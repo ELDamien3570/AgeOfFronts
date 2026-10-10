@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "civilizationId": "russians-rework",
+  "planSha256": "3beae20a2f266094378d9e99c5f75576922eaefe948b5a03d14ed55816df4566",
+  "createdMasters": [
+    {
+      "age": "EarlyMedieval",
+      "role": "Warship",
+      "label": "Rus coastal fighting longboat",
+      "unlock": "earlymedieval-coastal-warships",
+      "poster": "EarlyMedieval/Warship/SourceArt/Warship_Russian_EarlyMedieval_v1.png"
+    },
+    {
+      "age": "EarlyMedieval",
+      "role": "Transport",
+      "label": "Rus passenger transport",
+      "unlock": "earlymedieval-seafaring",
+      "poster": "EarlyMedieval/Transport/SourceArt/Transport_Russian_EarlyMedieval_v1.png"
+    },
+    {
+      "age": "EarlyMedieval",
+      "role": "Trade",
+      "label": "Rus river merchant boat",
+      "unlock": "earlymedieval-seafaring",
+      "poster": "EarlyMedieval/Trade/SourceArt/Trade_Russian_EarlyMedieval_v1.png"
+    },
+    {
+      "age": "LateMedieval",
+      "role": "Warship",
+      "label": "Late Medieval gunship",
+      "unlock": "latemedieval-naval-gunnery",
+      "poster": "LateMedieval/Warship/SourceArt/Warship_Russian_LateMedieval_v1.png"
+    },
+    {
+      "age": "LateMedieval",
+      "role": "Transport",
+      "label": "Late Medieval passenger ship",
+      "unlock": "latemedieval-merchant-convoys",
+      "poster": "LateMedieval/Transport/SourceArt/Transport_Russian_LateMedieval_v1.png"
+    },
+    {
+      "age": "LateMedieval",
+      "role": "Trade",
+      "label": "Late Medieval cargo ship",
+      "unlock": "latemedieval-merchant-convoys",
+      "poster": "LateMedieval/Trade/SourceArt/Trade_Russian_LateMedieval_v1.png"
+    },
+    {
+      "age": "Napoleonic",
+      "role": "Warship",
+      "label": "Imperial ship of the line",
+      "unlock": "earlymodern-ships-of-the-line",
+      "poster": "Napoleonic/Warship/SourceArt/Warship_Russian_Napoleonic_v1.png"
+    },
+    {
+      "age": "Napoleonic",
+      "role": "Transport",
+      "label": "Napoleonic troop transport",
+      "unlock": "earlymodern-ocean-transport",
+      "poster": "Napoleonic/Transport/SourceArt/Transport_Russian_Napoleonic_v1.png"
+    },
+    {
+      "age": "Napoleonic",
+      "role": "Trade",
+      "label": "Napoleonic merchantman",
+      "unlock": "earlymodern-ocean-transport",
+      "poster": "Napoleonic/Trade/SourceArt/Trade_Russian_Napoleonic_v1.png"
+    },
+    {
+      "age": "EarlyModern",
+      "role": "Warship",
+      "label": "Soviet destroyer",
+      "unlock": "modern-modern-warships",
+      "poster": "EarlyModern/Warship/SourceArt/Warship_Russian_EarlyModern_v1.png"
+    },
+    {
+      "age": "EarlyModern",
+      "role": "Transport",
+      "label": "Soviet troop transport",
+      "unlock": "modern-amphibious-transport",
+      "poster": "EarlyModern/Transport/SourceArt/Transport_Russian_EarlyModern_v1.png"
+    },
+    {
+      "age": "EarlyModern",
+      "role": "Trade",
+      "label": "Soviet powered freighter",
+      "unlock": "modern-amphibious-transport",
+      "poster": "EarlyModern/Trade/SourceArt/Trade_Russian_EarlyModern_v1.png"
+    },
+    {
+      "age": "EarlyModern",
+      "role": "Submarine",
+      "label": "Soviet diesel submarine",
+      "unlock": "russian-diesel-submarines",
+      "poster": "EarlyModern/Submarine/SourceArt/Submarine_Russian_EarlyModern_v1.png"
+    },
+    {
+      "age": "Modern",
+      "role": "Warship",
+      "label": "Guided-missile frigate",
+      "unlock": "russian-missile-frigates",
+      "poster": "Modern/Warship/SourceArt/Warship_Russian_Modern_v1.png"
+    },
+    {
+      "age": "Modern",
+      "role": "Transport",
+      "label": "Modern troop landing ship",
+      "unlock": "russian-modern-transport-fleet",
+      "poster": "Modern/Transport/SourceArt/Transport_Russian_Modern_v1.png"
+    },
+    {
+      "age": "Modern",
+      "role": "Trade",
+      "label": "Modern container ship",
+      "unlock": "russian-modern-transport-fleet",
+      "poster": "Modern/Trade/SourceArt/Trade_Russian_Modern_v1.png"
+    },
+    {
+      "age": "Modern",
+      "role": "Submarine",
+      "label": "Modern nuclear submarine",
+      "unlock": "russian-nuclear-submarines",
+      "poster": "Modern/Submarine/SourceArt/Submarine_Russian_Modern_v1.png"
+    }
+  ],
+  "existingAnimatedVessels": 9,
+  "totalVessels": 26,
+  "upgradePolicy": "Research upgrades do not add base sprites. Advanced Submarine Systems develops engineering; Nuclear Submarines supplies the Modern submarine master.",
+  "visualApproval": "approved",
+  "animationApproval": {
+    "status": "approved",
+    "userMessage": "okay animate them all"
+  },
+  "animationStatus": "All 17 vessels exported: 41 primary clips and two broadside variants"
+}

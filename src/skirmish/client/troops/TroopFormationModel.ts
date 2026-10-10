@@ -8,6 +8,7 @@ export interface ActorFrame {
 export interface ActorClip {
   id: string;
   file: string;
+  mask?: string;
   frameCount: number;
   loop?: boolean;
   fps?: number;

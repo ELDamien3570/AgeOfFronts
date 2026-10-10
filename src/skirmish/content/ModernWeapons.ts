@@ -37,6 +37,6 @@ export const STRATEGIC_PAYLOADS = {
   mirv: { damage: 24000, blastRadius: 3 * FIXED, warheads: 8 },
 } as const;
 
-export const ATOMIC_ATTACK:AttackProfile={...BOMBER_ATTACK,damage:24000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:16*FIXED}};
+export const ATOMIC_ATTACK:AttackProfile={...BOMBER_ATTACK,damage:24000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:12*FIXED}};
 export const DRONE_ATTACK:AttackProfile={...BOMBER_ATTACK,damage:10000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:3*FIXED}};
 export const NAVAL_AIR_ATTACK:AttackProfile={...BOMBER_ATTACK,damage:200,range:12*FIXED,reloadTicks:40,targets:["aircraft"],projectile:{diameter:FIXED/5,speed:2*FIXED,blastRadius:0}};

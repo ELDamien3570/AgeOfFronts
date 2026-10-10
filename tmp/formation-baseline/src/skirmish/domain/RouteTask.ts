@@ -1,0 +1,40 @@
+export interface ArmyRouteRequest {
+  armyId: number;
+  squadId: number;
+  revision: number;
+}
+import type { FiringPositionState } from "../FiringPositions";
+import type { DomainRouteTask } from "./DomainRoutePorts";
+export type MatchRouteTask =
+  | DomainRouteTask
+  | { kind: "army"; request: ArmyRouteRequest }
+  | {
+      kind: "ship-admission";
+      admissionId: number;
+      shipId: number;
+      playerId: number;
+    }
+  | {
+      kind: "admission";
+      admissionId: number;
+      squadId: number;
+      playerId: number;
+    }
+  | {
+      kind: "navigation";
+      operation: "repair" | "pursuit" | "blocked" | "smooth" | "continuation";
+      squadId: number;
+      revision: number;
+      playerId?: number;
+      generation?: number;
+      targetId?: number;
+      targetTile?: number;
+      firing?: FiringPositionState;
+    }
+  | {
+      kind: "ai-move";
+      generation?: number;
+      playerId: number;
+      squadIds: number[];
+      tile: number;
+    };

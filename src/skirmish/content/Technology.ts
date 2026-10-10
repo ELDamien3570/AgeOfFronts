@@ -8,9 +8,10 @@ import {
 import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
 export const TECHNOLOGIES = RUSSIAN_RECRUITMENT.technologies as Technology[];
 export function canonicalTechnologyId(id: string): string {
-  return (RUSSIAN_RECRUITMENT.aliases as Record<string,string>)[id] ?? id;
+  return (RUSSIAN_RECRUITMENT.aliases as Record<string, string>)[id] ?? id;
 }
-export const packageTechnology = (age:Age, slug:string) => `rus-${age.toLowerCase()}-${slug}`;
+export const packageTechnology = (age: Age, slug: string) =>
+  `rus-${age.toLowerCase()}-${slug}`;
 export const TECHNOLOGY = new Map(TECHNOLOGIES.map((t) => [t.id, t]));
 export function technologyAt(age: Age, tree: Tree, slot: number): Technology {
   const definition = TECHNOLOGIES.find(
@@ -27,13 +28,13 @@ export const STARTING_TECHNOLOGIES = [
 export const ADVANCES = [
   // Post-Stone prices follow capped market throughput, not the former unlimited
   // unload economy. Research catalogue prices use the same one-third rebalance.
-  { gold: 3_000, ticks: 700 },
-  { gold: 18_750, ticks: 800 },
-  { gold: 27_500, ticks: 900 },
-  { gold: 40_000, ticks: 1000 },
-  { gold: 57_500, ticks: 1100 },
-  { gold: 82_500, ticks: 1200 },
-  { gold: 120_000, ticks: 1400 },
+  { gold: 3_000, ticks: 1000 },
+  { gold: 18_750, ticks: 1100 },
+  { gold: 27_500, ticks: 1200 },
+  { gold: 40_000, ticks: 1300 },
+  { gold: 57_500, ticks: 1400 },
+  { gold: 82_500, ticks: 1500 },
+  { gold: 120_000, ticks: 1700 },
 ] as const;
 export function treeWorkload(age: Age, tree: Tree): number {
   return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree).length;

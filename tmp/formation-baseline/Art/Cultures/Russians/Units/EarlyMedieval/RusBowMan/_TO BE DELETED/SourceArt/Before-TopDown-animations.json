@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyMedieval",
+  "unit": "Rus Bow Man",
+  "category": "Ranged",
+  "actorCount": 1,
+  "stage": "single-idle-design-review",
+  "integrationStatus": "Single idle design awaiting user visual review.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1302,
+    "height": 1302
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed authored torso root; no silhouette fitting.",
+  "weapon": "Dark wooden recurve bow and iron-tipped arrow",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        1000
+      ],
+      "description": "Red tunic and boots, chainmail, green chest panel, patterned iron helmet and curved bow. Reference-based idle design for review.",
+      "frameCount": 1,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1302,
+          "height": 1302,
+          "pivot": {
+            "x": 651.0,
+            "y": 651.0
+          }
+        }
+      ]
+    }
+  ]
+}

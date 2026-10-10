@@ -1,0 +1,30 @@
+{
+  "folder": "Buildings/ClassicalAge/Mine/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/ClassicalAge/Mine/SourceArt/Icon-v1.png",
+      "archived": "Buildings/ClassicalAge/Mine/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "e4ecc1f181b4bf1ff496283ffbfde0161b2cfa2431ec8157fbea5b9d15855af2",
+      "size": 2874528
+    },
+    {
+      "original": "Buildings/ClassicalAge/Mine/SourceArt/Icon-v2.png",
+      "archived": "Buildings/ClassicalAge/Mine/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "a0a80e93d58e700ebafc1a37d815b2b76805ee5a00eb32430ab9f7271c490d0c",
+      "size": 2980066
+    },
+    {
+      "original": "Buildings/ClassicalAge/Mine/SourceArt/Icon-v3.png",
+      "archived": "Buildings/ClassicalAge/Mine/_TO BE DELETED/SourceArt/Icon-v3.png",
+      "sha256": "828c5a42f1257bdffc5b8c813091df3339f9eac4930abe9bd6785dcac37ddeb4",
+      "size": 3043063
+    },
+    {
+      "original": "Buildings/ClassicalAge/Mine/SourceArt/Icon-v4.png",
+      "archived": "Buildings/ClassicalAge/Mine/_TO BE DELETED/SourceArt/Icon-v4.png",
+      "sha256": "b13baaf7cc10ed56523329240767f0b20740ead1d043e323d9c67414e9ba45cc",
+      "size": 3095412
+    }
+  ]
+}

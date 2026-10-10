@@ -24,8 +24,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 70.3,
-            "y": 64.45
+            "x": 69.0,
+            "y": 65.0
           }
         },
         {
@@ -34,8 +34,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.875,
-            "y": 63.775
+            "x": 69.0,
+            "y": 65.0
           }
         },
         {
@@ -44,8 +44,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 66.25
+            "x": 69.0,
+            "y": 65.0
           }
         },
         {
@@ -54,8 +54,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 69.625,
-            "y": 62.65
+            "x": 69.0,
+            "y": 65.0
           }
         },
         {
@@ -64,8 +64,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.45,
-            "y": 62.875
+            "x": 69.0,
+            "y": 65.0
           }
         },
         {
@@ -74,8 +74,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.775,
-            "y": 64.45
+            "x": 69.0,
+            "y": 65.0
           }
         }
       ],
@@ -104,8 +104,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 66.7,
-            "y": 65.125
+            "x": 67.0,
+            "y": 67.0
           }
         },
         {
@@ -114,8 +114,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 60.4,
-            "y": 65.125
+            "x": 67.0,
+            "y": 67.0
           }
         },
         {
@@ -124,8 +124,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 67.15,
-            "y": 65.125
+            "x": 67.0,
+            "y": 67.0
           }
         },
         {
@@ -134,8 +134,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 66.475,
-            "y": 57.7
+            "x": 67.0,
+            "y": 67.0
           }
         },
         {
@@ -144,8 +144,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 60.175,
-            "y": 58.15
+            "x": 67.0,
+            "y": 67.0
           }
         },
         {
@@ -154,8 +154,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 67.375,
-            "y": 57.925
+            "x": 67.0,
+            "y": 67.0
           }
         }
       ],
@@ -184,8 +184,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 70.975,
-            "y": 38.575
+            "x": 71.0,
+            "y": 44.0
           }
         },
         {
@@ -194,8 +194,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 70.975,
-            "y": 38.575
+            "x": 71.0,
+            "y": 44.0
           }
         },
         {
@@ -204,8 +204,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 70.975,
-            "y": 38.575
+            "x": 71.0,
+            "y": 44.0
           }
         },
         {
@@ -214,8 +214,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 70.975,
-            "y": 38.575
+            "x": 71.0,
+            "y": 44.0
           }
         },
         {
@@ -224,8 +224,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 70.975,
-            "y": 38.575
+            "x": 71.0,
+            "y": 44.0
           }
         },
         {
@@ -234,8 +234,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 70.975,
-            "y": 38.575
+            "x": 71.0,
+            "y": 44.0
           }
         }
       ],
@@ -321,6 +321,247 @@
         }
       ],
       "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "label": "Charge in / maintain",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "description": "Brisk running with the pike lowered forward; loops to maintain charge.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 68.275,
+            "y": 36.099999999999994
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.575,
+            "y": 37.45
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.35,
+            "y": 36.775
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 68.275,
+            "y": 34.75
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 67.15,
+            "y": 35.425
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.35,
+            "y": 35.425
+          }
+        }
+      ],
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "label": "Charge attack",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        160,
+        180,
+        100,
+        200,
+        250
+      ],
+      "description": "Plant the feet and extend a committed two-handed pike thrust toward screen bottom.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.625,
+            "y": 39.025
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.625,
+            "y": 39.025
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.625,
+            "y": 39.025
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.625,
+            "y": 39.025
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.625,
+            "y": 39.025
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.625,
+            "y": 39.025
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "releaseFrame": 3
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Brief recoil and brace before recovering.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.65,
+            "y": 60.4
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.65,
+            "y": 60.4
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.65,
+            "y": 60.4
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.65,
+            "y": 60.4
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.65,
+            "y": 60.4
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.65,
+            "y": 60.4
+          }
+        }
+      ],
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/animations.json",
@@ -329,6 +570,9 @@
     "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Idle-Animated-v1.png": "59a82ac7024ce7855883dd1c8c0a8198bb04dcbb15fbd55a8cb553d0f8d25e73",
     "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Walk-v1.png": "34bfbc2eed2dfea0a5e541ecc9d94671a68b8d89ae009f663c534e7cc01689df",
     "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Attack-v1.png": "848296daa696b5cc16f5614ca742e595093b4d77fedbc8a223d16fdeaa18cf13",
-    "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Death-Side-v1.png": "a1f79da410d65f0b34be211bb6c0f4cfcd83884d149b42d7888320af540179c4"
+    "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Death-Side-v1.png": "a1f79da410d65f0b34be211bb6c0f4cfcd83884d149b42d7888320af540179c4",
+    "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Charge-v1.png": "5edf0575114bec475d044d591174bb390323537293c1e07081a21ede69d600fc",
+    "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Charge-Attack-v1.png": "c911c4b7f561d22a6e02a66e736a463e43cb01abc9219912a4bda37865a218a1",
+    "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Hit-v1.png": "761c7d5462ec5ff5cc4ac6f7bbc1a0ba2dca0898a10ea18a0f7562f376a57fd6"
   }
 }

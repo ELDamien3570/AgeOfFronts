@@ -5,6 +5,12 @@ import type { Projectile } from "../../domain/Definitions";
 import { FIXED, type ArcherVolley, type Snapshot } from "../../Protocol";
 import { squadArtworkPose } from "../CombatEffectsViewModel";
 import { COLORS } from "../FactionColors";
+import { FactionFrames } from "./FactionFrames";
+import { TroopImpacts } from "./TroopImpacts";
+import { drawPreviewProjectile } from "./ProjectilePresentation";
+import { weaponCycle } from "../../content/WeaponCycles";
+import { UNIT } from "../../content/Units";
+import { weaponVisual } from "../CombatEffectsViewModel";
 import {
   FormationEngagement,
   type EngagementOpponents,
@@ -27,6 +33,7 @@ import { actorFormationSlots } from "./TroopPacking";
 import { TroopRemains } from "./TroopRemains";
 import {
   javelinThrowTime,
+  throwTiming,
   TroopVolley,
   type VolleyThrower,
 } from "./TroopVolley";
@@ -52,6 +59,7 @@ export interface TroopActorOptions {
   troops: readonly TroopActorDefinition[];
   byDefinitionId: ReadonlyMap<string, TroopActorDefinition>;
   reformInPlace?: boolean;
+  groundElevationAt?: (x: number, y: number) => number;
   formationForSquad?: (squad: Snapshot["squads"][number]) => ManualFormation;
 }
 
@@ -76,7 +84,7 @@ export class TroopActors {
   formation: ManualFormation = "line";
   private assets = new Map<
     string,
-    { clip: ActorClip; image: HTMLImageElement }
+    { clip: ActorClip; image: HTMLImageElement; mask?: HTMLImageElement }
   >();
   private layouts = new Map<Name, FormationLayout>();
   private motions = new Map<
@@ -93,6 +101,13 @@ export class TroopActors {
     }
   >();
   private readonly remains = new TroopRemains();
+  private readonly factionFrames = new FactionFrames();
+  private readonly impacts = new TroopImpacts();
+  private frameScale = 64;
+  private frameProject?: (x:number,y:number)=>{x:number;y:number};
+  private readonly ownerBySquad = new Map<number, number>();
+  private readonly poses = new Map<number, { x: number; y: number; bottom: number; width: number }>();
+  labelPose = (id: number) => this.poses.get(id);
   private readonly volleys = new TroopVolley();
   private readonly shells = new TroopVolley();
   private readonly throwers = new Map<number, VolleyThrower[]>();
@@ -204,6 +219,7 @@ export class TroopActors {
   };
   beginFrame(): void {
     this.drawQueue.clear();
+    this.poses.clear();
     this.selectionIndex.beginFrame();
   }
   flush = (ctx: CanvasRenderingContext2D): void => {
@@ -233,6 +249,9 @@ export class TroopActors {
         ctx.stroke();
       }
     for (const entry of entries) {
+      this.impacts.member(ctx,entry.squadId,entry.soldierId,{x:entry.screenX,y:entry.screenY,angle:entry.angle},this.clock(),this.frameScale,true);
+    }
+    for (const entry of entries) {
       const { frame, size } = entry;
       ctx.save();
       ctx.translate(entry.screenX, entry.screenY);
@@ -250,6 +269,8 @@ export class TroopActors {
       );
       ctx.restore();
     }
+    for (const entry of entries) this.impacts.member(ctx,entry.squadId,entry.soldierId,{x:entry.screenX,y:entry.screenY,angle:entry.angle},this.clock(),this.frameScale,false);
+    if(this.frameProject)this.impacts.drawSmoke(ctx,this.clock(),this.frameScale,this.frameProject);
     ctx.restore();
   };
   private readonly vehicles: Set<string>;
@@ -273,6 +294,10 @@ export class TroopActors {
     this.byDefinitionId = options.byDefinitionId;
   }
   clear(): void {
+    this.factionFrames.clear();
+    this.impacts.clear();
+    this.ownerBySquad.clear();
+    this.poses.clear();
     this.motions.clear();
     this.headings.clear();
     this.remains.clear();
@@ -333,16 +358,17 @@ export class TroopActors {
           ? rangedLayout
           : footLayout;
       const assets = await Promise.all(
-        ["idle", "running", "attack", "death"].map(async (id) => {
-          const clip = manifest.animations.find((clip) => clip.id === id);
-          if (!clip) throw new Error(`Missing ${name} ${id}`);
+        manifest.animations.map(async (clip) => {
+          const id = clip.id;
           const image = await loadSharedImage(troopAssetUrl(root + clip.file));
+          const mask = clip.mask ? await loadSharedImage(troopAssetUrl(root + clip.mask)) : undefined;
           const baseScale =
             manifest.animations.find((c) => c.id === "idle")?.scale ?? 1;
           return {
             id,
             clip: { ...clip, scale: (clip.scale ?? 1) / baseScale },
             image,
+            mask,
           };
         }),
       );
@@ -357,11 +383,16 @@ export class TroopActors {
   prune(snapshot: Snapshot): void {
     const now = this.clock();
     this.playerId = snapshot.localPlayerId ?? 1;
-    if (!this.detailed) return;
+    if (!this.detailed) {this.ownerBySquad.clear();return;}
+    for (const squad of snapshot.squads) this.ownerBySquad.set(squad.id, squad.playerId);
     this.headings.update(snapshot, now);
     this.volleys.prune(snapshot.volleys);
     this.shells.prune(snapshot.expansion?.projectiles ?? []);
     const squads = new Map(snapshot.squads.map((s) => [s.id, s]));
+    this.impacts.update(snapshot.volleys,now,id=>{
+      const state=this.motions.get(id);
+      return state ? state.motion.soldiers(now).flatMap(s=>{const p=state.walkers.position(s.id);return p?[{...p,id:s.id}]:[];}) : [];
+    });
     const buildings = new Map(snapshot.buildings.map((b) => [b.id, b]));
     this.contacts.clear();
     // Freeze opponent poses at the snapshot boundary, so facing does not depend
@@ -417,6 +448,7 @@ export class TroopActors {
         this.motions.delete(id);
         this.throwers.delete(id);
       }
+    for(const id of this.ownerBySquad.keys())if(!ids.has(id))this.ownerBySquad.delete(id);
   }
   drawVolley = (
     ctx: CanvasRenderingContext2D,
@@ -427,6 +459,7 @@ export class TroopActors {
     width: number,
     height: number,
   ): boolean => {
+    if (volley.melee || volley.impact || volley.sourceKind === "aircraft") return true;
     const troop = this.byDefinitionId.get(volley.definitionId ?? "");
     if (!this.detailed || !troop?.ranged || !this.loaded.has(troop.name))
       return false;
@@ -538,11 +571,16 @@ export class TroopActors {
       troop.facingOffset,
       false,
       projectile.impactTick - projectile.tick,
+      this.contacts.get(projectile.sourceId)?.opponents[0]?.soldiers.map(s=>({x:s.x-this.contacts.get(projectile.sourceId)!.opponents[0].center.x,y:s.y-this.contacts.get(projectile.sourceId)!.opponents[0].center.y})) ?? [],
     );
     if (!flights.length) return false;
     ctx.save();
     for (const flight of flights) {
       const p = project(flight.x, flight.y);
+      const style=weaponVisual(projectile.definitionId);
+      if (["javelin","arrow","bolt"].includes(style)) {
+        ctx.save();ctx.translate(p.x,p.y);ctx.scale(tileSize/64,tileSize/64);drawPreviewProjectile(ctx,style==="arrow"?"bow":style,0,0,flight.angle);ctx.restore();continue;
+      }
       if (
         p.x < -20 ||
         p.y < -20 ||
@@ -612,6 +650,8 @@ export class TroopActors {
       started,
       fallDuration,
       seed: id * 31 + soldier.id * 17,
+      embedded: this.impacts.detach(id,soldier.id,started),
+      color: COLORS[this.ownerBySquad.get(id) ?? this.playerId],
     });
   }
   drawRemains = (
@@ -622,6 +662,8 @@ export class TroopActors {
     height: number,
   ): void => {
     if (!this.detailed) return;
+    this.impacts.ground(ctx,this.clock(),tileSize,project);
+    this.frameProject = project;
     const records = this.remains
       .sample(this.clock())
       .map((record) => ({ record, p: project(record.x, record.y) }))
@@ -665,10 +707,14 @@ export class TroopActors {
     ctx.globalAlpha = 1;
     for (const { record, p } of records) {
       if (!record.bodyVisible) continue;
-      const { clip, image } = this.assets.get(`${record.artwork}:death`)!;
-      const frame = clip.frames[clipFrame(clip, record.age)];
+      const asset = this.assets.get(`${record.artwork}:death`)!;
+      const { clip } = asset;
+      const { image, frame } = this.factionFrames.get(`${record.artwork}:death`, asset.image, asset.mask, clip.frames[clipFrame(clip, record.age)], record.color ?? COLORS[this.playerId]);
       const size =
         record.size * tileSize * record.bodyScale * (clip.scale ?? 1);
+      for(const shaft of record.embedded ?? []) {
+        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(record.angle);ctx.scale(tileSize/64*.65,tileSize/64*.65);drawPreviewProjectile(ctx,shaft.kind,2,0,shaft.angle,true);ctx.restore();
+      }
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(record.angle);
@@ -711,6 +757,7 @@ export class TroopActors {
       return false;
     }
     const name: Name = troop.name;
+    this.frameScale = tileSize;
     const mounted = troop.mounted;
     const ranged = troop.ranged;
     const soldierCount = troop.members ?? (troop.mounted ? 6 : 12);
@@ -838,8 +885,10 @@ export class TroopActors {
       id: string,
       time: number,
     ) => {
-      const { clip, image } = this.assets.get(`${name}:${id}`)!;
-      const frame = clip.frames[clipFrame(clip, time)];
+      const asset = this.assets.get(`${name}:${id}`)!;
+      const { clip } = asset;
+      const colored = this.factionFrames.get(`${name}:${id}`, asset.image, asset.mask, clip.frames[clipFrame(clip, time)], COLORS[squad.playerId]);
+      const { image, frame } = colored;
       const size = extent * scale * (clip.scale ?? 1);
       const screenX = p.x + (position.x - worldPosition.x) * tileSize;
       const screenY = p.y + (position.y - worldPosition.y) * tileSize;
@@ -877,6 +926,7 @@ export class TroopActors {
         frame,
         this.isSelected(squad.id) ? Math.max(3, selectionRadius * tileSize) : 0,
         COLORS[squad.playerId],
+        this.options?.groundElevationAt?.(position.x, position.y) ?? 0,
       );
     };
     for (const corpse of state.motion.dead(now))
@@ -905,16 +955,30 @@ export class TroopActors {
         !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
       planted,
       combatFootwork: !troop.vehicle,
+      carrierRelative: true,
       reformInPlace: this.options?.reformInPlace,
     });
     const walking = this.assets.get(`${name}:running`)!.clip;
+    if (soldiers.length) {
+      const minX = Math.min(...soldiers.map(s => s.x - footprint*s.scale/2));
+      const maxX = Math.max(...soldiers.map(s => s.x + footprint*s.scale/2));
+      const bottom = Math.max(...soldiers.map(s => s.y + footprint*s.scale/2));
+      this.poses.set(squad.id, {x: (minX+maxX)/2, y: soldiers.reduce((n,s)=>n+s.y,0)/soldiers.length, bottom, width: maxX-minX});
+    }
     const duration =
       walking.durations?.reduce((sum, duration) => sum + duration, 0) ??
       (walking.frameCount * 1000) / (walking.fps ?? 6);
     const throwers: VolleyThrower[] = [];
     for (const soldier of soldiers) {
       const moving = soldier.speed > 0.001 || soldier.turning;
-      const clip =
+      const definition = UNIT.get(squad.definitionId ?? "");
+      const cycle = definition && weaponCycle(definition);
+      const timing = throwTiming(this.assets.get(`${name}:attack`)!.clip);
+      const reloadStart = (squad.reloadStartedTick ?? Infinity)*50 + timing.duration-timing.release;
+      const reloadEnd = (squad.nextAttackTick ?? 0)*50 - timing.release;
+      const reloading = cycle && this.assets.has(`${name}:reload`) && tick*50 >= reloadStart && tick*50 < reloadEnd;
+      const bayonet = definition?.age === "Napoleonic" && definition.troopClass === "frontline" && squad.charge?.phase === "recovery" && this.assets.has(`${name}:charge-attack`);
+      const clip = bayonet ? "charge-attack" : reloading ? "reload" :
         ranged && throwTime !== undefined
           ? "attack"
           : moving
@@ -928,7 +992,7 @@ export class TroopActors {
                 )
               ? "attack"
               : "idle";
-      const time =
+      const time = clip === "charge-attack" ? (tick-(squad.lastAttackTick ?? tick))*50 : clip === "reload" ? (tick*50-reloadStart)/Math.max(1,reloadEnd-reloadStart)*throwTiming(this.assets.get(`${name}:reload`)!.clip).duration :
         clip === "attack"
           ? (throwTime ?? pose.elapsed * 50)
           : clip === "running"

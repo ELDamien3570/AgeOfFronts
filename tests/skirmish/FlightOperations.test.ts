@@ -172,7 +172,7 @@ describe("flight-time air operations", () => {
     expect(
       e.battle.projectiles.find((p) => p.definitionId === "atomic")
         ?.blastRadius,
-    ).toBe(16 * FIXED);
+    ).toBe(12 * FIXED);
   });
   it("keeps drones immune to fighter and naval defence and consumes them on impact", () => {
     const { game, e, planes } = fixture(),

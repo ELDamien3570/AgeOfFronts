@@ -1,5 +1,5 @@
 import { SpatialGrid } from "../SpatialGrid";
-import { flightTicks, flightSpeed, flightReachable, aircraftTechnology, missionKind, FLIGHT_RULES } from "../content/FlightOperations";
+import { flightTicks, flightSpeed, flightReachable, aircraftTechnology, missionKind, FLIGHT_RULES, aircraftRecruitmentCost } from "../content/FlightOperations";
 import { shoreTransportDefinition } from "../content/ShoreTransport";
 import { buildingGroundBounds } from "../BuildingFootprint";
 import { availableGold, paidCost } from "./Gold";
@@ -32,7 +32,7 @@ import {
   buildingCost,
   buildingIntegrity,
   buildingTechnology,
-  nextBuildingAge,
+  productionBuildingType,
 } from "../content/Buildings";
 import { startingEconomy } from "../content/StartingEconomy";
 import { TRIBE_BUILDING_ORDER, tribeBuildingLimit, tribeAdvanceRejection } from "./TribeDevelopment";
@@ -75,7 +75,6 @@ import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
 import type { RecruitmentJob, VesselDefinition } from "./Definitions";
 import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
-import { quoteBuildingUpgrades } from "./BuildingUpgrades";
 import { structureAim } from "./StructureTargeting";
 import { StructureAttackPreparation, type StructureAttackPreparationState } from "./StructureAttackPreparation";
 import { squadRadius, standable, tilePoint } from "../SquadGeometry";
@@ -302,6 +301,8 @@ export class Expansion {
     if (!technology || (!placementOnly && !this.progression.has(player.id, technology)))
       return "Research this building's technology first";
     const state = this.progression.states[player.id];
+    if (productionBuildingType(type, state.age, state.completed) !== type)
+      return "Armories are replaced by researched arms factories";
     const tier = automaticBuildingTier(type, state.age, state.completed);
     if (!placementOnly && tier && tier !== age)
       return "Build this structure at its latest researched tier";
@@ -379,20 +380,7 @@ export class Expansion {
   command(player: Player, command: Command): string | null | undefined {
     const { world } = this;
     if (command.type === "alliance" && command.action !== "declare" && world.options?.alliances === false) return "Alliances are disabled for this match";
-    if (command.type === "upgrade-building") {
-      const quote = quoteBuildingUpgrades(player, this.progression.states[player.id],
-        this.supply.inventories[player.id], world.buildings, world.owners, command.buildingIds);
-      if (quote.reason) return quote.reason;
-      spend(player, this.supply.inventories[player.id], quote.cost);
-      for (const { building, age, ticks } of quote.upgrades) {
-        const maximum = building.maxHealth ?? buildingIntegrity(building.type, building.age ?? "StoneAge");
-        const ratio = Math.min(1, (building.health ?? maximum) / maximum);
-        const maxHealth = buildingIntegrity(building.type, age,this.progression.states[player.id].completed);
-        world.updateBuilding(building.id, { age, maxHealth,
-          health: Math.max(1, Math.floor(maxHealth * ratio)), remainingTicks: ticks });
-      }
-      return null;
-    }
+    if (command.type === "upgrade-building") return "Buildings upgrade automatically with research";
     const armyResult = this.armies.command(player, command);
     if (armyResult !== undefined) return armyResult;
     if (command.type === "research") {
@@ -568,6 +556,7 @@ export class Expansion {
         a.atomicPayload=mission === "atomic";
         a.target = { x: command.x, y: command.y };
         a.state = "outbound";
+        a.flightBudgetTicks ??= a.fuelTicks;
         // Flight budget was filled at recruitment/landing; orders cannot refill it.
       }
       return null;
@@ -838,9 +827,7 @@ export class Expansion {
       this.aircraft.filter((a) => a.playerId === player.id).length + this.world.recruitment.count(player.id, "aircraft") >= AIRCRAFT_RULES.factionCapacity
     )
       return "Airfield or aircraft capacity reached";
-    const cost = {
-        gold: FLIGHT_RULES[kind].gold,
-      },
+    const cost = aircraftRecruitmentCost(kind),
       rejection = costRejection(
         player,
         this.supply.inventories[player.id],
@@ -983,7 +970,15 @@ export class Expansion {
       this.announce({ kind: "age", actorId: player.id, age }),
     );
     this.automaticTiers.step(world.players, this.progression.states, world.buildingFacts(),
-      (id, patch) => world.updateBuilding(id, patch));
+      (id, patch) => {
+        const building = world.buildings.find(b => b.id === id);
+        if (building?.type === "armory" && patch.type === "arms-factory") {
+          const priorities = this.supply.priorities[building.playerId];
+          if (priorities?.armory && priorities["arms-factory"] === undefined)
+            priorities["arms-factory"] = [...priorities.armory];
+        }
+        return world.updateBuilding(id, patch);
+      });
     const treaties = [...this.diplomacy.state.alliances];
     this.diplomacy.step(world.tick, world.players);
     for (const treaty of treaties)
@@ -1108,6 +1103,7 @@ export class Expansion {
           if (enemy.health <= 0) continue;
           const health = enemy.health;
           enemy.health -= 200;
+          if (this.world.volleys.length < 4096) this.world.volleys.push({id:this.world.allocateId(),tick:this.world.tick,squadId:a.id,playerId:a.playerId,definitionId:"fighter-guns",fromX:a.x,fromY:a.y,toX:enemy.x,toY:enemy.y,sourceKind:"aircraft",targetKind:"aircraft",targetId:enemy.id,damage:Math.min(200,health)});
           if (health > 0 && enemy.health <= 0) {
             const damage = new DamageLedger();
             damage.add(enemy.id, a.playerId, Math.min(200, health));
@@ -1116,7 +1112,7 @@ export class Expansion {
           a.reloadTick = this.world.tick + 40;
         }
       }
-      if(a.state === "ready") {a.fuelTicks=flightTicks(a.definitionId,this.progression.has(a.playerId,"rus-modern-airfields") ? "Modern" : a.age??base.age??"EarlyModern");continue;}
+      if(a.state === "ready") {a.fuelTicks=flightTicks(a.definitionId,this.progression.has(a.playerId,"rus-modern-airfields") ? "Modern" : a.age??base.age??"EarlyModern");a.flightBudgetTicks=a.fuelTicks;continue;}
       if (!a.target) continue;
       if(a.state !== "returning") {if(a.fuelTicks<=0)a.state="returning";else a.fuelTicks--;}
       if(a.state === "patrolling") {
@@ -1209,11 +1205,6 @@ export class Expansion {
           });
       }
       const own = this.world.buildingFacts().byOwner(player.id);
-      // One paid infrastructure improvement per strategic pass; no hidden grants.
-      const upgrade = own.find(building => !building.remainingTicks &&
-        (building.health ?? 1) >= (building.maxHealth ?? 1) &&
-        nextBuildingAge(building.type, building.age ?? "StoneAge", state.age, state.completed));
-      if (upgrade) this.world.applyCommand({ type: "upgrade-building", playerId: player.id, buildingIds: [upgrade.id] });
       const squadCount = this.world.squadFacts().byOwner(player.id).length;
       // Nearest owned land is order-independent (it is derived from ownership),
       // so checkpoints never need the per-player tile sets.
@@ -1432,7 +1423,7 @@ export class Expansion {
     for (const squad of squads) {
       const lease = this.modernization.leases.get(squad.id);
       if (!lease || squad.refit) continue;
-      if (this.world.owners[this.world.tileOf(squad)] !== player.id) {
+      if (squad.fighting || this.world.owners[this.world.tileOf(squad)] !== player.id) {
         if (rally === undefined) {
           if (this.world.owners[player.base] === player.id) rally = player.base;
           else {

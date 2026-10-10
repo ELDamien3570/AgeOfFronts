@@ -76,6 +76,7 @@ export class TroopVolley {
     facingOffset = 0,
     ballistic = true,
     flightTicks = 12,
+    targetOffsets: readonly {x:number;y:number}[] = [],
   ): FlyingJavelin[] {
     const progress = (tick - volley.tick) / Math.max(1, flightTicks);
     if (progress < 0 || progress >= 1) return [];
@@ -100,12 +101,13 @@ export class TroopVolley {
             volley.toX / FIXED - x,
           );
           const spread = (index - (attacking.length - 1) / 2) * 0.08;
+          const receiving = targetOffsets[(soldier.id+volley.id)%Math.max(1,targetOffsets.length)] ?? {x:0,y:0};
           return {
             soldierId: soldier.id,
             x,
             y,
-            toX: volley.toX / FIXED - Math.sin(bearing) * spread,
-            toY: volley.toY / FIXED + Math.cos(bearing) * spread,
+            toX: volley.toX / FIXED + receiving.x - Math.sin(bearing) * spread,
+            toY: volley.toY / FIXED + receiving.y + Math.cos(bearing) * spread,
           };
         }),
       );

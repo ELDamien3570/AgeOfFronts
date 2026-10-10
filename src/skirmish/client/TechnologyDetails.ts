@@ -157,7 +157,7 @@ export function technologyDetails(technology: Technology): string[] {
     lines.push(
       `Trade traffic builds ${AGE_NAMES[ageIndex]} roads. Road tier is independent of trader cargo capacity.`,
     );
-  if (role === "land-traders") {
+  if (role === "roads" || role === "land-traders") {
     const capacity = LAND_TRADE_CAPACITIES[ageIndex];
     lines.push(
       `Land trade: ${capacity} goods base cargo · ${Math.floor(capacity * 1.25)} with Stone Age cargo handling at one factory`,
@@ -176,7 +176,7 @@ export function technologyDetails(technology: Technology): string[] {
     );
     if (!ageIndex)
       lines.push(
-        "Cities are buildable from the start. +10% city health and receiving capacity.",
+        "Cities are unlocked from the start for reserves and cargo drop-off.",
       );
     else
       lines.push(

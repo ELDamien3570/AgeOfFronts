@@ -1,0 +1,36 @@
+{
+  "folder": "Aircraft/Modern/Bomber/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Aircraft/Modern/Bomber/Icon.png",
+      "archived": "Aircraft/Modern/Bomber/_TO BE DELETED/Icon.png",
+      "sha256": "695b18e7dce829f5c9f93343d31f4ef44b0b1c22a4eac28be1bb04fa3be344b9",
+      "size": 188712
+    },
+    {
+      "original": "Aircraft/Modern/Bomber/SourceArt/.gitkeep",
+      "archived": "Aircraft/Modern/Bomber/_TO BE DELETED/SourceArt/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "original": "Aircraft/Modern/Bomber/SourceArt/Pe8_Russian_WWII_v1.png",
+      "archived": "Aircraft/Modern/Bomber/_TO BE DELETED/SourceArt/Pe8_Russian_WWII_v1.png",
+      "sha256": "844899206292ff0e226cac7208f07cb0a20c40305d256a8e715616e3a69b4665",
+      "size": 872774
+    },
+    {
+      "original": "Aircraft/Modern/Bomber/SourceArt/Pe8_Russian_WWII_v2.png",
+      "archived": "Aircraft/Modern/Bomber/_TO BE DELETED/SourceArt/Pe8_Russian_WWII_v2.png",
+      "sha256": "fa632320a52fc8d82dd59c835c3de0fc81b382f95a0c75f57b1d43f710970340",
+      "size": 771236
+    },
+    {
+      "original": "Aircraft/Modern/Bomber/SourceArt/Tu160_Russian_Modern_framing-draft.png",
+      "archived": "Aircraft/Modern/Bomber/_TO BE DELETED/SourceArt/Tu160_Russian_Modern_framing-draft.png",
+      "sha256": "230981db64b5a88f6bc6f1a5c7d64091e539bac045b00d45ecbc3605f76a5fed",
+      "size": 759409
+    }
+  ]
+}

@@ -3227,8 +3227,8 @@
   },
   "unit-portrait-stoneage-cavalry": {
     "file": "unit-portrait-stoneage-cavalry.png",
-    "source": "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/Idle-v2.png",
-    "hash": "7aa435ceaa802e7d6b51b9b9008c8ba286058d023c52c12aa4c9f024b2a36e6d"
+    "source": "Art/Cultures/Russians/Units/StoneAge/Scout/Idle-Animated-v1.png",
+    "hash": "47b6602f0662786afac90646b435e28751b49a380ecbf9c8341236477bd35983"
   },
   "unit-portrait-bronzeage-infantry": {
     "file": "unit-portrait-bronzeage-infantry.png",
@@ -3237,13 +3237,13 @@
   },
   "unit-portrait-bronzeage-anticavalry": {
     "file": "unit-portrait-bronzeage-anticavalry.png",
-    "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Idle-Animated-v1.png",
-    "hash": "7bbaca6c01597bd26e6cf339799336e98b0b537932e1bfc20dd1d65752156a83"
+    "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/idle-v1.png",
+    "hash": "dcecc6f9b7fe4819381897fa6b0ad26c20685143567f51d92ec5caafe488ab16"
   },
   "unit-portrait-bronzeage-archer": {
     "file": "unit-portrait-bronzeage-archer.png",
-    "source": "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/Idle-Animated-v1.png",
-    "hash": "9d1ba15f6e61eeb1767b645c4e8d144ecab72450b9c7038a9eee543bf65010af"
+    "source": "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/TopDownReview/idle-v1.png",
+    "hash": "ae97a0c9d11e0c9694312b199b6553269ef41d06aae475610edc7e92c6c1f480"
   },
   "unit-portrait-bronzeage-cavalry": {
     "file": "unit-portrait-bronzeage-cavalry.png",
@@ -3262,8 +3262,8 @@
   },
   "unit-portrait-classicalage-archer": {
     "file": "unit-portrait-classicalage-archer.png",
-    "source": "Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/Idle-Animated-v1.png",
-    "hash": "78370d2c2bc2d451baebc096582383b35eef0b3515e7f73e7728f850ba3f18b6"
+    "source": "Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/TopDownReview/idle-v1.png",
+    "hash": "63c4571f82ddae73c4846fb986772d3bfdc1601104b3452bd85951064e19cb53"
   },
   "unit-portrait-classicalage-cavalry": {
     "file": "unit-portrait-classicalage-cavalry.png",

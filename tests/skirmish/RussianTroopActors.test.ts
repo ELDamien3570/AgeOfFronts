@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { RUSSIAN_TROOP_ACTORS } from "../../src/skirmish/client/troops/RussianTroopCatalogue";
 import { FORMATION_MOVEMENT } from "../../src/skirmish/content/FormationMovement";
+import approved from "../../src/skirmish/content/RussianVisualCalibration.json";
 import catalogue from "../../src/skirmish/content/RussianTroopActors.json";
 import { UNITS } from "../../src/skirmish/content/Units";
 
@@ -30,17 +31,17 @@ describe("normal skirmish individual artwork", () => {
     }
   });
   it("publishes complete bounded clips and preserves normalized pivots and authored pose scales", () => {
-    for (const entry of Object.values(catalogue)) {
+    for (const [binding,entry] of Object.entries(catalogue)) {
       const root = `Art/Runtime/Russians/Troops/${entry.key}/`;
       const data = JSON.parse(readFileSync(root + "animations.json", "utf8"));
       const source = JSON.parse(readFileSync(data.source, "utf8"));
       expect(data.actorCount).toBe(1);
-      expect(data.animations.map((clip: { id: string }) => clip.id)).toEqual([
+      expect(data.animations.map((clip: { id: string }) => clip.id)).toEqual(expect.arrayContaining([
         "idle",
         "running",
         "attack",
         "death",
-      ]);
+      ]));
       for (const clip of data.animations) {
         expect(existsSync(root + clip.file)).toBe(true);
         const original =
@@ -66,10 +67,10 @@ describe("normal skirmish individual artwork", () => {
             expect(frame.width).toBe(entry.vehicle ? 256 : 128);
             expect(frame.height).toBe(entry.vehicle ? 256 : 128);
             expect(frame.pivot.x / frame.width).toBeCloseTo(
-              original.frames[i].pivot.x / original.frames[i].width,
+              (approved as any)[binding]?.bodyAnchorsPx128?.[clip.id]?.x / 128 || original.frames[i].pivot.x / original.frames[i].width,
             );
             expect(frame.pivot.y / frame.height).toBeCloseTo(
-              original.frames[i].pivot.y / original.frames[i].height,
+              (approved as any)[binding]?.bodyAnchorsPx128?.[clip.id]?.y / 128 || original.frames[i].pivot.y / original.frames[i].height,
             );
           },
         );

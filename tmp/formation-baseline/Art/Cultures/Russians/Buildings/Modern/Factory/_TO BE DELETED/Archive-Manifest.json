@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Modern/Factory/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Modern/Factory/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Modern/Factory/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "88dbb6c8d26fb452c4c475e780392c2052cbbb1cb4e8babde9a190b7e95581e1",
+      "size": 2020212
+    },
+    {
+      "original": "Buildings/Modern/Factory/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Modern/Factory/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "fc9871f308854339c3686dd16c7b3b30b3308f93d2878cf7ff8b98b699d44363",
+      "size": 1796544
+    }
+  ]
+}

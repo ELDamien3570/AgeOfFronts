@@ -1,0 +1,30 @@
+{
+  "folder": "Buildings/StoneAge/Siege Workshop/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/StoneAge/Siege Workshop/SourceArt/.gitkeep",
+      "archived": "Buildings/StoneAge/Siege Workshop/_TO BE DELETED/SourceArt/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1
+    },
+    {
+      "original": "Buildings/StoneAge/Siege Workshop/SourceArt/Icon-v1.png",
+      "archived": "Buildings/StoneAge/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "3589e662adb2eb4cdbe7df700ffbf41ead6c8f460fa1291530b3d1adbcf941f8",
+      "size": 2332506
+    },
+    {
+      "original": "Buildings/StoneAge/Siege Workshop/SourceArt/Icon-v2.png",
+      "archived": "Buildings/StoneAge/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "77a5d8cae303d85af488e55037812e15ab0f9886a8d6ad10fc78d2dbea40c007",
+      "size": 2929734
+    },
+    {
+      "original": "Buildings/StoneAge/Siege Workshop/SourceArt/Icon-v3.png",
+      "archived": "Buildings/StoneAge/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v3.png",
+      "sha256": "4f236da76594b47508549edc1053e239bba4e8308e69fdb3fb3925c34b5873b2",
+      "size": 2751778
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "Modern",
+  "unit": "K-17 Bumerang",
+  "category": "Armored Vehicle",
+  "actorCount": 1,
+  "stage": "single-vehicle-idle-design-review",
+  "integrationStatus": "First idle pending review before animation; gameplay integration is separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1024,
+    "height": 1536
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed vehicle-root pivot and constant scale.",
+  "historicalEra": "Contemporary",
+  "historicalDirection": "User selected the K-17 infantry fighting vehicle variant of the VPK Bumerang. Stylized Russian equipment design.",
+  "designReference": "https://odin.t2com.army.mil/WEG/Asset/98120ce6edcd5819b72307efcd79c44d",
+  "weapon": "Autocannon turret with side missile launchers",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "sha256": "74aae24d20d59c85a572327115bd1191a5e0d160cb48e419b6581a075ccd0548",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 0.6666666666666666,
+      "durations": [
+        1000
+      ],
+      "description": "K-17 Bumerang: an eight-wheeled armored hull with a compact autocannon turret.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1024,
+          "height": 1536,
+          "pivot": {
+            "x": 512.0,
+            "y": 768.0
+          }
+        }
+      ]
+    }
+  ]
+}

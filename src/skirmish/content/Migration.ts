@@ -1,7 +1,7 @@
 /** Layout only: normal player placement and resource rules remain available. */
 export const MIGRATION_THEME = Object.freeze({
   id: "migration",
-  revision: 6,
+  revision: 7,
   name: "Migration",
   minimumIslands: 6,
   maximumIslands: 9,
@@ -63,5 +63,6 @@ export const MIGRATION_THEME = Object.freeze({
     focusFraction: 0.5,
   } as const,
   thermalErosion: { iterations: 8, talus: 55, rate: 0.1 },
+  formation: { resolution: 250, erosionPasses: 4, streamPower: 38, spurHeight: 0.28 },
   sea: { shelfWidthRatio: 0.035, maximumDepth: 4200 },
 });

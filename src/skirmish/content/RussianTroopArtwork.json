@@ -1,7 +1,7 @@
 {
   "StoneAge:frontline": "StoneAge/Clubman",
   "StoneAge:rangedInfantry": "StoneAge/Javelinist",
-  "StoneAge:lightCavalry": "StoneAge/MountedSpearman",
+  "StoneAge:lightCavalry": "StoneAge/Scout",
   "BronzeAge:frontline": "BronzeAge/BronzeAxeman",
   "BronzeAge:antiCavalry": "BronzeAge/BronzeSpearman",
   "BronzeAge:rangedInfantry": "BronzeAge/RiverArcher",

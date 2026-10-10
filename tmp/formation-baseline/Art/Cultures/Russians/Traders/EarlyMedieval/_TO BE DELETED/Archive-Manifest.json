@@ -1,0 +1,78 @@
+{
+  "folder": "Traders/EarlyMedieval/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Traders/EarlyMedieval/Animation_Validation.json",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/Animation_Validation.json",
+      "sha256": "c3905c5d25dcc5432fced1080f41b96c5d55a53c91e80bc4b8a6c18a2b8b31d4",
+      "size": 4726
+    },
+    {
+      "original": "Traders/EarlyMedieval/Generation-Manifest.json",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "11d95cbb2476a8a875718b5291a826506cf8a527635b31d8b6894f1cac99ad61",
+      "size": 3673
+    },
+    {
+      "original": "Traders/EarlyMedieval/Idle.webp",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/Idle.webp",
+      "sha256": "773be9365829f3f8e05e94549a68cbb9629006dff11e902c58628e057e2cb36a",
+      "size": 339022
+    },
+    {
+      "original": "Traders/EarlyMedieval/layers/Old_Legs_Removal_Mask.png",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/layers/Old_Legs_Removal_Mask.png",
+      "sha256": "0e26a966205af6fb46c5dab8f054fe81fb97959fd13084de80d874c41b05a791",
+      "size": 2314
+    },
+    {
+      "original": "Traders/EarlyMedieval/layers/Original_Painting.png",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/layers/Original_Painting.png",
+      "sha256": "dc5d8a7afca10a7ff5c5a69d91f8e16f64db6634c154b205ed1a31d6a2da6ed6",
+      "size": 849789
+    },
+    {
+      "original": "Traders/EarlyMedieval/README.md",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/README.md",
+      "sha256": "e96b01a09c68bd06d4a4534fd86ac9ff54d28e487f70d0ba9e1d0e67e7bd3071",
+      "size": 875
+    },
+    {
+      "original": "Traders/EarlyMedieval/Review/Preservation-Baseline.json",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/Review/Preservation-Baseline.json",
+      "sha256": "e542506d508783e894e0746c43bd3823eb120aecd4b6de2941e765535630fb97",
+      "size": 97928
+    },
+    {
+      "original": "Traders/EarlyMedieval/Review/Travel-Moving-Ground.gif",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/Review/Travel-Moving-Ground.gif",
+      "sha256": "a5a693362f5e069a7e971191df56e2ed3339097d1806b765d95ec31c8227a270",
+      "size": 445197
+    },
+    {
+      "original": "Traders/EarlyMedieval/Review/Walking-Frames.png",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/Review/Walking-Frames.png",
+      "sha256": "85f5d9a0ed195c2c6d327861b2df0374e0b5ee96b7d39b62d33fc2afb65763cd",
+      "size": 65192
+    },
+    {
+      "original": "Traders/EarlyMedieval/rig-authoring.json",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/rig-authoring.json",
+      "sha256": "368eecf253561ffb22e4ac2c379b6c56793d0e0e2bb437dc3328b69f4e019316",
+      "size": 6275
+    },
+    {
+      "original": "Traders/EarlyMedieval/Source_Transparent.png",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/Source_Transparent.png",
+      "sha256": "c69b60d7c92ac19054eae11a1f09320d6182838981cc6077ff527f5383540947",
+      "size": 846303
+    },
+    {
+      "original": "Traders/EarlyMedieval/Travel.webp",
+      "archived": "Traders/EarlyMedieval/_TO BE DELETED/Travel.webp",
+      "sha256": "ca8710cb21ada12903d67a1361923154a5fd719675bfca45a209c37d1c158499",
+      "size": 737328
+    }
+  ]
+}

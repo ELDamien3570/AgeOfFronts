@@ -1,26 +1,38 @@
 [
   {
     "theme": "migration",
-    "seed": 21628793,
+    "seed": 614546621,
     "size": 1000,
     "http": 200,
     "errors": [],
     "renderer": "webgl",
-    "deposits": "862",
-    "generationMs": "4728",
-    "legend": "Horses\n83\nStone\n95\nCopper\n98\nTin\n82\nIron ore\n88\nCarbon\n102\nGunpowder\n178\nOil\n136",
-    "filter": "horses"
+    "deposits": "762",
+    "generationMs": "5508",
+    "legend": "Horses78Stone75Copper94Tin91Iron ore68Carbon97Gunpowder159Oil100",
+    "filter": "all"
   },
   {
-    "theme": "black-forest",
+    "theme": "migration",
     "seed": 3,
     "size": 500,
     "http": 200,
     "errors": [],
     "renderer": "webgl",
-    "deposits": "707",
-    "generationMs": "741",
-    "legend": "Horses\n69\nStone\n76\nCopper\n83\nTin\n88\nIron ore\n85\nCarbon\n84\nGunpowder\n149\nOil\n73",
-    "filter": "horses"
+    "deposits": "238",
+    "generationMs": "1880",
+    "legend": "Horses16Stone29Copper28Tin24Iron ore20Carbon28Gunpowder51Oil42",
+    "filter": "all"
+  },
+  {
+    "theme": "migration",
+    "seed": 42,
+    "size": 250,
+    "http": 200,
+    "errors": [],
+    "renderer": "webgl",
+    "deposits": "57",
+    "generationMs": "838",
+    "legend": "Horses7Stone3Copper4Tin3Iron ore4Carbon7Gunpowder18Oil11",
+    "filter": "all"
   }
 ]

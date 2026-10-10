@@ -381,7 +381,7 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     expect([...shares.values()].reduce((a, b) => a + b, 0)).toBe(7);
     expect(shares.get(1)).toBe(6);
   });
-  it("issues one ranged volley event and reloads five times slower while moving", () => {
+  it("launches one physical ranged projectile and reloads five times slower while moving", () => {
     const m = make(),
       s = m.squads[0],
       t = m.squads.find((s) => s.playerId === 2)!;
@@ -392,14 +392,14 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     pos(m, t, 34, 20);
     m.updateSquad(s.id, { moved: true });
     m.expansion!.battle.fight([]);
-    expect(m.volleys).toHaveLength(1);
-    expect(s.nextAttackTick).toBe(200);
+    expect(m.expansion!.battle.projectiles).toHaveLength(1);
+    expect(s.nextAttackTick).toBe(250);
     m.expansion!.battle.fight([]);
-    expect(m.volleys).toHaveLength(1);
+    expect(m.expansion!.battle.projectiles).toHaveLength(1);
     m.updateSquad(s.id, { moved: false });
-    m.tick = 200;
+    m.tick = 250;
     m.expansion!.battle.fight([]);
-    expect(s.nextAttackTick).toBe(240);
+    expect(s.nextAttackTick).toBe(300);
   });
   it("sweeps fast shells and resolves damage and XP once", () => {
     const m = make(),

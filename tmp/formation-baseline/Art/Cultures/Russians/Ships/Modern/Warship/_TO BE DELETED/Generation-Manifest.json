@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "Modern",
+  "role": "Warship",
+  "label": "Guided-missile frigate",
+  "generator": "built-in imagegen",
+  "prompt": "Use case: stylized-concept. Asset: one production RTS Russian culture vessel sprite. STRICTLY TRUE 90-DEGREE DIRECTLY OVERHEAD ORTHOGRAPHIC VIEW. Bow points toward SCREEN BOTTOM, stern toward top. Entire ship and all oars/yards fit within square transparent canvas with at least 8 percent clear guard. Only deck surfaces and roofs are visible; no upright doors, hull side walls, front elevations or oblique perspective. Realistic hand-painted textured game art matching reference, clean readable silhouettes at 48/64/128px, restrained weathering, crisp dark edges, balanced overhead light. One vessel only, transparent alpha background, no water, wake, ground shadow, scene, labels, letters, flag fabric, people, side-view inset or UI. Subject: Contemporary Russian-inspired guided-missile frigate, angular grey hull and superstructure ROOFS only, one compact enclosed forward gun turret, neat rectangular vertical launch cells behind gun, faceted radar mast TOP, aft helicopter landing pad with simple circle painted on deck but no text or aircraft. Modern missile combat silhouette. Technical deck-plan camera, only turret and bridge roof plans. Radar mast small circular top faces not upright shafts. Landing pad circle as clean simple paint without letters. No visible sidewalls, doors, front windshield panels. No backdrop or halo.",
+  "generatedOriginal": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea7-45e8-7a11-8804-5420a62f53c3\\exec-36f3f3ee-a3f4-41b0-a8cc-a9d841d540dc.png",
+  "retainedOriginal": "SourceArt/Warship_Russian_Modern_Generated_v1.png",
+  "rawSha256": "48a6b12155a0d13085ed35b1c9b677b0dec76071cfabba7286f1869ae0e5aba2",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "source": "SourceArt/Warship_Russian_Modern_v1.png",
+  "sourceSha256": "d8a033d178d9afd1c66a4e06b3cd5ac9ec392110fed65c494afdc059ae143180",
+  "registration": {
+    "alphaBounds": [
+      97,
+      7,
+      1134,
+      1234
+    ],
+    "uniformScale": 0.8801955990220048,
+    "offset": [
+      170,
+      87
+    ],
+    "canvas": [
+      1254,
+      1254
+    ]
+  },
+  "conversion": "Uniform alpha-bounds fit, Lanczos resampling and transparent padding only; original retained unchanged.",
+  "technologyPlan": "skirmish/plans/technology-plan.json",
+  "civilizationId": "russians-rework",
+  "unlockTechnology": "russian-missile-frigates",
+  "unlockName": "Guided-Missile Frigates",
+  "visualApproval": "approved",
+  "animationApproval": {
+    "status": "approved",
+    "userMessage": "okay animate them all",
+    "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+    "date": "2026-10-07"
+  },
+  "integrationStatus": "art review only; no gameplay or match renderer changes",
+  "historicalScope": "Era-inspired role design, not an exact reconstruction of a named vessel"
+}

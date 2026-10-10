@@ -1,5 +1,11 @@
 import { TICKS_PER_SECOND } from "../Protocol";
 import type { Age, Aircraft } from "../domain/Definitions";
+export function aircraftRecruitmentCost(kind: AircraftKind) {
+  return {
+    gold: FLIGHT_RULES[kind].gold,
+    ...(kind === "drone" ? { items: { copper: 12, tin: 4 } } : {}),
+  };
+}
 export type AirMission = "bombing" | "patrol" | "atomic" | "drone";
 export type AircraftKind = "fighter" | "bomber" | "drone";
 export const FLIGHT_RULES = {

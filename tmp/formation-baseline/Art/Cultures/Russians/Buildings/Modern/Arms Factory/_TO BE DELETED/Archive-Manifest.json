@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Modern/Arms Factory/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Modern/Arms Factory/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Modern/Arms Factory/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "85f42f25c461fc7c665f69b58b493aa903457879919f5f5eb45e1d5a4844499a",
+      "size": 1708382
+    },
+    {
+      "original": "Buildings/Modern/Arms Factory/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Modern/Arms Factory/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "71a898f49a04b846189201845f272bf1a7e69b4507a765b6260401f1c15f2f4f",
+      "size": 1502839
+    }
+  ]
+}

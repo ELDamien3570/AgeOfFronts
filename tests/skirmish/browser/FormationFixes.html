@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Formation fixes — visual review</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #101b20;
+        color: #e6eee8;
+        font: 14px system-ui;
+      }
+      header {
+        padding: 22px 26px;
+        border-bottom: 1px solid #33454a;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0 0 8px;
+      }
+      header p {
+        color: #b4c7bc;
+        margin: 0;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 20px;
+        padding: 20px;
+      }
+      aside {
+        background: #19272d;
+        padding: 18px;
+        border-radius: 10px;
+      }
+      button,
+      select,
+      input {
+        font: inherit;
+      }
+      button {
+        background: #263b42;
+        color: #e6eee8;
+        border: 1px solid #49615d;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      nav {
+        display: grid;
+        gap: 8px;
+      }
+      nav button {
+        text-align: left;
+      }
+      nav button[aria-pressed="true"] {
+        border-color: #91c78a;
+        background: #32543d;
+      }
+      label {
+        display: block;
+        margin: 18px 0 8px;
+        color: #bed2c4;
+      }
+      input[type="range"],
+      select {
+        width: 100%;
+      }
+      select {
+        padding: 8px;
+        background: #24373e;
+        color: white;
+      }
+      canvas {
+        width: 100%;
+        height: auto;
+        background: #22342b;
+        border: 1px solid #46584b;
+        border-radius: 10px;
+      }
+      #caption {
+        line-height: 1.6;
+        max-width: 1000px;
+      }
+      #facts {
+        font-size: 13px;
+        color: #abc1b2;
+      }
+      #error {
+        color: #ff9c8a;
+      }
+      a {
+        color: #a6dca1;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 16px;
+      }
+      @media (max-width: 800px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+        nav {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Formation fixes — visual review</h1>
+      <p>
+        Isolated recommendations using existing troop art. Scripted encounters
+        and proposed timings; this page changes scripted encounters for quick comparison. Reviewed changes are now integrated into normal skirmish.
+      </p>
+    </header>
+    <main>
+      <aside>
+        <nav id="scenes"></nav>
+        <label
+          ><input type="checkbox" id="proposed" checked /> Recommended
+          presentation</label
+        ><label
+          ><input type="checkbox" id="debug" /> Show squad roots / shot
+          links</label
+        ><label
+          ><input type="checkbox" id="numbers" checked /> Counts on selection or
+          hover</label
+        ><label><input type="checkbox" id="smoke" checked /> Musket smoke</label
+        ><label>Zoom <span id="zoomValue">100%</span></label
+        ><input id="zoom" type="range" min="65" max="140" value="100" /><label
+          >Weapon</label
+        ><select id="weapon">
+          <option value="javelin">Javelin</option>
+          <option value="bow">Bow</option>
+          <option value="crossbow">Crossbow</option>
+          <option value="musket" selected>Musket</option>
+          <option value="grenadier">Grenadier: bayonet → shot → reload</option>
+          <option value="rifle">Rifle: three shots → reload</option>
+        </select>
+        <div id="damage-controls" hidden>
+          <label>Blue melee formations</label
+          ><select id="damage-melee"></select>
+          <label>Red melee formations</label
+          ><select id="damage-target"></select>
+          <label>Ranged formations (both sides)</label
+          ><select id="damage-ranged"></select>
+        </div>
+        <div class="row">
+          <button id="pause">Pause</button><button id="reset">Restart</button>
+        </div>
+        <p id="facts"></p>
+        <p id="error"></p>
+      </aside>
+      <section>
+        <canvas id="canvas" width="1200" height="700"></canvas>
+        <p id="caption"></p>
+      </section>
+    </main>
+    <script type="module" src="./FormationFixes.ts"></script>
+  </body>
+</html>

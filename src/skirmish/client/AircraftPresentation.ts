@@ -11,6 +11,7 @@ interface AircraftState {
   ascentDistance: number;
   angle: number;
   tick: number;
+  fighter: boolean;
 }
 
 const PARKED_SIZE = 28;
@@ -70,6 +71,7 @@ export class AircraftPresentation {
         ascentDistance,
         angle,
         tick: snapshot.tick,
+        fighter: aircraft.definitionId === "fighter",
       });
     }
     for (const id of this.aircraft.keys())
@@ -88,7 +90,7 @@ export class AircraftPresentation {
         aircraft.ascentDistance,
     );
     const ascent = height * height * (3 - 2 * height);
-    const size = PARKED_SIZE * (1 + ascent * 0.5);
+    const size = PARKED_SIZE * (1 + ascent * 0.5) * (aircraft.fighter ? 0.8 : 1);
     // Include rotated sprite corners in culling and click selection.
     const radius = size * Math.SQRT1_2 + 2;
     return { x, y, angle: aircraft.angle, size, radius };

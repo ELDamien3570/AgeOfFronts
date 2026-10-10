@@ -1408,6 +1408,8 @@ canvas.addEventListener("pointerdown", (event) => {
 
 canvas.addEventListener("pointermove", (event) => {
   const p = localPosition(event);
+  renderer.hoveredSquadId = renderer.squadAt(p.x, p.y)?.id ?? null;
+  renderer.hoveredAircraftId = renderer.aircraftAt(p.x, p.y, true);
   if(targetPreview) {
     const world=renderer.world(p.x,p.y),text=targetPreview(Math.round(world.x*FIXED),Math.round(world.y*FIXED),event.shiftKey);
     flightTip.textContent=text;flightTip.hidden=false;flightTip.style.left=`${Math.min(window.innerWidth-210,event.clientX+18)}px`;flightTip.style.top=`${event.clientY+18}px`;
@@ -1464,6 +1466,7 @@ canvas.addEventListener("pointermove", (event) => {
 });
 
 canvas.addEventListener("pointerleave", () => {
+  renderer.hoveredSquadId = renderer.hoveredAircraftId = null;
   if (renderer.spawn) renderer.spawn.hoverTile = null;
   terrainPointer = undefined;
   element("hover-terrain").textContent = "";

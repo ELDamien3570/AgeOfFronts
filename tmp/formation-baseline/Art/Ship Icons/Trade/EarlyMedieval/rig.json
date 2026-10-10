@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Trade/Trade_EarlyMedieval.png",
+  "sourceSha256": "d028edafaaadef520246451935fd1a5f5c497c8f238c4d49c66c9bace5415659",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [],
+  "layers": [
+    {
+      "name": "cloth-01",
+      "polygon": [
+        [
+          386.264,
+          462.416
+        ],
+        [
+          608.499,
+          462.416
+        ],
+        [
+          608.499,
+          617.701
+        ],
+        [
+          435.546,
+          611.192
+        ]
+      ],
+      "amplitude": 13.018,
+      "kind": "cloth",
+      "file": "layers/cloth-01.png"
+    },
+    {
+      "name": "cloth-02",
+      "polygon": [
+        [
+          645.693,
+          462.416
+        ],
+        [
+          866.998,
+          462.416
+        ],
+        [
+          818.646,
+          611.192
+        ],
+        [
+          645.693,
+          617.701
+        ]
+      ],
+      "amplitude": 13.018,
+      "kind": "cloth",
+      "file": "layers/cloth-02.png"
+    },
+    {
+      "name": "flag-01",
+      "polygon": [
+        [
+          636.395,
+          71.878
+        ],
+        [
+          676.378,
+          82.106
+        ],
+        [
+          712.643,
+          103.493
+        ],
+        [
+          738.679,
+          109.072
+        ],
+        [
+          748.907,
+          119.3
+        ],
+        [
+          701.485,
+          118.37
+        ],
+        [
+          662.431,
+          101.633
+        ],
+        [
+          636.395,
+          96.054
+        ]
+      ],
+      "pivot": [
+        636.395,
+        82.106
+      ],
+      "kind": "flag",
+      "amplitude": 10,
+      "maskFile": "Trade/masks/flag-EarlyMedieval-native.png",
+      "file": "layers/flag-01.png"
+    }
+  ],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

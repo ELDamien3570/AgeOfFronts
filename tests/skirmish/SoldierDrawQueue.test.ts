@@ -26,38 +26,30 @@ describe("shared soldier layer", () => {
     add(queue, 1, 0, 0);
     expect(queue.sort()[0].selectionRadius).toBe(0);
   });
-  it("keeps identity ordering regardless of position, sprite size, and insertion order", () => {
+  it("mixes flat-ground squads and preserves individual order through movement and animation", () => {
     const queue = new SoldierDrawQueue();
-    add(queue, 1, 0, 12, 80);
-    add(queue, 1, 1, 10, 80);
-    add(queue, 2, 0, 11, 32);
-    expect(queue.sort().map((e) => [e.squadId, e.soldierId])).toEqual([
-      [1, 0],
-      [1, 1],
-      [2, 0],
-    ]);
+    for(let squad=1;squad<=3;squad++)for(let member=0;member<4;member++)
+      add(queue,squad,member,100+member,32);
+    const first=queue.sort().map(e=>[e.squadId,e.soldierId]);
+    expect(first.slice(1).filter((e,i)=>e[0]!==first[i][0]).length).toBeGreaterThan(3);
+    queue.clear();
+    for(let squad=3;squad>=1;squad--)for(let member=3;member>=0;member--)
+      add(queue,squad,member,-member*100,member%2?90:24);
+    expect(queue.sort().map(e=>[e.squadId,e.soldierId])).toEqual(first);
   });
-  it("preserves overlap order as soldiers cross positions", () => {
-    const queue = new SoldierDrawQueue();
-    for (const [squad, member] of [
-      [2, 0],
-      [1, 2],
-      [1, 0],
-      [1, 1],
-    ])
-      add(queue, squad, member, 100 - squad * 20 - member * 5);
-    expect(queue.sort().map((e) => [e.squadId, e.soldierId])).toEqual([
-      [1, 0],
-      [1, 1],
-      [1, 2],
-      [2, 0],
-    ]);
+  it("draws higher terrain last, regardless of size, screen position and identity", () => {
+    const queue=new SoldierDrawQueue();
+    queue.add(1,0,0,-300,0,20,image,frame,0,"",900);
+    queue.add(2,0,0,500,0,100,image,frame,0,"",100);
+    expect(queue.sort().map(e=>e.elevation)).toEqual([100,900]);
+    queue.clear();add(queue,3,0,0);
+    expect(queue.sort()[0].elevation).toBe(0);
   });
   it("reuses records without retaining stale soldiers or their previous position", () => {
     const queue = new SoldierDrawQueue();
     add(queue, 1, 0, 1);
-    add(queue, 2, 0, 2);
     const previous = queue.sort()[0];
+    add(queue, 2, 0, 2);
     queue.clear();
     add(queue, 3, 1, 8);
     const next = queue.sort();

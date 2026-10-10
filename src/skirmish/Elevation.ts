@@ -9,6 +9,8 @@ export interface ElevationData {
   minimum: number;
   maximum: number;
   seaLevel: number;
+  /** Presentation-only relief gain; never changes heights or movement. */
+  reliefScale?: number;
 }
 
 export class ElevationField {
@@ -16,6 +18,7 @@ export class ElevationField {
   readonly minimum: number;
   readonly maximum: number;
   readonly seaLevel: number;
+  readonly reliefScale?: number;
   constructor(size: number, data: ElevationData) {
     if (
       !(data.values instanceof Float32Array) ||
@@ -25,7 +28,8 @@ export class ElevationField {
       data.maximum <= data.minimum ||
       !Number.isFinite(data.seaLevel) ||
       data.seaLevel < data.minimum ||
-      data.seaLevel > data.maximum
+      data.seaLevel > data.maximum ||
+      (data.reliefScale !== undefined && (!Number.isFinite(data.reliefScale) || data.reliefScale <= 0 || data.reliefScale > 10))
     )
       throw new Error("Invalid elevation field");
     for (const value of data.values)
@@ -39,6 +43,7 @@ export class ElevationField {
     this.minimum = data.minimum;
     this.maximum = data.maximum;
     this.seaLevel = data.seaLevel;
+    this.reliefScale = data.reliefScale;
   }
   heightAt(tile: number): number {
     return this.values[tile];

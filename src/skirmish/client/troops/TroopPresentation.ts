@@ -19,6 +19,7 @@ export function installTroopPresentation(
   const formations = new Map<number, ManualFormation>();
   const actors = new TroopActors(() => time, {
     reformInPlace: true,
+    groundElevationAt: (x, y) => renderer.groundElevationAt(x, y),
     troops: [...RUSSIAN_TROOP_ACTORS.values()],
     byDefinitionId: RUSSIAN_TROOP_ACTORS,
     formationForSquad: (squad) => formations.get(squad.id) ?? "mass",
@@ -39,6 +40,7 @@ export function installTroopPresentation(
   renderer.squadProjectileArtwork = actors.drawProjectile;
   renderer.squadRemainsArtwork = actors.drawRemains;
   renderer.squadArtworkViewRadius = actors.viewRadius;
+  renderer.squadLabelPose = actors.labelPose;
 
   const panel = document.createElement("div");
   panel.className = "troop-formation-controls";

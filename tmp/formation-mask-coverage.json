@@ -1,0 +1,50 @@
+{
+  "counts": {
+    "StoneAge": {
+      "actors": 3,
+      "masked": 2
+    },
+    "BronzeAge": {
+      "actors": 4,
+      "masked": 4
+    },
+    "ClassicalAge": {
+      "actors": 5,
+      "masked": 5
+    },
+    "EarlyMedieval": {
+      "actors": 6,
+      "masked": 6
+    },
+    "LateMedieval": {
+      "actors": 6,
+      "masked": 5
+    },
+    "Napoleonic": {
+      "actors": 6,
+      "masked": 5
+    },
+    "EarlyModern": {
+      "actors": 6,
+      "masked": 0
+    },
+    "Modern": {
+      "actors": 6,
+      "masked": 0
+    }
+  },
+  "unmaskedEarlyTroops": [
+    {
+      "binding": "StoneAge:lightCavalry",
+      "source": "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/animations.json"
+    },
+    {
+      "binding": "LateMedieval:heavyCavalry",
+      "source": "Art/Cultures/Russians/Units/LateMedieval/Boyar/animations.json"
+    },
+    {
+      "binding": "Napoleonic:antiCavalry",
+      "source": "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/animations.json"
+    }
+  ]
+}

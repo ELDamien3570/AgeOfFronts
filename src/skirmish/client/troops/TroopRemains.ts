@@ -1,7 +1,7 @@
 export const REMAINS = {
   bodyLifetime: 20_000,
   bloodLifetime: 45_000,
-  fallenScale: 0.95,
+  fallenScale: 1,
   bloodFadeStart: 5_000,
 } as const;
 
@@ -16,6 +16,8 @@ export interface FallenTroop {
   started: number;
   fallDuration: number;
   seed: number;
+  color?: string;
+  embedded?: readonly { kind: string; angle: number }[];
 }
 export interface PresentedRemains extends FallenTroop {
   age: number;

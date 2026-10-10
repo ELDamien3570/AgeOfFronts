@@ -1,0 +1,491 @@
+{
+  "schemaVersion": 1,
+  "name": "Old World",
+  "minimum": -450,
+  "maximum": 7188.0,
+  "seaLevel": 0,
+  "source": {
+    "file": "15_623_69_961_5_4096_3072_16bit.png",
+    "sha256": "dedec5acd8d5c3dc21670b59ccb9f53750eee0f78e2386c2192a32c90770a9e6",
+    "width": 4096,
+    "height": 3072,
+    "url": "https://manticorp.github.io/unrealheightmap/#latitude/15.623021332612552/longitude/69.96092523833056/zoom/2/outputzoom/5/width/4096/height/3072/outputformat/png16"
+  },
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 7188.0,
+    "range": 65536
+  },
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sampling": "area-majority land/water; average height within winning surface; ties water",
+  "waterRule": "calibrated sea level plus explicitly authored major-river hydrology plus registered lake polygons with explicit surface elevations",
+  "resolutionRule": "selected size is the longest edge; source aspect ratio preserved",
+  "variants": {
+    "250": {
+      "width": 250,
+      "height": 188,
+      "landCells": 20274,
+      "seaCode": 3861,
+      "heightMinimum": -450.0,
+      "heightMaximum": 5708.177734375
+    },
+    "500": {
+      "width": 500,
+      "height": 375,
+      "landCells": 81374,
+      "seaCode": 3861,
+      "heightMinimum": -450.0,
+      "heightMaximum": 6053.13623046875
+    },
+    "1000": {
+      "width": 1000,
+      "height": 750,
+      "landCells": 333153,
+      "seaCode": 3861,
+      "heightMinimum": -450.0,
+      "heightMaximum": 6268.19091796875
+    }
+  },
+  "environment": {
+    "schemaVersion": 1,
+    "encoding": "u8-moisture-vegetation-aridity",
+    "classifier": "visible-color-gradients-v1",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1,
+    "source": {
+      "file": "15_623_69_961_5_4096_3072_albedo_imagery.png",
+      "sha256": "69600635aab384cfdb1f239e2ffd15426c648467af503618815ce6005641a24b",
+      "width": 4096,
+      "height": 3072,
+      "registration": "same-footprint"
+    },
+    "interpretation": "approximate color-derived moisture, vegetation and aridity; height/water remain authoritative",
+    "variants": {
+      "250": {
+        "waterHintAgreement": 0.9444893617021276,
+        "waterHintIoU": 0.9024052668985898,
+        "meanLandMoisture": 0.4559751018884421,
+        "meanLandVegetation": 0.4341213608852834,
+        "meanLandAridity": 0.2829579854038883
+      },
+      "500": {
+        "waterHintAgreement": 0.952576,
+        "waterHintIoU": 0.9162672442205377,
+        "meanLandMoisture": 0.45145599813400916,
+        "meanLandVegetation": 0.42823766515970557,
+        "meanLandAridity": 0.2857942292113345
+      },
+      "1000": {
+        "waterHintAgreement": 0.964728,
+        "waterHintIoU": 0.9366579110567311,
+        "meanLandMoisture": 0.4486932607010981,
+        "meanLandVegetation": 0.42336365150016747,
+        "meanLandAridity": 0.28690821734558397
+      }
+    }
+  },
+  "lakes": {
+    "schemaVersion": 1,
+    "source": {
+      "title": "Natural Earth v5.0.0 1:10m ne_10m_lakes",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "upstreamCommit": "ace5fed0eaf3c6c03c951e75b439ba8fffbc218e",
+      "sourceFiles": [
+        {
+          "file": "ne_10m_lakes.geojson",
+          "sha256": "2d036f53dedec578001c5c30c2959ee7d4eebc1306900fa4367c49929ec8f2d9",
+          "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_lakes.geojson"
+        }
+      ],
+      "geometryPolicy": "Original features, properties and coordinates preserved; cropped only during rasterization",
+      "limitations": "Generalized cartography, not a complete drainage or lake inventory. Gameplay widths are exaggerated; fixed nominal lake levels are not current levels or datum conversions.",
+      "geographicBoundsWsen": [
+        -20.03907476166944,
+        -45.82881046594588,
+        159.96092523833056,
+        63.704715300055426
+      ],
+      "surfaceReferenceLevels": {
+        "Lake Victoria": {
+          "surfaceElevationMeters": 1134,
+          "url": "https://www.geodoi.ac.cn/weben/doi.aspx?Id=221"
+        },
+        "Lake Tanganyika": {
+          "surfaceElevationMeters": 773,
+          "url": "https://www.fao.org/fishery/static/LTR/GEN.HTM"
+        },
+        "Lake Malawi": {
+          "surfaceElevationMeters": 474,
+          "url": "https://africangreatlakesinform.org/article/lake-malawiniassanyasa"
+        },
+        "Lake Baikal": {
+          "surfaceElevationMeters": 455.5,
+          "url": "https://archive.iwlearn.net/bic.iwlearn.org/bic.iwlearn.org/bic.iwlearn.org/en/atlas/atlas/01-satellite-image-map.html"
+        },
+        "Lake Van": {
+          "surfaceElevationMeters": 1649,
+          "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2009WR008555"
+        },
+        "Danau Toba": {
+          "surfaceElevationMeters": 905,
+          "url": "https://wldb.ilec.or.jp/Display/html/3527"
+        }
+      },
+      "selectionNotes": "Selected significant permanent lakes with independently referenced nonnegative nominal levels. Below-sea basins and seasonal playas are excluded: shared renderer cannot represent negative lake surfaces.",
+      "file": "lakes.geojson",
+      "sha256": "1518531792d071b5451e01d8e9f561d84cb037c7a01f02f1fe88e5bd6597c6b7"
+    },
+    "surfaceElevationsMeters": {
+      "Lake Victoria": 1134,
+      "Lake Tanganyika": 773,
+      "Lake Malawi": 474,
+      "Lake Baikal": 455.5,
+      "Lake Van": 1649,
+      "Danau Toba": 905
+    },
+    "registration": "geographic polygons projected into the original Web Mercator footprint",
+    "sampling": "8x8 centre-sampled union coverage; majority and ties water; holes retain islands; mixed cells use dominant lake level with source-order ties",
+    "interpretation": "explicit inland water with flat authored surface elevations; source PNG and all heights outside lake masks preserved",
+    "variants": {
+      "250": {
+        "surfaceCells": 31,
+        "newWaterCells": 31,
+        "cellsByLake": {
+          "Lake Baikal": 12,
+          "Lake Malawi": 5,
+          "Lake Tanganyika": 4,
+          "Lake Victoria": 9,
+          "Danau Toba": 0,
+          "Lake Van": 1
+        }
+      },
+      "500": {
+        "surfaceCells": 135,
+        "newWaterCells": 135,
+        "cellsByLake": {
+          "Lake Baikal": 55,
+          "Lake Malawi": 18,
+          "Lake Tanganyika": 18,
+          "Lake Victoria": 40,
+          "Danau Toba": 0,
+          "Lake Van": 4
+        }
+      },
+      "1000": {
+        "surfaceCells": 568,
+        "newWaterCells": 568,
+        "cellsByLake": {
+          "Lake Baikal": 222,
+          "Lake Malawi": 80,
+          "Lake Tanganyika": 80,
+          "Lake Victoria": 172,
+          "Danau Toba": 2,
+          "Lake Van": 12
+        }
+      }
+    }
+  },
+  "hydrology": {
+    "schemaVersion": 1,
+    "source": {
+      "file": "rivers.geojson",
+      "sha256": "c215347d6580990985a140ddd9a5a373c723c26d9ffac2674486f2f908026b18",
+      "title": "Natural Earth 1:10m rivers and lake centerlines",
+      "url": "https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_10m_rivers_lake_centerlines.geojson",
+      "upstreamGitBlob": "61a0d7137a6ff1113cc259525e7479c63d5fec86",
+      "upstreamSha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "selection": {
+        "purpose": "Major-river gameplay layer for the Old World continental map; a curated selection rather than a complete drainage network.",
+        "geographicBoundsWsen": [
+          -19.68680925928618,
+          -44.59100201948848,
+          160.31319074071382,
+          64.47247016958447
+        ],
+        "registration": "WGS84 longitude/latitude registered to the original 8192x6144 Web Mercator heightmap, output zoom 6, centered at latitude 17.307970865257346 and longitude 70.31319074071382.",
+        "method": "Select exact Natural Earth name values listed in riverSystems plus the explicitly identified additionalSourceFeatures, retaining features with a line segment intersecting the map footprint. Preserve upstream feature order and all original coordinates and bounding boxes. The unnamed 598River receives a documented display label; append the documented reused authored Congo outlet extension. Do not otherwise clip, simplify, connect, or extend geometry.",
+        "rationale": "Keep major channels across Africa, Europe, Asia and Australia. Include differently named main-stem sections, lake/reservoir centerlines and named distributaries for continuity. Retain the Benue, Irtysh and Angara as major basin tributaries; exclude the dense minor-tributary network and canals.",
+        "riverSystems": {
+          "Nile": [
+            "Nile",
+            "Rosetta Branch",
+            "Damietta Branch",
+            "El Bahr el Abyad",
+            "Bahr el Jebel",
+            "Albert Nile",
+            "Victoria Nile",
+            "El Bahr el Azraq",
+            "Abay"
+          ],
+          "Congo": [
+            "Congo",
+            "Lualaba"
+          ],
+          "Niger": [
+            "Niger",
+            "Benue",
+            "B\u00e9nou\u00e9"
+          ],
+          "Zambezi": [
+            "Zambezi"
+          ],
+          "Orange": [
+            "Orange"
+          ],
+          "Danube": [
+            "Danube",
+            "Donau",
+            "Borcea",
+            "Bratul Chillia",
+            "Bratul Sfintu Gheorghe",
+            "Bratul Sulina"
+          ],
+          "Rhine": [
+            "Rhein",
+            "Rhin",
+            "Rhine",
+            "Nederrijn",
+            "Lek",
+            "Waal",
+            "IJssel"
+          ],
+          "Volga": [
+            "Volga"
+          ],
+          "Don": [
+            "Don"
+          ],
+          "Dnieper": [
+            "Dnipro",
+            "Dnepre"
+          ],
+          "Tigris and Euphrates": [
+            "Tigris",
+            "Dicle",
+            "Euphrates",
+            "Firat",
+            "Al Furat",
+            "Shatt al Arab"
+          ],
+          "Indus": [
+            "Indus",
+            "Shiquan"
+          ],
+          "Ganges and Brahmaputra": [
+            "Ganges",
+            "Brahmaputra",
+            "Dihang",
+            "Yarlung",
+            "Ganges-Brahmaputra Delta"
+          ],
+          "Yangtze": [
+            "Yangtze",
+            "Chang Jiang",
+            "Jinsha",
+            "Tongtian",
+            "Tuotuo"
+          ],
+          "Yellow River": [
+            "Huang"
+          ],
+          "Mekong": [
+            "Mekong",
+            "Lancang"
+          ],
+          "Irrawaddy": [
+            "Ayeyarwady",
+            "Irrawaddy Delta"
+          ],
+          "Salween": [
+            "Salween",
+            "Nu"
+          ],
+          "Amur": [
+            "Amur",
+            "Heilong Jiang"
+          ],
+          "Ob and Irtysh": [
+            "Ob",
+            "Malaya Ob",
+            "Biya",
+            "Katun",
+            "Irtysh",
+            "Ertis",
+            "Ertix"
+          ],
+          "Yenisey": [
+            "Yenisey",
+            "Verkhniy Yenisey",
+            "Angara"
+          ],
+          "Lena": [
+            "Lena"
+          ],
+          "Murray and Darling": [
+            "Murray",
+            "Darling",
+            "Barwon"
+          ]
+        },
+        "featureCount": 109,
+        "knownLimitations": [
+          "The northern crop excludes the Arctic mouths of the Ob, Yenisey and Lena; original linework crossing the crop is retained for the rasterizer to bound.",
+          "Natural Earth river linework can end at lake, estuary or coastline boundaries and contain small inter-feature gaps. No other approximate courses are authored to match this heightmap coastline.",
+          "Read-only four-neighbor QA of the initial bake found each selected river system internally connected at sizes 250, 500 and 1000; the Yangtze already reached mapped estuary water at all sizes.",
+          "Remaining mapped outlet gaps: Amur and Murray-Darling at sizes 500 and 1000; Dnieper at all sizes; Don at sizes 250 and 500. The Don reaches the enclosed Sea of Azov at size 1000, and the Nile reaches the enclosed Mediterranean at size 250; an unset ocean bit alone does not imply a river outlet gap.",
+          "The Congo outlet correction is explicitly approximate, reused from the existing Africa map rather than represented as unmodified Natural Earth data."
+        ],
+        "additionalSourceFeatures": [
+          {
+            "dissolve": "598River",
+            "rivernum": 598,
+            "originalName": null,
+            "displayName": "Ganges-Brahmaputra Delta",
+            "reason": "Original source delta branch closes the baked Ganges-Brahmaputra outlet gap at size 1000 without inventing geometry."
+          }
+        ],
+        "authoredFeatures": [
+          {
+            "name": "Congo",
+            "reusedFrom": "HeightMaps/Africa/rivers.geojson",
+            "reason": "Reuse the existing approximate Congo outlet extension to connect its inland Natural Earth endpoint to the Atlantic at sizes 500 and 1000. Preserve the existing authored geometry unchanged.",
+            "geometrySha256": "3aed727c735cde159604e9d5d93df932d8e60b81407417ead849ec50c648a22a"
+          }
+        ]
+      },
+      "geographicBoundsWsen": [
+        -20.03907476166944,
+        -45.82881046594588,
+        159.96092523833056,
+        63.704715300055426
+      ],
+      "registrationUpdate": "Reproject existing reviewed river geometries against replacement heightmap footprint."
+    },
+    "names": [
+      "Abay",
+      "Al Furat",
+      "Albert Nile",
+      "Amur",
+      "Angara",
+      "Ayeyarwady",
+      "Bahr el Jebel",
+      "Barwon",
+      "Benue",
+      "Biya",
+      "Borcea",
+      "Brahmaputra",
+      "Bratul Chillia",
+      "Bratul Sfintu Gheorghe",
+      "Bratul Sulina",
+      "B\u00e9nou\u00e9",
+      "Chang Jiang",
+      "Congo",
+      "Damietta Branch",
+      "Danube",
+      "Darling",
+      "Dicle",
+      "Dihang",
+      "Dnepre",
+      "Dnipro",
+      "Don",
+      "Donau",
+      "El Bahr el Abyad",
+      "El Bahr el Azraq",
+      "Ertis",
+      "Ertix",
+      "Euphrates",
+      "Firat",
+      "Ganges",
+      "Ganges-Brahmaputra Delta",
+      "Heilong Jiang",
+      "Huang",
+      "IJssel",
+      "Indus",
+      "Irrawaddy Delta",
+      "Irtysh",
+      "Jinsha",
+      "Katun",
+      "Lancang",
+      "Lek",
+      "Lena",
+      "Lualaba",
+      "Malaya Ob",
+      "Mekong",
+      "Murray",
+      "Nederrijn",
+      "Niger",
+      "Nile",
+      "Nu",
+      "Ob",
+      "Orange",
+      "Rhein",
+      "Rhin",
+      "Rhine",
+      "Rosetta Branch",
+      "Salween",
+      "Shatt al Arab",
+      "Shiquan",
+      "Tigris",
+      "Tongtian",
+      "Tuotuo",
+      "Verkhniy Yenisey",
+      "Victoria Nile",
+      "Volga",
+      "Waal",
+      "Yangtze",
+      "Yarlung",
+      "Yenisey",
+      "Zambezi"
+    ],
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    },
+    "registration": "geographic lines projected into the original Web Mercator footprint",
+    "interpretation": "major rivers are four-connected navigable water; gameplay widths exaggerated; original elevations preserved",
+    "variants": {
+      "250": {
+        "channelCells": 1539,
+        "newWaterCells": 1500
+      },
+      "500": {
+        "channelCells": 5735,
+        "newWaterCells": 5614
+      },
+      "1000": {
+        "channelCells": 15046,
+        "newWaterCells": 14708
+      }
+    }
+  },
+  "climate": {
+    "description": "Himalayan and Tibetan snow review: raise the mountain snowline to 5700 m in the regional core, softly blending to the original map baseline at the elliptical boundary. Keep snow on the highest peaks and expose grey rock over the plateau. Artistic snow extent, not a measured seasonal snow cover. Other climate fields, water and elevations retain their existing authority.",
+    "regions": [],
+    "snowPolicy": {
+      "northernIceLatitude": 90,
+      "northernTransitionDegrees": 3,
+      "exposedRockRelief": 220,
+      "equatorialSnowline": 4200,
+      "snowlineLatitudeDrop": 22,
+      "minimumMountainSnowline": 1800,
+      "mountainSnowlineRegions": [
+        {
+          "latitude": 32,
+          "longitude": 87,
+          "latitudeRadius": 10,
+          "longitudeRadius": 22,
+          "snowline": 5700
+        }
+      ]
+    }
+  }
+}

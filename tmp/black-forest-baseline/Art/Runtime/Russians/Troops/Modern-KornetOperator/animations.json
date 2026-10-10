@@ -24,8 +24,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 53.0,
+            "y": 44.0
           }
         },
         {
@@ -34,8 +34,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 53.0,
+            "y": 44.0
           }
         },
         {
@@ -44,8 +44,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 53.0,
+            "y": 44.0
           }
         },
         {
@@ -54,8 +54,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 53.0,
+            "y": 44.0
           }
         },
         {
@@ -64,8 +64,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 53.0,
+            "y": 44.0
           }
         },
         {
@@ -74,8 +74,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 53.0,
+            "y": 44.0
           }
         }
       ],
@@ -106,7 +106,7 @@
           "height": 128,
           "pivot": {
             "x": 64.0,
-            "y": 64.0
+            "y": 42.0
           }
         },
         {
@@ -116,7 +116,7 @@
           "height": 128,
           "pivot": {
             "x": 64.0,
-            "y": 64.0
+            "y": 42.0
           }
         },
         {
@@ -126,7 +126,7 @@
           "height": 128,
           "pivot": {
             "x": 64.0,
-            "y": 64.0
+            "y": 42.0
           }
         },
         {
@@ -136,7 +136,7 @@
           "height": 128,
           "pivot": {
             "x": 64.0,
-            "y": 64.0
+            "y": 42.0
           }
         },
         {
@@ -146,7 +146,7 @@
           "height": 128,
           "pivot": {
             "x": 64.0,
-            "y": 64.0
+            "y": 42.0
           }
         },
         {
@@ -156,7 +156,7 @@
           "height": 128,
           "pivot": {
             "x": 64.0,
-            "y": 64.0
+            "y": 42.0
           }
         }
       ],
@@ -186,8 +186,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 52.0,
+            "y": 44.0
           }
         },
         {
@@ -196,8 +196,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 52.0,
+            "y": 44.0
           }
         },
         {
@@ -206,8 +206,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 52.0,
+            "y": 44.0
           }
         },
         {
@@ -216,8 +216,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 52.0,
+            "y": 44.0
           }
         },
         {
@@ -226,8 +226,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 52.0,
+            "y": 44.0
           }
         },
         {
@@ -236,8 +236,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 52.0,
+            "y": 44.0
           }
         }
       ],
@@ -325,6 +325,168 @@
       ],
       "sha256": "fef5e0b4eddb6b5b68f6c412cef84dc0846fc009d4ce33dfc25489ef68f2dd1c",
       "releaseFrame": 3
+    },
+    {
+      "id": "reload",
+      "file": "reload.png",
+      "label": "Reload",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        200,
+        240,
+        300,
+        300,
+        240,
+        260
+      ],
+      "description": "Lift and reseat the launch tube, then return to the controls.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "sha256": "968d88161dbabc4e9c1128ea5775246ee24cab65a3c82489929c0e02353a287f",
+      "releaseFrame": 3
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Recoil and brace beside the deployed launcher.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "sha256": "40bf18ac8f2c15a92adfe04fcb3bc425744fc25d596745d9ca6578411a4a4b77",
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/Modern/KornetOperator/animations.json",
@@ -333,6 +495,8 @@
     "Art/Cultures/Russians/Units/Modern/KornetOperator/Idle-Animated-v1.png": "bb47518e351c9eb00c66d7a43f77c99f3e779423a53d4a0d346f201c3c2ac9e5",
     "Art/Cultures/Russians/Units/Modern/KornetOperator/Walk-v2.png": "3ab13e933b8af0c2083896ec41785a06b0387081a5bb78eb0f3870dfed4b52ca",
     "Art/Cultures/Russians/Units/Modern/KornetOperator/Attack-v4.png": "2d398237c57a240445ef8019e95e1f2dcae477cfd221a34e5d3e2e366f6544ba",
-    "Art/Cultures/Russians/Units/Modern/KornetOperator/Death-Side-v1.png": "fef5e0b4eddb6b5b68f6c412cef84dc0846fc009d4ce33dfc25489ef68f2dd1c"
+    "Art/Cultures/Russians/Units/Modern/KornetOperator/Death-Side-v1.png": "fef5e0b4eddb6b5b68f6c412cef84dc0846fc009d4ce33dfc25489ef68f2dd1c",
+    "Art/Cultures/Russians/Units/Modern/KornetOperator/Reload-v1.png": "968d88161dbabc4e9c1128ea5775246ee24cab65a3c82489929c0e02353a287f",
+    "Art/Cultures/Russians/Units/Modern/KornetOperator/Hit-v1.png": "40bf18ac8f2c15a92adfe04fcb3bc425744fc25d596745d9ca6578411a4a4b77"
   }
 }

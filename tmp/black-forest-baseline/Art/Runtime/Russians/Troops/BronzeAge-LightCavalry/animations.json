@@ -32,8 +32,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.0
           }
         },
         {
@@ -42,8 +42,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.0
           }
         },
         {
@@ -52,8 +52,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.0
           }
         },
         {
@@ -62,8 +62,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.0
           }
         },
         {
@@ -72,8 +72,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.0
           }
         },
         {
@@ -82,11 +82,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.0
           }
         }
       ],
+      "mask": "idle.mask.png",
       "releaseFrame": 3
     },
     {
@@ -120,8 +121,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.5
           }
         },
         {
@@ -130,8 +131,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.5
           }
         },
         {
@@ -140,8 +141,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.5
           }
         },
         {
@@ -150,8 +151,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.5
           }
         },
         {
@@ -160,8 +161,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.5
           }
         },
         {
@@ -170,11 +171,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 63.5
           }
         }
       ],
+      "mask": "running.mask.png",
       "releaseFrame": 3
     },
     {
@@ -208,8 +210,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 62.5
           }
         },
         {
@@ -218,8 +220,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 62.5
           }
         },
         {
@@ -228,8 +230,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 62.5
           }
         },
         {
@@ -238,8 +240,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 62.5
           }
         },
         {
@@ -248,8 +250,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 62.5
           }
         },
         {
@@ -258,12 +260,13 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 68.0,
+            "y": 62.5
           }
         }
       ],
       "impactFrame": 3,
+      "mask": "attack.mask.png",
       "releaseFrame": 3
     },
     {
@@ -352,6 +355,275 @@
           }
         }
       ],
+      "mask": "death.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "label": "Gallop / maintain charge",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "description": "Collected gallop with foreleg reach, support, hindleg recovery, and suspension. Gameplay supplies world movement.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "mask": "charge.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "label": "Charge attack",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        130,
+        190,
+        160,
+        100,
+        180,
+        240
+      ],
+      "description": "Braced advance into a heavy overarm spear thrust, then recovery.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "mask": "charge-attack.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        100,
+        100,
+        130,
+        130,
+        170,
+        180
+      ],
+      "description": "Brief rider recoil and horse brace, then recovery.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "mask": "hit.mask.png",
       "releaseFrame": 3
     }
   ],
@@ -361,6 +633,9 @@
     "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-Animated-v1.png": "d8de09cfa7abc25648b500593f123b08fb316ccd3b202e0503d2aeef30e0860c",
     "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Running-v1.png": "316ca1f44c7f2690d95b8398ebaedb8fc5fcdc240f9562232e45a99b3a4475a2",
     "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Attack-Overarm-v2.png": "ce2920433c22a295db0b7686e31e21360de57d7a94f73e68d62b10fcb87e58c1",
-    "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Death-Together-v1.png": "38d3543e2f1cadebaf61a4c21a3f3cbecf75162e10da0ed08b6194918df73d47"
+    "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Death-Together-v1.png": "38d3543e2f1cadebaf61a4c21a3f3cbecf75162e10da0ed08b6194918df73d47",
+    "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Charge-v1.png": "4560c3f755b11ef66b5bd336a43aee70563b598219d5a88fb63b83a917695214",
+    "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Charge-Attack-Overarm-v2.png": "a829c0a6ab4eee272eb6cbfbf6da75bbef985c443a999af0ae77fe7d75db0a3d",
+    "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Hit-v1.png": "0a2688ec16383c84a99ae23aa00cd4ad9d72ac7c9b4bb6e6f0a84069fe172821"
   }
 }

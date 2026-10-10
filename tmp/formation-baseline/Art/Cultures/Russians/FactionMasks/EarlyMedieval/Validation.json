@@ -1,0 +1,13 @@
+{
+  "sourceHashesMatch": true,
+  "metadataHashesMatch": true,
+  "maskDimensionsMatch": true,
+  "maskAlphaWithinSource": true,
+  "allFramesHaveSelectedFabric": true,
+  "units": 6,
+  "masks": 55,
+  "animationFrames": 330,
+  "maskedPixels": 1515335,
+  "httpFiles": 58,
+  "visualReview": "All animation frames inspected in blue contact sheets; final acceptance pending user review."
+}

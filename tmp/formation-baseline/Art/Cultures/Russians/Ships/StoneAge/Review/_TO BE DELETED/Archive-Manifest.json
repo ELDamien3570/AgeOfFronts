@@ -1,0 +1,42 @@
+{
+  "folder": "Ships/StoneAge/Review/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/StoneAge/Review/Animated_Boats_Review.jpg",
+      "archived": "Ships/StoneAge/Review/_TO BE DELETED/Animated_Boats_Review.jpg",
+      "sha256": "d333edab927ba6a3279f565af377cc1d65591974223dfec7bd8cdb711afae718",
+      "size": 170432
+    },
+    {
+      "original": "Ships/StoneAge/Review/Animation_Overview.png",
+      "archived": "Ships/StoneAge/Review/_TO BE DELETED/Animation_Overview.png",
+      "sha256": "cb28335b654307534a575780109a9fafcbc20ecdaa04e75846418951a8a97a2d",
+      "size": 177996
+    },
+    {
+      "original": "Ships/StoneAge/Review/Animation_Overview.webp",
+      "archived": "Ships/StoneAge/Review/_TO BE DELETED/Animation_Overview.webp",
+      "sha256": "aeb69f7e9afea833e358ea4d4d684838580cea3d45abb90f4a096a2a9bfa85af",
+      "size": 1399484
+    },
+    {
+      "original": "Ships/StoneAge/Review/Browser_Validation.json",
+      "archived": "Ships/StoneAge/Review/_TO BE DELETED/Browser_Validation.json",
+      "sha256": "3c03a16ea318f3f3ee52a3f896a3c60f6454f1094e42ea3d109b5a2379dd712d",
+      "size": 2848
+    },
+    {
+      "original": "Ships/StoneAge/Review/Game_Scale_Animated_Tactical.jpg",
+      "archived": "Ships/StoneAge/Review/_TO BE DELETED/Game_Scale_Animated_Tactical.jpg",
+      "sha256": "a01ac5901eab35fe6dabca3e45614bf674583e50f7f5ba01938b0af25045a1f2",
+      "size": 32090
+    },
+    {
+      "original": "Ships/StoneAge/Review/Game_Scale_Close.jpg",
+      "archived": "Ships/StoneAge/Review/_TO BE DELETED/Game_Scale_Close.jpg",
+      "sha256": "dbed2fded323fdc617a5a9e5e26ff9f07514a68981090fcbceee506cc25426f9",
+      "size": 60467
+    }
+  ]
+}

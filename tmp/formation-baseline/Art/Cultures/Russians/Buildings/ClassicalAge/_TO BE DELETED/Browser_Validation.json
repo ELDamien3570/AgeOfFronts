@@ -1,0 +1,32 @@
+{
+  "scope": "Local source-art inspection only; runtime integration and publishing remain separate.",
+  "checkedAt": "2026-10-03T00:54:19.469Z",
+  "passed": true,
+  "gallery": "http://127.0.0.1:9000/Art/Building%20Icons/Top-Down-Correction-Review.html?civ=russians&age=ClassicalAge",
+  "reviewState": {
+    "approvedAssets": 9,
+    "draftAssets": [
+      "barracks"
+    ]
+  },
+  "checks": [
+    "Russian Classical Age gallery displays ten building roles with the user-selected Black Sea stone and tile direction.",
+    "All 40 current hero and 48/64/128 pixel samples load at 1254x1254 source size.",
+    "All ten selected designs visually inspected; five camera revisions are preserved for factory, port, mine, blacksmith and barracks.",
+    "User approved the nine images other than barracks; approved images are unchanged after the barracks correction.",
+    "Revised barracks has balanced overhead roof pitches, round straw head tops with crossbar arms, flat post caps and stone wall caps; its four previews load and comparison uses the correct source PNG.",
+    "Base Classical Age selection restores nine base entries.",
+    "Russian Stone Age selection displays nine approved entries; Bronze Age displays ten approved entries.",
+    "SHA256 source checks confirm all 19 approved earlier-age images are unchanged.",
+    "Blacksmith comparison uses correct base/current PNGs; tower type filter yields one Classical entry and its comparison uses the base stone tower.",
+    "Wall inspector displays approved Stone, Bronze and Classical towers.",
+    "No console errors observed in building and wall inspectors.",
+    "Existing inspection JavaScript syntax and scoped text whitespace checks pass."
+  ],
+  "screenshots": [
+    "Inspection_Review.jpg",
+    "Full_Inspection_Review.jpg",
+    "Blacksmith_Comparison.jpg",
+    "Barracks_Review.jpg"
+  ]
+}

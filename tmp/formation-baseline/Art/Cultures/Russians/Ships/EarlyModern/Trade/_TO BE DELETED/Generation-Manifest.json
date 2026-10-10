@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "EarlyModern",
+  "role": "Trade",
+  "label": "Soviet powered freighter",
+  "generator": "built-in imagegen",
+  "prompt": "Use case: stylized-concept. Asset: one production RTS Russian culture vessel sprite. STRICTLY TRUE 90-DEGREE DIRECTLY OVERHEAD ORTHOGRAPHIC VIEW. Bow points toward SCREEN BOTTOM, stern toward top. Entire ship and all oars/yards fit within square transparent canvas with at least 8 percent clear guard. Only deck surfaces and roofs are visible; no upright doors, hull side walls, front elevations or oblique perspective. Realistic hand-painted textured game art matching reference, clean readable silhouettes at 48/64/128px, restrained weathering, crisp dark edges, balanced overhead light. One vessel only, transparent alpha background, no water, wake, ground shadow, scene, labels, letters, flag fabric, people, side-view inset or UI. Subject: Mid-20th-century Soviet-inspired steel general cargo freighter, broad grey hull, four large brown cargo hold hatch covers, overhead straight cargo booms and masts over hatches, small aft bridge roof, one dark oval funnel opening, restrained crates. No armament no passenger bench decks. Technical deck-plan camera, only bridge roof and flat hold covers. Crane booms are flat overhead straight bars, masts small circular top faces not upright shafts. No visible sidewalls, doors, front windshield panels. No backdrop or halo.",
+  "generatedOriginal": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea7-45e8-7a11-8804-5420a62f53c3\\exec-271ad8a6-5b7a-4cc5-b2d2-f9443f7b9f83.png",
+  "retainedOriginal": "SourceArt/Trade_Russian_EarlyModern_Generated_v1.png",
+  "rawSha256": "81f38ac47d6ffe88be4049b724aefe216e9ef020f1ebcfd21055d9d74e990eaa",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "source": "SourceArt/Trade_Russian_EarlyModern_v1.png",
+  "sourceSha256": "8edb509f74c643b0ad676836272d1445b62536300799990015a1d95da42c3f93",
+  "registration": {
+    "alphaBounds": [
+      39,
+      5,
+      1194,
+      1228
+    ],
+    "uniformScale": 0.8830744071954211,
+    "offset": [
+      117,
+      87
+    ],
+    "canvas": [
+      1254,
+      1254
+    ]
+  },
+  "conversion": "Uniform alpha-bounds fit, Lanczos resampling and transparent padding only; original retained unchanged.",
+  "technologyPlan": "skirmish/plans/technology-plan.json",
+  "civilizationId": "russians-rework",
+  "unlockTechnology": "modern-amphibious-transport",
+  "unlockName": "Amphibious Transport",
+  "visualApproval": "approved",
+  "animationApproval": {
+    "status": "approved",
+    "userMessage": "okay animate them all",
+    "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+    "date": "2026-10-07"
+  },
+  "integrationStatus": "art review only; no gameplay or match renderer changes",
+  "historicalScope": "Era-inspired role design, not an exact reconstruction of a named vessel"
+}

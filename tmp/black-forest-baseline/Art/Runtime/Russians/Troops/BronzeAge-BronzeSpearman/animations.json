@@ -3,28 +3,21 @@
   "animations": [
     {
       "id": "idle",
-      "file": "idle.png",
       "label": "Idle",
+      "file": "idle.png",
+      "sha256": "dcecc6f9b7fe4819381897fa6b0ad26c20685143567f51d92ec5caafe488ab16",
       "loop": true,
       "scale": 1,
       "durations": [
-        170,
-        170,
-        170,
-        170,
-        170,
-        170
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
       ],
-      "description": "Breathing and weight settle with the rear spear grip and large round shield.",
+      "description": "Six subtle breathing poses. Boots stay planted, almost no lateral sway. Carry spear low on screen left, shield on screen right.",
       "frameCount": 6,
-      "sourceFrameOrder": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
       "frames": [
         {
           "x": 0,
@@ -32,8 +25,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 49.0
           }
         },
         {
@@ -42,8 +35,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 49.0
           }
         },
         {
@@ -52,8 +45,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 49.0
           }
         },
         {
@@ -62,8 +55,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 49.0
           }
         },
         {
@@ -72,8 +65,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 49.0
           }
         },
         {
@@ -82,17 +75,19 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 49.0
           }
         }
       ],
+      "mask": "idle.mask.png",
       "releaseFrame": 3
     },
     {
       "id": "running",
-      "file": "running.png",
       "label": "Walk",
+      "file": "running.png",
+      "sha256": "b0ba5e2ddb3e3a4037812858eb920c882d448aa4b1c3a4873dc16adcca572a9e",
       "loop": true,
       "scale": 1,
       "durations": [
@@ -103,16 +98,8 @@
         160,
         160
       ],
-      "description": "Alternating walking steps with spear and shield carried steadily.",
+      "description": "Six alternating WALK poses: right foot leads, feet level, left foot leads, feet level, right foot leads, feet level. Short natural strides, thighs mostly hidden by shoulders, show different boot positions. Spear and shield carried steadily. Body root aligned across frames to reduce lateral drift.",
       "frameCount": 6,
-      "sourceFrameOrder": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
       "frames": [
         {
           "x": 0,
@@ -120,8 +107,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 69.0,
+            "y": 52.0
           }
         },
         {
@@ -130,8 +117,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 69.0,
+            "y": 52.0
           }
         },
         {
@@ -140,8 +127,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 69.0,
+            "y": 52.0
           }
         },
         {
@@ -150,8 +137,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 69.0,
+            "y": 52.0
           }
         },
         {
@@ -160,8 +147,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 69.0,
+            "y": 52.0
           }
         },
         {
@@ -170,37 +157,31 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 69.0,
+            "y": 52.0
           }
         }
       ],
+      "mask": "running.mask.png",
       "releaseFrame": 3
     },
     {
       "id": "attack",
+      "label": "Overhand spear thrust",
       "file": "attack.png",
-      "label": "Spear thrust",
+      "sha256": "c00d8b864ff1f4b82b4b7e3d75edd8474aec5fc91298d776fbc2a0fc1d7013e6",
       "loop": false,
-      "scale": 1,
+      "scale": 1.5,
       "durations": [
-        130,
+        140,
         180,
-        160,
-        100,
         180,
-        240
+        150,
+        180,
+        220
       ],
-      "description": "Raised overhand rear grip through draw-back, forward spear thrust, and recovery.",
+      "description": "Six OVERHAND forward spear thrust poses: ready, right hand draws spear back above right shoulder, thrust extension, full forward extension, withdraw, ready. Aim exactly SCREEN BOTTOM along the screen-left lane beside helmet. Right fist remains at SHOULDER HEIGHT or above, elbow behind and outward; NEVER drop to waist or switch to underhand grip. Shaft straight, bronze spearhead always at forward screen-bottom end, rear butt screen-top. Hand grips rear third. Shield protects screen-right flank.",
       "frameCount": 6,
-      "sourceFrameOrder": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
       "frames": [
         {
           "x": 0,
@@ -208,8 +189,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 67.0,
+            "y": 54.0
           }
         },
         {
@@ -218,8 +199,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 67.0,
+            "y": 54.0
           }
         },
         {
@@ -228,8 +209,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 67.0,
+            "y": 54.0
           }
         },
         {
@@ -238,8 +219,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 67.0,
+            "y": 54.0
           }
         },
         {
@@ -248,8 +229,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 67.0,
+            "y": 54.0
           }
         },
         {
@@ -258,20 +239,22 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 67.0,
+            "y": 54.0
           }
         }
       ],
       "impactFrame": 3,
+      "mask": "attack.mask.png",
       "releaseFrame": 3
     },
     {
       "id": "death",
-      "file": "death.png",
       "label": "Death - side fall",
+      "file": "death.png",
+      "sha256": "24762a5df4a7ec239bc7c21621778e7a65a3d10de42c55cacbc3795bf8f84618",
       "loop": false,
-      "scale": 1,
+      "scale": 1.25,
       "durations": [
         150,
         170,
@@ -280,16 +263,8 @@
         240,
         400
       ],
-      "description": "Knees buckle, body rolls onto its side, and settles into a held final pose.",
+      "description": "Six SIDE death stages: standing, knees buckle, tip sideways, fall onto side, settle, still corpse. Final three full body lying on SIDE with HEAD SCREEN RIGHT and BOOTS SCREEN LEFT continuously. Visible leather torso and pants when lying, anatomically connected legs. Spear and shield drop beside body, one of each, no blood.",
       "frameCount": 6,
-      "sourceFrameOrder": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
       "frames": [
         {
           "x": 0,
@@ -297,8 +272,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -307,8 +282,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -317,8 +292,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -327,8 +302,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -337,8 +312,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -347,20 +322,271 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 68.5
+            "x": 64.0,
+            "y": 64.0
           }
         }
       ],
+      "mask": "death.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "label": "Charge in / maintain",
+      "file": "charge.png",
+      "sha256": "b0ba5e2ddb3e3a4037812858eb920c882d448aa4b1c3a4873dc16adcca572a9e",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Fast alternating-foot charge movement with spear and shield held steadily. Body root aligned across frames to reduce lateral drift.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 67.75,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.8125,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 58.375,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 67.75,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.8125,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 58.375,
+            "y": 64.0
+          }
+        }
+      ],
+      "mask": "charge.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "label": "Charge spear thrust",
+      "file": "charge-attack.png",
+      "sha256": "1587bd87d320cbdaaf9b44eb5fcf6e0ccb09e204acf064b952a2efcc25a9f4b4",
+      "loop": false,
+      "scale": 1.5,
+      "durations": [
+        140,
+        180,
+        180,
+        160,
+        180,
+        220
+      ],
+      "description": "Six heavy OVERHAND spear thrust poses after advancing: brake and plant, draw spear over right shoulder, drive straight forward SCREEN BOTTOM beside helmet, fully extended thrust, withdraw, ready. Right fist remains ABOVE shoulder line, never underhand. Right foot drops slightly back to open chest while same directly overhead camera retained. One straight spear, rear grip, same shield.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "mask": "charge-attack.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "hit",
+      "label": "Get hit",
+      "file": "hit.png",
+      "sha256": "d0d2619fa15beeaa5899d8171c6b1408ceeb651757b4f33b7f3e2181408a56a2",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Six light hit reaction poses: stand, flinch, knees flex, recoil, recover, stand. Spear and shield retained, shield rises slightly to protect. No attack thrust or blood.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "mask": "hit.mask.png",
       "releaseFrame": 3
     }
   ],
-  "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/animations.json",
-  "metadataHash": "cd106e6498377f2b1b2092bf383d564fcebafaa9e8107816c849fe1ab34ac7db",
+  "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/animations.json",
+  "metadataHash": "d9a6d3b4defbaac562d4594dd03db87511b31a9e087dad72c9de7a71a68906a3",
   "hashes": {
-    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Idle-Animated-v1.png": "7bbaca6c01597bd26e6cf339799336e98b0b537932e1bfc20dd1d65752156a83",
-    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Running-v1.png": "a0c3573849c41bc642b389e2971ab07e22c4160616ce94b4e88458bf9a683cc5",
-    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Attack-Overhand-v2.png": "b50bab3e1b48c2c3d5904cc37385456fb28d36135b3a45706980bc3fba4dc492",
-    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Death-v1.png": "ddc4a9e41e0df770f2f14713c5767ab00ba931ca1315dc1f956f411f646c7e45"
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/idle-v1.png": "dcecc6f9b7fe4819381897fa6b0ad26c20685143567f51d92ec5caafe488ab16",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/running-v1.png": "b0ba5e2ddb3e3a4037812858eb920c882d448aa4b1c3a4873dc16adcca572a9e",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/attack-v2.png": "c00d8b864ff1f4b82b4b7e3d75edd8474aec5fc91298d776fbc2a0fc1d7013e6",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/death-v2.png": "24762a5df4a7ec239bc7c21621778e7a65a3d10de42c55cacbc3795bf8f84618",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/charge-v1.png": "b0ba5e2ddb3e3a4037812858eb920c882d448aa4b1c3a4873dc16adcca572a9e",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/charge-attack-v2.png": "1587bd87d320cbdaaf9b44eb5fcf6e0ccb09e204acf064b952a2efcc25a9f4b4",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/hit-v1.png": "d0d2619fa15beeaa5899d8171c6b1408ceeb651757b4f33b7f3e2181408a56a2"
   }
 }

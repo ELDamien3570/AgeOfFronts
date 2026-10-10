@@ -16,7 +16,12 @@ import {
   type EquipmentKind,
 } from "./Equipment";
 import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
-import { TECHNOLOGY, technologyAt, canonicalTechnologyId, packageTechnology } from "./Technology";
+import {
+  canonicalTechnologyId,
+  packageTechnology,
+  TECHNOLOGY,
+} from "./Technology";
+import { weaponCycle } from "./WeaponCycles";
 const ground: readonly TargetTag[] = [
   "infantry",
   "ranged",
@@ -113,7 +118,7 @@ for (const [index, age] of AGES.entries()) {
       age,
       line: "archer",
       role: field ? "artillery" : "siege",
-      technologyId: packageTechnology(age,"siege"),
+      technologyId: packageTechnology(age, "siege"),
       building: "siege-workshop",
       tags: ["siege"],
       speedPercent: contact ? 25 : 55,
@@ -127,8 +132,15 @@ for (const [index, age] of AGES.entries()) {
       ...(contact ? { undefendedCaptureTicks: 4 } : {}),
       placeholder: index === 0,
     };
-    const sourceEra = age === "Napoleonic" ? "earlymodern" : age === "EarlyModern" ? "modern" : age.toLowerCase();
-    const unlock = TECHNOLOGY.get(`russian-support-${sourceEra}-${field ? "field-support" : "siege"}`);
+    const sourceEra =
+      age === "Napoleonic"
+        ? "earlymodern"
+        : age === "EarlyModern"
+          ? "modern"
+          : age.toLowerCase();
+    const unlock = TECHNOLOGY.get(
+      `russian-support-${sourceEra}-${field ? "field-support" : "siege"}`,
+    );
     if (unlock?.age === age) unit.technologyId = unlock.id;
     addEquipment(unit, index, index >= 6 && field ? "troop" : "siege");
     UNITS.push(unit);
@@ -145,7 +157,9 @@ for (const [role, name, targets] of [
     line: "cavalry",
     role,
     technologyId:
-      role === "launcher" ? packageTechnology("Modern","mirvs-drones") : packageTechnology("EarlyModern","fortifications"),
+      role === "launcher"
+        ? packageTechnology("Modern", "mirvs-drones")
+        : packageTechnology("EarlyModern", "fortifications"),
     building: "depot",
     tags: ["vehicle"],
     speedPercent: 90,
@@ -231,7 +245,10 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
   const mounted = isCavalryTroopClass(cls),
     vehicle = mounted && index >= 6;
   const rangedAttack =
-    cls === "rangedInfantry" || cls === "rangedCavalry" || index >= 6;
+    cls === "rangedInfantry" ||
+    cls === "rangedCavalry" ||
+    index >= 6 ||
+    (age === "Napoleonic" && cls === "frontline");
   const line = mounted
     ? "cavalry"
     : cls === "rangedInfantry"
@@ -342,10 +359,46 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
       speed: FIXED * 2,
       blastRadius: 0,
     };
+  const cycle = weaponCycle(unit);
+  if (cycle && rangedAttack) {
+    const sustained =
+      ((cycle.rounds - 1) * cycle.interval + cycle.reload) / cycle.rounds;
+    const multiplier = Math.min(1, sustained / unit.attack.reloadTicks);
+    unit.attack.damage = Math.max(
+      1,
+      Math.round(unit.attack.damage * multiplier),
+    );
+    unit.attack.bonuses = Object.fromEntries(
+      Object.entries(unit.attack.bonuses).map(([tag, n]) => [
+        tag,
+        Math.round(n * multiplier),
+      ]),
+    );
+    unit.attack.reloadTicks = cycle.interval;
+  }
+  if (age === "Napoleonic" && cls === "frontline") {
+    unit.attack.range = 3 * FIXED;
+    unit.charge = {
+      speedPercent: 150,
+      damage: points(4),
+      radius: FIXED,
+      cooldownTicks: 400,
+      runupTicks: 6,
+      maximumDistance: 6 * FIXED,
+      penetration: 1000,
+    };
+  }
+  if (rangedAttack && index < 5)
+    unit.attack.projectile = {
+      diameter: FIXED / 10,
+      speed: FIXED * 0.4,
+      blastRadius: 0,
+    };
   addEquipment(unit, index, vehicle ? "vehicle" : "troop");
   UNITS.push(unit);
 }
-for (const unit of UNITS) unit.technologyId = canonicalTechnologyId(unit.technologyId);
+for (const unit of UNITS)
+  unit.technologyId = canonicalTechnologyId(unit.technologyId);
 UNITS.sort(
   (a, b) =>
     AGES.indexOf(a.age) - AGES.indexOf(b.age) ||
@@ -379,7 +432,18 @@ for (const [index, age] of AGES.entries())
       name: `${age === "StoneAge" ? "Canoe" : age === "Modern" ? "Powered" : age.replace(/Age$/, "")} ${kind === "trade" ? "merchant vessel" : kind}`,
       age,
       kind,
-      technologyId: packageTechnology(age,age === "StoneAge" ? kind === "transport" ? "cargo-canoes" : "port-sea-trade" : kind === "warship" ? "warships" : kind === "trade" ? "sea-traders" : "ports"),
+      technologyId: packageTechnology(
+        age,
+        age === "StoneAge"
+          ? kind === "transport"
+            ? "cargo-canoes"
+            : kind === "warship" ? "warships" : "port-sea-trade"
+          : kind === "warship"
+            ? "warships"
+            : kind === "trade"
+              ? "sea-traders"
+              : "ports",
+      ),
       cost: {
         gold: (kind === "warship" ? 700 : 300) * (index + 1),
       },
@@ -437,8 +501,14 @@ for (const [index, age] of AGES.entries())
         : {}),
     });
   }
-for(const age of ["EarlyModern","Modern"] as const) {
- const ship=VESSELS.find(v=>v.age===age&&v.kind==="warship")!;
- VESSELS.push({...ship,id:`${age.toLowerCase()}-submarine`,name:age==="Modern"?"Nuclear submarine":"Diesel submarine",technologyId:packageTechnology(age,"submarines"),cost:{gold:(ship.cost.gold??0)*1.25}});
+for (const age of ["EarlyModern", "Modern"] as const) {
+  const ship = VESSELS.find((v) => v.age === age && v.kind === "warship")!;
+  VESSELS.push({
+    ...ship,
+    id: `${age.toLowerCase()}-submarine`,
+    name: age === "Modern" ? "Nuclear submarine" : "Diesel submarine",
+    technologyId: packageTechnology(age, "submarines"),
+    cost: { gold: (ship.cost.gold ?? 0) * 1.25 },
+  });
 }
 export const VESSEL = new Map(VESSELS.map((v) => [v.id, v]));

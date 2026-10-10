@@ -1,0 +1,2780 @@
+{
+  "reference": {
+    "name": "Stone Age Clubman",
+    "binding": "StoneAge:frontline",
+    "memberScale": 0.24,
+    "bodySpanPx128": 85,
+    "footprint": 2.6666666666666665
+  },
+  "reviewOnly": false,
+  "rows": [
+    {
+      "id": "stoneage-infantry",
+      "name": "Clubmen",
+      "age": "StoneAge",
+      "ageName": "Stone Age",
+      "troopClass": "frontline",
+      "binding": "StoneAge:frontline",
+      "actor": {
+        "key": "StoneAge-Clubman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/StoneAge-Clubman/",
+        "memberScale": 0.24,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.24,
+        "bodySpanPx128": 85,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 55
+          },
+          "running": {
+            "x": 64,
+            "y": 50
+          },
+          "attack": {
+            "x": 64,
+            "y": 57
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/StoneAge/Clubman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "stoneage-cavalry",
+      "name": "Mounted Spearmen",
+      "age": "StoneAge",
+      "ageName": "Stone Age",
+      "troopClass": "lightCavalry",
+      "binding": "StoneAge:lightCavalry",
+      "actor": {
+        "key": "StoneAge-Scout",
+        "assetRoot": "/Art/Runtime/Russians/Troops/StoneAge-Scout/",
+        "memberScale": 0.6442105263157895,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.51,
+        "proposedScale": 0.6442105263157895,
+        "bodySpanPx128": 42,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 102,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 62,
+            "y": 65
+          },
+          "running": {
+            "x": 62,
+            "y": 65
+          },
+          "attack": {
+            "x": 62,
+            "y": 65
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "stoneage-archer",
+      "name": "Javelin Throwers",
+      "age": "StoneAge",
+      "ageName": "Stone Age",
+      "troopClass": "rangedInfantry",
+      "binding": "StoneAge:rangedInfantry",
+      "actor": {
+        "key": "StoneAge-Javelinist",
+        "assetRoot": "/Art/Runtime/Russians/Troops/StoneAge-Javelinist/",
+        "memberScale": 0.24727272727272726,
+        "sizeAudited": true,
+        "projectile": "javelin",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.35,
+            "y": 0.52
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24727272727272726,
+        "proposedScale": 0.33999999999999997,
+        "bodySpanPx128": 60,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 64
+          },
+          "running": {
+            "x": 64,
+            "y": 58
+          },
+          "attack": {
+            "x": 69,
+            "y": 60
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/animations.json",
+      "topDownVerified": true
+    },
+    {
+      "id": "stoneage-siege",
+      "name": "Field ram",
+      "age": "StoneAge",
+      "ageName": "Stone Age",
+      "troopClass": "siege",
+      "binding": "StoneAge:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "bronzeage-siege-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "bronzeage-siege-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "bronzeage-siege-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/Idle.png": "467676325cc09c36e3bc9ed2698b778fa5f997b7af3e68d961a68f6b8a5661b2",
+          "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/Movement.png": "8410d51c5c633ef317ca7dff3a2d959be99914faeeaa941e5922e26007bddcef",
+          "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/Attack.png": "641bba85df1a51c22d9832f8cc459100084025cfb8d8b45b457fb09b3e519d79"
+        },
+        "poster": "bronzeage-siege-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "bronzeage-anticavalry",
+      "name": "Bronze Spearmen",
+      "age": "BronzeAge",
+      "ageName": "Bronze Age",
+      "troopClass": "antiCavalry",
+      "binding": "BronzeAge:antiCavalry",
+      "actor": {
+        "key": "BronzeAge-BronzeSpearman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/BronzeAge-BronzeSpearman/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.3,
+        "bodySpanPx128": 68,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 49
+          },
+          "running": {
+            "x": 69,
+            "y": 52
+          },
+          "attack": {
+            "x": 67,
+            "y": 54
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/TopDownReview/animations.json",
+      "topDownVerified": true
+    },
+    {
+      "id": "bronzeage-field-support",
+      "name": "Assault siege tower",
+      "age": "BronzeAge",
+      "ageName": "Bronze Age",
+      "troopClass": "artillery",
+      "binding": "BronzeAge:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "bronzeage-field-support-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "bronzeage-field-support-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "bronzeage-field-support-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/SiegeTower_BronzeAge/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/SiegeTower_BronzeAge/Idle.png": "f3dd75ac4304aad50a4e704286465673d3023eec96289d1771dd06620aae2e76",
+          "Art/Weapon Icons/Siege Weapons/SiegeTower_BronzeAge/Movement.png": "990ff168336de8b0a82e759b5f7b8d5c775a17721337a526a1a29b655dc4a3dd",
+          "Art/Weapon Icons/Siege Weapons/SiegeTower_BronzeAge/Attack.png": "2982bd638b9bae7f63c9b066672058b25fc05e81ca3a8b9201955f40605d122d"
+        },
+        "poster": "bronzeage-field-support-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/SiegeTower_BronzeAge/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "bronzeage-infantry",
+      "name": "Bronze Axemen",
+      "age": "BronzeAge",
+      "ageName": "Bronze Age",
+      "troopClass": "frontline",
+      "binding": "BronzeAge:frontline",
+      "actor": {
+        "key": "BronzeAge-BronzeAxeman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/BronzeAge-BronzeAxeman/",
+        "memberScale": 0.27199999999999996,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.27199999999999996,
+        "proposedScale": 0.24,
+        "bodySpanPx128": 85,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 60
+          },
+          "running": {
+            "x": 64,
+            "y": 56
+          },
+          "attack": {
+            "x": 64,
+            "y": 57
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeAxeman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "bronzeage-cavalry",
+      "name": "Spear Riders",
+      "age": "BronzeAge",
+      "ageName": "Bronze Age",
+      "troopClass": "lightCavalry",
+      "binding": "BronzeAge:lightCavalry",
+      "actor": {
+        "key": "BronzeAge-LightCavalry",
+        "assetRoot": "/Art/Runtime/Russians/Troops/BronzeAge-LightCavalry/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.6510638297872341,
+        "bodySpanPx128": 36,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 94,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 68,
+            "y": 63
+          },
+          "running": {
+            "x": 68,
+            "y": 63.5
+          },
+          "attack": {
+            "x": 68,
+            "y": 62.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "bronzeage-archer",
+      "name": "Archers",
+      "age": "BronzeAge",
+      "ageName": "Bronze Age",
+      "troopClass": "rangedInfantry",
+      "binding": "BronzeAge:rangedInfantry",
+      "actor": {
+        "key": "BronzeAge-RiverArcher",
+        "assetRoot": "/Art/Runtime/Russians/Troops/BronzeAge-RiverArcher/",
+        "memberScale": 0.33999999999999997,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.61,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.33999999999999997,
+        "proposedScale": 0.27567567567567564,
+        "bodySpanPx128": 74,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 51
+          },
+          "running": {
+            "x": 64,
+            "y": 47
+          },
+          "attack": {
+            "x": 64,
+            "y": 47
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/TopDownReview/animations.json",
+      "topDownVerified": true
+    },
+    {
+      "id": "bronzeage-siege",
+      "name": "Battering ram",
+      "age": "BronzeAge",
+      "ageName": "Bronze Age",
+      "troopClass": "siege",
+      "binding": "BronzeAge:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "bronzeage-siege-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "bronzeage-siege-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "bronzeage-siege-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/Idle.png": "467676325cc09c36e3bc9ed2698b778fa5f997b7af3e68d961a68f6b8a5661b2",
+          "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/Movement.png": "8410d51c5c633ef317ca7dff3a2d959be99914faeeaa941e5922e26007bddcef",
+          "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/Attack.png": "641bba85df1a51c22d9832f8cc459100084025cfb8d8b45b457fb09b3e519d79"
+        },
+        "poster": "bronzeage-siege-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/BatteringRam_BronzeAge/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "classicalage-anticavalry",
+      "name": "Heavy Spearmen",
+      "age": "ClassicalAge",
+      "ageName": "Classical Age",
+      "troopClass": "antiCavalry",
+      "binding": "ClassicalAge:antiCavalry",
+      "actor": {
+        "key": "ClassicalAge-Pikeman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-Pikeman/",
+        "memberScale": 0.3709090909090909,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.3709090909090909,
+        "proposedScale": 0.35172413793103446,
+        "bodySpanPx128": 58,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 68,
+            "y": 54
+          },
+          "running": {
+            "x": 64,
+            "y": 49
+          },
+          "attack": {
+            "x": 69,
+            "y": 51
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/ClassicalAge/Pikeman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "classicalage-field-support",
+      "name": "Mangonel",
+      "age": "ClassicalAge",
+      "ageName": "Classical Age",
+      "troopClass": "artillery",
+      "binding": "ClassicalAge:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "classicalage-field-support-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "classicalage-field-support-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "classicalage-field-support-attack.png",
+            "frames": 24,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Field Artillery/Mangonel_ClassicalAge/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Field Artillery/Mangonel_ClassicalAge/Idle.png": "ebddbab824c14aeb810edca2bb77e1d806fb3eb064fdcf9aad098ecc6a4a927d",
+          "Art/Weapon Icons/Field Artillery/Mangonel_ClassicalAge/Movement.png": "1410cdfdca4c34357aefb77dec863e0a119d094c57e78c9548199885adcd701f",
+          "Art/Weapon Icons/Field Artillery/Mangonel_ClassicalAge/Attack.png": "c0ac2b67a91182ab64f171bc4d55de86c09f44169b16228eadaab876bab3c389"
+        },
+        "poster": "classicalage-field-support-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Field Artillery/Mangonel_ClassicalAge/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "classicalage-infantry",
+      "name": "Varangians",
+      "age": "ClassicalAge",
+      "ageName": "Classical Age",
+      "troopClass": "frontline",
+      "binding": "ClassicalAge:frontline",
+      "actor": {
+        "key": "ClassicalAge-ShieldWarrior",
+        "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-ShieldWarrior/",
+        "memberScale": 0.27199999999999996,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.27199999999999996,
+        "proposedScale": 0.2914285714285714,
+        "bodySpanPx128": 70,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 66,
+            "y": 55
+          },
+          "running": {
+            "x": 64,
+            "y": 53
+          },
+          "attack": {
+            "x": 66,
+            "y": 55
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/ClassicalAge/ShieldWarrior/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "classicalage-cavalry",
+      "name": "Light Horsemen",
+      "age": "ClassicalAge",
+      "ageName": "Classical Age",
+      "troopClass": "lightCavalry",
+      "binding": "ClassicalAge:lightCavalry",
+      "actor": {
+        "key": "ClassicalAge-LightCavalry",
+        "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-LightCavalry/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.6510638297872341,
+        "bodySpanPx128": 40,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 94,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 68,
+            "y": 63
+          },
+          "running": {
+            "x": 68,
+            "y": 64
+          },
+          "attack": {
+            "x": 68,
+            "y": 62.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "classicalage-rangedcavalry",
+      "name": "Horse Archers",
+      "age": "ClassicalAge",
+      "ageName": "Classical Age",
+      "troopClass": "rangedCavalry",
+      "binding": "ClassicalAge:rangedCavalry",
+      "actor": {
+        "key": "ClassicalAge-HorseArcher",
+        "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-HorseArcher/",
+        "memberScale": 0.48571428571428565,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.58
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.48571428571428565,
+        "proposedScale": 0.6510638297872341,
+        "bodySpanPx128": 40,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 94,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 68,
+            "y": 63
+          },
+          "running": {
+            "x": 68,
+            "y": 64
+          },
+          "attack": {
+            "x": 68,
+            "y": 63.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "classicalage-archer",
+      "name": "Recurve Bowmen",
+      "age": "ClassicalAge",
+      "ageName": "Classical Age",
+      "troopClass": "rangedInfantry",
+      "binding": "ClassicalAge:rangedInfantry",
+      "actor": {
+        "key": "ClassicalAge-RecurveArcher",
+        "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-RecurveArcher/",
+        "memberScale": 0.31384615384615383,
+        "sizeAudited": true,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.58,
+            "y": 0.65
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.31384615384615383,
+        "proposedScale": 0.255,
+        "bodySpanPx128": 80,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 62,
+            "y": 49
+          },
+          "running": {
+            "x": 62,
+            "y": 56
+          },
+          "attack": {
+            "x": 64,
+            "y": 47
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/TopDownReview/animations.json",
+      "topDownVerified": true
+    },
+    {
+      "id": "classicalage-siege",
+      "name": "Onager",
+      "age": "ClassicalAge",
+      "ageName": "Classical Age",
+      "troopClass": "siege",
+      "binding": "ClassicalAge:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "classicalage-siege-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "classicalage-siege-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "classicalage-siege-attack.png",
+            "frames": 24,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/Onager_ClassicalAge/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/Onager_ClassicalAge/Idle.png": "12c254750880d4a51130dbb1d39e00cc4db36131d6d6f8a6229ead057c87f9bf",
+          "Art/Weapon Icons/Siege Weapons/Onager_ClassicalAge/Movement.png": "2cd5295496287aced6050925cf4470492d83e71f6bbc2e5f091a374bb24799dc",
+          "Art/Weapon Icons/Siege Weapons/Onager_ClassicalAge/Attack.png": "7d319f22d87b2005b3c89ac52e88d2bc2155b1fce67823b8fcf8e178a8cb0cd5"
+        },
+        "poster": "classicalage-siege-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/Onager_ClassicalAge/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymedieval-anticavalry",
+      "name": "Mail Spearman",
+      "age": "EarlyMedieval",
+      "ageName": "Early Medieval",
+      "troopClass": "antiCavalry",
+      "binding": "EarlyMedieval:antiCavalry",
+      "actor": {
+        "key": "EarlyMedieval-MailSpearman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-MailSpearman/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.3923076923076923,
+        "bodySpanPx128": 52,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 57
+          },
+          "running": {
+            "x": 66,
+            "y": 47
+          },
+          "attack": {
+            "x": 69,
+            "y": 69
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymedieval-field-support",
+      "name": "Ballista",
+      "age": "EarlyMedieval",
+      "ageName": "Early Medieval",
+      "troopClass": "artillery",
+      "binding": "EarlyMedieval:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "earlymedieval-field-support-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "earlymedieval-field-support-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "earlymedieval-field-support-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Field Artillery/Ballista_EarlyMedieval/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Field Artillery/Ballista_EarlyMedieval/Idle.png": "7341fddcfba615044c3fba4ba6023ba47194f535a6bc4d1cb0da0aaf3edd4fc3",
+          "Art/Weapon Icons/Field Artillery/Ballista_EarlyMedieval/Movement.png": "b32560ac6887e56db569e01f373042b6e671c8e73e86ab88a0045f1ebd7ac74e",
+          "Art/Weapon Icons/Field Artillery/Ballista_EarlyMedieval/Attack.png": "bd65a3deda6116c4bfa4bebf7a01a6de640ca506b9de30a7c880805789808377"
+        },
+        "poster": "earlymedieval-field-support-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Field Artillery/Ballista_EarlyMedieval/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymedieval-infantry",
+      "name": "Rus Woodsman",
+      "age": "EarlyMedieval",
+      "ageName": "Early Medieval",
+      "troopClass": "frontline",
+      "binding": "EarlyMedieval:frontline",
+      "actor": {
+        "key": "EarlyMedieval-Axeman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-Axeman/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.26842105263157895,
+        "bodySpanPx128": 76,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 72,
+            "y": 52
+          },
+          "running": {
+            "x": 64,
+            "y": 57
+          },
+          "attack": {
+            "x": 68,
+            "y": 61
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymedieval-heavycavalry",
+      "name": "Druzhina",
+      "age": "EarlyMedieval",
+      "ageName": "Early Medieval",
+      "troopClass": "heavyCavalry",
+      "binding": "EarlyMedieval:heavyCavalry",
+      "actor": {
+        "key": "EarlyMedieval-Druzhina",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-Druzhina/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.68,
+        "bodySpanPx128": 30,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 90,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 70,
+            "y": 63
+          },
+          "running": {
+            "x": 70,
+            "y": 60.5
+          },
+          "attack": {
+            "x": 70,
+            "y": 67.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyMedieval/Druzhina/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymedieval-cavalry",
+      "name": "Rus Lancer",
+      "age": "EarlyMedieval",
+      "ageName": "Early Medieval",
+      "troopClass": "lightCavalry",
+      "binding": "EarlyMedieval:lightCavalry",
+      "actor": {
+        "key": "EarlyMedieval-LightCavalry",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-LightCavalry/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.6510638297872341,
+        "bodySpanPx128": 36,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 94,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 68,
+            "y": 63
+          },
+          "running": {
+            "x": 68,
+            "y": 63.5
+          },
+          "attack": {
+            "x": 68,
+            "y": 62.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymedieval-rangedcavalry",
+      "name": "Early Cossack Archer",
+      "age": "EarlyMedieval",
+      "ageName": "Early Medieval",
+      "troopClass": "rangedCavalry",
+      "binding": "EarlyMedieval:rangedCavalry",
+      "actor": {
+        "key": "EarlyMedieval-HorseArcher",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-HorseArcher/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.58
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.703448275862069,
+        "bodySpanPx128": 38,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 87,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 68,
+            "y": 63.5
+          },
+          "running": {
+            "x": 68,
+            "y": 64.5
+          },
+          "attack": {
+            "x": 68,
+            "y": 64.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyMedieval/HorseArcher/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymedieval-archer",
+      "name": "Rus Bowmen",
+      "age": "EarlyMedieval",
+      "ageName": "Early Medieval",
+      "troopClass": "rangedInfantry",
+      "binding": "EarlyMedieval:rangedInfantry",
+      "actor": {
+        "key": "EarlyMedieval-RusBowMan",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-RusBowMan/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.61,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.3090909090909091,
+        "bodySpanPx128": 66,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 48
+          },
+          "running": {
+            "x": 66,
+            "y": 45
+          },
+          "attack": {
+            "x": 58,
+            "y": 49
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyMedieval/RusBowMan/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymedieval-siege",
+      "name": "Trebuchet",
+      "age": "EarlyMedieval",
+      "ageName": "Early Medieval",
+      "troopClass": "siege",
+      "binding": "EarlyMedieval:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "earlymedieval-siege-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "earlymedieval-siege-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "earlymedieval-siege-attack.png",
+            "frames": 24,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/Trebuchet_EarlyMedieval/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/Trebuchet_EarlyMedieval/Idle.png": "21188ab462266f7845d32a4f51925dbc4d8dcbd84df91bdbd341e7d0a8b52001",
+          "Art/Weapon Icons/Siege Weapons/Trebuchet_EarlyMedieval/Movement.png": "df3ab40a8d8ec147f668c2759ab440d92d2d68b4052a90295865675d65f8a7ff",
+          "Art/Weapon Icons/Siege Weapons/Trebuchet_EarlyMedieval/Attack.png": "96885c7ae1c4c2dfd239b09c597f8fe8c20044beea729e28dd1d4dfa5c758395"
+        },
+        "poster": "earlymedieval-siege-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/Trebuchet_EarlyMedieval/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "latemedieval-anticavalry",
+      "name": "Plate Spearman",
+      "age": "LateMedieval",
+      "ageName": "Late Medieval",
+      "troopClass": "antiCavalry",
+      "binding": "LateMedieval:antiCavalry",
+      "actor": {
+        "key": "LateMedieval-PlateSpearman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-PlateSpearman/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.31875,
+        "bodySpanPx128": 64,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 52
+          },
+          "running": {
+            "x": 68,
+            "y": 55
+          },
+          "attack": {
+            "x": 70,
+            "y": 58
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/LateMedieval/PlateSpearman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "latemedieval-field-support",
+      "name": "Organ gun",
+      "age": "LateMedieval",
+      "ageName": "Late Medieval",
+      "troopClass": "artillery",
+      "binding": "LateMedieval:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "latemedieval-field-support-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "latemedieval-field-support-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "latemedieval-field-support-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Field Artillery/OrganGun_LateMedieval/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Field Artillery/OrganGun_LateMedieval/Idle.png": "7c6209bca25f448a4e67d5fc920449acb5feba2483f86b1045268d431601d414",
+          "Art/Weapon Icons/Field Artillery/OrganGun_LateMedieval/Movement.png": "33ad93b5f3bfcb65f3867799cb543b69aaf76f81c4b83cbde7af2f7c4de8be60",
+          "Art/Weapon Icons/Field Artillery/OrganGun_LateMedieval/Attack.png": "cab55298b9e99916297fff9ad3e11fd71c7cc0582f736ea6d37c10306ef6459e"
+        },
+        "poster": "latemedieval-field-support-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Field Artillery/OrganGun_LateMedieval/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "latemedieval-infantry",
+      "name": "Boyar Guards",
+      "age": "LateMedieval",
+      "ageName": "Late Medieval",
+      "troopClass": "frontline",
+      "binding": "LateMedieval:frontline",
+      "actor": {
+        "key": "LateMedieval-BoyarGuard",
+        "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-BoyarGuard/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.33999999999999997,
+        "bodySpanPx128": 60,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 79,
+            "y": 60
+          },
+          "running": {
+            "x": 78,
+            "y": 52
+          },
+          "attack": {
+            "x": 70,
+            "y": 64
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/LateMedieval/BoyarGuard/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "latemedieval-heavycavalry",
+      "name": "Boyar Cavalry",
+      "age": "LateMedieval",
+      "ageName": "Late Medieval",
+      "troopClass": "heavyCavalry",
+      "binding": "LateMedieval:heavyCavalry",
+      "actor": {
+        "key": "LateMedieval-Boyar",
+        "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-Boyar/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.6375000000000001,
+        "bodySpanPx128": 27,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 96,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 65,
+            "y": 64.5
+          },
+          "running": {
+            "x": 65,
+            "y": 65.5
+          },
+          "attack": {
+            "x": 65,
+            "y": 65.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/LateMedieval/Boyar/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "latemedieval-cavalry",
+      "name": "Cossack Riders",
+      "age": "LateMedieval",
+      "ageName": "Late Medieval",
+      "troopClass": "lightCavalry",
+      "binding": "LateMedieval:lightCavalry",
+      "actor": {
+        "key": "LateMedieval-CossackRider",
+        "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-CossackRider/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.7846153846153846,
+        "bodySpanPx128": 20,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 78,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 66
+          },
+          "running": {
+            "x": 64,
+            "y": 64.5
+          },
+          "attack": {
+            "x": 64,
+            "y": 64.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/LateMedieval/CossackRider/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "latemedieval-rangedcavalry",
+      "name": "Heavy Cossack Archer",
+      "age": "LateMedieval",
+      "ageName": "Late Medieval",
+      "troopClass": "rangedCavalry",
+      "binding": "LateMedieval:rangedCavalry",
+      "actor": {
+        "key": "LateMedieval-HorseArcher",
+        "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-HorseArcher/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.63,
+            "y": 0.62
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.6652173913043479,
+        "bodySpanPx128": 26,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 92,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 63.5
+          },
+          "running": {
+            "x": 64,
+            "y": 64.5
+          },
+          "attack": {
+            "x": 64,
+            "y": 63.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "latemedieval-archer",
+      "name": "Rus Crossbowman",
+      "age": "LateMedieval",
+      "ageName": "Late Medieval",
+      "troopClass": "rangedInfantry",
+      "binding": "LateMedieval:rangedInfantry",
+      "actor": {
+        "key": "LateMedieval-RusCrossbowman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-RusCrossbowman/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.3290322580645161,
+        "bodySpanPx128": 62,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 67,
+            "y": 34
+          },
+          "running": {
+            "x": 67,
+            "y": 35
+          },
+          "attack": {
+            "x": 63,
+            "y": 35
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "latemedieval-siege",
+      "name": "Bombard",
+      "age": "LateMedieval",
+      "ageName": "Late Medieval",
+      "troopClass": "siege",
+      "binding": "LateMedieval:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "latemedieval-siege-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "latemedieval-siege-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "latemedieval-siege-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/Bombard_LateMedieval/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/Bombard_LateMedieval/Idle.png": "a51494be907739d7e8e1269921237e1a99049889d20d682344e16059966106db",
+          "Art/Weapon Icons/Siege Weapons/Bombard_LateMedieval/Movement.png": "7243d1b7bb7b8416d656df0ffeb4ff2663f45a594e4d0705041b5fa6d514caba",
+          "Art/Weapon Icons/Siege Weapons/Bombard_LateMedieval/Attack.png": "382ea3efa6da487c0bd46dc550246709d6309cc8a5e57628b9b239a2676f8dd4"
+        },
+        "poster": "latemedieval-siege-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/Bombard_LateMedieval/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymodern-anticavalry",
+      "name": "Pikeman",
+      "age": "Napoleonic",
+      "ageName": "Napoleonic",
+      "troopClass": "antiCavalry",
+      "binding": "Napoleonic:antiCavalry",
+      "actor": {
+        "key": "EarlyModern-RenaissancePikeman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-RenaissancePikeman/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.48571428571428565,
+        "bodySpanPx128": 42,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 69,
+            "y": 65
+          },
+          "running": {
+            "x": 67,
+            "y": 67
+          },
+          "attack": {
+            "x": 71,
+            "y": 44
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "napoleonic-field-support",
+      "name": "Field cannon",
+      "age": "Napoleonic",
+      "ageName": "Napoleonic",
+      "troopClass": "artillery",
+      "binding": "Napoleonic:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "earlymodern-field-support-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "earlymodern-field-support-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "earlymodern-field-support-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Field Artillery/NapoleonicCannon_EarlyModern/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Field Artillery/NapoleonicCannon_EarlyModern/Idle.png": "52147fa74c1c96b10c32a9df859dd02b78be7e4c2907d37a120d48a36343e513",
+          "Art/Weapon Icons/Field Artillery/NapoleonicCannon_EarlyModern/Movement.png": "c81e5ed95ecaafe76b5ccce614da93f0dc799cb019822033d5cd203334d3421b",
+          "Art/Weapon Icons/Field Artillery/NapoleonicCannon_EarlyModern/Attack.png": "f09cfc629df81a402bca91638618d52f64ef1bd2655352f026b18b0a3be512d6"
+        },
+        "poster": "earlymodern-field-support-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Field Artillery/NapoleonicCannon_EarlyModern/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "napoleonic-infantry",
+      "name": "Grenadiers",
+      "age": "Napoleonic",
+      "ageName": "Napoleonic",
+      "troopClass": "frontline",
+      "binding": "Napoleonic:frontline",
+      "actor": {
+        "key": "EarlyModern-RusGrenadier",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-RusGrenadier/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.83
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.3090909090909091,
+        "bodySpanPx128": 66,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 46
+          },
+          "running": {
+            "x": 64,
+            "y": 41
+          },
+          "attack": {
+            "x": 64,
+            "y": 49
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyModern/RusGrenadier/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymodern-heavycavalry",
+      "name": "Cuirassiers",
+      "age": "Napoleonic",
+      "ageName": "Napoleonic",
+      "troopClass": "heavyCavalry",
+      "binding": "Napoleonic:heavyCavalry",
+      "actor": {
+        "key": "EarlyModern-Cuirassier",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-Cuirassier/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.6309278350515464,
+        "bodySpanPx128": 30,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 97,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 64.5
+          },
+          "running": {
+            "x": 64,
+            "y": 64
+          },
+          "attack": {
+            "x": 64,
+            "y": 65
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyModern/Cuirassier/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "napoleonic-cavalry",
+      "name": "Cossack Lancers",
+      "age": "Napoleonic",
+      "ageName": "Napoleonic",
+      "troopClass": "lightCavalry",
+      "binding": "Napoleonic:lightCavalry",
+      "actor": {
+        "key": "Napoleonic-CossackLancer",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Napoleonic-CossackLancer/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "arrow",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.7
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.7846153846153846,
+        "bodySpanPx128": 20,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 78,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 66
+          },
+          "running": {
+            "x": 64,
+            "y": 64
+          },
+          "attack": {
+            "x": 64,
+            "y": 66.5
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymodern-rangedcavalry",
+      "name": "Streltsy",
+      "age": "Napoleonic",
+      "ageName": "Napoleonic",
+      "troopClass": "rangedCavalry",
+      "binding": "Napoleonic:rangedCavalry",
+      "actor": {
+        "key": "EarlyModern-MountedMusketeer",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-MountedMusketeer/",
+        "memberScale": 0.49756097560975604,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": false,
+        "members": 6,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.51,
+            "y": 0.73
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.49756097560975604,
+        "proposedScale": 0.6580645161290323,
+        "bodySpanPx128": 34,
+        "method": "horse body length matched to proposed Druzhina; rider and equipment excluded from horse envelope",
+        "confidence": "visual proposal; user review pending",
+        "horseLengthPx128": 93,
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 65,
+            "y": 64
+          },
+          "running": {
+            "x": 65,
+            "y": 62.5
+          },
+          "attack": {
+            "x": 65,
+            "y": 64
+          }
+        },
+        "anchorMethod": "fixed per-clip horse centerline envelope, excluding side weapons; no per-frame recentering"
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "napoleonic-archer",
+      "name": "Rus Musketeer",
+      "age": "Napoleonic",
+      "ageName": "Napoleonic",
+      "troopClass": "rangedInfantry",
+      "binding": "Napoleonic:rangedInfantry",
+      "actor": {
+        "key": "EarlyModern-RusMusketeer",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-RusMusketeer/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.45,
+            "y": 0.8
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.27567567567567564,
+        "bodySpanPx128": 74,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 63,
+            "y": 40
+          },
+          "running": {
+            "x": 64,
+            "y": 32
+          },
+          "attack": {
+            "x": 64,
+            "y": 37
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "napoleonic-siege",
+      "name": "Early howitzer",
+      "age": "Napoleonic",
+      "ageName": "Napoleonic",
+      "troopClass": "siege",
+      "binding": "Napoleonic:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "earlymodern-siege-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "earlymodern-siege-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "earlymodern-siege-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/EarlyHowitzer_EarlyModern/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/EarlyHowitzer_EarlyModern/Idle.png": "989cbd5ab0f05ddd23573f2e171edc6eaadceb86738e449db026c8378e3baea5",
+          "Art/Weapon Icons/Siege Weapons/EarlyHowitzer_EarlyModern/Movement.png": "29a23dd90d876bdd3ab20f444e894ac0724ea9d92c29a5f19bb16ba60878a21c",
+          "Art/Weapon Icons/Siege Weapons/EarlyHowitzer_EarlyModern/Attack.png": "d7ae009b57d0f7fc22a0245391145c94bfd024b21d99ce9ae06f199ab26d1b3b"
+        },
+        "poster": "earlymodern-siege-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/EarlyHowitzer_EarlyModern/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-anti-air",
+      "name": "Anti-air vehicle",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "anti-air",
+      "binding": "EarlyModern:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "modern-anti-air-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "modern-anti-air-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "modern-anti-air-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/Idle-Sheet_00.png": "eca1d1e5b8eed2b6fe934e797e412015a44d1908371cc00f12e714778909dc2b",
+          "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/Movement-Sheet_00.png": "915b579a5069a346f0db8c09e325c4ac4bbc297aa37bd3ceb27bb980d481b884",
+          "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/Attack-Sheet_00.png": "756cf606bb686abf134fb13c8defce663145e074496a3bcc006ec1ef43e0de0f"
+        },
+        "poster": "modern-anti-air-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-anticavalry",
+      "name": "PTRD-41 Crew",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "antiCavalry",
+      "binding": "EarlyModern:antiCavalry",
+      "actor": {
+        "key": "Modern-PTRDRifleman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-PTRDRifleman/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.49,
+            "y": 0.76
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.36428571428571427,
+        "bodySpanPx128": 56,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 46
+          },
+          "running": {
+            "x": 64,
+            "y": 46
+          },
+          "attack": {
+            "x": 64,
+            "y": 39
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/PTRDRifleman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymodern-field-support",
+      "name": "Machine-gun crew",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "artillery",
+      "binding": "EarlyModern:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "modern-field-support-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "modern-field-support-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "modern-field-support-attack.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/Idle.png": "eedb97389fd98a5dbb31af89e054f1b2da1b61d8bfd295342c7d3bfa0ebb4fcd",
+          "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/Movement.png": "3159e3117a837af2053f91360c9d0f98a9760bda9d6749486e56ff0183e3873d",
+          "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/Attack.png": "ef41d32c6c0879f2bed65c38acfd17d2a4c366955f77a8f585adfb3b6de65b46"
+        },
+        "poster": "modern-field-support-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymodern-infantry",
+      "name": "Mosin Nagant Squad",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "frontline",
+      "binding": "EarlyModern:frontline",
+      "actor": {
+        "key": "EarlyModern-MosinNagant",
+        "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-MosinNagant/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.46,
+            "y": 0.78
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.31875,
+        "bodySpanPx128": 64,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 49,
+            "y": 51
+          },
+          "running": {
+            "x": 61,
+            "y": 53
+          },
+          "attack": {
+            "x": 64,
+            "y": 45
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/EarlyModern/MosinNagant/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-heavycavalry",
+      "name": "Tsar Tank",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "heavyCavalry",
+      "binding": "EarlyModern:heavyCavalry",
+      "actor": {
+        "key": "Modern-TsarTank",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-TsarTank/",
+        "memberScale": 1.4491468316519542,
+        "sizeAudited": false,
+        "projectile": "shell",
+        "vehicle": true,
+        "members": 1,
+        "widthWorld": 3.0076923076923068,
+        "lengthWorld": 3.596153846153846,
+        "releasePoints": [
+          {
+            "x": 0.57,
+            "y": 0.62
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 1.4491468316519542,
+        "proposedScale": 1.4491468316519542,
+        "method": "Tsar silhouette calibrated relative to T-34"
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/TsarTank/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymodern-cavalry",
+      "name": "Gun Trucks",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "lightCavalry",
+      "binding": "EarlyModern:lightCavalry",
+      "actor": {
+        "key": "Modern-MachineGunTruck",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-MachineGunTruck/",
+        "memberScale": 1.7812889812889812,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": true,
+        "members": 2,
+        "widthWorld": 1.3730769230769229,
+        "lengthWorld": 3.4653846153846146,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.2
+          }
+        ],
+        "facingOffset": 3.141592653589793
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 1.7812889812889812,
+        "proposedScale": 1.7812889812889812,
+        "method": "physical hull dimensions retained"
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/MachineGunTruck/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-rangedcavalry",
+      "name": "T-34",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "rangedCavalry",
+      "binding": "EarlyModern:rangedCavalry",
+      "actor": {
+        "key": "PreModern-T34-85",
+        "assetRoot": "/Art/Runtime/Russians/Troops/PreModern-T34-85/",
+        "memberScale": 1.975578947368421,
+        "sizeAudited": false,
+        "projectile": "shell",
+        "vehicle": true,
+        "members": 1,
+        "widthWorld": 1.9549999999999998,
+        "lengthWorld": 3.9884615384615376,
+        "releasePoints": [
+          {
+            "x": 0.51,
+            "y": 0.87
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 1.975578947368421,
+        "proposedScale": 1.975578947368421,
+        "method": "physical hull dimensions retained"
+      },
+      "source": "Art/Cultures/Russians/Units/PreModern/T34-85/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymodern-archer",
+      "name": "DP-28 Crew",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "rangedInfantry",
+      "binding": "EarlyModern:rangedInfantry",
+      "actor": {
+        "key": "Modern-SovietMachineGunner",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-SovietMachineGunner/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.51,
+            "y": 0.76
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.31875,
+        "bodySpanPx128": 64,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 63,
+            "y": 46
+          },
+          "running": {
+            "x": 64,
+            "y": 40
+          },
+          "attack": {
+            "x": 64,
+            "y": 41
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/SovietMachineGunner/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "earlymodern-siege",
+      "name": "Modern howitzer",
+      "age": "EarlyModern",
+      "ageName": "Early Modern",
+      "troopClass": "siege",
+      "binding": "EarlyModern:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "modern-siege-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "modern-siege-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "modern-siege-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/Idle.png": "69b19c9c56d71e0013858ec8a9b1e0dfcef08684521b9b414c1ee251d6fa3621",
+          "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/Movement.png": "12adea388cb336da14f04d3f5955e46958a0df29050f79ded8ff89a0ab3db6c6",
+          "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/Attack.png": "051ed1d80a5d4c9c5caeacbda4bdc97a42d740f39406c248eea997e4afd24d56"
+        },
+        "poster": "modern-siege-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "present-day-anticavalry",
+      "name": "ATGM Teams",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "antiCavalry",
+      "binding": "Modern:antiCavalry",
+      "actor": {
+        "key": "Modern-KornetOperator",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-KornetOperator/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "rocket",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.6,
+            "y": 0.15
+          }
+        ],
+        "facingOffset": 3.141592653589793
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.36428571428571427,
+        "bodySpanPx128": 56,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 53,
+            "y": 44
+          },
+          "running": {
+            "x": 64,
+            "y": 42
+          },
+          "attack": {
+            "x": 52,
+            "y": 44
+          }
+        },
+        "reviewFacingOffset": 0
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/KornetOperator/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-field-support",
+      "name": "Machine-gun crew",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "artillery",
+      "binding": "Modern:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "modern-field-support-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "modern-field-support-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "modern-field-support-attack.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/Idle.png": "eedb97389fd98a5dbb31af89e054f1b2da1b61d8bfd295342c7d3bfa0ebb4fcd",
+          "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/Movement.png": "3159e3117a837af2053f91360c9d0f98a9760bda9d6749486e56ff0183e3873d",
+          "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/Attack.png": "ef41d32c6c0879f2bed65c38acfd17d2a4c366955f77a8f585adfb3b6de65b46"
+        },
+        "poster": "modern-field-support-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Field Artillery/BrowningMachineGunner_Modern/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-infantry",
+      "name": "AK-47 Squad",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "frontline",
+      "binding": "Modern:frontline",
+      "actor": {
+        "key": "Modern-SovietAK47Rifleman",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-SovietAK47Rifleman/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.77
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.24878048780487802,
+        "bodySpanPx128": 82,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 64,
+            "y": 43
+          },
+          "running": {
+            "x": 64,
+            "y": 46
+          },
+          "attack": {
+            "x": 64,
+            "y": 41
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/SovietAK47Rifleman/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "present-day-heavycavalry",
+      "name": "T-14",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "heavyCavalry",
+      "binding": "Modern:heavyCavalry",
+      "actor": {
+        "key": "Modern-T14",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-T14/",
+        "memberScale": 2.3247863247863245,
+        "sizeAudited": false,
+        "projectile": "shell",
+        "vehicle": true,
+        "members": 1,
+        "widthWorld": 2.2884615384615383,
+        "lengthWorld": 5.688461538461537,
+        "releasePoints": [
+          {
+            "x": 0.5,
+            "y": 0.88
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 2.3247863247863245,
+        "proposedScale": 2.3247863247863245,
+        "method": "physical hull dimensions retained"
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/T14/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-launcher",
+      "name": "Mobile MIRV launcher",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "launcher",
+      "binding": "Modern:undefined",
+      "actor": null,
+      "art": null,
+      "scale": null,
+      "source": null,
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-cavalry",
+      "name": "VPK Bumerang",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "lightCavalry",
+      "binding": "Modern:lightCavalry",
+      "actor": {
+        "key": "Modern-Bumerang",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-Bumerang/",
+        "memberScale": 1.3324148488327592,
+        "sizeAudited": false,
+        "projectile": "shell",
+        "vehicle": true,
+        "members": 2,
+        "widthWorld": 2.092307692307692,
+        "lengthWorld": 5.753846153846154,
+        "releasePoints": [
+          {
+            "x": 0.53,
+            "y": 0.79
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 1.3324148488327592,
+        "proposedScale": 1.3324148488327592,
+        "method": "physical hull dimensions retained"
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/Bumerang/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "present-day-rangedcavalry",
+      "name": "2K22 Tunguska",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "rangedCavalry",
+      "binding": "Modern:rangedCavalry",
+      "actor": {
+        "key": "Modern-Tunguska",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-Tunguska/",
+        "memberScale": 1.6999999999999997,
+        "sizeAudited": false,
+        "projectile": "shell",
+        "vehicle": true,
+        "members": 1,
+        "widthWorld": 2.1249999999999996,
+        "lengthWorld": 5.165384615384615,
+        "releasePoints": [
+          {
+            "x": 0.38,
+            "y": 0.8
+          },
+          {
+            "x": 0.64,
+            "y": 0.8
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 1.6999999999999997,
+        "proposedScale": 1.6999999999999997,
+        "method": "physical hull dimensions retained"
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/Tunguska/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-archer",
+      "name": "RPL-20 Crew",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "rangedInfantry",
+      "binding": "Modern:rangedInfantry",
+      "actor": {
+        "key": "Modern-RPL20Gunner",
+        "assetRoot": "/Art/Runtime/Russians/Troops/Modern-RPL20Gunner/",
+        "memberScale": 0.24,
+        "sizeAudited": false,
+        "projectile": "bullet",
+        "vehicle": false,
+        "members": 12,
+        "widthWorld": 0,
+        "lengthWorld": 0,
+        "releasePoints": [
+          {
+            "x": 0.49,
+            "y": 0.66
+          }
+        ],
+        "facingOffset": 0
+      },
+      "art": null,
+      "scale": {
+        "currentScale": 0.24,
+        "proposedScale": 0.3290322580645161,
+        "bodySpanPx128": 62,
+        "method": "visual shoulder/torso envelope; rider torso for cavalry; weapons/shields excluded",
+        "confidence": "visual proposal; user review pending",
+        "bodyAnchorsPx128": {
+          "idle": {
+            "x": 63,
+            "y": 49
+          },
+          "running": {
+            "x": 64,
+            "y": 44
+          },
+          "attack": {
+            "x": 69,
+            "y": 48
+          }
+        }
+      },
+      "source": "Art/Cultures/Russians/Units/Modern/RPL20Gunner/animations.json",
+      "topDownVerified": false
+    },
+    {
+      "id": "modern-siege",
+      "name": "Modern howitzer",
+      "age": "Modern",
+      "ageName": "Modern",
+      "troopClass": "siege",
+      "binding": "Modern:undefined",
+      "actor": null,
+      "art": {
+        "clips": {
+          "idle": {
+            "file": "modern-siege-idle.png",
+            "frames": 12,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "movement": {
+            "file": "modern-siege-movement.png",
+            "frames": 8,
+            "columns": 6,
+            "fps": 12,
+            "loop": true
+          },
+          "attack": {
+            "file": "modern-siege-attack.png",
+            "frames": 18,
+            "columns": 6,
+            "fps": 12,
+            "loop": false
+          }
+        },
+        "facing": "screen-up",
+        "source": "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/animations.json",
+        "hashes": {
+          "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/Idle.png": "69b19c9c56d71e0013858ec8a9b1e0dfcef08684521b9b414c1ee251d6fa3621",
+          "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/Movement.png": "12adea388cb336da14f04d3f5955e46958a0df29050f79ded8ff89a0ab3db6c6",
+          "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/Attack.png": "051ed1d80a5d4c9c5caeacbda4bdc97a42d740f39406c248eea997e4afd24d56"
+        },
+        "poster": "modern-siege-portrait.png"
+      },
+      "scale": null,
+      "source": "Art/Weapon Icons/Siege Weapons/ModernHowitzer_Modern/animations.json",
+      "topDownVerified": false
+    }
+  ]
+}

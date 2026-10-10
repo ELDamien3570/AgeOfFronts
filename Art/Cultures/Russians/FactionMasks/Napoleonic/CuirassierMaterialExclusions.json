@@ -1,0 +1,2945 @@
+{
+  "purpose": "Keep the cream blanket roll and small hoof/metal highlights at their original color. Broad neutral white uniform cloth remains selected.",
+  "components": [
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        228,
+        158,
+        14,
+        20
+      ],
+      "corePixels": 234,
+      "meanSaturation": 49.48,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        265,
+        158,
+        15,
+        19
+      ],
+      "corePixels": 234,
+      "meanSaturation": 48.97,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        739,
+        158,
+        14,
+        20
+      ],
+      "corePixels": 246,
+      "meanSaturation": 48.1,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        777,
+        158,
+        16,
+        21
+      ],
+      "corePixels": 282,
+      "meanSaturation": 46.9,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        1251,
+        158,
+        15,
+        21
+      ],
+      "corePixels": 260,
+      "meanSaturation": 45.29,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        1289,
+        158,
+        16,
+        20
+      ],
+      "corePixels": 272,
+      "meanSaturation": 45.58,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        1314,
+        159,
+        12,
+        22
+      ],
+      "corePixels": 195,
+      "meanSaturation": 47.84,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        206,
+        160,
+        13,
+        21
+      ],
+      "corePixels": 154,
+      "meanSaturation": 50.64,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        289,
+        160,
+        8,
+        20
+      ],
+      "corePixels": 152,
+      "meanSaturation": 49.5,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        716,
+        160,
+        13,
+        22
+      ],
+      "corePixels": 177,
+      "meanSaturation": 50.85,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        802,
+        160,
+        12,
+        21
+      ],
+      "corePixels": 170,
+      "meanSaturation": 47.36,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        1233,
+        160,
+        9,
+        22
+      ],
+      "corePixels": 169,
+      "meanSaturation": 49.02,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        785,
+        261,
+        7,
+        7
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        228,
+        673,
+        14,
+        21
+      ],
+      "corePixels": 248,
+      "meanSaturation": 48.56,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        265,
+        673,
+        16,
+        20
+      ],
+      "corePixels": 249,
+      "meanSaturation": 47.82,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        739,
+        672,
+        15,
+        20
+      ],
+      "corePixels": 254,
+      "meanSaturation": 46.69,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        778,
+        672,
+        15,
+        21
+      ],
+      "corePixels": 267,
+      "meanSaturation": 48.88,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        290,
+        675,
+        9,
+        21
+      ],
+      "corePixels": 171,
+      "meanSaturation": 49.28,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        716,
+        674,
+        14,
+        21
+      ],
+      "corePixels": 160,
+      "meanSaturation": 49.33,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        802,
+        674,
+        9,
+        21
+      ],
+      "corePixels": 172,
+      "meanSaturation": 48.34,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        1251,
+        674,
+        15,
+        20
+      ],
+      "corePixels": 256,
+      "meanSaturation": 47.38,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        1290,
+        674,
+        15,
+        20
+      ],
+      "corePixels": 267,
+      "meanSaturation": 46.39,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        206,
+        676,
+        12,
+        21
+      ],
+      "corePixels": 152,
+      "meanSaturation": 47.39,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        1232,
+        676,
+        9,
+        21
+      ],
+      "corePixels": 159,
+      "meanSaturation": 44.58,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "idle-Registered-v1.png",
+      "bounds": [
+        1314,
+        676,
+        9,
+        22
+      ],
+      "corePixels": 181,
+      "meanSaturation": 47.6,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        232,
+        155,
+        12,
+        16
+      ],
+      "corePixels": 168,
+      "meanSaturation": 54.58,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        266,
+        155,
+        14,
+        17
+      ],
+      "corePixels": 205,
+      "meanSaturation": 54.99,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        744,
+        154,
+        13,
+        16
+      ],
+      "corePixels": 163,
+      "meanSaturation": 57.61,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        778,
+        154,
+        14,
+        15
+      ],
+      "corePixels": 166,
+      "meanSaturation": 57.3,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1254,
+        155,
+        13,
+        17
+      ],
+      "corePixels": 184,
+      "meanSaturation": 58.27,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1289,
+        155,
+        14,
+        15
+      ],
+      "corePixels": 202,
+      "meanSaturation": 57.47,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        214,
+        157,
+        8,
+        13
+      ],
+      "corePixels": 70,
+      "meanSaturation": 58.23,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        290,
+        156,
+        8,
+        16
+      ],
+      "corePixels": 84,
+      "meanSaturation": 58.61,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        727,
+        156,
+        7,
+        17
+      ],
+      "corePixels": 112,
+      "meanSaturation": 53.28,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        802,
+        156,
+        8,
+        17
+      ],
+      "corePixels": 119,
+      "meanSaturation": 58.21,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1237,
+        157,
+        8,
+        14
+      ],
+      "corePixels": 78,
+      "meanSaturation": 53.12,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1313,
+        156,
+        8,
+        17
+      ],
+      "corePixels": 123,
+      "meanSaturation": 57.5,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        189,
+        228,
+        10,
+        12
+      ],
+      "corePixels": 63,
+      "meanSaturation": 21.51,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        702,
+        233,
+        9,
+        10
+      ],
+      "corePixels": 78,
+      "meanSaturation": 23.27,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        232,
+        660,
+        12,
+        16
+      ],
+      "corePixels": 168,
+      "meanSaturation": 57.88,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        267,
+        660,
+        14,
+        17
+      ],
+      "corePixels": 203,
+      "meanSaturation": 56.26,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        291,
+        661,
+        8,
+        17
+      ],
+      "corePixels": 125,
+      "meanSaturation": 58.02,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1255,
+        660,
+        13,
+        17
+      ],
+      "corePixels": 170,
+      "meanSaturation": 55.92,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1290,
+        660,
+        14,
+        17
+      ],
+      "corePixels": 203,
+      "meanSaturation": 59.12,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        214,
+        662,
+        7,
+        16
+      ],
+      "corePixels": 84,
+      "meanSaturation": 58.04,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        743,
+        662,
+        13,
+        15
+      ],
+      "corePixels": 147,
+      "meanSaturation": 56.76,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        778,
+        662,
+        14,
+        14
+      ],
+      "corePixels": 169,
+      "meanSaturation": 54.44,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        801,
+        663,
+        9,
+        18
+      ],
+      "corePixels": 136,
+      "meanSaturation": 53.75,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1238,
+        663,
+        8,
+        15
+      ],
+      "corePixels": 96,
+      "meanSaturation": 58.34,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1314,
+        662,
+        8,
+        17
+      ],
+      "corePixels": 128,
+      "meanSaturation": 57.69,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        726,
+        664,
+        8,
+        18
+      ],
+      "corePixels": 105,
+      "meanSaturation": 54.12,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        701,
+        739,
+        8,
+        13
+      ],
+      "corePixels": 63,
+      "meanSaturation": 18.92,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "walk-Steady-v2.png",
+      "bounds": [
+        1214,
+        739,
+        10,
+        11
+      ],
+      "corePixels": 72,
+      "meanSaturation": 18.61,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        234,
+        156,
+        13,
+        17
+      ],
+      "corePixels": 175,
+      "meanSaturation": 50.06,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        268,
+        157,
+        13,
+        17
+      ],
+      "corePixels": 210,
+      "meanSaturation": 47.99,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        745,
+        157,
+        13,
+        16
+      ],
+      "corePixels": 173,
+      "meanSaturation": 51.55,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        779,
+        157,
+        14,
+        18
+      ],
+      "corePixels": 202,
+      "meanSaturation": 49.39,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        214,
+        158,
+        11,
+        18
+      ],
+      "corePixels": 131,
+      "meanSaturation": 48.53,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        290,
+        158,
+        11,
+        18
+      ],
+      "corePixels": 140,
+      "meanSaturation": 47.39,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        725,
+        159,
+        11,
+        18
+      ],
+      "corePixels": 140,
+      "meanSaturation": 46.87,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        801,
+        158,
+        11,
+        19
+      ],
+      "corePixels": 131,
+      "meanSaturation": 45.48,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1291,
+        159,
+        14,
+        18
+      ],
+      "corePixels": 207,
+      "meanSaturation": 48.66,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1240,
+        161,
+        9,
+        18
+      ],
+      "corePixels": 120,
+      "meanSaturation": 48.5,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1257,
+        160,
+        13,
+        18
+      ],
+      "corePixels": 200,
+      "meanSaturation": 50.62,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1314,
+        161,
+        8,
+        19
+      ],
+      "corePixels": 139,
+      "meanSaturation": 46.49,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        186,
+        222,
+        10,
+        13
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        693,
+        223,
+        10,
+        11
+      ],
+      "corePixels": 99,
+      "meanSaturation": 28.66,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1210,
+        229,
+        9,
+        10
+      ],
+      "corePixels": 88,
+      "meanSaturation": 28.26,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        234,
+        669,
+        13,
+        16
+      ],
+      "corePixels": 192,
+      "meanSaturation": 49.76,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        268,
+        669,
+        13,
+        17
+      ],
+      "corePixels": 191,
+      "meanSaturation": 47.45,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        214,
+        670,
+        11,
+        18
+      ],
+      "corePixels": 139,
+      "meanSaturation": 47.51,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        290,
+        670,
+        8,
+        19
+      ],
+      "corePixels": 143,
+      "meanSaturation": 44.34,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        725,
+        673,
+        12,
+        19
+      ],
+      "corePixels": 157,
+      "meanSaturation": 50.25,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        745,
+        672,
+        13,
+        17
+      ],
+      "corePixels": 192,
+      "meanSaturation": 52.58,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        779,
+        672,
+        14,
+        18
+      ],
+      "corePixels": 211,
+      "meanSaturation": 49.08,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        802,
+        673,
+        10,
+        19
+      ],
+      "corePixels": 140,
+      "meanSaturation": 46.09,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1241,
+        673,
+        8,
+        19
+      ],
+      "corePixels": 134,
+      "meanSaturation": 47.5,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1257,
+        672,
+        13,
+        18
+      ],
+      "corePixels": 193,
+      "meanSaturation": 52.84,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1291,
+        672,
+        14,
+        18
+      ],
+      "corePixels": 208,
+      "meanSaturation": 48.04,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1314,
+        673,
+        8,
+        19
+      ],
+      "corePixels": 145,
+      "meanSaturation": 47.48,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        186,
+        736,
+        10,
+        13
+      ],
+      "corePixels": 70,
+      "meanSaturation": 26.56,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        698,
+        741,
+        10,
+        12
+      ],
+      "corePixels": 96,
+      "meanSaturation": 21.01,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        1210,
+        741,
+        10,
+        13
+      ],
+      "corePixels": 94,
+      "meanSaturation": 19.32,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        225,
+        932,
+        13,
+        17
+      ],
+      "corePixels": 171,
+      "meanSaturation": 46.82,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-Registered-v1.png",
+      "bounds": [
+        730,
+        933,
+        14,
+        16
+      ],
+      "corePixels": 143,
+      "meanSaturation": 47.55,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        233,
+        157,
+        12,
+        17
+      ],
+      "corePixels": 184,
+      "meanSaturation": 50.66,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        267,
+        157,
+        12,
+        17
+      ],
+      "corePixels": 174,
+      "meanSaturation": 51.82,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        745,
+        157,
+        11,
+        17
+      ],
+      "corePixels": 154,
+      "meanSaturation": 51.07,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        778,
+        157,
+        12,
+        18
+      ],
+      "corePixels": 197,
+      "meanSaturation": 48.18,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        216,
+        158,
+        8,
+        18
+      ],
+      "corePixels": 126,
+      "meanSaturation": 52.73,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        288,
+        158,
+        11,
+        18
+      ],
+      "corePixels": 122,
+      "meanSaturation": 50.18,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        729,
+        159,
+        7,
+        17
+      ],
+      "corePixels": 112,
+      "meanSaturation": 53.62,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        799,
+        159,
+        8,
+        18
+      ],
+      "corePixels": 133,
+      "meanSaturation": 47.86,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        1256,
+        160,
+        12,
+        16
+      ],
+      "corePixels": 141,
+      "meanSaturation": 56.4,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        1289,
+        160,
+        12,
+        17
+      ],
+      "corePixels": 183,
+      "meanSaturation": 52.2,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        1310,
+        161,
+        8,
+        18
+      ],
+      "corePixels": 131,
+      "meanSaturation": 52.57,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        1240,
+        162,
+        7,
+        17
+      ],
+      "corePixels": 105,
+      "meanSaturation": 49.9,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        648,
+        171,
+        8,
+        11
+      ],
+      "corePixels": 72,
+      "meanSaturation": 26.75,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        659,
+        171,
+        9,
+        7
+      ],
+      "corePixels": 63,
+      "meanSaturation": 25.86,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        1257,
+        665,
+        12,
+        16
+      ],
+      "corePixels": 169,
+      "meanSaturation": 51.82,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        1291,
+        665,
+        12,
+        17
+      ],
+      "corePixels": 183,
+      "meanSaturation": 51.58,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        214,
+        667,
+        10,
+        18
+      ],
+      "corePixels": 119,
+      "meanSaturation": 52.61,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        233,
+        666,
+        12,
+        16
+      ],
+      "corePixels": 162,
+      "meanSaturation": 49.97,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        266,
+        666,
+        13,
+        17
+      ],
+      "corePixels": 196,
+      "meanSaturation": 51.22,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        288,
+        667,
+        8,
+        19
+      ],
+      "corePixels": 134,
+      "meanSaturation": 51.29,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        728,
+        667,
+        8,
+        18
+      ],
+      "corePixels": 118,
+      "meanSaturation": 54.15,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        744,
+        666,
+        12,
+        15
+      ],
+      "corePixels": 162,
+      "meanSaturation": 51.33,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        778,
+        666,
+        13,
+        18
+      ],
+      "corePixels": 188,
+      "meanSaturation": 52.2,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        799,
+        667,
+        11,
+        19
+      ],
+      "corePixels": 119,
+      "meanSaturation": 49.98,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        1238,
+        666,
+        10,
+        18
+      ],
+      "corePixels": 112,
+      "meanSaturation": 53.47,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        1312,
+        666,
+        11,
+        18
+      ],
+      "corePixels": 131,
+      "meanSaturation": 57.95,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        659,
+        702,
+        10,
+        8
+      ],
+      "corePixels": 78,
+      "meanSaturation": 24.32,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "attack-Steady-v2.png",
+      "bounds": [
+        645,
+        705,
+        11,
+        11
+      ],
+      "corePixels": 70,
+      "meanSaturation": 21.51,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        231,
+        149,
+        11,
+        17
+      ],
+      "corePixels": 172,
+      "meanSaturation": 41.83,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        264,
+        149,
+        14,
+        19
+      ],
+      "corePixels": 243,
+      "meanSaturation": 43.26,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        214,
+        150,
+        8,
+        20
+      ],
+      "corePixels": 134,
+      "meanSaturation": 40.79,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        287,
+        151,
+        9,
+        19
+      ],
+      "corePixels": 143,
+      "meanSaturation": 42.77,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        777,
+        155,
+        15,
+        20
+      ],
+      "corePixels": 247,
+      "meanSaturation": 40.69,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        744,
+        156,
+        13,
+        18
+      ],
+      "corePixels": 202,
+      "meanSaturation": 40.86,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        801,
+        157,
+        8,
+        19
+      ],
+      "corePixels": 140,
+      "meanSaturation": 42.15,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1257,
+        157,
+        16,
+        19
+      ],
+      "corePixels": 253,
+      "meanSaturation": 39.87,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1289,
+        157,
+        17,
+        19
+      ],
+      "corePixels": 249,
+      "meanSaturation": 40.87,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        723,
+        158,
+        12,
+        20
+      ],
+      "corePixels": 143,
+      "meanSaturation": 41.34,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1240,
+        159,
+        8,
+        19
+      ],
+      "corePixels": 142,
+      "meanSaturation": 42.37,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1315,
+        158,
+        11,
+        20
+      ],
+      "corePixels": 154,
+      "meanSaturation": 42.73,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        189,
+        227,
+        9,
+        9
+      ],
+      "corePixels": 72,
+      "meanSaturation": 22.15,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1212,
+        297,
+        13,
+        10
+      ],
+      "corePixels": 91,
+      "meanSaturation": 11.0,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        751,
+        661,
+        14,
+        17
+      ],
+      "corePixels": 208,
+      "meanSaturation": 39.72,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1255,
+        661,
+        14,
+        18
+      ],
+      "corePixels": 213,
+      "meanSaturation": 41.56,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        786,
+        662,
+        15,
+        19
+      ],
+      "corePixels": 234,
+      "meanSaturation": 42.82,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1237,
+        663,
+        9,
+        19
+      ],
+      "corePixels": 128,
+      "meanSaturation": 42.75,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1290,
+        662,
+        15,
+        19
+      ],
+      "corePixels": 241,
+      "meanSaturation": 41.25,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1313,
+        663,
+        12,
+        20
+      ],
+      "corePixels": 159,
+      "meanSaturation": 40.81,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        809,
+        664,
+        9,
+        19
+      ],
+      "corePixels": 158,
+      "meanSaturation": 43.68,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        232,
+        666,
+        19,
+        19
+      ],
+      "corePixels": 306,
+      "meanSaturation": 43.63,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        264,
+        666,
+        17,
+        19
+      ],
+      "corePixels": 270,
+      "meanSaturation": 45.53,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        289,
+        667,
+        13,
+        20
+      ],
+      "corePixels": 190,
+      "meanSaturation": 42.49,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        211,
+        668,
+        12,
+        21
+      ],
+      "corePixels": 162,
+      "meanSaturation": 43.77,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charge-attack-Steady-v2.png",
+      "bounds": [
+        1208,
+        743,
+        11,
+        10
+      ],
+      "corePixels": 87,
+      "meanSaturation": 22.38,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        265,
+        169,
+        16,
+        20
+      ],
+      "corePixels": 253,
+      "meanSaturation": 51.26,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        731,
+        168,
+        9,
+        15
+      ],
+      "corePixels": 110,
+      "meanSaturation": 50.05,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        750,
+        168,
+        27,
+        17
+      ],
+      "corePixels": 363,
+      "meanSaturation": 49.52,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        212,
+        171,
+        9,
+        20
+      ],
+      "corePixels": 154,
+      "meanSaturation": 46.9,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        230,
+        170,
+        14,
+        18
+      ],
+      "corePixels": 205,
+      "meanSaturation": 49.66,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        290,
+        170,
+        9,
+        21
+      ],
+      "corePixels": 172,
+      "meanSaturation": 51.65,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1237,
+        170,
+        8,
+        17
+      ],
+      "corePixels": 115,
+      "meanSaturation": 49.61,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1255,
+        170,
+        50,
+        20
+      ],
+      "corePixels": 781,
+      "meanSaturation": 49.35,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        809,
+        172,
+        10,
+        20
+      ],
+      "corePixels": 179,
+      "meanSaturation": 51.43,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1315,
+        174,
+        9,
+        20
+      ],
+      "corePixels": 148,
+      "meanSaturation": 48.85,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1164,
+        191,
+        11,
+        14
+      ],
+      "corePixels": 56,
+      "meanSaturation": 27.32,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        808,
+        278,
+        20,
+        22
+      ],
+      "corePixels": 322,
+      "meanSaturation": 34.09,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        238,
+        673,
+        18,
+        14
+      ],
+      "corePixels": 218,
+      "meanSaturation": 47.43,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        220,
+        674,
+        8,
+        12
+      ],
+      "corePixels": 94,
+      "meanSaturation": 43.45,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        279,
+        676,
+        8,
+        8
+      ],
+      "corePixels": 63,
+      "meanSaturation": 46.52,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        767,
+        677,
+        24,
+        18
+      ],
+      "corePixels": 358,
+      "meanSaturation": 49.34,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        296,
+        678,
+        9,
+        20
+      ],
+      "corePixels": 146,
+      "meanSaturation": 46.2,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        724,
+        679,
+        8,
+        17
+      ],
+      "corePixels": 124,
+      "meanSaturation": 52.01,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        741,
+        678,
+        8,
+        7
+      ],
+      "corePixels": 56,
+      "meanSaturation": 52.61,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        800,
+        679,
+        10,
+        19
+      ],
+      "corePixels": 160,
+      "meanSaturation": 49.62,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1255,
+        679,
+        12,
+        17
+      ],
+      "corePixels": 181,
+      "meanSaturation": 49.78,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1290,
+        679,
+        16,
+        18
+      ],
+      "corePixels": 238,
+      "meanSaturation": 49.9,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1237,
+        680,
+        8,
+        17
+      ],
+      "corePixels": 124,
+      "meanSaturation": 51.21,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1315,
+        680,
+        9,
+        18
+      ],
+      "corePixels": 146,
+      "meanSaturation": 49.82,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        157,
+        708,
+        10,
+        13
+      ],
+      "corePixels": 78,
+      "meanSaturation": 25.91,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        1211,
+        766,
+        10,
+        10
+      ],
+      "corePixels": 69,
+      "meanSaturation": 23.14,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "hit-Steady-v2.png",
+      "bounds": [
+        297,
+        786,
+        16,
+        16
+      ],
+      "corePixels": 187,
+      "meanSaturation": 33.11,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        755,
+        148,
+        9,
+        7
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        233,
+        154,
+        12,
+        18
+      ],
+      "corePixels": 201,
+      "meanSaturation": 51.92,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        266,
+        154,
+        14,
+        19
+      ],
+      "corePixels": 217,
+      "meanSaturation": 50.29,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        215,
+        156,
+        8,
+        17
+      ],
+      "corePixels": 78,
+      "meanSaturation": 51.56,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        289,
+        156,
+        8,
+        17
+      ],
+      "corePixels": 126,
+      "meanSaturation": 55.56,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        797,
+        157,
+        13,
+        20
+      ],
+      "corePixels": 169,
+      "meanSaturation": 51.79,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        725,
+        159,
+        9,
+        18
+      ],
+      "corePixels": 141,
+      "meanSaturation": 50.4,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        760,
+        159,
+        8,
+        8
+      ],
+      "corePixels": 49,
+      "meanSaturation": 37.47,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1252,
+        183,
+        16,
+        21
+      ],
+      "corePixels": 276,
+      "meanSaturation": 48.3,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1286,
+        183,
+        18,
+        21
+      ],
+      "corePixels": 290,
+      "meanSaturation": 52.36,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1233,
+        185,
+        9,
+        22
+      ],
+      "corePixels": 173,
+      "meanSaturation": 55.06,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1313,
+        184,
+        10,
+        22
+      ],
+      "corePixels": 187,
+      "meanSaturation": 54.33,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        686,
+        209,
+        9,
+        14
+      ],
+      "corePixels": 63,
+      "meanSaturation": 17.17,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        191,
+        215,
+        10,
+        14
+      ],
+      "corePixels": 79,
+      "meanSaturation": 20.0,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1195,
+        249,
+        17,
+        19
+      ],
+      "corePixels": 94,
+      "meanSaturation": 28.63,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        744,
+        663,
+        12,
+        17
+      ],
+      "corePixels": 160,
+      "meanSaturation": 50.99,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        726,
+        665,
+        8,
+        17
+      ],
+      "corePixels": 126,
+      "meanSaturation": 51.87,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        778,
+        664,
+        14,
+        17
+      ],
+      "corePixels": 205,
+      "meanSaturation": 50.44,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        801,
+        665,
+        12,
+        17
+      ],
+      "corePixels": 120,
+      "meanSaturation": 47.81,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1254,
+        666,
+        13,
+        17
+      ],
+      "corePixels": 196,
+      "meanSaturation": 56.95,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1288,
+        666,
+        15,
+        19
+      ],
+      "corePixels": 227,
+      "meanSaturation": 51.12,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1236,
+        668,
+        8,
+        17
+      ],
+      "corePixels": 116,
+      "meanSaturation": 53.72,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1312,
+        668,
+        9,
+        19
+      ],
+      "corePixels": 140,
+      "meanSaturation": 49.73,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        238,
+        675,
+        15,
+        19
+      ],
+      "corePixels": 230,
+      "meanSaturation": 51.69,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        218,
+        676,
+        10,
+        19
+      ],
+      "corePixels": 160,
+      "meanSaturation": 53.4,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        273,
+        679,
+        15,
+        19
+      ],
+      "corePixels": 233,
+      "meanSaturation": 48.04,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        297,
+        682,
+        9,
+        20
+      ],
+      "corePixels": 159,
+      "meanSaturation": 52.58,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        1213,
+        728,
+        10,
+        11
+      ],
+      "corePixels": 92,
+      "meanSaturation": 20.63,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "charged-impact-Steady-v2.png",
+      "bounds": [
+        181,
+        737,
+        10,
+        11
+      ],
+      "corePixels": 86,
+      "meanSaturation": 23.57,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        223,
+        162,
+        13,
+        17
+      ],
+      "corePixels": 215,
+      "meanSaturation": 49.04,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        259,
+        162,
+        14,
+        19
+      ],
+      "corePixels": 221,
+      "meanSaturation": 52.59,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        202,
+        165,
+        12,
+        19
+      ],
+      "corePixels": 163,
+      "meanSaturation": 49.1,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        282,
+        165,
+        9,
+        21
+      ],
+      "corePixels": 170,
+      "meanSaturation": 52.29,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        731,
+        178,
+        13,
+        22
+      ],
+      "corePixels": 178,
+      "meanSaturation": 49.5,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        754,
+        179,
+        7,
+        7
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        1305,
+        179,
+        46,
+        45
+      ],
+      "corePixels": 1198,
+      "meanSaturation": 50.32,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        781,
+        183,
+        25,
+        25
+      ],
+      "corePixels": 482,
+      "meanSaturation": 49.36,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        813,
+        193,
+        11,
+        21
+      ],
+      "corePixels": 151,
+      "meanSaturation": 50.99,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        1344,
+        218,
+        21,
+        20
+      ],
+      "corePixels": 227,
+      "meanSaturation": 49.45,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        181,
+        244,
+        7,
+        8
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        689,
+        257,
+        8,
+        8
+      ],
+      "corePixels": 56,
+      "meanSaturation": 21.46,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        783,
+        272,
+        9,
+        8
+      ],
+      "corePixels": 62,
+      "meanSaturation": 29.34,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        790,
+        702,
+        26,
+        25
+      ],
+      "corePixels": 424,
+      "meanSaturation": 50.95,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        1311,
+        704,
+        25,
+        23
+      ],
+      "corePixels": 421,
+      "meanSaturation": 51.34,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        287,
+        716,
+        40,
+        38
+      ],
+      "corePixels": 921,
+      "meanSaturation": 52.43,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        809,
+        731,
+        26,
+        27
+      ],
+      "corePixels": 417,
+      "meanSaturation": 52.82,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        1325,
+        732,
+        26,
+        27
+      ],
+      "corePixels": 486,
+      "meanSaturation": 52.5,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        319,
+        747,
+        25,
+        27
+      ],
+      "corePixels": 332,
+      "meanSaturation": 51.83,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        614,
+        760,
+        7,
+        7
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-Registered-v1.png",
+      "bounds": [
+        1125,
+        768,
+        10,
+        12
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        218,
+        173,
+        13,
+        17
+      ],
+      "corePixels": 195,
+      "meanSaturation": 50.8,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        255,
+        173,
+        15,
+        19
+      ],
+      "corePixels": 255,
+      "meanSaturation": 53.27,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        200,
+        175,
+        9,
+        20
+      ],
+      "corePixels": 132,
+      "meanSaturation": 55.95,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        279,
+        174,
+        10,
+        19
+      ],
+      "corePixels": 158,
+      "meanSaturation": 52.08,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        704,
+        179,
+        11,
+        19
+      ],
+      "corePixels": 144,
+      "meanSaturation": 54.07,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        725,
+        181,
+        19,
+        17
+      ],
+      "corePixels": 230,
+      "meanSaturation": 49.59,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        754,
+        185,
+        21,
+        23
+      ],
+      "corePixels": 358,
+      "meanSaturation": 53.85,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        783,
+        192,
+        11,
+        21
+      ],
+      "corePixels": 183,
+      "meanSaturation": 49.9,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1181,
+        239,
+        11,
+        17
+      ],
+      "corePixels": 161,
+      "meanSaturation": 51.81,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1152,
+        240,
+        19,
+        17
+      ],
+      "corePixels": 276,
+      "meanSaturation": 53.99,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        638,
+        243,
+        10,
+        8
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1125,
+        243,
+        18,
+        20
+      ],
+      "corePixels": 272,
+      "meanSaturation": 51.38,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1107,
+        247,
+        10,
+        19
+      ],
+      "corePixels": 126,
+      "meanSaturation": 53.25,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        174,
+        253,
+        10,
+        8
+      ],
+      "corePixels": 49,
+      "meanSaturation": 26.8,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1328,
+        260,
+        63,
+        109
+      ],
+      "corePixels": 2365,
+      "meanSaturation": 36.47,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        779,
+        303,
+        19,
+        21
+      ],
+      "corePixels": 290,
+      "meanSaturation": 37.31,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        686,
+        716,
+        14,
+        16
+      ],
+      "corePixels": 137,
+      "meanSaturation": 52.04,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        151,
+        721,
+        12,
+        20
+      ],
+      "corePixels": 154,
+      "meanSaturation": 53.13,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        710,
+        721,
+        15,
+        19
+      ],
+      "corePixels": 215,
+      "meanSaturation": 54.22,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1210,
+        721,
+        16,
+        20
+      ],
+      "corePixels": 228,
+      "meanSaturation": 54.08,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        172,
+        727,
+        17,
+        19
+      ],
+      "corePixels": 254,
+      "meanSaturation": 55.11,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1233,
+        727,
+        18,
+        20
+      ],
+      "corePixels": 260,
+      "meanSaturation": 56.07,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        734,
+        731,
+        15,
+        19
+      ],
+      "corePixels": 209,
+      "meanSaturation": 55.73,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        889,
+        735,
+        13,
+        13
+      ],
+      "corePixels": 130,
+      "meanSaturation": 37.38,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        196,
+        736,
+        15,
+        18
+      ],
+      "corePixels": 183,
+      "meanSaturation": 53.54,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1259,
+        737,
+        14,
+        18
+      ],
+      "corePixels": 176,
+      "meanSaturation": 53.49,
+      "reason": "cream blanket material"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        245,
+        763,
+        8,
+        10
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        1314,
+        765,
+        7,
+        9
+      ],
+      "corePixels": 0,
+      "meanSaturation": 255,
+      "reason": "small isolated highlight"
+    },
+    {
+      "sheet": "death-thrown-Registered-v1.png",
+      "bounds": [
+        342,
+        774,
+        10,
+        8
+      ],
+      "corePixels": 76,
+      "meanSaturation": 32.33,
+      "reason": "small isolated highlight"
+    }
+  ]
+}

@@ -1,0 +1,554 @@
+{
+  "source": "generated/Trader_LateMedieval.png",
+  "sourceSha256": "7403ba0841fc09f9439c6318564d70ca54db4cb88a2190581011247a027b8827",
+  "generatedSize": [
+    1254,
+    1254
+  ],
+  "nativeSize": [
+    1254,
+    1254
+  ],
+  "placement": {
+    "crop": [
+      111,
+      -27,
+      1149,
+      1254
+    ],
+    "scale": 0.8899297423887588,
+    "offset": [
+      165,
+      57
+    ],
+    "generatedSize": [
+      1254,
+      1254
+    ]
+  },
+  "layers": [
+    {
+      "kind": "suspension",
+      "rect": [
+        226,
+        21,
+        528,
+        419
+      ],
+      "name": "wagon-1-suspension",
+      "phase": 0,
+      "feather": 14,
+      "maskFile": "layers/wagon-1-suspension-mask.png",
+      "paintFile": "layers/wagon-1-suspension.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        239,
+        145,
+        251,
+        266
+      ],
+      "name": "wagon-1-wheel-1",
+      "feather": 3,
+      "maskFile": "layers/wagon-1-wheel-1-mask.png",
+      "paintFile": "layers/wagon-1-wheel-1.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        496,
+        145,
+        509,
+        266
+      ],
+      "name": "wagon-1-wheel-2",
+      "feather": 3,
+      "maskFile": "layers/wagon-1-wheel-2-mask.png",
+      "paintFile": "layers/wagon-1-wheel-2.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        245,
+        316,
+        255,
+        400
+      ],
+      "name": "wagon-1-wheel-3",
+      "feather": 3,
+      "maskFile": "layers/wagon-1-wheel-3-mask.png",
+      "paintFile": "layers/wagon-1-wheel-3.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        497,
+        316,
+        508,
+        400
+      ],
+      "name": "wagon-1-wheel-4",
+      "feather": 3,
+      "maskFile": "layers/wagon-1-wheel-4-mask.png",
+      "paintFile": "layers/wagon-1-wheel-4.png"
+    },
+    {
+      "kind": "cloth",
+      "rect": [
+        279,
+        40,
+        473,
+        236
+      ],
+      "name": "wagon-1-canvas",
+      "phase": 0,
+      "feather": 5,
+      "maskFile": "layers/wagon-1-canvas-mask.png",
+      "paintFile": "layers/wagon-1-canvas.png"
+    },
+    {
+      "kind": "suspension",
+      "rect": [
+        729,
+        20,
+        1030,
+        421
+      ],
+      "name": "wagon-2-suspension",
+      "phase": 1,
+      "feather": 14,
+      "maskFile": "layers/wagon-2-suspension-mask.png",
+      "paintFile": "layers/wagon-2-suspension.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        742,
+        145,
+        754,
+        266
+      ],
+      "name": "wagon-2-wheel-1",
+      "feather": 3,
+      "maskFile": "layers/wagon-2-wheel-1-mask.png",
+      "paintFile": "layers/wagon-2-wheel-1.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        1001,
+        145,
+        1013,
+        266
+      ],
+      "name": "wagon-2-wheel-2",
+      "feather": 3,
+      "maskFile": "layers/wagon-2-wheel-2-mask.png",
+      "paintFile": "layers/wagon-2-wheel-2.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        744,
+        316,
+        756,
+        400
+      ],
+      "name": "wagon-2-wheel-3",
+      "feather": 3,
+      "maskFile": "layers/wagon-2-wheel-3-mask.png",
+      "paintFile": "layers/wagon-2-wheel-3.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        1002,
+        316,
+        1013,
+        400
+      ],
+      "name": "wagon-2-wheel-4",
+      "feather": 3,
+      "maskFile": "layers/wagon-2-wheel-4-mask.png",
+      "paintFile": "layers/wagon-2-wheel-4.png"
+    },
+    {
+      "kind": "cloth",
+      "rect": [
+        782,
+        40,
+        975,
+        236
+      ],
+      "name": "wagon-2-canvas",
+      "phase": 1,
+      "feather": 5,
+      "maskFile": "layers/wagon-2-canvas-mask.png",
+      "paintFile": "layers/wagon-2-canvas.png"
+    },
+    {
+      "kind": "suspension",
+      "rect": [
+        470,
+        549,
+        775,
+        941
+      ],
+      "name": "wagon-3-suspension",
+      "phase": 2,
+      "feather": 14,
+      "maskFile": "layers/wagon-3-suspension-mask.png",
+      "paintFile": "layers/wagon-3-suspension.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        480,
+        680,
+        492,
+        794
+      ],
+      "name": "wagon-3-wheel-1",
+      "feather": 3,
+      "maskFile": "layers/wagon-3-wheel-1-mask.png",
+      "paintFile": "layers/wagon-3-wheel-1.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        744,
+        680,
+        755,
+        794
+      ],
+      "name": "wagon-3-wheel-2",
+      "feather": 3,
+      "maskFile": "layers/wagon-3-wheel-2-mask.png",
+      "paintFile": "layers/wagon-3-wheel-2.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        480,
+        850,
+        492,
+        927
+      ],
+      "name": "wagon-3-wheel-3",
+      "feather": 3,
+      "maskFile": "layers/wagon-3-wheel-3-mask.png",
+      "paintFile": "layers/wagon-3-wheel-3.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        744,
+        850,
+        755,
+        927
+      ],
+      "name": "wagon-3-wheel-4",
+      "feather": 3,
+      "maskFile": "layers/wagon-3-wheel-4-mask.png",
+      "paintFile": "layers/wagon-3-wheel-4.png"
+    },
+    {
+      "kind": "cloth",
+      "rect": [
+        523,
+        566,
+        721,
+        750
+      ],
+      "name": "wagon-3-canvas",
+      "phase": 2,
+      "feather": 5,
+      "maskFile": "layers/wagon-3-canvas-mask.png",
+      "paintFile": "layers/wagon-3-canvas.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        303,
+        345,
+        440,
+        654
+      ],
+      "name": "horse-1-body",
+      "phase": 0,
+      "maskFile": "layers/horse-1-body-mask.png",
+      "paintFile": "layers/horse-1-body.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        353,
+        653,
+        389,
+        692
+      ],
+      "name": "horse-1-visible-hoof",
+      "pinY": 653,
+      "stride": 18,
+      "lateral": 1.8,
+      "phase": 0,
+      "feather": 4,
+      "margin": 30,
+      "maskFile": "layers/horse-1-visible-hoof-mask.png",
+      "paintFile": "layers/horse-1-visible-hoof.png"
+    },
+    {
+      "kind": "tail",
+      "rect": [
+        352.5,
+        333,
+        390.5,
+        393
+      ],
+      "name": "horse-1-tail",
+      "phase": 0.4,
+      "feather": 5,
+      "maskFile": "layers/horse-1-tail-mask.png",
+      "paintFile": "layers/horse-1-tail.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        804,
+        345,
+        946,
+        654
+      ],
+      "name": "horse-2-body",
+      "phase": 1.8849555921538759,
+      "maskFile": "layers/horse-2-body-mask.png",
+      "paintFile": "layers/horse-2-body.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        861,
+        653,
+        899,
+        692
+      ],
+      "name": "horse-2-visible-hoof",
+      "pinY": 653,
+      "stride": 18,
+      "lateral": 1.8,
+      "phase": 1.8849555921538759,
+      "feather": 4,
+      "margin": 30,
+      "maskFile": "layers/horse-2-visible-hoof-mask.png",
+      "paintFile": "layers/horse-2-visible-hoof.png"
+    },
+    {
+      "kind": "tail",
+      "rect": [
+        856,
+        333,
+        894,
+        393
+      ],
+      "name": "horse-2-tail",
+      "phase": 2.284955592153876,
+      "feather": 5,
+      "maskFile": "layers/horse-2-tail-mask.png",
+      "paintFile": "layers/horse-2-tail.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        554,
+        871,
+        693,
+        1172
+      ],
+      "name": "horse-3-body",
+      "phase": 3.7699111843077517,
+      "maskFile": "layers/horse-3-body-mask.png",
+      "paintFile": "layers/horse-3-body.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        606,
+        1168,
+        643,
+        1212
+      ],
+      "name": "horse-3-visible-hoof",
+      "pinY": 1168,
+      "stride": 18,
+      "lateral": 1.8,
+      "phase": 3.7699111843077517,
+      "feather": 4,
+      "margin": 30,
+      "maskFile": "layers/horse-3-visible-hoof-mask.png",
+      "paintFile": "layers/horse-3-visible-hoof.png"
+    },
+    {
+      "kind": "tail",
+      "rect": [
+        604.5,
+        859,
+        642.5,
+        919
+      ],
+      "name": "horse-3-tail",
+      "phase": 4.169911184307752,
+      "feather": 5,
+      "maskFile": "layers/horse-3-tail-mask.png",
+      "paintFile": "layers/horse-3-tail.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        155,
+        393,
+        281,
+        541
+      ],
+      "name": "merchant-1-breathing",
+      "phase": 0,
+      "maskFile": "layers/merchant-1-breathing-mask.png",
+      "paintFile": "layers/merchant-1-breathing.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        181,
+        518,
+        209,
+        566
+      ],
+      "name": "merchant-1-leg-1",
+      "pinY": 518,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 0,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-1-leg-1-mask.png",
+      "paintFile": "layers/merchant-1-leg-1.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        206,
+        533,
+        238,
+        606
+      ],
+      "name": "merchant-1-leg-2",
+      "pinY": 533,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 3.141592653589793,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-1-leg-2-mask.png",
+      "paintFile": "layers/merchant-1-leg-2.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        972,
+        403,
+        1101,
+        549
+      ],
+      "name": "merchant-2-breathing",
+      "phase": 1.5707963267948966,
+      "maskFile": "layers/merchant-2-breathing-mask.png",
+      "paintFile": "layers/merchant-2-breathing.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        1050,
+        534,
+        1084,
+        576
+      ],
+      "name": "merchant-2-leg-1",
+      "pinY": 534,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 1.5707963267948966,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-2-leg-1-mask.png",
+      "paintFile": "layers/merchant-2-leg-1.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        1018,
+        542,
+        1051,
+        610
+      ],
+      "name": "merchant-2-leg-2",
+      "pinY": 542,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 4.71238898038469,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-2-leg-2-mask.png",
+      "paintFile": "layers/merchant-2-leg-2.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        729,
+        933,
+        858,
+        1084
+      ],
+      "name": "merchant-3-breathing",
+      "phase": 3.141592653589793,
+      "maskFile": "layers/merchant-3-breathing-mask.png",
+      "paintFile": "layers/merchant-3-breathing.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        758,
+        1060,
+        788,
+        1098
+      ],
+      "name": "merchant-3-leg-1",
+      "pinY": 1060,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 3.141592653589793,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-3-leg-1-mask.png",
+      "paintFile": "layers/merchant-3-leg-1.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        789,
+        1075,
+        823,
+        1128
+      ],
+      "name": "merchant-3-leg-2",
+      "pinY": 1075,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 6.283185307179586,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-3-leg-2-mask.png",
+      "paintFile": "layers/merchant-3-leg-2.png"
+    }
+  ],
+  "authoring": "Local mesh deformation of original painted pixels; limbs remain connected, wagon cargo stays secured, and overhead wheel treads retain their silhouette."
+}

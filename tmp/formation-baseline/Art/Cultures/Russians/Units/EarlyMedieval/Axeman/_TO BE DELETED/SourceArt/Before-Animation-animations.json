@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyMedieval",
+  "unit": "Axeman",
+  "category": "Infantry",
+  "actorCount": 1,
+  "stage": "single-idle-design-review",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 440,
+  "weapon": "Large gold-encrusted steel battle axe with axial spike",
+  "shield": "Round wooden shield strapped to back",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-Upright-v2.png",
+      "label": "Idle design",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        1000
+      ],
+      "description": "Single idle design with upright axe blade and upward socket spike, gold-detailed armor, and back-mounted shield.",
+      "frameCount": 1,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1254,
+          "height": 1254,
+          "pivot": {
+            "x": 627.0,
+            "y": 627.0
+          }
+        }
+      ]
+    }
+  ]
+}

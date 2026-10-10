@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/EarlyModern/Arms Factory/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/EarlyModern/Arms Factory/Generation.json",
+      "archived": "Buildings/EarlyModern/Arms Factory/_TO BE DELETED/Generation.json",
+      "sha256": "628da4d0e0e8fd79c49db42996a20a0a0f1fab1f7ed1d18427bbd4c02a9594f2",
+      "size": 2833
+    },
+    {
+      "original": "Buildings/EarlyModern/Arms Factory/SourceArt/Icon-v1.png",
+      "archived": "Buildings/EarlyModern/Arms Factory/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "c6bccec9293ca3958dd3f862baf1cc80e1248bb7858239ebf35130c64995d84c",
+      "size": 2101754
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "maxTroopLevel": 7,
+  "palette": {
+    "green": "#2bd05b",
+    "gold": "#ffd044",
+    "purple": "#914de8",
+    "black": "#000000"
+  },
+  "alpha": "straight / unpremultiplied PNG",
+  "placement": "centered below the formation marker, drawn without faction tint",
+  "display": {
+    "rowWidth": "match the formation marker width",
+    "rowHeight": "one quarter of row width",
+    "ringRecommendedSizePx": 16,
+    "gapPx": 2
+  },
+  "assets": [
+    {
+      "level": 1,
+      "stars": 1,
+      "layout": "row",
+      "fill": "#2bd05b",
+      "outline": "#000000",
+      "id": "level-01",
+      "width": 512,
+      "height": 128,
+      "svg": "svg/level-01.svg",
+      "png": "png/level-01.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0
+      },
+      "validation": {
+        "fillPixels": 1518,
+        "outlinePixels": 1894,
+        "transparentPixels": 61491,
+        "opaquePixels": 3671,
+        "edgePixels": 0
+      }
+    },
+    {
+      "level": 2,
+      "stars": 2,
+      "layout": "row",
+      "fill": "#2bd05b",
+      "outline": "#000000",
+      "id": "level-02",
+      "width": 512,
+      "height": 128,
+      "svg": "svg/level-02.svg",
+      "png": "png/level-02.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0
+      },
+      "validation": {
+        "fillPixels": 3036,
+        "outlinePixels": 3788,
+        "transparentPixels": 57446,
+        "opaquePixels": 7342,
+        "edgePixels": 0
+      }
+    },
+    {
+      "level": 3,
+      "stars": 3,
+      "layout": "row",
+      "fill": "#2bd05b",
+      "outline": "#000000",
+      "id": "level-03",
+      "width": 512,
+      "height": 128,
+      "svg": "svg/level-03.svg",
+      "png": "png/level-03.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0
+      },
+      "validation": {
+        "fillPixels": 4554,
+        "outlinePixels": 5682,
+        "transparentPixels": 53401,
+        "opaquePixels": 11013,
+        "edgePixels": 0
+      }
+    },
+    {
+      "level": 4,
+      "stars": 4,
+      "layout": "row",
+      "fill": "#2bd05b",
+      "outline": "#000000",
+      "id": "level-04",
+      "width": 512,
+      "height": 128,
+      "svg": "svg/level-04.svg",
+      "png": "png/level-04.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0
+      },
+      "validation": {
+        "fillPixels": 6072,
+        "outlinePixels": 7576,
+        "transparentPixels": 49356,
+        "opaquePixels": 14684,
+        "edgePixels": 0
+      }
+    },
+    {
+      "level": 5,
+      "stars": 5,
+      "layout": "row",
+      "fill": "#2bd05b",
+      "outline": "#000000",
+      "id": "level-05",
+      "width": 512,
+      "height": 128,
+      "svg": "svg/level-05.svg",
+      "png": "png/level-05.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0
+      },
+      "validation": {
+        "fillPixels": 7590,
+        "outlinePixels": 9470,
+        "transparentPixels": 45311,
+        "opaquePixels": 18355,
+        "edgePixels": 0
+      }
+    },
+    {
+      "level": 6,
+      "stars": 5,
+      "layout": "ring",
+      "fill": "#ffd044",
+      "outline": "#000000",
+      "id": "level-06",
+      "width": 256,
+      "height": 256,
+      "svg": "svg/level-06.svg",
+      "png": "png/level-06.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0
+      },
+      "validation": {
+        "fillPixels": 4633,
+        "outlinePixels": 7905,
+        "transparentPixels": 50361,
+        "opaquePixels": 13596,
+        "edgePixels": 0
+      }
+    },
+    {
+      "level": 7,
+      "stars": 5,
+      "layout": "ring",
+      "fill": "#914de8",
+      "outline": "#ffd044",
+      "id": "level-07",
+      "width": 256,
+      "height": 256,
+      "svg": "svg/level-07.svg",
+      "png": "png/level-07.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0
+      },
+      "validation": {
+        "fillPixels": 4633,
+        "outlinePixels": 7905,
+        "transparentPixels": 50361,
+        "opaquePixels": 13596,
+        "edgePixels": 0
+      }
+    }
+  ]
+}

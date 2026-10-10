@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Modern/Port/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Modern/Port/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Modern/Port/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "92198237f7f917cd2257945055a44d1aec377acfc575def44f880cdc906c9340",
+      "size": 1855175
+    },
+    {
+      "original": "Buildings/Modern/Port/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Modern/Port/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "075294d33b7b040443e16d864d237247e5bde9fa89425f955d67c5e64e046f8b",
+      "size": 1837567
+    }
+  ]
+}

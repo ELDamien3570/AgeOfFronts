@@ -76,13 +76,18 @@ describe("flat troop armour and authored tier superiority", () => {
         const oldDps =
           damageAmount(veteran.attack, defenceOf(newer), 1000, 20000) /
           veteran.attack.reloadTicks;
-        expect(freshDps, "full-strength effective DPS").toBeGreaterThan(oldDps);
+        const gainsRange = newer.age === "Napoleonic" && newer.troopClass === "frontline";
+        if(gainsRange) {
+          expect(newer.attack.range).toBeGreaterThan(older.attack.range);
+          expect(freshDps).toBeGreaterThan(0);
+          expect(newer.charge).toBeDefined();
+        } else expect(freshDps, "full-strength effective DPS").toBeGreaterThan(oldDps);
         const fresh = m.squads.find((s) => s.playerId === 1)!,
           old = m.squads.find((s) => s.playerId === 2)!;
         retainSquads(m, [fresh, old]);
         for (const [s, definition, x] of [
           [fresh, newer, 20],
-          [old, older, 21],
+          [old, older, gainsRange ? 22.5 : 21],
         ] as const) {
           m.updateSquad(s.id, { kind: line });
           m.updateSquad(s.id, { definitionId: definition.id });

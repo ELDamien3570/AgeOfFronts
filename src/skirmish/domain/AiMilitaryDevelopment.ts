@@ -16,7 +16,7 @@ export function newestMilitaryUnits(
   const roles = new Map<string, UnitDefinition>();
   for (const unit of UNITS)
     if (research.includes(unit.technologyId))
-      roles.set(`${unit.line}:${unit.role}`, unit);
+      roles.set(`${unit.line}:${unit.troopClass ?? unit.role}`, unit);
   return [...roles.values()];
 }
 
@@ -30,7 +30,7 @@ export function militaryProduction(
   incoming: Inventory,
   squadCount: number,
 ): Map<number, string | null> {
-  const available = recipes.filter((r) => research.includes(r.technologyId));
+  const available = recipes.filter((r) => !r.manualOnly && research.includes(r.technologyId));
   const producer = new Map(
     available.flatMap((r) =>
       Object.keys(r.outputs).map((id) => [id, r] as const),
@@ -113,6 +113,13 @@ export interface ModernizationLease {
   targetId: string;
   startedTick: number;
 }
+/** One class-preserving candidate order shared by kit demand and refit leases.
+ * Availability policy belongs to the caller; no free equipment or era jumps. */
+export function modernizationTarget(current: UnitDefinition, research: readonly string[], attainable: (unit: UnitDefinition) => boolean): UnitDefinition | undefined {
+  return [...UNITS].reverse().find(u => u.line === current.line &&
+    (u.troopClass ?? u.role) === (current.troopClass ?? current.role) &&
+    AGES.indexOf(u.age) > AGES.indexOf(current.age) && research.includes(u.technologyId) && attainable(u));
+}
 export class AiModernization {
   checkpoint() { return structuredClone({leases:this.leases}); }
   restore(saved: ReturnType<AiModernization["checkpoint"]>): void {
@@ -145,9 +152,16 @@ export class AiModernization {
     inventory: Inventory,
     tick: number,
   ): void {
-    const newest = newestMilitaryUnits(research),
-      remaining = { ...inventory };
+    const remaining = { ...inventory };
     let gold = player.gold;
+    for (const squad of squads) {
+      const lease = this.leases.get(squad.id);
+      const target = lease && UNIT.get(lease.targetId);
+      if (!target || squad.refit) continue;
+      const cost = unitRefitCost(target);
+      gold -= cost.gold ?? 0;
+      for (const [id,n] of Object.entries(cost.items ?? {})) remaining[id] = (remaining[id] ?? 0)-n;
+    }
     let count = squads.filter((s) => this.holds(s.id) || s.refit).length;
     const budget = Math.max(1, Math.ceil(squads.length / 4));
     for (const squad of [...squads].sort((a, b) => a.id - b.id)) {
@@ -155,17 +169,15 @@ export class AiModernization {
       if (
         this.holds(squad.id) ||
         squad.refit ||
-        squad.fighting ||
         squad.charge
       )
         continue;
       const current = UNIT.get(squad.definitionId ?? "stoneage-" + squad.kind)!;
-      const target = newest.find(
-        (u) =>
-          u.line === current.line &&
-          u.role === current.role &&
-          AGES.indexOf(u.age) > AGES.indexOf(current.age),
-      );
+      if (!current) continue;
+      const target = modernizationTarget(current, research, u => {
+        const cost = unitRefitCost(u);
+        return gold >= (cost.gold ?? 0) && Object.entries(cost.items ?? {}).every(([id,n]) => (remaining[id] ?? 0) >= n);
+      });
       if (!target) continue;
       const cost = unitRefitCost(target);
       if (

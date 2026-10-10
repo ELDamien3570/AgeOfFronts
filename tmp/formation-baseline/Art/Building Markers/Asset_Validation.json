@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "buildingTypeCoverage": 21,
+  "grayscaleAndOpaque": 21,
+  "uniqueSourceShapes": 21,
+  "reviewSizes": [
+    18,
+    24,
+    32
+  ],
+  "closestPairsAt18px": [
+    {
+      "a": "armory",
+      "b": "arms-factory",
+      "darkPixelIntersectionOverUnion": 0.678
+    },
+    {
+      "a": "city",
+      "b": "depot",
+      "darkPixelIntersectionOverUnion": 0.65
+    },
+    {
+      "a": "city",
+      "b": "factory",
+      "darkPixelIntersectionOverUnion": 0.609
+    },
+    {
+      "a": "armory",
+      "b": "tower",
+      "darkPixelIntersectionOverUnion": 0.606
+    },
+    {
+      "a": "archery",
+      "b": "armory",
+      "darkPixelIntersectionOverUnion": 0.566
+    },
+    {
+      "a": "factory",
+      "b": "depot",
+      "darkPixelIntersectionOverUnion": 0.547
+    },
+    {
+      "a": "oil-rig",
+      "b": "missile-silo",
+      "darkPixelIntersectionOverUnion": 0.528
+    },
+    {
+      "a": "stables",
+      "b": "city",
+      "darkPixelIntersectionOverUnion": 0.527
+    }
+  ],
+  "scope": "Coverage and raster invariants; readability requires visual review."
+}

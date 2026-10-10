@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "ClassicalAge",
+  "source": "SourceArt/Trader_Russian_ClassicalAge_v1.png",
+  "sourceSha256": "a249ca059b186f920a309930695d49dca8df89e4eb5b8a50b1c6635e7de38a61",
+  "generatedSize": [
+    1254,
+    1254
+  ],
+  "nativeSize": [
+    1254,
+    1254
+  ],
+  "placement": {
+    "crop": [
+      42,
+      20,
+      1248,
+      1217
+    ],
+    "scale": 0.945273631840796,
+    "offset": [
+      57,
+      61
+    ],
+    "generatedSize": [
+      1254,
+      1254
+    ]
+  },
+  "caravanRig": {
+    "sharedStride": {
+      "forwardReach": 105,
+      "rearReach": 67,
+      "stanceFraction": 0.65
+    },
+    "horseAtlas": "SourceArt/Horse_Walking_Limb_Atlas_v1.png",
+    "horseAtlasSha256": "87c38c643614dd8e21732ddf493559699611d3dd1baf64c0219e84800502e937",
+    "merchants": [
+      {
+        "name": "merchant-1",
+        "rig": {
+          "forwardReach": 105,
+          "rearReach": 67,
+          "stanceFraction": 0.65,
+          "atlas": "Shared/SourceArt/Walking_Leg_Atlas_v1.png",
+          "shinCrop": 0.8,
+          "oldLegsPolygon": [
+            [
+              152,
+              937
+            ],
+            [
+              169,
+              950
+            ],
+            [
+              195,
+              960
+            ],
+            [
+              218,
+              960
+            ],
+            [
+              243,
+              952
+            ],
+            [
+              261,
+              943
+            ],
+            [
+              277,
+              938
+            ],
+            [
+              279,
+              1100
+            ],
+            [
+              149,
+              1100
+            ]
+          ],
+          "hips": {
+            "left": [
+              185,
+              949
+            ],
+            "right": [
+              229,
+              949
+            ]
+          },
+          "thighLength": 83,
+          "shinLength": 80,
+          "hipHeight": 113,
+          "thighWidth": 51,
+          "shinWidth": 42,
+          "footWidth": 42,
+          "footLength": 54,
+          "idleReach": 65,
+          "footLift": 34,
+          "swingOutward": 6,
+          "footOutward": 4,
+          "kneeOutward": 2,
+          "phaseOffset": 0.5,
+          "assemblySway": 0
+        }
+      },
+      {
+        "name": "merchant-2",
+        "rig": {
+          "forwardReach": 105,
+          "rearReach": 67,
+          "stanceFraction": 0.65,
+          "atlas": "Shared/SourceArt/Walking_Leg_Atlas_v1.png",
+          "shinCrop": 0.8,
+          "oldLegsPolygon": [
+            [
+              1042,
+              967
+            ],
+            [
+              1059,
+              976
+            ],
+            [
+              1081,
+              984
+            ],
+            [
+              1105,
+              987
+            ],
+            [
+              1128,
+              982
+            ],
+            [
+              1150,
+              973
+            ],
+            [
+              1154,
+              1140
+            ],
+            [
+              1040,
+              1140
+            ]
+          ],
+          "hips": {
+            "left": [
+              1071,
+              972
+            ],
+            "right": [
+              1116,
+              972
+            ]
+          },
+          "thighLength": 83,
+          "shinLength": 80,
+          "hipHeight": 113,
+          "thighWidth": 51,
+          "shinWidth": 42,
+          "footWidth": 42,
+          "footLength": 54,
+          "idleReach": 65,
+          "footLift": 34,
+          "swingOutward": 6,
+          "footOutward": 4,
+          "kneeOutward": 2,
+          "phaseOffset": 0.62,
+          "assemblySway": 0
+        }
+      }
+    ],
+    "horses": [
+      {
+        "name": "horse-1",
+        "rig": {
+          "forwardReach": 105,
+          "rearReach": 67,
+          "stanceFraction": 0.65,
+          "hips": {
+            "hind-left": [
+              445,
+              655
+            ],
+            "hind-right": [
+              562,
+              655
+            ],
+            "fore-left": [
+              476,
+              865
+            ],
+            "fore-right": [
+              527,
+              865
+            ]
+          },
+          "upperLength": 130,
+          "lowerLength": 118,
+          "kneeSlack": 9,
+          "minimumHipHeight": 130,
+          "upperWidth": 54,
+          "lowerWidth": 34,
+          "hoofWidth": 39,
+          "hoofLength": 46,
+          "idleReach": 48,
+          "footLift": 43,
+          "footOutward": {
+            "fore": 4,
+            "hind": 30
+          },
+          "swingOutward": {
+            "fore": 2,
+            "hind": 7
+          },
+          "phaseOffset": 0,
+          "contactBias": {
+            "fore": 165,
+            "hind": 65
+          },
+          "foreUpperLength": 155,
+          "foreLowerLength": 155,
+          "pasternLength": 35,
+          "pasternForward": 12,
+          "foreUpperWidth": 40,
+          "foreLowerWidth": 22,
+          "foreHoofWidth": 32
+        },
+        "atlasRows": {
+          "fore": 0,
+          "hind": 1
+        },
+        "oldLegsPolygons": [
+          [
+            [
+              477,
+              1098
+            ],
+            [
+              529,
+              1098
+            ],
+            [
+              537,
+              1200
+            ],
+            [
+              470,
+              1200
+            ]
+          ]
+        ]
+      },
+      {
+        "name": "horse-2",
+        "rig": {
+          "forwardReach": 105,
+          "rearReach": 67,
+          "stanceFraction": 0.65,
+          "hips": {
+            "hind-left": [
+              757,
+              667
+            ],
+            "hind-right": [
+              872,
+              667
+            ],
+            "fore-left": [
+              787,
+              887
+            ],
+            "fore-right": [
+              836,
+              887
+            ]
+          },
+          "upperLength": 130,
+          "lowerLength": 118,
+          "kneeSlack": 9,
+          "minimumHipHeight": 130,
+          "upperWidth": 54,
+          "lowerWidth": 34,
+          "hoofWidth": 39,
+          "hoofLength": 46,
+          "idleReach": 48,
+          "footLift": 43,
+          "footOutward": {
+            "fore": 4,
+            "hind": 30
+          },
+          "swingOutward": {
+            "fore": 2,
+            "hind": 7
+          },
+          "phaseOffset": 0.13,
+          "contactBias": {
+            "fore": 145,
+            "hind": 65
+          },
+          "foreUpperLength": 155,
+          "foreLowerLength": 155,
+          "pasternLength": 35,
+          "pasternForward": 12,
+          "foreUpperWidth": 40,
+          "foreLowerWidth": 22,
+          "foreHoofWidth": 32
+        },
+        "atlasRows": {
+          "fore": 2,
+          "hind": 3
+        },
+        "oldLegsPolygons": [
+          [
+            [
+              794,
+              1106
+            ],
+            [
+              839,
+              1106
+            ],
+            [
+              846,
+              1200
+            ],
+            [
+              787,
+              1200
+            ]
+          ]
+        ]
+      }
+    ]
+  },
+  "bodyOcclusion": "layers/Body_Occlusion.png",
+  "articulatedLayers": [
+    "layers/merchant-1-left-thigh.png",
+    "layers/merchant-1-left-shin.png",
+    "layers/merchant-1-left-foot.png",
+    "layers/merchant-1-right-thigh.png",
+    "layers/merchant-1-right-shin.png",
+    "layers/merchant-1-right-foot.png",
+    "layers/merchant-2-left-thigh.png",
+    "layers/merchant-2-left-shin.png",
+    "layers/merchant-2-left-foot.png",
+    "layers/merchant-2-right-thigh.png",
+    "layers/merchant-2-right-shin.png",
+    "layers/merchant-2-right-foot.png",
+    "layers/horse-1-fore-upper.png",
+    "layers/horse-1-fore-lower.png",
+    "layers/horse-1-fore-hoof.png",
+    "layers/horse-1-hind-upper.png",
+    "layers/horse-1-hind-lower.png",
+    "layers/horse-1-hind-hoof.png",
+    "layers/horse-2-fore-upper.png",
+    "layers/horse-2-fore-lower.png",
+    "layers/horse-2-fore-hoof.png",
+    "layers/horse-2-hind-upper.png",
+    "layers/horse-2-hind-lower.png",
+    "layers/horse-2-hind-hoof.png"
+  ],
+  "authoring": "Two human two-leg rigs and two equine four-leg rigs. True planted stance, lifted recovery, distinct member phases and one shared contact speed. Wagon, lead ropes, shafts, harness and panniers remain in the retained body paint."
+}

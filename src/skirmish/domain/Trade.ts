@@ -386,7 +386,7 @@ export class Trade {
       const key = TradeReceiving.key(b.playerId, b.tile);
       receivers.set(key, (receivers.get(key) ?? 0) + 1);
       const research=this.progression.states[b.playerId].completed;
-      receivingPercent.set(key,Math.max(receivingPercent.get(key)??100,100+AGES.indexOf(b.age??"StoneAge")*5+(b.type==="city"&&b.age==="StoneAge"&&research.includes("rus-stoneage-cities")?10:0)));
+      receivingPercent.set(key,Math.max(receivingPercent.get(key)??100,100+AGES.indexOf(b.age??"StoneAge")*5));
     }
     for (const [key, stack] of receivers) this.receiving.configure(key, stack, this.world.tick,receivingPercent.get(key)??100);
     this.receiving.retain(new Set(receivers.keys()));
@@ -911,7 +911,7 @@ export class Trade {
     const research = this.progression.states[owner]?.completed ?? [];
     return !this.paused(owner, naval) && (naval
       ? VESSELS.some(v => v.kind === "trade" && research.includes(v.technologyId))
-      : research.includes("rus-stoneage-land-traders"));
+      : (research.includes("rus-stoneage-roads") || research.includes("rus-stoneage-land-traders")));
   }
   /** Current source throughput facts, shared with AI investment decisions. */
   sourceStatus(sourceId: number) {

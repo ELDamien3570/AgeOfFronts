@@ -21,6 +21,8 @@
  * sqrt(2)) run separately from land and from water, so the bake is O(n).
  */
 
+import { elevationRelief } from "./ElevationRelief";
+
 /** Distance clamp range, in tiles. */
 export const FIELD_RANGE = 8;
 /** Water depth (metres) at which the depth channel saturates. */
@@ -157,7 +159,7 @@ export interface FieldInputs {
   /** Non-zero where the tile is land (impassable land included). */
   land: ArrayLike<number>;
   /** Continuous elevation per tile and sea level, when the map has them. */
-  elevation?: { heights: Float32Array; seaLevel: number };
+  elevation?: { heights: Float32Array; seaLevel: number; reliefScale?: number };
 }
 
 /** Smoothing radius (tiles) applied to elevation before shading and depth. */
@@ -196,9 +198,11 @@ export function bakeTerrainFields(input: FieldInputs): Uint8Array {
           // Same fixed upper-left light and scale as `terrainRelief`.
           const gradient =
             at(x + 1, y) - at(x - 1, y) + at(x, y + 1) - at(x, y - 1);
+          const relief = elevation.reliefScale === undefined ? gradient / 40 :
+            elevationRelief(at, x, y, elevation.reliefScale);
           const shade = Math.max(
             -SHADE_LIMIT,
-            Math.min(SHADE_LIMIT, gradient / 40),
+            Math.min(SHADE_LIMIT, relief),
           );
           out[i * 4 + 1] = Math.round(128 + (shade / SHADE_LIMIT) * 127);
         } else

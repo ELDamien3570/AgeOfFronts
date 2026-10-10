@@ -1,0 +1,15 @@
+{
+  "tool": "built-in image_gen",
+  "HorseLimbAtlas": {
+    "prompt": "Use case: stylized-concept.\nCreate a transparent PAINTED HORSE WALKING RIG PARTS atlas, matching the approved Russian Classical Age trader horse reference. This is animation paint material, NOT a new trader composition.\nInput image is STYLE, COLOR and lighting reference only. Use crisp polished warm painted brown horse coat, dark mane/leg accents and dark gray-brown hooves with warm upper-left lighting. Exact perpendicular overhead game-sprite style.\nSquare genuinely transparent RGBA canvas. EXACTLY TWELVE separate limb PARTS in a tidy grid of FOUR ROWS and THREE COLUMNS. Each cell has one completely isolated piece centered inside clear transparent margins; no piece overlaps another cell. No labels, numbers, borders, text, ground or shadows.\nColumns in every row:\n1. One thick tapered UPPER LEG coat segment, the soft furred shoulder/thigh link, pointing straight DOWN.\n2. One narrower LOWER LEG / CANNON segment with smooth dark furred skin, pointing straight DOWN. NOT a complete leg and no second hoof attached. Clean ends for animation overlap, no artificial round wooden endcaps, no rope.\n3. ONE broad dark natural HORSE HOOF with a short matching furred fetlock at its top; hoof toe points straight DOWN. Seen exactly from ABOVE: an un-split oval-ish hoof with a broad front toe and subtle horn texture. Not a boot, shoe, cloven hoof, paw, glove or horse head.\nRow 1: bay BROWN horse FORELEG upper / lower / hoof.\nRow 2: same bay BROWN horse HINDLEG upper / lower / hoof.\nRow 3: slightly lighter ochre TAN/BAY horse FORELEG upper / lower / hoof.\nRow 4: same lighter TAN/BAY horse HINDLEG upper / lower / hoof.\nUpper segments are thick at proximal end and narrower at distal end, anatomically plausible fur silhouettes. Lower segments visibly slender, clean continuous lengths, modest subtle wrist/hock thickening but no bent pose. All vertical pieces use a neutral straight pose so the rig will articulate them. Hooves should have enough top surface to read at small sprite sizes.\nOne piece per cell, exactly 12 pieces, no full horses, body, saddle, harness or humans. No hard circular cut-surface/end-cap art. Beautiful simple fur and horn rendering consistent with the source, restrained large forms, transparent surrounding space.",
+    "reference": "SourceArt/Trader_Russian_ClassicalAge_v1.png",
+    "file": "SourceArt/Horse_Walking_Limb_Atlas_v1.png",
+    "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea7-45e8-7a11-8804-5420a62f53c3/exec-cb168c40-fdfb-4a84-92f9-faf8f648680c.png",
+    "use": "Separate coat segments, cannon segments and hoof paint for four articulated legs per horse; source party unchanged."
+  },
+  "MerchantLimbAtlas": {
+    "file": "../Shared/SourceArt/Walking_Leg_Atlas_v1.png",
+    "generationManifest": "../Shared/Generation-Manifest.json",
+    "use": "Existing approved painted human thigh/shin/boot atlas, scaled for two merchants."
+  }
+}

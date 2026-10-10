@@ -18,11 +18,11 @@ const death: FallenTroop = {
 };
 
 describe("world-space troop remains", () => {
-  it("shrinks during the fall and retains a full body until the exact removal deadline", () => {
+  it("retains standing scale through the fall and removes the body at its exact deadline", () => {
     const remains = new TroopRemains();
     remains.add(death);
     expect(remains.sample(1000)[0].bodyScale).toBe(1);
-    expect(remains.sample(1375)[0].bodyScale).toBeCloseTo(0.975);
+    expect(remains.sample(1375)[0].bodyScale).toBe(1);
     expect(remains.sample(1750)[0].bodyScale).toBe(REMAINS.fallenScale);
     expect(remains.sample(20_999)[0].bodyVisible).toBe(true);
     expect(remains.sample(21_000)[0].bodyVisible).toBe(false);

@@ -1,0 +1,107 @@
+[
+  {
+    "id": "rus-stoneage-port-sea-trade",
+    "before": 18.0,
+    "after": 80
+  },
+  {
+    "id": "rus-stoneage-cities",
+    "before": 25.0,
+    "after": 87
+  },
+  {
+    "id": "rus-stoneage-siege",
+    "before": 25.0,
+    "after": 87
+  },
+  {
+    "id": "rus-bronzeage-ship-improvements",
+    "before": 25.0,
+    "after": 87
+  },
+  {
+    "id": "rus-bronzeage-cities",
+    "before": 25.0,
+    "after": 87
+  },
+  {
+    "id": "rus-bronzeage-siege",
+    "before": 25.0,
+    "after": 87
+  },
+  {
+    "id": "rus-classicalage-ship-improvements",
+    "before": 35.0,
+    "after": 97
+  },
+  {
+    "id": "rus-classicalage-cities",
+    "before": 35.0,
+    "after": 97
+  },
+  {
+    "id": "rus-classicalage-siege",
+    "before": 35.0,
+    "after": 97
+  },
+  {
+    "id": "rus-earlymedieval-ship-improvements",
+    "before": 40.0,
+    "after": 102
+  },
+  {
+    "id": "rus-earlymedieval-cities",
+    "before": 40.0,
+    "after": 102
+  },
+  {
+    "id": "rus-earlymedieval-siege",
+    "before": 40.0,
+    "after": 102
+  },
+  {
+    "id": "rus-latemedieval-ship-improvements",
+    "before": 45.0,
+    "after": 107
+  },
+  {
+    "id": "rus-latemedieval-cities",
+    "before": 45.0,
+    "after": 107
+  },
+  {
+    "id": "rus-latemedieval-siege",
+    "before": 45.0,
+    "after": 107
+  },
+  {
+    "id": "rus-napoleonic-ship-improvements",
+    "before": 50.0,
+    "after": 112
+  },
+  {
+    "id": "rus-napoleonic-cities",
+    "before": 50.0,
+    "after": 112
+  },
+  {
+    "id": "rus-napoleonic-siege",
+    "before": 50.0,
+    "after": 112
+  },
+  {
+    "id": "rus-earlymodern-ship-improvements",
+    "before": 60.0,
+    "after": 122
+  },
+  {
+    "id": "rus-earlymodern-cities",
+    "before": 60.0,
+    "after": 122
+  },
+  {
+    "id": "rus-earlymodern-siege",
+    "before": 60.0,
+    "after": 122
+  }
+]

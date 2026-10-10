@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "defaultCivId": "base",
+  "civs": [
+    {
+      "id": "base",
+      "label": "Base",
+      "soldiers": "../Soldier Icons/review-manifest.json",
+      "siege": "../Weapon Icons/Weapon-Manifest.json",
+      "siegeResources": {
+        "prompts": "../Weapon Icons/Generation-Manifest.json",
+        "validation": "../Weapon Icons/Weapons-Validation.json"
+      },
+      "buildings": "../Building Icons/review-manifest.json"
+    },
+    {
+      "id": "russians",
+      "label": "Russians",
+      "soldiers": "Russians/Troops.json",
+      "siege": "Russians/Siege/manifest.json",
+      "buildings": "Russians/Buildings/manifest.json",
+      "buildingsResources": {
+        "aircraft": "Russians/Aircraft/manifest.json"
+      }
+    }
+  ]
+}

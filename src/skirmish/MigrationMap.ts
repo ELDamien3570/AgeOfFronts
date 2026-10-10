@@ -4,8 +4,8 @@ import { createSkirmishMap } from "./Elevation";
 import { ENVIRONMENT_FAMILIES, EnvironmentProfile } from "./Environment";
 import { buildMigrationLayout, type MigrationLayout } from "./MigrationLayout";
 import type { LoadedMap } from "./Protocol";
-import { resourceTerrainData } from "./ResourceTerrain";
 import { addResourceGeography } from "./ResourceGeography";
+import { resourceTerrainData } from "./ResourceTerrain";
 import { terrainNoise } from "./TerrainNoise";
 export type { MigrationLandmass } from "./MigrationLayout";
 
@@ -86,7 +86,17 @@ export function generateMigration(size = 500, seed = 0): MigrationMap {
           Math.min(1, shore[tile] / 5) *
           growing *
           Math.min(1, rain * 1.6);
-      terrain[tile] = mountain ? 159 : land ? 133 : 1;
+      // Elevation alone never makes a plateau impassable. Traversable hills
+      // follow slope; steep ridges retain the reserved-island constraint above.
+      terrain[tile] = mountain
+        ? 159
+        : land
+          ? slope > 32 && heights[tile] > 900
+            ? 153
+            : slope > 14 && heights[tile] > 250
+              ? 143
+              : 133
+          : 1;
       cover[tile] = land && !mountain ? Math.round(woodland * 240) : 0;
       moisture[tile] = land ? Math.round(rain * 255) : 255;
       aridity[tile] = land ? Math.round((1 - rain) * 160) : 0;
@@ -110,14 +120,24 @@ export function generateMigration(size = 500, seed = 0): MigrationMap {
       minimum: -4500,
       maximum: 6000,
       seaLevel: 0,
+      reliefScale: (5 * size) / 1000,
     },
     forest = { cover },
     environmentData = { moisture, vegetation, aridity, families },
     bare = createSkirmishMap(size, size, terrain, elevation, forest),
     environment = new EnvironmentProfile(bare, undefined, [], environmentData),
-    resources = addResourceGeography(bare, resourceTerrainData(bare, environment), {
-      theme: "migration", seed, heights, cover, moisture, landforms: layout.landforms,
-    }),
+    resources = addResourceGeography(
+      bare,
+      resourceTerrainData(bare, environment),
+      {
+        theme: "migration",
+        seed,
+        heights,
+        cover,
+        moisture,
+        landforms: layout.landforms,
+      },
+    ),
     map = createSkirmishMap(size, size, terrain, elevation, forest, resources);
   return {
     map,

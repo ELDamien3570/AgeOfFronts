@@ -1,0 +1,40 @@
+{
+  "generator": "built-in image_gen",
+  "name": "ICBM",
+  "label": "ICBM detonation",
+  "dimension": 627,
+  "columns": 4,
+  "rows": 4,
+  "frameCount": 16,
+  "relativeFootprint": 0.8,
+  "durations": [
+    40,
+    50,
+    80,
+    100,
+    140,
+    180,
+    240,
+    280,
+    320,
+    360,
+    400,
+    440,
+    480,
+    500,
+    550,
+    650
+  ],
+  "prompt": "Use case: precise-object-edit.\nInput image 1 is the EDIT TARGET. Preserve its realistic painted nuclear detonation, brilliant flash, expanding fireball, one dominant expanding shockwave ring, and lingering billowing smoke, with the SAME sixteen-stage chronology.\nFix the layout and frame clearance. Produce an EXACTLY SQUARE transparent PNG atlas with 4 EQUAL COLUMNS and 4 EQUAL ROWS of square cells. Sixteen row-major frames. Each effect pivot exactly at its cell center. No borders, labels or visible grid lines.\nEach blast including every shockwave, glow fringe and smoke wisp must remain INSIDE THE CENTRAL 50 PERCENT of its own cell width and height. Huge transparent margin on every side of every cell. Nothing touches or crosses a cell boundary, and neighbouring frames never overlap. Even the largest pressure ring and cloud must be dramatically smaller than the cell.\nCoherent timeline: cells 1-2 ignition and bright flash; cells 3-6 expanding yellow-orange fire and pressure ring(s); cells 7-8 cooling fire and growing smoke; cells 9-12 broad billowing smoky canopy with flames gone; cells 13-15 increasingly faint translucent lingering smoke; cell 16 entirely empty transparent.\nMake grey smoke partially transparent and progressively vanish at the end. Maintain the same cloud lobes across neighbouring frames. No opaque ground disk. Everything outside fire, glow and smoke is truly transparent alpha.\nTrue vertical 90-degree top down camera throughout, seeing the top of the cloud. No side view mushroom stem, horizon, buildings, physical bomb, text, logo or watermark.\nMost important: square whole canvas, exactly 4x4 layout, identical centered pivots, MASSIVE EMPTY TRANSPARENT CLEARANCE INSIDE EVERY CELL.",
+  "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-60269cdb-ba78-43bf-b7a7-fbbc6ddd0de6.png",
+  "reference": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-03c93cc4-ff12-4312-8e04-d93191d8b79a.png",
+  "previousGenerations": [
+    {
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-03c93cc4-ff12-4312-8e04-d93191d8b79a.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: animated nuclear detonation game VFX for Age of Fronts, transparent PNG sprite atlas.\nPrimary request: one nuclear blast viewed perfectly from above, evolving coherently through SIXTEEN consecutive frames arranged in an EXACT 4 x 4 grid, four equal square cells across and four down, left-to-right then next row.\nLayout: no grid lines, text, border, gutter or labels. Every cell contains the SAME centered blast at exactly its cell center. Fixed camera, fixed animation pivot and consistent scale across all cells. The expansion is motion within cells, not camera zoom. Never let glow, smoke or shockwaves cross into a neighboring cell.\nCamera: vertical 90-degree TOP DOWN orthographic view, see radial fireball, concentric shockwave and the top of a billowing smoke canopy. NO side view mushroom cloud or visible vertical stem, NO horizon, buildings, ground tiles or environment.\nStyle: realistic richly textured hand-painted strategy-game effect. Intense but readable warm-white flash, pale yellow heat, orange rolling fire, luminous circular pressure wave, turbulent dark charcoal and ash-grey smoke with feathered partially transparent wisps. Match the realistic painted texture finish of the game's overhead assets, with coherent organic motion and no flat diagram lines.\nTime evolution row-major:\n1 tiny warm-white ignition flash at center.\n2 extremely bright compact flash begins expanding.\n3 bright round fireball grows and a first luminous circular shockwave appears.\n4 expanding hot yellow/orange fireball and larger clean pressure ring.\n5 rolling fire and outward shockwave expand.\n6 largest fireball with turbulent outer edges and widening ring.\n7 orange heat begins dimming while grey smoke curls over the fire.\n8 large overhead smoke canopy expands, faint internal fire.\n9 full dense billowing smoke canopy with dim embers.\n10 smoke spreads broadly and pressure ring thins.\n11 cooling grey smoke retains the same lobe structure.\n12 lighter thinning smoke still visibly lingering.\n13 diffuse semi-transparent grey smoke.\n14 faint dispersed wisps.\n15 very faint residual wisps.\n16 completely empty transparent cell.\nAnimation continuity: the same principal smoke lobes and plume details evolve progressively; never sixteen unrelated explosions, no second late detonation. A one-shot flash, expansion, long cooling smoke phase and full fade out.\nConstraints: generous empty transparent space around every cell effect, true alpha transparency outside fire, glow and smoke and through the fading smoke. No painted opaque black, white or checkerboard background; no physical weapon, mushroom cloud side silhouette, text, logo, symbols, numbers, people or watermark.\nSpecific blast: a single strategic missile warhead detonation. A powerful warm-white flash, dense orange radial fireball, ONE clearly dominant thin circular pressure ring, then a broad dark-grey smoky circular canopy. Keep peak outer radius to about 80 percent of cell width. Smoke remains much longer than the bright fire phase. No tall stem visible from the side.",
+      "reasonReplaced": "Shockwaves overlap equal-cell boundaries"
+    }
+  ],
+  "rebuild": true,
+  "sourceAtlas": "SourceAtlas.png"
+}

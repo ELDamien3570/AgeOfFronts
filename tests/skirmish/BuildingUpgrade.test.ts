@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { buildingCost, buildingIntegrity, buildingUpgradeCost, nextBuildingAge } from "../../src/skirmish/content/Buildings";
+import { buildingIntegrity } from "../../src/skirmish/content/Buildings";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
 import type { Building } from "../../src/skirmish/Protocol";
@@ -26,68 +26,32 @@ function fixture() {
   return { m, e, p, building, upgrade };
 }
 
-describe("explicit paid building upgrades", () => {
-  it("advances only one tier with shared half-price gold and rounded-up item costs", () => {
-    const all = TECHNOLOGIES.map(t => t.id);
-    expect(nextBuildingAge("city", "StoneAge", "Modern", all)).toBe("BronzeAge");
-    expect(nextBuildingAge("city", "StoneAge", "Modern", [])).toBeNull();
-    expect(nextBuildingAge("tower", "EarlyModern", "Modern", all)).toBeNull();
-    const full = buildingCost("tower", "BronzeAge", 1), half = buildingUpgradeCost("tower", "BronzeAge", 1);
-    expect(half.gold).toBe(Math.round(full.gold! / 2));
-    expect(half.items!.stone).toBe(Math.ceil(full.items!.stone / 2));
+describe("research-driven building upgrades", () => {
+  it("offers no paid quote and rejects legacy commands without spending", () => {
+    const {m,p,building,upgrade} = fixture(), b=building(), gold=p.gold;
+    const vm=new EmpireViewModel(m.snapshot(), {selected:new Set(),selectedShips:new Set(),selectedBuilding:b.id});
+    expect(vm.buildingUpgrade()).toBeNull();
+    expect(upgrade(b.id,b.id)).toContain("automatically");
+    expect(p.gold).toBe(gold);expect(m.buildingFacts().byId(b.id)!.age).toBe("StoneAge");
+    expect(commandSchema.safeParse({type:"upgrade-building",playerId:1,buildingIds:[b.id]}).success).toBe(true);
   });
-  it("deduplicates, spends once, preserves structure identity and blocks recruitment during construction", () => {
-    const { m, p, building, upgrade } = fixture(), b = building(), before = p.gold;
-    const vm = new EmpireViewModel(m.snapshot(), { selected: new Set(), selectedShips: new Set(), selectedBuilding: b.id, selectedBuildings: new Set([b.id]) });
-    const quote = vm.buildingUpgrade()!;
-    expect(quote.reason).toBeNull();
-    expect(upgrade(b.id, b.id)).toBeNull();
-    expect(p.gold).toBe(before - quote.cost.gold!);
-    expect(b.age).toBe("BronzeAge");
-    expect(b.health).toBe(buildingIntegrity("city", "BronzeAge"));
-    expect(b.remainingTicks).toBe(quote.upgrades[0].ticks);
-    expect(m.buildings).toHaveLength(1);
-    expect(b.remainingTicks).toBeGreaterThan(0);
-    expect(upgrade(b.id)).toMatch(/construction/);
+  it("applies researched tiers without payment, reconstruction or free repairs", () => {
+    const {m,e,p,building}=fixture(), b=building(), gold=p.gold;
+    m.updateBuilding(b.id,{health:600});
+    e.beforeStep();
+    const upgraded=m.buildingFacts().byId(b.id)!;
+    expect(upgraded.age).toBe("Modern");expect(upgraded.id).toBe(b.id);
+    expect(upgraded.health!/upgraded.maxHealth!).toBeCloseTo(0.5,3);
+    expect(upgraded.remainingTicks).toBe(0);expect(p.gold).toBe(gold);
+    const health=upgraded.health;e.beforeStep();expect(m.buildingFacts().byId(b.id)!.health).toBe(health);
+    const restored=fixture();restored.m.restore(m.checkpoint());
+    expect(restored.m.buildingFacts().byId(b.id)).toEqual(upgraded);
   });
-  it("upgrades the affordable subset while validating all identities before mutation", () => {
-    const { m, p, building, upgrade } = fixture(), a = building(), b = building();
-    const price = buildingUpgradeCost("city", "BronzeAge", 2).gold!;
-    p.gold = price;
-    const vm = new EmpireViewModel(m.snapshot(), { selected: new Set(), selectedShips: new Set(), selectedBuilding: a.id, selectedBuildings: new Set([a.id, b.id]) });
-    expect(vm.buildingUpgrade()!.eligibleCount).toBe(2);
-    expect(vm.buildingUpgrade()!.upgrades).toHaveLength(1);
-    expect(upgrade(b.id, a.id)).toBeNull();
-    expect(p.gold).toBe(0); expect(a.age).toBe("BronzeAge"); expect(b.age).toBe("StoneAge");
-    m.updateBuilding((b).id, { playerId: 2 });
-    p.gold = 1e6;
-    expect(upgrade(a.id, b.id)).toMatch(/own territory/);
-    expect(a.age).toBe("BronzeAge"); expect(p.gold).toBe(1e6);
-    expect(commandSchema.safeParse({ type: "upgrade-building", playerId: 1, buildingIds: [a.id] }).success).toBe(true);
-    expect(m.applyCommand({ type: "upgrade-building", playerId: 1, buildingIds: [] })).not.toBeNull();
-  });
-  it("does not heal damaged buildings or grant upgrades without researched prerequisites", () => {
-    const { m, e, p, building, upgrade } = fixture(), b = building(), gold = p.gold;
-    m.updateBuilding((b).id, { health: b.health! - 1 });
-    expect(upgrade(b.id)).toMatch(/repair/);
-    expect(p.gold).toBe(gold);
-    m.updateBuilding((b).id, { health: b.maxHealth });
-    e.progression.states[1].completed = [];
-    expect(upgrade(b.id)).toMatch(/Research/);
-    expect(b.age).toBe("StoneAge");
-  });
-  it("pauses paid training and supply jobs and restores upgrade construction state", () => {
-    const { m, e, building, upgrade } = fixture(), b = building("factory");
-    e.supply.jobs[b.id] = { owner: 1, recipeId: "unused-paused", remainingTicks: 50, totalTicks: 50 };
-    m.recruitment.enqueue({ playerId: 1, buildingId: b.id, category: "land", kind: "infantry", totalTicks: 100, cost: {} });
-    expect(upgrade(b.id)).toBeNull();
-    const ticks = b.remainingTicks;
-    m.step();
-    expect(b.remainingTicks).toBe(ticks - 1);
-    expect(e.supply.jobs[b.id]!.remainingTicks).toBe(50);
-    expect(m.recruitment.jobs[0].remainingTicks).toBe(100);
-    const saved = m.checkpoint(); m.restore(saved);
-    expect(m.buildings[0].remainingTicks).toBe(ticks - 1);
-    expect(m.buildings[0].age).toBe("BronzeAge");
+  it("waits for research and for ordinary construction to finish", () => {
+    const {m,e,building}=fixture(), b=building();
+    e.progression.states[1].completed=[];e.beforeStep();expect(m.buildingFacts().byId(b.id)!.age).toBe("StoneAge");
+    e.progression.states[1].completed=TECHNOLOGIES.map(t=>t.id);m.updateBuilding(b.id,{remainingTicks:10});
+    e.beforeStep();expect(m.buildingFacts().byId(b.id)!.age).toBe("StoneAge");
+    m.updateBuilding(b.id,{remainingTicks:0});e.beforeStep();expect(m.buildingFacts().byId(b.id)!.age).toBe("Modern");
   });
 });

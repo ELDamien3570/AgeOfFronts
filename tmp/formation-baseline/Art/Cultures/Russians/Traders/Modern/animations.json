@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "unit": "Modern articulated semi-truck",
+  "age": "Modern",
+  "category": "OverlandTrader",
+  "memberCounts": {
+    "merchants": 0,
+    "wagons": 0,
+    "pullingAnimals": 0,
+    "packAnimals": 0,
+    "trucks": 1
+  },
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "frameSize": {
+    "width": 512,
+    "height": 1024
+  },
+  "sheetSize": {
+    "width": 2560,
+    "height": 2048
+  },
+  "grid": {
+    "columns": 5,
+    "rows": 2
+  },
+  "pivot": {
+    "x": 256,
+    "y": 512
+  },
+  "animations": {
+    "idle": {
+      "file": "Idle.png",
+      "frameCount": 10,
+      "suggestedFramesPerSecond": 8,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        }
+      ]
+    },
+    "travel": {
+      "file": "Travel.png",
+      "frameCount": 10,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 1024,
+          "width": 512,
+          "height": 1024
+        }
+      ]
+    }
+  },
+  "source": "SourceArt/Trader_Russian_Modern_Semi_v1.png",
+  "sourceSha256": "9e7fcc0e3c6771e5278630ae5a583e1479ee51f337256a658ac86e9980732f68",
+  "walkingGroundSpeed": 110,
+  "animationApproval": {
+    "status": "approved",
+    "userMessage": "okay make the modern one, should be a semi, you can extend this one to make it scale correctly",
+    "scope": "Continue trader creation and animation with extended canvas; visual acceptance pending."
+  },
+  "integrationStatus": "Art review only; not connected to match renderer"
+}

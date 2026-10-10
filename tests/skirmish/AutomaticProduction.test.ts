@@ -432,7 +432,7 @@ describe("persistent building-type priorities", () => {
     const result = plan({
       buildings: [building(1, "arms-factory"), building(2, "arms-factory")],
       priorities: { "arms-factory": ["make-icbm", "make-mirv"] },
-      inventory: { steel: 200, gunpowder: 150, oil: 100,
+      inventory: { steel: 200, gunpowder: 150, oil: 100, copper: 30, tin: 10,
         "payload:icbm": 10, "payload:mirv": 0 },
     });
     expect([...result.values()]).toEqual(["make-icbm"]);
@@ -441,7 +441,7 @@ describe("persistent building-type priorities", () => {
     const { e, p, stock, add, step } = setup();
     const b = add("arms-factory");
     stock["payload:icbm"] = 2;
-    Object.assign(stock, { steel: 400, gunpowder: 300, oil: 200 });
+    Object.assign(stock, { steel: 400, gunpowder: 300, oil: 200, copper: 60, tin: 20 });
     expect(e.supply.setPriorities(p, [b], "arms-factory", ["make-icbm"])).toBeNull();
     step(20);
     expect(e.supply.jobs[b.id]?.recipeId).toBe("make-icbm");
@@ -455,7 +455,7 @@ describe("persistent building-type priorities", () => {
     for (let t = 21 + firstTicks + 20; t <= 20 + firstTicks * 2 + 60; t++) step(t);
     expect(stock["payload:icbm"]).toBe(4);
     expect(e.supply.jobs[b.id]).toBeUndefined();
-    Object.assign(stock, { steel: 200, gunpowder: 150, oil: 100 });
+    Object.assign(stock, { steel: 200, gunpowder: 150, oil: 100, copper: 30, tin: 10 });
     const restart = Math.ceil((20 + firstTicks * 2 + 80) / 20) * 20;
     step(restart);
     expect(e.supply.jobs[b.id]?.recipeId).toBe("make-icbm");

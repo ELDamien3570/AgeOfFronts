@@ -39,7 +39,8 @@ export function squadArtworkPose(
 }
 export function weaponVisual(id?: string): WeaponVisual {
   if (
-    id === "modern-anti-air" || id === "naval-air-defence" ||
+    id === "modern-anti-air" ||
+    id === "naval-air-defence" ||
     ["mirv", "icbm", "hydrogen", "mirv-warhead"].includes(id ?? "")
   )
     return "rocket";
@@ -55,10 +56,26 @@ export function weaponVisual(id?: string): WeaponVisual {
   )
     return "stone";
   const unit = UNIT.get(id ?? "");
+  if (
+    unit?.troopClass &&
+    [
+      "StoneAge",
+      "BronzeAge",
+      "ClassicalAge",
+      "EarlyMedieval",
+      "LateMedieval",
+    ].includes(unit.age)
+  )
+    return unit.age === "LateMedieval" && unit.troopClass === "rangedInfantry"
+      ? "bolt"
+      : unit.age === "StoneAge" && unit.troopClass === "rangedInfantry"
+        ? "javelin"
+        : "arrow";
   if (unit?.attack.projectile || id?.endsWith("-warship")) return "shell";
   if (
     unit &&
-    ((unit.age === "Napoleonic" && unit.attack.channel === "ranged") || unit.age === "EarlyModern" ||
+    ((unit.age === "Napoleonic" && unit.attack.channel === "ranged") ||
+      unit.age === "EarlyModern" ||
       unit.age === "Modern" ||
       id === "latemedieval-field-support")
   )

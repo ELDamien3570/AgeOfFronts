@@ -1,0 +1,24 @@
+{
+  "folder": "Buildings/EarlyModern/Port/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/EarlyModern/Port/Generation.json",
+      "archived": "Buildings/EarlyModern/Port/_TO BE DELETED/Generation.json",
+      "sha256": "ea4dc554ac2e7543416fd012966756b63e8010f56e054d7d834b1230436c8082",
+      "size": 4723
+    },
+    {
+      "original": "Buildings/EarlyModern/Port/SourceArt/Icon-v1.png",
+      "archived": "Buildings/EarlyModern/Port/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "b1be63f38cb556b49cbb6597187a5f5789bbe8bd99256f07b73eef06d433d199",
+      "size": 2397337
+    },
+    {
+      "original": "Buildings/EarlyModern/Port/SourceArt/Icon-v2.png",
+      "archived": "Buildings/EarlyModern/Port/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "e4c5ace2471be934b709b370dc3563c9b35715131ee118d18c6b70dc8661cc94",
+      "size": 2750865
+    }
+  ]
+}

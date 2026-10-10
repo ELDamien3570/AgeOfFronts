@@ -1,0 +1,104 @@
+from pathlib import Path
+p=Path('tests/skirmish/browser/FormationFixes.ts');s=p.read_text();start=s.index('function damage() {');end=s.index('function aircraft(',start)
+s=s[:start]+'''type DamageUnit = (typeof scaleAudit.rows)[number];
+const damageUnits = scaleAudit.rows.filter(r => r.actor && !r.actor.vehicle);
+const damageReady = new Map<string, Promise<void>>();
+async function loadDamageUnit(row: DamageUnit) {
+  if (assets.has(row.id)) return;
+  if (!damageReady.has(row.id)) damageReady.set(row.id, (async () => {
+    const response = await fetch(row.actor!.assetRoot + "animations.json");
+    if (!response.ok) throw Error(row.name + " artwork unavailable");
+    const manifest: ActorManifest = await response.json();
+    const clips = manifest.animations.filter(c => ["idle", "attack"].includes(c.id));
+    const loaded = await Promise.all(clips.map(async c => [c.id, await image(row.actor!.assetRoot + c.file)] as const));
+    assets.set(row.id, {clips, images: new Map(loaded)});
+  })());
+  await damageReady.get(row.id);
+}
+for (const [control, defaultUnit, filter] of [
+  ["damage-melee", "stoneage-infantry", (r: DamageUnit) => r.actor?.projectile === "arrow" && !["rangedInfantry", "rangedCavalry"].includes(r.troopClass)],
+  ["damage-target", "stoneage-infantry", (_r: DamageUnit) => true],
+  ["damage-ranged", "stoneage-archer", (r: DamageUnit) => ["rangedInfantry", "rangedCavalry"].includes(r.troopClass) || ["bullet", "rocket"].includes(r.actor!.projectile)],
+] as const) {
+  const select = field<HTMLSelectElement>(control);
+  for (const row of damageUnits.filter(filter)) {
+    const option = document.createElement("option"); option.value = row.id;
+    option.textContent = `${row.ageName} · ${row.name}`; select.append(option);
+  }
+  select.value = defaultUnit;
+  const prepare = () => { selectedId = undefined; reset(); void loadDamageUnit(damageUnits.find(r => r.id === select.value)!).catch(e => {field("error").textContent = String(e);}); };
+  select.onchange = prepare;
+  prepare();
+}
+function damageLayout(row: DamageUnit, x: number, y: number, angle: number) {
+  const mounted = ["lightCavalry", "heavyCavalry", "rangedCavalry"].includes(row.troopClass);
+  const count = mounted ? 6 : 12, columns = mounted ? 3 : 4, ranks = count / columns;
+  const across = mounted ? 60 : 32, depth = mounted ? 88 : 32;
+  return Array.from({length:count}, (_, i) => {
+    const lx = (i % columns - (columns - 1) / 2) * across;
+    const ly = (Math.floor(i / columns) - (ranks - 1) / 2) * depth;
+    return {x:x + lx * Math.cos(angle) - ly * Math.sin(angle), y:y + lx * Math.sin(angle) + ly * Math.cos(angle)};
+  });
+}
+function damageFormation(row: DamageUnit, id: string, x: number, y: number, angle: number, color: string, clipId: string, ms: number, hp: number, hit: boolean) {
+  const points = damageLayout(row, x, y, angle), asset = assets.get(row.id);
+  if (!asset) return points;
+  const clip = asset.clips.find(c => c.id === clipId)!, idle = asset.clips.find(c => c.id === "idle")!;
+  const size = 64 * scaleAudit.reference.footprint * row.scale!.proposedScale;
+  const anchors = (row.scale as {bodyAnchorsPx128?:Record<string,{x:number;y:number}>,reviewFacingOffset?:number});
+  const anchor = anchors.bodyAnchorsPx128?.[clipId];
+  const facing = angle + (anchors.reviewFacingOffset ?? row.actor!.facingOffset);
+  const frame = clip.frames[clipFrame(clip, ms)];
+  const actualSize = size * (clip.scale ?? 1) / (idle.scale ?? 1);
+  const dx = anchor ? (frame.pivot.x / frame.width - anchor.x / 128) * actualSize : 0;
+  const dy = anchor ? (frame.pivot.y / frame.height - anchor.y / 128) * actualSize : 0;
+  for (const [i, p] of points.entries()) {
+    if (inspected(id)) {ctx.strokeStyle=color;ctx.globalAlpha=.45;ctx.beginPath();ctx.ellipse(p.x,p.y,9,6,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}
+    sprite(row.id, clipId, ms, p.x + dx * Math.cos(facing) - dy * Math.sin(facing), p.y + dx * Math.sin(facing) + dy * Math.cos(facing), facing, size, hit && i % 4 === 0);
+  }
+  const bottom = Math.max(...points.map(p => p.y)) + (row.actor!.members === 6 ? 65 : 30);
+  pickTargets.push({id,left:Math.min(...points.map(p=>p.x))-35,right:Math.max(...points.map(p=>p.x))+35,top:Math.min(...points.map(p=>p.y))-60,bottom:bottom+20});
+  if(inspected(id)){bar(x,bottom,90,hp,color);if(numbers.checked)centeredCount(String(points.length),x,bottom+20);}
+  return points;
+}
+function damage() {
+  const get = (id: string) => damageUnits.find(r=>r.id===field<HTMLSelectElement>(id).value)!;
+  const melee=get("damage-melee"), target=get("damage-target"), ranged=get("damage-ranged");
+  if (![melee,target,ranged].every(r=>assets.has(r.id))) {text("Loading chosen troops…",55,66);return;}
+  const mounted = (r: DamageUnit) => ["lightCavalry","heavyCavalry","rangedCavalry"].includes(r.troopClass);
+  const tx=550, ty=420, mx=tx-(mounted(melee)?102:52)-(mounted(target)?102:52)-12;
+  const rx=980, ry=245, rangedAngle=Math.atan2(ty-ry,tx-rx)-Math.PI/2;
+  const clip=assets.get(ranged.id)!.clips.find(c=>c.id==="attack")!;
+  const duration=clip.durations?.reduce((a,b)=>a+b,0) ?? 1200;
+  const period=Math.max(duration+900,ranged.actor!.projectile==="rocket"?4200:ranged.actor!.projectile==="bullet"?3200:2500);
+  const ms=clock%period, release=clip.durations?.slice(0,clip.releaseFrame??3).reduce((a,b)=>a+b,0) ?? 580;
+  const travel=ranged.actor!.projectile==="bullet"?220:750;
+  const sinceImpact=ms-release-travel, hit=sinceImpact>=0&&sinceImpact<220;
+  const kind=ranged.actor!.projectile==="arrow"?"bow":ranged.actor!.projectile;
+  text("Spaced ranks · individual volleys · hover/select for HP",55,66);
+  text(`${melee.name} → ${target.name} ← ${ranged.name}`,55,95,"#b4ccbb",15);
+  if(proposed.checked){groundImpacts(kind,tx,ty,sinceImpact,Math.floor(clock/period));if(clock>=period)groundImpacts(kind,tx,ty,sinceImpact+period,Math.floor(clock/period)-1);}
+  damageFormation(melee,"damage-melee",mx,ty,-Math.PI/2,"#78bcf0","attack",clock%1050,.82,false);
+  const defenders=damageFormation(target,"damage-target",tx,ty,Math.PI/2,"#ee8b7c","idle",clock,.67,proposed.checked&&hit);
+  const shooters=damageFormation(ranged,"damage-ranged",rx,ry,rangedAngle,"#edac79",ms<duration?"attack":"idle",ms<duration?ms:0,1,false);
+  for(const [i, soldier] of shooters.entries()) {
+    const elapsed=ms-release-i*14;
+    if(elapsed<0||elapsed>travel)continue;
+    const destination=defenders[i%defenders.length], p=elapsed/travel;
+    // Each release point is transformed from the selected sprite, rather than the squad root.
+    const point=ranged.actor!.releasePoints[i%ranged.actor!.releasePoints.length];
+    const anchor=(ranged.scale as {bodyAnchorsPx128?:Record<string,{x:number;y:number}>}).bodyAnchorsPx128?.attack ?? {x:64,y:64};
+    const size=64*scaleAudit.reference.footprint*ranged.scale!.proposedScale*(clip.scale??1)/(assets.get(ranged.id)!.clips.find(c=>c.id==="idle")!.scale??1);
+    const lx=(point.x-anchor.x/128)*size, ly=(point.y-anchor.y/128)*size;
+    const facing=rangedAngle+((ranged.scale as {reviewFacingOffset?:number}).reviewFacingOffset??ranged.actor!.facingOffset);
+    const sx=soldier.x+lx*Math.cos(facing)-ly*Math.sin(facing), sy=soldier.y+lx*Math.sin(facing)+ly*Math.cos(facing);
+    const px=sx+(destination.x-sx)*p, py=sy+(destination.y-sy)*p-(kind==="bullet"||kind==="rocket"?0:Math.sin(p*Math.PI)*35);
+    const vx=destination.x-sx, vy=destination.y-sy, norm=Math.hypot(vx,vy), length=kind==="javelin"?19:kind==="bullet"?8:13;
+    line(px,py,px-vx/norm*length,py-vy/norm*length,kind==="bullet"?"#efd5a1":"#d0bb89",kind==="rocket"?3:1.6);
+    if(kind!=="bullet"){line(px,py,px-vx/norm*3-vy/norm*2,py-vy/norm*3+vx/norm*2,"#c9cebc",1);}
+  }
+  if(proposed.checked&&clock%1300<160){line(tx-(mounted(target)?98:48),ty-14,tx-(mounted(target)?98:48),ty+14,"#f4c1a9",3);}
+  if(debug.checked)line(rx,ry,tx,ty,"#ffd46944");
+  text("Visual interaction test; unit choice does not simulate damage or balance.",55,650,"#b4ccbb",15);
+}
+''' +s[end:];p.write_text(s)

@@ -1,0 +1,96 @@
+{
+  "folder": "Traders/LateMedieval/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Traders/LateMedieval/Animation_Validation.json",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/Animation_Validation.json",
+      "sha256": "d348da3ebfd29cdaca347197272d54385b4eb54fc0414bc02109c4419640389c",
+      "size": 5189
+    },
+    {
+      "original": "Traders/LateMedieval/Generation-Manifest.json",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "54ee10e53af9e86e112841fe0feb7c8685ece8111ee43e4d7c12d76519fd35d1",
+      "size": 3104
+    },
+    {
+      "original": "Traders/LateMedieval/Idle.webp",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/Idle.webp",
+      "sha256": "4acd07039ebdd1bff2a1dbac68d0529655107bd4da78035599792bd97569eff1",
+      "size": 509750
+    },
+    {
+      "original": "Traders/LateMedieval/layers/Old_Legs_Removal_Mask.png",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/layers/Old_Legs_Removal_Mask.png",
+      "sha256": "2c92f86c19db03c6b886bddba0359b3164818a30ef14d6b200d96b10c096478b",
+      "size": 2297
+    },
+    {
+      "original": "Traders/LateMedieval/layers/Original_Painting.png",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/layers/Original_Painting.png",
+      "sha256": "b6723087672c4e7a123cd00bb971a9145c72c5e61b0f20d3336b26a439cedfdf",
+      "size": 1312757
+    },
+    {
+      "original": "Traders/LateMedieval/README.md",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/README.md",
+      "sha256": "daddc3bf42e82012da675e2557103c80f8d335c7884bbb4dbe6ad0a1ee1be685",
+      "size": 769
+    },
+    {
+      "original": "Traders/LateMedieval/Review/Preservation-Baseline.json",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/Review/Preservation-Baseline.json",
+      "sha256": "831c40feda3ab2e9be0aa5425dca3f54ca3ea6c4be2eb98a32f6da4c0eff62b3",
+      "size": 102399
+    },
+    {
+      "original": "Traders/LateMedieval/Review/Travel-Moving-Ground.gif",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/Review/Travel-Moving-Ground.gif",
+      "sha256": "6f67c7e385f40b91fbcb4762ba44d7de903ea15c03f89347a4262ee67a8a1e20",
+      "size": 712568
+    },
+    {
+      "original": "Traders/LateMedieval/Review/Walking-Frames.png",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/Review/Walking-Frames.png",
+      "sha256": "c0651b16f52694b1857f5b4b42a764c639199bc3012377a77c23e27b687258a4",
+      "size": 74118
+    },
+    {
+      "original": "Traders/LateMedieval/rig-authoring.json",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/rig-authoring.json",
+      "sha256": "24c7d384542dbe72f40bee8b984dc61b9060e7d4effa07ff91427ceecbb9500d",
+      "size": 9445
+    },
+    {
+      "original": "Traders/LateMedieval/SourceArt/Formation-Correction.json",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/SourceArt/Formation-Correction.json",
+      "sha256": "6fd1cd1b2eb6dca8cad6e3beebe537fd62f463b1b26824a27a1a67b8104ac2a6",
+      "size": 1892
+    },
+    {
+      "original": "Traders/LateMedieval/SourceArt/rig-authoring-v1.json",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/SourceArt/rig-authoring-v1.json",
+      "sha256": "6bdfdae2851444f6bb549eb21df4fb23518776a16353edd06e9e3b4c40ece904",
+      "size": 9242
+    },
+    {
+      "original": "Traders/LateMedieval/SourceArt/Trader_Russian_LateMedieval_v1.png",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/SourceArt/Trader_Russian_LateMedieval_v1.png",
+      "sha256": "f1160ee9d678dd639dc2a8eda6e222175bdf4fe7ca52ac6cc972359181539214",
+      "size": 1258784
+    },
+    {
+      "original": "Traders/LateMedieval/Source_Transparent.png",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/Source_Transparent.png",
+      "sha256": "36d76a1e9cc880c4f6150bb30e6a0552a2a4b9fd030af0a16e1abedfcad405fd",
+      "size": 1323206
+    },
+    {
+      "original": "Traders/LateMedieval/Travel.webp",
+      "archived": "Traders/LateMedieval/_TO BE DELETED/Travel.webp",
+      "sha256": "7325bfd669682d05f86b2b2a42c2ec9f924ff7399c27faa94a87f365201a4a63",
+      "size": 1235856
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import { flightPercent, missionKind, FLIGHT_RULES, type AirMission } from "../co
 import type { BuildingType, ShipType, SquadType } from "../Protocol";
 import { BUILDING_RULES } from "../Rules";
 import { AGE_NAMES, AGES, type Age } from "../domain/Definitions";
-import { buildingPreviewArtworkId } from "./ArtworkCatalog";
+import { aircraftArtworkId, buildingPreviewArtworkId } from "./ArtworkCatalog";
 import type { EmpireActions } from "./EmpireView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { eraPortrait } from "./EraArtwork";
@@ -372,7 +372,7 @@ export class EmpireHudView {
             kind,
             q.reason,
             `${FLIGHT_RULES[kind].gold.toLocaleString()} gold · ${FLIGHT_RULES[kind].preModernSeconds}s flight time (${FLIGHT_RULES[kind].modernSeconds}s Modern) · 6 per launch site / 32 per faction` ,
-            kind,
+            aircraftArtworkId(kind, q.building?.age ?? vm.progression.age),
           );
         })
         .join("") +

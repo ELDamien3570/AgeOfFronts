@@ -9227,7 +9227,7 @@
     {
       "id": "russians-rus-eight-age-rework",
       "name": "Rus — eight-age rework",
-      "notes": "Packaged eight-age sketch. Building tiers and their troop/equipment recipes are researched together. Specialist military unlocks are optional terminal side branches. Pre-modern means 1914–1970; Modern means present day. Prices, timers and small stat increases remain TBD, except unchanged Stone Age Coastal Navigation. Heavy cavalry starts with the available Druzhina roster in Early Medieval; unavailable earlier heavy-cavalry placeholders remain unavailable. Age-up requirements will be designed separately: do not require every optional leaf. Planner only; original trees and normal skirmish are unchanged.",
+      "notes": "Active eight-age Rus progression. Cities start unlocked. Economics branches into trade and metalworking, ending in fortifications. Warfare reaches siege through ranged and mobile training. Research upgrades buildings automatically; armories become arms factories. Two completed branches unlock age-up.",
       "technologies": [
         {
           "id": "rus-stoneage-cargo-canoes",
@@ -9249,11 +9249,11 @@
           "age": "StoneAge",
           "tree": "naval",
           "order": 2,
-          "name": "Port, War Canoes & Sea Trade",
+          "name": "Ports & Sea Trade",
           "prerequisites": [
             "rus-stoneage-cargo-canoes"
           ],
-          "description": "Unlock ports and their war-canoe and sea-trader recipes together. Ports create sea traders and warships and receive trade deliveries.",
+          "description": "Unlock ports and sea traders.",
           "buildingUnlocks": [
             "Port"
           ],
@@ -9264,13 +9264,32 @@
           "researchSeconds": 18
         },
         {
-          "id": "rus-stoneage-coastal-navigation",
+          "id": "rus-stoneage-warships",
           "age": "StoneAge",
           "tree": "naval",
           "order": 3,
-          "name": "Coastal Navigation",
+          "name": "War Canoes",
           "prerequisites": [
             "rus-stoneage-port-sea-trade"
+          ],
+          "description": "Unlock war canoes at ports.",
+          "buildingUnlocks": [],
+          "kind": "unlock",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 300,
+          "researchSeconds": 20,
+          "troopUnlocks": []
+        },
+        {
+          "id": "rus-stoneage-coastal-navigation",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 4,
+          "name": "Coastal Navigation",
+          "prerequisites": [
+            "rus-stoneage-port-sea-trade",
+            "rus-stoneage-warships"
           ],
           "description": "Unchanged upgrade: improve squad transport hulls and sailing speed, military sailing speed and warship firing rate. Trade ships are unchanged.",
           "buildingUnlocks": [],
@@ -9281,18 +9300,17 @@
           "researchSeconds": 25
         },
         {
-          "id": "rus-stoneage-factories-mines",
+          "id": "rus-stoneage-cities",
           "age": "StoneAge",
           "tree": "economic",
           "order": 1,
-          "name": "Workshops & Stone Mining",
+          "name": "Cities",
           "prerequisites": [],
-          "description": "Unlock/upgrade factories and mines together, including extraction and stone tools; no metal smelting. Factories create trade cargo, spawn overland traders, and smelt the available metals. No separate recipe unlock research.",
+          "description": "Unlock cities for reserves and cargo drop-off.",
           "buildingUnlocks": [
-            "Factory",
-            "Mine"
+            "City"
           ],
-          "kind": "unlock",
+          "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 0,
@@ -9303,29 +9321,32 @@
           "age": "StoneAge",
           "tree": "economic",
           "order": 2,
-          "name": "Paths & Roads",
+          "name": "Roads & Trade",
           "prerequisites": [
-            "rus-stoneage-factories-mines"
+            "rus-stoneage-cities"
           ],
-          "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
+          "description": "Improve roads and overland traders: faster routes and more cargo per trip.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": 300,
-          "researchSeconds": 20
+          "gold": 600,
+          "researchSeconds": 40
         },
         {
-          "id": "rus-stoneage-land-traders",
+          "id": "rus-stoneage-factories-mines",
           "age": "StoneAge",
           "tree": "economic",
           "order": 3,
-          "name": "Overland Traders",
+          "name": "Workshops & Stone Mining",
           "prerequisites": [
-            "rus-stoneage-factories-mines"
+            "rus-stoneage-cities"
           ],
-          "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
-          "buildingUnlocks": [],
+          "description": "Unlock workshops and stone mines.",
+          "buildingUnlocks": [
+            "Factory",
+            "Mine"
+          ],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
@@ -9333,20 +9354,22 @@
           "researchSeconds": 20
         },
         {
-          "id": "rus-stoneage-cities",
+          "id": "rus-stoneage-fortifications",
           "age": "StoneAge",
           "tree": "economic",
           "order": 4,
-          "name": "Settlement Administration",
+          "name": "Stone Age Fortifications",
           "prerequisites": [
             "rus-stoneage-roads",
-            "rus-stoneage-land-traders"
+            "rus-stoneage-factories-mines"
           ],
-          "description": "Cities are buildable from the start. Improve city reserve generation and building health by 10%, and receiving capacity by 10%. This closes the Stone Age economic branch.",
+          "description": "Upgrade towers, walls and gates.",
           "buildingUnlocks": [
-            "City"
+            "Tower",
+            "Palisades",
+            "Gates"
           ],
-          "kind": "upgrade",
+          "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 450,
@@ -9357,9 +9380,9 @@
           "age": "StoneAge",
           "tree": "warfare",
           "order": 1,
-          "name": "Stone Age Infantry & Equipment",
+          "name": "Stone Age Infantry",
           "prerequisites": [],
-          "description": "Unlock/upgrade barracks and blacksmith together, including this tier's equipment-production recipes and barracks troop recipes: Clubmen. These recipes require no individual follow-up unlocks.",
+          "description": "Upgrade barracks and equipment production; unlock Clubmen and their equipment recipes.",
           "buildingUnlocks": [
             "Barracks",
             "Blacksmith"
@@ -9375,11 +9398,11 @@
           "age": "StoneAge",
           "tree": "warfare",
           "order": 2,
-          "name": "Stone Age Ranged Training",
+          "name": "Stone Age Ranged",
           "prerequisites": [
             "rus-stoneage-barracks-equipment"
           ],
-          "description": "Upgrade the ranged recruitment building and its equipment/troop recipes together: Javelin Throwers.",
+          "description": "Upgrade the range; unlock this age's ranged troops and equipment.",
           "buildingUnlocks": [
             "Archery Range"
           ],
@@ -9398,7 +9421,7 @@
           "prerequisites": [
             "rus-stoneage-barracks-equipment"
           ],
-          "description": "Upgrade stables, their light-cavalry equipment recipe and Mounted Spearmen together.",
+          "description": "Upgrade stables; unlock this age's light cavalry and equipment.",
           "buildingUnlocks": [
             "Stables"
           ],
@@ -9409,38 +9432,16 @@
           "researchSeconds": 15
         },
         {
-          "id": "rus-stoneage-fortifications",
-          "age": "StoneAge",
-          "tree": "warfare",
-          "order": 4,
-          "name": "Stone Age Fortifications",
-          "prerequisites": [
-            "rus-stoneage-barracks-equipment"
-          ],
-          "description": "Unlock/upgrade this tier's towers, walls/palisades and gates together, with modest fortification durability improvements.",
-          "buildingUnlocks": [
-            "Tower",
-            "Palisades",
-            "Gates"
-          ],
-          "kind": "unlock",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 450,
-          "researchSeconds": 25
-        },
-        {
           "id": "rus-stoneage-siege",
           "age": "StoneAge",
           "tree": "warfare",
           "order": 5,
-          "name": "Stone Age Siege Engineering",
+          "name": "Stone Age Siege",
           "prerequisites": [
             "rus-stoneage-ranged",
-            "rus-stoneage-mobile",
-            "rus-stoneage-fortifications"
+            "rus-stoneage-mobile"
           ],
-          "description": "Unlock/upgrade the siege workshop and all siege/artillery equipment and recruitment recipes available in this age. No separate workshop or per-engine research. Requires ranged, cavalry/vehicle and fortification upgrades.",
+          "description": "Upgrade siege workshops and unlock this age's siege units and equipment.",
           "buildingUnlocks": [
             "Siege Workshop"
           ],
@@ -9448,7 +9449,7 @@
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 450,
-          "researchSeconds": 25
+          "researchSeconds": 45.0
         },
         {
           "id": "rus-bronzeage-ports",
@@ -9459,7 +9460,7 @@
           "prerequisites": [
             "rus-stoneage-coastal-navigation"
           ],
-          "description": "Unlock the new port tier and automatically upgrade every existing port. Slightly increase receiving capacity, cargo-stock generation, land and sea cargo per trip, and building health. This node bundles the tier benefits; no separate port-building research.",
+          "description": "Upgrade all ports: more cargo, receiving capacity and durability.",
           "buildingUnlocks": [
             "Port"
           ],
@@ -9478,7 +9479,7 @@
           "prerequisites": [
             "rus-bronzeage-ports"
           ],
-          "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
+          "description": "Unlock this age's warships at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -9495,7 +9496,7 @@
           "prerequisites": [
             "rus-bronzeage-ports"
           ],
-          "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
+          "description": "Upgrade spawned sea traders and their cargo capacity.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -9513,24 +9514,60 @@
             "rus-bronzeage-warships",
             "rus-bronzeage-sea-traders"
           ],
-          "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
+          "description": "Improve ship durability and warship firing rate.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 3334,
-          "researchSeconds": 25
+          "researchSeconds": 45.0
+        },
+        {
+          "id": "rus-bronzeage-cities",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 1,
+          "name": "Bronze Age Cities",
+          "prerequisites": [
+            "rus-stoneage-fortifications"
+          ],
+          "description": "Upgrade all cities: more reserves, receiving capacity and durability.",
+          "buildingUnlocks": [
+            "City"
+          ],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 3334,
+          "researchSeconds": 45.0
+        },
+        {
+          "id": "rus-bronzeage-roads",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 2,
+          "name": "Bronze Age Roads & Trade",
+          "prerequisites": [
+            "rus-bronzeage-cities"
+          ],
+          "description": "Improve roads and overland traders: faster routes and more cargo per trip.",
+          "buildingUnlocks": [],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 4668,
+          "researchSeconds": 44
         },
         {
           "id": "rus-bronzeage-factories-mines",
           "age": "BronzeAge",
           "tree": "economic",
-          "order": 1,
-          "name": "Bronze Age Factories & Mines",
+          "order": 3,
+          "name": "Bronze Age Metalworking",
           "prerequisites": [
-            "rus-stoneage-cities"
+            "rus-bronzeage-cities"
           ],
-          "description": "Unlock/upgrade factories and mines together, including extraction and copper, tin and bronze smelting. Factories create trade cargo, spawn overland traders, and smelt the available metals. No separate recipe unlock research.",
+          "description": "Upgrade factories and mines; unlock this age's refining and metal recipes.",
           "buildingUnlocks": [
             "Factory",
             "Mine"
@@ -9542,57 +9579,25 @@
           "researchSeconds": 20
         },
         {
-          "id": "rus-bronzeage-roads",
-          "age": "BronzeAge",
-          "tree": "economic",
-          "order": 2,
-          "name": "Bronze Age Road Networks",
-          "prerequisites": [
-            "rus-bronzeage-factories-mines"
-          ],
-          "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 2334,
-          "researchSeconds": 22
-        },
-        {
-          "id": "rus-bronzeage-land-traders",
-          "age": "BronzeAge",
-          "tree": "economic",
-          "order": 3,
-          "name": "Bronze Age Overland Trade",
-          "prerequisites": [
-            "rus-bronzeage-factories-mines"
-          ],
-          "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 2334,
-          "researchSeconds": 22
-        },
-        {
-          "id": "rus-bronzeage-cities",
+          "id": "rus-bronzeage-fortifications",
           "age": "BronzeAge",
           "tree": "economic",
           "order": 4,
-          "name": "Bronze Age Cities",
+          "name": "Bronze Age Fortifications",
           "prerequisites": [
             "rus-bronzeage-roads",
-            "rus-bronzeage-land-traders"
+            "rus-bronzeage-factories-mines"
           ],
-          "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+          "description": "Upgrade towers, walls and gates.",
           "buildingUnlocks": [
-            "City"
+            "Tower",
+            "Walls",
+            "Gates"
           ],
-          "kind": "upgrade",
+          "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": 3334,
+          "gold": 6667,
           "researchSeconds": 25
         },
         {
@@ -9600,11 +9605,11 @@
           "age": "BronzeAge",
           "tree": "warfare",
           "order": 1,
-          "name": "Bronze Age Infantry & Equipment",
+          "name": "Bronze Age Infantry",
           "prerequisites": [
             "rus-stoneage-siege"
           ],
-          "description": "Unlock/upgrade barracks and blacksmith together, including this tier's equipment-production recipes and barracks troop recipes: Bronze Axemen, Bronze Spearmen. These recipes require no individual follow-up unlocks.",
+          "description": "Upgrade barracks and equipment production; unlock Bronze Axemen, Bronze Spearmen and their equipment recipes.",
           "buildingUnlocks": [
             "Barracks",
             "Blacksmith"
@@ -9620,11 +9625,11 @@
           "age": "BronzeAge",
           "tree": "warfare",
           "order": 2,
-          "name": "Bronze Age Ranged Training",
+          "name": "Bronze Age Ranged",
           "prerequisites": [
             "rus-bronzeage-barracks-equipment"
           ],
-          "description": "Upgrade the ranged recruitment building and its equipment/troop recipes together: Archers.",
+          "description": "Upgrade the range; unlock this age's ranged troops and equipment.",
           "buildingUnlocks": [
             "Archery Range"
           ],
@@ -9643,7 +9648,7 @@
           "prerequisites": [
             "rus-bronzeage-barracks-equipment"
           ],
-          "description": "Upgrade stables, their light-cavalry equipment recipe and Spear Riders together.",
+          "description": "Upgrade stables; unlock this age's light cavalry and equipment.",
           "buildingUnlocks": [
             "Stables"
           ],
@@ -9654,38 +9659,16 @@
           "researchSeconds": 22
         },
         {
-          "id": "rus-bronzeage-fortifications",
-          "age": "BronzeAge",
-          "tree": "warfare",
-          "order": 4,
-          "name": "Bronze Age Fortifications",
-          "prerequisites": [
-            "rus-bronzeage-barracks-equipment"
-          ],
-          "description": "Unlock/upgrade this tier's towers, walls/palisades and gates together, with modest fortification durability improvements.",
-          "buildingUnlocks": [
-            "Tower",
-            "Walls",
-            "Gates"
-          ],
-          "kind": "unlock",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 6667,
-          "researchSeconds": 25
-        },
-        {
           "id": "rus-bronzeage-siege",
           "age": "BronzeAge",
           "tree": "warfare",
           "order": 5,
-          "name": "Bronze Age Siege Engineering",
+          "name": "Bronze Age Siege",
           "prerequisites": [
             "rus-bronzeage-ranged",
-            "rus-bronzeage-mobile",
-            "rus-bronzeage-fortifications"
+            "rus-bronzeage-mobile"
           ],
-          "description": "Unlock/upgrade the siege workshop and all siege/artillery equipment and recruitment recipes available in this age. No separate workshop or per-engine research. Requires ranged, cavalry/vehicle and fortification upgrades.",
+          "description": "Upgrade siege workshops and unlock this age's siege units and equipment.",
           "buildingUnlocks": [
             "Siege Workshop"
           ],
@@ -9693,7 +9676,7 @@
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 6667,
-          "researchSeconds": 25
+          "researchSeconds": 45.0
         },
         {
           "id": "rus-classicalage-ports",
@@ -9704,7 +9687,7 @@
           "prerequisites": [
             "rus-bronzeage-ship-improvements"
           ],
-          "description": "Unlock the new port tier and automatically upgrade every existing port. Slightly increase receiving capacity, cargo-stock generation, land and sea cargo per trip, and building health. This node bundles the tier benefits; no separate port-building research.",
+          "description": "Upgrade all ports: more cargo, receiving capacity and durability.",
           "buildingUnlocks": [
             "Port"
           ],
@@ -9723,7 +9706,7 @@
           "prerequisites": [
             "rus-classicalage-ports"
           ],
-          "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
+          "description": "Unlock this age's warships at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -9740,7 +9723,7 @@
           "prerequisites": [
             "rus-classicalage-ports"
           ],
-          "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
+          "description": "Upgrade spawned sea traders and their cargo capacity.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -9758,24 +9741,60 @@
             "rus-classicalage-warships",
             "rus-classicalage-sea-traders"
           ],
-          "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
+          "description": "Improve ship durability and warship firing rate.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 5334,
-          "researchSeconds": 35
+          "researchSeconds": 55.0
+        },
+        {
+          "id": "rus-classicalage-cities",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 1,
+          "name": "Classical Age Cities",
+          "prerequisites": [
+            "rus-bronzeage-fortifications"
+          ],
+          "description": "Upgrade all cities: more reserves, receiving capacity and durability.",
+          "buildingUnlocks": [
+            "City"
+          ],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 5334,
+          "researchSeconds": 55.0
+        },
+        {
+          "id": "rus-classicalage-roads",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 2,
+          "name": "Classical Age Roads & Trade",
+          "prerequisites": [
+            "rus-classicalage-cities"
+          ],
+          "description": "Improve roads and overland traders: faster routes and more cargo per trip.",
+          "buildingUnlocks": [],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 8000,
+          "researchSeconds": 56
         },
         {
           "id": "rus-classicalage-factories-mines",
           "age": "ClassicalAge",
           "tree": "economic",
-          "order": 1,
-          "name": "Classical Age Factories & Mines",
+          "order": 3,
+          "name": "Classical Age Metalworking",
           "prerequisites": [
-            "rus-bronzeage-cities"
+            "rus-classicalage-cities"
           ],
-          "description": "Unlock/upgrade factories and mines together, including extraction and iron smelting. Factories create trade cargo, spawn overland traders, and smelt the available metals. No separate recipe unlock research.",
+          "description": "Upgrade factories and mines; unlock this age's refining and metal recipes.",
           "buildingUnlocks": [
             "Factory",
             "Mine"
@@ -9787,57 +9806,25 @@
           "researchSeconds": 25
         },
         {
-          "id": "rus-classicalage-roads",
-          "age": "ClassicalAge",
-          "tree": "economic",
-          "order": 2,
-          "name": "Classical Age Road Networks",
-          "prerequisites": [
-            "rus-classicalage-factories-mines"
-          ],
-          "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 4000,
-          "researchSeconds": 28
-        },
-        {
-          "id": "rus-classicalage-land-traders",
-          "age": "ClassicalAge",
-          "tree": "economic",
-          "order": 3,
-          "name": "Classical Age Overland Trade",
-          "prerequisites": [
-            "rus-classicalage-factories-mines"
-          ],
-          "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 4000,
-          "researchSeconds": 28
-        },
-        {
-          "id": "rus-classicalage-cities",
+          "id": "rus-classicalage-fortifications",
           "age": "ClassicalAge",
           "tree": "economic",
           "order": 4,
-          "name": "Classical Age Cities",
+          "name": "Classical Age Fortifications",
           "prerequisites": [
             "rus-classicalage-roads",
-            "rus-classicalage-land-traders"
+            "rus-classicalage-factories-mines"
           ],
-          "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+          "description": "Upgrade towers, walls and gates.",
           "buildingUnlocks": [
-            "City"
+            "Tower",
+            "Walls",
+            "Gates"
           ],
-          "kind": "upgrade",
+          "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": 5334,
+          "gold": 10667,
           "researchSeconds": 35
         },
         {
@@ -9845,11 +9832,11 @@
           "age": "ClassicalAge",
           "tree": "warfare",
           "order": 1,
-          "name": "Classical Age Infantry & Equipment",
+          "name": "Classical Age Infantry",
           "prerequisites": [
             "rus-bronzeage-siege"
           ],
-          "description": "Unlock/upgrade barracks and blacksmith together, including this tier's equipment-production recipes and barracks troop recipes: Varangians, Heavy Spearmen. These recipes require no individual follow-up unlocks.",
+          "description": "Upgrade barracks and equipment production; unlock Varangians, Heavy Spearmen and their equipment recipes.",
           "buildingUnlocks": [
             "Barracks",
             "Blacksmith"
@@ -9865,11 +9852,11 @@
           "age": "ClassicalAge",
           "tree": "warfare",
           "order": 2,
-          "name": "Classical Age Ranged Training",
+          "name": "Classical Age Ranged",
           "prerequisites": [
             "rus-classicalage-barracks-equipment"
           ],
-          "description": "Upgrade the ranged recruitment building and its equipment/troop recipes together: Recurve Bowmen.",
+          "description": "Upgrade the range; unlock this age's ranged troops and equipment.",
           "buildingUnlocks": [
             "Archery Range"
           ],
@@ -9888,7 +9875,7 @@
           "prerequisites": [
             "rus-classicalage-barracks-equipment"
           ],
-          "description": "Upgrade stables, their light-cavalry equipment recipe and Light Horsemen together.",
+          "description": "Upgrade stables; unlock this age's light cavalry and equipment.",
           "buildingUnlocks": [
             "Stables"
           ],
@@ -9899,38 +9886,16 @@
           "researchSeconds": 28
         },
         {
-          "id": "rus-classicalage-fortifications",
-          "age": "ClassicalAge",
-          "tree": "warfare",
-          "order": 4,
-          "name": "Classical Age Fortifications",
-          "prerequisites": [
-            "rus-classicalage-barracks-equipment"
-          ],
-          "description": "Unlock/upgrade this tier's towers, walls/palisades and gates together, with modest fortification durability improvements.",
-          "buildingUnlocks": [
-            "Tower",
-            "Walls",
-            "Gates"
-          ],
-          "kind": "unlock",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 10667,
-          "researchSeconds": 35
-        },
-        {
           "id": "rus-classicalage-siege",
           "age": "ClassicalAge",
           "tree": "warfare",
           "order": 5,
-          "name": "Classical Age Siege Engineering",
+          "name": "Classical Age Siege",
           "prerequisites": [
             "rus-classicalage-ranged",
-            "rus-classicalage-mobile",
-            "rus-classicalage-fortifications"
+            "rus-classicalage-mobile"
           ],
-          "description": "Unlock/upgrade the siege workshop and all siege/artillery equipment and recruitment recipes available in this age. No separate workshop or per-engine research. Requires ranged, cavalry/vehicle and fortification upgrades.",
+          "description": "Upgrade siege workshops and unlock this age's siege units and equipment.",
           "buildingUnlocks": [
             "Siege Workshop"
           ],
@@ -9938,18 +9903,18 @@
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 10667,
-          "researchSeconds": 35
+          "researchSeconds": 55.0
         },
         {
           "id": "rus-classicalage-ranged-mobile",
           "age": "ClassicalAge",
           "tree": "warfare",
           "order": 6,
-          "name": "Horse Archers — Horse Archery",
+          "name": "Horse Archers",
           "prerequisites": [
             "rus-classicalage-ranged"
           ],
-          "description": "Optional terminal unlock: Horse Archers and its equipment/recruitment recipe. No technology requires this node. Produced at stables; the research branches from ranged training.",
+          "description": "Unlock Horse Archers and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -9966,7 +9931,7 @@
           "prerequisites": [
             "rus-classicalage-ship-improvements"
           ],
-          "description": "Unlock the new port tier and automatically upgrade every existing port. Slightly increase receiving capacity, cargo-stock generation, land and sea cargo per trip, and building health. This node bundles the tier benefits; no separate port-building research.",
+          "description": "Upgrade all ports: more cargo, receiving capacity and durability.",
           "buildingUnlocks": [
             "Port"
           ],
@@ -9985,7 +9950,7 @@
           "prerequisites": [
             "rus-earlymedieval-ports"
           ],
-          "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
+          "description": "Unlock this age's warships at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10002,7 +9967,7 @@
           "prerequisites": [
             "rus-earlymedieval-ports"
           ],
-          "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
+          "description": "Upgrade spawned sea traders and their cargo capacity.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10020,24 +9985,60 @@
             "rus-earlymedieval-warships",
             "rus-earlymedieval-sea-traders"
           ],
-          "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
+          "description": "Improve ship durability and warship firing rate.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 8667,
-          "researchSeconds": 40
+          "researchSeconds": 60.0
+        },
+        {
+          "id": "rus-earlymedieval-cities",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 1,
+          "name": "Early Medieval Cities",
+          "prerequisites": [
+            "rus-classicalage-fortifications"
+          ],
+          "description": "Upgrade all cities: more reserves, receiving capacity and durability.",
+          "buildingUnlocks": [
+            "City"
+          ],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 8667,
+          "researchSeconds": 60.0
+        },
+        {
+          "id": "rus-earlymedieval-roads",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 2,
+          "name": "Early Medieval Roads & Trade",
+          "prerequisites": [
+            "rus-earlymedieval-cities"
+          ],
+          "description": "Improve roads and overland traders: faster routes and more cargo per trip.",
+          "buildingUnlocks": [],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 12000,
+          "researchSeconds": 66
         },
         {
           "id": "rus-earlymedieval-factories-mines",
           "age": "EarlyMedieval",
           "tree": "economic",
-          "order": 1,
-          "name": "Early Medieval Factories & Mines",
+          "order": 3,
+          "name": "Early Medieval Metalworking",
           "prerequisites": [
-            "rus-classicalage-cities"
+            "rus-earlymedieval-cities"
           ],
-          "description": "Unlock/upgrade factories and mines together, including extraction and improved ironworking. Factories create trade cargo, spawn overland traders, and smelt the available metals. No separate recipe unlock research.",
+          "description": "Upgrade factories and mines; unlock this age's refining and metal recipes.",
           "buildingUnlocks": [
             "Factory",
             "Mine"
@@ -10049,57 +10050,25 @@
           "researchSeconds": 30
         },
         {
-          "id": "rus-earlymedieval-roads",
-          "age": "EarlyMedieval",
-          "tree": "economic",
-          "order": 2,
-          "name": "Early Medieval Road Networks",
-          "prerequisites": [
-            "rus-earlymedieval-factories-mines"
-          ],
-          "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 6000,
-          "researchSeconds": 33
-        },
-        {
-          "id": "rus-earlymedieval-land-traders",
-          "age": "EarlyMedieval",
-          "tree": "economic",
-          "order": 3,
-          "name": "Early Medieval Overland Trade",
-          "prerequisites": [
-            "rus-earlymedieval-factories-mines"
-          ],
-          "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 6000,
-          "researchSeconds": 33
-        },
-        {
-          "id": "rus-earlymedieval-cities",
+          "id": "rus-earlymedieval-fortifications",
           "age": "EarlyMedieval",
           "tree": "economic",
           "order": 4,
-          "name": "Early Medieval Cities",
+          "name": "Early Medieval Fortifications",
           "prerequisites": [
             "rus-earlymedieval-roads",
-            "rus-earlymedieval-land-traders"
+            "rus-earlymedieval-factories-mines"
           ],
-          "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+          "description": "Upgrade towers, walls and gates.",
           "buildingUnlocks": [
-            "City"
+            "Tower",
+            "Walls",
+            "Gates"
           ],
-          "kind": "upgrade",
+          "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": 8667,
+          "gold": 17334,
           "researchSeconds": 40
         },
         {
@@ -10107,11 +10076,11 @@
           "age": "EarlyMedieval",
           "tree": "warfare",
           "order": 1,
-          "name": "Early Medieval Infantry & Equipment",
+          "name": "Early Medieval Infantry",
           "prerequisites": [
             "rus-classicalage-siege"
           ],
-          "description": "Unlock/upgrade barracks and blacksmith together, including this tier's equipment-production recipes and barracks troop recipes: Rus Woodsman, Mail Spearman. These recipes require no individual follow-up unlocks.",
+          "description": "Upgrade barracks and equipment production; unlock Rus Woodsman, Mail Spearman and their equipment recipes.",
           "buildingUnlocks": [
             "Barracks",
             "Blacksmith"
@@ -10127,11 +10096,11 @@
           "age": "EarlyMedieval",
           "tree": "warfare",
           "order": 2,
-          "name": "Early Medieval Ranged Training",
+          "name": "Early Medieval Ranged",
           "prerequisites": [
             "rus-earlymedieval-barracks-equipment"
           ],
-          "description": "Upgrade the ranged recruitment building and its equipment/troop recipes together: Rus Bowmen.",
+          "description": "Upgrade the range; unlock this age's ranged troops and equipment.",
           "buildingUnlocks": [
             "Archery Range"
           ],
@@ -10150,7 +10119,7 @@
           "prerequisites": [
             "rus-earlymedieval-barracks-equipment"
           ],
-          "description": "Upgrade stables, their light-cavalry equipment recipe and Rus Lancer together.",
+          "description": "Upgrade stables; unlock this age's light cavalry and equipment.",
           "buildingUnlocks": [
             "Stables"
           ],
@@ -10161,38 +10130,16 @@
           "researchSeconds": 33
         },
         {
-          "id": "rus-earlymedieval-fortifications",
-          "age": "EarlyMedieval",
-          "tree": "warfare",
-          "order": 4,
-          "name": "Early Medieval Fortifications",
-          "prerequisites": [
-            "rus-earlymedieval-barracks-equipment"
-          ],
-          "description": "Unlock/upgrade this tier's towers, walls/palisades and gates together, with modest fortification durability improvements.",
-          "buildingUnlocks": [
-            "Tower",
-            "Walls",
-            "Gates"
-          ],
-          "kind": "unlock",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 17334,
-          "researchSeconds": 40
-        },
-        {
           "id": "rus-earlymedieval-siege",
           "age": "EarlyMedieval",
           "tree": "warfare",
           "order": 5,
-          "name": "Early Medieval Siege Engineering",
+          "name": "Early Medieval Siege",
           "prerequisites": [
             "rus-earlymedieval-ranged",
-            "rus-earlymedieval-mobile",
-            "rus-earlymedieval-fortifications"
+            "rus-earlymedieval-mobile"
           ],
-          "description": "Unlock/upgrade the siege workshop and all siege/artillery equipment and recruitment recipes available in this age. No separate workshop or per-engine research. Requires ranged, cavalry/vehicle and fortification upgrades.",
+          "description": "Upgrade siege workshops and unlock this age's siege units and equipment.",
           "buildingUnlocks": [
             "Siege Workshop"
           ],
@@ -10200,18 +10147,18 @@
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 17334,
-          "researchSeconds": 40
+          "researchSeconds": 60.0
         },
         {
           "id": "rus-earlymedieval-ranged-mobile",
           "age": "EarlyMedieval",
           "tree": "warfare",
           "order": 6,
-          "name": "Early Cossack Archer — Horse Archery",
+          "name": "Cossack Archers",
           "prerequisites": [
             "rus-earlymedieval-ranged"
           ],
-          "description": "Optional terminal unlock: Early Cossack Archer and its equipment/recruitment recipe. No technology requires this node. Produced at stables; the research branches from ranged training.",
+          "description": "Unlock Cossack Archers and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10228,7 +10175,7 @@
           "prerequisites": [
             "rus-earlymedieval-mobile"
           ],
-          "description": "Optional terminal unlock: Druzhina and its equipment/recruitment recipe at stables. No technology requires this node.",
+          "description": "Unlock Druzhina and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10245,7 +10192,7 @@
           "prerequisites": [
             "rus-earlymedieval-ship-improvements"
           ],
-          "description": "Unlock the new port tier and automatically upgrade every existing port. Slightly increase receiving capacity, cargo-stock generation, land and sea cargo per trip, and building health. This node bundles the tier benefits; no separate port-building research.",
+          "description": "Upgrade all ports: more cargo, receiving capacity and durability.",
           "buildingUnlocks": [
             "Port"
           ],
@@ -10264,7 +10211,7 @@
           "prerequisites": [
             "rus-latemedieval-ports"
           ],
-          "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
+          "description": "Unlock this age's warships at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10281,7 +10228,7 @@
           "prerequisites": [
             "rus-latemedieval-ports"
           ],
-          "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
+          "description": "Upgrade spawned sea traders and their cargo capacity.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10299,24 +10246,60 @@
             "rus-latemedieval-warships",
             "rus-latemedieval-sea-traders"
           ],
-          "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
+          "description": "Improve ship durability and warship firing rate.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 13334,
-          "researchSeconds": 45
+          "researchSeconds": 65.0
+        },
+        {
+          "id": "rus-latemedieval-cities",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 1,
+          "name": "Late Medieval Cities",
+          "prerequisites": [
+            "rus-earlymedieval-fortifications"
+          ],
+          "description": "Upgrade all cities: more reserves, receiving capacity and durability.",
+          "buildingUnlocks": [
+            "City"
+          ],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 13334,
+          "researchSeconds": 65.0
+        },
+        {
+          "id": "rus-latemedieval-roads",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 2,
+          "name": "Late Medieval Roads & Trade",
+          "prerequisites": [
+            "rus-latemedieval-cities"
+          ],
+          "description": "Improve roads and overland traders: faster routes and more cargo per trip.",
+          "buildingUnlocks": [],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 18668,
+          "researchSeconds": 80
         },
         {
           "id": "rus-latemedieval-factories-mines",
           "age": "LateMedieval",
           "tree": "economic",
-          "order": 1,
-          "name": "Late Medieval Factories & Mines",
+          "order": 3,
+          "name": "Late Medieval Metalworking",
           "prerequisites": [
-            "rus-earlymedieval-cities"
+            "rus-latemedieval-cities"
           ],
-          "description": "Unlock/upgrade factories and mines together, including extraction and steel production. Factories create trade cargo, spawn overland traders, and smelt the available metals. No separate recipe unlock research.",
+          "description": "Upgrade factories and mines; unlock this age's refining and metal recipes.",
           "buildingUnlocks": [
             "Factory",
             "Mine"
@@ -10328,57 +10311,25 @@
           "researchSeconds": 35
         },
         {
-          "id": "rus-latemedieval-roads",
-          "age": "LateMedieval",
-          "tree": "economic",
-          "order": 2,
-          "name": "Late Medieval Road Networks",
-          "prerequisites": [
-            "rus-latemedieval-factories-mines"
-          ],
-          "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 9334,
-          "researchSeconds": 40
-        },
-        {
-          "id": "rus-latemedieval-land-traders",
-          "age": "LateMedieval",
-          "tree": "economic",
-          "order": 3,
-          "name": "Late Medieval Overland Trade",
-          "prerequisites": [
-            "rus-latemedieval-factories-mines"
-          ],
-          "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 9334,
-          "researchSeconds": 40
-        },
-        {
-          "id": "rus-latemedieval-cities",
+          "id": "rus-latemedieval-fortifications",
           "age": "LateMedieval",
           "tree": "economic",
           "order": 4,
-          "name": "Late Medieval Cities",
+          "name": "Late Medieval Fortifications",
           "prerequisites": [
             "rus-latemedieval-roads",
-            "rus-latemedieval-land-traders"
+            "rus-latemedieval-factories-mines"
           ],
-          "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+          "description": "Upgrade towers, walls and gates.",
           "buildingUnlocks": [
-            "City"
+            "Tower",
+            "Walls",
+            "Gates"
           ],
-          "kind": "upgrade",
+          "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": 13334,
+          "gold": 26667,
           "researchSeconds": 45
         },
         {
@@ -10386,11 +10337,11 @@
           "age": "LateMedieval",
           "tree": "warfare",
           "order": 1,
-          "name": "Late Medieval Infantry & Equipment",
+          "name": "Late Medieval Infantry",
           "prerequisites": [
             "rus-earlymedieval-siege"
           ],
-          "description": "Unlock/upgrade barracks and blacksmith together, including this tier's equipment-production recipes and barracks troop recipes: Boyar Guards, Plate Spearman. These recipes require no individual follow-up unlocks.",
+          "description": "Upgrade barracks and equipment production; unlock Boyar Guards, Plate Spearman and their equipment recipes.",
           "buildingUnlocks": [
             "Barracks",
             "Blacksmith"
@@ -10406,11 +10357,11 @@
           "age": "LateMedieval",
           "tree": "warfare",
           "order": 2,
-          "name": "Late Medieval Ranged Training",
+          "name": "Late Medieval Ranged",
           "prerequisites": [
             "rus-latemedieval-barracks-equipment"
           ],
-          "description": "Upgrade the ranged recruitment building and its equipment/troop recipes together: Rus Crossbowman.",
+          "description": "Upgrade the range; unlock this age's ranged troops and equipment.",
           "buildingUnlocks": [
             "Archery Range"
           ],
@@ -10429,7 +10380,7 @@
           "prerequisites": [
             "rus-latemedieval-barracks-equipment"
           ],
-          "description": "Upgrade stables, their light-cavalry equipment recipe and Cossack Riders together.",
+          "description": "Upgrade stables; unlock this age's light cavalry and equipment.",
           "buildingUnlocks": [
             "Stables"
           ],
@@ -10440,38 +10391,16 @@
           "researchSeconds": 40
         },
         {
-          "id": "rus-latemedieval-fortifications",
-          "age": "LateMedieval",
-          "tree": "warfare",
-          "order": 4,
-          "name": "Late Medieval Fortifications",
-          "prerequisites": [
-            "rus-latemedieval-barracks-equipment"
-          ],
-          "description": "Unlock/upgrade this tier's towers, walls/palisades and gates together, with modest fortification durability improvements.",
-          "buildingUnlocks": [
-            "Tower",
-            "Walls",
-            "Gates"
-          ],
-          "kind": "unlock",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 26667,
-          "researchSeconds": 45
-        },
-        {
           "id": "rus-latemedieval-siege",
           "age": "LateMedieval",
           "tree": "warfare",
           "order": 5,
-          "name": "Late Medieval Siege Engineering",
+          "name": "Late Medieval Siege",
           "prerequisites": [
             "rus-latemedieval-ranged",
-            "rus-latemedieval-mobile",
-            "rus-latemedieval-fortifications"
+            "rus-latemedieval-mobile"
           ],
-          "description": "Unlock/upgrade the siege workshop and all siege/artillery equipment and recruitment recipes available in this age. No separate workshop or per-engine research. Requires ranged, cavalry/vehicle and fortification upgrades.",
+          "description": "Upgrade siege workshops and unlock this age's siege units and equipment.",
           "buildingUnlocks": [
             "Siege Workshop"
           ],
@@ -10479,18 +10408,18 @@
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 26667,
-          "researchSeconds": 45
+          "researchSeconds": 65.0
         },
         {
           "id": "rus-latemedieval-ranged-mobile",
           "age": "LateMedieval",
           "tree": "warfare",
           "order": 6,
-          "name": "Heavy Cossack Archer — Horse Archery",
+          "name": "Heavy Cossack Archers",
           "prerequisites": [
             "rus-latemedieval-ranged"
           ],
-          "description": "Optional terminal unlock: Heavy Cossack Archer and its equipment/recruitment recipe. No technology requires this node. Produced at stables; the research branches from ranged training.",
+          "description": "Unlock Heavy Cossack Archers and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10507,7 +10436,7 @@
           "prerequisites": [
             "rus-latemedieval-mobile"
           ],
-          "description": "Optional terminal unlock: Boyar Cavalry and its equipment/recruitment recipe at stables. No technology requires this node.",
+          "description": "Unlock Boyar Cavalry and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10524,7 +10453,7 @@
           "prerequisites": [
             "rus-latemedieval-ship-improvements"
           ],
-          "description": "Unlock the new port tier and automatically upgrade every existing port. Slightly increase receiving capacity, cargo-stock generation, land and sea cargo per trip, and building health. This node bundles the tier benefits; no separate port-building research.",
+          "description": "Upgrade all ports: more cargo, receiving capacity and durability.",
           "buildingUnlocks": [
             "Port"
           ],
@@ -10543,7 +10472,7 @@
           "prerequisites": [
             "rus-napoleonic-ports"
           ],
-          "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
+          "description": "Unlock this age's warships at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10560,7 +10489,7 @@
           "prerequisites": [
             "rus-napoleonic-ports"
           ],
-          "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
+          "description": "Upgrade spawned sea traders and their cargo capacity.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10578,24 +10507,60 @@
             "rus-napoleonic-warships",
             "rus-napoleonic-sea-traders"
           ],
-          "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
+          "description": "Improve ship durability and warship firing rate.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 18334,
-          "researchSeconds": 50
+          "researchSeconds": 70.0
+        },
+        {
+          "id": "rus-napoleonic-cities",
+          "age": "Napoleonic",
+          "tree": "economic",
+          "order": 1,
+          "name": "Napoleonic Cities",
+          "prerequisites": [
+            "rus-latemedieval-fortifications"
+          ],
+          "description": "Upgrade all cities: more reserves, receiving capacity and durability.",
+          "buildingUnlocks": [
+            "City"
+          ],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 18334,
+          "researchSeconds": 70.0
+        },
+        {
+          "id": "rus-napoleonic-roads",
+          "age": "Napoleonic",
+          "tree": "economic",
+          "order": 2,
+          "name": "Napoleonic Roads & Trade",
+          "prerequisites": [
+            "rus-napoleonic-cities"
+          ],
+          "description": "Improve roads and overland traders: faster routes and more cargo per trip.",
+          "buildingUnlocks": [],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 26668,
+          "researchSeconds": 88
         },
         {
           "id": "rus-napoleonic-factories-mines",
           "age": "Napoleonic",
           "tree": "economic",
-          "order": 1,
-          "name": "Napoleonic Factories & Mines",
+          "order": 3,
+          "name": "Napoleonic Metalworking",
           "prerequisites": [
-            "rus-latemedieval-cities"
+            "rus-napoleonic-cities"
           ],
-          "description": "Unlock/upgrade factories and mines together, including extraction and steel and gunpowder-era production. Factories create trade cargo, spawn overland traders, and smelt the available metals. No separate recipe unlock research.",
+          "description": "Upgrade factories and mines; unlock this age's refining and metal recipes.",
           "buildingUnlocks": [
             "Factory",
             "Mine"
@@ -10607,57 +10572,25 @@
           "researchSeconds": 40
         },
         {
-          "id": "rus-napoleonic-roads",
-          "age": "Napoleonic",
-          "tree": "economic",
-          "order": 2,
-          "name": "Napoleonic Road Networks",
-          "prerequisites": [
-            "rus-napoleonic-factories-mines"
-          ],
-          "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 13334,
-          "researchSeconds": 44
-        },
-        {
-          "id": "rus-napoleonic-land-traders",
-          "age": "Napoleonic",
-          "tree": "economic",
-          "order": 3,
-          "name": "Napoleonic Overland Trade",
-          "prerequisites": [
-            "rus-napoleonic-factories-mines"
-          ],
-          "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 13334,
-          "researchSeconds": 44
-        },
-        {
-          "id": "rus-napoleonic-cities",
+          "id": "rus-napoleonic-fortifications",
           "age": "Napoleonic",
           "tree": "economic",
           "order": 4,
-          "name": "Napoleonic Cities",
+          "name": "Napoleonic Fortifications",
           "prerequisites": [
             "rus-napoleonic-roads",
-            "rus-napoleonic-land-traders"
+            "rus-napoleonic-factories-mines"
           ],
-          "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+          "description": "Upgrade towers, walls and gates.",
           "buildingUnlocks": [
-            "City"
+            "Tower",
+            "Walls",
+            "Gates"
           ],
-          "kind": "upgrade",
+          "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": 18334,
+          "gold": 36667,
           "researchSeconds": 50
         },
         {
@@ -10665,11 +10598,11 @@
           "age": "Napoleonic",
           "tree": "warfare",
           "order": 1,
-          "name": "Napoleonic Infantry & Equipment",
+          "name": "Napoleonic Infantry",
           "prerequisites": [
             "rus-latemedieval-siege"
           ],
-          "description": "Unlock/upgrade barracks and armory together, including this tier's equipment-production recipes and barracks troop recipes: Grenadiers, Pikeman. These recipes require no individual follow-up unlocks.",
+          "description": "Upgrade barracks and equipment production; unlock Grenadiers, Pikeman and their equipment recipes.",
           "buildingUnlocks": [
             "Barracks",
             "Armory"
@@ -10685,11 +10618,11 @@
           "age": "Napoleonic",
           "tree": "warfare",
           "order": 2,
-          "name": "Napoleonic Ranged Training",
+          "name": "Napoleonic Ranged",
           "prerequisites": [
             "rus-napoleonic-barracks-equipment"
           ],
-          "description": "Upgrade the ranged recruitment building and its equipment/troop recipes together: Rus Musketeer.",
+          "description": "Upgrade the range; unlock this age's ranged troops and equipment.",
           "buildingUnlocks": [
             "Archery Range"
           ],
@@ -10708,7 +10641,7 @@
           "prerequisites": [
             "rus-napoleonic-barracks-equipment"
           ],
-          "description": "Upgrade stables, their light-cavalry equipment recipe and Cossack Lancers together.",
+          "description": "Upgrade stables; unlock this age's light cavalry and equipment.",
           "buildingUnlocks": [
             "Stables"
           ],
@@ -10719,38 +10652,16 @@
           "researchSeconds": 44
         },
         {
-          "id": "rus-napoleonic-fortifications",
-          "age": "Napoleonic",
-          "tree": "warfare",
-          "order": 4,
-          "name": "Napoleonic Fortifications",
-          "prerequisites": [
-            "rus-napoleonic-barracks-equipment"
-          ],
-          "description": "Unlock/upgrade this tier's towers, walls/palisades and gates together, with modest fortification durability improvements.",
-          "buildingUnlocks": [
-            "Tower",
-            "Walls",
-            "Gates"
-          ],
-          "kind": "unlock",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 36667,
-          "researchSeconds": 50
-        },
-        {
           "id": "rus-napoleonic-siege",
           "age": "Napoleonic",
           "tree": "warfare",
           "order": 5,
-          "name": "Napoleonic Siege Engineering",
+          "name": "Napoleonic Siege",
           "prerequisites": [
             "rus-napoleonic-ranged",
-            "rus-napoleonic-mobile",
-            "rus-napoleonic-fortifications"
+            "rus-napoleonic-mobile"
           ],
-          "description": "Unlock/upgrade the siege workshop and all siege/artillery equipment and recruitment recipes available in this age. No separate workshop or per-engine research. Requires ranged, cavalry/vehicle and fortification upgrades.",
+          "description": "Upgrade siege workshops and unlock this age's siege units and equipment.",
           "buildingUnlocks": [
             "Siege Workshop"
           ],
@@ -10758,18 +10669,18 @@
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 36667,
-          "researchSeconds": 50
+          "researchSeconds": 70.0
         },
         {
           "id": "rus-napoleonic-ranged-mobile",
           "age": "Napoleonic",
           "tree": "warfare",
           "order": 6,
-          "name": "Streltsy — Horse Archery",
+          "name": "Mounted Streltsy",
           "prerequisites": [
             "rus-napoleonic-ranged"
           ],
-          "description": "Optional terminal unlock: Streltsy and its equipment/recruitment recipe. No technology requires this node. Produced at stables; the research branches from ranged training.",
+          "description": "Unlock Mounted Streltsy and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10786,7 +10697,7 @@
           "prerequisites": [
             "rus-napoleonic-mobile"
           ],
-          "description": "Optional terminal unlock: Cuirassiers and its equipment/recruitment recipe at stables. No technology requires this node.",
+          "description": "Unlock Cuirassiers and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10803,7 +10714,7 @@
           "prerequisites": [
             "rus-napoleonic-ship-improvements"
           ],
-          "description": "Unlock the new port tier and automatically upgrade every existing port. Slightly increase receiving capacity, cargo-stock generation, land and sea cargo per trip, and building health. This node bundles the tier benefits; no separate port-building research.",
+          "description": "Upgrade all ports: more cargo, receiving capacity and durability.",
           "buildingUnlocks": [
             "Port"
           ],
@@ -10822,7 +10733,7 @@
           "prerequisites": [
             "rus-earlymodern-ports"
           ],
-          "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
+          "description": "Unlock this age's warships at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10839,7 +10750,7 @@
           "prerequisites": [
             "rus-earlymodern-ports"
           ],
-          "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
+          "description": "Upgrade spawned sea traders and their cargo capacity.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10857,13 +10768,13 @@
             "rus-earlymodern-warships",
             "rus-earlymodern-sea-traders"
           ],
-          "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
+          "description": "Improve ship durability and warship firing rate.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 30000,
-          "researchSeconds": 60
+          "researchSeconds": 80.0
         },
         {
           "id": "rus-earlymodern-submarines",
@@ -10874,7 +10785,7 @@
           "prerequisites": [
             "rus-earlymodern-warships"
           ],
-          "description": "Unlock submarines and their port recipe. This is an optional specialization; submarine improvements are included in the later Modern General Fleet Improvements node. No quiet-propulsion chain.",
+          "description": "Unlock diesel submarines at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -10883,15 +10794,51 @@
           "researchSeconds": 50
         },
         {
-          "id": "rus-earlymodern-factories-mines",
+          "id": "rus-earlymodern-cities",
           "age": "EarlyModern",
           "tree": "economic",
           "order": 1,
-          "name": "Pre-modern Factories & Mines",
+          "name": "Pre-modern Cities",
           "prerequisites": [
-            "rus-napoleonic-cities"
+            "rus-napoleonic-fortifications"
           ],
-          "description": "Unlock/upgrade factories and mines together, including extraction and industrial steel production. Factories create trade cargo, spawn overland traders, and smelt the available metals. No separate recipe unlock research.",
+          "description": "Upgrade all cities: more reserves, receiving capacity and durability.",
+          "buildingUnlocks": [
+            "City"
+          ],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 30000,
+          "researchSeconds": 80.0
+        },
+        {
+          "id": "rus-earlymodern-roads",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 2,
+          "name": "Pre-modern Roads & Trade",
+          "prerequisites": [
+            "rus-earlymodern-cities"
+          ],
+          "description": "Improve roads and overland traders: faster routes and more cargo per trip.",
+          "buildingUnlocks": [],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 40000,
+          "researchSeconds": 100
+        },
+        {
+          "id": "rus-earlymodern-factories-mines",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 3,
+          "name": "Pre-modern Metalworking",
+          "prerequisites": [
+            "rus-earlymodern-cities"
+          ],
+          "description": "Upgrade factories and mines; unlock this age's refining and metal recipes. Blacksmiths can recycle older armour into copper, tin and iron.",
           "buildingUnlocks": [
             "Factory",
             "Mine"
@@ -10903,57 +10850,25 @@
           "researchSeconds": 45
         },
         {
-          "id": "rus-earlymodern-roads",
-          "age": "EarlyModern",
-          "tree": "economic",
-          "order": 2,
-          "name": "Pre-modern Road Networks",
-          "prerequisites": [
-            "rus-earlymodern-factories-mines"
-          ],
-          "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 20000,
-          "researchSeconds": 50
-        },
-        {
-          "id": "rus-earlymodern-land-traders",
-          "age": "EarlyModern",
-          "tree": "economic",
-          "order": 3,
-          "name": "Pre-modern Overland Trade",
-          "prerequisites": [
-            "rus-earlymodern-factories-mines"
-          ],
-          "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 20000,
-          "researchSeconds": 50
-        },
-        {
-          "id": "rus-earlymodern-cities",
+          "id": "rus-earlymodern-fortifications",
           "age": "EarlyModern",
           "tree": "economic",
           "order": 4,
-          "name": "Pre-modern Cities",
+          "name": "Pre-modern Fortifications",
           "prerequisites": [
             "rus-earlymodern-roads",
-            "rus-earlymodern-land-traders"
+            "rus-earlymodern-factories-mines"
           ],
-          "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+          "description": "Upgrade trenches, gun nests and anti-aircraft emplacements.",
           "buildingUnlocks": [
-            "City"
+            "Gun Nest",
+            "Trench",
+            "Anti-Aircraft Emplacement"
           ],
-          "kind": "upgrade",
+          "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": 30000,
+          "gold": 60000,
           "researchSeconds": 60
         },
         {
@@ -10961,11 +10876,11 @@
           "age": "EarlyModern",
           "tree": "economic",
           "order": 5,
-          "name": "Oil Wells & Offshore Rigs",
+          "name": "Oil Extraction",
           "prerequisites": [
             "rus-earlymodern-factories-mines"
           ],
-          "description": "Unlock oil extraction through oil wells and offshore oil rigs. The oil-rig unlock belongs to economics, not naval. Supplies fuel for the industrial-age army and fleet.",
+          "description": "Unlock oil wells and offshore rigs.",
           "buildingUnlocks": [
             "Oil Well",
             "Oil Rig"
@@ -10981,11 +10896,11 @@
           "age": "EarlyModern",
           "tree": "warfare",
           "order": 1,
-          "name": "Pre-modern Infantry & Equipment",
+          "name": "Pre-modern Infantry",
           "prerequisites": [
             "rus-napoleonic-siege"
           ],
-          "description": "Unlock/upgrade barracks and arms factory together, including this tier's equipment-production recipes and barracks troop recipes: Mosin Nagant Squad, PTRD-41 Crew. These recipes require no individual follow-up unlocks.",
+          "description": "Upgrade barracks and armories to arms factories; unlock Mosin Nagant Squad, PTRD-41 Crew and their equipment recipes.",
           "buildingUnlocks": [
             "Barracks",
             "Arms Factory"
@@ -11001,11 +10916,11 @@
           "age": "EarlyModern",
           "tree": "warfare",
           "order": 2,
-          "name": "Pre-modern Ranged Infantry",
+          "name": "Pre-modern Ranged",
           "prerequisites": [
             "rus-earlymodern-barracks-equipment"
           ],
-          "description": "Upgrade the ranged recruitment building and its equipment/troop recipes together: DP-28 Crew.",
+          "description": "Upgrade the range; unlock this age's ranged troops and equipment.",
           "buildingUnlocks": [
             "Archery Range"
           ],
@@ -11024,7 +10939,7 @@
           "prerequisites": [
             "rus-earlymodern-barracks-equipment"
           ],
-          "description": "Replace the stable progression with vehicle-depot upgrades and the base light-vehicle recipe: Gun Trucks. Heavy and ranged vehicle recipes are separate optional side branches.",
+          "description": "Upgrade vehicle depots; unlock this age's vehicles and equipment.",
           "buildingUnlocks": [
             "Vehicle Depot"
           ],
@@ -11035,38 +10950,16 @@
           "researchSeconds": 50
         },
         {
-          "id": "rus-earlymodern-fortifications",
-          "age": "EarlyModern",
-          "tree": "warfare",
-          "order": 4,
-          "name": "Pre-modern Fortifications",
-          "prerequisites": [
-            "rus-earlymodern-barracks-equipment"
-          ],
-          "description": "Unlock/upgrade this tier's gun nests, trenches and anti-aircraft emplacements together, with modest fortification durability improvements.",
-          "buildingUnlocks": [
-            "Gun Nest",
-            "Trench",
-            "Anti-Aircraft Emplacement"
-          ],
-          "kind": "unlock",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 60000,
-          "researchSeconds": 60
-        },
-        {
           "id": "rus-earlymodern-siege",
           "age": "EarlyModern",
           "tree": "warfare",
           "order": 5,
-          "name": "Pre-modern Siege Engineering",
+          "name": "Pre-modern Siege",
           "prerequisites": [
             "rus-earlymodern-ranged",
-            "rus-earlymodern-mobile",
-            "rus-earlymodern-fortifications"
+            "rus-earlymodern-mobile"
           ],
-          "description": "Unlock/upgrade the siege workshop and all siege/artillery equipment and recruitment recipes available in this age. No separate workshop or per-engine research. Requires ranged, cavalry/vehicle and fortification upgrades.",
+          "description": "Upgrade siege workshops and unlock this age's siege units and equipment.",
           "buildingUnlocks": [
             "Siege Workshop"
           ],
@@ -11074,7 +10967,7 @@
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 60000,
-          "researchSeconds": 60
+          "researchSeconds": 80.0
         },
         {
           "id": "rus-earlymodern-ranged-mobile",
@@ -11085,7 +10978,7 @@
           "prerequisites": [
             "rus-earlymodern-mobile"
           ],
-          "description": "Optional terminal unlock: T-34 and its equipment/recruitment recipe. No technology requires this node. Produced at the vehicle depot.",
+          "description": "Unlock T-34 and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11102,7 +10995,7 @@
           "prerequisites": [
             "rus-earlymodern-mobile"
           ],
-          "description": "Optional terminal unlock: Tsar Tank and its equipment/recruitment recipe at the vehicle depot. No technology requires this node.",
+          "description": "Unlock Tsar Tank and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11115,11 +11008,11 @@
           "age": "EarlyModern",
           "tree": "warfare",
           "order": 8,
-          "name": "Pre-modern Airfields & Fighters",
+          "name": "Pre-modern Airfields",
           "prerequisites": [
             "rus-earlymodern-barracks-equipment"
           ],
-          "description": "Unlock/upgrade military airfields together with this age's fighters and their production recipe. Bombers remain a separate optional specialization.",
+          "description": "Unlock airfields and fighters. Fighters can patrol for three minutes.",
           "buildingUnlocks": [
             "Military Airstrip"
           ],
@@ -11138,7 +11031,7 @@
           "prerequisites": [
             "rus-earlymodern-airfields"
           ],
-          "description": "Optional terminal unlock: this age's bombers and their production recipe. No technology requires this specialization. Pre-modern bombers can carry atomic bombs after Nuclear Weapons is researched.",
+          "description": "Unlock pre-modern bombers and their bombing runs.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11151,12 +11044,12 @@
           "age": "EarlyModern",
           "tree": "warfare",
           "order": 11,
-          "name": "Nuclear Weapons & Atomic Bombs",
+          "name": "Atomic Weapons",
           "prerequisites": [
             "rus-earlymodern-siege",
             "rus-earlymodern-airfields"
           ],
-          "description": "End-of-pre-modern unlock: nuclear weapons facility and A-bomb production/loading for bombers. Reuse the existing H-bomb artwork for a bomber-dropped atomic bomb. Bomber specialization is required to produce the delivery aircraft, but is not a research prerequisite of this node. Atomic bombs are produced at the nuclear weapons facility and loaded one per bomber for O: A-Bomb Run.",
+          "description": "Unlock nuclear facilities, atomic bombs and bomber A-Bomb Runs.",
           "buildingUnlocks": [
             "Nuclear Weapons Facility"
           ],
@@ -11175,7 +11068,7 @@
           "prerequisites": [
             "rus-earlymodern-ship-improvements"
           ],
-          "description": "Unlock the new port tier and automatically upgrade every existing port. Slightly increase receiving capacity, cargo-stock generation, land and sea cargo per trip, and building health. This node bundles the tier benefits; no separate port-building research.",
+          "description": "Upgrade all ports: more cargo, receiving capacity and durability.",
           "buildingUnlocks": [
             "Port"
           ],
@@ -11194,7 +11087,7 @@
           "prerequisites": [
             "rus-modern-ports"
           ],
-          "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
+          "description": "Unlock this age's warships at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11211,7 +11104,7 @@
           "prerequisites": [
             "rus-modern-ports"
           ],
-          "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
+          "description": "Upgrade spawned sea traders and their cargo capacity.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11229,7 +11122,7 @@
             "rus-modern-warships",
             "rus-modern-sea-traders"
           ],
-          "description": "One general improvement for researched warships, submarines, squad transports and sea traders: slight durability, cargo/receiving and warship firing-rate improvements as applicable. Bundles Reinforced Transport Hulls and Maritime Cargo Systems; no Integrated Fleet Command or separate submarine-improvement node.",
+          "description": "Improve ship durability and warship firing rate.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11246,7 +11139,7 @@
           "prerequisites": [
             "rus-modern-warships"
           ],
-          "description": "One optional upgrade combining naval missile capability and fleet air defence. Replaces the two separate missile/air-defence upgrades.",
+          "description": "Improve warship missiles and let warships engage hostile aircraft.",
           "buildingUnlocks": [],
           "kind": "upgrade",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11258,13 +11151,17 @@
           "id": "rus-modern-submarines",
           "age": "Modern",
           "tree": "naval",
-          "order": 6,
+          "order": 99,
           "name": "Nuclear Submarines",
           "prerequisites": [
+            "rus-modern-ports",
             "rus-modern-warships",
+            "rus-modern-sea-traders",
+            "rus-modern-ship-improvements",
+            "rus-modern-naval-missiles-air-defence",
             "rus-earlymodern-submarines"
           ],
-          "description": "Unlock the modern nuclear-powered submarine tier and its port recipe. Nuclear propulsion does not grant nuclear missiles. General Fleet Improvements supplies the later modest submarine improvements.",
+          "description": "Unlock nuclear submarines at ports.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11273,15 +11170,51 @@
           "researchSeconds": 63
         },
         {
-          "id": "rus-modern-factories-mines",
+          "id": "rus-modern-cities",
           "age": "Modern",
           "tree": "economic",
           "order": 1,
-          "name": "Modern Factories & Mines",
+          "name": "Modern Cities",
           "prerequisites": [
-            "rus-earlymodern-cities"
+            "rus-earlymodern-fortifications"
           ],
-          "description": "Unlock/upgrade factories and mines together, including extraction and modern alloy and equipment production. Factories create trade cargo, spawn overland traders, and smelt the available metals. No separate recipe unlock research.",
+          "description": "Upgrade all cities: more reserves, receiving capacity and durability.",
+          "buildingUnlocks": [
+            "City"
+          ],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 37500,
+          "researchSeconds": 75
+        },
+        {
+          "id": "rus-modern-roads",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 2,
+          "name": "Modern Roads & Trade",
+          "prerequisites": [
+            "rus-modern-cities"
+          ],
+          "description": "Improve roads and overland traders: faster routes and more cargo per trip.",
+          "buildingUnlocks": [],
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 50000,
+          "researchSeconds": 126
+        },
+        {
+          "id": "rus-modern-factories-mines",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 3,
+          "name": "Modern Metalworking",
+          "prerequisites": [
+            "rus-modern-cities"
+          ],
+          "description": "Upgrade factories and mines; unlock this age's refining and metal recipes.",
           "buildingUnlocks": [
             "Factory",
             "Mine"
@@ -11293,57 +11226,25 @@
           "researchSeconds": 57
         },
         {
-          "id": "rus-modern-roads",
-          "age": "Modern",
-          "tree": "economic",
-          "order": 2,
-          "name": "Modern Road Networks",
-          "prerequisites": [
-            "rus-modern-factories-mines"
-          ],
-          "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 25000,
-          "researchSeconds": 63
-        },
-        {
-          "id": "rus-modern-land-traders",
-          "age": "Modern",
-          "tree": "economic",
-          "order": 3,
-          "name": "Modern Overland Trade",
-          "prerequisites": [
-            "rus-modern-factories-mines"
-          ],
-          "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
-          "buildingUnlocks": [],
-          "kind": "upgrade",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 25000,
-          "researchSeconds": 63
-        },
-        {
-          "id": "rus-modern-cities",
+          "id": "rus-modern-fortifications",
           "age": "Modern",
           "tree": "economic",
           "order": 4,
-          "name": "Modern Cities",
+          "name": "Modern Fortifications",
           "prerequisites": [
             "rus-modern-roads",
-            "rus-modern-land-traders"
+            "rus-modern-factories-mines"
           ],
-          "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+          "description": "Upgrade trenches, gun nests and anti-aircraft emplacements.",
           "buildingUnlocks": [
-            "City"
+            "Gun Nest",
+            "Trench",
+            "Anti-Aircraft Emplacement"
           ],
-          "kind": "upgrade",
+          "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": 37500,
+          "gold": 75000,
           "researchSeconds": 75
         },
         {
@@ -11351,11 +11252,11 @@
           "age": "Modern",
           "tree": "warfare",
           "order": 1,
-          "name": "Modern Infantry & Equipment",
+          "name": "Modern Infantry",
           "prerequisites": [
             "rus-earlymodern-nuclear-weapons"
           ],
-          "description": "Unlock/upgrade barracks and arms factory together, including this tier's equipment-production recipes and barracks troop recipes: AK-47 Squad, ATGM Teams. These recipes require no individual follow-up unlocks.",
+          "description": "Upgrade barracks and armories to arms factories; unlock AK-47 Squad, ATGM Teams and their equipment recipes.",
           "buildingUnlocks": [
             "Barracks",
             "Arms Factory"
@@ -11371,11 +11272,11 @@
           "age": "Modern",
           "tree": "warfare",
           "order": 2,
-          "name": "Modern Ranged Infantry",
+          "name": "Modern Ranged",
           "prerequisites": [
             "rus-modern-barracks-equipment"
           ],
-          "description": "Upgrade the ranged recruitment building and its equipment/troop recipes together: RPL-20 Crew.",
+          "description": "Upgrade the range; unlock this age's ranged troops and equipment.",
           "buildingUnlocks": [
             "Archery Range"
           ],
@@ -11394,7 +11295,7 @@
           "prerequisites": [
             "rus-modern-barracks-equipment"
           ],
-          "description": "Replace the stable progression with vehicle-depot upgrades and the base light-vehicle recipe: VPK Bumerang. Heavy and ranged vehicle recipes are separate optional side branches.",
+          "description": "Upgrade vehicle depots; unlock this age's vehicles and equipment.",
           "buildingUnlocks": [
             "Vehicle Depot"
           ],
@@ -11405,38 +11306,16 @@
           "researchSeconds": 63
         },
         {
-          "id": "rus-modern-fortifications",
-          "age": "Modern",
-          "tree": "warfare",
-          "order": 4,
-          "name": "Modern Fortifications",
-          "prerequisites": [
-            "rus-modern-barracks-equipment"
-          ],
-          "description": "Unlock/upgrade this tier's gun nests, trenches and anti-aircraft emplacements together, with modest fortification durability improvements.",
-          "buildingUnlocks": [
-            "Gun Nest",
-            "Trench",
-            "Anti-Aircraft Emplacement"
-          ],
-          "kind": "unlock",
-          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
-          "decision": "proposed",
-          "gold": 75000,
-          "researchSeconds": 75
-        },
-        {
           "id": "rus-modern-siege",
           "age": "Modern",
           "tree": "warfare",
           "order": 5,
-          "name": "Modern Siege Engineering",
+          "name": "Modern Siege",
           "prerequisites": [
             "rus-modern-ranged",
-            "rus-modern-mobile",
-            "rus-modern-fortifications"
+            "rus-modern-mobile"
           ],
-          "description": "Unlock/upgrade the siege workshop and all siege/artillery equipment and recruitment recipes available in this age. No separate workshop or per-engine research. Requires ranged, cavalry/vehicle and fortification upgrades.",
+          "description": "Upgrade siege workshops and unlock this age's siege units and equipment.",
           "buildingUnlocks": [
             "Siege Workshop"
           ],
@@ -11455,7 +11334,7 @@
           "prerequisites": [
             "rus-modern-mobile"
           ],
-          "description": "Optional terminal unlock: 2K22 Tunguska and its equipment/recruitment recipe. No technology requires this node. Produced at the vehicle depot.",
+          "description": "Unlock 2K22 Tunguska and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11472,7 +11351,7 @@
           "prerequisites": [
             "rus-modern-mobile"
           ],
-          "description": "Optional terminal unlock: T-14 and its equipment/recruitment recipe at the vehicle depot. No technology requires this node.",
+          "description": "Unlock T-14 and their equipment recipe.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11485,11 +11364,11 @@
           "age": "Modern",
           "tree": "warfare",
           "order": 8,
-          "name": "Modern Airfields & Fighters",
+          "name": "Modern Airfields",
           "prerequisites": [
             "rus-modern-barracks-equipment"
           ],
-          "description": "Unlock/upgrade military airfields together with this age's fighters and their production recipe. Bombers remain a separate optional specialization.",
+          "description": "Upgrade airfields and fighters; improve flight time.",
           "buildingUnlocks": [
             "Military Airstrip"
           ],
@@ -11508,7 +11387,7 @@
           "prerequisites": [
             "rus-modern-airfields"
           ],
-          "description": "Optional terminal unlock: this age's bombers and their production recipe. No technology requires this specialization. Pre-modern bombers can carry atomic bombs after Nuclear Weapons is researched.",
+          "description": "Unlock modern bombers and their bombing runs.",
           "buildingUnlocks": [],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
@@ -11521,14 +11400,13 @@
           "age": "Modern",
           "tree": "warfare",
           "order": 11,
-          "name": "Missile Silos & Missile Defence",
+          "name": "Missiles & Defence",
           "prerequisites": [
             "rus-modern-ranged",
             "rus-modern-mobile",
-            "rus-modern-fortifications",
             "rus-modern-airfields"
           ],
-          "description": "One unlock for missile silos and missile-defence construction, with their associated missile/defence recipes. Removes separate unlock tolls for these two buildings.",
+          "description": "Unlock missile silos and missile defence systems.",
           "buildingUnlocks": [
             "Missile Silo",
             "Missile Defence"
@@ -11544,11 +11422,11 @@
           "age": "Modern",
           "tree": "warfare",
           "order": 12,
-          "name": "MIRVs & Drone Systems",
+          "name": "MIRVs & Drones",
           "prerequisites": [
             "rus-modern-missile-infrastructure"
           ],
-          "description": "Unlock MIRVs, MIRV launch complexes and Drone Facilities together. U sends single-use drones on a 120-second, slower-speed flight; drones currently bypass defence.",
+          "description": "Unlock MIRV launchers and drone facilities for strategic strikes.",
           "buildingUnlocks": [
             "MIRV Launch Complex",
             "Drone Facility"

@@ -1,0 +1,78 @@
+{
+  "size": 384,
+  "blackThreshold": 12,
+  "icons": {
+    "city": {
+      "source": "Art/Building Icons/City/Top-Down-Correction/City_StoneAge.png",
+      "sourceSha256": "8c68a32e42da744454218880a360edecd9ff34e93ba1f8d1df006263d2d65131",
+      "transparency": "authored",
+      "sourceBounds": [
+        49,
+        28,
+        1192,
+        1226
+      ],
+      "outputSha256": "ed2d6657340ab86f87a57e507ec3b38d137533835972c49ab33ad5b8815ce7c9"
+    },
+    "factory": {
+      "source": "Art/Building Icons/Factory/Top-Down-Correction/Factor_StoneAge.png",
+      "sourceSha256": "a2f7c73a2168bd0d6fd9d171aa11d7d38a196f703617d2bbda58e258e44efab0",
+      "transparency": "authored",
+      "sourceBounds": [
+        0,
+        21,
+        1238,
+        1222
+      ],
+      "outputSha256": "d5cf0ce43037817cd36aa5dd63bdccdc7bbccd3e188d7681662918be629661a7"
+    },
+    "port": {
+      "source": "Art/Building Icons/Port/Top-Down-Correction/Port_StoneAge.png",
+      "sourceSha256": "c92d42448c3ea35e172b382284d7c153c43b8667336dc1af788780f2fa872bd2",
+      "transparency": "authored",
+      "sourceBounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "outputSha256": "19301249d843ce079d1e9dacf7191e85389728bb2343fc9917c48d79f86295a1"
+    },
+    "barracks": {
+      "source": "Art/Building Icons/Barracks/Top-Down-Correction/Barracks_StoneAge.png",
+      "sourceSha256": "ad9235955f7acd1be8dd4a25f2141ebbde65e14b37f8317772a4b0401820251b",
+      "transparency": "authored",
+      "sourceBounds": [
+        0,
+        21,
+        1224,
+        1199
+      ],
+      "outputSha256": "8b12f7161d4ed7885cb019f9a2dfbd8cdf5474b50cf16f8173a74bc0f40941f3"
+    },
+    "archery": {
+      "source": "Art/Building Icons/Archery Range/Top-Down-Correction/Archery_StoneAge.png",
+      "sourceSha256": "bcdae30ce805d873e81ab1d1c4f00a9d5878366fad6d4781cf5b1e350dd45132",
+      "transparency": "authored",
+      "sourceBounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "outputSha256": "ebbf1042fc4f83fc7db174c18630feb39952ebee5f80f4de4941ee397b22a742"
+    },
+    "stables": {
+      "source": "Art/Building Icons/Stables/Top-Down-Correction/Stables_StoneAge.png",
+      "sourceSha256": "686ac3ae346f31d7e8c2743b0e6b201b25e023464f8e3e3dcd2ddac0bbf5dbb1",
+      "transparency": "authored",
+      "sourceBounds": [
+        0,
+        0,
+        1238,
+        1254
+      ],
+      "outputSha256": "ebca02cb2a637b0df4ed1e1333ccbbda5abc0bcecc5a6fc97db8d8ee923550aa"
+    }
+  }
+}

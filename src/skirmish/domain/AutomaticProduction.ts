@@ -2,8 +2,8 @@ import type { Building, BuildingType } from "../Protocol";
 import { producerCompatible } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
 import { TECHNOLOGY } from "../content/Technology";
-import { AGES, type Inventory, type ProductionRecipe } from "./Definitions";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
+import { AGES, type Inventory, type ProductionRecipe } from "./Definitions";
 
 export interface ProductionPlan {
   owner: number;
@@ -47,23 +47,23 @@ const equipmentKind = (recipe: ProductionRecipe) => {
       : item.endsWith("-siege")
         ? "siege"
         : "troop";
-};
+}
 const rank = (recipe: ProductionRecipe) =>
-  AGES.indexOf(TECHNOLOGY.get(recipe.technologyId)!.age);
-const compareId = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+  AGES.indexOf(TECHNOLOGY.get(recipe.technologyId)!.age)
+const compareId = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
 /** Age-based button highlights; material availability only affects actual jobs. */
-export function automaticProductionPriorities(
-  type: BuildingType,
+export function automaticProductionPriorities(type: BuildingType,
   research: readonly string[],
 ): string[] {
   const available = PRODUCTION_RECIPES.filter(
     (r) =>
       producerCompatible(type, r.building) &&
+      !r.manualOnly &&
       research.includes(r.technologyId) &&
       !Object.keys(r.outputs)[0].startsWith("payload:"),
   ).sort((a, b) => rank(b) - rank(a) || compareId(a.id, b.id));
-  const groups = new Set<string>();
+  const groups = new Set<string>()
   return available
     .filter((r) => {
       const group = equipmentKind(r) ?? "metal";
@@ -93,25 +93,29 @@ export function automaticProduction(
     renewable,
     squadCount,
     priorities = {},
-  } = context;
-  const completed = new Set(research);
+  } = context
+  const completed = new Set(research)
   const own = [...buildings]
     .filter(
       (b) => !b.remainingTicks && (b.health ?? 1) > 0 && automaticProducer(b),
     )
-    .sort((a, b) => a.id - b.id);
-  const automatic = own.filter((b) => !plans.has(b.id));
+    .sort((a, b) => a.id - b.id)
+  const automatic = own.filter((b) => !plans.has(b.id))
   // Keep flexible higher-tier workshops available for recipes that only they
   // can make; IDs still break ties deterministically within each capability.
   const capability = (type: BuildingType) =>
-    type === "arms-factory" ? 2 : type === "armory" ? 1 : 0;
+    type === "arms-factory" ? 2 : type === "armory" ? 1 : 0
   const byCapability = [...automatic].sort(
     (a, b) => capability(a.type) - capability(b.type) || a.id - b.id,
+  )
+  const available = recipes.filter(
+    (r) => completed.has(r.technologyId) &&
+      (!r.manualOnly ||
+        Object.values(priorities).some((ids) => ids?.includes(r.id))),
   );
-  const available = recipes.filter((r) => completed.has(r.technologyId));
   // Selected refining patterns retain their upstream dependencies (steel needs
   // iron), while other manually excluded patterns stay excluded.
-  const allowed = new Map<BuildingType, Set<string>>();
+  const allowed = new Map<BuildingType, Set<string>>()
   for (const b of own) {
     const selected = priorities[b.type];
     if (selected === undefined || allowed.has(b.type)) continue;
@@ -130,13 +134,13 @@ export function automaticProduction(
     }
     allowed.set(b.type, ids);
   }
-  const defaultsByType = new Map<BuildingType, Set<string>>();
+  const defaultsByType = new Map<BuildingType, Set<string>>()
   const compatible = (b: Building, r: ProductionRecipe) =>
     producerCompatible(b.type, r.building) &&
     (!allowed.has(b.type) || allowed.get(b.type)!.has(r.id)) &&
     (!equipmentKind(r) ||
       !defaultsByType.has(b.type) ||
-      defaultsByType.get(b.type)!.has(r.id));
+      defaultsByType.get(b.type)!.has(r.id))
   const canProduce = (r: ProductionRecipe) =>
     own.some(
       (b) =>
@@ -144,19 +148,19 @@ export function automaticProduction(
         (plans.has(b.id)
           ? plans.get(b.id)!.recipeId === r.id
           : compatible(b, r)),
-    );
+    )
   const automaticRecipes = available.filter((r) =>
     automatic.some((b) => compatible(b, r)),
-  );
+  )
   const smelting = available
     .filter((r) => r.building === "factory" && canProduce(r))
-    .sort((a, b) => rank(b) - rank(a) || compareId(a.id, b.id));
+    .sort((a, b) => rank(b) - rank(a) || compareId(a.id, b.id))
   const refiners = new Map(
     smelting.flatMap((r) =>
       Object.keys(r.outputs).map((id) => [id, r] as const),
     ),
-  );
-  const held = (id: string) => (inventory[id] ?? 0) + (incoming[id] ?? 0);
+  )
+  const held = (id: string) => (inventory[id] ?? 0) + (incoming[id] ?? 0)
   // Avoid reserving iron for steel forever when carbon cannot be obtained. A
   // finite affordable batch is valid too; no free inputs or speculative credit.
   const sustainable = (r: ProductionRecipe, depth = 0): boolean =>
@@ -165,7 +169,7 @@ export function automaticProduction(
       if (held(id) >= n || renewable.has(id)) return true;
       const upstream = refiners.get(id);
       return !!upstream && sustainable(upstream, depth + 1);
-    });
+    })
 
   // A type's controls govern that type only: another group's Bronze override
   // must not commandeer an automatic Modern arms factory after its buffer fills.
@@ -190,14 +194,15 @@ export function automaticProduction(
     defaultsByType.set(b.type, selected);
   }
 
-  const targets = new Map<ProductionRecipe, number>();
-  const continuous = new Set<ProductionRecipe>();
-  const troopCapacity = automatic.filter(b => ["blacksmith", "armory", "arms-factory"].includes(b.type)).length;
+  const targets = new Map<ProductionRecipe, number>()
+  const continuous = new Set<ProductionRecipe>()
+  const troopCapacity = automatic.filter((b) => ["blacksmith", "armory", "arms-factory"].includes(b.type),
+  ).length;
   // Keep several batches per workshop ready for a human recruitment/refit burst.
   // AI demand below replaces these buffers with its exact economic quote.
-  const troopTarget = Math.min(180, Math.max(12, troopCapacity * 3, Math.ceil(squadCount / 3)));
-  const vehicleTarget = Math.min(6, Math.max(2, Math.ceil(squadCount / 12)));
-  const siegeTarget = Math.min(4, Math.max(2, Math.ceil(squadCount / 16)));
+  const troopTarget = Math.min(180, Math.max(12, troopCapacity * 3, Math.ceil(squadCount / 3)))
+  const vehicleTarget = Math.min(6, Math.max(2, Math.ceil(squadCount / 12)))
+  const siegeTarget = Math.min(4, Math.max(2, Math.ceil(squadCount / 16)))
   for (const kind of ["troop", "vehicle", "siege"] as const) {
     const candidates = automaticRecipes
       .filter((r) => equipmentKind(r) === kind)
@@ -265,35 +270,35 @@ export function automaticProduction(
       if (requested > 0) targets.set(recipe, requested);
     }
   }
-  const budget = { ...inventory };
+  const budget = { ...inventory }
   if (context.ai)
     for (const [id, n] of Object.entries(context.protectedInputs ?? {}))
       budget[id] = Math.max(0, (budget[id] ?? 0) - n);
-  const allocated = { ...incoming };
-  const result = new Map<number, string>();
+  const allocated = { ...incoming }
+  const result = new Map<number, string>()
   const idle = new Set(
     automatic.filter((b) => !busy.has(b.id)).map((b) => b.id),
-  );
-  const output = (r: ProductionRecipe) => Object.keys(r.outputs)[0];
+  )
+  const output = (r: ProductionRecipe) => Object.keys(r.outputs)[0]
   const amount = (r: ProductionRecipe) =>
-    (inventory[output(r)] ?? 0) + (allocated[output(r)] ?? 0);
+    (inventory[output(r)] ?? 0) + (allocated[output(r)] ?? 0)
   const deficit = (r: ProductionRecipe, target: number) =>
-    continuous.has(r) ? 1 : Math.max(0, target - amount(r));
+    continuous.has(r) ? 1 : Math.max(0, target - amount(r))
   const producer = (r: ProductionRecipe) =>
-    byCapability.find((b) => idle.has(b.id) && compatible(b, r));
+    byCapability.find((b) => idle.has(b.id) && compatible(b, r))
   const affordable = (r: ProductionRecipe) =>
-    Object.entries(r.inputs).every(([id, n]) => (budget[id] ?? 0) >= n);
+    Object.entries(r.inputs).every(([id, n]) => (budget[id] ?? 0) >= n)
   const reserve = (r: ProductionRecipe) => {
     for (const [id, n] of Object.entries(r.inputs))
       budget[id] = Math.max(0, (budget[id] ?? 0) - n);
-  };
+  }
   const start = (r: ProductionRecipe, b: Building) => {
     reserve(r);
     idle.delete(b.id);
     result.set(b.id, r.id);
     for (const [id, n] of Object.entries(r.outputs))
       allocated[id] = (allocated[id] ?? 0) + n;
-  };
+  }
   // Fund a blocked priority's immediate refining chain before a lower-tier
   // recipe can reserve those same materials. Outputs remain in flight; they
   // cannot pay another job until its batch actually completes.
@@ -312,14 +317,14 @@ export function automaticProduction(
         }
       }
     }
-  };
+  }
 
   // Globally compare stock coverage, rather than letting building insertion
   // order decide who gets scarce steel. Reserve only the next blocked batch;
   // unrelated resources remain available to other specialties.
-  const blocked = new Set<ProductionRecipe>();
+  const blocked = new Set<ProductionRecipe>()
   const priority = (r: ProductionRecipe) =>
-    equipmentKind(r) === "troop" ? 0 : equipmentKind(r) === "siege" ? 1 : 2;
+    equipmentKind(r) === "troop" ? 0 : equipmentKind(r) === "siege" ? 1 : 2
   while (idle.size) {
     const next = [...targets]
       .filter(
@@ -348,7 +353,7 @@ export function automaticProduction(
     }
   }
 
-  const materialTargets: Inventory = context.ai && context.aiDemand ? { ...context.aiDemand.materials } : {};
+  const materialTargets: Inventory = context.ai && context.aiDemand ? { ...context.aiDemand.materials } : {}
   // The demand quote already expanded aggregate equipment inputs once. Adding
   // those deficits again would double the AI's refining/material claims.
   if(!(context.ai && context.aiDemand))for (const [r, target] of targets) {
@@ -367,10 +372,17 @@ export function automaticProduction(
         if (refiners.has(id))
           materialTargets[id] = Math.max(materialTargets[id] ?? 0, n * 2);
   }
-  const metalBuffer = context.ai ? 60 : Math.max(60, Math.min(3000, automatic.filter(b => b.type === "factory").length * 60));
+  const metalBuffer = context.ai
+    ? 60
+    : Math.max(
+        60,
+          Math.min(
+          3000, automatic.filter((b) => b.type === "factory").length * 60,
+        ),
+      );
   const newestMetal = smelting.find(
     (r) => held(Object.keys(r.outputs)[0]) >= metalBuffer || sustainable(r),
-  );
+  )
   if (newestMetal && !(context.ai && context.aiDemand))
     materialTargets[output(newestMetal)] = Math.max(
       metalBuffer,
@@ -398,7 +410,7 @@ export function automaticProduction(
           Math.min(120, batches * n),
         );
   }
-  const blockedSmelting = new Set<ProductionRecipe>();
+  const blockedSmelting = new Set<ProductionRecipe>()
   while (idle.size) {
     const orderedSmelting =
       priorities.factory === undefined

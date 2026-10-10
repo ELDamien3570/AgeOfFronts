@@ -53,7 +53,7 @@ function fixture() {
 describe("aircraft flight presentation", () => {
   it("smoothly grows to 1.5 times parked size and shrinks through the final landing step", () => {
     const { aircraft, presentation, update } = fixture();
-    expect(presentation.pose(aircraft.id)!.size).toBe(28);
+    expect(presentation.pose(aircraft.id)!.size).toBeCloseTo(28 * 0.8);
     aircraft.state = "outbound";
     aircraft.target = { x: aircraft.x + 30 * FIXED, y: aircraft.y };
     const sizes: number[] = [];
@@ -63,11 +63,11 @@ describe("aircraft flight presentation", () => {
       sizes.push(presentation.pose(aircraft.id)!.size);
     }
     expect(sizes.every((size, i) => !i || size > sizes[i - 1])).toBe(true);
-    expect(sizes[5]).toBe(35);
-    expect(sizes[11]).toBe(42);
+    expect(sizes[5]).toBeCloseTo(35 * 0.8);
+    expect(sizes[11]).toBeCloseTo(42 * 0.8);
     aircraft.x += FIXED;
     update();
-    expect(presentation.pose(aircraft.id)!.size).toBe(42);
+    expect(presentation.pose(aircraft.id)!.size).toBeCloseTo(42 * 0.8);
     aircraft.state = "returning";
     for (let i = 0; i < 12; i++) {
       aircraft.x -= FIXED;
@@ -79,8 +79,8 @@ describe("aircraft flight presentation", () => {
     aircraft.target = null;
     update();
     expect(presentation.pose(aircraft.id, 0)!.size).toBe(beforeLanding);
-    expect(presentation.pose(aircraft.id, 0.5)!.size).toBeGreaterThan(28);
-    expect(presentation.pose(aircraft.id)!.size).toBe(28);
+    expect(presentation.pose(aircraft.id, 0.5)!.size).toBeGreaterThan(28 * 0.8);
+    expect(presentation.pose(aircraft.id)!.size).toBeCloseTo(28 * 0.8);
   });
 
   it.each([
@@ -131,11 +131,11 @@ describe("aircraft flight presentation", () => {
     update();
     const halfway = presentation.pose(aircraft.id, 0.5)!;
     expect(halfway.x).toBe(26.5 * FIXED);
-    expect(halfway.size).toBe(35);
+    expect(halfway.size).toBeCloseTo(35 * 0.8);
     presentation.update(snapshot);
     expect(presentation.pose(aircraft.id, 0.5)).toEqual(halfway);
-    expect(presentation.pose(aircraft.id, -1)!.size).toBe(28);
-    expect(presentation.pose(aircraft.id, 2)!.size).toBe(42);
+    expect(presentation.pose(aircraft.id, -1)!.size).toBeCloseTo(28 * 0.8);
+    expect(presentation.pose(aircraft.id, 2)!.size).toBeCloseTo(42 * 0.8);
     snapshot.expansion!.aircraft.length = 0;
     update();
     expect(presentation.pose(aircraft.id)).toBeUndefined();
@@ -171,8 +171,10 @@ describe("aircraft flight presentation", () => {
 
   it("follows a real simulation sortie through cruise, return and landing without changing aircraft state", () => {
     const { aircraft, snapshot, presentation, match } = fixture();
-    aircraft.definitionId="bomber";
-    match.addBuilding(snapshot.buildings.find((b) => b.id === aircraft.airfieldId)!);
+    aircraft.definitionId = "bomber";
+    match.addBuilding(
+      snapshot.buildings.find((b) => b.id === aircraft.airfieldId)!,
+    );
     const departure = { x: aircraft.x, y: aircraft.y };
     expect(
       match.applyCommand({

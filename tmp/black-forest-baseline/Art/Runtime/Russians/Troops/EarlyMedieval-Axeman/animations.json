@@ -24,8 +24,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 71.875,
-            "y": 64.0
+            "x": 72.0,
+            "y": 52.0
           }
         },
         {
@@ -34,8 +34,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.675,
-            "y": 64.0
+            "x": 72.0,
+            "y": 52.0
           }
         },
         {
@@ -44,8 +44,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 61.975,
-            "y": 62.2
+            "x": 72.0,
+            "y": 52.0
           }
         },
         {
@@ -54,8 +54,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 71.875,
-            "y": 63.775
+            "x": 72.0,
+            "y": 52.0
           }
         },
         {
@@ -64,8 +64,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.675,
-            "y": 64.0
+            "x": 72.0,
+            "y": 52.0
           }
         },
         {
@@ -74,11 +74,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 61.975
+            "x": 72.0,
+            "y": 52.0
           }
         }
       ],
+      "mask": "idle.mask.png",
       "releaseFrame": 3
     },
     {
@@ -104,8 +105,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.45,
-            "y": 64.0
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -114,8 +115,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.45,
-            "y": 64.0
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -124,8 +125,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.65,
-            "y": 64.0
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -134,8 +135,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.225,
-            "y": 64.0
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -144,8 +145,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.225,
-            "y": 64.0
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -154,11 +155,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.775,
-            "y": 64.0
+            "x": 64.0,
+            "y": 57.0
           }
         }
       ],
+      "mask": "running.mask.png",
       "releaseFrame": 3
     },
     {
@@ -184,8 +186,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 68.0,
+            "y": 61.0
           }
         },
         {
@@ -194,8 +196,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 68.0,
+            "y": 61.0
           }
         },
         {
@@ -204,8 +206,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 68.0,
+            "y": 61.0
           }
         },
         {
@@ -214,8 +216,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 68.0,
+            "y": 61.0
           }
         },
         {
@@ -224,8 +226,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 68.0,
+            "y": 61.0
           }
         },
         {
@@ -234,12 +236,13 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 68.0,
+            "y": 61.0
           }
         }
       ],
       "impactFrame": 3,
+      "mask": "attack.mask.png",
       "releaseFrame": 3
     },
     {
@@ -320,6 +323,251 @@
           }
         }
       ],
+      "mask": "death.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "label": "Charge in / maintain",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "description": "Brisk running strides with a forward lean; loops to maintain charge.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 71.875,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.125,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.125,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 73.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.175,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.35,
+            "y": 64.0
+          }
+        }
+      ],
+      "mask": "charge.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "label": "Charge attack",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        160,
+        180,
+        100,
+        200,
+        250
+      ],
+      "description": "Plant the feet and deliver a heavy overhead axe chop.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "mask": "charge-attack.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Brief recoil and brace before recovering.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "mask": "hit.mask.png",
       "releaseFrame": 3
     }
   ],
@@ -329,6 +577,9 @@
     "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Idle-Animated-v2.png": "084f1b8b538f1879f54bcf0995493893109b764944eb39a4acd52f8427d34f1a",
     "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Walk-v1.png": "21f59db418308dd3940802e8170115bdaf70515d7dc9181fb7dac3fe2eeaf7dc",
     "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Attack-v1.png": "d8f9dafe540abeb9217f1cd9c1c3dd184bb4f8f8b345f21b55e4bbbe5982c1d2",
-    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Death-Side-v3.png": "58fa68a508a3adf2d48c83e7b1c0e35b2588c322d122aa91e283b19a445a6a4e"
+    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Death-Side-v3.png": "58fa68a508a3adf2d48c83e7b1c0e35b2588c322d122aa91e283b19a445a6a4e",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Charge-v2.png": "2d3a7e1ada9eae45e5991902c674c7a38ea4118264032cec15aa9b6376324af1",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Charge-Attack-v1.png": "2017c7c44da2873ca7490dad44059bf8178602ff2a30d0d1a4cdc40ebd3fe6ff",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Hit-v1.png": "00571bba5340813a6e19514fe50eccffe26bfecda620dc457c5f8f3309e2febf"
   }
 }

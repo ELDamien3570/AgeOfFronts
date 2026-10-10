@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Modern/Rail Terminal/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Modern/Rail Terminal/Generation.json",
+      "archived": "Buildings/Modern/Rail Terminal/_TO BE DELETED/Generation.json",
+      "sha256": "6aaa840e426fe7c4000a8a4fd0ccd9f96687b2e821cdc55bb999d64e9ce4f9f3",
+      "size": 2491
+    },
+    {
+      "original": "Buildings/Modern/Rail Terminal/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Modern/Rail Terminal/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "2201e924aaee569acb11df1d63a15136b0dd9ef0547c52a0d4f74e8187442e1d",
+      "size": 2064137
+    }
+  ]
+}

@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Russian troops · Instancing prototype</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: system-ui, sans-serif;
+        background: #101917;
+        color: #e5ebe3;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+      header {
+        padding: 18px 24px;
+        border-bottom: 1px solid #35433a;
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: center;
+      }
+      h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      header p {
+        margin: 5px 0 0;
+        color: #a9b8aa;
+        font-size: 13px;
+      }
+      .tag {
+        color: #d9b97b;
+        font-size: 12px;
+        letter-spacing: 1px;
+      }
+      main {
+        position: relative;
+        min-height: 0;
+      }
+      aside {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        bottom: 12px;
+        width: 240px;
+        z-index: 5;
+        padding: 20px;
+        overflow: auto;
+        background: #16211d;
+        border-right: 1px solid #35433a;
+      }
+      label {
+        display: block;
+        margin: 0 0 17px;
+        font-size: 13px;
+        color: #c3d0c2;
+      }
+      select,
+      input[type="number"] {
+        display: block;
+        width: 100%;
+        margin-top: 7px;
+        padding: 8px;
+        background: #24322b;
+        color: #edf1e9;
+        border: 1px solid #4c5d4e;
+        border-radius: 5px;
+      }
+      input[type="range"] {
+        display: block;
+        width: 100%;
+        margin-top: 9px;
+        accent-color: #c7af74;
+      }
+      button {
+        padding: 9px 12px;
+        color: #f1ebdb;
+        background: #334a3b;
+        border: 1px solid #60765e;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #425e4b;
+      }
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin: 12px 0 18px;
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 1.6;
+        color: #a6b5a7;
+      }
+      #stage {
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        cursor: grab;
+        touch-action: none;
+        background: #263a2a;
+      }
+      #stage canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      #ground {
+        z-index: 0;
+      }
+      #gpu,
+      #fallback {
+        z-index: 1;
+      }
+      #overlay {
+        z-index: 2;
+      }
+      #stats {
+        position: absolute;
+        bottom: 18px;
+        right: 18px;
+        z-index: 3;
+        padding: 12px 16px;
+        border: 1px solid #60765e;
+        border-radius: 6px;
+        background: #101a16e8;
+        font:
+          12px/1.7 ui-monospace,
+          monospace;
+        white-space: pre;
+        pointer-events: none;
+      }
+      #status {
+        color: #dfc98f;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .divider {
+        border-top: 1px solid #35433a;
+        margin: 20px 0;
+      }
+      @media (max-width: 750px) {
+        header {
+          padding: 14px;
+        }
+        aside {
+          width: 210px;
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Russian Stone Age troops</h1>
+        <p>
+          Individual actors assembled locally into formations · drag to pan,
+          scroll to zoom
+        </p>
+      </div>
+      <div>
+        <span class="tag">GAME SCALE</span>
+        <a href="./StoneAgeDemo.html" style="color:#d8cba3;margin-right:12px">Play Stone Age demo</a>
+        <button id="controls">Hide controls</button>
+      </div>
+    </header>
+    <main>
+      <aside>
+        <label
+          >Scene<select id="scene">
+            <option value="grid" selected>Grid review</option>
+            <option value="battle">Three battles · 20 vs 20 each</option>
+          </select></label
+        >
+        <label
+          >Formation<select id="formation">
+            <option value="line" selected>Line</option>
+            <option value="shield-wall">Shield wall</option>
+            <option value="square">Square · face outward</option>
+          </select></label
+        >
+        <label
+          >Formation footprint<select id="footprint">
+            <option value="tile" selected>One-tile proposal</option>
+            <option value="game">Smaller world footprint</option>
+          </select></label
+        >
+        <label
+          >Horse &amp; rider size <output id="horseValue">1.25×</output
+          ><input
+            id="horseSize"
+            type="range"
+            min="0.5"
+            max="3"
+            step="0.05"
+            value="1.25"
+        /></label>
+        <label>Game map<select id="map"></select></label>
+        <label
+          >World size<select id="worldSize">
+            <option>250</option>
+            <option selected>500</option>
+            <option>1000</option>
+          </select></label
+        >
+        <label
+          >Troops at full strength<input
+            id="troops"
+            type="number"
+            min="1"
+            max="1000"
+            value="1000"
+        /></label>
+        <label
+          >Game HUD bottom inset (px)<input
+            id="hudInset"
+            type="number"
+            min="0"
+            max="600"
+            value="0"
+        /></label>
+        <label
+          >Renderer<select id="renderer">
+            <option value="webgl">WebGL2 · instanced</option>
+            <option value="canvas">Canvas 2D · comparison</option>
+          </select></label
+        >
+        <label
+          >Troop type<select id="actor">
+            <option value="mixed">All three types</option>
+            <option value="Clubman">Clubman</option>
+            <option value="Javelinist">Javelinist</option>
+            <option value="MountedSpearman">Mounted Spearman</option>
+          </select></label
+        >
+        <label
+          >Action<select id="action">
+            <option value="idle">Idle</option>
+            <option value="running">Walk</option>
+            <option value="attack" selected>Front rank attacks</option>
+            <option value="charge">Charge preview · auto-return</option>
+          </select></label
+        >
+        <label
+          >Formations<input
+            id="formations"
+            type="number"
+            min="1"
+            max="10000"
+            value="100"
+        /></label>
+        <label
+          >Soldiers per formation<select id="soldiers">
+            <option>5</option>
+            <option selected>12</option>
+            <option>24</option>
+            <option>48</option>
+          </select></label
+        >
+        <label
+          >Strength <output id="strengthValue">100%</output
+          ><input id="strength" type="range" min="0" max="100" value="100"
+        /></label>
+        <div class="buttons">
+          <button id="casualty">Lose one front soldier</button>
+          <button id="rankCasualty">Drain front rank</button>
+          <button id="reset">Restore</button>
+        </div>
+        <label class="check"
+          ><input id="playCasualties" type="checkbox" /> Play death &amp; fill
+          sequences</label
+        >
+        <label class="check"
+          ><input id="tour" type="checkbox" /> Cycle formation
+          transitions</label
+        >
+        <label
+          >Tile size <output id="zoomValue">96 px</output
+          ><input
+            id="zoom"
+            type="range"
+            min="0.01"
+            max="96"
+            step="any"
+            value="96"
+        /></label>
+        <label
+          ><input type="checkbox" id="detail" /> Keep soldiers at distant
+          zoom</label
+        >
+        <label
+          ><input type="checkbox" id="bounds" /> Show inspection overlays and
+          performance</label
+        >
+        <div class="buttons">
+          <button id="overview">Map fit</button
+          ><button id="starting">Spawn zoom</button
+          ><button id="close">Maximum zoom</button
+          ><button id="stress">Stress scene</button>
+        </div>
+        <div class="divider"></div>
+        <div class="buttons">
+          <button id="loss">Test context recovery</button>
+          <button id="compare">Run fixed comparison</button>
+        </div>
+        <p id="comparison" class="hint" role="status"></p>
+        <p id="status" role="status">Loading authored actor sheets…</p>
+        <p class="hint">
+          One grid square = one game tile. Gold: game selection underlay. Blue
+          dashed circle: physical squad core. White dashed square: formation
+          artwork canvas.
+        </p>
+        <p class="hint">
+          Layouts are visual only; the squad collider stays fixed. One-tile mode
+          uses a fixed world footprint; zoom magnifies it naturally and
+          casualties do not shrink survivors. Cavalry displays the same
+          selected soldier count. Horse scaling includes the rider and adjusts
+          formation spacing.
+        </p>
+        <p class="hint">
+          Synthetic presentation scene. No combat simulation or network traffic.
+          Timings include CPU preparation/submission and frame cadence, not a
+          GPU timer.
+        </p>
+      </aside>
+      <section id="stage" aria-label="Interactive troop rendering scene">
+        <canvas id="ground"></canvas><canvas id="gpu"></canvas
+        ><canvas id="fallback"></canvas><canvas id="overlay"></canvas>
+        <div id="stats" style="display: none">Loading…</div>
+      </section>
+    </main>
+    <script type="module" src="./InstancedTroops.ts"></script>
+  </body>
+</html>

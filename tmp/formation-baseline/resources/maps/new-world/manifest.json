@@ -1,0 +1,657 @@
+{
+  "schemaVersion": 1,
+  "name": "New World",
+  "minimum": -450,
+  "maximum": 6501,
+  "seaLevel": 0,
+  "source": {
+    "file": "14_606_-99_846_6_6144_8192_16bit.png",
+    "sha256": "430d528c37c5b36c772532a7cf4a701249ddc4113ae9222818f6cc285370f2f3",
+    "width": 6144,
+    "height": 8192,
+    "url": "https://manticorp.github.io/unrealheightmap/#latitude/14.606155323814846/longitude/-99.84601840885307/zoom/2/outputzoom/6/width/6144/height/8192/outputformat/png16"
+  },
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 6501,
+    "range": 65536
+  },
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sampling": "area-majority land/water; average height within winning surface; ties water",
+  "waterRule": "calibrated sea level plus explicitly authored major-river hydrology plus registered lake polygons with explicit surface elevations",
+  "resolutionRule": "selected size is the longest edge; source aspect ratio preserved",
+  "variants": {
+    "250": {
+      "width": 188,
+      "height": 250,
+      "landCells": 12110,
+      "seaCode": 4242,
+      "heightMinimum": -450.0,
+      "heightMaximum": 4856.0478515625
+    },
+    "500": {
+      "width": 375,
+      "height": 500,
+      "landCells": 48560,
+      "seaCode": 4242,
+      "heightMinimum": -450.0,
+      "heightMaximum": 5267.30029296875
+    },
+    "1000": {
+      "width": 750,
+      "height": 1000,
+      "landCells": 202389,
+      "seaCode": 4242,
+      "heightMinimum": -450.0,
+      "heightMaximum": 5468.18505859375
+    }
+  },
+  "climate": {
+    "description": "New World review: Arctic snow is centred near 65 degrees north, with a broad 3-degree transition shaped by deterministic geographic variation and calibrated elevation, rather than a straight latitude stripe. Only already-cold tundra/alpine land is eligible; steep exposed ground retains grey rock. Elsewhere, only peaks above an authored high mountain snowline are snowy: 5000 metres at the equator, falling 20 metres per degree of absolute latitude, with a 4000-metre floor. Local relief is normalized to the 500-cell map before the 220-metre exposed-rock cutoff. This is approximate art direction, not measured seasonal snow cover. Water and calibrated elevations are unchanged.",
+    "regions": [],
+    "snowPolicy": {
+      "northernIceLatitude": 65,
+      "exposedRockRelief": 220,
+      "equatorialSnowline": 5000,
+      "snowlineLatitudeDrop": 20,
+      "minimumMountainSnowline": 4000,
+      "northernTransitionDegrees": 3
+    }
+  },
+  "environment": {
+    "schemaVersion": 1,
+    "encoding": "u8-moisture-vegetation-aridity",
+    "classifier": "visible-color-gradients-v1",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1,
+    "source": {
+      "file": "14_606_-99_846_6_6144_8192_albedo_imagery.png",
+      "sha256": "bf644c41d10ff13047d2d697d4c14e864076ffe357694b814056e35024b33017",
+      "width": 6144,
+      "height": 8192,
+      "registration": "same-footprint"
+    },
+    "interpretation": "approximate color-derived moisture, vegetation and aridity; height/water remain authoritative",
+    "variants": {
+      "250": {
+        "waterHintAgreement": 0.9512765957446808,
+        "waterHintIoU": 0.9344759506709777,
+        "meanLandMoisture": 0.5082942309871925,
+        "meanLandVegetation": 0.49720600378879876,
+        "meanLandAridity": 0.10904357118569973
+      },
+      "500": {
+        "waterHintAgreement": 0.956096,
+        "waterHintIoU": 0.9408539958758738,
+        "meanLandMoisture": 0.4989491068255968,
+        "meanLandVegetation": 0.48563281325709856,
+        "meanLandAridity": 0.11561020124689085
+      },
+      "1000": {
+        "waterHintAgreement": 0.96848,
+        "waterHintIoU": 0.9569201163375538,
+        "meanLandMoisture": 0.4989425430875254,
+        "meanLandVegetation": 0.484960499771407,
+        "meanLandAridity": 0.12033072788676515
+      }
+    }
+  },
+  "lakes": {
+    "schemaVersion": 1,
+    "source": {
+      "title": "Natural Earth 1:10m lakes and reservoirs, version 5.0.0",
+      "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_lakes.geojson",
+      "downloadUrl": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_lakes.geojson",
+      "upstreamCommit": "ace5fed0eaf3c6c03c951e75b439ba8fffbc218e",
+      "upstreamGitBlob": "e48ec603e0943b62f8c81960fb990bb6bab4a4a8",
+      "upstreamSha256": "2d036f53dedec578001c5c30c2959ee7d4eebc1306900fa4367c49929ec8f2d9",
+      "upstreamBytes": 5043554,
+      "page": "https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-lakes/",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "selection": {
+        "purpose": "Reproducible inland lake surface masks for the Great Lakes and Lake Saint Clair in the New World continental map.",
+        "geographicBoundsWsen": [
+          -167.34601840885307,
+          -59.888258694748515,
+          -32.34601840885307,
+          71.7468551459884
+        ],
+        "registration": "Original WGS84 longitude/latitude coordinates (OGC CRS84, longitude first); project into the original 6144x8192 Web Mercator heightmap, output zoom 6, centered at latitude 14.606155323814846 and longitude -99.84601840885307.",
+        "method": "Select the six exact names and verify ne_id and wikidataid in sourceIdentities. Preserve upstream feature order, properties, coordinate arrays, polygon holes and bounding boxes exactly. Do not clip, simplify, repair, rename, connect or extend geometry.",
+        "sourceIdentities": {
+          "Lake Superior": {
+            "ne_id": 1159112991,
+            "wikidataid": "Q1066"
+          },
+          "Lake Michigan": {
+            "ne_id": 1159113005,
+            "wikidataid": "Q1169"
+          },
+          "Lake Huron": {
+            "ne_id": 1159113021,
+            "wikidataid": "Q1383"
+          },
+          "Lake Erie": {
+            "ne_id": 1159106757,
+            "wikidataid": "Q5492"
+          },
+          "Lake Ontario": {
+            "ne_id": 1159106765,
+            "wikidataid": "Q1062"
+          },
+          "Lake Saint Clair": {
+            "ne_id": 1159106775,
+            "wikidataid": "Q736707"
+          }
+        },
+        "featureCount": 6,
+        "knownLimitations": [
+          "Natural Earth is generalized small-scale cartography. Its lake polygons may incorporate broad outlet reaches; it is not a hydrographic survey or a record of current shorelines.",
+          "Island holes are retained. Rasterization must preserve them at available resolution and must not infer water from height or colour.",
+          "Lake polygons and existing river linework do not by themselves establish continuous raster or hydraulic connectivity, physical channel widths, navigability, bathymetry or depth.",
+          "No authored connector is supplied. The five Great Lakes are not one level surface: the model must use separate elevations, with Michigan and Huron at the same level.",
+          "IGLD 1985 is a hydraulic-height datum. The nominal values are an explicit terrain-model convention; no precise conversion to the upstream DEM vertical datum is asserted."
+        ]
+      },
+      "elevations": {
+        "role": "Documented candidate nominal flat surfaces, configured separately by the importer; no upstream feature property is modified.",
+        "basis": "Exact published chart datum / low-water datum (LWD) values in metres, IGLD 1985. These are reference levels, not measured current levels or long-term averages.",
+        "surfaceElevationsMeters": {
+          "Lake Superior": 183.2,
+          "Lake Michigan": 176.0,
+          "Lake Huron": 176.0,
+          "Lake Erie": 173.5,
+          "Lake Ontario": 74.2,
+          "Lake Saint Clair": 174.4
+        },
+        "primarySource": "https://www.tidesandcurrents.noaa.gov/gldatums.html",
+        "crossCheckSource": "https://tides.gc.ca/en/great-lakes-st-lawrence-river-system",
+        "roundedPhysicalCharacteristicsSource": "https://apps.glerl.noaa.gov/coastwatch/webdata/statistic/physical.html",
+        "roundedPhysicalCharacteristicsMeters": {
+          "Lake Superior": 183,
+          "Lake Michigan": 176,
+          "Lake Huron": 176,
+          "Lake Erie": 173,
+          "Lake Ontario": 74
+        },
+        "roundingNote": "NOAA GLERL physical-characteristics table reports whole-metre low-water-datum elevations. They are separately sourced coarse published values, not exact current levels. The configured candidates retain the chart-datum decimal precision; do not describe them as live or average water levels."
+      },
+      "file": "lakes.geojson",
+      "sha256": "b02a290debcb3dd995f751cb5338c5fa231d74d1391efd43c655732946babbe6"
+    },
+    "surfaceElevationsMeters": {
+      "Lake Superior": 183.2,
+      "Lake Michigan": 176.0,
+      "Lake Huron": 176.0,
+      "Lake Erie": 173.5,
+      "Lake Ontario": 74.2,
+      "Lake Saint Clair": 174.4
+    },
+    "registration": "geographic polygons projected into the original Web Mercator footprint",
+    "sampling": "8x8 centre-sampled union coverage; majority and ties water; holes retain islands; mixed cells use dominant lake level with source-order ties",
+    "interpretation": "explicit inland water with flat authored surface elevations; source PNG and all heights outside lake masks preserved",
+    "variants": {
+      "250": {
+        "surfaceCells": 80,
+        "newWaterCells": 78,
+        "cellsByLake": {
+          "Lake Erie": 7,
+          "Lake Ontario": 7,
+          "Lake Saint Clair": 0,
+          "Lake Superior": 28,
+          "Lake Michigan": 18,
+          "Lake Huron": 20
+        }
+      },
+      "500": {
+        "surfaceCells": 311,
+        "newWaterCells": 302,
+        "cellsByLake": {
+          "Lake Erie": 29,
+          "Lake Ontario": 20,
+          "Lake Saint Clair": 1,
+          "Lake Superior": 115,
+          "Lake Michigan": 70,
+          "Lake Huron": 76
+        }
+      },
+      "1000": {
+        "surfaceCells": 1241,
+        "newWaterCells": 1208,
+        "cellsByLake": {
+          "Lake Erie": 120,
+          "Lake Ontario": 91,
+          "Lake Saint Clair": 5,
+          "Lake Superior": 451,
+          "Lake Michigan": 279,
+          "Lake Huron": 295
+        }
+      }
+    }
+  },
+  "hydrology": {
+    "schemaVersion": 1,
+    "source": {
+      "file": "rivers.geojson",
+      "sha256": "a9b575054f794164ec747d029995ce4fa5bb679bfd5395a2c1c20f20ebade2a5",
+      "title": "Natural Earth 1:10m rivers and lake centerlines",
+      "url": "https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_10m_rivers_lake_centerlines.geojson",
+      "upstreamGitBlob": "61a0d7137a6ff1113cc259525e7479c63d5fec86",
+      "upstreamSha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "selection": {
+        "purpose": "Major-river gameplay layer for the New World continental map; a curated selection rather than a complete drainage network.",
+        "geographicBoundsWsen": [
+          -167.34601840885307,
+          -59.888258694748515,
+          -32.34601840885307,
+          71.7468551459884
+        ],
+        "registration": "WGS84 longitude/latitude registered to the original 6144x8192 Web Mercator heightmap, output zoom 6, centered at latitude 14.606155323814846 and longitude -99.84601840885307.",
+        "method": "Select all original River and Lake Centerline features with rivernum values listed in sourceRiverNumbersBySystem, plus the three name-qualified additionalSourceFeatures. Every selected coordinate is inside the map footprint. Preserve upstream feature order, properties, coordinates and bounding boxes exactly. Do not clip, simplify, rename, connect or extend geometry.",
+        "rationale": "Keep meaningful major channels across North America, Mesoamerica and South America, including differently named main-stem sections, major basin tributaries and supplied lake/reservoir centerlines. Exclude the dense minor-tributary network and canals. Numeric source identities distinguish unrelated rivers sharing a name.",
+        "riverSystems": {
+          "Yukon": [
+            "Teslin",
+            "Yukon"
+          ],
+          "Kuskokwim": [
+            "Kuskokwim",
+            "N. Fork Kuskokwim"
+          ],
+          "Mackenzie": [
+            "Athabasca",
+            "Finlay",
+            "Mackenzie",
+            "Peace",
+            "Slave"
+          ],
+          "Nelson and Saskatchewan": [
+            "Nelson",
+            "North Saskatchewan",
+            "Red",
+            "Saskatchewan",
+            "South Saskatchewan"
+          ],
+          "Churchill (Hudson Bay)": [
+            "Churchill"
+          ],
+          "Columbia and Snake": [
+            "Columbia",
+            "Snake"
+          ],
+          "Fraser (British Columbia)": [
+            "Fraser"
+          ],
+          "Sacramento and San Joaquin": [
+            "Sacramento",
+            "San Joaquin"
+          ],
+          "Colorado (North America)": [
+            "Colorado"
+          ],
+          "Rio Grande": [
+            "Rio Grande"
+          ],
+          "Mississippi and Missouri": [
+            "Allegheny",
+            "Arkansas",
+            "Holston",
+            "Madison",
+            "Mississippi",
+            "Missouri",
+            "Ohio",
+            "Tennessee"
+          ],
+          "St. Lawrence and Great Lakes outlets": [
+            "Niagara",
+            "St. Clair",
+            "St. Lawrence"
+          ],
+          "Lerma and Santiago": [
+            "Lerma",
+            "Ro Grande de Santiago"
+          ],
+          "Usumacinta and Grijalva": [
+            "Chixoy",
+            "Grijalva",
+            "Rio Salinas",
+            "San Pedro y San Pablo",
+            "Usumacinta"
+          ],
+          "San Juan (Nicaragua and Costa Rica)": [
+            "San Juan"
+          ],
+          "Magdalena": [
+            "Magdalena"
+          ],
+          "Orinoco": [
+            "Apure",
+            "Cojedes",
+            "Meta",
+            "Orinoco"
+          ],
+          "Amazon": [
+            "Amazonas",
+            "Caquet\u00e1",
+            "Culuene",
+            "Grande",
+            "Guapor\u00e9",
+            "Japur\u00e1",
+            "Juruena",
+            "Madeira",
+            "Mamor\u00e9",
+            "Mara\u00f1\u00f3n",
+            "Negro",
+            "Pur\u00fas",
+            "Tapaj\u00f3s",
+            "Ucayali",
+            "Xingu"
+          ],
+          "Tocantins and Araguaia": [
+            "Araguaia",
+            "Braco Menor",
+            "Tocantins"
+          ],
+          "Sao Francisco": [
+            "Indai\u00e1",
+            "S\u00e3o  Francisco"
+          ],
+          "Parana and Paraguay": [
+            "Grande",
+            "Parana\u00edba",
+            "Paran\u00e1"
+          ],
+          "Uruguay": [
+            "Uruguay"
+          ],
+          "Negro (Patagonia)": [
+            "Limay",
+            "Negro",
+            "Neuqu\u00e9n"
+          ],
+          "Colorado (Argentina)": [
+            "Colorado"
+          ],
+          "Chubut": [
+            "Chubut"
+          ],
+          "Santa Cruz": [
+            "Santa Cruz"
+          ],
+          "Bio-Bio": [
+            "B\u00edo-B\u00edo"
+          ]
+        },
+        "sourceRiverNumbersBySystem": {
+          "Yukon": [
+            53,
+            61
+          ],
+          "Kuskokwim": [
+            234,
+            235
+          ],
+          "Mackenzie": [
+            34,
+            39,
+            33,
+            323,
+            173
+          ],
+          "Nelson and Saskatchewan": [
+            275,
+            112,
+            117,
+            266,
+            409
+          ],
+          "Churchill (Hudson Bay)": [
+            629
+          ],
+          "Columbia and Snake": [
+            64,
+            103
+          ],
+          "Fraser (British Columbia)": [
+            187
+          ],
+          "Sacramento and San Joaquin": [
+            167,
+            249
+          ],
+          "Colorado (North America)": [
+            163
+          ],
+          "Rio Grande": [
+            110
+          ],
+          "Mississippi and Missouri": [
+            3,
+            156,
+            8,
+            7,
+            92,
+            80,
+            131,
+            169,
+            185
+          ],
+          "St. Lawrence and Great Lakes outlets": [
+            23,
+            88,
+            89
+          ],
+          "Lerma and Santiago": [
+            232,
+            661
+          ],
+          "Usumacinta and Grijalva": [
+            193,
+            391
+          ],
+          "San Juan (Nicaragua and Costa Rica)": [
+            159
+          ],
+          "Magdalena": [
+            126
+          ],
+          "Orinoco": [
+            75,
+            290,
+            432,
+            1018
+          ],
+          "Amazon": [
+            2,
+            10,
+            183,
+            78,
+            91,
+            90,
+            87,
+            77,
+            373,
+            204,
+            184,
+            289,
+            200,
+            190,
+            197,
+            177
+          ],
+          "Tocantins and Araguaia": [
+            115,
+            335,
+            100,
+            152
+          ],
+          "Sao Francisco": [
+            104,
+            123
+          ],
+          "Parana and Paraguay": [
+            36,
+            99,
+            108,
+            164
+          ],
+          "Uruguay": [
+            293
+          ],
+          "Negro (Patagonia)": [
+            139,
+            127,
+            645
+          ],
+          "Colorado (Argentina)": [
+            192
+          ],
+          "Chubut": [
+            285
+          ],
+          "Santa Cruz": [
+            196
+          ],
+          "Bio-Bio": [
+            194
+          ]
+        },
+        "additionalSourceFeatures": [
+          {
+            "name": "Usumacinta",
+            "rivernum": 0,
+            "dissolve": null,
+            "reason": "Name-qualified original feature in the Usumacinta system; rivernum zero alone is not a unique selector."
+          },
+          {
+            "name": "Rio Salinas",
+            "rivernum": 0,
+            "dissolve": null,
+            "reason": "Name-qualified original feature in the Usumacinta system; rivernum zero alone is not a unique selector."
+          },
+          {
+            "name": "San Pedro y San Pablo",
+            "rivernum": 0,
+            "dissolve": null,
+            "reason": "Name-qualified original feature in the Usumacinta system; rivernum zero alone is not a unique selector."
+          }
+        ],
+        "featureCount": 111,
+        "knownLimitations": [
+          "The footprint includes the eastern Brazilian coast and mainland southern South America, but crops the western Aleutians and land north of 71.746855 degrees north. River inclusion is curated, not exhaustive.",
+          "Upstream labels are preserved even when a feature spans differently named channels: 103River is named Columbia while its paired lake-centerline feature is named Snake; 36River is named Parana (accented in the original) and includes the Paraguay-to-lower-Parana course; 90River is named Guapore (accented in the original) along the lower Mamore continuation; 1018River is named Cojedes and includes the exact downstream continuation from the Apure endpoint to the Orinoco.",
+          "The supplied St. Lawrence, Niagara and St. Clair lines do not include a continuous Great Lakes water polygon or all connecting channels. Lake centerlines elsewhere are retained, but they do not reconstruct lake shorelines.",
+          "Natural Earth linework can stop at lake, estuary or coastline boundaries and contain small gaps between original features. These lines have not been extended to meet the heightmap coastline, including the Amazon estuary and the St. Lawrence lower course.",
+          "No authored outlet extension or approximate connecting reach is included. Selection and raster connectivity do not establish physical channel width or real-world navigability.",
+          "Read-only four-neighbor raster QA with the shared calibrated sea mask and one/two/three-cell strokes found outlet gaps at all sizes for Churchill, Sacramento/San Joaquin, the St. Lawrence/Great Lakes segments and Tocantins/Araguaia. At size 1000 there are additional gaps for Yukon, Kuskokwim, North American Colorado, Orinoco, Amazon, Uruguay and Santa Cruz; Santa Cruz also has a gap at size 250.",
+          "With the source Cojedes continuation retained, the Orinoco system is internally connected at all three sizes. The Amazon and Xingu portions remain separate at size 1000 because the supplied estuary linework ends before they join. No unrelated tributaries or nearby headwater crossings were added merely to force raster ocean connectivity."
+        ]
+      }
+    },
+    "names": [
+      "Allegheny",
+      "Amazonas",
+      "Apure",
+      "Araguaia",
+      "Arkansas",
+      "Athabasca",
+      "Braco Menor",
+      "B\u00edo-B\u00edo",
+      "Caquet\u00e1",
+      "Chixoy",
+      "Chubut",
+      "Churchill",
+      "Cojedes",
+      "Colorado",
+      "Columbia",
+      "Culuene",
+      "Finlay",
+      "Fraser",
+      "Grande",
+      "Grijalva",
+      "Guapor\u00e9",
+      "Holston",
+      "Indai\u00e1",
+      "Japur\u00e1",
+      "Juruena",
+      "Kuskokwim",
+      "Lerma",
+      "Limay",
+      "Mackenzie",
+      "Madeira",
+      "Madison",
+      "Magdalena",
+      "Mamor\u00e9",
+      "Mara\u00f1\u00f3n",
+      "Meta",
+      "Mississippi",
+      "Missouri",
+      "N. Fork Kuskokwim",
+      "Negro",
+      "Nelson",
+      "Neuqu\u00e9n",
+      "Niagara",
+      "North Saskatchewan",
+      "Ohio",
+      "Orinoco",
+      "Parana\u00edba",
+      "Paran\u00e1",
+      "Peace",
+      "Pur\u00fas",
+      "Red",
+      "Rio Grande",
+      "Rio Salinas",
+      "Ro Grande de Santiago",
+      "Sacramento",
+      "San Joaquin",
+      "San Juan",
+      "San Pedro y San Pablo",
+      "Santa Cruz",
+      "Saskatchewan",
+      "Slave",
+      "Snake",
+      "South Saskatchewan",
+      "St. Clair",
+      "St. Lawrence",
+      "S\u00e3o  Francisco",
+      "Tapaj\u00f3s",
+      "Tennessee",
+      "Teslin",
+      "Tocantins",
+      "Ucayali",
+      "Uruguay",
+      "Usumacinta",
+      "Xingu",
+      "Yukon"
+    ],
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    },
+    "registration": "geographic lines projected into the original Web Mercator footprint",
+    "interpretation": "major rivers are four-connected navigable water; gameplay widths exaggerated; original elevations preserved",
+    "variants": {
+      "250": {
+        "channelCells": 1544,
+        "newWaterCells": 1534
+      },
+      "500": {
+        "channelCells": 5873,
+        "newWaterCells": 5838
+      },
+      "1000": {
+        "channelCells": 15151,
+        "newWaterCells": 15083
+      }
+    }
+  }
+}

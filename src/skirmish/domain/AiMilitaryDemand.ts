@@ -1,12 +1,12 @@
-import { UNIT, UNITS } from "../content/Units";
+import { buildingCost, buildingTechnology } from "../content/Buildings";
+import { packageTechnology } from "../content/Technology";import { UNIT, UNITS } from "../content/Units";
 import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
+import { modernizationTarget } from "./AiMilitaryDevelopment";
+import { militaryPosture } from "./AiMilitaryPosture";
 import type { AiPersonality } from "./AiPersonality";
 import { AiProductionDependencies } from "./AiProductionDependencies";
 import { AGES, type Inventory, type UnitDefinition } from "./Definitions";
 import { unitRefitCost } from "./Refitting";
-import { buildingTechnology, buildingCost } from "../content/Buildings";
-import { technologyAt, packageTechnology } from "../content/Technology";
-import { militaryPosture } from "./AiMilitaryPosture";
 
 export interface AiDemandPreparation {equipment:Inventory;units:Partial<Record<UnitDefinition["role"],number>>;quote:import("./AiProductionDependencies").AiDependencyQuote;availabilityDeferred:boolean;}
 export interface AiProductionDemand {
@@ -33,9 +33,15 @@ export function militaryDemand(
     materials: {},
     units: {},
   };
-  if(!saved){
+  if (!saved) {
   const posture=militaryPosture(snapshot,personality);
-  const antiAir=snapshot.age==="Modern" ? Math.max(2,snapshot.buildings.filter(b=>b.type==="city" && (b.health??1)>0).length*2) : 0;
+    const antiAir =snapshot.age === "Modern"
+        ? Math.max(
+            2,snapshot.buildings.filter(
+              (b) =>b.type==="city" && (b.health??1)>0,
+            ).length * 2,
+          )
+        : 0;
   const total = Math.min(
     snapshot.cap,
     snapshot.isolated && snapshot.threatTroops === 0 && !posture.wealthy ? Math.max(personality.minimumRaidSquads,12) : Infinity,
@@ -89,18 +95,11 @@ export function militaryDemand(
       result.equipment[id] = (result.equipment[id] ?? 0) + buffer * n;
   }
   let upgrades = Math.max(1, Math.ceil(snapshot.squads.length / 4));
-  for (const squad of snapshot.squads) {
+    for (const squad of snapshot.squads) {
     if (!upgrades || squad.refit || squad.embarkedOn !== null) continue;
     const current = UNIT.get(squad.definitionId ?? `stoneage-${squad.kind}`);
     if (!current) continue;
-    const target = [...UNITS]
-      .reverse()
-      .find(
-        (u) =>
-          u.line === current.line &&
-          u.role === current.role &&
-          AGES.indexOf(u.age) > AGES.indexOf(current.age) &&
-          snapshot.research.includes(u.technologyId) &&
+      const target = modernizationTarget(current, snapshot.research, (u) =>
           Object.entries(unitRefitCost(u).items ?? {}).every(([id, n]) =>
             dependencies.available(id, n),
           ),
@@ -109,28 +108,36 @@ export function militaryDemand(
     upgrades--;
     for (const [id, n] of Object.entries(unitRefitCost(target).items ?? {}))
       result.equipment[id] = (result.equipment[id] ?? 0) + n;
-  }
-  if(snapshot.age === "Modern") {
-    const cities=snapshot.buildings.filter(b=>b.type==="city" && (b.health??1)>0).length;
-    const defenses=snapshot.buildings.filter(b=>b.type==="missile-defence" && (b.health??1)>0).length;
+    }
+    if (snapshot.age === "Modern") {
+      const cities =snapshot.buildings.filter(
+        (b) =>b.type==="city" && (b.health??1)>0,
+      ).length;
+      const defenses =snapshot.buildings.filter(
+        (b) =>b.type==="missile-defence" && (b.health??1)>0,
+      ).length;
     if (cities && defenses<cities*(posture.wealthy?10:1) && snapshot.research.includes(buildingTechnology("missile-defence","Modern")!))
       for (const [item,n] of Object.entries(buildingCost("missile-defence","Modern",defenses).items??{})) result.equipment[item]=(result.equipment[item]??0)+n;
-    // Stock a small ready salvo through the same dependency/material planner.
-    // Aviation and strategic weapons have independent capacity from land squads.
-    for(const [type,payload] of [["missile-silo","hydrogen"],["mirv-launcher","mirv"]] as const)
-      if(snapshot.buildings.some(b=>b.type===type) && snapshot.research.includes(packageTechnology("Modern",type==="mirv-launcher"?"mirvs-drones":"missile-infrastructure")))
-        result.equipment[`payload:${payload}`]=2;
-    if(snapshot.buildings.some(b=>b.type==="missile-silo") && snapshot.research.includes(packageTechnology("Modern","missile-infrastructure")))
+      // Stock a small ready salvo through the same dependency/material planner.
+      // Aviation and strategic weapons have independent capacity from land squads.
+      for (const [type,payload] of [["missile-silo","hydrogen"],["mirv-launcher","mirv"]] as const)
+        if (snapshot.buildings.some((b) => b.type === type) && snapshot.research.includes(packageTechnology("Modern",type==="mirv-launcher"?"mirvs-drones":"missile-infrastructure"))
+        )
+        result.equipment[`payload:${payload}`] = 2;
+      if (snapshot.buildings.some((b) =>b.type==="missile-silo") && snapshot.research.includes(packageTechnology("Modern","missile-infrastructure"))
+      )
       result.equipment["payload:icbm"]=1;
-    const oilUsers=snapshot.buildings.filter(b=>["depot","arms-factory","airstrip","missile-silo","mirv-launcher"].includes(b.type)).length;
+      const oilUsers =snapshot.buildings.filter((b) =>["depot","arms-factory","airstrip","missile-silo","mirv-launcher"].includes(b.type),
+      ).length;
     if(oilUsers)result.equipment.oil=Math.max(40,oilUsers*20);
+    }
   }
-  }
-  if(snapshot.buildings.some(b=>b.type==="nuclear-facility") && snapshot.research.includes(packageTechnology("EarlyModern","nuclear-weapons"))) result.equipment["payload:atomic"]=2;
+  if (snapshot.buildings.some((b) =>b.type==="nuclear-facility") && snapshot.research.includes(packageTechnology("EarlyModern","nuclear-weapons"))
+  ) result.equipment["payload:atomic"]=2;
   const preparation=saved??{equipment:result.equipment,units:result.units,quote:dependencies.beginMaterials(result.equipment),availabilityDeferred:dependencies.deferred};
-  result.equipment=preparation.equipment;result.units=preparation.units;
+  result.equipment=preparation.equipment; result.units=preparation.units;
   dependencies.stepMaterials(preparation.quote,allowance);
-  result.materials=preparation.quote.materials;result.bottlenecks=preparation.quote.reasons;result.timeToOutput=preparation.quote.ticks;
+  result.materials=preparation.quote.materials; result.bottlenecks=preparation.quote.reasons; result.timeToOutput=preparation.quote.ticks;
   if(preparation.quote.phase!=="done"){result.planning=preparation;result.deferred=true;}
   else if(preparation.availabilityDeferred||dependencies.deferred||preparation.quote.status==="deferred")result.deferred=true;
   return result;

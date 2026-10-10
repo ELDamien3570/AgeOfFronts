@@ -1,0 +1,393 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Warships/Warship_EarlyModern.png",
+  "sourceSha256": "1a0ba6283892b98154608b0b035d63113ad94a340c3ac6e82d9cde46425224f6",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [
+    [
+      526,
+      545
+    ],
+    [
+      724,
+      545
+    ],
+    [
+      752,
+      650
+    ],
+    [
+      755,
+      850
+    ],
+    [
+      729,
+      990
+    ],
+    [
+      726,
+      1090
+    ],
+    [
+      670,
+      1110
+    ],
+    [
+      626,
+      1150
+    ],
+    [
+      580,
+      1110
+    ],
+    [
+      526,
+      1090
+    ],
+    [
+      521,
+      990
+    ],
+    [
+      495,
+      850
+    ],
+    [
+      499,
+      650
+    ]
+  ],
+  "layers": [
+    {
+      "name": "cloth-01",
+      "polygon": [
+        [
+          613,
+          110
+        ],
+        [
+          565,
+          164
+        ],
+        [
+          613,
+          161
+        ]
+      ],
+      "amplitude": 5,
+      "kind": "cloth",
+      "file": "layers/cloth-01.png"
+    },
+    {
+      "name": "cloth-02",
+      "polygon": [
+        [
+          639,
+          110
+        ],
+        [
+          689,
+          164
+        ],
+        [
+          639,
+          161
+        ]
+      ],
+      "amplitude": 5,
+      "kind": "cloth",
+      "file": "layers/cloth-02.png"
+    },
+    {
+      "name": "cloth-03",
+      "polygon": [
+        [
+          525,
+          193
+        ],
+        [
+          612,
+          192
+        ],
+        [
+          612,
+          293
+        ],
+        [
+          512,
+          293
+        ]
+      ],
+      "amplitude": 10,
+      "kind": "cloth",
+      "file": "layers/cloth-03.png"
+    },
+    {
+      "name": "cloth-04",
+      "polygon": [
+        [
+          640,
+          192
+        ],
+        [
+          724,
+          193
+        ],
+        [
+          740,
+          293
+        ],
+        [
+          640,
+          293
+        ]
+      ],
+      "amplitude": 10,
+      "kind": "cloth",
+      "file": "layers/cloth-04.png"
+    },
+    {
+      "name": "cloth-05",
+      "polygon": [
+        [
+          484,
+          338
+        ],
+        [
+          611,
+          338
+        ],
+        [
+          611,
+          441
+        ],
+        [
+          469,
+          440
+        ]
+      ],
+      "amplitude": 12,
+      "kind": "cloth",
+      "file": "layers/cloth-05.png"
+    },
+    {
+      "name": "cloth-06",
+      "polygon": [
+        [
+          641,
+          338
+        ],
+        [
+          765,
+          338
+        ],
+        [
+          782,
+          440
+        ],
+        [
+          641,
+          441
+        ]
+      ],
+      "amplitude": 12,
+      "kind": "cloth",
+      "file": "layers/cloth-06.png"
+    },
+    {
+      "name": "cloth-07",
+      "polygon": [
+        [
+          455,
+          479
+        ],
+        [
+          612,
+          480
+        ],
+        [
+          612,
+          550
+        ],
+        [
+          530,
+          550
+        ]
+      ],
+      "amplitude": 10,
+      "kind": "cloth",
+      "file": "layers/cloth-07.png"
+    },
+    {
+      "name": "cloth-08",
+      "polygon": [
+        [
+          642,
+          480
+        ],
+        [
+          796,
+          479
+        ],
+        [
+          721,
+          550
+        ],
+        [
+          642,
+          550
+        ]
+      ],
+      "amplitude": 10,
+      "kind": "cloth",
+      "file": "layers/cloth-08.png"
+    },
+    {
+      "name": "gun-port-01",
+      "kind": "gun",
+      "side": "port",
+      "muzzle": [
+        495,
+        580
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-port-01.png"
+    },
+    {
+      "name": "gun-port-02",
+      "kind": "gun",
+      "side": "port",
+      "muzzle": [
+        495,
+        636
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-port-02.png"
+    },
+    {
+      "name": "gun-port-03",
+      "kind": "gun",
+      "side": "port",
+      "muzzle": [
+        495,
+        690
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-port-03.png"
+    },
+    {
+      "name": "gun-port-04",
+      "kind": "gun",
+      "side": "port",
+      "muzzle": [
+        495,
+        746
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-port-04.png"
+    },
+    {
+      "name": "gun-port-05",
+      "kind": "gun",
+      "side": "port",
+      "muzzle": [
+        495,
+        803
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-port-05.png"
+    },
+    {
+      "name": "gun-port-06",
+      "kind": "gun",
+      "side": "port",
+      "muzzle": [
+        495,
+        861
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-port-06.png"
+    },
+    {
+      "name": "gun-starboard-01",
+      "kind": "gun",
+      "side": "starboard",
+      "muzzle": [
+        758,
+        580
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-starboard-01.png"
+    },
+    {
+      "name": "gun-starboard-02",
+      "kind": "gun",
+      "side": "starboard",
+      "muzzle": [
+        758,
+        636
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-starboard-02.png"
+    },
+    {
+      "name": "gun-starboard-03",
+      "kind": "gun",
+      "side": "starboard",
+      "muzzle": [
+        758,
+        690
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-starboard-03.png"
+    },
+    {
+      "name": "gun-starboard-04",
+      "kind": "gun",
+      "side": "starboard",
+      "muzzle": [
+        758,
+        746
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-starboard-04.png"
+    },
+    {
+      "name": "gun-starboard-05",
+      "kind": "gun",
+      "side": "starboard",
+      "muzzle": [
+        758,
+        803
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-starboard-05.png"
+    },
+    {
+      "name": "gun-starboard-06",
+      "kind": "gun",
+      "side": "starboard",
+      "muzzle": [
+        758,
+        861
+      ],
+      "amplitude": 7,
+      "file": "layers/gun-starboard-06.png"
+    }
+  ],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

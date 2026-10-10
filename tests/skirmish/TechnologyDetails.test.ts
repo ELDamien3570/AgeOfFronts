@@ -54,10 +54,10 @@ describe("technology inspection", () => {
     expect(text("rus-earlymodern-factories-mines")).toContain(
       "Recipe production rate: 170% of base",
     );
-    expect(text("rus-earlymodern-land-traders")).toContain("6 horses/s");
-    expect(text("rus-classicalage-land-traders")).toContain("3 horses/s");
+    expect(text("rus-earlymodern-roads")).toContain("6 horses/s");
+    expect(text("rus-classicalage-roads")).toContain("3 horses/s");
     expect(text("rus-classicalage-cities")).not.toContain("horses/s");
-    expect(text("rus-earlymodern-land-traders")).toContain(
+    expect(text("rus-earlymodern-roads")).toContain(
       "120 goods base cargo · 150 with Stone Age cargo handling",
     );
   });

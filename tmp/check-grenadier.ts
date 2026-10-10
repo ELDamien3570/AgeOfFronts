@@ -1,0 +1,2 @@
+import {defaultUnit} from "../src/skirmish/content/Units";import {damageAmount} from "../src/skirmish/domain/Combat";import {unitEffects} from "../src/skirmish/domain/ResearchEffects";import {technologyAt} from "../src/skirmish/content/Technology";
+const a=defaultUnit("infantry","Napoleonic"),b=unitEffects(defaultUnit("infantry","LateMedieval"),[technologyAt("LateMedieval","warfare",4).id]);console.log(a.attack,b);console.log(damageAmount(a.attack,b));

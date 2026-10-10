@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "StoneAge",
+  "unit": "Scout",
+  "category": "Cavalry",
+  "actorCount": 1,
+  "stage": "single-mounted-idle-design-review",
+  "integrationStatus": "One Scout idle for visual review. Prior mounted spearman sources are preserved. Runtime formations and gameplay integration are separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed authored saddle/root pivot and one constant scale, no silhouette fitting.",
+  "weapon": "Short wooden club with a rounded stone head and leather lashings",
+  "mount": "Chestnut horse with black mane and tail, primitive leather saddle and bridle",
+  "equipmentFinish": "Russian Stone Age red fur-trimmed cap and tunic, cream fur collar, simple wrist wraps, pale trousers and brown boots",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        1000
+      ],
+      "description": "Mounted Scout holds a short stone-headed club beside the chestnut horse; single idle design for review.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1254,
+          "height": 1254,
+          "pivot": {
+            "x": 627.0,
+            "y": 627.0
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leather Mask Painter</title>
+<style>
+  :root { --bg:#1b1d21; --panel:#24272d; --line:#363a42; --text:#e6e8ec; --dim:#9aa1ad; --add:#3ddc84; --erase:#ff5a5a; --clear:#ffd04a; --accent:#6aa8ff; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font:13px/1.35 system-ui, Segoe UI, sans-serif; overflow:hidden; }
+  #app { display:grid; grid-template-columns:300px 1fr; grid-template-rows:auto 1fr auto; height:100%; }
+  #side { grid-row:1 / 4; background:var(--panel); border-right:1px solid var(--line); overflow:auto; }
+  #side { display:flex; flex-direction:column; overflow:hidden; }
+  #filters { padding:8px; border-bottom:1px solid var(--line); display:grid; gap:6px; }
+  #filters input[type=search], #filters select { width:100%; background:#1b1d21; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:6px 8px; font:inherit; }
+  #filters .row { display:flex; gap:10px; flex-wrap:wrap; color:var(--dim); font-size:12px; }
+  #filters label { display:flex; gap:4px; align-items:center; cursor:pointer; }
+  #count { color:var(--dim); font-size:12px; }
+  #tree { overflow:auto; flex:1; padding-bottom:30px; }
+  .grp-h { position:sticky; top:0; display:flex; width:100%; justify-content:space-between; gap:6px; padding:6px 10px; background:#2b2f37; border:0; border-top:1px solid var(--line); color:var(--text); text-align:left; cursor:pointer; font:600 12px/1.3 system-ui; z-index:1; }
+  .grp-h .n { color:var(--dim); font-weight:400; }
+  .grp-h:hover { background:#343944; }
+  .sheet { display:flex; width:100%; justify-content:space-between; gap:6px; padding:4px 10px 4px 22px; background:none; border:0; color:var(--text); text-align:left; cursor:pointer; font:inherit; font-size:12.5px; }
+  .sheet:hover { background:#2d3139; }
+  .sheet.on { background:#34507d; }
+  .sheet.rev { opacity:.5; }
+  .sheet .tags { display:flex; gap:4px; align-items:center; flex:none; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--add); }
+  .tick { color:var(--add); font-size:11px; }
+  .sheet .sub { color:var(--dim); font-size:11px; }
+  #bar { display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; padding:8px 10px; background:var(--panel); border-bottom:1px solid var(--line); }
+  .grp { display:flex; gap:4px; align-items:center; }
+  .grp label { color:var(--dim); margin-right:2px; }
+  .btn { background:#2d3139; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:5px 9px; cursor:pointer; font:inherit; }
+  .btn:hover { background:#383d47; }
+  .btn.on { outline:2px solid var(--accent); }
+  .btn kbd { opacity:.6; margin-left:4px; font-size:11px; }
+  .btn[data-tool=add].on { outline-color:var(--add); } .btn[data-tool=erase].on { outline-color:var(--erase); } .btn[data-tool=clear].on { outline-color:var(--clear); }
+  input[type=range] { width:110px; } input[type=color] { width:32px; height:26px; padding:0; border:1px solid var(--line); background:none; }
+  #vp { position:relative; overflow:hidden; background:#34373e; cursor:none; touch-action:none; }
+  #stage { position:absolute; left:0; top:0; transform-origin:0 0; background:#46494f; }
+  #stage canvas { position:absolute; left:0; top:0; }
+  #stage.pix canvas { image-rendering:pixelated; }
+  #corr { opacity:.35; display:none; }
+  #grid { position:absolute; left:0; top:0; pointer-events:none; }
+  #cursor { position:fixed; pointer-events:none; border:2px solid #fff; border-radius:50%; transform:translate(-50%,-50%); mix-blend-mode:difference; display:none; }
+  #status { padding:6px 10px; background:var(--panel); border-top:1px solid var(--line); color:var(--dim); display:flex; justify-content:space-between; gap:12px; }
+  #status b { color:var(--text); font-weight:600; }
+  #msg.ok { color:var(--add); } #msg.err { color:var(--erase); }
+  .hint { color:var(--dim); font-size:12px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div id="filters">
+      <input id="q" type="search" placeholder="Search unit, animation, age…  ( / )">
+      <div class="row">
+        <select id="ageSel" style="flex:1"><option value="">All ages</option></select>
+        <select id="groupSel" style="flex:1"><option value="unit">Group: unit</option><option value="anim">Group: animation</option></select>
+      </div>
+      <div class="row">
+        <label><input id="fCorr" type="checkbox"> Corrected only</label>
+        <label><input id="fHide" type="checkbox"> Hide reviewed</label>
+        <span id="count"></span>
+      </div>
+    </div>
+    <div id="tree"></div>
+  </aside>
+  <div id="bar">
+    <div class="grp"><label>Brush</label>
+      <button class="btn on" data-tool="add" title="Mark pixels as leather (A)">Add leather<kbd>A</kbd></button>
+      <button class="btn" data-tool="erase" title="Mark pixels as NOT leather (E)">Erase leather<kbd>E</kbd></button>
+      <button class="btn" data-tool="clear" title="Remove your corrections and fall back to auto (C)">Undo-paint<kbd>C</kbd></button>
+    </div>
+    <div class="grp"><label>Size</label><input id="size" type="range" min="1" max="60" value="8"><span id="sizeVal">8</span><span class="hint">[ ]</span></div>
+    <div class="grp"><label>View</label>
+      <button class="btn on" data-view="final" title="Final mask in magenta (1)">Mask<kbd>1</kbd></button>
+      <button class="btn" data-view="auto" title="Auto detection only, to see what the corrections change (2)">Auto<kbd>2</kbd></button>
+      <button class="btn" data-view="recolor" title="Recolour preview using the final mask (3)">Recolour<kbd>3</kbd></button>
+      <button class="btn" data-view="none" title="Plain art (4)">Art<kbd>4</kbd></button>
+      <input id="tint" type="color" value="#2f6fdb" title="Preview colour">
+    </div>
+    <div class="grp">
+      <button class="btn" id="showCorr" title="Show your raw green/red strokes on top (G). Painted leather already shows as pink; removed leather shows red.">Strokes<kbd>G</kbd></button>
+      <button class="btn" id="showGrid" title="Frame grid (H)">Grid<kbd>H</kbd></button>
+      <button class="btn" id="fit" title="Fit to window (F)">Fit<kbd>F</kbd></button>
+    </div>
+    <div class="grp">
+      <button class="btn" id="undo">Undo<kbd>Ctrl+Z</kbd></button>
+      <button class="btn" id="redo">Redo<kbd>Ctrl+Y</kbd></button>
+      <button class="btn" id="save" style="border-color:var(--accent)">Save<kbd>Ctrl+S</kbd></button>
+      <button class="btn" id="prev" title="Previous sheet in the filtered list (Alt+Left)">&#9664;</button>
+      <button class="btn" id="next" title="Next sheet in the filtered list (Alt+Right)">&#9654;</button>
+      <button class="btn" id="rev" title="Mark this sheet reviewed and go to the next (R)">Reviewed &#10003;<kbd>R</kbd></button>
+    </div>
+  </div>
+  <div id="vp">
+    <div id="stage" class="pix">
+      <canvas id="base"></canvas><canvas id="over"></canvas><canvas id="corr"></canvas><canvas id="grid"></canvas>
+    </div>
+    <div id="cursor"></div>
+  </div>
+  <div id="status"><span id="sheetName">Loading…</span><span id="msg"></span><span class="hint">Wheel: zoom · Space/right-drag: pan · pink = leather (painted leather too) · red tint = leather you removed · painting stays inside the sprite</span></div>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const vp = $('#vp'), stage = $('#stage'), cursor = $('#cursor');
+const base = $('#base'), over = $('#over'), corr = $('#corr'), gridC = $('#grid');
+const GREEN = 0xFF00FF00, RED = 0xFF0000FF;   // ABGR little-endian
+let sheets = [], cur = null, W = 0, H = 0;
+let srcData, srcA, autoA, corrImg, corr32, overImg, overCtx, corrCtx;
+let tool = 'add', view = 'final', brush = 8, zoom = 1, panX = 0, panY = 0;
+let dirty = false, undoStack = [], redoStack = [], stroke = null, panning = null, spaceDown = false, mouse = { x: 0, y: 0 };
+
+const msg = (t, c = '') => { const m = $('#msg'); m.textContent = t; m.className = c; };
+
+// ---------- loading ----------
+async function loadImage(url) {
+  const r = await fetch(url); if (!r.ok) return null;
+  return await createImageBitmap(await r.blob());
+}
+function pixels(bmp) {
+  const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height;
+  const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(bmp, 0, 0);
+  return x.getImageData(0, 0, c.width, c.height);
+}
+async function openSheet(s) {
+  if (cur && dirty) await save();
+  msg('Loading…');
+  const q = '?a=' + s.age + '&t=' + encodeURIComponent(s.target) + '&_=' + Date.now();
+  const [src, auto, cor] = await Promise.all([loadImage('/api/source' + q), loadImage('/api/auto' + q), loadImage('/api/correction' + q)]);
+  if (!src || !auto) { msg('Could not load sheet', 'err'); return; }
+  cur = s; save_('maskPainter.last', { age: s.age, target: s.target }); W = src.width; H = src.height;
+  const sd = pixels(src); srcData = sd.data;
+  srcA = new Uint8Array(W * H); autoA = new Uint8Array(W * H);
+  const ad = pixels(auto).data;
+  for (let i = 0; i < W * H; i++) { srcA[i] = srcData[i * 4 + 3]; autoA[i] = ad[i * 4 + 3]; }
+  for (const c of [base, over, corr, gridC]) { c.width = W; c.height = H; }
+  stage.style.width = W + 'px'; stage.style.height = H + 'px';
+  base.getContext('2d').drawImage(src, 0, 0);
+  corrCtx = corr.getContext('2d', { willReadFrequently: true });
+  corrImg = corrCtx.createImageData(W, H); corr32 = new Uint32Array(corrImg.data.buffer);
+  if (cor) {
+    const cd = pixels(cor).data, c32 = new Uint32Array(cd.buffer);
+    for (let i = 0; i < c32.length; i++) { const a = cd[i * 4 + 3] > 127; corr32[i] = !a ? 0 : (cd[i * 4 + 1] > 127 && cd[i * 4] < 128 ? GREEN : (cd[i * 4] > 127 && cd[i * 4 + 1] < 128 ? RED : 0)); }
+  }
+  corrCtx.putImageData(corrImg, 0, 0);
+  overCtx = over.getContext('2d'); overImg = overCtx.createImageData(W, H);
+  drawGrid(); refreshOverlay(0, 0, W, H);
+  undoStack = []; redoStack = []; dirty = false;
+  $('#sheetName').innerHTML = '<small>' + s.age + '</small> <b>' + s.unit + '</b> / ' + s.file;
+  renderSide();
+  fit(); msg('');
+}
+
+// ---------- rendering ----------
+function finalAlpha(i) {
+  const c = corr32[i];
+  if (c === GREEN) return srcA[i];
+  if (c === RED) return 0;
+  return autoA[i];
+}
+function refreshOverlay(x0, y0, w, h) {
+  const d = overImg.data, tint = hexToRgb($('#tint').value);
+  for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
+    const i = y * W + x, o = i * 4;
+    let a = 0, r = 0, g = 0, b = 0;
+    if (view === 'final' || view === 'auto') {
+      a = (view === 'final' ? finalAlpha(i) : autoA[i]) * 0.85; r = 255; g = 0; b = 255;
+      if (view === 'final' && corr32[i] === RED && autoA[i] > 0) { r = 255; g = 40; b = 40; a = 130; }   // leather you removed
+    } else if (view === 'recolor') {
+      const m = finalAlpha(i) / 255;
+      if (m > 0) {
+        const lum = (srcData[o] * .3 + srcData[o + 1] * .59 + srcData[o + 2] * .11) / 255 * 3.2;
+        r = Math.min(255, tint[0] * lum); g = Math.min(255, tint[1] * lum); b = Math.min(255, tint[2] * lum);
+        a = srcA[i] * m;
+      }
+    }
+    d[o] = r; d[o + 1] = g; d[o + 2] = b; d[o + 3] = a;
+  }
+  overCtx.putImageData(overImg, 0, 0, x0, y0, w, h);
+}
+function drawGrid() {
+  const g = gridC.getContext('2d'); g.clearRect(0, 0, W, H);
+  g.strokeStyle = 'rgba(120,200,255,.55)'; g.lineWidth = 1;
+  const n = Math.round(W / 512);
+  for (let i = 1; i < n; i++) { g.beginPath(); g.moveTo(i * 512 + .5, 0); g.lineTo(i * 512 + .5, H); g.stroke(); }
+  for (let j = 1; j < Math.round(H / 512); j++) { g.beginPath(); g.moveTo(0, j * 512 + .5); g.lineTo(W, j * 512 + .5); g.stroke(); }
+  gridC.style.display = $('#showGrid').classList.contains('on') ? '' : 'none';
+}
+const hexToRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+
+// ---------- view transform ----------
+function applyView() {
+  stage.style.transform = `translate(${panX}px,${panY}px) scale(${zoom})`;
+  stage.classList.toggle('pix', zoom >= 2);
+  updateCursor();
+}
+function fit() {
+  const r = vp.getBoundingClientRect();
+  zoom = Math.min(r.width / W, r.height / H) * 0.98;
+  panX = (r.width - W * zoom) / 2; panY = (r.height - H * zoom) / 2; applyView();
+}
+function toImage(cx, cy) {
+  const r = vp.getBoundingClientRect();
+  return [(cx - r.left - panX) / zoom, (cy - r.top - panY) / zoom];
+}
+function updateCursor() {
+  const d = Math.max(4, brush * 2 * zoom);
+  cursor.style.width = cursor.style.height = d + 'px';
+  cursor.style.left = mouse.x + 'px'; cursor.style.top = mouse.y + 'px';
+}
+vp.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = vp.getBoundingClientRect(), cx = e.clientX - r.left, cy = e.clientY - r.top;
+  const nz = Math.min(24, Math.max(0.1, zoom * Math.exp(-e.deltaY * 0.0015)));
+  panX = cx - (cx - panX) * nz / zoom; panY = cy - (cy - panY) * nz / zoom; zoom = nz; applyView();
+}, { passive: false });
+
+// ---------- painting ----------
+function toolValue() { return tool === 'add' ? GREEN : tool === 'erase' ? RED : 0; }
+function stamp(cx, cy, val, log, box) {
+  const r = brush, x0 = Math.max(0, Math.floor(cx - r)), x1 = Math.min(W - 1, Math.ceil(cx + r));
+  const y0 = Math.max(0, Math.floor(cy - r)), y1 = Math.min(H - 1, Math.ceil(cy + r));
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    const dx = x + .5 - cx, dy = y + .5 - cy; if (dx * dx + dy * dy > r * r) continue;
+    const i = y * W + x;
+    if (tool !== 'clear' && srcA[i] === 0) continue;       // stay inside the sprite
+    if (corr32[i] === val) continue;
+    log.idx.push(i); log.old.push(corr32[i]); corr32[i] = val;
+    if (x < box.x0) box.x0 = x; if (x > box.x1) box.x1 = x; if (y < box.y0) box.y0 = y; if (y > box.y1) box.y1 = y;
+  }
+}
+function flush(box) {
+  if (box.x1 < box.x0) return;
+  const w = box.x1 - box.x0 + 1, h = box.y1 - box.y0 + 1;
+  corrCtx.putImageData(corrImg, 0, 0, box.x0, box.y0, w, h);
+  refreshOverlay(box.x0, box.y0, w, h);
+}
+function paintTo(ix, iy) {
+  const s = stroke, dx = ix - s.lx, dy = iy - s.ly, dist = Math.hypot(dx, dy), step = Math.max(1, brush / 3);
+  const box = { x0: 1e9, y0: 1e9, x1: -1, y1: -1 };
+  const n = Math.max(1, Math.ceil(dist / step));
+  for (let k = 1; k <= n; k++) stamp(s.lx + dx * k / n, s.ly + dy * k / n, s.val, s.log, box);
+  s.lx = ix; s.ly = iy; flush(box);
+}
+vp.addEventListener('pointerdown', e => {
+  if (!cur) return;
+  if (e.button === 1 || e.button === 2 || spaceDown) { panning = { x: e.clientX, y: e.clientY, px: panX, py: panY }; vp.setPointerCapture(e.pointerId); return; }
+  if (e.button !== 0) return;
+  vp.setPointerCapture(e.pointerId);
+  const [ix, iy] = toImage(e.clientX, e.clientY);
+  stroke = { val: toolValue(), log: { idx: [], old: [] }, lx: ix, ly: iy };
+  const box = { x0: 1e9, y0: 1e9, x1: -1, y1: -1 };
+  stamp(ix, iy, stroke.val, stroke.log, box); flush(box);
+});
+vp.addEventListener('pointermove', e => {
+  mouse = { x: e.clientX, y: e.clientY }; updateCursor();
+  if (panning) { panX = panning.px + e.clientX - panning.x; panY = panning.py + e.clientY - panning.y; applyView(); return; }
+  if (stroke) { const [ix, iy] = toImage(e.clientX, e.clientY); paintTo(ix, iy); }
+});
+vp.addEventListener('pointerup', () => {
+  panning = null;
+  if (stroke) {
+    if (stroke.log.idx.length) { undoStack.push({ idx: stroke.log.idx, old: stroke.log.old, nw: stroke.val }); redoStack = []; markDirty(); }
+    stroke = null;
+  }
+});
+vp.addEventListener('contextmenu', e => e.preventDefault());
+vp.addEventListener('pointerenter', () => cursor.style.display = 'block');
+vp.addEventListener('pointerleave', () => cursor.style.display = 'none');
+
+function applyEntry(en, undo) {
+  for (let k = 0; k < en.idx.length; k++) corr32[en.idx[k]] = undo ? en.old[k] : en.nw;
+  corrCtx.putImageData(corrImg, 0, 0); refreshOverlay(0, 0, W, H);
+}
+function undo() { const e = undoStack.pop(); if (!e) return; applyEntry(e, true); redoStack.push(e); markDirty(); }
+function redo() { const e = redoStack.pop(); if (!e) return; applyEntry(e, false); undoStack.push(e); markDirty(); }
+function markDirty() { dirty = true; msg('Unsaved changes'); }
+
+// ---------- saving ----------
+async function save() {
+  if (!cur || !dirty) return;
+  let any = false; for (let i = 0; i < corr32.length; i++) if (corr32[i]) { any = true; break; }
+  msg('Saving…');
+  const blob = any ? await new Promise(r => corr.toBlob(r, 'image/png')) : new Blob([]);
+  const res = await fetch('/api/correction?a=' + cur.age + '&t=' + encodeURIComponent(cur.target) + (any ? '' : '&empty=1'), { method: 'POST', body: blob });
+  if (res.ok) {
+    dirty = false; msg('Saved — mask rebuilt', 'ok');
+    cur.hasCorrection = any; renderSide();
+  } else msg('Save failed: ' + (await res.text()).slice(0, 200), 'err');
+}
+
+// ---------- UI ----------
+const AGE_ORDER = ['StoneAge', 'BronzeAge', 'ClassicalAge', 'EarlyMedieval'];
+const AGE_LABEL = { StoneAge: 'Stone Age', BronzeAge: 'Bronze Age', ClassicalAge: 'Classical Age', EarlyMedieval: 'Early Medieval' };
+const ANIM_ORDER = ['Idle', 'Move', 'Attack', 'Charge', 'Charge attack', 'Charged impact', 'Reload', 'Hit', 'Death', 'Other'];
+function animKind(f) {
+  f = f.toLowerCase();
+  if (/death|corpse/.test(f)) return 'Death';
+  if (/reload/.test(f)) return 'Reload';
+  if (/charge.?attack/.test(f)) return 'Charge attack';
+  if (/charged/.test(f)) return 'Charged impact';
+  if (/charge/.test(f)) return 'Charge';
+  if (/attack/.test(f)) return 'Attack';
+  if (/hit/.test(f)) return 'Hit';
+  if (/idle/.test(f)) return 'Idle';
+  if (/run|gait|walk/.test(f)) return 'Move';
+  return 'Other';
+}
+const load_ = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v === null || v === undefined ? d : v; } catch { return d; } };
+const save_ = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+let reviewed = new Set(load_('maskPainter.reviewed', []));
+let opened = load_('maskPainter.open', {});              // group key -> true when the user opened it
+const key = s => s.age + '/' + s.target;
+const groupOf = s => ($('#groupSel').value === 'anim' ? animKind(s.file) : AGE_LABEL[s.age] + ' · ' + s.unit);
+const isCur = s => cur && cur.target === s.target && cur.age === s.age;
+
+function filtered() {
+  const q = $('#q').value.trim().toLowerCase().split(/\s+/).filter(Boolean), age = $('#ageSel').value;
+  return sheets.filter(s => (!age || s.age === age)
+    && (!$('#fCorr').checked || s.hasCorrection)
+    && (!$('#fHide').checked || !reviewed.has(key(s)) || isCur(s))
+    && q.every(w => (AGE_LABEL[s.age] + ' ' + s.age + ' ' + s.unit + ' ' + s.file + ' ' + animKind(s.file)).toLowerCase().includes(w)));
+}
+function renderSide() {
+  const tree = $('#tree'), keep = tree.scrollTop; tree.innerHTML = '';
+  const list = filtered(), byAnim = $('#groupSel').value === 'anim', searching = $('#q').value.trim() !== '';
+  const groups = new Map();
+  for (const s of list) { const g = groupOf(s); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(s); }
+  const order = [...groups.keys()];
+  if (byAnim) order.sort((a, b) => ANIM_ORDER.indexOf(a) - ANIM_ORDER.indexOf(b));
+  for (const g of order) {
+    const items = groups.get(g);
+    const open = searching || items.some(isCur) || opened[g];
+    const done = items.filter(s => reviewed.has(key(s))).length;
+    const h = document.createElement('button'); h.className = 'grp-h';
+    h.innerHTML = '<span>' + (open ? '▾ ' : '▸ ') + g + '</span><span class="n">' + (done ? done + '/' : '') + items.length + '</span>';
+    h.onclick = () => { opened[g] = !open; save_('maskPainter.open', opened); renderSide(); };
+    tree.appendChild(h);
+    if (!open) continue;
+    for (const s of items) {
+      const b = document.createElement('button'); b.className = 'sheet' + (isCur(s) ? ' on' : '') + (reviewed.has(key(s)) ? ' rev' : '');
+      b.innerHTML = '<span>' + (byAnim ? '<span class="sub">' + s.unit + ' — </span>' : '') + s.file.replace(/\.png$/, '') + '</span><span class="tags">'
+        + (reviewed.has(key(s)) ? '<span class="tick" title="Reviewed">✓</span>' : '') + (s.hasCorrection ? '<i class="dot" title="Has painted corrections"></i>' : '') + '</span>';
+      b.onclick = () => openSheet(s); tree.appendChild(b);
+    }
+  }
+  tree.scrollTop = keep;
+  $('#count').textContent = list.length + ' / ' + sheets.length + ' sheets';
+}
+async function step(d) {
+  const list = filtered(), pool = list.length ? list : sheets;
+  const i = pool.findIndex(isCur);
+  const n = pool[(i < 0 ? (d > 0 ? 0 : pool.length - 1) : (i + d + pool.length) % pool.length)];
+  if (n) { opened[groupOf(n)] = true; await openSheet(n); }
+}
+function toggleReviewed(advance) {
+  if (!cur) return; const k = key(cur);
+  if (reviewed.has(k)) reviewed.delete(k); else reviewed.add(k);
+  save_('maskPainter.reviewed', [...reviewed]);
+  if (advance && reviewed.has(k)) step(1); else renderSide();
+}
+$('#q').oninput = renderSide; $('#ageSel').onchange = renderSide; $('#groupSel').onchange = renderSide;
+$('#fCorr').onchange = renderSide; $('#fHide').onchange = renderSide;
+$('#prev').onclick = () => step(-1); $('#next').onclick = () => step(1); $('#rev').onclick = () => toggleReviewed(true);
+function setTool(t) { tool = t; document.querySelectorAll('[data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === t)); cursor.style.borderColor = ''; }
+function setView(v) { view = v; document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v)); if (cur) refreshOverlay(0, 0, W, H); }
+function setBrush(n) { brush = Math.max(1, Math.min(60, n)); $('#size').value = brush; $('#sizeVal').textContent = brush; updateCursor(); }
+document.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => setTool(b.dataset.tool));
+document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => setView(b.dataset.view));
+$('#size').oninput = e => setBrush(+e.target.value);
+$('#tint').oninput = () => { if (view === 'recolor') refreshOverlay(0, 0, W, H); };
+$('#showCorr').onclick = e => { e.currentTarget.classList.toggle('on'); corr.style.display = e.currentTarget.classList.contains('on') ? '' : 'none'; };
+$('#showGrid').onclick = e => { e.currentTarget.classList.toggle('on'); if (cur) drawGrid(); };
+$('#fit').onclick = fit; $('#undo').onclick = undo; $('#redo').onclick = redo; $('#save').onclick = save;
+addEventListener('resize', () => cur && fit());
+addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+addEventListener('keyup', e => { if (e.code === 'Space') spaceDown = false; });
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { spaceDown = true; e.preventDefault(); return; }
+  const k = e.key.toLowerCase();
+  if (e.target.tagName === 'INPUT' && e.target.type === 'search') { if (e.key === 'Escape') e.target.blur(); return; }
+  if (e.altKey && e.key === 'ArrowRight') { e.preventDefault(); step(1); return; }
+  if (e.altKey && e.key === 'ArrowLeft') { e.preventDefault(); step(-1); return; }
+  if (e.ctrlKey || e.metaKey) {
+    if (k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+    else if (k === 'y') { e.preventDefault(); redo(); }
+    else if (k === 's') { e.preventDefault(); save(); }
+    return;
+  }
+  if (k === '/') { e.preventDefault(); $('#q').focus(); return; }
+  if (k === 'r') { toggleReviewed(true); return; }
+  if (k === 'a') setTool('add'); else if (k === 'e') setTool('erase'); else if (k === 'c') setTool('clear');
+  else if (k === '[') setBrush(brush - (brush > 12 ? 4 : 1)); else if (k === ']') setBrush(brush + (brush >= 12 ? 4 : 1));
+  else if (k === '1') setView('final'); else if (k === '2') setView('auto'); else if (k === '3') setView('recolor'); else if (k === '4') setView('none');
+  else if (k === 'g') $('#showCorr').click(); else if (k === 'h') $('#showGrid').click(); else if (k === 'f') fit();
+});
+
+(async () => {
+  sheets = await (await fetch('/api/sheets')).json();
+  sheets.sort((a, b) => AGE_ORDER.indexOf(a.age) - AGE_ORDER.indexOf(b.age));
+  for (const a of AGE_ORDER) if (sheets.some(s => s.age === a)) { const o = document.createElement('option'); o.value = a; o.textContent = AGE_LABEL[a]; $('#ageSel').appendChild(o); }
+  setBrush(8);
+  const last = load_('maskPainter.last', null);
+  const first = (last && sheets.find(s => s.age === last.age && s.target === last.target)) || sheets.find(s => /idle/i.test(s.file)) || sheets[0];
+  if (first) openSheet(first); else renderSide();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+{
+  "source": "generated/Trader_ClassicalAge.png",
+  "sourceSha256": "c26f6656409e9032061407c270be63bb48c9226fcfe8cc1128bbd5c1a3389b05",
+  "generatedSize": [
+    1254,
+    1254
+  ],
+  "nativeSize": [
+    1254,
+    1254
+  ],
+  "placement": {
+    "crop": [
+      69,
+      42,
+      1222,
+      1199
+    ],
+    "scale": 0.9853068280034573,
+    "offset": [
+      59,
+      57
+    ],
+    "generatedSize": [
+      1254,
+      1254
+    ]
+  },
+  "layers": [
+    {
+      "kind": "suspension",
+      "rect": [
+        264,
+        84,
+        719,
+        605
+      ],
+      "name": "wagon-1-suspension",
+      "phase": 0,
+      "feather": 14,
+      "maskFile": "layers/wagon-1-suspension-mask.png",
+      "paintFile": "layers/wagon-1-suspension.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        276,
+        337,
+        291,
+        535
+      ],
+      "name": "wagon-1-wheel-1",
+      "feather": 3,
+      "maskFile": "layers/wagon-1-wheel-1-mask.png",
+      "paintFile": "layers/wagon-1-wheel-1.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        687,
+        337,
+        701,
+        535
+      ],
+      "name": "wagon-1-wheel-2",
+      "feather": 3,
+      "maskFile": "layers/wagon-1-wheel-2-mask.png",
+      "paintFile": "layers/wagon-1-wheel-2.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        395,
+        575,
+        582,
+        1085
+      ],
+      "name": "mule-1-body",
+      "phase": 0,
+      "maskFile": "layers/mule-1-body-mask.png",
+      "paintFile": "layers/mule-1-body.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        477,
+        1083,
+        518,
+        1154
+      ],
+      "name": "mule-1-visible-hoof",
+      "pinY": 1083,
+      "stride": 18,
+      "lateral": 1.8,
+      "phase": 0,
+      "feather": 4,
+      "margin": 30,
+      "maskFile": "layers/mule-1-visible-hoof-mask.png",
+      "paintFile": "layers/mule-1-visible-hoof.png"
+    },
+    {
+      "kind": "tail",
+      "rect": [
+        469.5,
+        563,
+        507.5,
+        623
+      ],
+      "name": "mule-1-tail",
+      "phase": 0.4,
+      "feather": 5,
+      "maskFile": "layers/mule-1-tail-mask.png",
+      "paintFile": "layers/mule-1-tail.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        735,
+        550,
+        895,
+        1080
+      ],
+      "name": "donkey-2-body",
+      "phase": 1.5707963267948966,
+      "maskFile": "layers/donkey-2-body-mask.png",
+      "paintFile": "layers/donkey-2-body.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        785,
+        1080,
+        833,
+        1156
+      ],
+      "name": "donkey-2-visible-hoof",
+      "pinY": 1080,
+      "stride": 18,
+      "lateral": 1.8,
+      "phase": 1.5707963267948966,
+      "feather": 4,
+      "margin": 30,
+      "maskFile": "layers/donkey-2-visible-hoof-mask.png",
+      "paintFile": "layers/donkey-2-visible-hoof.png"
+    },
+    {
+      "kind": "tail",
+      "rect": [
+        796,
+        538,
+        834,
+        598
+      ],
+      "name": "donkey-2-tail",
+      "phase": 1.9707963267948965,
+      "feather": 5,
+      "maskFile": "layers/donkey-2-tail-mask.png",
+      "paintFile": "layers/donkey-2-tail.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        113,
+        670,
+        352,
+        902
+      ],
+      "name": "merchant-1-breathing",
+      "phase": 0,
+      "maskFile": "layers/merchant-1-breathing-mask.png",
+      "paintFile": "layers/merchant-1-breathing.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        185,
+        864,
+        225,
+        940
+      ],
+      "name": "merchant-1-leg-1",
+      "pinY": 864,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 0,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-1-leg-1-mask.png",
+      "paintFile": "layers/merchant-1-leg-1.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        222,
+        870,
+        272,
+        1024
+      ],
+      "name": "merchant-1-leg-2",
+      "pinY": 870,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 3.141592653589793,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-1-leg-2-mask.png",
+      "paintFile": "layers/merchant-1-leg-2.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        954,
+        729,
+        1181,
+        1005
+      ],
+      "name": "merchant-2-breathing",
+      "phase": 1.8849555921538759,
+      "maskFile": "layers/merchant-2-breathing-mask.png",
+      "paintFile": "layers/merchant-2-breathing.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        1004,
+        963,
+        1052,
+        1036
+      ],
+      "name": "merchant-2-leg-1",
+      "pinY": 963,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 1.8849555921538759,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-2-leg-1-mask.png",
+      "paintFile": "layers/merchant-2-leg-1.png"
+    },
+    {
+      "kind": "limb",
+      "rect": [
+        1057,
+        990,
+        1106,
+        1102
+      ],
+      "name": "merchant-2-leg-2",
+      "pinY": 990,
+      "stride": 14,
+      "lateral": 1.5,
+      "phase": 5.026548245743669,
+      "feather": 5,
+      "margin": 28,
+      "maskFile": "layers/merchant-2-leg-2-mask.png",
+      "paintFile": "layers/merchant-2-leg-2.png"
+    }
+  ],
+  "authoring": "Local mesh deformation of original painted pixels; limbs remain connected, wagon cargo stays secured, and overhead wheel treads retain their silhouette."
+}

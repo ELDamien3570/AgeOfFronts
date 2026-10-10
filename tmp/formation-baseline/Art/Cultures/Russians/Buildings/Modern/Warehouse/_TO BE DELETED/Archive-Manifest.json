@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Modern/Warehouse/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Modern/Warehouse/Generation.json",
+      "archived": "Buildings/Modern/Warehouse/_TO BE DELETED/Generation.json",
+      "sha256": "bf1e0e097ebc6ec492b65351965f95d01a0db77a65c329560b49ccd3508b0b5d",
+      "size": 2535
+    },
+    {
+      "original": "Buildings/Modern/Warehouse/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Modern/Warehouse/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "cb2ca1d2ad5114d684f2e661de1e717bbcaac2e9977b484e48702d11b677f0de",
+      "size": 1686934
+    }
+  ]
+}

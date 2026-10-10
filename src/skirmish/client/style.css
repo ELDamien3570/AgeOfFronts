@@ -2307,3 +2307,17 @@ footer span:last-child {
 #delete-building-close { position: absolute; right: 8px; top: 8px; }
 .building-delete-dialog button { padding: 7px 12px; cursor: pointer; }
 #delete-building-confirm { margin-left: 10px; }
+
+/* Main age progression endpoints, independent of isolated side upgrades. */
+.tech-graph .tech-node.progression-endpoint {
+  padding-right: 24px;
+}
+.tech-graph .tech-node .tech-endpoint-star {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: #f1d279;
+  font-size: 16px;
+  line-height: 1;
+  text-shadow: 0 1px 2px #000;
+}

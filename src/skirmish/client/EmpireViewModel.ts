@@ -3,6 +3,7 @@ import {
   buildingTechnology,
   buildingTicks,
   producerCompatible,
+  productionBuildingType,
 } from "../content/Buildings";
 import { supplyItemName } from "../content/Equipment";
 import { aircraftTechnology, FLIGHT_RULES } from "../content/FlightOperations";
@@ -186,6 +187,7 @@ export class EmpireViewModel {
       : "Building unavailable";
   }
   buildingVisible(type: BuildingType): boolean {
+    if (productionBuildingType(type, this.progression.age, this.progression.completed) !== type) return false;
     return (
       !!this.buildingAge(type) ||
       !!buildingTechnology(type, this.progression.age)
@@ -379,22 +381,8 @@ export class EmpireViewModel {
         : productionText("ready", { recipe: producer.selected.name }))
     );
   }
-  buildingUpgrade() {
-    const ids = this.selection.selectedBuildings?.size
-      ? [...this.selection.selectedBuildings]
-      : this.selection.selectedBuilding === null
-        ? []
-        : [this.selection.selectedBuilding];
-    if (!ids.length) return null;
-    return quoteBuildingUpgrades(
-      this.player,
-      this.progression,
-      this.inventory,
-      this.state.buildings,
-      this.state.owners,
-      ids,
-    );
-  }
+  /** Legacy inspection API; building upgrades are exclusively research-driven. */
+  buildingUpgrade(): ReturnType<typeof quoteBuildingUpgrades> | null { return null; }
   refit(focusedId?: number) {
     const selected = this.state.squads.filter(
       (s) => s.playerId === this.playerId && this.selection.selected.has(s.id),

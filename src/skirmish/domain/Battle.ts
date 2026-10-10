@@ -1,3 +1,5 @@
+import { afterWeaponShot } from "../content/WeaponCycles";
+import { predictiveAim } from "../RangedAim";
 import { restoreArray } from "../StateTransfer";
 import { DamageLedger } from "../Conquest";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
@@ -258,6 +260,13 @@ export class Battle {
     targetAircraftId?: number,
   ): boolean {
     if (!this.canFire(kind === "mirv" ? warheads : 0)) return false;
+    const unit = definitionId && UNIT.get(definitionId);
+    if (unit && unit.attack.channel === "ranged" && ["StoneAge","BronzeAge","ClassicalAge","EarlyMedieval","LateMedieval"].includes(unit.age) && unit.troopClass) {
+      const motion = (target as Squad).locomotion;
+      const velocity = motion ? {x:-Math.sin(motion.heading)*motion.speed*20/FIXED*64,y:Math.cos(motion.heading)*motion.speed*20/FIXED*64} : {x:0,y:0};
+      const aimed = predictiveAim({x:source.x/FIXED*64,y:source.y/FIXED*64},{x:target.x/FIXED*64,y:target.y/FIXED*64},velocity,(profile.projectile?.speed ?? FIXED)*20/FIXED*64,source.id*65537+this.world.tick,4);
+      target = {x:Math.round(aimed.point.x/64*FIXED),y:Math.round(aimed.point.y/64*FIXED)};
+    }
     if (kind === "mirv") this.reservedWarheads += warheads;
     this.projectiles.push({
       id: this.world.allocateId(),
@@ -307,7 +316,9 @@ export class Battle {
       y: number;
       definitionId?: string;
     },
-    target: Position,
+    target: Position & {id?:number},
+    damage = 0,
+    melee = false,
   ): void {
     if (this.world.volleys.length >= 4096) return;
     this.world.volleys.push({
@@ -320,6 +331,7 @@ export class Battle {
       fromY: source.y,
       toX: target.x,
       toY: target.y,
+      targetId: target.id, damage, melee,
     });
   }
   private contribution(
@@ -449,6 +461,7 @@ export class Battle {
               ),
             );
             damage.add(target.id, squad.playerId, hit);
+            this.volley(squad, target, hit, true);
             this.contribution(contributions, target.id, squad.id, hit);
             remaining -= hit;
           }
@@ -457,6 +470,7 @@ export class Battle {
           this.world.updateSquad(squad.id, { order: { type: "hold" } });
           this.world.updateSquad(squad.id, { path: [] });
           this.world.updateSquad(squad.id, { queuedOrders: [] });
+          if (definition.age === "Napoleonic" && definition.troopClass === "frontline") this.world.updateSquad(squad.id, {lastAttackTick:tick-1,nextAttackTick:Math.max(tick+10,squad.nextAttackTick ?? 0)});
         }
         continue;
       }
@@ -499,7 +513,7 @@ export class Battle {
           this.world.updateSquad(squad.id, { xp: Math.min(20000, (squad.xp ?? 0) + hit) });
           this.volley(squad, target);
           this.world.updateSquad(squad.id, { lastAttackTick: tick });
-          this.world.updateSquad(squad.id, { nextAttackTick: tick + attackInterval(profile, squad.moved) });
+          this.world.updateSquad(squad.id, afterWeaponShot(definition, squad.magazineShots ?? 0, tick, attackInterval(profile, squad.moved)));
           this.world.updateSquad(squad.id, { fighting: true });
           this.world.updateSquad(squad.id, { lastCombatTick: tick });
           if (target.health <= 0) {
@@ -547,7 +561,7 @@ export class Battle {
       this.world.updateSquad(target.id, { lastCombatTick: tick });
       if (tick < (squad.nextAttackTick ?? 0)) continue;
       this.world.updateSquad(squad.id, { lastAttackTick: tick });
-      this.world.updateSquad(squad.id, { nextAttackTick: tick + attackInterval(profile, squad.moved) });
+      this.world.updateSquad(squad.id, afterWeaponShot(definition, squad.magazineShots ?? 0, tick, attackInterval(profile, squad.moved)));
       if (profile.projectile) {
         const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
         this.fire(
@@ -565,7 +579,7 @@ export class Battle {
         );
         continue;
       }
-      if (profile.channel === "ranged") this.volley(squad, target);
+
       const hit = damageAmount(
         profile,
         this.targetDefence(target),
@@ -573,6 +587,7 @@ export class Battle {
         squad.xp,
       );
       damage.add(target.id, squad.playerId, hit);
+      this.volley(squad, target, hit, profile.channel === "melee");
       this.contribution(contributions, target.id, squad.id, hit);
       this.world.updateSquad(squad.id, { firingCharge: 0 });
     }
@@ -643,7 +658,7 @@ export class Battle {
     this.world.updateSquad(squad.id, { lastCombatTick: this.world.tick });
     if (this.world.tick < (squad.nextAttackTick ?? 0)) return;
     this.world.updateSquad(squad.id, { lastAttackTick: this.world.tick });
-    this.world.updateSquad(squad.id, { nextAttackTick: this.world.tick + attackInterval(profile, squad.moved) });
+    this.world.updateSquad(squad.id, afterWeaponShot(this.definition(squad), squad.magazineShots ?? 0, this.world.tick, attackInterval(profile, squad.moved)));
     if (profile.projectile) {
       const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
       this.fire(
@@ -916,6 +931,9 @@ export class Battle {
       if (!arrived) continue;
       p.impacted = true;
       p.impactAt = tick;
+      if (!p.blastRadius && !directHit && !directStructure && this.world.volleys.length < 4096) {
+        this.world.volleys.push({id:this.world.allocateId(),squadId:p.sourceId,playerId:p.playerId,definitionId:p.definitionId,tick,fromX:p.fromX,fromY:p.fromY,toX:p.x,toY:p.y,impact:true});
+      }
       if (!p.blastRadius) {
         // Contact weapons have one target. A miss is not a small explosion.
         if (
@@ -947,6 +965,7 @@ export class Battle {
             p.playerId,
             hit,
           );
+          if ("troops" in directHit && this.world.volleys.length < 4096) this.world.volleys.push({id:this.world.allocateId(),squadId:p.sourceId,playerId:p.playerId,definitionId:p.definitionId,tick,fromX:p.fromX,fromY:p.fromY,toX:p.x,toY:p.y,targetId:directHit.id,damage:hit,impact:true});
           this.contribution(
             contributions,
             directHit.id,

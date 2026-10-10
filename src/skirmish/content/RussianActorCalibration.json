@@ -160,8 +160,8 @@
     ],
     "vehicle": true,
     "members": 1,
-    "widthMetres": 9,
-    "lengthMetres": 9,
+    "widthMetres": 4.6,
+    "lengthMetres": 5.5,
     "projectile": "shell"
   },
   "PreModern/T34-85": {

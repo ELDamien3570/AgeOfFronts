@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "EarlyModern",
+  "generator": "built-in image_gen",
+  "prompt": "Use case: stylized-concept. Create ONE transparent top-down RTS game sprite: WWII Soviet ZiS-5-inspired two-axle cargo truck, Early Modern Russian overland trader. Reference aircraft is STYLE AND STRICT90DEGREE TOP-DOWN CAMERA ONLY, no aircraft components. One physically coherent 1930s/1940s simple truck: narrow olive-drab steel cab with solid cab ROOF visible from above, long rectangular olive engine HOOD and front fenders at SCREEN BOTTOM, longer wooden-sided cargo bed behind cab toward SCREEN TOP under weathered tan canvas tarp stretched over five transverse bows, ropes tied down along edges, compact brownwood tailgate at backtop. Clear trade cargo role, covered delivery truck, no weapons or military armor. Two axles only: four visible black tire tread silhouettes at sides, rear axle may have paired tires but seen as compact sameaxle blacktread width, NO third axle. Frontbumper atbottomthin straightdarksteelstroke visible FROM ABOVE, no talluprightgrille frontface; cabroof/hood dominate, no visible verticaldoors/windshieldportrait. A small dark horizontal windshield glass seam just ahead of cabroof is strongly foreshortened from directly above. No modern aerodynamiccab, no semitrailer, no exaggerated headlights/stars/flags. Strong longcargo bed plus compactenginecab silhouette distinct from horse carts. Strict90degree verticaloverhead orthographic perpendicular camera, truck aligned straight SCREEN DOWN. Crisp dimensional handpainted gameart matching approved assets, subduedolive/khakitan/blackrubber, legibleat48/64/128px, restrainedseams/wear. Single complete centered vehicle squarecanvas, >=90px fully transparent clear margins all edges, maximumoccupancy80%, no clipping tires or bumper. GenuineRGBA transparent background, no ground, no cast shadowoutsidevehicle, exhaustsmoke, glow, labels,text,atlas or othervehicles. Static masteronly.",
+  "selectedModel": "ZiS-5-inspired covered cargo truck",
+  "selectionNote": "Recommended option used after optional choice remained unanswered; stated before generation.",
+  "generatedFile": "C:/Users/Damien/.codex/generated_images/01a0fea7-45e8-7a11-8804-5420a62f53c3/exec-6f48dd6d-dfff-4c99-8d29-b9c85ab665ba.png",
+  "reference": "../../Aircraft/EarlyModern/Fighter/SourceArt/Yak3_Russian_WWII_v2.png",
+  "research": [
+    "https://autoar.org/arhivnyy-fond/2/zis-5/?sl=en"
+  ],
+  "historicalScope": "ZiS-5-inspired game sprite; not an exact technical reconstruction.",
+  "userMessage": "okay make early modern, it should be a ww2 era truck",
+  "status": "Idle and Travel exported; visual acceptance pending",
+  "sourceSha256": "150cf64c62e654bf5db6f65d90b2237ecc7faac6eadf721dde2e165af550e20b",
+  "animationAuthoring": "rig-authoring.json; ../vehicle-rig.py"
+}

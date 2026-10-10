@@ -27,7 +27,7 @@ export class AiProductionDependencies {
   ) {
     for(const b of snapshot.buildings)if(!b.remainingTicks && (b.health??1)>0)this.readyTypes.add(b.type);
     this.recipes = PRODUCTION_RECIPES.filter((r) =>
-      snapshot.research.includes(r.technologyId),
+      !r.manualOnly && snapshot.research.includes(r.technologyId),
     ).sort(
       (a, b) =>
         Number(this.producer(b)) - Number(this.producer(a)) ||

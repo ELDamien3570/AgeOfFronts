@@ -1,0 +1,204 @@
+{
+  "folder": "Ships/LateMedieval/Transport/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/LateMedieval/Transport/Generation-Manifest.json",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "2d0bb1cb7e40eee0aaf32e7a2bf8737eddc7679307adcd287e662265f99ab981",
+      "size": 2897
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/Idle-Preview.webp",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "d8a95897f19ffa32ad9ef36b885a271e57d16d332244c8ad625421f82278575a",
+      "size": 686716
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/Hull-Protection.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/Hull-Protection.png",
+      "sha256": "2146448f283c30b7d28f9e8f235a237e545fce4104501a9ea4dc8e2bf1628328",
+      "size": 1719
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/Hull.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/Hull.png",
+      "sha256": "39bf9493ffdc75ae6ec12a1b79f59f735b496272ca0fff965af5df38d70cea6e",
+      "size": 85979
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-1-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-1-mask.png",
+      "sha256": "f53a6934e079f488bf802c9b042939d8beddc4f9f5900930dedceb1a1e04bc91",
+      "size": 423
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-1.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-1.png",
+      "sha256": "62d84551898ab53df36f9db7d9cfd79fc8fa38f7109736a366359fa794405018",
+      "size": 1737
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-2-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-2-mask.png",
+      "sha256": "39a4a9f3b256d9aa44368338acc20943a1d9d785779377ef7b38241a95a658cc",
+      "size": 427
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-2.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-2.png",
+      "sha256": "40d329ad1769087e00e52ab87168d1de9262fbb82eb6331423a364ea455f9a0e",
+      "size": 1742
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-3-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-3-mask.png",
+      "sha256": "9d0d43b82fd7a77f095a99d3a9e76c1245aaddd2dfeb1f7d2cb1afcb6fe8e79f",
+      "size": 415
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-3.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-3.png",
+      "sha256": "743cb53fa1f6028b6a6c605810fd84fc2e69f03d40549d5d2b2cab6a2047cd44",
+      "size": 1754
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-4-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-4-mask.png",
+      "sha256": "4ec680f2f4582f5565e0fd3c200d61be73373eac0733c82d6538588772233d40",
+      "size": 412
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-4.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-4.png",
+      "sha256": "af8795dc16e28ad20b657fdccee24c34a55d8c6be750fe4acb3bc9975e883b8f",
+      "size": 1725
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-5-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-5-mask.png",
+      "sha256": "30e2806fddbe65f75909a2de59d89b1f5c4740a7b078cc4e375f6c825cdfdf8a",
+      "size": 407
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-5.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-5.png",
+      "sha256": "d008d49e134602eca5dd05f2b2a3523f0ea45b3b80c870618f1f8c0b84099ec8",
+      "size": 1711
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-6-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-6-mask.png",
+      "sha256": "00c4fbd53e6bb3d30ec6673eb2d087cefde48dcdbc76980b870ec8fc8e80ff7d",
+      "size": 492
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/port-6.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/port-6.png",
+      "sha256": "c0687ab0008d83df69cef08e059c290cc813cf0e6ec420516b9e48d91137b0d0",
+      "size": 2101
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-1-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-1-mask.png",
+      "sha256": "389f040b105ba33ebb4b4d1ba87042475d1dc2ea84dd5ebd3a6735602969d802",
+      "size": 434
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-1.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-1.png",
+      "sha256": "401d1a577dd1244f3d7a65fc873a4abbaa903ba14a761b8c0912adda1fcff9f3",
+      "size": 1734
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-2-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-2-mask.png",
+      "sha256": "aa37aa382aef6aa659a789881625639734e1f0aafc226db2998f6337df16c4e4",
+      "size": 426
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-2.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-2.png",
+      "sha256": "1018b726182c5922afed0bdb5149af595ef0f00da39ede7b3258a201b0dbfdd0",
+      "size": 1729
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-3-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-3-mask.png",
+      "sha256": "007c14a8866ec891029b7848d63d06bf03659bff5f092355df52992425a7fdc5",
+      "size": 421
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-3.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-3.png",
+      "sha256": "be26248b4948584eec7117c1f95128f2c48596ba99e9bb3ef7d8a8ebd6c3ebfe",
+      "size": 1726
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-4-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-4-mask.png",
+      "sha256": "a65c661f6eb21e800dcc2dbd9b726a4950f8a0150ee59415b49b2ff8ab2403e8",
+      "size": 439
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-4.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-4.png",
+      "sha256": "1b7c622fd4ca56ad749609b38633153e8503f00192414b8da9541026c1ac3930",
+      "size": 1707
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-5-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-5-mask.png",
+      "sha256": "4e5c2e2053b97626b216fb12306716382699d1a154a5ea9b8625db7d2d9368bc",
+      "size": 420
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-5.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-5.png",
+      "sha256": "583e9ea6fb1897f46392d0b7d3f07dd04043606ea6b6bb5a6c4e4514ca06258d",
+      "size": 1697
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-6-mask.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-6-mask.png",
+      "sha256": "c3ab24371e4da645534ed0193bf9ea15ced2e3900d2d207d2e487cfbd2813a4e",
+      "size": 522
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/layers/starboard-6.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/layers/starboard-6.png",
+      "sha256": "a4dd5ed3ebd5c75667517f150d1bd8d66fcd55636c754f618a9e9c76c3682b1f",
+      "size": 2179
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/Review/Frame-128px.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/Review/Frame-128px.png",
+      "sha256": "3f17b6f829c866f689d752fed9881172d44bce8d0401d6ecec02e897568fe845",
+      "size": 12057
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/Review/Frame-48px.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/Review/Frame-48px.png",
+      "sha256": "335e278b2d367fe5f41d62ce25438bb00a3b7503e948f2e3d44bb8450a2b7da4",
+      "size": 2540
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/Review/Frame-64px.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/Review/Frame-64px.png",
+      "sha256": "4f4f145939d9f7aaa4a628b7b09605f1b2b1636fe5b63731c4bde2c8ec215bfd",
+      "size": 3839
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/Sailing-Preview.webp",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "453e8ba490ad3a97b94bd9ba4f21777ac73fc2a66156009bd1e079a76532cdf3",
+      "size": 706396
+    },
+    {
+      "original": "Ships/LateMedieval/Transport/SourceArt/Transport_Russian_LateMedieval_Generated_v1.png",
+      "archived": "Ships/LateMedieval/Transport/_TO BE DELETED/SourceArt/Transport_Russian_LateMedieval_Generated_v1.png",
+      "sha256": "e5fbdf7ba30933f3c547cf3f262ce48bcec744d35af30990d267a00f2166df3f",
+      "size": 964125
+    }
+  ]
+}

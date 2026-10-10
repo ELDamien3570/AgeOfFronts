@@ -1,0 +1,506 @@
+{
+  "schemaVersion": 2,
+  "revision": "classical-red-v1",
+  "age": "ClassicalAge",
+  "status": "awaiting-user-visual-review",
+  "scope": "Red cloth and dyed leather clothing. Steel, fur, skin, weapons, shields and horses are preserved.",
+  "maskEncoding": "White RGBA, with material coverage in alpha at exact source-sheet coordinates.",
+  "units": [
+    {
+      "id": "russian-classicalage-light-cavalry",
+      "name": "LightCavalry",
+      "label": "Russian iron light cavalry - single rider",
+      "metadata": "../../Units/ClassicalAge/LightCavalry/animations.json",
+      "metadataHash": "d3a4347092619b06c6ee87406021b654547f25e6f3c8b0d645b222c434b5cb01",
+      "materials": [
+        "red cloth and dyed leather clothing"
+      ],
+      "preserved": [
+        "steel armor and fittings",
+        "fur",
+        "skin",
+        "shields",
+        "weapons",
+        "horse and tack"
+      ],
+      "sheets": [
+        {
+          "file": "Idle-Animated-v1.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Idle-Animated-v1.png",
+          "sourceHash": "bca6c3c6a00ca15e1dc984f4ce5b17afbdd64cc7425aa150789b62ab5f1b7c74",
+          "mask": "LightCavalry/Idle-Animated-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9854
+        },
+        {
+          "file": "Running-v1.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Running-v1.png",
+          "sourceHash": "1df71c529dc1be3226486e3e746ab3a172dca095823e62f426e40ac00f448150",
+          "mask": "LightCavalry/Running-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 8373
+        },
+        {
+          "file": "Attack-v1.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Attack-v1.png",
+          "sourceHash": "727e5eb6de78f4f893eb31ec2bc72dbf5645d2621f7eb0a838b3ff5ca0efa233",
+          "mask": "LightCavalry/Attack-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9446
+        },
+        {
+          "file": "Hit-v1.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Hit-v1.png",
+          "sourceHash": "7a4f81f81e60f066dc05ddacf0454dbb26dc768c33225edf0bcdff607861758a",
+          "mask": "LightCavalry/Hit-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9758
+        },
+        {
+          "file": "Charged-Impact-v1.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Charged-Impact-v1.png",
+          "sourceHash": "fb5057b283cb0e9e48b285fa7bfe57e15051faab38773ddb1045e5fd8887fd77",
+          "mask": "LightCavalry/Charged-Impact-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 10566
+        },
+        {
+          "file": "Charge-v1.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Charge-v1.png",
+          "sourceHash": "07ab9af45f6ec2f51509088955269bea12144a39ae2bcd0f3680cd5a1e3e4eb4",
+          "mask": "LightCavalry/Charge-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9247
+        },
+        {
+          "file": "Charge-Attack-v1.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Charge-Attack-v1.png",
+          "sourceHash": "e27f26bdadb2d4a97a1b3aa37a387321358e35ca8af84bc89a9c18022ce035b9",
+          "mask": "LightCavalry/Charge-Attack-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 8006
+        },
+        {
+          "file": "Death-Together-v2.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Death-Together-v2.png",
+          "sourceHash": "210a6e948f2e163665f28572acabdd6d23189123060a27bce0f3015339e0610f",
+          "mask": "LightCavalry/Death-Together-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9928
+        },
+        {
+          "file": "Death-Thrown-v1.png",
+          "source": "../../Units/ClassicalAge/LightCavalry/Death-Thrown-v1.png",
+          "sourceHash": "d14351bb68f9ecc4a1c1b44a976ed37a6ffaf5fd457092677743f99d9b2e1457",
+          "mask": "LightCavalry/Death-Thrown-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 12317
+        }
+      ]
+    },
+    {
+      "id": "russian-classicalage-recurve-archer",
+      "name": "RecurveArcher",
+      "label": "Russian Recurve Bowmen - single actor",
+      "metadata": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/animations.json",
+      "metadataHash": "4beeb91ca6671db85033d9c7f106500722a6973efb8cc24889c02030d2adb2d1",
+      "materials": [
+        "red cloth and dyed leather clothing"
+      ],
+      "preserved": [
+        "steel armor and fittings",
+        "fur",
+        "skin",
+        "shields",
+        "weapons",
+        "horse and tack"
+      ],
+      "sheets": [
+        {
+          "file": "idle-v1.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/idle-v1.png",
+          "sourceHash": "63c4571f82ddae73c4846fb986772d3bfdc1601104b3452bd85951064e19cb53",
+          "mask": "RecurveArcher/idle-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 13328
+        },
+        {
+          "file": "running-v1.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/running-v1.png",
+          "sourceHash": "a2d1ecf1df20e50ffacb2e1028e607b1ca21534637b564f4aca1651edbeadf21",
+          "mask": "RecurveArcher/running-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9833
+        },
+        {
+          "file": "charge-v1.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/charge-v1.png",
+          "sourceHash": "a2d1ecf1df20e50ffacb2e1028e607b1ca21534637b564f4aca1651edbeadf21",
+          "mask": "RecurveArcher/charge-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9833
+        },
+        {
+          "file": "attack-v2.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/attack-v2.png",
+          "sourceHash": "9743661c5bdfa9183c36495138d97c338dcaeca0b79e81631011b235273fdbbd",
+          "mask": "RecurveArcher/attack-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 11861
+        },
+        {
+          "file": "charge-attack-v1.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/charge-attack-v1.png",
+          "sourceHash": "23c3d9af62f31e5828b854723b3674be8e11ca5c62574845826bcbfeb0299238",
+          "mask": "RecurveArcher/charge-attack-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 11535
+        },
+        {
+          "file": "reload-v3.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/reload-v3.png",
+          "sourceHash": "2b3e5492b6c31377a22572792e78a565e3d69f31606e0159c77a6b2a687f8daf",
+          "mask": "RecurveArcher/reload-v3.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 12598
+        },
+        {
+          "file": "hit-v1.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/hit-v1.png",
+          "sourceHash": "3ad2356581aaa3dca2f0cfac6d5fceebc2b9f7c9baeca74106e4b0ddee8a8b81",
+          "mask": "RecurveArcher/hit-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 10455
+        },
+        {
+          "file": "charged-v2.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/charged-v2.png",
+          "sourceHash": "9038de0dfe680d33e2142a4afb3ca95fd1e8e33d8ac4340a57c5ed8c48847980",
+          "mask": "RecurveArcher/charged-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 10584
+        },
+        {
+          "file": "death-v1.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/death-v1.png",
+          "sourceHash": "3948b34d5c7f886fa312bc01491c1ee82861b56ffcc1d69bf52cc93bec93978b",
+          "mask": "RecurveArcher/death-v1.faction-mask.png?v=1791590304",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 24377
+        },
+        {
+          "file": "death-back-v1.png",
+          "source": "../../Units/ClassicalAge/RecurveArcher/TopDownReview/death-back-v1.png",
+          "sourceHash": "55b1da619fdc0df916518975c8a8ab829e8c20fc879e21d4b6edac2ad2fa8db8",
+          "mask": "RecurveArcher/death-back-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 25381
+        }
+      ]
+    },
+    {
+      "id": "russian-classicalage-shield-warrior",
+      "name": "ShieldWarrior",
+      "label": "Russian Varangians - single soldier",
+      "metadata": "../../Units/ClassicalAge/ShieldWarrior/animations.json",
+      "metadataHash": "7bb985d7b27779202b8175130cde05f47bdb7ffbd95a2da02d7da6101c1c42ae",
+      "materials": [
+        "red cloth and dyed leather clothing"
+      ],
+      "preserved": [
+        "steel armor and fittings",
+        "fur",
+        "skin",
+        "shields",
+        "weapons",
+        "horse and tack"
+      ],
+      "sheets": [
+        {
+          "file": "Idle-Axe-Consistent-v2.png",
+          "source": "../../Units/ClassicalAge/ShieldWarrior/Idle-Axe-Consistent-v2.png",
+          "sourceHash": "52254d749625badfe4cb8fc87f307ec64aee97f88e1b5ae365bd4c601aad3ffd",
+          "mask": "ShieldWarrior/Idle-Axe-Consistent-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 39432
+        },
+        {
+          "file": "Gait-Axe-Consistent-v5.png",
+          "source": "../../Units/ClassicalAge/ShieldWarrior/Gait-Axe-Consistent-v5.png",
+          "sourceHash": "0aa2ce16fc87ef39e52dc955d672a622f7fc3846dac538172f0273aa9b5e73f3",
+          "mask": "ShieldWarrior/Gait-Axe-Consistent-v5.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 39033
+        },
+        {
+          "file": "Attack-Axe-Consistent-v4.png",
+          "source": "../../Units/ClassicalAge/ShieldWarrior/Attack-Axe-Consistent-v4.png",
+          "sourceHash": "dcc71661e5310ff9949a21cfe5241730c50079a2a95b7dbda5bbe5f98fb11484",
+          "mask": "ShieldWarrior/Attack-Axe-Consistent-v4.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 37204
+        },
+        {
+          "file": "Hit-Axe-Consistent-v3.png",
+          "source": "../../Units/ClassicalAge/ShieldWarrior/Hit-Axe-Consistent-v3.png",
+          "sourceHash": "cefea6b369f16f175971450dad3993afffddfe3299a10340415552d32872aa69",
+          "mask": "ShieldWarrior/Hit-Axe-Consistent-v3.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 43353
+        },
+        {
+          "file": "Charged-Axe-Consistent-v3.png",
+          "source": "../../Units/ClassicalAge/ShieldWarrior/Charged-Axe-Consistent-v3.png",
+          "sourceHash": "8137bd80ad4de3642f5bce132bf2b5c64130653d9a66d8354f4a39f42cb2b0df",
+          "mask": "ShieldWarrior/Charged-Axe-Consistent-v3.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 44949
+        },
+        {
+          "file": "Death-Side-Axe-Consistent-v4.png",
+          "source": "../../Units/ClassicalAge/ShieldWarrior/Death-Side-Axe-Consistent-v4.png",
+          "sourceHash": "130153b965cb6fc4b2a5f69b93819843e64f823026594a8b1c4db74e3b272113",
+          "mask": "ShieldWarrior/Death-Side-Axe-Consistent-v4.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 30590
+        },
+        {
+          "file": "Death-Back-Axe-Consistent-v6.png",
+          "source": "../../Units/ClassicalAge/ShieldWarrior/Death-Back-Axe-Consistent-v6.png",
+          "sourceHash": "86a99e66acd680abe9df81b93d6e7f1700c844584149bd14fb40bf305495a52e",
+          "mask": "ShieldWarrior/Death-Back-Axe-Consistent-v6.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 36572
+        }
+      ]
+    },
+    {
+      "id": "russian-classicalage-horse-archer",
+      "name": "HorseArcher",
+      "label": "Russian horse archer - single rider",
+      "metadata": "../../Units/ClassicalAge/HorseArcher/animations.json",
+      "metadataHash": "a3c2aad4ad3bc0953ca7dd06e641eaf9b663f17514409a554544d6e5e40914e8",
+      "materials": [
+        "red cloth and dyed leather clothing"
+      ],
+      "preserved": [
+        "steel armor and fittings",
+        "fur",
+        "skin",
+        "shields",
+        "weapons",
+        "horse and tack"
+      ],
+      "sheets": [
+        {
+          "file": "Idle-Animated-v1.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Idle-Animated-v1.png",
+          "sourceHash": "baa90e503c54801fafc8d24402b4ca22b7a97ed9c6d0e0d115b16dfb9a5d33f6",
+          "mask": "HorseArcher/Idle-Animated-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9986
+        },
+        {
+          "file": "Running-v1.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Running-v1.png",
+          "sourceHash": "7b246992a89b59f314989eafa89f62889296372e8ee3f94a03c08d4615250d57",
+          "mask": "HorseArcher/Running-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 8551
+        },
+        {
+          "file": "Attack-ArrowGrip-v7.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Attack-ArrowGrip-v7.png",
+          "sourceHash": "1cb97f8a7dc5bb4e1a007d2dbff9f135a94fef7171385073198db28567f76776",
+          "mask": "HorseArcher/Attack-ArrowGrip-v7.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 10744
+        },
+        {
+          "file": "Hit-v1.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Hit-v1.png",
+          "sourceHash": "adc00b3a1d6aefe99e3cc1f18563ead66662a3121aeb20833f927328f9ae74a0",
+          "mask": "HorseArcher/Hit-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 10056
+        },
+        {
+          "file": "Charged-Impact-v1.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Charged-Impact-v1.png",
+          "sourceHash": "23bdc5a9e1766ff40c16622207cd8fb44f4f2f330d1d48f058c00982e5990c83",
+          "mask": "HorseArcher/Charged-Impact-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 10792
+        },
+        {
+          "file": "Charge-v1.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Charge-v1.png",
+          "sourceHash": "555e6199f0235792cbfb1d6f8f078b5d0b63af10e69be4c0a7eb8b3dca9d5508",
+          "mask": "HorseArcher/Charge-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9826
+        },
+        {
+          "file": "Charge-Attack-ArrowGrip-v11.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Charge-Attack-ArrowGrip-v11.png",
+          "sourceHash": "faba8d50ead8486531fabca9b9bcc640280689c69d6f57c678fb56ab753f388e",
+          "mask": "HorseArcher/Charge-Attack-ArrowGrip-v11.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 5715
+        },
+        {
+          "file": "Death-Together-v1.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Death-Together-v1.png",
+          "sourceHash": "fb0497a78c85052644201abd80372ef4a5c937b7b732fd3151cb90ef66703a21",
+          "mask": "HorseArcher/Death-Together-v1.faction-mask.png?v=1791590305",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 9855
+        },
+        {
+          "file": "Death-Thrown-Released-v2.png",
+          "source": "../../Units/ClassicalAge/HorseArcher/Death-Thrown-Released-v2.png",
+          "sourceHash": "148be6b5eb135dfc7bbb0e5d63c1cb14ccf5f6b8557ac69fee3b1de81634396b",
+          "mask": "HorseArcher/Death-Thrown-Released-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 12521
+        }
+      ]
+    },
+    {
+      "id": "russian-classical-pikeman",
+      "name": "Pikeman",
+      "label": "Russian Heavy Spearmen - single soldier",
+      "metadata": "../../Units/ClassicalAge/Pikeman/animations.json",
+      "metadataHash": "212d1c7a2e1365ed675cb96a380273c87eaf1f4cd87ba548c2511e0db4273c8b",
+      "materials": [
+        "red cloth and dyed leather clothing"
+      ],
+      "preserved": [
+        "steel armor and fittings",
+        "fur",
+        "skin",
+        "shields",
+        "weapons",
+        "horse and tack"
+      ],
+      "sheets": [
+        {
+          "file": "Idle-Smooth-v2.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Idle-Smooth-v2.png",
+          "sourceHash": "e45f7a524402d6ebbc0297b158656e00361b56eac6d4d0231ec4ebd6450884bb",
+          "mask": "Pikeman/Idle-Smooth-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 30927
+        },
+        {
+          "file": "Walk-Steady-v2.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Walk-Steady-v2.png",
+          "sourceHash": "e9c67deffeb27f62ca8401ae27f16752005dc1357592f79c90d69e89003ca5ec",
+          "mask": "Pikeman/Walk-Steady-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 27152
+        },
+        {
+          "file": "Attack-Rebuilt-v7.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Attack-Rebuilt-v7.png",
+          "sourceHash": "3c2937f596812eafd4f0fd30bd4f17ed38f299303403a16730091fa842b94c53",
+          "mask": "Pikeman/Attack-Rebuilt-v7.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 26540
+        },
+        {
+          "file": "Hit-v1.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Hit-v1.png",
+          "sourceHash": "004b383bd3eb8c715e0e5d350caeebc42326af1fdc315f7cac655c36f77ee1b4",
+          "mask": "Pikeman/Hit-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 25532
+        },
+        {
+          "file": "Charged-v1.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Charged-v1.png",
+          "sourceHash": "98289ee63421976e6d11e2b4282d2062a584ea6e7d1a6c822d8ee3cbd6c919b7",
+          "mask": "Pikeman/Charged-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 26319
+        },
+        {
+          "file": "Charge-Steady-v2.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Charge-Steady-v2.png",
+          "sourceHash": "1ad9e5328540d583df6c06195a8b0518279dcb6baf98983514d452157b115c7c",
+          "mask": "Pikeman/Charge-Steady-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 29037
+        },
+        {
+          "file": "Charge-Attack-Rebuilt-Clean-v8.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Charge-Attack-Rebuilt-Clean-v8.png",
+          "sourceHash": "185067f409eba663a065658edf5b4d1d0f2f94205d8f65eac6e6455aa9f11c72",
+          "mask": "Pikeman/Charge-Attack-Rebuilt-Clean-v8.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 20412
+        },
+        {
+          "file": "Death-Side-Rebuilt-v2.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Death-Side-Rebuilt-v2.png",
+          "sourceHash": "82c03d65e0a7ed91bbf4677e92972dae67b328a228c0a59e14115114cfc75ab7",
+          "mask": "Pikeman/Death-Side-Rebuilt-v2.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 35282
+        },
+        {
+          "file": "Death-Back-v1.png",
+          "source": "../../Units/ClassicalAge/Pikeman/Death-Back-v1.png",
+          "sourceHash": "e7db455f950a8e104b4f24daaec39c56434d2c3cc7e56c71318bb688e9a21190",
+          "mask": "Pikeman/Death-Back-v1.faction-mask.png?v=classical-red-v1",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 34010
+        }
+      ]
+    }
+  ]
+}

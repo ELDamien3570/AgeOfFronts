@@ -14,6 +14,8 @@ export const AUTOMATIC_TIER_BUILDINGS: readonly BuildingType[] = [
   "city",
   "factory",
   "mine",
+  "oil-well",
+  "oil-rig",
   "nuclear-facility",
   "drone-facility",
   "anti-air-emplacement",
@@ -53,12 +55,16 @@ export function automaticBuildingTier(
         ),
     );
 }
+/** Armory is one physical production line; research promotes it in place. */
+export function productionBuildingType(type: BuildingType, age: Age, completed: readonly string[]): BuildingType {
+  return type === "armory" && automaticBuildingTier("arms-factory", age, completed) ? "arms-factory" : type;
+}
 export function buildingFoundationTechnology(
   type: BuildingType,
   age: Age,
 ): string | null {
   if (type === "city" && age === "StoneAge")
-    return "rus-stoneage-factories-mines";
+    return "rus-stoneage-cities";
   const bindings = RUSSIAN_RECRUITMENT.buildings as Record<string, string>;
   if (
     AGES.indexOf(age) >= 6 &&
@@ -106,32 +112,6 @@ export function buildingCost(
         : undefined;
   return { gold: cost, items };
 }
-/** A paid upgrade advances one catalogue tier; it never jumps missing tiers. */
-export function nextBuildingAge(
-  type: BuildingType,
-  currentAge: Age,
-  playerAge: Age,
-  completedTechs: readonly string[],
-): Age | null {
-  if (AUTOMATIC_TIER_BUILDINGS.includes(type)) return null;
-  const next = AGES[AGES.indexOf(currentAge) + 1];
-  if (!next || AGES.indexOf(next) > AGES.indexOf(playerAge)) return null;
-  const technology = buildingTechnology(type, next);
-  return technology && completedTechs.includes(technology) ? next : null;
-}
-export function buildingUpgradeCost(
-  type: BuildingType,
-  nextAge: Age,
-  existingCount = 0,
-): Cost {
-  const full = buildingCost(type, nextAge, existingCount);
-  return {
-    gold: Math.round((full.gold ?? 0) / 2),
-    items: Object.fromEntries(
-      Object.entries(full.items ?? {}).map(([id, n]) => [id, Math.ceil(n / 2)]),
-    ),
-  };
-}
 export function buildingIntegrity(
   type: BuildingType,
   age: Age,
@@ -139,12 +119,7 @@ export function buildingIntegrity(
 ): number {
   return Math.round(
     (type === "tower" ? 2000 : type === "trench" ? 1500 : 1200) *
-      1.3 ** AGES.indexOf(age) *
-      (type === "city" &&
-      age === "StoneAge" &&
-      research.includes("rus-stoneage-cities")
-        ? 1.1
-        : 1),
+      1.3 ** AGES.indexOf(age),
   );
 }
 export function producerCompatible(

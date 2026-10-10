@@ -24,8 +24,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 63.0,
+            "y": 49.0
           }
         },
         {
@@ -34,8 +34,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 63.0,
+            "y": 49.0
           }
         },
         {
@@ -44,8 +44,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 63.0,
+            "y": 49.0
           }
         },
         {
@@ -54,8 +54,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 63.0,
+            "y": 49.0
           }
         },
         {
@@ -64,8 +64,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 63.0,
+            "y": 49.0
           }
         },
         {
@@ -74,8 +74,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 63.0,
+            "y": 49.0
           }
         }
       ],
@@ -104,8 +104,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 44.0
           }
         },
         {
@@ -114,8 +114,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 44.0
           }
         },
         {
@@ -124,8 +124,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 44.0
           }
         },
         {
@@ -134,8 +134,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 44.0
           }
         },
         {
@@ -144,8 +144,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 44.0
           }
         },
         {
@@ -154,8 +154,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 44.0
           }
         }
       ],
@@ -184,8 +184,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 69.0,
+            "y": 48.0
           }
         },
         {
@@ -194,8 +194,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 69.0,
+            "y": 48.0
           }
         },
         {
@@ -204,8 +204,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 69.0,
+            "y": 48.0
           }
         },
         {
@@ -214,8 +214,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 69.0,
+            "y": 48.0
           }
         },
         {
@@ -224,8 +224,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 69.0,
+            "y": 48.0
           }
         },
         {
@@ -234,8 +234,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 69.0,
+            "y": 48.0
           }
         }
       ],
@@ -328,6 +328,338 @@
         }
       ],
       "releaseFrame": 3
+    },
+    {
+      "id": "reload",
+      "file": "reload.png",
+      "label": "Reload belt container",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        300,
+        400,
+        350,
+        500,
+        400,
+        300
+      ],
+      "description": "Remove the old belt container, attach a replacement, seat the belt lead in the feed window and ready the weapon.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "weaponState": {
+        "start": "reload-requested",
+        "end": "loaded-ready"
+      },
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "label": "Charge in / maintain",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Sustained running with alternating strides and RPL-20 secure.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "label": "Advance, plant and shoot",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        200,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Brake, plant, aim and shoot toward screen-bottom, then lower the RPL-20. Reload is separate.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "burstFrames": [
+        3,
+        4
+      ],
+      "weaponState": {
+        "start": "loaded-ready",
+        "end": "burst-complete"
+      }
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Brief recoil and recovery with equipment retained.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/Modern/RPL20Gunner/animations.json",
@@ -336,6 +668,10 @@
     "Art/Cultures/Russians/Units/Modern/RPL20Gunner/idle-v2.png": "f0ba09d6a7c8043da14b1bcf476717382d8b36b9b707c1b7288950fd4c902bc7",
     "Art/Cultures/Russians/Units/Modern/RPL20Gunner/running-v2.png": "6fbab7c17554b02f03914f8ad49904cf0bbd2df54407daead933df1690bf48d8",
     "Art/Cultures/Russians/Units/Modern/RPL20Gunner/attack-v2.png": "80b5a6d82739e45921f1490840f01cb0ffc0aeed85c6f832eb0c2965a9d8275f",
-    "Art/Cultures/Russians/Units/Modern/RPL20Gunner/death-v2.png": "138be6816066513b0538bf642f88c961f0babfe7ee4563d2481d0ec3641a41a5"
+    "Art/Cultures/Russians/Units/Modern/RPL20Gunner/death-v2.png": "138be6816066513b0538bf642f88c961f0babfe7ee4563d2481d0ec3641a41a5",
+    "Art/Cultures/Russians/Units/Modern/RPL20Gunner/reload-v2.png": "848a4a9180929aa98f86f1d31b48eb2246f32ab88dd4cd3a35ef8af9073ceb41",
+    "Art/Cultures/Russians/Units/Modern/RPL20Gunner/charge-v1.png": "6fbab7c17554b02f03914f8ad49904cf0bbd2df54407daead933df1690bf48d8",
+    "Art/Cultures/Russians/Units/Modern/RPL20Gunner/charge-attack-v2.png": "ef78416dfb00fb9be5f7710c0f8f1128c64a964150ca35b48f1798a15ab00f01",
+    "Art/Cultures/Russians/Units/Modern/RPL20Gunner/hit-v2.png": "5b9b2a126721ae51b93c0dedd47569c36aa23d264bc6048f5eba74d2291f8330"
   }
 }

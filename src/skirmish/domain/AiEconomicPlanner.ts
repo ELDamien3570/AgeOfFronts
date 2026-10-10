@@ -3,9 +3,6 @@ import { AI_DOCTRINES } from "../content/AiDoctrines";
 import type { BuildingType, Command } from "../Protocol";
 import {
   buildingCost,
-  buildingIntegrity,
-  buildingUpgradeCost,
-  nextBuildingAge,
   buildingTechnology,
   buildingTicks,
 } from "../content/Buildings";
@@ -120,21 +117,6 @@ export function economicCandidates(
     ([id, n]) =>
       (snapshot.liquid.items?.[id] ?? 0) + (snapshot.incoming[id] ?? 0) < n,
   );
-  const counts = new Map<BuildingType, number>();
-  for (const b of snapshot.buildings) counts.set(b.type, (counts.get(b.type) ?? 0) + 1);
-  let upgrades = 0;
-  for (const b of snapshot.buildings) {
-    if (upgrades >= 4) break;
-    const age = nextBuildingAge(b.type, b.age ?? "StoneAge", state.age, state.completed);
-    const maximum = b.maxHealth ?? buildingIntegrity(b.type, b.age ?? "StoneAge");
-    if (!age || b.remainingTicks || (b.health ?? maximum) < maximum) continue;
-    const cost = buildingUpgradeCost(b.type, age, counts.get(b.type) ?? 0);
-    emit("upgrade", String(b.id), { type: "upgrade-building", playerId: snapshot.playerId, buildingIds: [b.id] },
-      cost, b.type === "city" ? 500 + reserveShortage / 10 :
-        snapshot.supplyLimitedSources?.includes(b.id) ? 5000 : 1000,
-      "Modernize existing infrastructure without an extra site", Math.round(buildingTicks(b.type, counts.get(b.type) ?? 0) / 2));
-    upgrades++;
-  }
   for (const site of investments.slice(0, 8)) {
     const technology = buildingTechnology(site.type, snapshot.age);
     if (!technology) continue;

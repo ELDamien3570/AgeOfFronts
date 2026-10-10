@@ -365,6 +365,97 @@
       "scaleX": 0.8812261,
       "scaleY": 0.8923885,
       "releaseFrame": 3
+    },
+    {
+      "id": "hit",
+      "label": "Get hit",
+      "file": "hit.png",
+      "scale": 1,
+      "loop": false,
+      "frameCount": 6,
+      "durations": [
+        130,
+        80,
+        120,
+        180,
+        180,
+        260
+      ],
+      "description": "Localized armor impact, brief recoil and recovery.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 154.75,
+            "y": 139.75
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 134.0,
+            "y": 140.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 112.0,
+            "y": 140.0
+          }
+        },
+        {
+          "x": 768,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 155.5,
+            "y": 135.25
+          }
+        },
+        {
+          "x": 1024,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 133.5,
+            "y": 135.25
+          }
+        },
+        {
+          "x": 1280,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 112.5,
+            "y": 135.25
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "a4458ba04c3ab8f3cbe305ea257ced8aa7acb2738a16573294e89fe649b3a50e",
+      "scaleX": 0.7603306,
+      "scaleY": 0.7718502,
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/Modern/Tunguska/animations.json",
@@ -373,6 +464,7 @@
     "Art/Cultures/Russians/Units/Modern/Tunguska/Idle-v3.png": "37084efa05e29168d63a7845a057e9139fafe67d91c5f70db12c01122be2749b",
     "Art/Cultures/Russians/Units/Modern/Tunguska/Running-v3.png": "b0b1ac52d4b99ba3458a1d4ec10b2434085abcb5d3d3d455c7cceb923228f2f5",
     "Art/Cultures/Russians/Units/Modern/Tunguska/GunFire-v3.png": "d2ea1d04cebe9be557f8acaeb78f1f805366719e086b84bcb8c9c4d542cf94cd",
-    "Art/Cultures/Russians/Units/Modern/Tunguska/Death-v3.png": "b1a00b5699a48d8dec8e5a7df798f231b9673e4e7602cc6e638049ae35d2d3bd"
+    "Art/Cultures/Russians/Units/Modern/Tunguska/Death-v3.png": "b1a00b5699a48d8dec8e5a7df798f231b9673e4e7602cc6e638049ae35d2d3bd",
+    "Art/Cultures/Russians/Units/Modern/Tunguska/Hit-v3.png": "a4458ba04c3ab8f3cbe305ea257ced8aa7acb2738a16573294e89fe649b3a50e"
   }
 }

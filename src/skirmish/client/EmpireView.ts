@@ -268,23 +268,10 @@ export class EmpireView {
         );
     const actions = this.root.querySelector<HTMLElement>("#refit-actions")!;
 
-    const buildingUpgrade = vm.buildingUpgrade();
-    actions.hidden = !refit && !buildingUpgrade;
-    if (buildingUpgrade) {
-      const { upgrades, reason, cost, skipped, eligibleCount } = buildingUpgrade;
-      const key = JSON.stringify([reason, cost, skipped, eligibleCount, upgrades.map(u => [u.building.id, u.age])]);
-      if (actions.dataset.key !== key) {
-        actions.dataset.key = key;
-        const tiers = [...new Set(upgrades.map(u => AGE_NAMES[AGES.indexOf(u.age)]))].join(" / ");
-        const items = Object.entries(cost.items ?? {}).map(([id, n]) => `${n} ${id}`).join(" · ");
-        actions.innerHTML = !upgrades.length && reason === "Military buildings upgrade automatically with research"
-          ? `<small>${escape(reason)}</small>`
-          : `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length}/${eligibleCount + skipped} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>Ctrl U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
-      }
-    }
-
+    actions.hidden = !refit;
+    if (!refit) { actions.replaceChildren(); delete actions.dataset.key; }
     if (
-      !buildingUpgrade && refit &&
+      refit &&
       actions.dataset.key !==
         `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
     ) {
@@ -299,13 +286,6 @@ export class EmpireView {
   upgrade(): void {
     if (!this.vm) return;
     const focus = this.actions.focusedRef();
-    const buildingUpgrade = this.vm.buildingUpgrade();
-    if (buildingUpgrade) {
-      if (!buildingUpgrade.reason) this.actions.command({ type: "upgrade-building",
-        playerId: this.playerId, buildingIds: buildingUpgrade.upgrades.map(u => u.building.id) });
-      else this.actions.notify(buildingUpgrade.reason);
-      return;
-    }
     if (this.vm.selection.selected.size) {
       const choice = this.vm.refit(
         focus?.startsWith("squad:") ? Number(focus.split(":")[1]) : undefined,

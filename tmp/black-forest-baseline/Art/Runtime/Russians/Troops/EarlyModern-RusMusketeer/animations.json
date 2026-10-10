@@ -24,8 +24,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.05078125,
-            "y": 65.0
+            "x": 63.0,
+            "y": 40.0
           }
         },
         {
@@ -34,8 +34,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 61.849609375,
-            "y": 65.0
+            "x": 63.0,
+            "y": 40.0
           }
         },
         {
@@ -44,8 +44,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 61.849609375,
-            "y": 65.0
+            "x": 63.0,
+            "y": 40.0
           }
         },
         {
@@ -54,8 +54,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.2509765625,
-            "y": 65.0
+            "x": 63.0,
+            "y": 40.0
           }
         },
         {
@@ -64,8 +64,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 61.849609375,
-            "y": 65.0
+            "x": 63.0,
+            "y": 40.0
           }
         },
         {
@@ -74,11 +74,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.650390625,
-            "y": 65.0
+            "x": 63.0,
+            "y": 40.0
           }
         }
       ],
+      "mask": "idle.mask.png",
       "releaseFrame": 3
     },
     {
@@ -104,8 +105,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 32.0
           }
         },
         {
@@ -114,8 +115,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 32.0
           }
         },
         {
@@ -124,8 +125,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 32.0
           }
         },
         {
@@ -134,8 +135,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 32.0
           }
         },
         {
@@ -144,8 +145,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 32.0
           }
         },
         {
@@ -154,11 +155,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 32.0
           }
         }
       ],
+      "mask": "running.mask.png",
       "releaseFrame": 3
     },
     {
@@ -184,8 +186,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 37.0
           }
         },
         {
@@ -194,8 +196,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 37.0
           }
         },
         {
@@ -204,8 +206,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 37.0
           }
         },
         {
@@ -214,8 +216,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 37.0
           }
         },
         {
@@ -224,8 +226,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 37.0
           }
         },
         {
@@ -234,8 +236,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.2,
-            "y": 65.0
+            "x": 64.0,
+            "y": 37.0
           }
         }
       ],
@@ -243,7 +245,8 @@
       "weaponState": {
         "start": "loaded-ready",
         "end": "spent"
-      }
+      },
+      "mask": "attack.mask.png"
     },
     {
       "id": "death",
@@ -323,6 +326,339 @@
           }
         }
       ],
+      "mask": "death.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "reload",
+      "file": "reload.png",
+      "label": "Reload musket",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        300,
+        400,
+        350,
+        500,
+        400,
+        300
+      ],
+      "description": "Measure powder, load the ball and wadding, ram the charge, prime the pan and return to low carry.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "weaponState": {
+        "start": "spent",
+        "end": "loaded-ready"
+      },
+      "mask": "reload.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "label": "Charge in / maintain",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Sustained running with alternating strides and musket secure.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "mask": "charge.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "label": "Advance, plant and shoot",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        200,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Brake, plant, aim and shoot toward screen-bottom, then lower the empty musket. Reload is separate.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "loaded-ready",
+        "end": "spent"
+      },
+      "mask": "charge-attack.mask.png"
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Brief recoil and recovery with equipment retained.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "mask": "hit.mask.png",
       "releaseFrame": 3
     }
   ],
@@ -332,6 +668,10 @@
     "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/idle-v2.png": "48a188f977ba4d09e33d1a5ec44c15747e47187d80bed4377259ce9205555620",
     "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/running-v1.png": "a0c9b7c8aa05298d77b5d832a2447ba4ebbf47817b5d51456287626aaf8b3ac7",
     "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/attack-leg-v3.png": "361c41091c6d5ffba0a79bed6df1a1a84f3901bd6c767ee86c04c4b75d09cd63",
-    "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/death-v1.png": "8a6fe4910d84a62d76e6e6324bbfa230b7e95d56ab58c62e82ffd36b5523911a"
+    "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/death-v1.png": "8a6fe4910d84a62d76e6e6324bbfa230b7e95d56ab58c62e82ffd36b5523911a",
+    "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/reload-v1.png": "346a4edfec48fb8d334e817940e5789576765443c4e00e48ac2824eabec720d4",
+    "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/charge-v1.png": "88c8875ae08a971f68d7c76bf44adb3313e522b15ac3be182181b67ef51456bc",
+    "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/charge-attack-stance-v2.png": "6dbc7bf987e1e1829800bef9b15a22f5074fa55a4b083a8e498c7d18966c950a",
+    "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/hit-v1.png": "986b7c8bf600ba59a2b4f5977f56c0bab2703b3524358420be342dbe77e0906a"
   }
 }

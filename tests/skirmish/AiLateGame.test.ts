@@ -129,8 +129,8 @@ describe("late-game AI development",()=>{
 
   it("carries strategic payload and oil requirements into automatic production",()=>{
     const f=fixture();f.add("missile-silo",30);f.add("mirv-launcher",40);const arms=f.add("arms-factory",50);
-    Object.assign(f.expansion.supply.inventories[f.player.id],{steel:10000,gunpowder:10000,oil:10000});
-    const demand=militaryDemand(f.snapshot(),personalityOf(f.player),new Set(["iron","coal","oil","sulfur","saltpetre"]));
+    Object.assign(f.expansion.supply.inventories[f.player.id],{steel:10000,gunpowder:10000,oil:10000,copper:10000,tin:10000});
+    const demand=militaryDemand(f.snapshot(),personalityOf(f.player),new Set(["iron","coal","oil","sulfur","saltpetre","copper","tin"]));
     expect(demand.equipment["payload:hydrogen"]).toBe(2);
     expect(demand.equipment["payload:mirv"]).toBe(2);
     expect(demand.equipment.oil).toBeGreaterThanOrEqual(60);

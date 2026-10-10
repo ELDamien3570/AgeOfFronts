@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "ClassicalAge",
+  "status": "partially-approved",
+  "approvedDate": "2026-10-02",
+  "approval": "User: the barrack isnt top down enough, otherwise this is approved",
+  "scope": "Approval of all ten selected source images, including the revised overhead barracks. Runtime integration and publishing remain separate.",
+  "pendingAssetIds": [
+    "mine",
+    "siege-workshop"
+  ],
+  "assets": [
+    {
+      "id": "city",
+      "file": "City/Icon.png",
+      "selectedSourceFile": "City/SourceArt/Icon-v1.png",
+      "sha256": "5f1765a7eeecd0482caa2bf3df139890c104cd28892ca63d6d61d3290519876a"
+    },
+    {
+      "id": "archery",
+      "file": "Archery Range/Icon.png",
+      "selectedSourceFile": "Archery Range/SourceArt/Icon-v1.png",
+      "sha256": "85e723dc20773d46502c17d39f0d25961375aa108715ca7d90036e045b87c7a8"
+    },
+    {
+      "id": "stables",
+      "file": "Stables/Icon.png",
+      "selectedSourceFile": "Stables/SourceArt/Icon-v1.png",
+      "sha256": "ffbbce234520449b52297830e4e211079d28ecbbc2c1738a5af6f933d68a3647"
+    },
+    {
+      "id": "factory",
+      "file": "Factory/Icon.png",
+      "selectedSourceFile": "Factory/SourceArt/Icon-v2.png",
+      "sha256": "1a59acf87dbf831b9734a44552e4bad36c0b6f6b9bdad9e4f6f6e1fa64502815"
+    },
+    {
+      "id": "port",
+      "file": "Port/Icon.png",
+      "selectedSourceFile": "Port/SourceArt/Icon-v2.png",
+      "sha256": "ed86793f30301f344ed1ccbb40612a20203794a6a59b4f2099b16060b2171d81"
+    },
+    {
+      "id": "tower",
+      "file": "Tower/Icon.png",
+      "selectedSourceFile": "Tower/SourceArt/Icon-v1.png",
+      "sha256": "1664e2252f0b3ac62183e07792c060556096590cda0567aaa037a91a3034e96c"
+    },
+    {
+      "id": "blacksmith",
+      "file": "Blacksmith/Icon.png",
+      "selectedSourceFile": "Blacksmith/SourceArt/Icon-v2.png",
+      "sha256": "1a27020996fd181b021c6b19c0910b7725b19c7e7a164ea5e24b9a52f02b228f"
+    },
+    {
+      "id": "barracks",
+      "file": "Barracks/Icon.png",
+      "selectedSourceFile": "Barracks/SourceArt/Icon-v2.png",
+      "sha256": "3fde42305845a36a6f31c16710ed4b97564f3284ce972548812b90a5ffcd3b07"
+    }
+  ],
+  "additionalApprovals": [
+    {
+      "assetIds": [
+        "barracks"
+      ],
+      "approvedDate": "2026-10-02",
+      "approval": "User: that looks better"
+    }
+  ],
+  "revisionDate": "2026-10-07",
+  "revisionNote": "Earlier approval remains valid for preserved masters; new camera revisions await visual approval."
+}

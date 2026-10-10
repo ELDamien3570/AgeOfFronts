@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "BronzeAge",
+  "unit": "Bronze Spearman",
+  "category": "Melee",
+  "actorCount": 1,
+  "stage": "single-idle-design-review",
+  "integrationStatus": "One idle frame for visual review; formations will use runtime instances. Gameplay is not integrated.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Authored body pivot and one fixed scale; no silhouette fitting.",
+  "weapon": "Wooden spear with leaf-shaped bronze spearhead",
+  "offhand": "Round timber shield with bronze boss and rim",
+  "equipmentFinish": "Bronze helmet and compact paired bronze pauldrons, cream fur collar, stitched reddish-brown leather top, pale trousers and brown boots matching the Bronze Axeman.",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "label": "Idle \u00b7 single frame",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        1000
+      ],
+      "description": "Single idle design frame: same axeman armor and shield, with a bronze-tipped spear.",
+      "frameCount": 1,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1254,
+          "height": 1254,
+          "pivot": {
+            "x": 660,
+            "y": 680
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0
+      ]
+    }
+  ]
+}

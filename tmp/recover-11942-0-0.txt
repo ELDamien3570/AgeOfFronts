@@ -1,0 +1,49 @@
+from pathlib import Path
+p=Path('tests/skirmish/browser/FormationScaleGallery.ts');s=p.read_text(encoding='utf-8').replace('zoom: () => number,\n)', 'zoom: () => number,\n  paused: () => boolean = () => false,\n)');s=s.replace('row.topDownVerified\n          ? "Top-down review source ✓"\n          : row.actor.key','`${row.actor.key}${row.topDownVerified ? " · Top-down review source ✓" : ""}`');s=s.replace('Dedicated artwork missing: icon fallback','Dedicated troop artwork missing');s=s.replace('    render(performance.now());','    elapsed=0;render(elapsed);');s=s.replace('  let ready = false,\n    next = 0;','  let ready = false,\n    next = 0, previous=0, elapsed=0;');s=s.replace('  function frame(now: number) {\n    if (ready && now >= next) {\n      render(now);','  function frame(now: number) {\n    if(previous && !paused() && !root.hidden && controls.animate.checked)elapsed+=Math.min(100,now-previous);\n    previous=now;\n    if (ready && now >= next) {\n      render(elapsed);');p.write_text(s,encoding='utf-8')
+p=Path('tests/skirmish/browser/FormationFixes.ts');s=p.read_text(encoding='utf-8');s=s.replace('  () => Number(field<HTMLInputElement>("zoom").value) / 100,\n);','  () => Number(field<HTMLInputElement>("zoom").value) / 100,\n  () => paused,\n);',1);p.write_text(s,encoding='utf-8')
+Path('.codex/FormationFixes/09-TroopScaling.md').write_text('''# 09 — Clubman scale review and top-down source correction
+
+The FormationFixes page now opens to an all-troop gallery. It includes **59 land-unit definitions**: 36 human/mounted individual actors, six physically calibrated vehicles, and17 additional composed-art/support definitions. Every human/rider has an unchanged Clubman next to it at the same world magnification. Vehicle comparisons use half that magnification for both vehicle and Clubman.
+
+## Source corrections applied
+
+Runtime actors previously referenced the older root-folder manifests for these three troops. Their complete idle/running/attack/death sets and recruitment portraits now derive from:
+
+- `BronzeAge/RiverArcher/TopDownReview/animations.json`
+- `ClassicalAge/RecurveArcher/TopDownReview/animations.json`
+- `BronzeAge/BronzeSpearman/TopDownReview/animations.json`
+
+`prepareRussianTroopActors.py` explicitly requires those sources rather than silently falling back. Its new `--only` selector rebuilds just named actor folders, retaining all other catalogue entries and skipping generated cleanup. `prepareRussianArtwork.py --portrait-only` refreshes only selected recruitment portraits and preserves the rest of the runtime manifest. Source art remains untouched.
+
+Commands from repository root:
+
+```
+python scripts/prepareRussianTroopActors.py --only BronzeAge/RiverArcher --only ClassicalAge/RecurveArcher --only BronzeAge/BronzeSpearman
+python scripts/prepareRussianArtwork.py --portrait-only BronzeAge/RiverArcher --portrait-only ClassicalAge/RecurveArcher --portrait-only BronzeAge/BronzeSpearman
+```
+
+## Size proposals: gallery only
+
+The Clubman keeps its existing0.24 member scale. Its audited85px torso/shoulder span at a128px source-frame equivalent corresponds to approximately0.425 map cell with the existing2/0.75 presentation footprint.
+
+Proposed person scales use a visual torso/shoulder estimate, excluding extended weapons and shields; cavalry uses the rider's torso. These are approximate artistic measurements, not automated segmentation or a guarantee that helmets/clothing have identical silhouettes. The source-frame estimates and proposed multipliers are saved in `scale-proposals.json`; the generated59-entry page dataset is `tests/skirmish/browser/FormationScaleAudit.json`.
+
+The proposal is `Clubman scale ×85 / actor body span`. Use one fixed multiplier throughout idle, walking, attack and death; preserve authored pivots and pose scaling. Do not dynamically crop or refit each animation frame. Some older manually scaled actors need a reduction, while many later fallback-scaled actors need a substantial increase.
+
+Game member scales, soldier counts, formation spacing, collision and combat are unchanged. This review changes the three requested artwork sources and portraits, while presenting the proposed new multipliers for visual approval.
+
+## Limits before applying scales to gameplay
+
+- The strongest cavalry proposals are approximately2× current size because their riders occupy relatively little of the artwork. That enlarges the whole horse too. If the resulting mount/rider proportions look wrong, a source-art proportion correction is better than hiding it with formation-specific scaling.
+- Inspect all three poses before approval: shoulder/body volume and helmet styles vary. The reference body-width guide is a comparison aid, not a visible-collider assertion.
+- Applying larger riders will require checking six-rider packing. Current packing uses a shared mount-envelope estimate; derive a fixed idle envelope per approved actor if needed, rather than introduce per-frame packing or reduce soldier size in some formations.
+- Vehicles retain their existing metre-based hull scales. They should not be normalized to a human silhouette.
+- Additional legacy land definitions retain their composed-art path. **`modern-launcher` has no dedicated troop artwork in the active catalogue** and is visibly flagged in the gallery. The MIRV building icon exists, but it is not a mobile troop sprite.
+
+## Verification
+
+Four focused artwork/integration suites pass:16 tests, including source hashes, metadata hashes, clip durations and fixed-pivot preservation for the three top-down actors. Chrome loads59 gallery cards, all idle/walking/attack choices and current/proposed switches without missing HTTP assets or page errors. Captures: `scale-gallery-top.png` and `scale-gallery-modern.png`.
+
+Full TypeScript checking still reports the existing missing Javelinist authoring-manifest fixture and dependent implicit-any error. No production scale multipliers are changed by this review.
+''',encoding='utf-8')
+p=Path('.codex/FormationFixes/README.md');s=p.read_text(encoding='utf-8');s+='\n## Troop scale review\n\nSee [09 — Troop scaling](09-TroopScaling.md) for the all-unit gallery, proposed person/rider multipliers, and the three corrected TopDownReview actor/portrait sources. Production scale settings remain unchanged while the gallery is reviewed.\n';p.write_text(s,encoding='utf-8')

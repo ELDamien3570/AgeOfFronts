@@ -1,0 +1,30 @@
+{
+  "folder": "Buildings/BronzeAge/Siege Workshop/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/BronzeAge/Siege Workshop/SourceArt/Icon-v1.png",
+      "archived": "Buildings/BronzeAge/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "356e4c2de30176773b379ae1e90f3d7770c578369e6b2da1762c43bd8c8b3699",
+      "size": 2716427
+    },
+    {
+      "original": "Buildings/BronzeAge/Siege Workshop/SourceArt/Icon-v2.png",
+      "archived": "Buildings/BronzeAge/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "8a49573cd24eb94039b08e18d59de24bc7e6ebe91a45141bbab7afb6b944c0ef",
+      "size": 2514686
+    },
+    {
+      "original": "Buildings/BronzeAge/Siege Workshop/SourceArt/Icon-v3.png",
+      "archived": "Buildings/BronzeAge/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v3.png",
+      "sha256": "d1b95a58a69d86d4de2c0cd93cd2163e8c1980bc54635244b588f17e2ff037d7",
+      "size": 2555553
+    },
+    {
+      "original": "Buildings/BronzeAge/Siege Workshop/SourceArt/Icon-v4.png",
+      "archived": "Buildings/BronzeAge/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v4.png",
+      "sha256": "43b55c3afd034299a54894b06b0f7c195d57e3770f6c3917cad2d4ba22cd655e",
+      "size": 2790698
+    }
+  ]
+}

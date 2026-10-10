@@ -88,7 +88,7 @@ export function roadsUnlocked(research: Research): boolean {
 export function landTraderTier(research: Research): number {
   let tier = 0;
   for (const [i, age] of AGES.entries())
-    if (research.includes(packageTechnology(age, "land-traders"))) tier = i;
+    if (research.includes(packageTechnology(age, "roads")) || research.includes(packageTechnology(age, "land-traders"))) tier = i;
   return tier;
 }
 export function portCargoPercent(research: Research): number {
@@ -99,14 +99,14 @@ export function portCargoPercent(research: Research): number {
   return percent;
 }
 export function cargoHandlingPercent(research: Research): number {
-  return research.includes(packageTechnology("StoneAge", "land-traders"))
+  return research.includes(packageTechnology("StoneAge", "roads")) || research.includes(packageTechnology("StoneAge", "land-traders"))
     ? 125
     : 100;
 }
 export function breedingPerSecond(research: Research): number {
   let tier = -1;
   for (const [i, age] of AGES.entries())
-    if (research.includes(packageTechnology(age, "land-traders"))) tier = i;
+    if (research.includes(packageTechnology(age, "roads")) || research.includes(packageTechnology(age, "land-traders"))) tier = i;
   return tier < 0 ? 0 : Math.min(6, tier + 1);
 }
 export function throughputPercent(research: Research): number {

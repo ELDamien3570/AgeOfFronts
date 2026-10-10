@@ -1,4 +1,4 @@
-import { STARTING_TECHNOLOGIES, TECHNOLOGY } from "../content/Technology";
+import { STARTING_TECHNOLOGIES, TECHNOLOGIES, TECHNOLOGY } from "../content/Technology";
 import { AGES, TREES, type Age, type Tree } from "../domain/Definitions";
 import type { EmpireViewModel } from "./EmpireViewModel";
 
@@ -18,11 +18,18 @@ export class TechnologyViewModel {
   get trees() {
     return TREES.map((tree) => {
       const nodes = this.empire.nodes(this.age).filter((n) => n.tree === tree);
+      // The next age's root identifies the main progression endpoint, even
+      // when isolated upgrades appear below it. Modern has no successor age.
+      const nextAge = AGES[AGES.indexOf(this.age) + 1];
+      const successor = TECHNOLOGIES.find(n => n.age === nextAge && n.tree === tree && n.slot === 1);
+      const endpoint = nodes.find(n => successor?.prerequisites.includes(n.id))
+        ?? nodes.reduce((last, n) => n.slot > last.slot ? n : last);
       const job = this.empire.progression.research[tree];
       return {
         tree,
         nodes: nodes.map((n) => ({
           ...n,
+          progressionEndpoint: n.id === endpoint.id,
           status: n.completed
             ? (STARTING_TECHNOLOGIES.includes(n.id) || (n.age === (this.empire.expansion.startingAge ?? "StoneAge") && n.slot === 1))
               ? "Starting grant"

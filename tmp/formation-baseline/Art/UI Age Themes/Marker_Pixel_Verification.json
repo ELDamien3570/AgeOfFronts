@@ -1,0 +1,7 @@
+{
+  "rivalMarkerUnchangedAcrossLocalAges": true,
+  "distinctOwnAgeRims": 7,
+  "fixedCommandDockPosition": true,
+  "allEmpirePanelsClearCommandDock": true,
+  "ownCenterScreenshotComparison": "Inconclusive: browser captures use JPEG compression. Marker_Render_Verification.json provides lossless native canvas validation."
+}

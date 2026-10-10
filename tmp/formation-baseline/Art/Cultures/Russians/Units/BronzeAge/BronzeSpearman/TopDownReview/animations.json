@@ -1,0 +1,808 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "BronzeAge",
+  "unit": "Bronze Spearman",
+  "category": "Melee",
+  "actorCount": 1,
+  "stage": "overhead-animation-review",
+  "integrationStatus": "Solo actor animation review; runtime formations and gameplay integration are separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 320,
+  "registration": "Authored fixed roots, uniform whole-pose scale and transparent padding; fixed clip scale calibrates smaller generated thrust poses.",
+  "weapon": "Wooden spear with leaf-shaped bronze spearhead",
+  "offhand": "Large round timber shield with bronze boss and rim; requested 150% linear size versus initial idle.",
+  "equipmentFinish": "Bronze helmet and compact paired bronze pauldrons, cream fur collar, stitched reddish-brown leather top, pale trousers and brown boots matching the Bronze Axeman.",
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle-v1.png",
+      "sha256": "dcecc6f9b7fe4819381897fa6b0ad26c20685143567f51d92ec5caafe488ab16",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Six subtle breathing poses. Boots stay planted, almost no lateral sway. Carry spear low on screen left, shield on screen right.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "label": "Walk",
+      "file": "running-v1.png",
+      "sha256": "b0ba5e2ddb3e3a4037812858eb920c882d448aa4b1c3a4873dc16adcca572a9e",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Six alternating WALK poses: right foot leads, feet level, left foot leads, feet level, right foot leads, feet level. Short natural strides, thighs mostly hidden by shoulders, show different boot positions. Spear and shield carried steadily. Body root aligned across frames to reduce lateral drift.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 271.0,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 267.25,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 233.5,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 271.0,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 267.25,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 233.5,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "label": "Charge in / maintain",
+      "file": "charge-v1.png",
+      "sha256": "b0ba5e2ddb3e3a4037812858eb920c882d448aa4b1c3a4873dc16adcca572a9e",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Fast alternating-foot charge movement with spear and shield held steadily. Body root aligned across frames to reduce lateral drift.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 271.0,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 267.25,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 233.5,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 271.0,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 267.25,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 233.5,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "label": "Overhand spear thrust",
+      "file": "attack-v2.png",
+      "sha256": "c00d8b864ff1f4b82b4b7e3d75edd8474aec5fc91298d776fbc2a0fc1d7013e6",
+      "loop": false,
+      "scale": 1.5,
+      "durations": [
+        140,
+        180,
+        180,
+        150,
+        180,
+        220
+      ],
+      "description": "Six OVERHAND forward spear thrust poses: ready, right hand draws spear back above right shoulder, thrust extension, full forward extension, withdraw, ready. Aim exactly SCREEN BOTTOM along the screen-left lane beside helmet. Right fist remains at SHOULDER HEIGHT or above, elbow behind and outward; NEVER drop to waist or switch to underhand grip. Shaft straight, bronze spearhead always at forward screen-bottom end, rear butt screen-top. Hand grips rear third. Shield protects screen-right flank.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "label": "Charge spear thrust",
+      "file": "charge-attack-v2.png",
+      "sha256": "1587bd87d320cbdaaf9b44eb5fcf6e0ccb09e204acf064b952a2efcc25a9f4b4",
+      "loop": false,
+      "scale": 1.5,
+      "durations": [
+        140,
+        180,
+        180,
+        160,
+        180,
+        220
+      ],
+      "description": "Six heavy OVERHAND spear thrust poses after advancing: brake and plant, draw spear over right shoulder, drive straight forward SCREEN BOTTOM beside helmet, fully extended thrust, withdraw, ready. Right fist remains ABOVE shoulder line, never underhand. Right foot drops slightly back to open chest while same directly overhead camera retained. One straight spear, rear grip, same shield.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "hit",
+      "label": "Get hit",
+      "file": "hit-v1.png",
+      "sha256": "d0d2619fa15beeaa5899d8171c6b1408ceeb651757b4f33b7f3e2181408a56a2",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Six light hit reaction poses: stand, flinch, knees flex, recoil, recover, stand. Spear and shield retained, shield rises slightly to protect. No attack thrust or blood.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "label": "Get charged",
+      "file": "charged-v1.png",
+      "sha256": "36f59f79ea8a18a675f6635a5d6bcdf8ddf719ebb684e210070c6318b34781be",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        120,
+        180,
+        180,
+        180,
+        230
+      ],
+      "description": "Six heavy charge-impact reactions: stand, backward recoil, knees buckle and stagger, brace with shield, regain balance, stand. Spear retained in right hand, shield in left; never stab or swap arms. Stronger motion than light hit.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "label": "Death - side fall",
+      "file": "death-v2.png",
+      "sha256": "24762a5df4a7ec239bc7c21621778e7a65a3d10de42c55cacbc3795bf8f84618",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Six SIDE death stages: standing, knees buckle, tip sideways, fall onto side, settle, still corpse. Final three full body lying on SIDE with HEAD SCREEN RIGHT and BOOTS SCREEN LEFT continuously. Visible leather torso and pants when lying, anatomically connected legs. Spear and shield drop beside body, one of each, no blood.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-back",
+      "label": "Death - back fall",
+      "file": "death-back-v3.png",
+      "sha256": "3ec051cb332fdf2c7b35589b17a42b6469f64188c5c0bcf7c9a522da9000764f",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Six BACK death stages: standing, recoil, buckle backwards, land on BACK, settle, still corpse. Final three HEAD SCREEN TOP and BOOTS SCREEN BOTTOM continuously without flip. Full prone-on-back body with leather torso and pants visible, hands beside body; spear and shield fall beside him, one of each, no blood.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    }
+  ],
+  "motionContract": "Local gait and spear poses; gameplay owns world movement, formation placement, and attack authorization.",
+  "deathVariants": [
+    "death",
+    "death-back"
+  ]
+}

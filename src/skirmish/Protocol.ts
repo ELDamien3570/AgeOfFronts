@@ -1,19 +1,17 @@
-import type { DeploymentLine } from "./FormationLine";
+
 import type { GameMap } from "../core/game/GameMap";
 import type { ElevationData } from "./Elevation";
 import type { EnvironmentProfile } from "./Environment";
 import type { EnvironmentData } from "./EnvironmentData";
-import type { ForestData } from "./Forest";
+import type { ForestData } from "./Forest";import type { DeploymentLine } from "./FormationLine";
 import type { MapGeography } from "./Geography";
 import type { ResourceTerrainData } from "./ResourceTerrain";
 import type {
   Age,
-  StartingAge,
   ArmyOrder,
-  ChargeState,
-  ExpansionSnapshot,
+  ChargeState, ExpansionSnapshot,
   RefitJob,
-  TechnologySpeed,
+  StartingAge, TechnologySpeed,
 } from "./domain/Definitions";
 
 export const FIXED = 256;
@@ -88,13 +86,14 @@ export type Command =
       definitionId: string;
     }
   | {
-      type: "charge";
-      playerId: number;
+      type: "charge"; playerId: number;
       squadIds: number[];
       x: number;
       y: number;
       targetId?: number;
-      fallbackOrder?: { type: "move"; tile: number } | { type: "attack"; targetId: number };
+      fallbackOrder?:
+        | { type: "move"; tile: number }
+        | { type: "attack"; targetId: number };
     }
   | {
       type: "attack-structure";
@@ -104,10 +103,17 @@ export type Command =
       barrierId?: number;
     }
   | {
-      type: "alliance";
-      playerId: number;
+      type: "alliance"; playerId: number;
       otherId: number;
-      action: "offer" | "offer-long-term" | "accept" | "reject" | "renew" | "break" | "declare" | "end-long-term";
+      action:
+        | "offer"
+        | "offer-long-term"
+        | "accept"
+        | "reject"
+        | "renew"
+        | "break"
+        | "declare"
+        | "end-long-term";
     }
   | {
       type: "repair";
@@ -194,7 +200,13 @@ export type Command =
       append?: boolean;
     };
 
-export type MovementBlockReason = "crowd" | "yielding" | "terrain" | "restricted" | "planning" | "blocked";
+export type MovementBlockReason =
+  | "crowd"
+  | "yielding"
+  | "terrain"
+  | "restricted"
+  | "planning"
+  | "blocked";
 export interface MovementStatus {
   reason: MovementBlockReason;
   since: number;
@@ -226,6 +238,8 @@ export interface Squad {
   readonly xp?: number;
   readonly nextAttackTick?: number;
   readonly lastAttackTick?: number;
+  readonly magazineShots?: number;
+  readonly reloadStartedTick?: number;
   readonly planningPaused?: boolean;
   readonly movementStatus?: Readonly<MovementStatus>;
   readonly refit?: Readonly<RefitJob> | null;
@@ -355,12 +369,17 @@ export interface ArcherVolley {
   id: number;
   tick: number;
   squadId: number;
-  definitionId?: string;
-  playerId: number;
+    definitionId?: string; playerId: number;
   fromX: number;
   fromY: number;
   toX: number;
   toY: number;
+  sourceKind?: "squad" | "aircraft";
+  targetKind?: "squad" | "aircraft";
+      targetId?: number;
+  damage?: number;
+  melee?: boolean;
+  impact?: boolean;
 }
 
 // Defense zones are a movement modifier, never a passive damage source.
@@ -450,8 +469,8 @@ export interface SnapshotPacket {
   removedSquads?: Int32Array;
   removedShips?: Int32Array;
   tick: number;
-  width: number;
-  height: number;
+      width: number;
+      height: number;
   tiles: Uint32Array;
   squads: Int32Array;
   orders: Int32Array;
@@ -476,6 +495,8 @@ export interface SnapshotPacket {
     deploymentTicks?: number;
     lastAttackTick?: number;
     nextAttackTick?: number;
+    magazineShots?: number;
+    reloadStartedTick?: number;
     planningPaused?: boolean;
     movementStatus?: MovementStatus;
     refit?: RefitJob | null;

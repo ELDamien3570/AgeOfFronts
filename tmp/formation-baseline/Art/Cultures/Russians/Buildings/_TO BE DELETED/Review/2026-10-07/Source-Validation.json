@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-07",
+  "scope": "source-art and inspection only; not match-runtime integration",
+  "passed": true,
+  "changedRequestedIcons": 7,
+  "unchangedOtherSelectedIcons": 69,
+  "preservedPriorImages": 214,
+  "unchangedBaseImages": 70,
+  "ageCounts": {
+    "Napoleonic": 10,
+    "EarlyModern": 0,
+    "Modern": 17
+  },
+  "images": [
+    {
+      "file": "StoneAge/Mine/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "solidBounds": [
+        64,
+        29,
+        1191,
+        1223
+      ],
+      "selectedMasterMatches": true,
+      "sha256": "ae423f212ee600fe8cdefee685157dfd1085a275851481871a3f0d222c4a2fea",
+      "passed": true
+    },
+    {
+      "file": "StoneAge/Siege Workshop/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "solidBounds": [
+        44,
+        84,
+        1215,
+        1173
+      ],
+      "selectedMasterMatches": true,
+      "sha256": "4f236da76594b47508549edc1053e239bba4e8308e69fdb3fb3925c34b5873b2",
+      "passed": true
+    },
+    {
+      "file": "BronzeAge/Mine/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "solidBounds": [
+        38,
+        30,
+        1217,
+        1220
+      ],
+      "selectedMasterMatches": true,
+      "sha256": "f0c030c0afc74deaab0366a655646e52bd1a7acdc382c3ef045af1cb8501fc0c",
+      "passed": true
+    },
+    {
+      "file": "BronzeAge/Siege Workshop/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "solidBounds": [
+        52,
+        108,
+        1209,
+        1167
+      ],
+      "selectedMasterMatches": true,
+      "sha256": "43b55c3afd034299a54894b06b0f7c195d57e3770f6c3917cad2d4ba22cd655e",
+      "passed": true
+    },
+    {
+      "file": "BronzeAge/Blacksmith/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "solidBounds": [
+        83,
+        82,
+        1185,
+        1181
+      ],
+      "selectedMasterMatches": true,
+      "sha256": "fb11f8ee8ab1ef8681c2d79116016a4a381f4438685f93c65a586a66a4831e57",
+      "passed": true
+    },
+    {
+      "file": "ClassicalAge/Mine/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "solidBounds": [
+        31,
+        32,
+        1229,
+        1225
+      ],
+      "selectedMasterMatches": true,
+      "sha256": "b13baaf7cc10ed56523329240767f0b20740ead1d043e323d9c67414e9ba45cc",
+      "passed": true
+    },
+    {
+      "file": "ClassicalAge/Siege Workshop/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "solidBounds": [
+        55,
+        60,
+        1197,
+        1173
+      ],
+      "selectedMasterMatches": true,
+      "sha256": "d619438807c59ba1aa4a14e4de71426076da39ec75483ed50970d1e98ecd689f",
+      "passed": true
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,60 @@
+{
+  "folder": "Ships/EarlyModern/Transport/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/EarlyModern/Transport/Generation-Manifest.json",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "5a41a32d423a9e9dfd91069a61b577d50de04654d480aee73c87de147f52d595",
+      "size": 2914
+    },
+    {
+      "original": "Ships/EarlyModern/Transport/Idle-Preview.webp",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "af06e00ed05f9fd6d3195209e5c14d02325c7d763cc30b9838b21f46f968151a",
+      "size": 469982
+    },
+    {
+      "original": "Ships/EarlyModern/Transport/layers/Hull-Protection.png",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/layers/Hull-Protection.png",
+      "sha256": "65795a5b91030a2a433dae510d1edf494082a9cfa1153cd94f3797759f68f257",
+      "size": 334
+    },
+    {
+      "original": "Ships/EarlyModern/Transport/layers/Hull.png",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/layers/Hull.png",
+      "sha256": "dfa5e011a6541a23604c234651d550660a70daa08b12b4ff7343c53181037ab0",
+      "size": 70056
+    },
+    {
+      "original": "Ships/EarlyModern/Transport/Review/Frame-128px.png",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/Review/Frame-128px.png",
+      "sha256": "dbcd7984f3e1de586384c38c5ec2d47e3e8ed75b564b5df967c11dfaea75eabf",
+      "size": 8530
+    },
+    {
+      "original": "Ships/EarlyModern/Transport/Review/Frame-48px.png",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/Review/Frame-48px.png",
+      "sha256": "b0f7b3427e3138ce6029eeda50dc2fefe6eeff8a6075b074a05a6c3348cb1830",
+      "size": 1901
+    },
+    {
+      "original": "Ships/EarlyModern/Transport/Review/Frame-64px.png",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/Review/Frame-64px.png",
+      "sha256": "47d8f9e784df70802fdd280d868f9c9fbe98e4657ca7c9176353afe8e3213db6",
+      "size": 2851
+    },
+    {
+      "original": "Ships/EarlyModern/Transport/Sailing-Preview.webp",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "f4848c9cef9fafee61eb7ed6152ec55ddeee0ec91c0bce2c0cb419872752c992",
+      "size": 485758
+    },
+    {
+      "original": "Ships/EarlyModern/Transport/SourceArt/Transport_Russian_EarlyModern_Generated_v1.png",
+      "archived": "Ships/EarlyModern/Transport/_TO BE DELETED/SourceArt/Transport_Russian_EarlyModern_Generated_v1.png",
+      "sha256": "309ed51a842809be143a3b32b3835243fcd7da906a299986ff928c9caa5b2fed",
+      "size": 745175
+    }
+  ]
+}

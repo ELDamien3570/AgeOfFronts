@@ -1,6 +1,7 @@
 import { TerrainType } from "../../core/game/Game";
 import type { GameMap } from "../../core/game/GameMap";
 import { elevationOf } from "../Elevation";
+import { elevationRelief } from "./ElevationRelief";
 import type { EnvironmentProfile } from "../Environment";
 import { forestOf } from "../Forest";
 import type { MapGeography } from "../Geography";
@@ -124,7 +125,10 @@ export function terrainRelief(map: GameMap): Int8Array | undefined {
         sample(x - 1, y) +
         sample(x, y + 1) -
         sample(x, y - 1);
-      shades[tile] = Math.round(Math.max(-26, Math.min(26, gradient / 40)));
+      const relief = elevation.reliefScale === undefined ? gradient / 40 :
+        elevationRelief(sample, x, y, elevation.reliefScale);
+      const limit = elevation.reliefScale === undefined ? 26 : 42;
+      shades[tile] = Math.round(Math.max(-limit, Math.min(limit, relief)));
     }
   return shades;
 }
@@ -199,7 +203,7 @@ export class PaintedTerrain {
       land: source.land,
       elevation:
         elevation && heights
-          ? { heights, seaLevel: elevation.seaLevel }
+          ? { heights, seaLevel: elevation.seaLevel, reliefScale: elevation.reliefScale }
           : undefined,
     };
   }

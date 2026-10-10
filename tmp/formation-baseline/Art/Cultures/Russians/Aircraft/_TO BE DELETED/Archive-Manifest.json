@@ -1,0 +1,132 @@
+{
+  "folder": "Aircraft/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Aircraft/build-animations.py",
+      "archived": "Aircraft/_TO BE DELETED/build-animations.py",
+      "sha256": "c46a04dd1089c887dafd990160d84b1339ef3c039fd708cb02748c274814e6d6",
+      "size": 7155
+    },
+    {
+      "original": "Aircraft/build-static.py",
+      "archived": "Aircraft/_TO BE DELETED/build-static.py",
+      "sha256": "a9d4bb9a105d4a12f576c33820e3b937c7173ead296cfbcd5d9fe8850e18b794",
+      "size": 7022
+    },
+    {
+      "original": "Aircraft/Generation-Manifest.json",
+      "archived": "Aircraft/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "69d906665cbcb4865e6f29e3caba70a8750515f8da5f6f400c8601549eaec8d8",
+      "size": 10420
+    },
+    {
+      "original": "Aircraft/Generation-Prompts.json",
+      "archived": "Aircraft/_TO BE DELETED/Generation-Prompts.json",
+      "sha256": "f81108424e5aba380369e33fc5e09c8ea8b70d58c1041be8aff58435dbc33820",
+      "size": 7701
+    },
+    {
+      "original": "Aircraft/Modern-Generation-Manifest.json",
+      "archived": "Aircraft/_TO BE DELETED/Modern-Generation-Manifest.json",
+      "sha256": "171bbc0db09cde9e62354e2e7d12983e1734704160d3cc3acff5518a562e8c17",
+      "size": 2279
+    },
+    {
+      "original": "Aircraft/Modern-Generation-Prompts.json",
+      "archived": "Aircraft/_TO BE DELETED/Modern-Generation-Prompts.json",
+      "sha256": "12122dfa16423bb7b03c2f981629c85605698f3928c260d40e57036bcd5b4cf7",
+      "size": 4177
+    },
+    {
+      "original": "Aircraft/README.md",
+      "archived": "Aircraft/_TO BE DELETED/README.md",
+      "sha256": "421f3d79fc6acfe857929e182aa04fae9dd6ee477f963dd26752c0d499e136d6",
+      "size": 2462
+    },
+    {
+      "original": "Aircraft/Review/Animation-Frames-Review.png",
+      "archived": "Aircraft/_TO BE DELETED/Review/Animation-Frames-Review.png",
+      "sha256": "7bbba7fcf831f5c05cc42815165a70d998123f42fedfca788392e75c3da7d711",
+      "size": 231220
+    },
+    {
+      "original": "Aircraft/Review/Animation-HTTP-Validation.json",
+      "archived": "Aircraft/_TO BE DELETED/Review/Animation-HTTP-Validation.json",
+      "sha256": "95a902e7998b88983f51204dfb8674d2e2aa589b7667ae3aaf3ad5dfd097e6df",
+      "size": 953
+    },
+    {
+      "original": "Aircraft/Review/Animation-Validation.json",
+      "archived": "Aircraft/_TO BE DELETED/Review/Animation-Validation.json",
+      "sha256": "7c6b5da3eaf6bda18956b12ffa54c3887b0a319ebceb3f3217771c052eb4b32f",
+      "size": 1739
+    },
+    {
+      "original": "Aircraft/Review/bomber-modern-Flight.gif",
+      "archived": "Aircraft/_TO BE DELETED/Review/bomber-modern-Flight.gif",
+      "sha256": "18c7aee775bddadc82a200fe0994d71b077b9e0dbd29c8a478cbb40fd267a955",
+      "size": 701626
+    },
+    {
+      "original": "Aircraft/Review/bomber-wwii-Flight.gif",
+      "archived": "Aircraft/_TO BE DELETED/Review/bomber-wwii-Flight.gif",
+      "sha256": "8e8850eb240873e45bc55685107825abbad57d3ad13a8346b83f8f88bbafff58",
+      "size": 288310
+    },
+    {
+      "original": "Aircraft/Review/fighter-modern-Flight.gif",
+      "archived": "Aircraft/_TO BE DELETED/Review/fighter-modern-Flight.gif",
+      "sha256": "b12aa6b83455277f5a727521f9dcbc68328f9bb7b8949f708d3941910fcafd8e",
+      "size": 947232
+    },
+    {
+      "original": "Aircraft/Review/fighter-wwii-Flight.gif",
+      "archived": "Aircraft/_TO BE DELETED/Review/fighter-wwii-Flight.gif",
+      "sha256": "5af79dde6754de1bb6bb7a8d51e7d5a4c8fe3f8562f4ef619d1ba944840db497",
+      "size": 334845
+    },
+    {
+      "original": "Aircraft/Review/HTTP_Validation.json",
+      "archived": "Aircraft/_TO BE DELETED/Review/HTTP_Validation.json",
+      "sha256": "d7976300c1daf3351b463728b022e84a8cf89982d876e4c31ed17d2bc30a187f",
+      "size": 591
+    },
+    {
+      "original": "Aircraft/Review/Jet-Exhaust-Review.png",
+      "archived": "Aircraft/_TO BE DELETED/Review/Jet-Exhaust-Review.png",
+      "sha256": "1e6b44c8cfa17b450f3403aea12ab954475892286e9db1871ac2381141a82bf4",
+      "size": 171983
+    },
+    {
+      "original": "Aircraft/Review/Modern-Aircraft-Static-Review.png",
+      "archived": "Aircraft/_TO BE DELETED/Review/Modern-Aircraft-Static-Review.png",
+      "sha256": "5fef95621871f0596ba4e301635d06d331175e68dde987d2c1b30a56ea18da52",
+      "size": 242840
+    },
+    {
+      "original": "Aircraft/Review/Modern-Preservation-Baseline.json",
+      "archived": "Aircraft/_TO BE DELETED/Review/Modern-Preservation-Baseline.json",
+      "sha256": "17f49a98659a7a3fd67300a5ef905b2ffe024221555ebf38131690172d3147fb",
+      "size": 34045
+    },
+    {
+      "original": "Aircraft/Review/Preservation-Baseline.json",
+      "archived": "Aircraft/_TO BE DELETED/Review/Preservation-Baseline.json",
+      "sha256": "b2c2084a8f4f3e6045fcd551cccfd214b1fde9b31e76598b8843dee3699b559a",
+      "size": 51732
+    },
+    {
+      "original": "Aircraft/Review/Source_Validation.json",
+      "archived": "Aircraft/_TO BE DELETED/Review/Source_Validation.json",
+      "sha256": "7e8e326107f7eedebea06859a1d87feb9edd66e6cef38f49301b3449ab8e32b2",
+      "size": 1512
+    },
+    {
+      "original": "Aircraft/Review/Soviet_Aircraft_Static_Review.png",
+      "archived": "Aircraft/_TO BE DELETED/Review/Soviet_Aircraft_Static_Review.png",
+      "sha256": "5b79acba46ed28e6bf507d58117a27361dd1d37b271c3b3c60b1dd7155a52534",
+      "size": 228795
+    }
+  ]
+}

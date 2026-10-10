@@ -1,0 +1,69 @@
+{
+  "seed": 47,
+  "label": "baseline",
+  "tick": 12005,
+  "seconds": 600.25,
+  "wallSeconds": 14.617988599999999,
+  "winner": 2,
+  "rows": [
+    {
+      "id": 1,
+      "ages": [
+        {
+          "age": "StoneAge",
+          "seconds": 0
+        },
+        {
+          "age": "BronzeAge",
+          "seconds": 125.15
+        }
+      ],
+      "researchTicks": 6020,
+      "goldWaitTicks": 5985
+    },
+    {
+      "id": 2,
+      "ages": [
+        {
+          "age": "StoneAge",
+          "seconds": 0
+        },
+        {
+          "age": "BronzeAge",
+          "seconds": 125.3
+        }
+      ],
+      "researchTicks": 6380,
+      "goldWaitTicks": 5625
+    }
+  ],
+  "players": [
+    {
+      "id": 1,
+      "gold": 4322,
+      "land": 0,
+      "squads": []
+    },
+    {
+      "id": 2,
+      "gold": 18561,
+      "land": 7495,
+      "squads": [
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-infantry",
+        "stoneage-archer",
+        "stoneage-infantry",
+        "stoneage-archer",
+        "stoneage-infantry"
+      ]
+    }
+  ]
+}

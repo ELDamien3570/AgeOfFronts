@@ -1,0 +1,84 @@
+{
+  "folder": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/E/Firing-Review.gif",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/E/Firing-Review.gif",
+      "sha256": "5694572f96f02d5345532f8904c8acae489ec7b2b85c404dbfdb4a24b402f516",
+      "size": 503979
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/layers/Barrel-1-Mask.png",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/layers/Barrel-1-Mask.png",
+      "sha256": "8901ec7f0dcb689f2037c3ea2556766cdb8e3ec4832ff8550f52b943dcdcc971",
+      "size": 517
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/layers/Body-Mask.png",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/layers/Body-Mask.png",
+      "sha256": "b6f1ab1c244c18388fff863eb64120bff3bbcfed77412910a03fa30dc54d1f9b",
+      "size": 575
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/layers/Original.png",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/layers/Original.png",
+      "sha256": "d40b1a242093c761fc5c7995d72b7cdb8f6d45581cc1ea0e6bd399e3481c6cf5",
+      "size": 183129
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/layers/Repair-Mask-Review.png",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/layers/Repair-Mask-Review.png",
+      "sha256": "84c99de5ed5ec0dfc5c5ae2aec23752f59d1d92ad234aebeaf9cd4eec9d15e6c",
+      "size": 2745
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/layers/Repair-Mask.png",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/layers/Repair-Mask.png",
+      "sha256": "5e2c3c5e45714276f73386a7e23583abf5a978ad64c01497f2c8f6d272f5493e",
+      "size": 810
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/N/Firing-Review.gif",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/N/Firing-Review.gif",
+      "sha256": "854b1479d765b522851570f21f8453e44deedc41c5dccb590463262ca22b9899",
+      "size": 508527
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/S/Firing-Review.gif",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/S/Firing-Review.gif",
+      "sha256": "a1c496abcedac3f55e78404a007a8f278cd88e63ab62a571826ce04fd5cb35d4",
+      "size": 510825
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/SourceArt/Generation.json",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/SourceArt/Generation.json",
+      "sha256": "a74bfcbe17bee6c17596203e9151f5f3149e95f7a26e3c60fc13a955c0210d40",
+      "size": 2236
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/SourceArt/Plate-v1.png",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/SourceArt/Plate-v1.png",
+      "sha256": "fd9764cbc3aee3c362e0d12789fc2be081700fb456aeafef5f712a2d0bde93fb",
+      "size": 1743587
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Animations/W/Firing-Review.gif",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Animations/W/Firing-Review.gif",
+      "sha256": "d9d9d1af91f6c94dea240c3fe87b573482db50c5b33cccc49caf2c6457aac256",
+      "size": 499743
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/Generation.json",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/Generation.json",
+      "sha256": "0ceada15c2603bbd2caf8e30bb55765d0e63c6c4e37878cef5aa0c45c5b5762d",
+      "size": 2913
+    },
+    {
+      "original": "Buildings/EarlyModern/Gun Nest/SourceArt/Icon-v1.png",
+      "archived": "Buildings/EarlyModern/Gun Nest/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "7f2da6c5c6c01743ad38f0dfa17753c0061daf7a3810e72ec53061bda61152e6",
+      "size": 1843768
+    }
+  ]
+}

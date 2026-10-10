@@ -36,18 +36,20 @@ describe("approved Rus runtime tree", () => {
       );
     expect(() => validateTechnologies()).not.toThrow();
   });
-  it("starts with city construction and keeps the city statistical upgrade unresearched", () => {
+  it("starts with free city construction and its base statistics", () => {
     const state = startingProgression();
     expect(state.completed).toContain(buildingTechnology("city", "StoneAge"));
-    expect(state.completed).not.toContain("rus-stoneage-cities");
+    expect(state.completed).toContain("rus-stoneage-cities");
+    expect(state.completed).not.toContain("rus-stoneage-factories-mines");
     expect(cityReserveIncome("StoneAge", state.completed)).toBe(8);
     const complete = [...state.completed, "rus-stoneage-cities"];
-    expect(cityReserveIncome("StoneAge", complete)).toBe(9);
-    expect(buildingIntegrity("city", "StoneAge", complete)).toBe(1320);
+    expect(cityReserveIncome("StoneAge", complete)).toBe(8);
+    expect(buildingIntegrity("city", "StoneAge", complete)).toBe(1200);
   });
-  it("applies same-age city health upgrades once and preserves damaged health ratios", () => {
+  it("applies researched city tier upgrades once and preserves damaged health ratios", () => {
     const state = startingProgression();
-    state.completed.push("rus-stoneage-cities");
+    state.age = "BronzeAge";
+    state.completed.push("rus-bronzeage-cities");
     let city: Building = {
       id: 1,
       playerId: 1,
@@ -69,15 +71,15 @@ describe("approved Rus runtime tree", () => {
       facts as any,
       update,
     );
-    expect(city.maxHealth).toBe(1320);
-    expect(city.health).toBe(660);
+    expect(city.maxHealth).toBe(1560);
+    expect(city.health).toBe(780);
     tiers.step(
       [{ id: 1, eliminated: false } as Player],
       { 1: state },
       facts as any,
       update,
     );
-    expect(city.health).toBe(660);
+    expect(city.health).toBe(780);
   });
   it("still requires two complete current-age branches including side branches", () => {
     const state = startingProgression("EarlyModern");
@@ -125,10 +127,10 @@ describe("approved Rus runtime tree", () => {
     expect(vm.buildingAge("nuclear-facility")).toBe("EarlyModern");
     expect(game.expansion!.buildRejection(game.players[0], "barracks", game.players[0].base, "StoneAge")).toContain("latest researched tier");
   });
-  it("separates road and trader upgrades and improves existing submarines with Modern fleet research", () => {
+  it("combines road and trader upgrades and improves existing submarines with Modern fleet research", () => {
     const roads = ["rus-modern-roads"];
     expect(logisticsTier(roads)).toBe(7);
-    expect(landTraderTier(roads)).toBe(0);
+    expect(landTraderTier(roads)).toBe(7);
     expect(landTraderTier(["rus-classicalage-land-traders"])).toBe(2);
     expect(portCargoPercent(["rus-bronzeage-ports", "rus-modern-ports"])).toBe(135);
     const sub = VESSELS.find(v => v.id === "earlymodern-submarine")!;

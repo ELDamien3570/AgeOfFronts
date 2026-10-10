@@ -1,0 +1,8 @@
+{
+  "soldiers": 3900,
+  "frames": 600,
+  "sortMeanMs": 0.8969713333333322,
+  "sortP95Ms": 1.2880999999999858,
+  "sortMaxMs": 2.8327999999999633,
+  "environment": "Node CPU component benchmark; excludes Canvas and browser frame cost"
+}

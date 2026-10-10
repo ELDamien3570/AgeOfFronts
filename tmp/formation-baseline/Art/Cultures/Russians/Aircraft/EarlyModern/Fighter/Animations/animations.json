@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "id": "fighter-wwii",
+  "age": "EarlyModern",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-up",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sheetSize": {
+    "width": 2560,
+    "height": 2048
+  },
+  "grid": {
+    "columns": 5,
+    "rows": 4
+  },
+  "pivot": {
+    "x": 256.0,
+    "y": 256.0
+  },
+  "source": "EarlyModern/Fighter/SourceArt/Yak3_Russian_WWII_v2.png",
+  "sourceSha256": "0b622f59a9ac966c13c6083bc3c2b6261d62ef1ec26ef2e06eb39c9dcbd9ae34",
+  "animations": {
+    "parked": {
+      "file": "Parked.png",
+      "frameCount": 20,
+      "suggestedFramesPerSecond": 20,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 10,
+          "x": 0,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 11,
+          "x": 512,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 12,
+          "x": 1024,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 13,
+          "x": 1536,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 14,
+          "x": 2048,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 15,
+          "x": 0,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 16,
+          "x": 512,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 17,
+          "x": 1024,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 18,
+          "x": 1536,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 19,
+          "x": 2048,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        }
+      ]
+    },
+    "flight": {
+      "file": "Flight.png",
+      "frameCount": 20,
+      "suggestedFramesPerSecond": 20,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 10,
+          "x": 0,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 11,
+          "x": 512,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 12,
+          "x": 1024,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 13,
+          "x": 1536,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 14,
+          "x": 2048,
+          "y": 1024,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 15,
+          "x": 0,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 16,
+          "x": 512,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 17,
+          "x": 1024,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 18,
+          "x": 1536,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 19,
+          "x": 2048,
+          "y": 1536,
+          "width": 512,
+          "height": 512
+        }
+      ]
+    }
+  },
+  "rig": {
+    "propellers": [
+      [
+        0.5,
+        0.187,
+        0.12,
+        0.029
+      ]
+    ],
+    "exhausts": []
+  }
+}

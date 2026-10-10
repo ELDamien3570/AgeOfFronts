@@ -8,6 +8,7 @@ import type { Landform } from "./RegionalTopography";
 import { erodeTerrainSlopes } from "./TerrainErosion";
 import { terrainNoise } from "./TerrainNoise";
 import { terrainShoreDistance } from "./TerrainShoreDistance";
+import { formTerrain } from "./TerrainFormation";
 
 export interface MigrationCove {
   x: number;
@@ -468,6 +469,7 @@ export function buildMigrationLayout(
           shore[tile],
         )
       : -18;
+  formTerrain(size, regions, heights, shore, topography.features, seed, MIGRATION_THEME.formation);
   erodeTerrainSlopes(size, regions, heights, MIGRATION_THEME.thermalErosion);
   const waterMask = Uint8Array.from(regions, (value) => Number(!value)),
     toLand = terrainShoreDistance(size, waterMask);

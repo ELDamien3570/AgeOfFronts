@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import manifest from "../../Art/Cultures/Russians/Units/StoneAge/Javelinist/animations.json";
+import manifest from "../../Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/animations.json";
 import {
   FIXED,
   type ArcherVolley,
@@ -50,11 +50,12 @@ describe("individual javelin volleys", () => {
       lastAttackTick: 20,
       nextAttackTick: 60,
     } as Snapshot["squads"][number];
-    expect(throwTiming(clip).release).toBe(480);
+    const timing=throwTiming(clip);
+    expect(timing.release).toBe(580);
     expect(clipFrame(clip, javelinThrowTime(source, 19.99, clip)!)).toBe(2);
     expect(clipFrame(clip, javelinThrowTime(source, 20, clip)!)).toBe(3);
-    expect(clipFrame(clip, javelinThrowTime(source, 29, clip)!)).toBe(5);
-    expect(javelinThrowTime(source, 30, clip)).toBeUndefined();
+    expect(clipFrame(clip, javelinThrowTime(source, 20+(timing.duration-timing.release-1)/50, clip)!)).toBe(clip.frames.length-1);
+    expect(javelinThrowTime(source, 20+(timing.duration-timing.release)/50, clip)).toBeUndefined();
   });
   it("releases one javelin at each actual throwing hand in every rank, excluding walkers", () => {
     const presentation = new TroopVolley();

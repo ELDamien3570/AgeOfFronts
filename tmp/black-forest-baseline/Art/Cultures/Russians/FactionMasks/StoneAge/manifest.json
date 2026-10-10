@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "age": "StoneAge",
+  "status": "awaiting-user-visual-review",
+  "maskEncoding": "White RGBA; alpha selects faction-colored material. Same pixel dimensions as source. Zero alpha preserves original material.",
+  "scope": "Selected gallery assets only; source sprites and gameplay unchanged.",
+  "units": [
+    {
+      "id": "russian-stoneage-clubman",
+      "name": "Clubman",
+      "metadata": "../../Units/StoneAge/Clubman/animations.json",
+      "metadataHash": "d53d7da248bc034542eff13584c684c28f8b9100b4b771aec9da3c883bbe889d",
+      "materials": [
+        "red cap",
+        "red tunic and sleeves"
+      ],
+      "preserved": [
+        "fur",
+        "skin",
+        "trousers",
+        "boots and straps",
+        "weapon"
+      ],
+      "sheets": [
+        {
+          "file": "Idle-Stylized-Clean-v8.png",
+          "source": "../../Units/StoneAge/Clubman/Idle-Stylized-Clean-v8.png",
+          "sourceHash": "250379e7dfd298564850547af6f6bb859326ed361620323b0ef32c15d708a0ad",
+          "mask": "Clubman/Idle-Stylized-Clean-v8.faction-mask.png?v=1791590353",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 125684
+        },
+        {
+          "file": "Running-Stylized-v9.png",
+          "source": "../../Units/StoneAge/Clubman/Running-Stylized-v9.png",
+          "sourceHash": "36b6dd96b24ff403a9fc803b22c39148070bdae6115e4b1841a8e522c2198721",
+          "mask": "Clubman/Running-Stylized-v9.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 121477
+        },
+        {
+          "file": "Attack-Stylized-v12.png",
+          "source": "../../Units/StoneAge/Clubman/Attack-Stylized-v12.png",
+          "sourceHash": "190135e7e1ffb834fce66382671f2377cdb6915dcaedd618b6cb18c8bc3b39db",
+          "mask": "Clubman/Attack-Stylized-v12.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 108146
+        },
+        {
+          "file": "Hit-Stylized-v11.png",
+          "source": "../../Units/StoneAge/Clubman/Hit-Stylized-v11.png",
+          "sourceHash": "6da7fac3cbe6369d0feb1059a435077a8823c08646193323100ea2eafed17371",
+          "mask": "Clubman/Hit-Stylized-v11.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 115847
+        },
+        {
+          "file": "Charged-Stylized-v11.png",
+          "source": "../../Units/StoneAge/Clubman/Charged-Stylized-v11.png",
+          "sourceHash": "eccd5e355cd5d2707ebab26d19f906e711d238241186c2d12e603ce6c1637f51",
+          "mask": "Clubman/Charged-Stylized-v11.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 113700
+        },
+        {
+          "file": "Charge-Stylized-v10.png",
+          "source": "../../Units/StoneAge/Clubman/Charge-Stylized-v10.png",
+          "sourceHash": "c72232d2ca736e67343fcf9d1505d0e5e2811d88742f6f3ee69c8d03f10ff963",
+          "mask": "Clubman/Charge-Stylized-v10.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 125614
+        },
+        {
+          "file": "Death-Nadir-v14.png",
+          "source": "../../Units/StoneAge/Clubman/Death-Nadir-v14.png",
+          "sourceHash": "c3e907a8a3c25c190a3cfa4f41ebb436d281a7abd9a7e73eaebffa222671128f",
+          "mask": "Clubman/Death-Nadir-v14.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 105004
+        },
+        {
+          "file": "Corpse-Prone-Nadir-v14.png",
+          "source": "../../Units/StoneAge/Clubman/Corpse-Prone-Nadir-v14.png",
+          "sourceHash": "0e3cd0822d1e72dd5870786f705cbc27ab1935c89327ef1f495d9bddc83c8479",
+          "mask": "Clubman/Corpse-Prone-Nadir-v14.faction-mask.png",
+          "width": 512,
+          "height": 512,
+          "maskedPixels": 13309
+        },
+        {
+          "file": "ChargeAttack-Stylized-v12.png",
+          "source": "../../Units/StoneAge/Clubman/ChargeAttack-Stylized-v12.png",
+          "sourceHash": "91ca61b51ea03353e3e47999c6e87ba096ec5f340d00c318a0e2339f4e106890",
+          "mask": "Clubman/ChargeAttack-Stylized-v12.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 105266
+        },
+        {
+          "file": "Death-Back-Nadir-v14.png",
+          "source": "../../Units/StoneAge/Clubman/Death-Back-Nadir-v14.png",
+          "sourceHash": "50ff7d971de49ececc6a2a92a4936019d6c8715a4abf2078536ad154331f0750",
+          "mask": "Clubman/Death-Back-Nadir-v14.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 73464
+        },
+        {
+          "file": "Corpse-Back-Nadir-v14.png",
+          "source": "../../Units/StoneAge/Clubman/Corpse-Back-Nadir-v14.png",
+          "sourceHash": "2b7313445854090dbc74367028760ec214062311911800c00cebf26557ee1fac",
+          "mask": "Clubman/Corpse-Back-Nadir-v14.faction-mask.png",
+          "width": 512,
+          "height": 512,
+          "maskedPixels": 10202
+        }
+      ]
+    },
+    {
+      "id": "russian-stoneage-javelinist",
+      "name": "Javelinist",
+      "metadata": "../../Units/StoneAge/Javelinist/TopDownReview/animations.json",
+      "metadataHash": "176424d7932183466d581bb7643ec415ffa396a054385f28804b491c13a8bb54",
+      "materials": [
+        "red cap",
+        "red tunic and sleeves"
+      ],
+      "preserved": [
+        "fur",
+        "skin",
+        "trousers",
+        "boots and straps",
+        "weapon"
+      ],
+      "sheets": [
+        {
+          "file": "idle-v1.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/idle-v1.png",
+          "sourceHash": "f70ab55b35a1fdf9e313a32d2e617a3daeb0a4af3cf527754a8aaa05a3f62d69",
+          "mask": "Javelinist/idle-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 70314
+        },
+        {
+          "file": "running-v1.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/running-v1.png",
+          "sourceHash": "36583ec8f554853915fac369d91e90f866c77c426214d19a3dc6999108d753f3",
+          "mask": "Javelinist/running-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 74229
+        },
+        {
+          "file": "charge-v1.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/charge-v1.png",
+          "sourceHash": "36583ec8f554853915fac369d91e90f866c77c426214d19a3dc6999108d753f3",
+          "mask": "Javelinist/charge-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 74229
+        },
+        {
+          "file": "attack-v1.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/attack-v1.png",
+          "sourceHash": "38016e8d548e7f49b2dab1e8d650384702e0d6ff8e9203a06afc34700a7e159c",
+          "mask": "Javelinist/attack-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 61849
+        },
+        {
+          "file": "charge-attack-v1.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/charge-attack-v1.png",
+          "sourceHash": "eaab1ecc0e8afa907c5c833b2ba3a9e90013595867923905256267cb8a8cd91a",
+          "mask": "Javelinist/charge-attack-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 59294
+        },
+        {
+          "file": "reload-v2.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/reload-v2.png",
+          "sourceHash": "edc50eddb0daff6859dee15b824ff5f7025d333622bb8f353b22a5ade2032d04",
+          "mask": "Javelinist/reload-v2.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 69641
+        },
+        {
+          "file": "hit-v1.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/hit-v1.png",
+          "sourceHash": "eb810f8a426a7fac5406c216d683ce8f30d90fd0540b713aa8a7904b804fa90b",
+          "mask": "Javelinist/hit-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 69808
+        },
+        {
+          "file": "charged-v1.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/charged-v1.png",
+          "sourceHash": "6cf505613694ff889748e320b7b1dd18ae417b3534c095cf60172b80c20fd1f4",
+          "mask": "Javelinist/charged-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 53018
+        },
+        {
+          "file": "death-v2.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/death-v2.png",
+          "sourceHash": "885119b1c1b63863a78044daf96bfff32ef097cdc714808e859caafdecf6d283",
+          "mask": "Javelinist/death-v2.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 73840
+        },
+        {
+          "file": "death-back-v1.png",
+          "source": "../../Units/StoneAge/Javelinist/TopDownReview/death-back-v1.png",
+          "sourceHash": "d46755598e2e4bcbbdf76c42b6ad1c9da8fe6a512030ddd808298b629c5e367c",
+          "mask": "Javelinist/death-back-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 71936
+        }
+      ]
+    },
+    {
+      "id": "russian-stoneage-scout",
+      "name": "Scout",
+      "metadata": "../../Units/StoneAge/Scout/animations.json",
+      "metadataHash": "695a516090e3d1824418e7460abf661719068bc4f4d32cb711601ac6559b17d8",
+      "materials": [
+        "red cap",
+        "red tunic and sleeves",
+        "red saddle panel when exposed"
+      ],
+      "preserved": [
+        "fur",
+        "skin",
+        "trousers",
+        "boots and straps",
+        "weapon",
+        "horse coat, mane and tack"
+      ],
+      "sheets": [
+        {
+          "file": "Idle-Animated-v1.png",
+          "source": "../../Units/StoneAge/Scout/Idle-Animated-v1.png",
+          "sourceHash": "47b6602f0662786afac90646b435e28751b49a380ecbf9c8341236477bd35983",
+          "mask": "Scout/Idle-Animated-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 35687
+        },
+        {
+          "file": "Running-v1.png",
+          "source": "../../Units/StoneAge/Scout/Running-v1.png",
+          "sourceHash": "19666edce66dabfd8a3e01c05ebf268114823991cf796d4b3a53142cc5a1cf33",
+          "mask": "Scout/Running-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 29960
+        },
+        {
+          "file": "Attack-v1.png",
+          "source": "../../Units/StoneAge/Scout/Attack-v1.png",
+          "sourceHash": "d4545df3dc222bce013893e92fb2fc1d761041fec6dd54edfba5b839b00cc088",
+          "mask": "Scout/Attack-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 33771
+        },
+        {
+          "file": "Hit-v1.png",
+          "source": "../../Units/StoneAge/Scout/Hit-v1.png",
+          "sourceHash": "5bf534c46342505a9d73da2f8bea35f2617154c112562101609f5cca36521cb3",
+          "mask": "Scout/Hit-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 33572
+        },
+        {
+          "file": "Charged-Impact-v1.png",
+          "source": "../../Units/StoneAge/Scout/Charged-Impact-v1.png",
+          "sourceHash": "8c212687f98bd63a937ff9c3c8645e30d6479f1942e811082ded45629c5bcbbc",
+          "mask": "Scout/Charged-Impact-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 36696
+        },
+        {
+          "file": "Charge-v1.png",
+          "source": "../../Units/StoneAge/Scout/Charge-v1.png",
+          "sourceHash": "f9e01c644f0f123d4c60e27694ee28f1ba9dce876e750bda0bf90fdf2beff164",
+          "mask": "Scout/Charge-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 28042
+        },
+        {
+          "file": "Charge-Attack-v1.png",
+          "source": "../../Units/StoneAge/Scout/Charge-Attack-v1.png",
+          "sourceHash": "5c168839ba61ec4cedfa9412d42a4fa6879ba306c41cf622a7c19778d7a0838b",
+          "mask": "Scout/Charge-Attack-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 33117
+        },
+        {
+          "file": "Death-Together-v1.png",
+          "source": "../../Units/StoneAge/Scout/Death-Together-v1.png",
+          "sourceHash": "cb0c93dfaed0162233b8c722070fc96f8c276eba1b2e38ccb92a37726444456d",
+          "mask": "Scout/Death-Together-v1.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 34982
+        },
+        {
+          "file": "Death-Thrown-v2.png",
+          "source": "../../Units/StoneAge/Scout/Death-Thrown-v2.png",
+          "sourceHash": "b7b4ec498029641cb543adbc90eb8257066ebf96ec4c6f4bb0d2573ec74cca4b",
+          "mask": "Scout/Death-Thrown-v2.faction-mask.png",
+          "width": 1536,
+          "height": 1024,
+          "maskedPixels": 27228
+        }
+      ]
+    }
+  ]
+}

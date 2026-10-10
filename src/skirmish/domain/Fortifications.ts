@@ -44,7 +44,7 @@ export class Fortifications {
     restored: walls => { for (const wall of walls) Object.freeze(wall.tiles); this.barrierChanges.invalidate(); },
   });
   get barriers(): readonly Barrier[] { return this.barrierEntities.values; }
-  updateBarrier(id: number, changes: Partial<Pick<Barrier, "health" | "remainingTicks">>): Barrier | undefined {
+  updateBarrier(id: number, changes: Partial<Pick<Barrier, "health" | "remainingTicks" | "age" | "maxHealth">>): Barrier | undefined {
     return this.barrierEntities.update(id, changes);
   }
   /** Fixture/import boundary; ordinary construction uses addTower's quote. */
@@ -402,6 +402,14 @@ export class Fortifications {
       ) {
         this.updateBarrier(wall.id, { health: 0 });
         dirty = true;
+      }
+      if (a && b && a.playerId === wall.playerId && b.playerId === wall.playerId && wall.health > 0) {
+        const tier = Math.min(AGES.indexOf(a.age ?? "StoneAge"), AGES.indexOf(b.age ?? "StoneAge"));
+        if (tier > AGES.indexOf(wall.age)) {
+          const maxHealth = Math.round(2000 * 1.3 ** tier);
+          this.updateBarrier(wall.id, {age:AGES[tier],maxHealth,health:Math.max(1,Math.floor(maxHealth*wall.health/wall.maxHealth))});
+          dirty = true;
+        }
       }
       if (wall.remainingTicks > 0) {
         this.updateBarrier(wall.id, { remainingTicks: wall.remainingTicks - 1 });

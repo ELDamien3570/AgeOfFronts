@@ -1,0 +1,861 @@
+{
+  "schemaVersion": 1,
+  "status": "animation-proposal",
+  "key": "InterceptorHumvee",
+  "label": "Anti-missile / anti-drone Humvee",
+  "age": "Modern",
+  "type": "vehicle",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-up",
+  "directionCount": 1,
+  "frameSize": {
+    "width": 627,
+    "height": 627
+  },
+  "pivot": {
+    "x": 313.5,
+    "y": 313.5
+  },
+  "normalizedPivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "alpha": "straight",
+  "textureLimit": 4096,
+  "frameOrder": "row-major, then next sheet",
+  "animations": {
+    "idle": {
+      "frameCount": 12,
+      "sourceKeyframeCount": 4,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "durationMs": 1000,
+      "preview": "Idle-Preview.webp",
+      "once": null,
+      "previewPauseMs": 0,
+      "files": [
+        "Idle-Sheet_00.png"
+      ],
+      "sheets": [
+        {
+          "file": "Idle-Sheet_00.png",
+          "width": 3762,
+          "height": 1254,
+          "columns": 6,
+          "rows": 2,
+          "firstFrame": 0,
+          "frameCount": 12
+        }
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Idle_000.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Idle_001.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 627,
+          "y": 0
+        },
+        {
+          "index": 2,
+          "keyframe": 0,
+          "file": "Frames/Idle_002.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 1254,
+          "y": 0
+        },
+        {
+          "index": 3,
+          "keyframe": 1,
+          "file": "Frames/Idle_003.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "7e73dab9aefb2e582e97e203815e9f3db89f5fc2336a75170b0225837bfb93eb",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 1881,
+          "y": 0
+        },
+        {
+          "index": 4,
+          "keyframe": 1,
+          "file": "Frames/Idle_004.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "7e73dab9aefb2e582e97e203815e9f3db89f5fc2336a75170b0225837bfb93eb",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 2508,
+          "y": 0
+        },
+        {
+          "index": 5,
+          "keyframe": 1,
+          "file": "Frames/Idle_005.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "7e73dab9aefb2e582e97e203815e9f3db89f5fc2336a75170b0225837bfb93eb",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 3135,
+          "y": 0
+        },
+        {
+          "index": 6,
+          "keyframe": 2,
+          "file": "Frames/Idle_006.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "e29cf3a352e12515763ef1f6b0cfd46ef067febd8402e97cc114da3405313f6c",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 0,
+          "y": 627
+        },
+        {
+          "index": 7,
+          "keyframe": 2,
+          "file": "Frames/Idle_007.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "e29cf3a352e12515763ef1f6b0cfd46ef067febd8402e97cc114da3405313f6c",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 627,
+          "y": 627
+        },
+        {
+          "index": 8,
+          "keyframe": 2,
+          "file": "Frames/Idle_008.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "e29cf3a352e12515763ef1f6b0cfd46ef067febd8402e97cc114da3405313f6c",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 1254,
+          "y": 627
+        },
+        {
+          "index": 9,
+          "keyframe": 3,
+          "file": "Frames/Idle_009.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "569f1482aed2e6672f5aead552c5fc02a32f3f4e1ae197239fb3809bbb866f57",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 1881,
+          "y": 627
+        },
+        {
+          "index": 10,
+          "keyframe": 3,
+          "file": "Frames/Idle_010.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "569f1482aed2e6672f5aead552c5fc02a32f3f4e1ae197239fb3809bbb866f57",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 2508,
+          "y": 627
+        },
+        {
+          "index": 11,
+          "keyframe": 3,
+          "file": "Frames/Idle_011.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "569f1482aed2e6672f5aead552c5fc02a32f3f4e1ae197239fb3809bbb866f57",
+          "sheet": "Idle-Sheet_00.png",
+          "x": 3135,
+          "y": 627
+        }
+      ],
+      "events": [],
+      "sourceArt": [
+        "SourceArt/Idle.png"
+      ],
+      "interpolation": "held painted poses"
+    },
+    "movement": {
+      "frameCount": 8,
+      "sourceKeyframeCount": 4,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "durationMs": 667,
+      "preview": "Movement-Preview.webp",
+      "once": null,
+      "previewPauseMs": 0,
+      "files": [
+        "Movement-Sheet_00.png"
+      ],
+      "sheets": [
+        {
+          "file": "Movement-Sheet_00.png",
+          "width": 3762,
+          "height": 1254,
+          "columns": 6,
+          "rows": 2,
+          "firstFrame": 0,
+          "frameCount": 8
+        }
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Movement_000.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "9d70ac8caa367f6101242af8ead86398a105c67f6edcccd87515e44785b7be5d",
+          "sheet": "Movement-Sheet_00.png",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Movement_001.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "9d70ac8caa367f6101242af8ead86398a105c67f6edcccd87515e44785b7be5d",
+          "sheet": "Movement-Sheet_00.png",
+          "x": 627,
+          "y": 0
+        },
+        {
+          "index": 2,
+          "keyframe": 1,
+          "file": "Frames/Movement_002.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "5e8c4efcc947bc58fb0c0e635d238aa71c2991dfebb24701621ca266cda13f22",
+          "sheet": "Movement-Sheet_00.png",
+          "x": 1254,
+          "y": 0
+        },
+        {
+          "index": 3,
+          "keyframe": 1,
+          "file": "Frames/Movement_003.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "5e8c4efcc947bc58fb0c0e635d238aa71c2991dfebb24701621ca266cda13f22",
+          "sheet": "Movement-Sheet_00.png",
+          "x": 1881,
+          "y": 0
+        },
+        {
+          "index": 4,
+          "keyframe": 2,
+          "file": "Frames/Movement_004.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "a25226c7d23298b07488ab49be32ddd2d514e6f4cf744b1f1b81cfcdc0d81c51",
+          "sheet": "Movement-Sheet_00.png",
+          "x": 2508,
+          "y": 0
+        },
+        {
+          "index": 5,
+          "keyframe": 2,
+          "file": "Frames/Movement_005.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "a25226c7d23298b07488ab49be32ddd2d514e6f4cf744b1f1b81cfcdc0d81c51",
+          "sheet": "Movement-Sheet_00.png",
+          "x": 3135,
+          "y": 0
+        },
+        {
+          "index": 6,
+          "keyframe": 3,
+          "file": "Frames/Movement_006.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "967e94a8e793bbde71644bd6e2d32b0c87634ad0b8c4715e7ee4b134b3fa960b",
+          "sheet": "Movement-Sheet_00.png",
+          "x": 0,
+          "y": 627
+        },
+        {
+          "index": 7,
+          "keyframe": 3,
+          "file": "Frames/Movement_007.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "967e94a8e793bbde71644bd6e2d32b0c87634ad0b8c4715e7ee4b134b3fa960b",
+          "sheet": "Movement-Sheet_00.png",
+          "x": 627,
+          "y": 627
+        }
+      ],
+      "events": [],
+      "sourceArt": [
+        "SourceArt/Movement.png"
+      ],
+      "interpolation": "held painted poses"
+    },
+    "attack": {
+      "frameCount": 18,
+      "sourceKeyframeCount": 8,
+      "suggestedFramesPerSecond": 12,
+      "loop": false,
+      "durationMs": 1500,
+      "preview": "Attack-Preview.webp",
+      "once": "Attack-OneShot.webp",
+      "previewPauseMs": 900,
+      "files": [
+        "Attack-Sheet_00.png"
+      ],
+      "sheets": [
+        {
+          "file": "Attack-Sheet_00.png",
+          "width": 3762,
+          "height": 1881,
+          "columns": 6,
+          "rows": 3,
+          "firstFrame": 0,
+          "frameCount": 18
+        }
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Attack_000.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Attack_001.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 627,
+          "y": 0
+        },
+        {
+          "index": 2,
+          "keyframe": 0,
+          "file": "Frames/Attack_002.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 1254,
+          "y": 0
+        },
+        {
+          "index": 3,
+          "keyframe": 4,
+          "file": "Frames/Attack_003.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "8aa2313bbe7ece69331095d2d6dd531e262f556b36a0968ec8e623cdd6f35260",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 1881,
+          "y": 0
+        },
+        {
+          "index": 4,
+          "keyframe": 4,
+          "file": "Frames/Attack_004.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "8aa2313bbe7ece69331095d2d6dd531e262f556b36a0968ec8e623cdd6f35260",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 2508,
+          "y": 0
+        },
+        {
+          "index": 5,
+          "keyframe": 5,
+          "file": "Frames/Attack_005.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "83006a843568b38c11c0e26fa8df1fb61b67f2ece2310a2e75ae0bc74d1bc386",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 3135,
+          "y": 0
+        },
+        {
+          "index": 6,
+          "keyframe": 5,
+          "file": "Frames/Attack_006.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "83006a843568b38c11c0e26fa8df1fb61b67f2ece2310a2e75ae0bc74d1bc386",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 0,
+          "y": 627
+        },
+        {
+          "index": 7,
+          "keyframe": 5,
+          "file": "Frames/Attack_007.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "83006a843568b38c11c0e26fa8df1fb61b67f2ece2310a2e75ae0bc74d1bc386",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 627,
+          "y": 627
+        },
+        {
+          "index": 8,
+          "keyframe": 5,
+          "file": "Frames/Attack_008.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "83006a843568b38c11c0e26fa8df1fb61b67f2ece2310a2e75ae0bc74d1bc386",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 1254,
+          "y": 627
+        },
+        {
+          "index": 9,
+          "keyframe": 6,
+          "file": "Frames/Attack_009.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "8cb9cebc84c4b91ff7e344fc2639feede86493fd9a453cf842ecac26d3cf5a11",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 1881,
+          "y": 627
+        },
+        {
+          "index": 10,
+          "keyframe": 6,
+          "file": "Frames/Attack_010.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "8cb9cebc84c4b91ff7e344fc2639feede86493fd9a453cf842ecac26d3cf5a11",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 2508,
+          "y": 627
+        },
+        {
+          "index": 11,
+          "keyframe": 6,
+          "file": "Frames/Attack_011.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "8cb9cebc84c4b91ff7e344fc2639feede86493fd9a453cf842ecac26d3cf5a11",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 3135,
+          "y": 627
+        },
+        {
+          "index": 12,
+          "keyframe": 7,
+          "file": "Frames/Attack_012.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "8840e42b900c46a8cae20d8d074b9ce5baab432fc2022117fe829fba82af2696",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 0,
+          "y": 1254
+        },
+        {
+          "index": 13,
+          "keyframe": 7,
+          "file": "Frames/Attack_013.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "8840e42b900c46a8cae20d8d074b9ce5baab432fc2022117fe829fba82af2696",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 627,
+          "y": 1254
+        },
+        {
+          "index": 14,
+          "keyframe": 0,
+          "file": "Frames/Attack_014.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 1254,
+          "y": 1254
+        },
+        {
+          "index": 15,
+          "keyframe": 0,
+          "file": "Frames/Attack_015.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 1881,
+          "y": 1254
+        },
+        {
+          "index": 16,
+          "keyframe": 0,
+          "file": "Frames/Attack_016.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 2508,
+          "y": 1254
+        },
+        {
+          "index": 17,
+          "keyframe": 0,
+          "file": "Frames/Attack_017.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1872fe5100840783c01af6dc84654b52b8994fd4133e21812ee4b0d2bfb591d3",
+          "sheet": "Attack-Sheet_00.png",
+          "x": 3135,
+          "y": 1254
+        }
+      ],
+      "events": [
+        {
+          "frame": 3,
+          "timeMs": 250,
+          "name": "launch_projectile"
+        }
+      ],
+      "sourceArt": [
+        "SourceArt/Idle.png",
+        "SourceArt/Attack.png"
+      ],
+      "interpolation": "held painted poses"
+    }
+  },
+  "sourceAudit": {
+    "Idle": {
+      "file": "SourceArt/Idle.png",
+      "audit": [
+        {
+          "index": 0,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            170,
+            68,
+            506,
+            580
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255
+        },
+        {
+          "index": 1,
+          "rect": {
+            "left": 627,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            122,
+            68,
+            510,
+            580
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 2,
+          "rect": {
+            "left": 0,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            170,
+            41,
+            523,
+            552
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255
+        },
+        {
+          "index": 3,
+          "rect": {
+            "left": 627,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            122,
+            41,
+            458,
+            552
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        }
+      ],
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          627,
+          1254
+        ]
+      }
+    },
+    "Movement": {
+      "file": "SourceArt/Movement.png",
+      "audit": [
+        {
+          "index": 0,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            162,
+            64,
+            511,
+            585
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255
+        },
+        {
+          "index": 1,
+          "rect": {
+            "left": 627,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            117,
+            64,
+            518,
+            585
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 2,
+          "rect": {
+            "left": 0,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            162,
+            38,
+            543,
+            557
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255
+        },
+        {
+          "index": 3,
+          "rect": {
+            "left": 627,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            117,
+            37,
+            466,
+            558
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        }
+      ],
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          627,
+          1254
+        ]
+      }
+    },
+    "Attack": {
+      "file": "SourceArt/Attack.png",
+      "audit": [
+        {
+          "index": 0,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            168,
+            14,
+            511,
+            582
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255
+        },
+        {
+          "index": 1,
+          "rect": {
+            "left": 627,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            120,
+            66,
+            461,
+            582
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 2,
+          "rect": {
+            "left": 0,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            168,
+            39,
+            510,
+            554
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255
+        },
+        {
+          "index": 3,
+          "rect": {
+            "left": 627,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            120,
+            38,
+            461,
+            555
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        }
+      ],
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          627,
+          1254
+        ]
+      }
+    }
+  },
+  "links": {
+    "projectile": "HumveeInterceptor",
+    "effect": "HumveeIntercept"
+  },
+  "notes": [
+    "Rear mount: two four-tube interceptor pods aimed north over the cab."
+  ],
+  "packaging": {
+    "generator": "built-in image_gen",
+    "alignment": "fixed source cell centers; no per-frame mass recentering",
+    "rigidInterpolation": "none; painted poses held at explicit timings",
+    "effectsInterpolation": "premultiplied-alpha blending of 16 painted poses",
+    "movement": "in place; game supplies world translation"
+  }
+}

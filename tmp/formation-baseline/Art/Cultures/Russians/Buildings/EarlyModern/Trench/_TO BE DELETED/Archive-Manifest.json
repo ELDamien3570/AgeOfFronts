@@ -1,0 +1,24 @@
+{
+  "folder": "Buildings/EarlyModern/Trench/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/EarlyModern/Trench/Generation.json",
+      "archived": "Buildings/EarlyModern/Trench/_TO BE DELETED/Generation.json",
+      "sha256": "99a0c722fb1eb7b4195e1a134846a6906b5055653239ce688250622e52f8a15b",
+      "size": 4582
+    },
+    {
+      "original": "Buildings/EarlyModern/Trench/SourceArt/Icon-v1.png",
+      "archived": "Buildings/EarlyModern/Trench/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "71e9109190252c3fd0f487a23d9c7832d51d80b66c4ae7794c8f8fae93606500",
+      "size": 2408297
+    },
+    {
+      "original": "Buildings/EarlyModern/Trench/SourceArt/Icon-v2.png",
+      "archived": "Buildings/EarlyModern/Trench/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "ab074216e37956557638df70f2df6963cd13d7aafe452ef0d5745c30fc88c69c",
+      "size": 2422792
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "folder": "Ships/ClassicalAge/Transport/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/ClassicalAge/Transport/Idle-Preview.webp",
+      "archived": "Ships/ClassicalAge/Transport/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "70b2306331f6b1d79e2d1673779018017f41e679de4c85852a51ed8630f5ed1e",
+      "size": 992904
+    },
+    {
+      "original": "Ships/ClassicalAge/Transport/Sailing-Preview.webp",
+      "archived": "Ships/ClassicalAge/Transport/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "c9b47d709d714539595cf91f6f551a4694cf3f0cd6999f5d332814561fe17051",
+      "size": 1012666
+    },
+    {
+      "original": "Ships/ClassicalAge/Transport/Source_Transparent.png",
+      "archived": "Ships/ClassicalAge/Transport/_TO BE DELETED/Source_Transparent.png",
+      "sha256": "600b9d06c800e914b3706e5999e7d2485e0264a8cb4f49874e8dbc4c21980776",
+      "size": 887271
+    }
+  ]
+}

@@ -4,6 +4,7 @@ The manifest keeps the author's eight-age identities; runtime migration decides
 which definitions use each asset. Run this after approved source artwork changes.
 """
 from pathlib import Path
+import argparse
 from PIL import Image
 import hashlib
 import json
@@ -12,7 +13,11 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "Art/Cultures/Russians"
 OUT = ROOT / "Art/Runtime/Russians"
 SIZE = 128
-manifest = {}
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--portrait-only", action="append", default=[], help="Update only troop portraits from this source folder")
+args = parser.parse_args()
+portrait_selection = set(args.portrait_only)
+manifest = json.loads((OUT / "manifest.json").read_text(encoding="utf-8")) if portrait_selection else {}
 OUT.mkdir(parents=True, exist_ok=True)
 
 
@@ -79,39 +84,44 @@ def animated(key, path, aliases=None):
         manifest[key]["poster"] = poster
 
 
-for asset in json.loads((SOURCE / "Buildings/manifest.json").read_text(encoding="utf-8"))["assets"]:
-    static(f"building-{asset['age'].lower()}-{asset['id']}", SOURCE / "Buildings" / asset["file"])
-for asset in json.loads((SOURCE / "Ships/Ship_Animation_Manifest.json").read_text())["assets"]:
-    kind = {"Warships": "warship", "Transport": "transport", "Trade": "trade", "Submarine": "submarine", "Submarines": "submarine"}.get(asset["category"])
-    if kind:
-        animated(f"{asset['age'].lower()}-{kind}", SOURCE / "Ships" / asset["metadata"], {"running": "sailing"})
-for asset in json.loads((SOURCE / "Traders/Trader_Animation_Manifest.json").read_text())["assets"]:
-    animated(f"{asset['age'].lower()}-trader", SOURCE / "Traders" / asset["metadata"], {"running": "travel"})
-for age in ("EarlyModern", "Modern"):
-    for kind in ("Fighter", "Bomber"):
-        animated(f"{age.lower()}-{kind.lower()}", SOURCE / "Aircraft" / age / kind / "Animations/animations.json", {"idle": "parked", "running": "flight"})
-for asset in json.loads((SOURCE / "Buildings/Animations/manifest.json").read_text())["assets"]:
-    kind = "gun-nest" if asset["folder"] == "Gun Nest" else "anti-aircraft"
-    base = Image.open(SOURCE / "Buildings" / asset["basePlate"]).convert("RGBA")
-    box = base.getbbox()
-    anchor = {"x": box[0]*SIZE/base.width, "y": box[1]*SIZE/base.height, "width": (box[2]-box[0])*SIZE/base.width, "height": (box[3]-box[1])*SIZE/base.height}
-    for facing, metadata in asset["facings"].items():
-        key = f"building-{asset['age'].lower()}-{kind}-firing-{facing.lower()}"
-        animated(key, SOURCE / "Buildings" / metadata)
-        for clip in manifest[key]["clips"].values():
-            clip["groundBounds"] = anchor
-        manifest[key]["groundBounds"] = anchor
-        if facing == "N":
-            # Idle and firing use the exact same ground plate coordinate frame.
-            manifest[f"building-{asset['age'].lower()}-{kind}"] = {"file": manifest[key]["poster"], "groundBounds": anchor, "source": asset["facings"][facing]}
-# Recruitment portraits use the same explicit age/class bindings as the planner.
-# These are single actors for cards, never silently substituted for world formations.
+if not portrait_selection:
+    for asset in json.loads((SOURCE / "Buildings/manifest.json").read_text(encoding="utf-8"))["assets"]:
+        static(f"building-{asset['age'].lower()}-{asset['id']}", SOURCE / "Buildings" / asset["file"])
+    for asset in json.loads((SOURCE / "Ships/Ship_Animation_Manifest.json").read_text())["assets"]:
+        kind = {"Warships": "warship", "Transport": "transport", "Trade": "trade", "Submarine": "submarine", "Submarines": "submarine"}.get(asset["category"])
+        if kind:
+            animated(f"{asset['age'].lower()}-{kind}", SOURCE / "Ships" / asset["metadata"], {"running": "sailing"})
+    for asset in json.loads((SOURCE / "Traders/Trader_Animation_Manifest.json").read_text())["assets"]:
+        animated(f"{asset['age'].lower()}-trader", SOURCE / "Traders" / asset["metadata"], {"running": "travel"})
+    for age in ("EarlyModern", "Modern"):
+        for kind in ("Fighter", "Bomber"):
+            animated(f"{age.lower()}-{kind.lower()}", SOURCE / "Aircraft" / age / kind / "Animations/animations.json", {"idle": "parked", "running": "flight"})
+    for asset in json.loads((SOURCE / "Buildings/Animations/manifest.json").read_text())["assets"]:
+        kind = "gun-nest" if asset["folder"] == "Gun Nest" else "anti-aircraft"
+        base = Image.open(SOURCE / "Buildings" / asset["basePlate"]).convert("RGBA")
+        box = base.getbbox()
+        anchor = {"x": box[0]*SIZE/base.width, "y": box[1]*SIZE/base.height, "width": (box[2]-box[0])*SIZE/base.width, "height": (box[3]-box[1])*SIZE/base.height}
+        for facing, metadata in asset["facings"].items():
+            key = f"building-{asset['age'].lower()}-{kind}-firing-{facing.lower()}"
+            animated(key, SOURCE / "Buildings" / metadata)
+            for clip in manifest[key]["clips"].values():
+                clip["groundBounds"] = anchor
+            manifest[key]["groundBounds"] = anchor
+            if facing == "N":
+                # Idle and firing use the exact same ground plate coordinate frame.
+                manifest[f"building-{asset['age'].lower()}-{kind}"] = {"file": manifest[key]["poster"], "groundBounds": anchor, "source": asset["facings"][facing]}
+    # Recruitment portraits use the same explicit age/class bindings as the planner.
+    # These are single actors for cards, never silently substituted for world formations.
 unit_art = json.loads((ROOT / "src/skirmish/content/RussianTroopArtwork.json").read_text())
+if portrait_selection - set(unit_art.values()):
+    raise ValueError(f"Unknown portrait source folders: {sorted(portrait_selection - set(unit_art.values()))}")
 roster = json.loads((ROOT / "src/skirmish/content/russian-recruitment.json").read_text())
 actor_catalogue = json.loads((ROOT / "src/skirmish/content/RussianTroopActors.json").read_text(encoding="utf-8"))
 for troop in roster["units"]:
     folder = unit_art.get(f"{troop['age']}:{troop['troopClass']}")
     if not folder:
+        continue
+    if portrait_selection and folder not in portrait_selection:
         continue
     actor = actor_catalogue.get(f"{troop['age']}:{troop['troopClass']}")
     runtime_metadata = ROOT / "Art/Runtime/Russians/Troops" / actor["key"] / "animations.json" if actor else None
@@ -138,14 +148,15 @@ def collect_files(value):
     elif isinstance(value, list):
         for item in value:
             collect_files(item)
-collect_files(manifest)
-removed = json.loads((OUT / "RuntimeCleanup.json").read_text(encoding="utf-8")).get("removedGeneratedFiles", []) if (OUT / "RuntimeCleanup.json").exists() else []
-for path in OUT.glob("*.png"):
-    if path.name not in referenced:
-        if path.resolve().parent != OUT.resolve():
-            raise RuntimeError("Runtime cleanup escaped its output directory")
-        removed.append(path.name)
-        path.unlink()
-(OUT / "RuntimeCleanup.json").write_text(json.dumps({"removedGeneratedFiles": removed,
-    "policy": "Only unreferenced generated runtime PNGs; authored source/review versions preserved."}, indent=2)+"\n", encoding="utf-8")
+if not portrait_selection:
+    collect_files(manifest)
+    removed = json.loads((OUT / "RuntimeCleanup.json").read_text(encoding="utf-8")).get("removedGeneratedFiles", []) if (OUT / "RuntimeCleanup.json").exists() else []
+    for path in OUT.glob("*.png"):
+        if path.name not in referenced:
+            if path.resolve().parent != OUT.resolve():
+                raise RuntimeError("Runtime cleanup escaped its output directory")
+            removed.append(path.name)
+            path.unlink()
+    (OUT / "RuntimeCleanup.json").write_text(json.dumps({"removedGeneratedFiles": removed,
+        "policy": "Only unreferenced generated runtime PNGs; authored source/review versions preserved."}, indent=2)+"\n", encoding="utf-8")
 print(f"Prepared {len(manifest)} Russian assets, {sum(p.stat().st_size for p in OUT.glob('*.png')) / 1048576:.1f} MiB")

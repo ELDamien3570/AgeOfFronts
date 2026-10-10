@@ -1,0 +1,829 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "StoneAge",
+  "unit": "Javelinist",
+  "category": "Ranged",
+  "actorCount": 1,
+  "stage": "art-prototype",
+  "integrationStatus": "Single-soldier art review; runtime formation instancing and combat integration are separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "registration": "Explicit authored torso pivots and fixed per-clip scale. Cap component measurements aid inspection; playback never fits silhouette bounds.",
+  "weapon": "Stone-tipped throwing javelin",
+  "chargeAttack": "Stop and throw after advancing",
+  "projectileContract": "Thrown projectiles are separate from the actor sprite. Release-frame markers are presentation references; gameplay timing remains authoritative.",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        170,
+        170,
+        170,
+        170,
+        170,
+        170
+      ],
+      "description": "Breathe and hold the throwing spear ready at his side.",
+      "frameCount": 6,
+      "fps": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 279,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 250,
+            "y": 254
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 243,
+            "y": 252
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 280,
+            "y": 247
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 255,
+            "y": 247
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 242,
+            "y": 246
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "Running-v2.png",
+      "label": "Movement",
+      "loop": true,
+      "scale": 1.03,
+      "durations": [
+        150,
+        130,
+        160,
+        150,
+        130,
+        160
+      ],
+      "description": "Full alternating steps; spear carried low and the free arm swings.",
+      "frameCount": 6,
+      "fps": 7,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 271,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 255,
+            "y": 259
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 252,
+            "y": 257
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 272,
+            "y": 252
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 257
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 251,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v3.png",
+      "label": "Javelin throw",
+      "loop": false,
+      "scale": 1.06,
+      "durations": [
+        140,
+        180,
+        160,
+        90,
+        170,
+        240
+      ],
+      "releaseFrame": 3,
+      "description": "Plant and turn into an overarm throw, release, follow through, and settle unarmed. Reload is a separate clip.",
+      "frameCount": 6,
+      "fps": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 276.0,
+            "y": 267.1
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 250.2,
+            "y": 312.7
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 240.3,
+            "y": 315.4
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 277.7,
+            "y": 276.1
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 233.1,
+            "y": 279.6
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.2,
+            "y": 252.8
+          }
+        }
+      ],
+      "weaponState": {
+        "start": "armed",
+        "end": "unarmed"
+      }
+    },
+    {
+      "id": "reload",
+      "label": "Reload",
+      "loop": false,
+      "scale": 1.06,
+      "durations": [
+        120,
+        180,
+        180,
+        200,
+        180,
+        220
+      ],
+      "frameCount": 6,
+      "fps": 6,
+      "file": "Reload-v2.png",
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 277.0,
+            "y": 258.7
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 273.5,
+            "y": 287.3
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 243.5,
+            "y": 296.3
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 289.6,
+            "y": 257.2
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 270.2,
+            "y": 260.8
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 259.0,
+            "y": 260.3
+          }
+        }
+      ],
+      "description": "Reach behind the shoulder, grip a spare shaft, extract one javelin, bring it around, and lower it to armed ready.",
+      "weaponState": {
+        "start": "unarmed",
+        "end": "armed"
+      }
+    },
+    {
+      "id": "hit",
+      "file": "Hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        90,
+        70,
+        110,
+        100,
+        90,
+        120
+      ],
+      "description": "A quick flinch and guarded recovery while staying on his feet.",
+      "frameCount": 6,
+      "fps": 10,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 280,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 255,
+            "y": 248
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 239,
+            "y": 285
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 279,
+            "y": 244
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 253,
+            "y": 248
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 250,
+            "y": 253
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "Charged-v2.png",
+      "label": "Get charged",
+      "loop": false,
+      "scale": 1.4,
+      "durations": [
+        100,
+        85,
+        150,
+        180,
+        160,
+        200
+      ],
+      "description": "Heavy recoil, a backward stumble, a low crouch, and recovery; spear retained.",
+      "frameCount": 6,
+      "fps": 7,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 250,
+            "y": 266
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 262,
+            "y": 287
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 268,
+            "y": 268
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 276,
+            "y": 275
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 271,
+            "y": 274
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 245
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "Charge.png",
+      "label": "Charge advance",
+      "loop": true,
+      "scale": 1.1,
+      "durations": [
+        100,
+        80,
+        100,
+        80,
+        100,
+        80
+      ],
+      "description": "Run aggressively with the javelin secure. This gait supplies entry and Maintain charge when the formation is assembled.",
+      "frameCount": 6,
+      "fps": 11,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 262,
+            "y": 255
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 253,
+            "y": 254
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 253
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 295,
+            "y": 248
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 245
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 251,
+            "y": 244
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "ChargeAttack-v2.png",
+      "label": "Charge throw",
+      "loop": false,
+      "scale": 1.08,
+      "durations": [
+        140,
+        190,
+        200,
+        85,
+        180,
+        245
+      ],
+      "releaseFrame": 3,
+      "description": "Brake the advance, plant, and make a forceful overarm throw, release, follow through, and settle unarmed. Reload is a separate clip.",
+      "frameCount": 6,
+      "fps": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 269.5,
+            "y": 282.6
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 239.4,
+            "y": 297.9
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 252.3,
+            "y": 308.4
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 283.3,
+            "y": 302.6
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 276.3,
+            "y": 299.9
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.2,
+            "y": 274.2
+          }
+        }
+      ],
+      "weaponState": {
+        "start": "armed",
+        "end": "unarmed"
+      }
+    },
+    {
+      "id": "death",
+      "file": "Death.png",
+      "label": "Death",
+      "loop": false,
+      "scale": 1.06,
+      "durations": [
+        120,
+        140,
+        150,
+        180,
+        180,
+        300
+      ],
+      "description": "Knees buckle, tip onto his side, and hold the full fallen body beside the dropped spear.",
+      "frameCount": 6,
+      "fps": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 278,
+            "y": 254
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 275,
+            "y": 268
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 290,
+            "y": 276
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 269,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 276,
+            "y": 270
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 284,
+            "y": 286
+          }
+        }
+      ]
+    }
+  ],
+  "reviewFootprint": 400,
+  "throwReloadContract": {
+    "sequence": [
+      "attack",
+      "reload",
+      "idle"
+    ],
+    "chargeSequence": [
+      "charge-attack",
+      "reload",
+      "idle"
+    ],
+    "releaseFrame": 3,
+    "timingAuthority": "Runtime controls attack and reload timing. Source clips do not create projectiles or consume ammunition."
+  }
+}

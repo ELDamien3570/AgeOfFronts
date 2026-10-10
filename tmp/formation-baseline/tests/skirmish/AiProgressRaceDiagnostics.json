@@ -1,0 +1,266 @@
+{
+  "baselineRevision": "2390f7d133baceca8d4ae7934b1ccd9dcefe9680",
+  "scenario": {
+    "startingAge": "BronzeAge",
+    "factions": 4,
+    "seeds": [
+      47,
+      72
+    ],
+    "map": [
+      240,
+      160
+    ],
+    "maximumTicks": 39600,
+    "stopAtVictory": true
+  },
+  "limitations": [
+    "Synthetic small-map scenarios; not the reported saved match.",
+    "Timing overlapped validation and is not a controlled performance comparison.",
+    "Policy does not grant gold, research, equipment or remove threat/placement rules."
+  ],
+  "baseline": [
+    {
+      "seed": 47,
+      "tick": 27006,
+      "winner": 4,
+      "combatTicks": 2111,
+      "movingOrFightingFraction": 0.7749218971882987,
+      "meanMs": 1.6249984129933925,
+      "p95Ms": 4.314000000000306,
+      "commands": {
+        "order": 7694,
+        "research": 52,
+        "build": 36,
+        "recruit": 156,
+        "recruit-ship": 18,
+        "create-army": 3,
+        "army-auto": 3,
+        "army-order": 3,
+        "sail": 138,
+        "alliance": 1,
+        "disband-army": 3,
+        "stop-ships": 11,
+        "refit": 3,
+        "advance-age": 5,
+        "naval-attack": 1
+      },
+      "players": [
+        {
+          "id": 1,
+          "land": 0,
+          "losses": 42000,
+          "age": "ClassicalAge",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 2,
+          "land": 0,
+          "losses": 14000,
+          "age": "BronzeAge",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 3,
+          "land": 0,
+          "losses": 54050,
+          "age": "ClassicalAge",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 4,
+          "land": 8965,
+          "losses": 41885,
+          "age": "EarlyMedieval",
+          "squads": 9,
+          "ships": 4
+        }
+      ],
+      "checkpointContinuation": "equal-after-30-ticks"
+    },
+    {
+      "seed": 72,
+      "tick": 39630,
+      "winner": null,
+      "combatTicks": 2653,
+      "movingOrFightingFraction": 0.6820131840535733,
+      "meanMs": 2.034466134177241,
+      "p95Ms": 5.884300000005169,
+      "commands": {
+        "order": 13644,
+        "research": 107,
+        "build": 51,
+        "recruit": 183,
+        "recruit-ship": 80,
+        "sail": 1183,
+        "create-army": 9,
+        "army-auto": 9,
+        "army-order": 12,
+        "disband-army": 9,
+        "alliance": 1,
+        "advance-age": 11,
+        "refit": 27
+      },
+      "players": [
+        {
+          "id": 1,
+          "land": 4800,
+          "losses": 0,
+          "age": "LateMedieval",
+          "squads": 13,
+          "ships": 0
+        },
+        {
+          "id": 2,
+          "land": 12305,
+          "losses": 101870,
+          "age": "LateMedieval",
+          "squads": 4,
+          "ships": 15
+        },
+        {
+          "id": 3,
+          "land": 0,
+          "losses": 57416,
+          "age": "EarlyMedieval",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 4,
+          "land": 9828,
+          "losses": 20571,
+          "age": "LateMedieval",
+          "squads": 10,
+          "ships": 10
+        }
+      ],
+      "checkpointContinuation": "equal-after-30-ticks"
+    }
+  ],
+  "candidate": [
+    {
+      "seed": 47,
+      "tick": 19739,
+      "winner": 4,
+      "combatTicks": 813,
+      "movingOrFightingFraction": 0.6326923076923077,
+      "meanMs": 1.5576622485869773,
+      "p95Ms": 3.8140999999995984,
+      "commands": {
+        "order": 5757,
+        "research": 46,
+        "build": 25,
+        "recruit": 81,
+        "recruit-ship": 2,
+        "create-army": 6,
+        "army-auto": 6,
+        "army-order": 11,
+        "sail": 106,
+        "disband-army": 6,
+        "advance-age": 4,
+        "refit": 6,
+        "upgrade-building": 2
+      },
+      "players": [
+        {
+          "id": 1,
+          "land": 0,
+          "losses": 14877,
+          "age": "ClassicalAge",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 2,
+          "land": 0,
+          "losses": 29300,
+          "age": "ClassicalAge",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 3,
+          "land": 0,
+          "losses": 21456,
+          "age": "ClassicalAge",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 4,
+          "land": 9283,
+          "losses": 10625,
+          "age": "ClassicalAge",
+          "squads": 13,
+          "ships": 1
+        }
+      ],
+      "checkpointContinuation": "equal-after-30-ticks"
+    },
+    {
+      "seed": 72,
+      "tick": 39630,
+      "winner": null,
+      "combatTicks": 1974,
+      "movingOrFightingFraction": 0.5115293191418492,
+      "meanMs": 2.0775237746835162,
+      "p95Ms": 5.521099999998114,
+      "commands": {
+        "order": 11153,
+        "research": 122,
+        "build": 51,
+        "recruit": 141,
+        "recruit-ship": 123,
+        "sail": 1311,
+        "alliance": 2,
+        "advance-age": 12,
+        "upgrade-building": 23,
+        "create-army": 7,
+        "army-auto": 7,
+        "army-order": 10,
+        "disband-army": 7,
+        "refit": 91,
+        "stop-ships": 6
+      },
+      "players": [
+        {
+          "id": 1,
+          "land": 4800,
+          "losses": 0,
+          "age": "LateMedieval",
+          "squads": 9,
+          "ships": 3
+        },
+        {
+          "id": 2,
+          "land": 0,
+          "losses": 62340,
+          "age": "LateMedieval",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 3,
+          "land": 0,
+          "losses": 29650,
+          "age": "ClassicalAge",
+          "squads": 0,
+          "ships": 0
+        },
+        {
+          "id": 4,
+          "land": 24000,
+          "losses": 16163,
+          "age": "Modern",
+          "squads": 29,
+          "ships": 11
+        }
+      ],
+      "checkpointContinuation": "equal-after-30-ticks"
+    }
+  ]
+}

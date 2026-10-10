@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Transport/Transport_Modern.png",
+  "sourceSha256": "a81636b252756a306941e2038ad5cfe61d8b978662ed9e093c97ab7dac825961",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [
+    [
+      626,
+      81
+    ],
+    [
+      699,
+      180
+    ],
+    [
+      728,
+      351
+    ],
+    [
+      744,
+      574
+    ],
+    [
+      733,
+      1010
+    ],
+    [
+      697,
+      1146
+    ],
+    [
+      553,
+      1146
+    ],
+    [
+      517,
+      1010
+    ],
+    [
+      504,
+      574
+    ],
+    [
+      521,
+      351
+    ],
+    [
+      551,
+      180
+    ]
+  ],
+  "layers": [],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

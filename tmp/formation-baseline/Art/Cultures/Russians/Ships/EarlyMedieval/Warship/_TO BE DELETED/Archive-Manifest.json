@@ -1,0 +1,210 @@
+{
+  "folder": "Ships/EarlyMedieval/Warship/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/EarlyMedieval/Warship/Attack-Preview.webp",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/Attack-Preview.webp",
+      "sha256": "d0ed52530d963166223796ac2948ec8c5a11a9a7c0de4df8191d0ff7221df170",
+      "size": 881128
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/Generation-Manifest.json",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "e8470019fe9c8eb3c6d330c33d327c7fc380658e1dea17232437d53b2cc85c27",
+      "size": 2669
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/Idle-Preview.webp",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "1b81500b59cd0c6aa02d59a5ad577773a2b006e9f85d43caa56807a63d310c99",
+      "size": 874758
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/Hull-Protection.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/Hull-Protection.png",
+      "sha256": "f2765bb7a2803a061d14f3562ff3187b046fec721390f1ce8e36d3cd58aa9321",
+      "size": 1525
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/Hull.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/Hull.png",
+      "sha256": "8d79307ffc451aa57bf49dba32a17d61765ee9c5e397b2fc0890363dcedf57be",
+      "size": 64070
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-1-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-1-mask.png",
+      "sha256": "c8e1b5fcedf7847aae09205e3021c0ad9938520015873841f2aed37498cd82d2",
+      "size": 847
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-1.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-1.png",
+      "sha256": "dcaf0f79fd08ce0d4c2c88d45a1faaf8337ac81d7c6e6c2428bcfc07a9d096d0",
+      "size": 5431
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-2-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-2-mask.png",
+      "sha256": "f287a89ccce38629e24cdebba070909aab28d1b8021d0d7fb98d10ce61265190",
+      "size": 788
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-2.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-2.png",
+      "sha256": "0e91f4683428c3be060f936ee77cb37fc621c660bec9ae807a4779330375c342",
+      "size": 4951
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-3-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-3-mask.png",
+      "sha256": "cfec6abbdea1580f6bc2aefc7fa7b9c76ced08f4f9565f8bd20ec4d55cb94b4a",
+      "size": 758
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-3.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-3.png",
+      "sha256": "3323aaef36271b88ecb290a9e3a7b96339041ca62528e7b5b95da1b5c70075b9",
+      "size": 4730
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-4-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-4-mask.png",
+      "sha256": "7265bf65ff62f53b94fcb9c4867a5052297ff4b74428bcf511d1c886e878b1a5",
+      "size": 750
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-4.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-4.png",
+      "sha256": "b46ca1b0f4cd7dea1740ed8cc18a324d1d5fd0cd512888d0c31842b3ef4154bd",
+      "size": 4482
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-5-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-5-mask.png",
+      "sha256": "3e8dfd402fd2fa93a0325c37a3438d04aa28149c497d3f3501d0b8869ffecf79",
+      "size": 778
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-5.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-5.png",
+      "sha256": "1d11a1c18238eb154407b75906e9119293bd3b800464849666dbabf1bd82371a",
+      "size": 4300
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-6-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-6-mask.png",
+      "sha256": "90fdb3cc4adcd447e9bcd5e3494fded83b4807e9bd3f1b0cebb09eca061ef7d8",
+      "size": 877
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/port-6.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/port-6.png",
+      "sha256": "c9ec567baa658c63c098b4128fb177422dd67c169ea959ed11d56ebfcd8ccfb3",
+      "size": 4866
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-1-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-1-mask.png",
+      "sha256": "758aa407947251fc30ac041b54350c336215695141185dcbb66dd8a6609d6ff7",
+      "size": 960
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-1.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-1.png",
+      "sha256": "a56af289e04830633851fa9b4ca64fb069a555bd93464c1bb57b2d2b81ecd9e0",
+      "size": 6207
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-2-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-2-mask.png",
+      "sha256": "ad5a63cf590165902dc0332e596ad4d3abf4efb9ee41ac436bb96b18e9f31259",
+      "size": 886
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-2.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-2.png",
+      "sha256": "102d2b41bbf6b4ba9d9664f676809f2ad891e3a5e53dede234ddf2b949ed7cda",
+      "size": 5564
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-3-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-3-mask.png",
+      "sha256": "71865e3da22e5302000efd78c0412df92fc132a4b7aea5d883afb52615c745f7",
+      "size": 875
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-3.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-3.png",
+      "sha256": "5a404cb6b0db8b2fd25cdbda0f1f421e81c80d6ae77ba52e769f919043c1e6fb",
+      "size": 5095
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-4-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-4-mask.png",
+      "sha256": "49b4ee4f7602ae8dd02e95c0eafd547e6344ce50459d07033a14fe1dcf4613b4",
+      "size": 841
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-4.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-4.png",
+      "sha256": "a56fffa98505775c279f6bd5991807c949d725168d4d525f8d40acd3df6fd671",
+      "size": 4685
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-5-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-5-mask.png",
+      "sha256": "f6195da18b2b70b2d7222e0b576bddea05d8fba959bec68ebe7879ffc249ae51",
+      "size": 829
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-5.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-5.png",
+      "sha256": "a64bcfb06cae10c467c88aef659d2d9ac820e1b085e6124ad28d4851ff6f5a89",
+      "size": 4388
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-6-mask.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-6-mask.png",
+      "sha256": "1b01a164757ad551a4d361faefa8579cc1fa20da790ede970014109bcd3ed8fc",
+      "size": 904
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/layers/starboard-6.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/layers/starboard-6.png",
+      "sha256": "f42cf0e0aa024d21d102365c4b8bcfb5ce5c73fe81a2fd7588108e1c09598a3b",
+      "size": 4791
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/Review/Frame-128px.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/Review/Frame-128px.png",
+      "sha256": "c62328c4184ff0dba5d2bc204425bd611015fbb15f6c7d8f2ec60f7af820873c",
+      "size": 14852
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/Review/Frame-48px.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/Review/Frame-48px.png",
+      "sha256": "f6af16c974eaa2d5572348d2d2573e26fa85ce142777ce40bbd14ff9a5c223e6",
+      "size": 3039
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/Review/Frame-64px.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/Review/Frame-64px.png",
+      "sha256": "709ae156adb7531215e7e7b234df4367a297faf823ff57610aa7eea1bdb30c6c",
+      "size": 4821
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/Sailing-Preview.webp",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "6163c1a084eb8eddadca00a9e97ee03ddf6229c045804728636ce25f205966de",
+      "size": 894168
+    },
+    {
+      "original": "Ships/EarlyMedieval/Warship/SourceArt/Warship_Russian_EarlyMedieval_Generated_v1.png",
+      "archived": "Ships/EarlyMedieval/Warship/_TO BE DELETED/SourceArt/Warship_Russian_EarlyMedieval_Generated_v1.png",
+      "sha256": "a888a277139bb80b9c29836f71ca385fe3f5c4f14cbc955326785b6d790615f4",
+      "size": 950554
+    }
+  ]
+}

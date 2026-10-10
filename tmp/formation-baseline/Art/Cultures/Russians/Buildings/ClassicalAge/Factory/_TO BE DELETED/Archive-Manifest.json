@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/ClassicalAge/Factory/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/ClassicalAge/Factory/SourceArt/Icon-v1.png",
+      "archived": "Buildings/ClassicalAge/Factory/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "ca4e3a7004f91823704a73bbbfe981c67cdbeb6efedae361d17d74c740dcf2a1",
+      "size": 2272680
+    },
+    {
+      "original": "Buildings/ClassicalAge/Factory/SourceArt/Icon-v2.png",
+      "archived": "Buildings/ClassicalAge/Factory/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "1a59acf87dbf831b9734a44552e4bad36c0b6f6b9bdad9e4f6f6e1fa64502815",
+      "size": 2476900
+    }
+  ]
+}

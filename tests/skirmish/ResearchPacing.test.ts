@@ -9,6 +9,6 @@ describe("research pacing contract", () => {
       expect(Number.isSafeInteger(technology.ticks)).toBe(true);
       expect(technology.ticks).toBeGreaterThanOrEqual(0);
     }
-    expect(ADVANCES.map(a => a.ticks / 20)).toEqual([35,40,45,50,55,60,70]);
+    expect(ADVANCES.map(a => a.ticks / 20)).toEqual([50,55,60,65,70,75,85]);
   });
 });

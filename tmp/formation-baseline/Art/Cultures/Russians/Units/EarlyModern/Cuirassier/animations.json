@@ -1,0 +1,933 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyModern",
+  "unit": "Cuirassier",
+  "category": "Heavy Cavalry",
+  "actorCount": 1,
+  "stage": "single-mounted-actor-art-prototype",
+  "integrationStatus": "Nine solo Cuirassier animation clips pending visual review.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed pivot and scale. Walk, sword cut, charge thrust, hit and charge impact registered horizontally against horse rump and saddle; authored vertical and limb motion retained.",
+  "weapon": "Straight steel cavalry broadsword with brass basket guard",
+  "mount": "Unarmored bay horse with period saddle, leather harness and muted red saddlecloth",
+  "equipmentFinish": "Black-painted cuirass, crested black leather helmet, white wool jacket, pale trousers and black riding boots",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle-Registered-v1.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        600,
+        600,
+        600,
+        600,
+        600,
+        600
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Quiet breathing idle loop. Nearly fixed rider, horse head and feet, only slight chest breathing, subtle ears and tail. No sway or stepping.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "walk-Steady-v2.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Natural four-beat walk in place with six successive leg positions. Correct hinged horse legs and hooves alternating support and lift, saddle horizontally fixed, minimal sideways sway. Rider holds straight sword upright at rest.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "registration": "Whole-pose horizontal registration against horse rump and saddle. Vertical gait, sword articulation and rider recoil retained."
+    },
+    {
+      "id": "charge",
+      "file": "charge-Registered-v1.png",
+      "label": "Gallop / maintain charge",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Natural gallop loop in place, hind propulsion, gathered legs, suspension, foreleg reach/landing and recovery. Anatomically coherent legs, no sideways paddling, steady horizontal saddle and mild vertical bob. Rider sword poised ready.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-Steady-v2.png",
+      "label": "Broadsword cut",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        170,
+        180,
+        150,
+        110,
+        180,
+        230
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: One forward mounted broadsword CUT: upright sword ready; raise right arm and blade; swing blade forward/downward beside horse neck on screen-left; complete downward cutting strike; withdraw blade; upright ready recovery. Keep rigid straight blade, same length, basket hilt connected to right gloved hand in every frame. Left hand reins.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "registration": "Whole-pose horizontal registration against horse rump and saddle. Vertical gait, sword articulation and rider recoil retained."
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-Steady-v2.png",
+      "label": "Charge broadsword thrust",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        150,
+        110,
+        180,
+        230
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Forward cavalry sword THRUST: begin upright ready; lower straight broadsword and lean slightly forward; extend right arm aiming point toward screen-bottom alongside horse neck screen-left; fully extended forward thrust past horse shoulder without stabbing horse; retract; upright sword ready. Strong foreshortening when blade points downward into forward battlefield direction. Same rigid straight blade and basket hilt every frame.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "registration": "Whole-pose horizontal registration against horse rump and saddle. Vertical gait, sword articulation and rider recoil retained."
+    },
+    {
+      "id": "hit",
+      "file": "hit-Steady-v2.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        100,
+        100,
+        130,
+        140,
+        170,
+        200
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Small hit reaction: upright ready; torso recoils; right arm braces with sword; horse briefly flinches; settle; upright ready. Controlled nonlethal recoil, no damage overlay.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "registration": "Whole-pose horizontal registration against horse rump and saddle. Vertical gait, sword articulation and rider recoil retained."
+    },
+    {
+      "id": "charged",
+      "file": "charged-impact-Steady-v2.png",
+      "label": "Get charged",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        130,
+        130,
+        180,
+        200,
+        200,
+        240
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Distinct heavy charge impact: upright; rider recoils and reins pull; horse forelegs buckle; mount staggers with rider bracing; horse regains stance; upright recovery. Do not dismount or invert.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "registration": "Whole-pose horizontal registration against horse rump and saddle. Vertical gait, sword articulation and rider recoil retained."
+    },
+    {
+      "id": "death",
+      "file": "death-Registered-v1.png",
+      "label": "Death - together fall",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        200,
+        230,
+        280,
+        650
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Horse and rider fall TOGETHER: mounted upright; horse knees buckle; rider and mount lean/collapse screen-left; both fall onto their side; settle on ground; final dead horse and rider. Real articulated fall, no upright sprite rotation shortcut. Final two frames maintain same corpse orientation. Retain equipment and recognizable unarmored horse.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-thrown",
+      "file": "death-thrown-Registered-v1.png",
+      "label": "Death - thrown rider",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        220,
+        240,
+        280,
+        650
+      ],
+      "description": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Distinct THROWN RIDER death: upright; horse stumbles; rider thrown clear toward screen-right; rider lands beside collapsing horse; both settle lying on ground; final corpses in same orientation. One horse and one rider only, no floating duplicate body, no inversion at end.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    }
+  ],
+  "offhand": "Left hand holds reins; no shield",
+  "historicalDirection": "Russian Napoleonic cuirassier inspired by the Borodino museum equipment reconstruction.",
+  "historicalEra": "Napoleonic circa 1812",
+  "deathVariants": [
+    "death",
+    "death-thrown"
+  ],
+  "motionContract": "Local gait, sword strikes and reactions. Gameplay owns world movement, formations and combat timing."
+}

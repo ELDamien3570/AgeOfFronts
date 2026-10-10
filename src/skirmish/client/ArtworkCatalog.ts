@@ -66,3 +66,8 @@ export function buildingPreviewArtworkId(
     )
   );
 }
+
+export function aircraftArtworkId(kind: "fighter" | "bomber" | "drone", age: Age): string {
+  if (kind === "drone") return "drone";
+  return `${age === "Modern" ? "modern" : "earlymodern"}-${kind}`;
+}

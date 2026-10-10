@@ -1,7 +1,7 @@
 import { buildingFootprint } from "../BuildingFootprint";
 import type { Coast } from "../CoastIndex";
 import type { BuildingType, Player } from "../Protocol";
-import { buildingTechnology, producerCompatible } from "../content/Buildings";
+import { buildingTechnology, producerCompatible, productionBuildingType } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
 import { resourceTechnology } from "../content/Resources";
 import { UNITS } from "../content/Units";
@@ -156,6 +156,7 @@ export class AiPlacementCandidates {
     let tested = 0;
     for (let i = 0; i < types.length && tested < 8; i++) {
       const type = types[(start + i) % types.length];
+      if (productionBuildingType(type, snapshot.age, snapshot.research) !== type) continue;
       // Resume after the type that consumed the allowance, rather than a fixed
       // stride that can repeatedly miss prerequisite producers as the catalog grows.
       this.cursors.set(player.id,(start+i+1)%types.length);

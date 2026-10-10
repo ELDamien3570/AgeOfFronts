@@ -1,4 +1,6 @@
-/** Reusable client-only sprite queue. All soldiers share one layer with permanent identity ordering. */
+import { compareSoldierDrawOrder, soldierDrawKey, type SoldierDrawOrder } from "./SoldierDrawOrder";
+
+/** Reusable client-only queue: terrain elevation, then stable individual order. */
 export interface SoldierSpriteFrame {
   x: number;
   y: number;
@@ -6,7 +8,7 @@ export interface SoldierSpriteFrame {
   height: number;
   pivot: { x: number; y: number };
 }
-export interface SoldierDrawEntry {
+export interface SoldierDrawEntry extends SoldierDrawOrder {
   squadId: number;
   soldierId: number;
   screenX: number;
@@ -35,11 +37,14 @@ export class SoldierDrawQueue {
     frame: SoldierSpriteFrame,
     selectionRadius = 0,
     selectionColor = "",
+    elevation = 0,
   ): void {
     const index = this.entries.length;
     let entry = this.pool[index];
     if (!entry) {
       entry = {
+        elevation,
+        drawKey: soldierDrawKey(squadId, soldierId),
         squadId,
         soldierId,
         screenX,
@@ -53,6 +58,8 @@ export class SoldierDrawQueue {
       };
       this.pool.push(entry);
     } else {
+      entry.elevation = elevation;
+      entry.drawKey = soldierDrawKey(squadId, soldierId);
       entry.squadId = squadId;
       entry.soldierId = soldierId;
       entry.screenX = screenX;
@@ -67,8 +74,6 @@ export class SoldierDrawQueue {
     this.entries.push(entry);
   }
   sort(): readonly SoldierDrawEntry[] {
-    return this.entries.sort(
-      (a, b) => a.squadId - b.squadId || a.soldierId - b.soldierId,
-    );
+    return this.entries.sort(compareSoldierDrawOrder);
   }
 }

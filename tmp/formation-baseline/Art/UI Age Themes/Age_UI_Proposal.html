@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Age of Fronts · Age UI proposal</title>
+  <link rel="stylesheet" href="./proposal.css" />
+</head>
+<body>
+  <main class="proposal">
+    <header class="review-heading">
+      <div><p class="eyebrow">AGE OF FRONTS / DESIGN PROPOSAL</p><h1>An empire that wears its age.</h1></div>
+      <div class="review-controls">
+        <label for="age-select">Preview your age</label>
+        <select id="age-select"></select>
+        <button id="age-up" type="button">Simulate age-up →</button>
+      </div>
+    </header>
+    <nav id="themes" class="theme-strip" aria-label="Seven age themes"></nav>
+    <div class="context-line"><span id="theme-description"></span><span>Material frames · stable symbols · faction-colored centers</span></div>
+
+    <section id="hud" class="age-skin hud" aria-label="Proposed game interface">
+      <header class="frame resources">
+        <div class="inlay resource-inlay">
+          <div class="faction-name"><span class="faction-stripe"></span><strong>YOUR EMPIRE</strong><small class="current-age">Stone Age</small></div>
+          <div class="resource"><span class="resource-symbol coin" aria-hidden="true">◈</span><div><small>GOLD</small><b>1,240</b></div></div>
+          <div class="resource"><div><small>TROOPS IN FIELD</small><b>24,000</b></div></div>
+          <div class="resource"><div><small>RESERVE TROOPS</small><b>10,000</b></div></div>
+          <div class="resource"><div><small>LAND</small><b>420</b></div></div>
+          <div class="resource population"><div><small>SQUADS</small><b>12 <span>/ 64</span></b></div></div>
+          <button id="pause-demo" class="quiet-button" type="button" aria-pressed="false">Ⅱ Pause</button>
+        </div>
+      </header>
+
+      <div class="world">
+        <svg class="map-land" viewBox="0 0 1100 400" preserveAspectRatio="none" aria-hidden="true">
+          <defs><pattern id="map-grid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#d9dabb" stroke-opacity=".1" stroke-width=".8" /></pattern><filter id="soft-bank"><feGaussianBlur stdDeviation="5" /></filter></defs>
+          <path d="M760 -20C840 140 716 170 807 265S910 345 870 420" fill="none" stroke="#273526" stroke-width="102" filter="url(#soft-bank)" />
+          <path d="M760 -20C840 140 716 170 807 265S910 345 870 420" fill="none" stroke="#426c71" stroke-width="70" />
+          <path d="M760 -20C840 140 716 170 807 265S910 345 870 420" fill="none" stroke="#83aca8" stroke-opacity=".2" stroke-width="56" />
+          <path d="M0 310H220V230H460V105H680" fill="none" stroke="#302b20" stroke-width="23" stroke-linejoin="round" opacity=".5" />
+          <path d="M0 310H220V230H460V105H680" fill="none" stroke="#a29566" stroke-width="15" stroke-linejoin="round" opacity=".7" />
+          <path d="M220 230V320H565" fill="none" stroke="#a29566" stroke-width="13" stroke-linejoin="round" opacity=".6" />
+          <rect width="1100" height="400" fill="url(#map-grid)" />
+          <g fill="#33482b" opacity=".6"><circle cx="500" cy="22" r="38"/><circle cx="560" cy="25" r="27"/><circle cx="110" cy="143" r="26"/><circle cx="145" cy="166" r="32"/><circle cx="1030" cy="264" r="38"/><circle cx="1000" cy="298" r="25"/></g>
+        </svg>
+        <div class="frame age-plaque"><div class="inlay"><small>YOUR FACTION’S AGE</small><h2 class="current-age">Stone Age</h2><div class="age-progress" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+        <div class="world-caption">BORDERLANDS <span>·</span> TACTICAL VIEW</div>
+        <div id="world-markers"></div>
+        <div class="selected-ring" aria-hidden="true"></div>
+        <div class="squad-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="frame marker-legend"><div class="inlay"><strong>Map borders follow the owner</strong><div id="marker-examples"></div><small>Actual 18px markers. The center keeps the faction color.</small></div></div>
+        <aside class="frame selection-panel">
+          <div class="inlay">
+            <div class="panel-heading"><h3 id="selection-name">Barracks</h3><span>SELECTED</span></div>
+            <div class="selection-hero"><div class="frame portrait-frame"><div class="portrait-inlay"><img id="selected-portrait" src="../Runtime/Ages/building-stoneage-barracks.png" alt="Barracks artwork" /></div></div><div><strong>Ready for orders</strong><small class="current-age">Stone Age</small><div class="health-track" aria-label="Health 92 percent"><i></i></div><small>920 / 1,000</small></div></div>
+            <div class="panel-rule"></div>
+            <div class="selection-stats"><span>Garrison <b>0 / 8</b></span><span>Rally point <b>Set</b></span></div>
+            <button id="rally-demo" class="frame action-button" type="button" aria-pressed="false"><span class="inlay">⚑ Set rally point</span></button>
+            <button class="frame action-button disabled" type="button" disabled><span class="inlay">Upgrade · next age</span></button>
+            <p class="state-note" id="selection-note">Consistent green for health and selection.</p>
+          </div>
+        </aside>
+        <div id="age-notice" class="frame age-notice" role="status" aria-live="polite"><div class="inlay"><small>AN AGE BEGINS</small><strong id="notice-age"></strong></div></div>
+      </div>
+
+      <footer class="command-dock">
+        <div class="frame mini-map"><div class="inlay"><div class="mini-terrain"><span class="mini-river"></span><i class="mini-own"></i><i class="mini-enemy"></i><span class="mini-viewport"></span></div><small>YOUR FRONTIER</small></div></div>
+        <div class="frame build-panel"><div class="inlay"><div class="panel-heading"><h3>Construct</h3><small>Same silhouettes in every age</small></div><div id="build-buttons" class="build-buttons"></div></div></div>
+        <div class="frame research-panel"><div class="inlay"><div class="panel-heading"><h3>Empire</h3><span id="material-name">STONE</span></div><button id="technology-demo" class="frame action-button" type="button" aria-expanded="false"><span class="inlay">◇ Technologies</span></button><div class="research-progress"><small>Research queue</small><span>1 / 3</span></div><div class="queue-track"><i></i></div></div></div>
+      </footer>
+      <div id="technology-card" class="frame technology-card" hidden><div class="inlay"><button id="close-technology" class="quiet-button" aria-label="Close technology preview">×</button><small>TECHNOLOGY PANEL</small><h3>Knowledge of your age</h3><p>The same material trim carries into research cards, dialogs and tooltips.</p><div class="panel-rule"></div><strong class="current-age">Stone Age</strong><p>Browsing technologies would keep the HUD tied to your earned age.</p></div></div>
+    </section>
+    <footer class="review-notes"><p><b>Proposed direction:</b> tactile rims, recessed dark panels and simple corner fittings. The controls stay in place as your empire advances.</p><p>Preview only · includes an age-up demonstration · original symbols and artwork reused</p></footer>
+    <p id="load-status" role="status">Loading shared building symbols…</p>
+  </main>
+  <script type="module" src="./proposal.js"></script>
+</body>
+</html>

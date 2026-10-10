@@ -1,0 +1,252 @@
+{
+  "passed": true,
+  "age": "LateMedieval",
+  "animationRevision": 2,
+  "gaits": [
+    {
+      "age": "LateMedieval",
+      "member": "merchant-1",
+      "legCount": 2,
+      "boneLengthsValid": true,
+      "plantedStanceMatchesGroundMotion": true,
+      "fullStrideExcursionEveryLeg": true,
+      "liftedRecoveryEveryLeg": true,
+      "stanceSamplesPerLeg": {
+        "left": 7,
+        "right": 7
+      },
+      "sharedContactVelocity": true,
+      "groundSpeedPixelsPerSecond": 95.8855555692111,
+      "bothFeetTakeLead": true,
+      "passed": true
+    },
+    {
+      "age": "LateMedieval",
+      "member": "horse-1",
+      "legCount": 4,
+      "boneLengthsValid": true,
+      "plantedStanceMatchesGroundMotion": true,
+      "fullStrideExcursionEveryLeg": true,
+      "liftedRecoveryEveryLeg": true,
+      "stanceSamplesPerLeg": {
+        "hind-left": 7,
+        "fore-left": 6,
+        "hind-right": 7,
+        "fore-right": 7
+      },
+      "sharedContactVelocity": true,
+      "groundSpeedPixelsPerSecond": 95.8855555692111,
+      "fourDistinctContactPhases": true,
+      "hipsToFeetContinuous": true,
+      "passed": true
+    },
+    {
+      "age": "LateMedieval",
+      "member": "horse-2",
+      "legCount": 4,
+      "boneLengthsValid": true,
+      "plantedStanceMatchesGroundMotion": true,
+      "fullStrideExcursionEveryLeg": true,
+      "liftedRecoveryEveryLeg": true,
+      "stanceSamplesPerLeg": {
+        "hind-left": 6,
+        "fore-left": 7,
+        "hind-right": 6,
+        "fore-right": 7
+      },
+      "sharedContactVelocity": true,
+      "groundSpeedPixelsPerSecond": 95.8855555692111,
+      "fourDistinctContactPhases": true,
+      "hipsToFeetContinuous": true,
+      "passed": true
+    }
+  ],
+  "clips": [
+    {
+      "file": "Idle.png",
+      "rgba": true,
+      "dimensionsCorrect": true,
+      "frameCount": 10,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "correctFrameGrid": true,
+      "correctTiming": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.022674,
+        0.012698,
+        0.007099,
+        0.015653,
+        0.023088,
+        0.022466,
+        0.01265,
+        0.007225,
+        0.015961,
+        0.023628
+      ],
+      "bounds": [
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "Travel.png",
+      "rgba": true,
+      "dimensionsCorrect": true,
+      "frameCount": 10,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "correctFrameGrid": true,
+      "correctTiming": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.30469,
+        0.270403,
+        0.297094,
+        0.2988,
+        0.303707,
+        0.320623,
+        0.257492,
+        0.296702,
+        0.312659,
+        0.320345
+      ],
+      "bounds": [
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ],
+        [
+          65,
+          82,
+          438,
+          437
+        ]
+      ],
+      "passed": true
+    }
+  ],
+  "physicalInvariants": {
+    "retainedWagonCargoDrawbarsHubsAndPanniersUnchanged": true,
+    "protectedSilhouettesUnchanged": true,
+    "treadTextureRolls": true,
+    "articulatedMemberCount": 3,
+    "articulatedLegCount": 10,
+    "separatePaintedLimbLayers": 18,
+    "note": "Opaque protected source-space paint audited across all twenty poses; wheel RGB rolls inside the retained silhouette."
+  },
+  "previousFilesChecked": 747,
+  "previousFilesChanged": [],
+  "sourceMasterPreserved": true
+}

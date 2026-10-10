@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-07",
+  "passed": true,
+  "method": "Separate local headless Microsoft Edge; in-app automation unavailable",
+  "newAssetsChecked": [
+    {
+      "age": "EarlyModern",
+      "folder": "Barracks",
+      "category": "Barracks",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "City",
+      "category": "City",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Archery Range",
+      "category": "Archery Range",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Vehicle Depot",
+      "category": "Vehicle Depot",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Arms Factory",
+      "category": "Arms Factory",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Siege Workshop",
+      "category": "Siege",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Factory",
+      "category": "Factory",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Port",
+      "category": "Port",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Mine",
+      "category": "Mine",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Oil Well",
+      "category": "Oil Well",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Oil Rig",
+      "category": "Oil Rig",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Gun Nest",
+      "category": "Gun Nest",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Trench",
+      "category": "Trench",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Anti-Aircraft Emplacement",
+      "category": "Anti-Aircraft Emplacement",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Rail Terminal",
+      "category": "Rail Terminal",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Oil Refinery",
+      "category": "Oil Refinery",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "EarlyModern",
+      "folder": "Nuclear Weapons Facility",
+      "category": "Nuclear Weapons Facility",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "Modern",
+      "folder": "Rail Terminal",
+      "category": "Rail Terminal",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "Modern",
+      "folder": "Drone Facility",
+      "category": "Drone Facility",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "Modern",
+      "folder": "Warehouse",
+      "category": "Warehouse",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    }
+  ],
+  "totalRussianIcons": 97,
+  "earlyModernIcons": 18,
+  "modernIcons": 20,
+  "baseTotal": 64,
+  "olderCounts": {
+    "StoneAge": 9,
+    "BronzeAge": 10,
+    "ClassicalAge": 10,
+    "EarlyMedieval": 10,
+    "LateMedieval": 10,
+    "Napoleonic": 10
+  },
+  "newFacilitiesTotal": 32,
+  "emptySelectionCorrect": true,
+  "backgrounds": [
+    "checker",
+    "dark",
+    "light"
+  ],
+  "screenshots": [
+    "EarlyModern",
+    "Modern"
+  ],
+  "pageErrors": []
+}

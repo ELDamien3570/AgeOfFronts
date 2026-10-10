@@ -1,0 +1,153 @@
+{
+  "regressionPoints": [
+    {
+      "unit": "RiverArcher",
+      "clip": "death-back",
+      "frame": 5,
+      "material": "left hand",
+      "maskAlpha": 0
+    },
+    {
+      "unit": "RiverArcher",
+      "clip": "death-back",
+      "frame": 5,
+      "material": "right hand",
+      "maskAlpha": 0
+    },
+    {
+      "unit": "BronzeSpearman",
+      "clip": "charge-attack",
+      "frame": 5,
+      "material": "raised hand",
+      "maskAlpha": 0
+    },
+    {
+      "unit": "BronzeAxeman",
+      "clip": "charged",
+      "frame": 1,
+      "material": "right hand",
+      "maskAlpha": 0
+    },
+    {
+      "unit": "LightCavalry",
+      "clip": "idle",
+      "frame": 1,
+      "material": "horse coat",
+      "maskAlpha": 0
+    },
+    {
+      "unit": "BronzeAxeman",
+      "clip": "running",
+      "frame": 1,
+      "material": "rear boot",
+      "maskAlpha": 0
+    }
+  ],
+  "idleAndRunningCoverage": [
+    {
+      "unit": "BronzeAxeman",
+      "file": "Idle-BronzeMace-Nadir-v3.png",
+      "selectedPixels": [
+        2614,
+        2774,
+        2965,
+        2621,
+        2759,
+        2816
+      ],
+      "maxToMinRatio": 1.1342769701606732
+    },
+    {
+      "unit": "BronzeAxeman",
+      "file": "Running-BronzeMace-Nadir-v4.png",
+      "selectedPixels": [
+        2686,
+        3255,
+        3187,
+        2752,
+        3152,
+        3299
+      ],
+      "maxToMinRatio": 1.2282204020848846
+    },
+    {
+      "unit": "BronzeSpearman",
+      "file": "idle-v1.png",
+      "selectedPixels": [
+        1896,
+        2208,
+        1914,
+        2183,
+        2087,
+        1964
+      ],
+      "maxToMinRatio": 1.1645569620253164
+    },
+    {
+      "unit": "BronzeSpearman",
+      "file": "running-v1.png",
+      "selectedPixels": [
+        1473,
+        1483,
+        1579,
+        1553,
+        1528,
+        1519
+      ],
+      "maxToMinRatio": 1.0719619823489477
+    },
+    {
+      "unit": "RiverArcher",
+      "file": "idle-v1.png",
+      "selectedPixels": [
+        1405,
+        1501,
+        1457,
+        1343,
+        1299,
+        1296
+      ],
+      "maxToMinRatio": 1.158179012345679
+    },
+    {
+      "unit": "RiverArcher",
+      "file": "running-v3.png",
+      "selectedPixels": [
+        1226,
+        1483,
+        1225,
+        1212,
+        1132,
+        1302
+      ],
+      "maxToMinRatio": 1.3100706713780919
+    },
+    {
+      "unit": "LightCavalry",
+      "file": "Idle-Animated-v1.png",
+      "selectedPixels": [
+        937,
+        960,
+        946,
+        934,
+        911,
+        925
+      ],
+      "maxToMinRatio": 1.0537870472008781
+    },
+    {
+      "unit": "LightCavalry",
+      "file": "Running-v1.png",
+      "selectedPixels": [
+        726,
+        859,
+        777,
+        824,
+        750,
+        725
+      ],
+      "maxToMinRatio": 1.1848275862068967
+    }
+  ],
+  "limitations": "Static material coverage and explicit spill checks; animated browser acceptance remains with the user."
+}

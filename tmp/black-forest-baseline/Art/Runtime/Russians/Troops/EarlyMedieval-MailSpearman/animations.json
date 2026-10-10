@@ -24,8 +24,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.325,
-            "y": 69.625
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -35,7 +35,7 @@
           "height": 128,
           "pivot": {
             "x": 64.0,
-            "y": 68.5
+            "y": 57.0
           }
         },
         {
@@ -44,8 +44,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.225,
-            "y": 68.5
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -54,8 +54,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.55,
-            "y": 69.175
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -64,8 +64,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.325,
-            "y": 69.625
+            "x": 64.0,
+            "y": 57.0
           }
         },
         {
@@ -74,11 +74,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.325,
-            "y": 69.625
+            "x": 64.0,
+            "y": 57.0
           }
         }
       ],
+      "mask": "idle.mask.png",
       "releaseFrame": 3
     },
     {
@@ -104,8 +105,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 66.475,
-            "y": 62.65
+            "x": 66.0,
+            "y": 47.0
           }
         },
         {
@@ -114,8 +115,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.45,
-            "y": 62.2
+            "x": 66.0,
+            "y": 47.0
           }
         },
         {
@@ -124,8 +125,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.775,
-            "y": 62.425
+            "x": 66.0,
+            "y": 47.0
           }
         },
         {
@@ -134,8 +135,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 66.7,
-            "y": 58.825
+            "x": 66.0,
+            "y": 47.0
           }
         },
         {
@@ -144,7 +145,259 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 65.125,
+            "x": 66.0,
+            "y": 47.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.0,
+            "y": 47.0
+          }
+        }
+      ],
+      "mask": "running.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Overhand spear thrust",
+      "loop": false,
+      "scale": 1.1764705882352942,
+      "durations": [
+        140,
+        170,
+        100,
+        170,
+        160,
+        220
+      ],
+      "description": "Complete painted overhand attack poses oriented to thrust toward the bottom of the screen.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.0,
+            "y": 69.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.0,
+            "y": 69.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.0,
+            "y": 69.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.0,
+            "y": 69.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.0,
+            "y": 69.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.0,
+            "y": 69.0
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sheetSize": {
+        "width": 1536,
+        "height": 1024
+      },
+      "grid": {
+        "columns": 3,
+        "rows": 2
+      },
+      "mask": "attack.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, followed by a side collapse and settled corpse.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "mask": "death.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "label": "Charge in / maintain",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "description": "Brisk running strides with a forward lean; loops to maintain charge.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 68.95,
+            "y": 58.375
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.475,
+            "y": 60.85
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.925,
+            "y": 60.625
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.925,
+            "y": 59.05
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 68.05,
             "y": 59.725
           }
         },
@@ -154,17 +407,18 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.55,
-            "y": 59.5
+            "x": 68.275,
+            "y": 60.625
           }
         }
       ],
+      "mask": "charge.mask.png",
       "releaseFrame": 3
     },
     {
-      "id": "attack",
-      "file": "attack.png",
-      "label": "Overhand spear thrust",
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "label": "Charge attack",
       "loop": false,
       "scale": 1.1764705882352942,
       "durations": [
@@ -248,23 +502,24 @@
         "columns": 3,
         "rows": 2
       },
+      "mask": "charge-attack.mask.png",
       "releaseFrame": 3
     },
     {
-      "id": "death",
-      "file": "death.png",
-      "label": "Death - side fall",
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
       "loop": false,
       "scale": 1,
       "durations": [
-        150,
-        170,
-        190,
-        210,
-        240,
-        400
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
       ],
-      "description": "Knees buckle, followed by a side collapse and settled corpse.",
+      "description": "Brief recoil and brace before recovering.",
       "frameCount": 6,
       "frames": [
         {
@@ -328,6 +583,7 @@
           }
         }
       ],
+      "mask": "hit.mask.png",
       "releaseFrame": 3
     }
   ],
@@ -337,6 +593,9 @@
     "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Idle-Animated-v1.png": "ee918aee9331bb73a8e9156bb7a592adddf24eea8115365fe0dbd6f0aa8b7b53",
     "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Walk-v1.png": "f27d6edfb6f972b47fe3de3d4075c34ed3c478715f3d2ae53632ca030cab16cc",
     "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Attack-Forward-Pose-v8.png": "1d8001ecc490d70fe4e88b1d3b2b9a6363a727a6b9c5aebfd596ed76b33c9ba4",
-    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Death-Side-v1.png": "438edd0fe83d88e5f33f9864c5266c01aa6d07dea17e455eab6bd943797c3dea"
+    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Death-Side-v1.png": "438edd0fe83d88e5f33f9864c5266c01aa6d07dea17e455eab6bd943797c3dea",
+    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Charge-v1.png": "dc52c975166a7d9f28fa59cb5b929c1a069e0d210fa7b18f1cca30c0cc1e3aa5",
+    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Charge-Attack-Forward-Pose-v8.png": "fb63f848a33a6c7adcc786c6132dd89b09bcf5af7563fe4508c51a17f39faf5a",
+    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Hit-v1.png": "db15f8f8872711e32232240179ae7ed7d78f8722c0b645c3c42054310f7b1cec"
   }
 }

@@ -1,0 +1,36 @@
+{
+  "folder": "Ships/ClassicalAge/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/ClassicalAge/Animation-Support-Generation.json",
+      "archived": "Ships/ClassicalAge/_TO BE DELETED/Animation-Support-Generation.json",
+      "sha256": "4d1d6ece01840be5ae84ce5fdee7e2946a6215de51e8f2d664f0107f9218fd85",
+      "size": 1791
+    },
+    {
+      "original": "Ships/ClassicalAge/Animation_Validation.json",
+      "archived": "Ships/ClassicalAge/_TO BE DELETED/Animation_Validation.json",
+      "sha256": "70c3d6e968baca05484d6acae8e424925dce34b7f2c80397aefb77f66759d700",
+      "size": 11286
+    },
+    {
+      "original": "Ships/ClassicalAge/Generation-Manifest.json",
+      "archived": "Ships/ClassicalAge/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "ac943cc62b2cc007cf7d3856a2a7cf7f1a9b9b1e04409b76841b16853a950aca",
+      "size": 15817
+    },
+    {
+      "original": "Ships/ClassicalAge/README.md",
+      "archived": "Ships/ClassicalAge/_TO BE DELETED/README.md",
+      "sha256": "23f99a983760322c2a2df7553d6272350e5be7c5c01656bf83c8ebb1ca342d7a",
+      "size": 2569
+    },
+    {
+      "original": "Ships/ClassicalAge/Static_Art_Validation.json",
+      "archived": "Ships/ClassicalAge/_TO BE DELETED/Static_Art_Validation.json",
+      "sha256": "f237949f272b7cfaa32b4d53954d4baf1dd205a89a1bc6bf49e4747fa82c1ab1",
+      "size": 783
+    }
+  ]
+}

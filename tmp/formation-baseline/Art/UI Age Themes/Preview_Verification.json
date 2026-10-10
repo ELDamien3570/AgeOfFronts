@@ -1,0 +1,118 @@
+{
+  "stage": "proposal",
+  "browserPassed": true,
+  "url": "http://127.0.0.1:9008/Art/UI%20Age%20Themes/Age_UI_Proposal.html",
+  "themes": [
+    {
+      "ageName": "Stone Age",
+      "ageUpDisabled": false,
+      "horizontalOverflow": false,
+      "hudAge": "StoneAge",
+      "mapMarkerWidth": 18,
+      "ownAge": "StoneAge",
+      "portraitLoaded": true,
+      "rivalA": "BronzeAge",
+      "rivalB": "Modern",
+      "selectedAge": "StoneAge",
+      "selectedCards": 1
+    },
+    {
+      "ageName": "Bronze Age",
+      "ageUpDisabled": false,
+      "horizontalOverflow": false,
+      "hudAge": "BronzeAge",
+      "mapMarkerWidth": 18,
+      "ownAge": "BronzeAge",
+      "portraitLoaded": true,
+      "rivalA": "BronzeAge",
+      "rivalB": "Modern",
+      "selectedAge": "BronzeAge",
+      "selectedCards": 1
+    },
+    {
+      "ageName": "Classical Age",
+      "ageUpDisabled": false,
+      "horizontalOverflow": false,
+      "hudAge": "ClassicalAge",
+      "mapMarkerWidth": 18,
+      "ownAge": "ClassicalAge",
+      "portraitLoaded": true,
+      "rivalA": "BronzeAge",
+      "rivalB": "Modern",
+      "selectedAge": "ClassicalAge",
+      "selectedCards": 1
+    },
+    {
+      "ageName": "Early Medieval",
+      "ageUpDisabled": false,
+      "horizontalOverflow": false,
+      "hudAge": "EarlyMedieval",
+      "mapMarkerWidth": 18,
+      "ownAge": "EarlyMedieval",
+      "portraitLoaded": true,
+      "rivalA": "BronzeAge",
+      "rivalB": "Modern",
+      "selectedAge": "EarlyMedieval",
+      "selectedCards": 1
+    },
+    {
+      "ageName": "Late Medieval",
+      "ageUpDisabled": false,
+      "horizontalOverflow": false,
+      "hudAge": "LateMedieval",
+      "mapMarkerWidth": 18,
+      "ownAge": "LateMedieval",
+      "portraitLoaded": true,
+      "rivalA": "BronzeAge",
+      "rivalB": "Modern",
+      "selectedAge": "LateMedieval",
+      "selectedCards": 1
+    },
+    {
+      "ageName": "Early Modern",
+      "ageUpDisabled": false,
+      "horizontalOverflow": false,
+      "hudAge": "EarlyModern",
+      "mapMarkerWidth": 18,
+      "ownAge": "EarlyModern",
+      "portraitLoaded": true,
+      "rivalA": "BronzeAge",
+      "rivalB": "Modern",
+      "selectedAge": "EarlyModern",
+      "selectedCards": 1
+    },
+    {
+      "ageName": "Modern",
+      "ageUpDisabled": true,
+      "horizontalOverflow": false,
+      "hudAge": "Modern",
+      "mapMarkerWidth": 18,
+      "ownAge": "Modern",
+      "portraitLoaded": true,
+      "rivalA": "BronzeAge",
+      "rivalB": "Modern",
+      "selectedAge": "Modern",
+      "selectedCards": 1
+    }
+  ],
+  "ageUp": {
+    "age": "EarlyMedieval",
+    "noticeText": "Early Medieval",
+    "noticeVisible": true,
+    "transitionActive": true
+  },
+  "controls": {
+    "dialogOpened": true,
+    "dialogClosed": true,
+    "focusReturned": "technology-demo",
+    "pause": "▶ Resume",
+    "rally": "true",
+    "selected": "Port"
+  },
+  "consoleErrors": [],
+  "limits": [
+    "Isolated design prototype. Production HUD not reskinned.",
+    "Game age-up and opponent progression integration not exercised.",
+    "Default desktop viewport verified; smaller breakpoint layout not browser-tested."
+  ]
+}

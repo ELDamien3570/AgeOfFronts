@@ -295,3 +295,15 @@ describe("friendly fortification passage", () => {
     ).toBe(true);
   });
 });
+
+it("upgrades connected walls with their supporting tower tiers without repairing damage",()=>{
+  const m=match(),a=tower(m,10,5),b=tower(m,12,5),forts=m.expansion!.fortifications;
+  const wall={...barrier(a,b,[m.map.ref(10,5),m.map.ref(11,5),m.map.ref(12,5)]),health:1000};
+  forts.addBarrier(wall);
+  m.updateBuilding(a.id,{age:"BronzeAge"});forts.step(1,m.buildings);
+  expect(forts.barriers[0].age).toBe("StoneAge");
+  m.updateBuilding(b.id,{age:"BronzeAge"});forts.step(2,m.buildings);
+  expect(forts.barriers[0]).toMatchObject({age:"BronzeAge",maxHealth:2600,health:1300});
+  forts.step(3,m.buildings);expect(forts.barriers[0].health).toBe(1300);
+  const saved=forts.checkpoint();forts.restore(saved);expect(forts.barriers[0].age).toBe("BronzeAge");
+});

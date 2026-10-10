@@ -32,8 +32,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.0
           }
         },
         {
@@ -42,8 +42,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.0
           }
         },
         {
@@ -52,8 +52,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.0
           }
         },
         {
@@ -62,8 +62,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.0
           }
         },
         {
@@ -72,8 +72,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.0
           }
         },
         {
@@ -82,11 +82,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.0
           }
         }
       ],
+      "mask": "idle.mask.png",
       "releaseFrame": 3
     },
     {
@@ -120,8 +121,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -130,8 +131,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -140,8 +141,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -150,8 +151,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -160,8 +161,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -170,11 +171,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         }
       ],
+      "mask": "running.mask.png",
       "releaseFrame": 3
     },
     {
@@ -208,8 +210,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.5
           }
         },
         {
@@ -218,8 +220,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.5
           }
         },
         {
@@ -228,8 +230,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.5
           }
         },
         {
@@ -238,8 +240,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.5
           }
         },
         {
@@ -248,8 +250,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.5
           }
         },
         {
@@ -258,13 +260,14 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 66.5
           }
         }
       ],
       "impactFrame": 3,
       "sourceAnimation": "original charge-attack",
+      "mask": "attack.mask.png",
       "releaseFrame": 3
     },
     {
@@ -298,8 +301,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -308,8 +311,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -318,8 +321,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -328,8 +331,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -338,8 +341,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         },
         {
@@ -348,11 +351,281 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64,
-            "y": 64
+            "x": 64.0,
+            "y": 64.0
           }
         }
       ],
+      "mask": "death.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "label": "Gallop / maintain charge",
+      "loop": true,
+      "scale": 1.5375375375375375,
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "description": "Six successive phases of natural gallop loop: hind push, gather, suspension, foreleg reach, landing, recovery. Correct legs/hooves, no paddling or sideways twists. Saddle horizontally fixed, mild vertical bob. Rider holds lance ready near right shoulder.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "mask": "charge.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "label": "Charge lance thrust",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        170,
+        180,
+        150,
+        110,
+        180,
+        230
+      ],
+      "description": "Six consecutive poses for a controlled mounted lance thrust: upright lance at rest; lower lance forward; extend right arm toward screen-bottom beside horse neck screen-left; full forward thrust with spearhead clearly at FORWARD lower end; retract; upright recovery. Lance rigid straight wooden shaft with ONE steel spearhead on forward end, never backwards, never swapped ends. No underhand grip flip; coherent shoulder-level grip and arm path.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sourceAnimation": "original attack",
+      "mask": "charge-attack.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        100,
+        100,
+        130,
+        140,
+        170,
+        200
+      ],
+      "description": "Small nonlethal hit: idle; rider recoils slightly; braces arm/lance; horse flinches; settles; idle recovery. Horse/saddle horizontally fixed. Rider recoil articulated without sideways whole-body sliding.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "mask": "hit.mask.png",
       "releaseFrame": 3
     }
   ],
@@ -362,6 +635,9 @@
     "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/idle-Registered-v1.png": "6a029d5bfc9d8453cef5baba4814a9cfad598ecdb21eee71ee55935d9614f506",
     "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/walk-Registered-v1.png": "dd9437240bcdf71c165383b47a41948c2d2268324ba0791de7bb718ba1b61bb4",
     "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/charge-attack-Registered-v1.png": "83b7b7ba05715efafe1cffa932d7e7e0a417e8f5b752e2a4360f597cdd28c3f7",
-    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/death-Registered-v1.png": "6205dcdaa982f1e6bc436264d091ee6df03a063abfd1bf72e254ce46a20e15fc"
+    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/death-Registered-v1.png": "6205dcdaa982f1e6bc436264d091ee6df03a063abfd1bf72e254ce46a20e15fc",
+    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/charge-Registered-v1.png": "d665a34fdd3459620890ee7e7f173423b52efa3ee411d26504fce58b9c17fcee",
+    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/attack-Registered-v1.png": "05d887478377f37e480fc68318f7c97f674f90c58f75439cbc13d61b33b55361",
+    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/hit-Registered-v1.png": "3b6d5c1f88a4cad3d3e7030162683ce97afaadd15dbcf3db0a084a7704c9fd3e"
   }
 }

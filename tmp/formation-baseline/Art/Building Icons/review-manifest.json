@@ -1,0 +1,512 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "base",
+  "assets": [
+    {
+      "id": "city-stoneage",
+      "label": "City",
+      "category": "City",
+      "age": "StoneAge",
+      "file": "City/Top-Down-Correction/City_StoneAge.png",
+      "original": "City/City_StoneAge.png"
+    },
+    {
+      "id": "city-bronzeage",
+      "label": "City",
+      "category": "City",
+      "age": "BronzeAge",
+      "file": "City/Top-Down-Correction/City_BronzeAge.png",
+      "original": "City/City_BronzeAge.png"
+    },
+    {
+      "id": "city-classicalage",
+      "label": "City",
+      "category": "City",
+      "age": "ClassicalAge",
+      "file": "City/Top-Down-Correction/City_ClassicalAge.png",
+      "original": "City/City_ClassicalAge.png"
+    },
+    {
+      "id": "city-earlymedieval",
+      "label": "City",
+      "category": "City",
+      "age": "EarlyMedieval",
+      "file": "City/Top-Down-Correction/City_EarlyMedieval.png",
+      "original": "City/City_EarlyMedieval.png"
+    },
+    {
+      "id": "city-latemedieval",
+      "label": "City",
+      "category": "City",
+      "age": "LateMedieval",
+      "file": "City/Top-Down-Correction/City_LateMedieval.png",
+      "original": "City/City_LateMedieval.png"
+    },
+    {
+      "id": "city-earlymodern",
+      "label": "City",
+      "category": "City",
+      "age": "Napoleonic",
+      "file": "City/Top-Down-Correction/City_EarlyModern.png",
+      "original": "City/City_EarlyModern.png"
+    },
+    {
+      "id": "city-modern",
+      "label": "City",
+      "category": "City",
+      "age": "Modern",
+      "file": "City/Top-Down-Correction/City_Modern.png",
+      "original": "City/City_Modern.png"
+    },
+    {
+      "id": "barracks-stoneage",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "StoneAge",
+      "file": "Barracks/Top-Down-Correction/Barracks_StoneAge.png",
+      "original": "Barracks/Barracks_StoneAge.png"
+    },
+    {
+      "id": "barracks-bronzeage",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "BronzeAge",
+      "file": "Barracks/Top-Down-Correction/Barracks_BronzeAge.png",
+      "original": "Barracks/Barracks_BronzeAge.png"
+    },
+    {
+      "id": "barracks-classicalage",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "ClassicalAge",
+      "file": "Barracks/Top-Down-Correction/Barracks_ClassicalAge.png",
+      "original": "Barracks/Barracks_ClassicalAge.png"
+    },
+    {
+      "id": "barracks-earlymedieval",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "EarlyMedieval",
+      "file": "Barracks/Top-Down-Correction/Barracks_EarlyMedieval.png",
+      "original": "Barracks/Barracks_EarlyMedieval.png"
+    },
+    {
+      "id": "barracks-latemedieval",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "LateMedieval",
+      "file": "Barracks/Top-Down-Correction/Barracks_LateMedieval.png",
+      "original": "Barracks/Barracks_LateMedieval.png"
+    },
+    {
+      "id": "barracks-earlymodern",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "Napoleonic",
+      "file": "Barracks/Top-Down-Correction/Barracks_EarlyModern.png",
+      "original": "Barracks/Barracks_EarlyModern.png"
+    },
+    {
+      "id": "barracks-modern",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "Modern",
+      "file": "Barracks/Top-Down-Correction/Barracks_Modern.png",
+      "original": "Barracks/Barracks_Modern.png"
+    },
+    {
+      "id": "archery-range-stoneage",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "StoneAge",
+      "file": "Archery Range/Top-Down-Correction/Archery_StoneAge.png",
+      "original": "Archery Range/Archery_StoneAge.png"
+    },
+    {
+      "id": "archery-range-bronzeage",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "BronzeAge",
+      "file": "Archery Range/Top-Down-Correction/Archery_BronzeAge.png",
+      "original": "Archery Range/Archery_BronzeAge.png"
+    },
+    {
+      "id": "archery-range-classicalage",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "ClassicalAge",
+      "file": "Archery Range/Top-Down-Correction/Archery_ClassicalAge.png",
+      "original": "Archery Range/Archery_ClassicalAge.png"
+    },
+    {
+      "id": "archery-range-earlymedieval",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "EarlyMedieval",
+      "file": "Archery Range/Top-Down-Correction/Archery_EarlyMedieval.png",
+      "original": "Archery Range/Archery_EarlyMedieval.png"
+    },
+    {
+      "id": "archery-range-latemedieval",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "LateMedieval",
+      "file": "Archery Range/Top-Down-Correction/Archery_LateMedieval.png",
+      "original": "Archery Range/Archery_LateMedieval.png"
+    },
+    {
+      "id": "archery-range-earlymodern",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "Napoleonic",
+      "file": "Archery Range/Top-Down-Correction/Archery_EarlyModern.png",
+      "original": "Archery Range/Archery_EarlyModern.png"
+    },
+    {
+      "id": "archery-range-modern",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "Modern",
+      "file": "Archery Range/Top-Down-Correction/Archery_Modern.png",
+      "original": "Archery Range/Archery_Modern.png"
+    },
+    {
+      "id": "factory-stoneage",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "StoneAge",
+      "file": "Factory/Top-Down-Correction/Factor_StoneAge.png",
+      "original": "Factory/Factor_StoneAge.png"
+    },
+    {
+      "id": "factory-bronzeage",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "BronzeAge",
+      "file": "Factory/Top-Down-Correction/Factory_BronzeAge.png",
+      "original": "Factory/Factory_BronzeAge.png"
+    },
+    {
+      "id": "factory-classicalage",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "ClassicalAge",
+      "file": "Factory/Top-Down-Correction/Factory_ClassicalAge.png",
+      "original": "Factory/Factory_ClassicalAge.png"
+    },
+    {
+      "id": "factory-earlymedieval",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "EarlyMedieval",
+      "file": "Factory/Top-Down-Correction/Factory_EarlyMedieval.png",
+      "original": "Factory/Factory_EarlyMedieval.png"
+    },
+    {
+      "id": "factory-latemedieval",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "LateMedieval",
+      "file": "Factory/Top-Down-Correction/Factory_LateMedieval.png",
+      "original": "Factory/Factory_LateMedieval.png"
+    },
+    {
+      "id": "factory-earlymodern",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "Napoleonic",
+      "file": "Factory/Top-Down-Correction/Factory_EarlyModern.png",
+      "original": "Factory/Factory_EarlyModern.png"
+    },
+    {
+      "id": "factory-modern",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "Modern",
+      "file": "Factory/Top-Down-Correction/Factory_Modern.png",
+      "original": "Factory/Factory_Modern.png"
+    },
+    {
+      "id": "port-stoneage",
+      "label": "Port",
+      "category": "Port",
+      "age": "StoneAge",
+      "file": "Port/Top-Down-Correction/Port_StoneAge.png",
+      "original": "Port/Port_StoneAge.png"
+    },
+    {
+      "id": "port-bronzeage",
+      "label": "Port",
+      "category": "Port",
+      "age": "BronzeAge",
+      "file": "Port/Top-Down-Correction/Port_BronzeAge.png",
+      "original": "Port/Port_BronzeAge.png"
+    },
+    {
+      "id": "port-classicalage",
+      "label": "Port",
+      "category": "Port",
+      "age": "ClassicalAge",
+      "file": "Port/Top-Down-Correction/Port_ClassicalAge.png",
+      "original": "Port/Port_ClassicalAge.png"
+    },
+    {
+      "id": "port-earlymedieval",
+      "label": "Port",
+      "category": "Port",
+      "age": "EarlyMedieval",
+      "file": "Port/Top-Down-Correction/Port_EarlyMedieval.png",
+      "original": "Port/Port_EarlyMedieval.png"
+    },
+    {
+      "id": "port-latemedieval",
+      "label": "Port",
+      "category": "Port",
+      "age": "LateMedieval",
+      "file": "Port/Top-Down-Correction/Port_LateMedieval.png",
+      "original": "Port/Port_LateMedieval.png"
+    },
+    {
+      "id": "port-earlymodern",
+      "label": "Port",
+      "category": "Port",
+      "age": "Napoleonic",
+      "file": "Port/Top-Down-Correction/Port_EarlyModern.png",
+      "original": "Port/Port_EarlyModern.png"
+    },
+    {
+      "id": "port-modern",
+      "label": "Port",
+      "category": "Port",
+      "age": "Modern",
+      "file": "Port/Top-Down-Correction/Port_Modern.png",
+      "original": "Port/Port_Modern.png"
+    },
+    {
+      "id": "stables-stoneage",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "StoneAge",
+      "file": "Stables/Top-Down-Correction/Stables_StoneAge.png",
+      "original": "Stables/Stables_StoneAge.png"
+    },
+    {
+      "id": "stables-bronzeage",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "BronzeAge",
+      "file": "Stables/Top-Down-Correction/Stables_BronzeAge.png",
+      "original": "Stables/Stables_BronzeAge.png"
+    },
+    {
+      "id": "stables-classicalage",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "ClassicalAge",
+      "file": "Stables/Top-Down-Correction/Stables_ClassicalAge.png",
+      "original": "Stables/Stables_ClassicalAge.png"
+    },
+    {
+      "id": "stables-earlymedieval",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "EarlyMedieval",
+      "file": "Stables/Top-Down-Correction/Stables_EarlyMedieval.png",
+      "original": "Stables/Stables_EarlyMedieval.png"
+    },
+    {
+      "id": "stables-latemedieval",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "LateMedieval",
+      "file": "Stables/Top-Down-Correction/Stables_LateMedieval.png",
+      "original": "Stables/Stables_LateMedieval.png"
+    },
+    {
+      "id": "stables-earlymodern",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "Napoleonic",
+      "file": "Stables/Top-Down-Correction/Stables_EarlyModern.png",
+      "original": "Stables/Stables_EarlyModern.png"
+    },
+    {
+      "id": "stables-modern",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "Modern",
+      "file": "Stables/Top-Down-Correction/Stables_Modern.png",
+      "original": "Stables/Stables_Modern.png"
+    },
+    {
+      "id": "mine-bronzeage",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "BronzeAge",
+      "file": "Mine/Top-Down-Correction/Mine_BronzeAge.png"
+    },
+    {
+      "id": "mine-classicalage",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "ClassicalAge",
+      "file": "Mine/Top-Down-Correction/Mine_ClassicalAge.png"
+    },
+    {
+      "id": "mine-earlymedieval",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "EarlyMedieval",
+      "file": "Mine/Top-Down-Correction/Mine_EarlyMedieval.png"
+    },
+    {
+      "id": "mine-latemedieval",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "LateMedieval",
+      "file": "Mine/Top-Down-Correction/Mine_LateMedieval.png"
+    },
+    {
+      "id": "mine-earlymodern",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "Napoleonic",
+      "file": "Mine/Top-Down-Correction/Mine_EarlyModern.png"
+    },
+    {
+      "id": "mine-modern",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "Modern",
+      "file": "Mine/Top-Down-Correction/Mine_Modern.png"
+    },
+    {
+      "id": "armory-earlymodern",
+      "label": "Armory",
+      "category": "Armory",
+      "age": "Napoleonic",
+      "file": "Armory/Top-Down-Correction/Armory_EarlyModern.png",
+      "newFacility": true
+    },
+    {
+      "id": "arms-factory-modern",
+      "label": "Arms Factory",
+      "category": "Arms Factory",
+      "age": "Modern",
+      "file": "Arms Factory/Top-Down-Correction/ArmsFactory_Modern.png",
+      "newFacility": true
+    },
+    {
+      "id": "oil-well-modern",
+      "label": "Oil Well",
+      "category": "Oil Well",
+      "age": "Modern",
+      "file": "Oil Well/Top-Down-Correction/OilWell_Modern.png",
+      "newFacility": true
+    },
+    {
+      "id": "oil-rig-modern",
+      "label": "Oil Rig",
+      "category": "Oil Rig",
+      "age": "Modern",
+      "file": "Oil Rig/Top-Down-Correction/OilRig_Modern.png",
+      "newFacility": true
+    },
+    {
+      "id": "siege-bronzeage",
+      "label": "Siege",
+      "category": "Siege",
+      "age": "BronzeAge",
+      "file": "Siege/Top-Down-Correction/Siege_BronzeAge.png"
+    },
+    {
+      "id": "siege-classicalage",
+      "label": "Siege",
+      "category": "Siege",
+      "age": "ClassicalAge",
+      "file": "Siege/Top-Down-Correction/Siege_ClassicalAge.png"
+    },
+    {
+      "id": "siege-earlymedieval",
+      "label": "Siege",
+      "category": "Siege",
+      "age": "EarlyMedieval",
+      "file": "Siege/Top-Down-Correction/Siege_EarlyMedieval.png"
+    },
+    {
+      "id": "siege-latemedieval",
+      "label": "Siege",
+      "category": "Siege",
+      "age": "LateMedieval",
+      "file": "Siege/Top-Down-Correction/Siege_LateMedieval.png"
+    },
+    {
+      "id": "siege-earlymodern",
+      "label": "Siege",
+      "category": "Siege",
+      "age": "Napoleonic",
+      "file": "Siege/Top-Down-Correction/Siege_EarlyModern.png"
+    },
+    {
+      "id": "siege-modern",
+      "label": "Siege",
+      "category": "Siege",
+      "age": "Modern",
+      "file": "Siege/Top-Down-Correction/Siege_Modern.png"
+    },
+    {
+      "id": "military-airstrip-modern",
+      "label": "Military Airstrip",
+      "category": "Military Airstrip",
+      "age": "Modern",
+      "file": "Military%20Airstrip/Top-Down-Correction/MilitaryAirstrip_Modern.png",
+      "newFacility": true
+    },
+    {
+      "id": "missile-silo-modern",
+      "label": "Missile Silo",
+      "category": "Missile Silo",
+      "age": "Modern",
+      "file": "Missile%20Silo/Top-Down-Correction/MissileSilo_Modern.png",
+      "newFacility": true
+    },
+    {
+      "id": "blacksmith-bronzeage",
+      "label": "Blacksmith",
+      "category": "Blacksmith",
+      "age": "BronzeAge",
+      "file": "Blacksmith/Top-Down-Correction/Blacksmith_BronzeAge.png",
+      "original": "Blacksmith/Top-Down-Correction/_previous/v1/Blacksmith_BronzeAge.png"
+    },
+    {
+      "id": "blacksmith-classicalage",
+      "label": "Blacksmith",
+      "category": "Blacksmith",
+      "age": "ClassicalAge",
+      "file": "Blacksmith/Top-Down-Correction/Blacksmith_ClassicalAge.png",
+      "original": "Blacksmith/Top-Down-Correction/_previous/v1/Blacksmith_ClassicalAge.png"
+    },
+    {
+      "id": "blacksmith-earlymedieval",
+      "label": "Blacksmith",
+      "category": "Blacksmith",
+      "age": "EarlyMedieval",
+      "file": "Blacksmith/Top-Down-Correction/Blacksmith_EarlyMedieval.png",
+      "original": "Blacksmith/Top-Down-Correction/_previous/v1/Blacksmith_EarlyMedieval.png"
+    },
+    {
+      "id": "blacksmith-latemedieval",
+      "label": "Blacksmith",
+      "category": "Blacksmith",
+      "age": "LateMedieval",
+      "file": "Blacksmith/Top-Down-Correction/Blacksmith_LateMedieval.png",
+      "original": "Blacksmith/Top-Down-Correction/_previous/v1/Blacksmith_LateMedieval.png"
+    }
+  ],
+  "inspectionAgeMigration": {
+    "date": "2026-10-07",
+    "previousAge": "EarlyModern",
+    "age": "Napoleonic",
+    "note": "Artwork filenames and original base PNGs remain unchanged; EarlyModern is reserved for WWII-era artwork."
+  }
+}

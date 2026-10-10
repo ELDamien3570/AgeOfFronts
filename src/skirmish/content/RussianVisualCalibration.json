@@ -1,0 +1,680 @@
+{
+  "StoneAge:frontline": {
+    "memberScale": 0.24,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 55
+      },
+      "running": {
+        "x": 64,
+        "y": 50
+      },
+      "attack": {
+        "x": 64,
+        "y": 57
+      }
+    },
+    "facingOffset": 0
+  },
+  "StoneAge:lightCavalry": {
+    "memberScale": 0.6442105263157895,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 62,
+        "y": 65
+      },
+      "running": {
+        "x": 62,
+        "y": 65
+      },
+      "attack": {
+        "x": 62,
+        "y": 65
+      }
+    },
+    "facingOffset": 0
+  },
+  "StoneAge:rangedInfantry": {
+    "memberScale": 0.33999999999999997,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 64
+      },
+      "running": {
+        "x": 64,
+        "y": 58
+      },
+      "attack": {
+        "x": 69,
+        "y": 60
+      }
+    },
+    "facingOffset": 0
+  },
+  "BronzeAge:antiCavalry": {
+    "memberScale": 0.3,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 49
+      },
+      "running": {
+        "x": 69,
+        "y": 52
+      },
+      "attack": {
+        "x": 67,
+        "y": 54
+      }
+    },
+    "facingOffset": 0
+  },
+  "BronzeAge:frontline": {
+    "memberScale": 0.24,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 60
+      },
+      "running": {
+        "x": 64,
+        "y": 56
+      },
+      "attack": {
+        "x": 64,
+        "y": 57
+      }
+    },
+    "facingOffset": 0
+  },
+  "BronzeAge:lightCavalry": {
+    "memberScale": 0.6510638297872341,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 68,
+        "y": 63
+      },
+      "running": {
+        "x": 68,
+        "y": 63.5
+      },
+      "attack": {
+        "x": 68,
+        "y": 62.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "BronzeAge:rangedInfantry": {
+    "memberScale": 0.27567567567567564,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 51
+      },
+      "running": {
+        "x": 64,
+        "y": 47
+      },
+      "attack": {
+        "x": 64,
+        "y": 47
+      }
+    },
+    "facingOffset": 0
+  },
+  "ClassicalAge:antiCavalry": {
+    "memberScale": 0.35172413793103446,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 68,
+        "y": 54
+      },
+      "running": {
+        "x": 64,
+        "y": 49
+      },
+      "attack": {
+        "x": 69,
+        "y": 51
+      }
+    },
+    "facingOffset": 0
+  },
+  "ClassicalAge:frontline": {
+    "memberScale": 0.2914285714285714,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 66,
+        "y": 55
+      },
+      "running": {
+        "x": 64,
+        "y": 53
+      },
+      "attack": {
+        "x": 66,
+        "y": 55
+      }
+    },
+    "facingOffset": 0
+  },
+  "ClassicalAge:lightCavalry": {
+    "memberScale": 0.6510638297872341,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 68,
+        "y": 63
+      },
+      "running": {
+        "x": 68,
+        "y": 64
+      },
+      "attack": {
+        "x": 68,
+        "y": 62.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "ClassicalAge:rangedCavalry": {
+    "memberScale": 0.6510638297872341,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 68,
+        "y": 63
+      },
+      "running": {
+        "x": 68,
+        "y": 64
+      },
+      "attack": {
+        "x": 68,
+        "y": 63.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "ClassicalAge:rangedInfantry": {
+    "memberScale": 0.255,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 62,
+        "y": 49
+      },
+      "running": {
+        "x": 62,
+        "y": 56
+      },
+      "attack": {
+        "x": 64,
+        "y": 47
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyMedieval:antiCavalry": {
+    "memberScale": 0.3923076923076923,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 57
+      },
+      "running": {
+        "x": 66,
+        "y": 47
+      },
+      "attack": {
+        "x": 69,
+        "y": 69
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyMedieval:frontline": {
+    "memberScale": 0.26842105263157895,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 72,
+        "y": 52
+      },
+      "running": {
+        "x": 64,
+        "y": 57
+      },
+      "attack": {
+        "x": 68,
+        "y": 61
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyMedieval:heavyCavalry": {
+    "memberScale": 0.68,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 70,
+        "y": 63
+      },
+      "running": {
+        "x": 70,
+        "y": 60.5
+      },
+      "attack": {
+        "x": 70,
+        "y": 67.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyMedieval:lightCavalry": {
+    "memberScale": 0.6510638297872341,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 68,
+        "y": 63
+      },
+      "running": {
+        "x": 68,
+        "y": 63.5
+      },
+      "attack": {
+        "x": 68,
+        "y": 62.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyMedieval:rangedCavalry": {
+    "memberScale": 0.703448275862069,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 68,
+        "y": 63.5
+      },
+      "running": {
+        "x": 68,
+        "y": 64.5
+      },
+      "attack": {
+        "x": 68,
+        "y": 64.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyMedieval:rangedInfantry": {
+    "memberScale": 0.3090909090909091,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 48
+      },
+      "running": {
+        "x": 66,
+        "y": 45
+      },
+      "attack": {
+        "x": 58,
+        "y": 49
+      }
+    },
+    "facingOffset": 0
+  },
+  "LateMedieval:antiCavalry": {
+    "memberScale": 0.31875,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 52
+      },
+      "running": {
+        "x": 68,
+        "y": 55
+      },
+      "attack": {
+        "x": 70,
+        "y": 58
+      }
+    },
+    "facingOffset": 0
+  },
+  "LateMedieval:frontline": {
+    "memberScale": 0.33999999999999997,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 79,
+        "y": 60
+      },
+      "running": {
+        "x": 78,
+        "y": 52
+      },
+      "attack": {
+        "x": 70,
+        "y": 64
+      }
+    },
+    "facingOffset": 0
+  },
+  "LateMedieval:heavyCavalry": {
+    "memberScale": 0.6375000000000001,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 65,
+        "y": 64.5
+      },
+      "running": {
+        "x": 65,
+        "y": 65.5
+      },
+      "attack": {
+        "x": 65,
+        "y": 65.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "LateMedieval:lightCavalry": {
+    "memberScale": 0.7846153846153846,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 66
+      },
+      "running": {
+        "x": 64,
+        "y": 64.5
+      },
+      "attack": {
+        "x": 64,
+        "y": 64.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "LateMedieval:rangedCavalry": {
+    "memberScale": 0.6652173913043479,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 63.5
+      },
+      "running": {
+        "x": 64,
+        "y": 64.5
+      },
+      "attack": {
+        "x": 64,
+        "y": 63.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "LateMedieval:rangedInfantry": {
+    "memberScale": 0.3290322580645161,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 67,
+        "y": 34
+      },
+      "running": {
+        "x": 67,
+        "y": 35
+      },
+      "attack": {
+        "x": 63,
+        "y": 35
+      }
+    },
+    "facingOffset": 0
+  },
+  "Napoleonic:antiCavalry": {
+    "memberScale": 0.48571428571428565,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 69,
+        "y": 65
+      },
+      "running": {
+        "x": 67,
+        "y": 67
+      },
+      "attack": {
+        "x": 71,
+        "y": 44
+      }
+    },
+    "facingOffset": 0
+  },
+  "Napoleonic:frontline": {
+    "memberScale": 0.3090909090909091,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 46
+      },
+      "running": {
+        "x": 64,
+        "y": 41
+      },
+      "attack": {
+        "x": 64,
+        "y": 49
+      }
+    },
+    "facingOffset": 0
+  },
+  "Napoleonic:heavyCavalry": {
+    "memberScale": 0.6309278350515464,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 64.5
+      },
+      "running": {
+        "x": 64,
+        "y": 64
+      },
+      "attack": {
+        "x": 64,
+        "y": 65
+      }
+    },
+    "facingOffset": 0
+  },
+  "Napoleonic:lightCavalry": {
+    "memberScale": 0.7846153846153846,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 66
+      },
+      "running": {
+        "x": 64,
+        "y": 64
+      },
+      "attack": {
+        "x": 64,
+        "y": 66.5
+      }
+    },
+    "facingOffset": 0
+  },
+  "Napoleonic:rangedCavalry": {
+    "memberScale": 0.6580645161290323,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 65,
+        "y": 64
+      },
+      "running": {
+        "x": 65,
+        "y": 62.5
+      },
+      "attack": {
+        "x": 65,
+        "y": 64
+      }
+    },
+    "facingOffset": 0
+  },
+  "Napoleonic:rangedInfantry": {
+    "memberScale": 0.27567567567567564,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 63,
+        "y": 40
+      },
+      "running": {
+        "x": 64,
+        "y": 32
+      },
+      "attack": {
+        "x": 64,
+        "y": 37
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyModern:antiCavalry": {
+    "memberScale": 0.36428571428571427,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 46
+      },
+      "running": {
+        "x": 64,
+        "y": 46
+      },
+      "attack": {
+        "x": 64,
+        "y": 39
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyModern:frontline": {
+    "memberScale": 0.31875,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 49,
+        "y": 51
+      },
+      "running": {
+        "x": 61,
+        "y": 53
+      },
+      "attack": {
+        "x": 64,
+        "y": 45
+      }
+    },
+    "facingOffset": 0
+  },
+  "EarlyModern:heavyCavalry": {
+    "memberScale": 2.835287279319041,
+    "bodyAnchorsPx128": {},
+    "facingOffset": 0
+  },
+  "EarlyModern:lightCavalry": {
+    "memberScale": 1.7812889812889812,
+    "bodyAnchorsPx128": {},
+    "facingOffset": 3.141592653589793
+  },
+  "EarlyModern:rangedCavalry": {
+    "memberScale": 1.975578947368421,
+    "bodyAnchorsPx128": {},
+    "facingOffset": 0
+  },
+  "EarlyModern:rangedInfantry": {
+    "memberScale": 0.31875,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 63,
+        "y": 46
+      },
+      "running": {
+        "x": 64,
+        "y": 40
+      },
+      "attack": {
+        "x": 64,
+        "y": 41
+      }
+    },
+    "facingOffset": 0
+  },
+  "Modern:antiCavalry": {
+    "memberScale": 0.36428571428571427,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 53,
+        "y": 44
+      },
+      "running": {
+        "x": 64,
+        "y": 42
+      },
+      "attack": {
+        "x": 52,
+        "y": 44
+      }
+    },
+    "facingOffset": 0
+  },
+  "Modern:frontline": {
+    "memberScale": 0.24878048780487802,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 64,
+        "y": 43
+      },
+      "running": {
+        "x": 64,
+        "y": 46
+      },
+      "attack": {
+        "x": 64,
+        "y": 41
+      }
+    },
+    "facingOffset": 0
+  },
+  "Modern:heavyCavalry": {
+    "memberScale": 2.3247863247863245,
+    "bodyAnchorsPx128": {},
+    "facingOffset": 0
+  },
+  "Modern:lightCavalry": {
+    "memberScale": 1.3324148488327592,
+    "bodyAnchorsPx128": {},
+    "facingOffset": 0
+  },
+  "Modern:rangedCavalry": {
+    "memberScale": 1.6999999999999997,
+    "bodyAnchorsPx128": {},
+    "facingOffset": 0
+  },
+  "Modern:rangedInfantry": {
+    "memberScale": 0.3290322580645161,
+    "bodyAnchorsPx128": {
+      "idle": {
+        "x": 63,
+        "y": 49
+      },
+      "running": {
+        "x": 64,
+        "y": 44
+      },
+      "attack": {
+        "x": 69,
+        "y": 48
+      }
+    },
+    "facingOffset": 0
+  }
+}

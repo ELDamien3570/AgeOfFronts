@@ -1,0 +1,37 @@
+[
+  {
+    "age": "StoneAge",
+    "cards": 37,
+    "status": "37 / 37 icons · Stone frame retains its color · centers recolored by faction"
+  },
+  {
+    "age": "BronzeAge",
+    "cards": 37,
+    "status": "37 / 37 icons · Bronze frame retains its color · centers recolored by faction"
+  },
+  {
+    "age": "ClassicalAge",
+    "cards": 37,
+    "status": "37 / 37 icons · Iron frame retains its color · centers recolored by faction"
+  },
+  {
+    "age": "EarlyMedieval",
+    "cards": 37,
+    "status": "37 / 37 icons · Shimmering steel frame retains its color · centers recolored by faction"
+  },
+  {
+    "age": "LateMedieval",
+    "cards": 37,
+    "status": "37 / 37 icons · Gold frame retains its color · centers recolored by faction"
+  },
+  {
+    "age": "EarlyModern",
+    "cards": 37,
+    "status": "37 / 37 icons · Gunmetal frame retains its color · centers recolored by faction"
+  },
+  {
+    "age": "Modern",
+    "cards": 37,
+    "status": "37 / 37 icons · Army green frame retains its color · centers recolored by faction"
+  }
+]

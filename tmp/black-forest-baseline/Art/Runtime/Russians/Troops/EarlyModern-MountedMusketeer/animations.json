@@ -32,8 +32,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -42,8 +42,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -52,8 +52,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -62,8 +62,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -72,8 +72,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -82,11 +82,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         }
       ],
+      "mask": "idle.mask.png",
       "releaseFrame": 3
     },
     {
@@ -120,8 +121,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 62.5
           }
         },
         {
@@ -130,8 +131,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 62.5
           }
         },
         {
@@ -140,8 +141,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 62.5
           }
         },
         {
@@ -150,8 +151,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 62.5
           }
         },
         {
@@ -160,8 +161,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 62.5
           }
         },
         {
@@ -170,11 +171,12 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 62.5
           }
         }
       ],
+      "mask": "running.mask.png",
       "releaseFrame": 3
     },
     {
@@ -208,8 +210,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -218,8 +220,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -228,8 +230,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -238,8 +240,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -248,8 +250,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         },
         {
@@ -258,12 +260,13 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.7,
-            "y": 63.7
+            "x": 65.0,
+            "y": 64.0
           }
         }
       ],
       "impactFrame": 3,
+      "mask": "attack.mask.png",
       "releaseFrame": 3
     },
     {
@@ -352,6 +355,364 @@
           }
         }
       ],
+      "mask": "death.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "reload",
+      "file": "reload.png",
+      "label": "Reload",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        400,
+        700,
+        600,
+        900,
+        700,
+        500
+      ],
+      "description": "Stationary mounted reload: powder, ball, ramrod, priming and return to rest.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "mask": "reload.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "label": "Gallop / maintain charge",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "description": "Galloping loop with articulated horse legs; gameplay supplies world movement.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "mask": "charge.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "label": "Charge shot",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        160,
+        190,
+        230,
+        100,
+        180,
+        230
+      ],
+      "description": "Settle after advancing, shoulder and fire a forward musket shot, then recover.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "mask": "charge-attack.mask.png",
+      "releaseFrame": 3
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        100,
+        100,
+        130,
+        130,
+        170,
+        180
+      ],
+      "description": "Small rider recoil and horse startle, followed by recovery.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "mask": "hit.mask.png",
       "releaseFrame": 3
     }
   ],
@@ -361,6 +722,10 @@
     "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Idle-Animated-Registered-v1.png": "04deee4000d41db99d754d93c3407d524cab5cd89f29558f8d762b537e9e89d9",
     "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Running-Registered-v1.png": "f72e8dc36292de59fa8faf78bb79e3655bffb2444e1e44e6ba7ae5cd5e82cd4a",
     "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Attack-v1.png": "90d600614f1a020d6d0d31af6d90702626acc6da7d8e105ff6a743404f592932",
-    "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Death-Together-v1.png": "48516b23fc040126d04c80926c2f27113ed5655d0bcc09b00c8916cac37fdbac"
+    "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Death-Together-v1.png": "48516b23fc040126d04c80926c2f27113ed5655d0bcc09b00c8916cac37fdbac",
+    "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Reload-v1.png": "a247fe0d154938b703fafaaaf11a906ddcd8daa8a6ed431407a9011503bce52e",
+    "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Charge-Registered-v1.png": "590fdf414d360095232a25b31fae084f553dee4f215bf64c61355c7a46730957",
+    "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Charge-Attack-v1.png": "9172f0550e2eaa590684dca0ace584c3e23433987358f1b9b7c1d1d52550749d",
+    "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Hit-v1.png": "785c4cd7fc7e6fdadac50e39414e66454628d212cce7dc2e06eec1dd5b0c0a2b"
   }
 }

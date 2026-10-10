@@ -4,6 +4,7 @@ import {
   AUTOMATIC_TIER_BUILDINGS,
   automaticBuildingTier,
   buildingIntegrity,
+  productionBuildingType,
 } from "../content/Buildings";
 import { AGES, type Age, type ProgressionState } from "./Definitions";
 
@@ -45,11 +46,12 @@ export class AutomaticBuildingTiers {
       }
       if (!changed && !researched) continue;
       for (const building of facts.byOwner(player.id)) {
-        const age = known!.tiers.get(building.type),
+        const type = productionBuildingType(building.type, state.age, state.completed);
+        const age = known!.tiers.get(type),
           current = building.age ?? "StoneAge";
         if (
           !age ||
-          building.remainingTicks ||
+          (building.remainingTicks && type === building.type) ||
           AGES.indexOf(age) < AGES.indexOf(current)
         )
           continue;
@@ -57,9 +59,10 @@ export class AutomaticBuildingTiers {
           building.maxHealth ?? buildingIntegrity(building.type, current);
         const health = building.health ?? maximum;
         if (health <= 0) continue;
-        const maxHealth = buildingIntegrity(building.type, age,state.completed);
-        if(age === current && maximum === maxHealth)continue;
+        const maxHealth = buildingIntegrity(type, age,state.completed);
+        if(type === building.type && age === current && maximum === maxHealth)continue;
         update(building.id, {
+          type,
           age,
           maxHealth,
           health: Math.max(

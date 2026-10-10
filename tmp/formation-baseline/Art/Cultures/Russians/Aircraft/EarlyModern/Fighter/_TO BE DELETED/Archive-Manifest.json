@@ -1,0 +1,18 @@
+{
+  "folder": "Aircraft/EarlyModern/Fighter/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Aircraft/EarlyModern/Fighter/SourceArt/.gitkeep",
+      "archived": "Aircraft/EarlyModern/Fighter/_TO BE DELETED/SourceArt/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "original": "Aircraft/EarlyModern/Fighter/SourceArt/Yak3_Russian_WWII_v1.png",
+      "archived": "Aircraft/EarlyModern/Fighter/_TO BE DELETED/SourceArt/Yak3_Russian_WWII_v1.png",
+      "sha256": "3f1a0c671d9c69ffd805f3c3cc32ebe82694601c91e75dfa116eb60c7f5acea1",
+      "size": 887354
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "created_at_utc": "2026-09-30T08:25:24.924750+00:00",
+  "generator": "built-in image_gen",
+  "asset_count": 4,
+  "previous_png_count": 99,
+  "protected_png_count": 93,
+  "previous_pngs_verified_unchanged": 93,
+  "concurrent_auxiliary_changes": [
+    {
+      "path": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Building Icons\\_prepared\\StoneAge\\archery.png",
+      "before_sha256": "4A0BECF3A1B7986985AE87FE31F75DA6BC056812FFF41E1019CC3676F80D7DF0",
+      "current_sha256": "EBBF1042FC4F83FC7DB174C18630FEB39952EBEE5F80F4DE4941EE397B22A742",
+      "disposition": "Concurrent auxiliary reference change; left untouched"
+    },
+    {
+      "path": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Building Icons\\_prepared\\StoneAge\\barracks.png",
+      "before_sha256": "6AC9CDBA062ECB58B79BA3516733A6037A4A7D13611D8E79230BC25DEA7E59CD",
+      "current_sha256": "8B12F7161D4ED7885CB019F9A2DFBD8CDF5474B50CF16F8173A74BC0F40941F3",
+      "disposition": "Concurrent auxiliary reference change; left untouched"
+    },
+    {
+      "path": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Building Icons\\_prepared\\StoneAge\\city.png",
+      "before_sha256": "B68FB2E1247210258248FC742260631E4727E76B5227A8A3D34DA623064F4AB4",
+      "current_sha256": "ED2D6657340AB86F87A57E507EC3B38D137533835972C49AB33AD5B8815CE7C9",
+      "disposition": "Concurrent auxiliary reference change; left untouched"
+    },
+    {
+      "path": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Building Icons\\_prepared\\StoneAge\\factory.png",
+      "before_sha256": "946ADA83F21516606A03DE30140925313709CF4D4FBA9850F0EDE8944F0F7E20",
+      "current_sha256": "D5CF0CE43037817CD36AA5DD63BDCCDC7BBCCD3E188D7681662918BE629661A7",
+      "disposition": "Concurrent auxiliary reference change; left untouched"
+    },
+    {
+      "path": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Building Icons\\_prepared\\StoneAge\\port.png",
+      "before_sha256": "7B6780D58F8E72349CBFA3DAB1B263596C7E774D81BC914DAFCC89AF863EA810",
+      "current_sha256": "19301249D843CE079D1E9DACF7191E85389728BB2343FC9917C48D79F86295A1",
+      "disposition": "Concurrent auxiliary reference change; left untouched"
+    },
+    {
+      "path": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Building Icons\\_prepared\\StoneAge\\stables.png",
+      "before_sha256": "60334799DC0FEDBF7B947914618C9FCBD31B988CFB008AD5819601BD0D1C0B8E",
+      "current_sha256": "EBCA02CB2A637B0DF4ED1E1333CCBBDA5ABC0BCECC5A6FC97DB8D8EE923550AA",
+      "disposition": "Concurrent auxiliary reference change; left untouched"
+    }
+  ],
+  "alpha_thresholds": {
+    "maximum_corner_alpha": 1,
+    "substantial_artwork_alpha_above": 32
+  },
+  "passed": true,
+  "errors": [],
+  "images": [
+    {
+      "category": "Armory",
+      "filename": "Armory_EarlyModern.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "db9a81505e140479ca273be6157a94023cdddbf6749b7e5eb661b25b78e6a647",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "substantial_artwork_bounds": [
+        95,
+        83,
+        1175,
+        1118
+      ]
+    },
+    {
+      "category": "Arms Factory",
+      "filename": "ArmsFactory_Modern.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "a0255994bdf23e24ef8879b254399941c837aa3c2384cee5371bfed1d145cb41",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "substantial_artwork_bounds": [
+        77,
+        132,
+        1183,
+        1145
+      ]
+    },
+    {
+      "category": "Oil Well",
+      "filename": "OilWell_Modern.png",
+      "dimensions": [
+        627,
+        627
+      ],
+      "mode": "RGBA",
+      "sha256": "590849ca6d1bf51a3f9de2b51ab718e3406eab40c7af87fb08524d63dee167b6",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "substantial_artwork_bounds": [
+        43,
+        48,
+        602,
+        580
+      ]
+    },
+    {
+      "category": "Oil Rig",
+      "filename": "OilRig_Modern.png",
+      "dimensions": [
+        627,
+        627
+      ],
+      "mode": "RGBA",
+      "sha256": "9d060e94cdea4e3443b1ed1c47bf728861d76b737012402deccd7ba3db4c72e9",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "substantial_artwork_bounds": [
+        25,
+        41,
+        605,
+        578
+      ]
+    }
+  ]
+}

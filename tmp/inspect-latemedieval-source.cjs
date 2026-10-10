@@ -1,0 +1,7 @@
+const fs=require('fs'),path=require('path'),sharp=require('C:/Users/Damien/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/sharp');
+(async()=>{const c=JSON.parse(fs.readFileSync('Art/Cultures/Russians/Troops.json'));for(const u of c.units.filter(u=>u.age==='LateMedieval')){const p=path.resolve('Art/Cultures/Russians',u.metadata),d=JSON.parse(fs.readFileSync(p));const overlays=[];let row=0;for(const a of d.animations){for(const [col,f] of a.frames.entries()){const buf=await sharp(path.resolve(path.dirname(p),f.sheet||a.file)).extract({left:f.x,top:f.y,width:f.width,height:f.height}).resize(170,170).png().toBuffer();overlays.push({input:buf,left:col*170,top:row*200+24})}const label=Buffer.from(`<svg width="512" height="24"><text x="8" y="18" fill="white" font-size="16">${a.id}: all frames</text></svg>`);overlays.push({input:label,left:0,top:row*200});row++}const out='tmp/latemedieval-'+d.unit.replace(/\W+/g,'-')+'-all-sources.png';await sharp({create:{width:1020,height:row*200,channels:4,background:'#383838'}}).composite(overlays).png().toFile(out);console.log(out)}})();
+
+
+
+
+

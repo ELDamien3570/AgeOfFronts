@@ -1,0 +1,60 @@
+{
+  "folder": "Buildings/LateMedieval/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/LateMedieval/Approval.json",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/Approval.json",
+      "sha256": "e7fb15a6acfce26ef829f97bba56903b36a5b3f8f013ed75948ac21a64d70326",
+      "size": 2515
+    },
+    {
+      "original": "Buildings/LateMedieval/Blacksmith_Comparison.png",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/Blacksmith_Comparison.png",
+      "sha256": "f9602c149547b91f963547f82f8966e83eedde6086e1f4b6e96bb6e72ca3ad9e",
+      "size": 71954
+    },
+    {
+      "original": "Buildings/LateMedieval/Browser_Validation.json",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/Browser_Validation.json",
+      "sha256": "10b09555b0e33c939488a06f13bc7dcf979e2dd5498fc38c6df3c2732d5b56b6",
+      "size": 1542
+    },
+    {
+      "original": "Buildings/LateMedieval/Full_Inspection_Review.png",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/Full_Inspection_Review.png",
+      "sha256": "706fc225b4b4a108037cf5f0b50eeefbbc762820524607b9d0352f0cb7d27ad8",
+      "size": 459075
+    },
+    {
+      "original": "Buildings/LateMedieval/Generation.json",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/Generation.json",
+      "sha256": "fc3cc5d38a58b05d0eeb6aae24b920c84c9f30371e5c981ffa522a2dfcb7c741",
+      "size": 78912
+    },
+    {
+      "original": "Buildings/LateMedieval/Inspection_Review.png",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/Inspection_Review.png",
+      "sha256": "a12599dc506c6fa64e260137105403c7f6c7bc2494bc8cc82130e344c19e32f2",
+      "size": 213770
+    },
+    {
+      "original": "Buildings/LateMedieval/README.md",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/README.md",
+      "sha256": "a20cd188220003ec2ddcef2b9f75ae45fb23fc846de35e188eccb6a56998e1d6",
+      "size": 2192
+    },
+    {
+      "original": "Buildings/LateMedieval/Regional_References.md",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/Regional_References.md",
+      "sha256": "456cd08083a11751ef3f85a8e99d59f8df573acc460a5a99bfc9900c1757953b",
+      "size": 3241
+    },
+    {
+      "original": "Buildings/LateMedieval/Source_Validation.json",
+      "archived": "Buildings/LateMedieval/_TO BE DELETED/Source_Validation.json",
+      "sha256": "7b1073d28c7bf8aef1f02bc2220e792930b6a1599ad42df533d5cc5d643fb664",
+      "size": 6099
+    }
+  ]
+}

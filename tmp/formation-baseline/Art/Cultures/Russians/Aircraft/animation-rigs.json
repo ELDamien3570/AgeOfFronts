@@ -1,0 +1,6 @@
+{
+  "fighter-wwii": {"propellers": [[0.5, 0.187, 0.12, 0.029]], "exhausts": []},
+  "bomber-wwii": {"propellers": [[0.286, 0.358, 0.05, 0.012], [0.398, 0.331, 0.05, 0.012], [0.602, 0.331, 0.05, 0.012], [0.714, 0.358, 0.05, 0.012]], "exhausts": [], "yawDegrees": 0.12},
+  "fighter-modern": {"propellers": [], "exhausts": [[0.45, 0.86], [0.55, 0.86]], "exhaustLength": 19, "exhaustRadius": 4},
+  "bomber-modern": {"propellers": [], "exhausts": [[0.41, 0.696], [0.444, 0.696], [0.556, 0.696], [0.59, 0.696]], "exhaustLength": 16, "exhaustRadius": 3}
+}

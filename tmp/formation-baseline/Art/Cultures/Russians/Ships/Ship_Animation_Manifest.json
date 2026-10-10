@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "artDirection": "Russian era-inspired naval roles across eight ages; overhead combat, passenger and freight silhouettes",
+  "shipCount": 26,
+  "clipCount": 62,
+  "assets": [
+    {
+      "age": "StoneAge",
+      "ageLabel": "Stone Age",
+      "category": "Warships",
+      "poster": "StoneAge/Warship/SourceArt/Warship_Russian_StoneAge_v1.png",
+      "description": "Narrow fighting canoe \u00b7 paired stone-tipped spears \u00b7 ochre hide wraps",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "metadata": "StoneAge/Warship/animations.json"
+    },
+    {
+      "age": "StoneAge",
+      "ageLabel": "Stone Age",
+      "category": "Transport",
+      "poster": "StoneAge/Transport/SourceArt/Transport_Russian_StoneAge_v1.png",
+      "description": "Broad passenger hull \u00b7 five open benches \u00b7 pale hide seat pads",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "metadata": "StoneAge/Transport/animations.json"
+    },
+    {
+      "age": "StoneAge",
+      "ageLabel": "Stone Age",
+      "category": "Trade",
+      "poster": "StoneAge/Trade/SourceArt/Trade_Russian_StoneAge_v2.png",
+      "description": "Wide twin-log cargo craft \u00b7 six large secured bundles and containers",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "metadata": "StoneAge/Trade/animations.json"
+    },
+    {
+      "age": "BronzeAge",
+      "ageLabel": "Bronze Age",
+      "category": "Warships",
+      "poster": "BronzeAge/Warship/SourceArt/Warship_Russian_BronzeAge_v7.png",
+      "description": "Long fighting canoe \u00b7 four matched oar pairs \u00b7 bronze spearheads",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "metadata": "BronzeAge/Warship/animations.json"
+    },
+    {
+      "age": "BronzeAge",
+      "ageLabel": "Bronze Age",
+      "category": "Transport",
+      "poster": "BronzeAge/Transport/SourceArt/Transport_Russian_BronzeAge_v1.png",
+      "description": "Pale birch-bark passenger hull \u00b7 six open benches \u00b7 stowed paddles",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "metadata": "BronzeAge/Transport/animations.json"
+    },
+    {
+      "age": "BronzeAge",
+      "ageLabel": "Bronze Age",
+      "category": "Trade",
+      "poster": "BronzeAge/Trade/SourceArt/Trade_Russian_BronzeAge_v1.png",
+      "description": "Broad twin-log freight craft \u00b7 secured goods, grain and traded metal",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "metadata": "BronzeAge/Trade/animations.json"
+    },
+    {
+      "age": "ClassicalAge",
+      "ageLabel": "Classical Age",
+      "category": "Warships",
+      "poster": "ClassicalAge/Warship/SourceArt/Warship_Russian_ClassicalAge_v3.png",
+      "description": "Plank-built fighting hull \u00b7 six straight oar pairs \u00b7 iron spearheads and shields",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "b2357b1f62c81cf33da8c4c6c1ee278f93e064c17647d1e305cb896c7dcea503",
+      "metadata": "ClassicalAge/Warship/animations.json"
+    },
+    {
+      "age": "ClassicalAge",
+      "ageLabel": "Classical Age",
+      "category": "Transport",
+      "poster": "ClassicalAge/Transport/SourceArt/Transport_Russian_ClassicalAge_v1.png",
+      "description": "Broad passenger hull \u00b7 eight pale benches \u00b7 clear open interior",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "1f9f3d3253e85593af5fb578249d25b012fb4cffa21b159b98486f401b26b81a",
+      "metadata": "ClassicalAge/Transport/animations.json"
+    },
+    {
+      "age": "ClassicalAge",
+      "ageLabel": "Classical Age",
+      "category": "Trade",
+      "poster": "ClassicalAge/Trade/SourceArt/Trade_Russian_ClassicalAge_v1.png",
+      "description": "Plank-built cargo hull \u00b7 six secured loads \u00b7 iron, felt, fur and pottery",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "740502f0b3c880403a02cb7728dd9348db532c0454523c1b8071412f06b8ee0d",
+      "metadata": "ClassicalAge/Trade/animations.json"
+    },
+    {
+      "age": "EarlyMedieval",
+      "ageLabel": "Early Medieval",
+      "category": "Warships",
+      "label": "Rus coastal fighting longboat",
+      "poster": "EarlyMedieval/Warship/SourceArt/Warship_Russian_EarlyMedieval_v1.png",
+      "description": "Rus coastal fighting longboat - Coastal Warships",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "f12ee977bca7be22e939bd4557836d8ecaa816286528d60aa47246003ae7bd52",
+      "technology": "earlymedieval-coastal-warships",
+      "metadata": "EarlyMedieval/Warship/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "EarlyMedieval",
+      "ageLabel": "Early Medieval",
+      "category": "Transport",
+      "label": "Rus passenger transport",
+      "poster": "EarlyMedieval/Transport/SourceArt/Transport_Russian_EarlyMedieval_v1.png",
+      "description": "Rus passenger transport - Seafaring",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "cc2bf55c00e54de89b540672d93f03ba78bc6fffaa3e7de7ac891230f9fb034b",
+      "technology": "earlymedieval-seafaring",
+      "metadata": "EarlyMedieval/Transport/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "EarlyMedieval",
+      "ageLabel": "Early Medieval",
+      "category": "Trade",
+      "label": "Rus river merchant boat",
+      "poster": "EarlyMedieval/Trade/SourceArt/Trade_Russian_EarlyMedieval_v1.png",
+      "description": "Rus river merchant boat - Seafaring",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "54c0f130ff8d99c8b113d2d715e235a70960d05fbbea75b459d1b6f79e8e98ab",
+      "technology": "earlymedieval-seafaring",
+      "metadata": "EarlyMedieval/Trade/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "LateMedieval",
+      "ageLabel": "Late Medieval",
+      "category": "Warships",
+      "label": "Late Medieval gunship",
+      "poster": "LateMedieval/Warship/SourceArt/Warship_Russian_LateMedieval_v1.png",
+      "description": "Late Medieval gunship - Naval Gunnery",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "0e9ac56201d53b824d5b70d31efe5700500be051f788d7da4993d291fa045cb2",
+      "technology": "latemedieval-naval-gunnery",
+      "metadata": "LateMedieval/Warship/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "LateMedieval",
+      "ageLabel": "Late Medieval",
+      "category": "Transport",
+      "label": "Late Medieval passenger ship",
+      "poster": "LateMedieval/Transport/SourceArt/Transport_Russian_LateMedieval_v1.png",
+      "description": "Late Medieval passenger ship - Merchant Convoys",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "4dea5c2a8114cee4c837452ed38b988edd59733ff3b61bba71321a68d9d8d233",
+      "technology": "latemedieval-merchant-convoys",
+      "metadata": "LateMedieval/Transport/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "LateMedieval",
+      "ageLabel": "Late Medieval",
+      "category": "Trade",
+      "label": "Late Medieval cargo ship",
+      "poster": "LateMedieval/Trade/SourceArt/Trade_Russian_LateMedieval_v1.png",
+      "description": "Late Medieval cargo ship - Merchant Convoys",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "14627f79700ade6e787a54f1405d989c242b826ee7ca2e59820179be8154366f",
+      "technology": "latemedieval-merchant-convoys",
+      "metadata": "LateMedieval/Trade/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "Napoleonic",
+      "ageLabel": "Napoleonic",
+      "category": "Warships",
+      "label": "Imperial ship of the line",
+      "poster": "Napoleonic/Warship/SourceArt/Warship_Russian_Napoleonic_v1.png",
+      "description": "Imperial ship of the line - Ships of the Line",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "0ca71a662bcbbdacdd73ade2af27e21fcd862a8226b9de38ad858296727f5a8a",
+      "technology": "earlymodern-ships-of-the-line",
+      "metadata": "Napoleonic/Warship/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "Napoleonic",
+      "ageLabel": "Napoleonic",
+      "category": "Transport",
+      "label": "Napoleonic troop transport",
+      "poster": "Napoleonic/Transport/SourceArt/Transport_Russian_Napoleonic_v1.png",
+      "description": "Napoleonic troop transport - Ocean Transport",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "235543c68b0297446f51e9be7b0e8686ac27bb6f1ee8ed76b90350b1649be5b5",
+      "technology": "earlymodern-ocean-transport",
+      "metadata": "Napoleonic/Transport/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "Napoleonic",
+      "ageLabel": "Napoleonic",
+      "category": "Trade",
+      "label": "Napoleonic merchantman",
+      "poster": "Napoleonic/Trade/SourceArt/Trade_Russian_Napoleonic_v1.png",
+      "description": "Napoleonic merchantman - Ocean Transport",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "a38c456dba90b0dc36e4632d6d850285b3baf592340a67d4ecf444981c5574ec",
+      "technology": "earlymodern-ocean-transport",
+      "metadata": "Napoleonic/Trade/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "EarlyModern",
+      "ageLabel": "Early Modern",
+      "category": "Warships",
+      "label": "Soviet destroyer",
+      "poster": "EarlyModern/Warship/SourceArt/Warship_Russian_EarlyModern_v1.png",
+      "description": "Soviet destroyer - Destroyer Warfare",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "5d7c40a567b37f22c56823262773d454c47265f52235a6c0684f503c62a10897",
+      "technology": "modern-modern-warships",
+      "metadata": "EarlyModern/Warship/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "EarlyModern",
+      "ageLabel": "Early Modern",
+      "category": "Transport",
+      "label": "Soviet troop transport",
+      "poster": "EarlyModern/Transport/SourceArt/Transport_Russian_EarlyModern_v1.png",
+      "description": "Soviet troop transport - Amphibious Transport",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "c7daf95647a5794a1e48900bcddf38288921129d3dd2c2654ebc040ffd817975",
+      "technology": "modern-amphibious-transport",
+      "metadata": "EarlyModern/Transport/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "EarlyModern",
+      "ageLabel": "Early Modern",
+      "category": "Trade",
+      "label": "Soviet powered freighter",
+      "poster": "EarlyModern/Trade/SourceArt/Trade_Russian_EarlyModern_v1.png",
+      "description": "Soviet powered freighter - Amphibious Transport",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "8edb509f74c643b0ad676836272d1445b62536300799990015a1d95da42c3f93",
+      "technology": "modern-amphibious-transport",
+      "metadata": "EarlyModern/Trade/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "EarlyModern",
+      "ageLabel": "Early Modern",
+      "category": "Submarines",
+      "label": "Soviet diesel submarine",
+      "poster": "EarlyModern/Submarine/SourceArt/Submarine_Russian_EarlyModern_v1.png",
+      "description": "Soviet diesel submarine - Diesel Submarines",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "2a2547ae43727087722175b5d81b7689dd9eb77c5feeb0c402f409653d4202c1",
+      "technology": "russian-diesel-submarines",
+      "metadata": "EarlyModern/Submarine/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "Modern",
+      "ageLabel": "Modern",
+      "category": "Warships",
+      "label": "Guided-missile frigate",
+      "poster": "Modern/Warship/SourceArt/Warship_Russian_Modern_v1.png",
+      "description": "Guided-missile frigate - Guided-Missile Frigates",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "d8a033d178d9afd1c66a4e06b3cd5ac9ec392110fed65c494afdc059ae143180",
+      "technology": "russian-missile-frigates",
+      "metadata": "Modern/Warship/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "Modern",
+      "ageLabel": "Modern",
+      "category": "Transport",
+      "label": "Modern troop landing ship",
+      "poster": "Modern/Transport/SourceArt/Transport_Russian_Modern_v1.png",
+      "description": "Modern troop landing ship - Modern Transport Fleet",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "95b95b62a6521a45c810b8541499a66111f0f321f1be769bf6fb5b2aaaa6e16e",
+      "technology": "russian-modern-transport-fleet",
+      "metadata": "Modern/Transport/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "Modern",
+      "ageLabel": "Modern",
+      "category": "Trade",
+      "label": "Modern container ship",
+      "poster": "Modern/Trade/SourceArt/Trade_Russian_Modern_v1.png",
+      "description": "Modern container ship - Modern Transport Fleet",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "e9e4df0fce672345d083c8cfe549c1800635dde91309b7d9816e88a1fe8fe976",
+      "technology": "russian-modern-transport-fleet",
+      "metadata": "Modern/Trade/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    },
+    {
+      "age": "Modern",
+      "ageLabel": "Modern",
+      "category": "Submarines",
+      "label": "Modern nuclear submarine",
+      "poster": "Modern/Submarine/SourceArt/Submarine_Russian_Modern_v1.png",
+      "description": "Modern nuclear submarine - Nuclear Submarines",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "cdff98b2308a4c49ee67478da01a7c0356b9ebe3bc7bdcf0776276c3892e52f7",
+      "technology": "russian-nuclear-submarines",
+      "metadata": "Modern/Submarine/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay animate them all",
+        "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+        "date": "2026-10-07"
+      }
+    }
+  ],
+  "animationApproval": {
+    "status": "approved",
+    "age": "ClassicalAge",
+    "date": "2026-10-02",
+    "userMessage": "those are approved, animate them"
+  },
+  "animationApprovals": {
+    "StoneAge": {
+      "date": "2026-10-02",
+      "userMessage": "these are perfect, you're clear to animate them.",
+      "age": "StoneAge"
+    },
+    "BronzeAge": {
+      "age": "BronzeAge",
+      "date": "2026-10-02",
+      "userMessage": "Okay those are good, animate them"
+    },
+    "ClassicalAge": {
+      "status": "approved",
+      "age": "ClassicalAge",
+      "date": "2026-10-02",
+      "userMessage": "those are approved, animate them"
+    },
+    "EarlyMedieval": {
+      "status": "approved",
+      "userMessage": "okay animate them all",
+      "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+      "date": "2026-10-07"
+    },
+    "LateMedieval": {
+      "status": "approved",
+      "userMessage": "okay animate them all",
+      "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+      "date": "2026-10-07"
+    },
+    "Napoleonic": {
+      "status": "approved",
+      "userMessage": "okay animate them all",
+      "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+      "date": "2026-10-07"
+    },
+    "EarlyModern": {
+      "status": "approved",
+      "userMessage": "okay animate them all",
+      "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+      "date": "2026-10-07"
+    },
+    "Modern": {
+      "status": "approved",
+      "userMessage": "okay animate them all",
+      "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+      "date": "2026-10-07"
+    }
+  },
+  "status": "All 26 vessels animated; game integration unverified"
+}

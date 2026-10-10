@@ -63,7 +63,7 @@ export function technologyTreeMarkup(
           })
           .join(
             "",
-          )}</svg>${tree.nodes.map((n) => `<button class="tech-node ${n.completed ? "complete" : n.researching ? "researching" : ""}" style="grid-row:${n.row + 1};grid-column:${n.column}/span ${n.span}" data-node="${n.id}" aria-pressed="${detail.id === n.id}" title="${escape(n.name)} · ${escape(n.status)} · ${fmt(n.gold)} gold · ${n.ticks / 20}s"><b>${escape(n.name)}</b><small>${escape(n.status)}</small></button>`).join("")}</div></section>`;
+          )}</svg>${tree.nodes.map((n) => `<button class="tech-node ${n.progressionEndpoint ? "progression-endpoint" : ""} ${n.completed ? "complete" : n.researching ? "researching" : ""}" style="grid-row:${n.row + 1};grid-column:${n.column}/span ${n.span}" data-node="${n.id}" aria-pressed="${detail.id === n.id}" title="${escape(n.name)} · ${escape(n.status)} · ${fmt(n.gold)} gold · ${n.ticks / 20}s">${n.progressionEndpoint ? '<span class="tech-endpoint-star" role="img" aria-label="Main progression endpoint" title="Main progression endpoint · all research in this age’s branch still counts toward age-up">★</span>' : ""}<b>${escape(n.name)}</b><small>${escape(n.status)}</small></button>`).join("")}</div></section>`;
       })
       .join(
         "",

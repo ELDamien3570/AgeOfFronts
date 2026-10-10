@@ -50,6 +50,8 @@ interface MotionOptions {
   looseTravel?: boolean;
   /** Stable travel lanes that follow the root path through bends. */
   travelLanes?: boolean;
+  /** Root translation is carried exactly once; followers integrate local reshaping only. */
+  carrierRelative?: boolean;
 }
 const angleDelta = (from: number, to: number) =>
   Math.atan2(Math.sin(to - from), Math.cos(to - from));
@@ -95,6 +97,13 @@ export class FormationSoldierMotion {
       }
       this.leaderVX = this.leaderVY = 0;
     } else if (dt) {
+      if (options.carrierRelative) {
+        for (const member of this.members.values()) {
+          member.x += anchorDX; member.y += anchorDY;
+          member.targetX += anchorDX; member.targetY += anchorDY;
+          member.goalX += anchorDX; member.goalY += anchorDY;
+        }
+      }
       const follow =
         1 -
         Math.exp(
@@ -268,7 +277,7 @@ export class FormationSoldierMotion {
             (options.engaged || options.looseTravel ? 4 : 7);
           if (plantedCombat && member.repositioning)
             correction = Math.max(0.65, correction);
-          const carry = plantedCombat ? 0 : 1;
+          const carry = plantedCombat || options.carrierRelative ? 0 : 1;
           let desiredVX =
             (options.combatFootwork ? slotVX : this.leaderVX) * carry +
             (distance ? (dx / distance) * correction : 0);
@@ -473,7 +482,7 @@ export class FormationSoldierMotion {
             options.looseTravel && !options.engaged
               ? speed > 0.08
                 ? Math.atan2(member.vy, member.vx) - Math.PI / 2
-                : member.angle
+                : options.carrierRelative && leaderSpeed > 0.08 ? Math.atan2(this.leaderVY, this.leaderVX) - Math.PI / 2 : member.angle
               : stepping && !backstepping
                 ? stepFacing
                 : options.engaged || options.reformInPlace || speed < 0.12
@@ -540,7 +549,8 @@ export class FormationSoldierMotion {
       }
       if (dt)
         member.lastSpeed =
-          Math.hypot(member.x - startX, member.y - startY) / dt;
+          Math.hypot(member.x - startX + (options.carrierRelative ? anchorDX : 0), member.y - startY + (options.carrierRelative ? anchorDY : 0)) / dt;
+      if (dt && options.carrierRelative) member.gaitDistance += Math.hypot(anchorDX, anchorDY);
       else if (resumed) member.lastSpeed = 0;
       result.push({
         ...slot,

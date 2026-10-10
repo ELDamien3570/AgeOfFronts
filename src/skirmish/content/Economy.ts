@@ -58,4 +58,4 @@ export const RESERVE_GROWTH = {
 export const baseReserveIncome = (age: Age) =>
   RESERVE_GROWTH.base[AGES.indexOf(age)];
 export const cityReserveIncome = (age: Age, research:readonly string[]=[]) =>
-  Math.round(RESERVE_GROWTH.city[AGES.indexOf(age)] * (age === "StoneAge" && research.includes("rus-stoneage-cities") ? 1.1 : 1));
+  RESERVE_GROWTH.city[AGES.indexOf(age)];

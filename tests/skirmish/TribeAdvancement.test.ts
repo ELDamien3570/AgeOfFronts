@@ -45,7 +45,7 @@ describe("tribe catch-up progression", () => {
     for (const player of game.players.filter(p => p.kind !== "tribe")) progression.states[player.id].age = "BronzeAge";
     game.tick += 60;
     game.expansion!.beforeStep();
-    expect(state.advancement).toMatchObject({ target: "BronzeAge", remainingTicks: 700 });
+    expect(state.advancement).toMatchObject({ target: "BronzeAge", remainingTicks: ADVANCES[0].ticks });
   });
   it("rounds the 75% threshold up and ignores eliminated factions", () => {
     const { game, tribe, progression, state } = fixture();
@@ -75,8 +75,8 @@ describe("tribe catch-up progression", () => {
     expect(game.applyCommand(command)).toBeNull();
     expect(tribe.gold).toBe(97_000);
     expect(state.age).toBe("StoneAge");
-    expect(state.advancement?.remainingTicks).toBe(700);
-    for (let i = 0; i < 700; i++) progression.step(game.players);
+    expect(state.advancement?.remainingTicks).toBe(ADVANCES[0].ticks);
+    for (let i = 0; i < ADVANCES[0].ticks; i++) progression.step(game.players);
     expect(state.age).toBe("BronzeAge");
     const technology = TECHNOLOGIES.find(t => t.age === "BronzeAge" && t.tree === "warfare" && t.slot === 1)!;
     expect(game.applyCommand({ type: "research", playerId: tribe.id, technologyId: technology.id })).toBeNull();

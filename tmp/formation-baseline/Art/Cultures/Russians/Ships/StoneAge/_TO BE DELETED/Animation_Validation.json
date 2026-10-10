@@ -1,0 +1,650 @@
+{
+  "schemaVersion": 1,
+  "shipCount": 3,
+  "primaryClipCount": 7,
+  "frameCount": 70,
+  "assetContractsPassed": true,
+  "approvedMastersUnchanged": true,
+  "baseFleetFilesUnchanged": true,
+  "baseFleetFilesChecked": 309,
+  "clips": [
+    {
+      "role": "Warship",
+      "motion": "idle",
+      "file": "StoneAge\\Warship\\Idle.png",
+      "sha256": "4c5e2183ade79f53a462e1956a8ffae422c150dae149f9ff1318026b1d5aabe2",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        0.97905,
+        0.64998,
+        0.17905,
+        0.78581,
+        1.09173,
+        0.98099,
+        0.65053,
+        0.17997,
+        0.78885,
+        1.08958
+      ],
+      "bounds": [
+        [
+          118,
+          60,
+          314,
+          452
+        ],
+        [
+          79,
+          61,
+          376,
+          453
+        ],
+        [
+          79,
+          61,
+          376,
+          452
+        ],
+        [
+          79,
+          61,
+          376,
+          452
+        ],
+        [
+          79,
+          62,
+          376,
+          453
+        ],
+        [
+          117,
+          60,
+          314,
+          452
+        ],
+        [
+          117,
+          59,
+          376,
+          450
+        ],
+        [
+          79,
+          60,
+          376,
+          451
+        ],
+        [
+          79,
+          60,
+          376,
+          451
+        ],
+        [
+          79,
+          59,
+          376,
+          450
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Warship",
+      "motion": "sailing",
+      "file": "StoneAge\\Warship\\Sailing.png",
+      "sha256": "f6263c0d3539d91ffb1b7559e709c7b94e817a7a214f136b1aa4c0f17d3aacf5",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        0.52845,
+        0.24619,
+        0.21795,
+        0.53468,
+        0.67827,
+        0.53226,
+        0.24631,
+        0.2192,
+        0.53814,
+        0.67728
+      ],
+      "bounds": [
+        [
+          118,
+          60,
+          314,
+          492
+        ],
+        [
+          79,
+          60,
+          376,
+          497
+        ],
+        [
+          79,
+          60,
+          376,
+          496
+        ],
+        [
+          79,
+          60,
+          376,
+          495
+        ],
+        [
+          79,
+          60,
+          376,
+          493
+        ],
+        [
+          117,
+          60,
+          314,
+          492
+        ],
+        [
+          79,
+          61,
+          376,
+          497
+        ],
+        [
+          79,
+          59,
+          376,
+          496
+        ],
+        [
+          79,
+          59,
+          376,
+          495
+        ],
+        [
+          79,
+          61,
+          376,
+          493
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Warship",
+      "motion": "attack",
+      "file": "StoneAge\\Warship\\Attack.png",
+      "sha256": "1bf8a11b2dd2c72322bcfd9f5600d07a24000de25bfdc9febf14ac89420df616",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": false,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        0.9759,
+        0.87444,
+        0.52712,
+        0.86199,
+        1.51399,
+        1.33511,
+        0.98318,
+        0.3603,
+        0.79347,
+        1.08749
+      ],
+      "bounds": [
+        [
+          118,
+          60,
+          314,
+          452
+        ],
+        [
+          79,
+          61,
+          376,
+          453
+        ],
+        [
+          199,
+          63,
+          313,
+          453
+        ],
+        [
+          199,
+          63,
+          313,
+          452
+        ],
+        [
+          198,
+          53,
+          314,
+          453
+        ],
+        [
+          199,
+          47,
+          314,
+          451
+        ],
+        [
+          199,
+          36,
+          314,
+          450
+        ],
+        [
+          199,
+          30,
+          314,
+          450
+        ],
+        [
+          79,
+          21,
+          376,
+          451
+        ],
+        [
+          79,
+          59,
+          376,
+          450
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Transport",
+      "motion": "idle",
+      "file": "StoneAge\\Transport\\Idle.png",
+      "sha256": "135d1110e0ae793d92de083e4f237810d764f9120ec3455f240ca4efb0b19ff4",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        1.5664,
+        1.08721,
+        0.20954,
+        1.24068,
+        1.69108,
+        1.57324,
+        1.09168,
+        0.20997,
+        1.24686,
+        1.69567
+      ],
+      "bounds": [
+        [
+          79,
+          59,
+          340,
+          441
+        ],
+        [
+          79,
+          61,
+          341,
+          442
+        ],
+        [
+          79,
+          60,
+          341,
+          444
+        ],
+        [
+          79,
+          60,
+          341,
+          444
+        ],
+        [
+          79,
+          61,
+          341,
+          443
+        ],
+        [
+          78,
+          59,
+          340,
+          441
+        ],
+        [
+          78,
+          58,
+          340,
+          442
+        ],
+        [
+          78,
+          57,
+          340,
+          441
+        ],
+        [
+          78,
+          57,
+          341,
+          441
+        ],
+        [
+          79,
+          58,
+          341,
+          442
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Transport",
+      "motion": "sailing",
+      "file": "StoneAge\\Transport\\Sailing.png",
+      "sha256": "0ab9c68952ebda47cba42f8462bd397330d6d786ba5c95c8ca9768b906f00fbb",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        0.75546,
+        0.38659,
+        0.25309,
+        0.6817,
+        0.93886,
+        0.764,
+        0.38816,
+        0.25356,
+        0.68622,
+        0.94339
+      ],
+      "bounds": [
+        [
+          79,
+          59,
+          340,
+          483
+        ],
+        [
+          79,
+          59,
+          341,
+          488
+        ],
+        [
+          79,
+          59,
+          341,
+          486
+        ],
+        [
+          79,
+          59,
+          341,
+          485
+        ],
+        [
+          79,
+          59,
+          341,
+          484
+        ],
+        [
+          78,
+          59,
+          340,
+          483
+        ],
+        [
+          78,
+          58,
+          340,
+          488
+        ],
+        [
+          78,
+          58,
+          340,
+          486
+        ],
+        [
+          79,
+          58,
+          341,
+          485
+        ],
+        [
+          79,
+          60,
+          341,
+          484
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Trade",
+      "motion": "idle",
+      "file": "StoneAge\\Trade\\Idle.png",
+      "sha256": "948a320b9aa205c036b1e503fba1bea756a3666fbf1aadd447f99e1ec8c603b4",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        3.02029,
+        2.12072,
+        0.28914,
+        2.30257,
+        3.14511,
+        3.03418,
+        2.12113,
+        0.28861,
+        2.30376,
+        3.1618
+      ],
+      "bounds": [
+        [
+          137,
+          46,
+          419,
+          439
+        ],
+        [
+          79,
+          47,
+          437,
+          442
+        ],
+        [
+          79,
+          48,
+          437,
+          443
+        ],
+        [
+          79,
+          48,
+          437,
+          443
+        ],
+        [
+          79,
+          47,
+          437,
+          442
+        ],
+        [
+          137,
+          46,
+          418,
+          439
+        ],
+        [
+          136,
+          46,
+          437,
+          438
+        ],
+        [
+          79,
+          45,
+          437,
+          440
+        ],
+        [
+          79,
+          45,
+          437,
+          440
+        ],
+        [
+          79,
+          46,
+          437,
+          441
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Trade",
+      "motion": "sailing",
+      "file": "StoneAge\\Trade\\Sailing.png",
+      "sha256": "2351bd88e0bff038f41873fdac0b757ccbc06660a87a2414278138d431ca77e0",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        1.43279,
+        0.71202,
+        0.41675,
+        1.0617,
+        1.59284,
+        1.44184,
+        0.71555,
+        0.41684,
+        1.06475,
+        1.60039
+      ],
+      "bounds": [
+        [
+          137,
+          46,
+          419,
+          483
+        ],
+        [
+          79,
+          47,
+          437,
+          488
+        ],
+        [
+          79,
+          47,
+          437,
+          487
+        ],
+        [
+          79,
+          47,
+          437,
+          485
+        ],
+        [
+          79,
+          47,
+          437,
+          484
+        ],
+        [
+          137,
+          46,
+          418,
+          483
+        ],
+        [
+          79,
+          46,
+          437,
+          488
+        ],
+        [
+          79,
+          46,
+          437,
+          487
+        ],
+        [
+          79,
+          46,
+          437,
+          485
+        ],
+        [
+          79,
+          46,
+          437,
+          484
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    }
+  ],
+  "visualReview": "Asset checks only. Browser evidence is recorded separately in Review/Browser_Validation.json; no game-match integration claimed."
+}

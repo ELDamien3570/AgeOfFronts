@@ -1,0 +1,80 @@
+{
+  "generator": "built-in image_gen",
+  "jobs": [
+    {
+      "key": "MIRVLaunchComplex",
+      "label": "MIRV launch complex",
+      "category": "Building",
+      "age": "Modern",
+      "dimension": 1254,
+      "clip": "IdleFramed",
+      "prompt": "Use case: image-edit. Keep this single STRICT VERTICAL OVERHEAD MIRV site design unchanged, including flat roof tops and thin fence plan. Reframe the COMPLETE compound, gently reducing its overall footprint so ALL shrub tips, the north road end and every fence edge have at least 70px fully transparent outer border on all four sides of the1254x1254 canvas. Restore any cropped northmost foliage edge. A single CLOSED-hatch ready/idle sprite. No new details, perspective, facade, smoke or text. Same center and circular hatch. Fully transparent background, no checkerboard.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-5c0b9302-e7c0-4b37-a886-fe9ab6ad3bb9.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-cf805238-7fb3-40ac-8821-9dd8bb397182.png",
+      "supersedes": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-0a86f1e4-3d2b-4d18-b88e-6318943e005e.png",
+      "mode": "single"
+    },
+    {
+      "key": "MIRVLaunchComplex",
+      "label": "MIRV launch complex",
+      "category": "Building",
+      "age": "Modern",
+      "dimension": 1254,
+      "clip": "IdleB",
+      "prompt": "Use case: image-edit. Make ONE1254x1254 RGBA animation keyframe of THIS EXACT MIRV launch complex. Preserve EVERY fixed site feature, roof, road, perimeter, container, shrub and concrete seam in the same pixel coordinates as reference. STRICT 90-degree overhead orthographic, no facades, isometric tilt or perspective. Do not zoom, recenter, rotate or change site boundaries. Single sprite, not an atlas. True alpha outside compound, preserve the reference's wide transparent outer margin. Only change the central silo/state lights as follows: The circular silo hatch is CLOSED and unchanged. The 4 small status lamps around the rim glow a little greener/amber, tiny rooftop vent fan changes orientation, giving a subtle idle monitoring pose. Absolutely no open hatch, launch, rocket or smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-cf805238-7fb3-40ac-8821-9dd8bb397182.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-296d56e6-3a5a-440a-8264-85dec7af2c4a.png",
+      "supersedes": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-0a86f1e4-3d2b-4d18-b88e-6318943e005e.png",
+      "mode": "single"
+    },
+    {
+      "key": "MIRVLaunchComplex",
+      "label": "MIRV launch complex",
+      "category": "Building",
+      "age": "Modern",
+      "dimension": 1254,
+      "clip": "Opening",
+      "prompt": "Use case: image-edit. Make ONE1254x1254 RGBA animation keyframe of THIS EXACT MIRV launch complex. Preserve EVERY fixed site feature, roof, road, perimeter, container, shrub and concrete seam in the same pixel coordinates as reference. STRICT 90-degree overhead orthographic, no facades, isometric tilt or perspective. Do not zoom, recenter, rotate or change site boundaries. Single sprite, not an atlas. True alpha outside compound, preserve the reference's wide transparent outer margin. Only change the central silo/state lights as follows: The TWO olive semicircular hatch panels slide horizontally OUTWARD to LEFT and RIGHT by about80px each along short ground-level rails. Both halves preserve shape, same diameter and plan orientation, opening a central DARK VERTICAL SLOT within the stationary circular silo rim. Aperture shows only shadow-dark void, no inner technical structure. No rocket, fumes or explosions. Surrounding site unchanged.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-cf805238-7fb3-40ac-8821-9dd8bb397182.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-ea974642-2dca-4337-a29e-32f0180372df.png",
+      "supersedes": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-0a86f1e4-3d2b-4d18-b88e-6318943e005e.png",
+      "mode": "single"
+    },
+    {
+      "key": "MIRVLaunchComplex",
+      "label": "MIRV launch complex",
+      "category": "Building",
+      "age": "Modern",
+      "dimension": 1254,
+      "clip": "Launched",
+      "prompt": "Use case: image-edit. Make ONE1254x1254 RGBA animation keyframe of THIS EXACT MIRV launch complex. Preserve EVERY fixed site feature, roof, road, perimeter, container, shrub and concrete seam in the same pixel coordinates as reference. STRICT 90-degree overhead orthographic, no facades, isometric tilt or perspective. Do not zoom, recenter, rotate or change site boundaries. Single sprite, not an atlas. True alpha outside compound, preserve the reference's wide transparent outer margin. Only change the central silo/state lights as follows: The TWO olive semicircular hatch panels are slid LEFT and RIGHT clear of the central opening, lying flat on apron, with stationary circular rim centered at the same position. A rocket launching VERTICALLY toward the camera is seen END-ON as a small pale circular pointed NOSE CAP centered above the dark silo, surrounded by restrained bright white-amber exhaust and smoky puffs confined inside/just around the rim. DO NOT show a long north-south side profile rocket lying across the complex, or a tilted missile. Exhaust diameter under220px; unobstructed site remains unchanged.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-cf805238-7fb3-40ac-8821-9dd8bb397182.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-cd89fd7b-31a1-4d6a-9d45-7528d0c15e29.png",
+      "supersedes": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-0a86f1e4-3d2b-4d18-b88e-6318943e005e.png",
+      "mode": "single"
+    },
+    {
+      "key": "MIRVLaunchComplex",
+      "label": "MIRV launch complex",
+      "category": "Building",
+      "age": "Modern",
+      "dimension": 1254,
+      "clip": "Recover",
+      "prompt": "Use case: image-edit. Make ONE1254x1254 RGBA animation keyframe of THIS EXACT MIRV launch complex. Preserve EVERY fixed site feature, roof, road, perimeter, container, shrub and concrete seam in the same pixel coordinates as reference. STRICT 90-degree overhead orthographic, no facades, isometric tilt or perspective. Do not zoom, recenter, rotate or change site boundaries. Single sprite, not an atlas. True alpha outside compound, preserve the reference's wide transparent outer margin. Only change the central silo/state lights as follows: The TWO olive semicircular hatch panels remain slid LEFT and RIGHT as in fully open launch position. The rocket has LEFT the scene. Only a small soft dissipating gray-white smoke wreath above the central dark shaft, no flames. Clear overhead roof outlines and unchanged ground plan. Prepare transition back to closed idle; no debris, destruction or crater.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-cf805238-7fb3-40ac-8821-9dd8bb397182.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-e05efb16-5a10-4e21-b4b8-8a3d1ec68971.png",
+      "supersedes": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-0a86f1e4-3d2b-4d18-b88e-6318943e005e.png",
+      "mode": "single"
+    }
+  ]
+}

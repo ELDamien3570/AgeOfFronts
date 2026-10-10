@@ -14,7 +14,7 @@ import { MAX_FACTION_SHIPS } from "./Rules";
  * buffer values, never JSON scalars. Variable ID lists use offset/count pairs.
  * Strings are interned once per packet, not repeated for every entity. */
 export interface PackedSnapshotDetails {
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   strings: string[];
   squads?: Float64Array;
   /** Optional squad-level motion extension; legacy 27-value rows stay readable. */
@@ -26,10 +26,10 @@ export interface PackedSnapshotDetails {
   ids: Float64Array;
 }
 export const DETAIL_STRIDES = {
-  squad: 27,
+  squad: 29,
   building: 7,
   ship: 22,
-  volley: 9,
+  volley: 15,
 } as const;
 const reasons = [
   "crowd",
@@ -38,8 +38,8 @@ const reasons = [
   "restricted",
   "planning",
   "blocked",
-] as const;
-const phases = ["approach", "committed", "recovery", "preparing"] as const;
+] as const
+const phases = ["approach", "committed", "recovery", "preparing"] as const
 const repairs = [
   "idle",
   "patrolling",
@@ -47,18 +47,18 @@ const repairs = [
   "waiting-for-dock",
   "repairing",
   "returning-to-patrol",
-] as const;
-const number = (value: number | undefined) => value ?? NaN;
+] as const
+const number = (value: number | undefined) => value ?? NaN
 const optional = (value: number): number | undefined =>
-  Number.isNaN(value) ? undefined : value;
+  Number.isNaN(value) ? undefined : value
 const nullable = (value: number | null | undefined) =>
-  value === null ? Infinity : number(value);
+  value === null ? Infinity : number(value)
 const readNullable = (value: number) =>
-  value === Infinity ? null : optional(value);
+  value === Infinity ? null : optional(value)
 const boolean = (value: boolean | undefined) =>
-  value === undefined ? NaN : Number(value);
+  value === undefined ? NaN : Number(value)
 const readBoolean = (value: number) =>
-  Number.isNaN(value) ? undefined : !!value;
+  Number.isNaN(value) ? undefined : !!value
 
 export function packSnapshotDetails(
   squads: readonly Snapshot["squads"][number][] | undefined,
@@ -67,7 +67,7 @@ export function packSnapshotDetails(
   volleys: readonly ArcherVolley[],
 ): PackedSnapshotDetails {
   const strings: string[] = [],
-    stringIds = new Map<string, number>();
+    stringIds = new Map<string, number>()
   const string = (value: string | undefined) => {
     if (value === undefined) return NaN;
     let id = stringIds.get(value);
@@ -77,19 +77,19 @@ export function packSnapshotDetails(
       stringIds.set(value, id);
     }
     return id;
-  };
-  let count = 0;
+  }
+  let count = 0
   for (const squad of squads ?? [])
     count += squad.movementStatus?.blockerIds.length ?? 0;
   for (const ship of ships)
     count += ship.waypoints.length;
-  const ids = new Float64Array(count);
-  let cursor = 0;
+  const ids = new Float64Array(count)
+  let cursor = 0
   const list = (values: readonly number[]) => {
     const start = cursor;
     for (const value of values) ids[cursor++] = value;
     return start;
-  };
+  }
   const writeRefit = (
     buffer: Float64Array,
     at: number,
@@ -103,55 +103,57 @@ export function packSnapshotDetails(
           : string(refit.targetId);
     buffer[at + 1] = number(refit?.remainingTicks);
     buffer[at + 2] = number(refit?.totalTicks);
-  };
+  }
   const squadData =
-    squads && new Float64Array(squads.length * DETAIL_STRIDES.squad);
+    squads && new Float64Array(squads.length * DETAIL_STRIDES.squad)
   if (squadData)
     for (let row = 0; row < squads!.length; row++) {
       const s = squads![row],
         at = row * DETAIL_STRIDES.squad,
-        b = squadData;
-      b[at] = s.id;
-      b[at + 1] = string(s.definitionId);
-      b[at + 2] = number(s.xp);
-      b[at + 3] = number(s.deploymentTicks);
-      b[at + 4] = number(s.nextAttackTick);
-      b[at + 5] = number(s.lastAttackTick);
-      b[at + 6] = boolean(s.planningPaused);
+        b = squadData
+    b[at] = s.id
+      b[at + 1] = string(s.definitionId)
+      b[at + 2] = number(s.xp)
+      b[at + 3] = number(s.deploymentTicks)
+      b[at + 4] = number(s.nextAttackTick)
+      b[at + 5] = number(s.lastAttackTick)
+      b[at + 27] = number(s.magazineShots);
+      b[at + 28] = number(s.reloadStartedTick);
+      b[at + 6] = boolean(s.planningPaused)
       b[at + 7] = s.movementStatus
         ? reasons.indexOf(s.movementStatus.reason)
-        : NaN;
-      b[at + 8] = number(s.movementStatus?.since);
-      b[at + 9] = list(s.movementStatus?.blockerIds ?? []);
-      b[at + 10] = s.movementStatus?.blockerIds.length ?? 0;
-      writeRefit(b, at + 11, s.refit);
+        : NaN
+      b[at + 8] = number(s.movementStatus?.since)
+      b[at + 9] = list(s.movementStatus?.blockerIds ?? [])
+      b[at + 10] = s.movementStatus?.blockerIds.length ?? 0
+      writeRefit(b, at + 11, s.refit)
       b[at + 14] =
         s.charge === undefined
           ? NaN
           : s.charge === null
             ? Infinity
-            : phases.indexOf(s.charge.phase);
-      b[at + 15] = number(s.charge?.x);
-      b[at + 16] = number(s.charge?.y);
-      b[at + 17] = number(s.charge?.startTick);
-      b[at + 18] = number(s.charge?.committedTick);
-      b[at + 19] = number(s.charge?.targetId);
-      b[at + 20] = number(s.chargeReadyTick);
+            : phases.indexOf(s.charge.phase)
+      b[at + 15] = number(s.charge?.x)
+      b[at + 16] = number(s.charge?.y)
+      b[at + 17] = number(s.charge?.startTick)
+      b[at + 18] = number(s.charge?.committedTick)
+      b[at + 19] = number(s.charge?.targetId)
+      b[at + 20] = number(s.chargeReadyTick)
       b[at + 21] =
         s.structureTarget === undefined
           ? NaN
           : s.structureTarget === null
             ? Infinity
-            : 1;
-      b[at + 22] = number(s.structureTarget?.buildingId);
-      b[at + 23] = number(s.structureTarget?.barrierId);
+            : 1
+      b[at + 22] = number(s.structureTarget?.buildingId)
+      b[at + 23] = number(s.structureTarget?.barrierId)
       // Afloat: hull, its maximum and the carrying vessel (NaN on land).
-      b[at + 24] = s.afloat === undefined ? NaN : s.afloat === null ? Infinity : s.afloat.hull;
-      b[at + 25] = number(s.afloat?.maxHull);
-      b[at + 26] = string(s.afloat?.vesselId);
+      b[at + 24] = s.afloat === undefined ? NaN : s.afloat === null ? Infinity : s.afloat.hull
+      b[at + 25] = number(s.afloat?.maxHull)
+      b[at + 26] = string(s.afloat?.vesselId)
     }
   const buildingData =
-    buildings && new Float64Array(buildings.length * DETAIL_STRIDES.building);
+    buildings && new Float64Array(buildings.length * DETAIL_STRIDES.building)
   if (buildingData)
     for (let row = 0; row < buildings!.length; row++) {
       const b = buildings![row],
@@ -165,7 +167,7 @@ export function packSnapshotDetails(
       out[at + 5] = number(b.nextAttackTick);
       out[at + 6] = number(b.launchReadyTick);
     }
-  const shipData = new Float64Array(ships.length * DETAIL_STRIDES.ship);
+  const shipData = new Float64Array(ships.length * DETAIL_STRIDES.ship)
   for (let row = 0; row < ships.length; row++) {
     const s = ships[row],
       at = row * DETAIL_STRIDES.ship,
@@ -192,23 +194,29 @@ export function packSnapshotDetails(
     b[at + 21] =
       s.repairState === undefined ? NaN : repairs.indexOf(s.repairState);
   }
-  const volleyData = new Float64Array(volleys.length * DETAIL_STRIDES.volley);
+  const volleyData = new Float64Array(volleys.length * DETAIL_STRIDES.volley)
   for (let row = 0; row < volleys.length; row++) {
     const v = volleys[row],
       at = row * DETAIL_STRIDES.volley,
-      b = volleyData;
-    b[at] = v.id;
-    b[at + 1] = v.tick;
-    b[at + 2] = v.squadId;
-    b[at + 3] = string(v.definitionId);
-    b[at + 4] = v.playerId;
-    b[at + 5] = v.fromX;
-    b[at + 6] = v.fromY;
-    b[at + 7] = v.toX;
-    b[at + 8] = v.toY;
+      b = volleyData
+    b[at] = v.id
+    b[at + 1] = v.tick
+    b[at + 2] = v.squadId
+    b[at + 3] = string(v.definitionId)
+    b[at + 4] = v.playerId
+    b[at + 5] = v.fromX
+    b[at + 6] = v.fromY
+    b[at + 7] = v.toX
+    b[at + 8] = v.toY
+    b[at + 9] = v.targetId ?? -1;
+    b[at + 10] = v.damage ?? 0;
+    b[at + 11] = v.melee ? 1 : 0;
+    b[at + 12] = v.sourceKind === "aircraft" ? 1 : 0;
+    b[at + 13] = v.targetKind === "aircraft" ? 1 : 0;
+    b[at + 14] = v.impact ? 1 : 0;
   }
-  let squadMotion: Float64Array | undefined;
-  if (squads?.some(s => s.locomotion)) {
+  let squadMotion: Float64Array | undefined
+  if (squads?.some((s) => s.locomotion)) {
     squadMotion = new Float64Array(squads.length * 4);
     for (let row = 0; row < squads.length; row++) {
       const s = squads[row], at = row * 4;
@@ -219,21 +227,30 @@ export function packSnapshotDetails(
     }
   }
   return {
-    version: squads?.some(s => s.locomotion || s.charge?.phase === "preparing") ? 2 : 1,
+    version: 3,
     strings,
     squads: squadData,
     ...(squadMotion ? { squadMotion } : {}),
     buildings: buildingData,
     ships: shipData,
-    ...(ships.some(s=>s.airDefenseTick!==undefined)?{shipAirDefense:new Float64Array(ships.filter(s=>s.airDefenseTick!==undefined).flatMap(s=>[s.id,s.airDefenseTick!]))}:{}),
+    ...(ships.some((s) =>s.airDefenseTick!==undefined)
+      ? {
+  shipAirDefense: new Float64Array(
+            ships
+              .filter((s) =>s.airDefenseTick!==undefined)
+              .flatMap((s) =>[s.id,s.airDefenseTick!]),
+          ),
+        }
+      : {}),
     volleys: volleyData,
     ids,
   };
 }
 
-export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
+export function validateSnapshotDetails(
+  data: PackedSnapshotDetails): void {
   if (
-    (data.version !== 1 && data.version !== 2) ||
+    (data.version !== 1 && data.version < 2 && data.version !== 3) ||
     !Array.isArray(data.strings) ||
     data.strings.some((s) => typeof s !== "string") ||
     !(data.ids instanceof Float64Array)
@@ -262,14 +279,21 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
         throw new Error("Invalid packed snapshot identity");
       seen.add(buffer[at]);
     }
-  };
-  rows(data.squads, DETAIL_STRIDES.squad, MAX_SQUADS * 255);
-  rows(data.squadMotion, 4, MAX_SQUADS * 255);
-  rows(data.buildings, DETAIL_STRIDES.building, 1_000_000);
-  rows(data.ships, DETAIL_STRIDES.ship, MAX_FACTION_SHIPS * 255, true);
-  rows(data.shipAirDefense,2,MAX_FACTION_SHIPS*255);
+  }
+  rows(
+    data.squads,
+    data.version === 3 ? DETAIL_STRIDES.squad : 27, MAX_SQUADS * 255,
+  );
+  rows(data.squadMotion, 4, MAX_SQUADS * 255)
+  rows(data.buildings, DETAIL_STRIDES.building, 1_000_000)
+  rows(data.ships, DETAIL_STRIDES.ship, MAX_FACTION_SHIPS * 255, true)
+  rows(data.shipAirDefense,2,MAX_FACTION_SHIPS*255)
   if(data.shipAirDefense)for(let at=0;at<data.shipAirDefense.length;at+=2)if(!Number.isSafeInteger(data.shipAirDefense[at+1])||data.shipAirDefense[at+1]<0)throw new Error("Invalid ship air defence tick");
-  rows(data.volleys, DETAIL_STRIDES.volley, MAX_SQUADS * 255, true);
+  rows(
+    data.volleys,
+    data.version === 3 ? DETAIL_STRIDES.volley : 9, MAX_SQUADS * 255,
+    true,
+  );
   const range = (offset: number, count: number, maximum: number) => {
     if (
       !Number.isSafeInteger(offset) ||
@@ -280,7 +304,7 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
       offset + count > data.ids.length
     )
       throw new Error("Invalid packed snapshot list range");
-  };
+  }
   const string = (value: number, nullAllowed = false) => {
     if (Number.isNaN(value) || (nullAllowed && value === Infinity)) return;
     if (
@@ -289,7 +313,7 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
       value >= data.strings.length
     )
       throw new Error("Invalid packed snapshot string");
-  };
+  }
   const enumeration = (
     value: number,
     count: number,
@@ -303,19 +327,24 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
       return;
     if (!Number.isSafeInteger(value) || value < 0 || value >= count)
       throw new Error("Invalid packed snapshot enum");
-  };
+  }
   const finite = (buffer: Float64Array, start: number, count: number) => {
     for (let at = start; at < start + count; at++)
       if (!Number.isFinite(buffer[at]))
         throw new Error("Invalid packed snapshot number");
-  };
-  if (data.squadMotion) {
-    if (data.version !== 2) throw new Error("Invalid packed snapshot motion version");
-    if (!data.squads || data.squadMotion.length / 4 !== data.squads.length / DETAIL_STRIDES.squad)
+  }
+  if ( data.squadMotion) {
+    if (data.version < 2) throw new Error("Invalid packed snapshot motion version");
+    if (
+      !data.squads || data.squadMotion.length / 4 !== data.squads.length / (data.version === 3 ? DETAIL_STRIDES.squad : 27)
+    )
       throw new Error("Invalid packed snapshot motion rows");
     for (let at = 0; at < data.squadMotion.length; at += 4) {
-      const b = data.squadMotion;
-      if (b[at] !== data.squads[(at / 4) * DETAIL_STRIDES.squad]) throw new Error("Invalid packed snapshot motion identity");
+      const b = data.squadMotion
+      if (
+        b[at] !==
+        data.squads[(at / 4) * (data.version === 3 ? DETAIL_STRIDES.squad : 27)]
+      ) throw new Error("Invalid packed snapshot motion identity");
       if (Number.isNaN(b[at + 1])) {
         if (!Number.isNaN(b[at + 2]) || !Number.isNaN(b[at + 3])) throw new Error("Invalid packed snapshot motion");
       } else {
@@ -329,15 +358,22 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
     if (!Number.isSafeInteger(id) || id < 0)
       throw new Error("Invalid packed snapshot list identity");
   if (data.squads)
-    for (let at = 0; at < data.squads.length; at += DETAIL_STRIDES.squad) {
-      const b = data.squads;
-      range(b[at + 9], b[at + 10], 8);
-      string(b[at + 1]);
-      string(b[at + 11], true);
-      enumeration(b[at + 6], 2);
-      enumeration(b[at + 7], reasons.length);
-      enumeration(b[at + 14], data.version === 2 ? phases.length : 3, true, true);
-      enumeration(b[at + 21], 2, true, true);
+    for (
+      let at = 0; at < data.squads.length;
+      at += data.version === 3 ? DETAIL_STRIDES.squad : 27
+    ) {
+      const b = data.squads
+      range(b[at + 9], b[at + 10], 8); string(b[at + 1]);
+      string(b[at + 11], true)
+      enumeration(b[at + 6], 2)
+      enumeration(b[at + 7], reasons.length)
+    enumeration(
+      b[at + 14],
+        data.version >= 2 ? phases.length : 3,
+        true,
+        true,
+      );
+      enumeration(b[at + 21], 2, true, true)
       if (Number.isFinite(b[at + 11])) finite(b, at + 12, 2);
       if (Number.isFinite(b[at + 14])) finite(b, at + 15, 4);
       if (Number.isFinite(b[at + 7])) finite(b, at + 8, 1);
@@ -362,10 +398,13 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
     enumeration(b[at + 21], repairs.length);
     if (Number.isFinite(b[at + 13])) finite(b, at + 14, 2);
   }
-  for (let at = 0; at < data.volleys.length; at += DETAIL_STRIDES.volley) {
-    string(data.volleys[at + 3]);
-    finite(data.volleys, at, 3);
-    finite(data.volleys, at + 4, 5);
+  for (
+    let at = 0; at < data.volleys.length;
+    at += data.version === 3 ? DETAIL_STRIDES.volley : 9
+  ) {
+    string(data.volleys[at + 3])
+    finite(data.volleys, at, 3)
+    finite(data.volleys, at + 4, data.version === 3 ? 11 : 5);
   }
 }
 
@@ -376,7 +415,7 @@ export function unpackSnapshotDetails(
   "squadDetails" | "buildingDetails" | "ships" | "volleys"
 > {
   const string = (id: number) =>
-    Number.isNaN(id) ? undefined : data.strings[id];
+    Number.isNaN(id) ? undefined : data.strings[id]
   const refit = (b: Float64Array, at: number): RefitJob | null | undefined =>
     Number.isNaN(b[at])
       ? undefined
@@ -386,15 +425,18 @@ export function unpackSnapshotDetails(
             targetId: string(b[at])!,
             remainingTicks: b[at + 1],
             totalTicks: b[at + 2],
-          };
+          }
   const list = (offset: number, count: number) =>
-    Array.from(data.ids.subarray(offset, offset + count));
+    Array.from(data.ids.subarray(offset, offset + count))
   const squadDetails: SnapshotPacket["squadDetails"] = data.squads
     ? []
-    : undefined;
+    : undefined
   if (data.squads)
-    for (let at = 0; at < data.squads.length; at += DETAIL_STRIDES.squad) {
-      const b = data.squads;
+    for (
+      let at = 0; at < data.squads.length;
+      at += data.version === 3 ? DETAIL_STRIDES.squad : 27
+    ) {
+      const b = data.squads
       const charge: ChargeState | null | undefined = Number.isNaN(b[at + 14])
         ? undefined
         : b[at + 14] === Infinity
@@ -406,14 +448,20 @@ export function unpackSnapshotDetails(
               startTick: b[at + 17],
               committedTick: b[at + 18],
               targetId: optional(b[at + 19]),
-            };
+            }
       squadDetails!.push({
-        id: b[at],
+      id: b[at],
         definitionId: string(b[at + 1]),
         xp: optional(b[at + 2]),
         deploymentTicks: optional(b[at + 3]),
         nextAttackTick: optional(b[at + 4]),
         lastAttackTick: optional(b[at + 5]),
+        ...(data.version === 3
+          ? {
+              magazineShots: optional(b[at + 27]),
+              reloadStartedTick: optional(b[at + 28]),
+            }
+          : {}),
         planningPaused: readBoolean(b[at + 6]),
         movementStatus: Number.isNaN(b[at + 7])
           ? undefined
@@ -425,10 +473,29 @@ export function unpackSnapshotDetails(
         refit: refit(b, at + 11),
         charge,
         chargeReadyTick: optional(b[at + 20]),
-        locomotion: data.squadMotion && !Number.isNaN(data.squadMotion[(at / DETAIL_STRIDES.squad) * 4 + 1])
-          ? { heading: data.squadMotion[(at / DETAIL_STRIDES.squad) * 4 + 1],
-            targetHeading: data.squadMotion[(at / DETAIL_STRIDES.squad) * 4 + 2],
-            speed: data.squadMotion[(at / DETAIL_STRIDES.squad) * 4 + 3] } : undefined,
+        locomotion: data.squadMotion &&
+          !Number.isNaN( data.squadMotion[
+              (at / (data.version === 3 ? DETAIL_STRIDES.squad : 27)) * 4 + 1
+            ],
+          )
+            ? {
+                heading: data.squadMotion[
+                    (at / (data.version === 3 ? DETAIL_STRIDES.squad : 27)) *
+                      4 +
+                      1
+                  ],
+            targetHeading: data.squadMotion[
+                    (at / (data.version === 3 ? DETAIL_STRIDES.squad : 27)) *
+                      4 +
+                      2
+                  ],
+            speed: data.squadMotion[
+                    (at / (data.version === 3 ? DETAIL_STRIDES.squad : 27)) *
+                      4 +
+                      3
+                  ],
+              }
+            : undefined,
         structureTarget: Number.isNaN(b[at + 21])
           ? undefined
           : b[at + 21] === Infinity
@@ -446,7 +513,7 @@ export function unpackSnapshotDetails(
     }
   const buildingDetails: SnapshotPacket["buildingDetails"] = data.buildings
     ? []
-    : undefined;
+    : undefined
   if (data.buildings)
     for (
       let at = 0;
@@ -464,7 +531,7 @@ export function unpackSnapshotDetails(
         launchReadyTick: optional(b[at + 6]),
       });
     }
-  const ships: Snapshot["ships"] = [];
+  const ships: Snapshot["ships"] = []
   for (let at = 0; at < data.ships.length; at += DETAIL_STRIDES.ship) {
     const b = data.ships;
     ships.push({
@@ -493,9 +560,12 @@ export function unpackSnapshotDetails(
     const cooldown=new Map<number,number>();for(let at=0;at<data.shipAirDefense.length;at+=2)cooldown.set(data.shipAirDefense[at],data.shipAirDefense[at+1]);
     for(let i=0;i<ships.length;i++)if(cooldown.has(ships[i].id))ships[i]={...ships[i],airDefenseTick:cooldown.get(ships[i].id)};
   }
-  const volleys: ArcherVolley[] = [];
-  for (let at = 0; at < data.volleys.length; at += DETAIL_STRIDES.volley) {
-    const b = data.volleys;
+  const volleys: ArcherVolley[] = []
+  for (
+    let at = 0; at < data.volleys.length;
+    at += data.version === 3 ? DETAIL_STRIDES.volley : 9
+  ) {
+    const b = data.volleys
     volleys.push({
       id: b[at],
       tick: b[at + 1],
@@ -506,6 +576,16 @@ export function unpackSnapshotDetails(
       fromY: b[at + 6],
       toX: b[at + 7],
       toY: b[at + 8],
+      ...(data.version === 3 && b[at + 9] >= 0 ? { targetId: b[at + 9] } : {}),
+      ...(data.version === 3 && b[at + 10] > 0 ? { damage: b[at + 10] } : {}),
+      ...(data.version === 3 && b[at + 11] ? { melee: true } : {}),
+      ...(data.version === 3 && b[at + 12]
+        ? { sourceKind: "aircraft" as const }
+        : {}),
+      ...(data.version === 3 && b[at + 13]
+        ? { targetKind: "aircraft" as const }
+        : {}),
+      ...(data.version === 3 && b[at + 14] ? { impact: true } : {}),
     });
   }
   return { squadDetails, buildingDetails, ships, volleys };

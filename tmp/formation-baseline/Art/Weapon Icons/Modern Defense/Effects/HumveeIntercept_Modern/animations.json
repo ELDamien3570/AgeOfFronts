@@ -1,0 +1,788 @@
+{
+  "schemaVersion": 1,
+  "status": "animation-proposal",
+  "key": "HumveeIntercept",
+  "label": "Humvee interceptor impact",
+  "age": "Modern",
+  "type": "effect",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-up",
+  "directionCount": 1,
+  "frameSize": {
+    "width": 314,
+    "height": 314
+  },
+  "pivot": {
+    "x": 157,
+    "y": 157
+  },
+  "normalizedPivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "alpha": "straight",
+  "textureLimit": 4096,
+  "frameOrder": "row-major, then next sheet",
+  "animations": {
+    "detonate": {
+      "frameCount": 28,
+      "sourceKeyframeCount": 16,
+      "suggestedFramesPerSecond": 24,
+      "loop": false,
+      "durationMs": 1167,
+      "preview": "Detonate-Preview.webp",
+      "once": "Detonate-OneShot.webp",
+      "previewPauseMs": 900,
+      "files": [
+        "Detonate-Sheet_00.png"
+      ],
+      "sheets": [
+        {
+          "file": "Detonate-Sheet_00.png",
+          "width": 2512,
+          "height": 1256,
+          "columns": 8,
+          "rows": 4,
+          "firstFrame": 0,
+          "frameCount": 28
+        }
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "blend": 0,
+          "file": "Frames/Detonate_000.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "8e6302319f34f60c53225c84cfb26908a5b91637967476ed6fed73af38cade61",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "index": 1,
+          "keyframe": 1,
+          "blend": 0.20462962962962958,
+          "file": "Frames/Detonate_001.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "4d705e0c93863a61ca4f99b6982ba436271c68f674a917fb34b2c6139750c816",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 314,
+          "y": 0
+        },
+        {
+          "index": 2,
+          "keyframe": 2,
+          "blend": 0.2526748971193415,
+          "file": "Frames/Detonate_002.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "dbb088c24f68ae7e5650ca36d1b95b90b6b7a23b818aa06ff51f8053e0b97a7d",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 628,
+          "y": 0
+        },
+        {
+          "index": 3,
+          "keyframe": 3,
+          "blend": 0.19111111111111087,
+          "file": "Frames/Detonate_003.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "a51e2875d8238bed0191b2808a9c349a6457435eda3b07e4ecbdce2bbb227c52",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 942,
+          "y": 0
+        },
+        {
+          "index": 4,
+          "keyframe": 4,
+          "blend": 0.045679012345678886,
+          "file": "Frames/Detonate_004.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "4f1ef3a39de8a45e013f8c963419a5af8378d9e3fab32cfdc7a80bc3fecb4286",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1256,
+          "y": 0
+        },
+        {
+          "index": 5,
+          "keyframe": 4,
+          "blend": 0.7654320987654321,
+          "file": "Frames/Detonate_005.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "8e307fcbf4261c69baebafbcce72ebef814dd3d3293e610c657427ca8577c326",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1570,
+          "y": 0
+        },
+        {
+          "index": 6,
+          "keyframe": 5,
+          "blend": 0.4478632478632475,
+          "file": "Frames/Detonate_006.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "0bc7390723b80a5bbcc2c33a332a1820db35c42d753e326e550ba581ade399cc",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1884,
+          "y": 0
+        },
+        {
+          "index": 7,
+          "keyframe": 6,
+          "blend": 0.09728395061728407,
+          "file": "Frames/Detonate_007.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "0f99326ca21b81535e96fa9607156434eb2aa229f0a95355d10f85b7a4321308",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 2198,
+          "y": 0
+        },
+        {
+          "index": 8,
+          "keyframe": 6,
+          "blend": 0.6730864197530863,
+          "file": "Frames/Detonate_008.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "2017b14f5a3297e7e14390ec210bda76d8d06f9499458eebc1e968d8695a92ff",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 0,
+          "y": 314
+        },
+        {
+          "index": 9,
+          "keyframe": 7,
+          "blend": 0.21960784313725512,
+          "file": "Frames/Detonate_009.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "4a365ad58978b3613912a5eccb241cf68ac4966a3553d8d290c55961517ef7e7",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 314,
+          "y": 314
+        },
+        {
+          "index": 10,
+          "keyframe": 7,
+          "blend": 0.7276688453159041,
+          "file": "Frames/Detonate_010.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "a08a5b4313ba4e937d370bb65dc654fd2698791037cf880a97d0c791461f5ddf",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 628,
+          "y": 314
+        },
+        {
+          "index": 11,
+          "keyframe": 8,
+          "blend": 0.22263374485596676,
+          "file": "Frames/Detonate_011.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "95bea75e31c8954350a08c03eb482b0f630c79a0a74790488de781af0bfa82f2",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 942,
+          "y": 314
+        },
+        {
+          "index": 12,
+          "keyframe": 8,
+          "blend": 0.7024691358024686,
+          "file": "Frames/Detonate_012.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "226a7fa890002c21b0d223b0fe726d48b49b91f52fce59998f9055ef30677c2d",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1256,
+          "y": 314
+        },
+        {
+          "index": 13,
+          "keyframe": 9,
+          "blend": 0.1727095516569199,
+          "file": "Frames/Detonate_013.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "feff654de8729f6f107da367c4c5d3792f6fa5e95a2504ffe2216299dcdee969",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1570,
+          "y": 314
+        },
+        {
+          "index": 14,
+          "keyframe": 9,
+          "blend": 0.6272904483430801,
+          "file": "Frames/Detonate_014.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "02dadb89478234d5b5d79f93786aef1f22e06127e8906324759b69c586a63c92",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1884,
+          "y": 314
+        },
+        {
+          "index": 15,
+          "keyframe": 10,
+          "blend": 0.07777777777777828,
+          "file": "Frames/Detonate_015.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "005ff17aacc279ff0f7d28e5b3e90a782807f3df5a6e70fa2064806231a8f8b7",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 2198,
+          "y": 314
+        },
+        {
+          "index": 16,
+          "keyframe": 10,
+          "blend": 0.5096296296296293,
+          "file": "Frames/Detonate_016.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "1b60de58ae43b9f7739889a494e5a2aa7fbc6911d8d97de100166f9444ecbb65",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 0,
+          "y": 628
+        },
+        {
+          "index": 17,
+          "keyframe": 10,
+          "blend": 0.9414814814814815,
+          "file": "Frames/Detonate_017.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "f68be16f61b20379c599180bf1951b1359b9a94cf4f4493fd5c4d18c40cf2e65",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 314,
+          "y": 628
+        },
+        {
+          "index": 18,
+          "keyframe": 11,
+          "blend": 0.3555555555555559,
+          "file": "Frames/Detonate_018.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "6fbee1442081c631b597982ffe05bd06aa8eb90cf120e44d81cfe1061c0750ef",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 628,
+          "y": 628
+        },
+        {
+          "index": 19,
+          "keyframe": 11,
+          "blend": 0.7668430335096997,
+          "file": "Frames/Detonate_019.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "0758ff0d7cc9156adfad8c437f7f9b091337c02527ae5bbb354915ae7999fe15",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 942,
+          "y": 628
+        },
+        {
+          "index": 20,
+          "keyframe": 12,
+          "blend": 0.1781305114638447,
+          "file": "Frames/Detonate_020.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "38f094a6534f67c32836198fa4a2546d8ac1d5e38069c0dd61ec434a7b6b5076",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1256,
+          "y": 628
+        },
+        {
+          "index": 21,
+          "keyframe": 12,
+          "blend": 0.5894179894179896,
+          "file": "Frames/Detonate_021.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "7622ef6bc7b927a37f6dc6ee6296a9d49d822404c5aade18621c42e996d60448",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1570,
+          "y": 628
+        },
+        {
+          "index": 22,
+          "keyframe": 13,
+          "blend": 0.0006441223832523421,
+          "file": "Frames/Detonate_022.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "4997c24fd98abcca12af84aa8a0904daa7890ebd541b61688102ae2c26ac2afa",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 1884,
+          "y": 628
+        },
+        {
+          "index": 23,
+          "keyframe": 13,
+          "blend": 0.37616747181964555,
+          "file": "Frames/Detonate_023.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "d39770f68f16b4ab6a7fb254857421c1432a3e2b075f201f26c0ef2abe79d985",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 2198,
+          "y": 628
+        },
+        {
+          "index": 24,
+          "keyframe": 13,
+          "blend": 0.7516908212560378,
+          "file": "Frames/Detonate_024.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "3f38dfa41e2d71e2e81327f41495272ba85c815eed54c840da0d1860809cadd3",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 0,
+          "y": 942
+        },
+        {
+          "index": 25,
+          "keyframe": 14,
+          "blend": 0.1448478181151442,
+          "file": "Frames/Detonate_025.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 41,
+          "sha256": "c5857c20d396e5128e1feca7e73cb4a41605b11972ce9bf57b82a0ed19aaec1c",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 314,
+          "y": 942
+        },
+        {
+          "index": 26,
+          "keyframe": 14,
+          "blend": 0.5724239090575721,
+          "file": "Frames/Detonate_026.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "cb092fb8999d143dadd77cce4bc140c8a6b1e3b309c7fdc0d6111d666c9472bf",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 628,
+          "y": 942
+        },
+        {
+          "index": 27,
+          "keyframe": 15,
+          "blend": 0,
+          "file": "Frames/Detonate_027.png",
+          "width": 314,
+          "height": 314,
+          "durationMs": 42,
+          "sha256": "6797a5bcf5d03aed7a4742b15f03c04c3f4ccd98e81b3d85dc099d0d43f4dc7a",
+          "sheet": "Detonate-Sheet_00.png",
+          "x": 942,
+          "y": 942
+        }
+      ],
+      "events": [],
+      "sourceArt": [
+        "SourceArt/DetonateFramed.png"
+      ],
+      "interpolation": "effect"
+    }
+  },
+  "sourceAudit": {
+    "DetonateFramed": {
+      "file": "SourceArt/DetonateFramed.png",
+      "audit": [
+        {
+          "index": 0,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "width": 314,
+            "height": 314
+          },
+          "bounds": [
+            124,
+            146,
+            232,
+            252
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            177.2563940240968,
+            196.6729011505828
+          ]
+        },
+        {
+          "index": 1,
+          "rect": {
+            "left": 314,
+            "top": 0,
+            "width": 313,
+            "height": 314
+          },
+          "bounds": [
+            60,
+            101,
+            266,
+            286
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            164.2746771269979,
+            193.02462732504844
+          ]
+        },
+        {
+          "index": 2,
+          "rect": {
+            "left": 627,
+            "top": 0,
+            "width": 314,
+            "height": 314
+          },
+          "bounds": [
+            59,
+            108,
+            238,
+            278
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            151.76544077057693,
+            196.63016603789498
+          ]
+        },
+        {
+          "index": 3,
+          "rect": {
+            "left": 941,
+            "top": 0,
+            "width": 313,
+            "height": 314
+          },
+          "bounds": [
+            34,
+            95,
+            243,
+            292
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            138.04934458559822,
+            194.71945657203383
+          ]
+        },
+        {
+          "index": 4,
+          "rect": {
+            "left": 0,
+            "top": 314,
+            "width": 314,
+            "height": 313
+          },
+          "bounds": [
+            67,
+            82,
+            282,
+            296
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            177.93706552650835,
+            187.0937656733398
+          ]
+        },
+        {
+          "index": 5,
+          "rect": {
+            "left": 314,
+            "top": 314,
+            "width": 313,
+            "height": 313
+          },
+          "bounds": [
+            56,
+            79,
+            291,
+            293
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            174.5163570859175,
+            189.18543324931306
+          ]
+        },
+        {
+          "index": 6,
+          "rect": {
+            "left": 627,
+            "top": 314,
+            "width": 314,
+            "height": 313
+          },
+          "bounds": [
+            38,
+            67,
+            267,
+            294
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            154.45976587910505,
+            185.00383226775008
+          ]
+        },
+        {
+          "index": 7,
+          "rect": {
+            "left": 941,
+            "top": 314,
+            "width": 313,
+            "height": 313
+          },
+          "bounds": [
+            29,
+            70,
+            258,
+            291
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            145.84858466070634,
+            183.4777895980719
+          ]
+        },
+        {
+          "index": 8,
+          "rect": {
+            "left": 0,
+            "top": 627,
+            "width": 314,
+            "height": 314
+          },
+          "bounds": [
+            59,
+            53,
+            304,
+            288
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            183.36768139465232,
+            172.28965038048867
+          ]
+        },
+        {
+          "index": 9,
+          "rect": {
+            "left": 314,
+            "top": 627,
+            "width": 313,
+            "height": 314
+          },
+          "bounds": [
+            65,
+            63,
+            289,
+            277
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            179.74676124592511,
+            169.68042125595812
+          ]
+        },
+        {
+          "index": 10,
+          "rect": {
+            "left": 627,
+            "top": 627,
+            "width": 314,
+            "height": 314
+          },
+          "bounds": [
+            48,
+            55,
+            277,
+            280
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            157.76663683865624,
+            171.36936295386403
+          ]
+        },
+        {
+          "index": 11,
+          "rect": {
+            "left": 941,
+            "top": 627,
+            "width": 313,
+            "height": 314
+          },
+          "bounds": [
+            37,
+            56,
+            271,
+            280
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            151.28313243374808,
+            175.03403580751973
+          ]
+        },
+        {
+          "index": 12,
+          "rect": {
+            "left": 0,
+            "top": 941,
+            "width": 314,
+            "height": 313
+          },
+          "bounds": [
+            76,
+            47,
+            286,
+            249
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            178.78991079585236,
+            150.364461035332
+          ]
+        },
+        {
+          "index": 13,
+          "rect": {
+            "left": 314,
+            "top": 941,
+            "width": 313,
+            "height": 313
+          },
+          "bounds": [
+            81,
+            56,
+            271,
+            237
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 253,
+          "anchor": [
+            181.3731941240054,
+            153.85267345609373
+          ]
+        },
+        {
+          "index": 14,
+          "rect": {
+            "left": 627,
+            "top": 941,
+            "width": 314,
+            "height": 313
+          },
+          "bounds": [
+            93,
+            55,
+            227,
+            230
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 235,
+          "anchor": [
+            164.17255298903123,
+            149.9413548020273
+          ]
+        },
+        {
+          "index": 15,
+          "rect": {
+            "left": 941,
+            "top": 941,
+            "width": 313,
+            "height": 313
+          },
+          "bounds": null,
+          "edgeAlpha": 1,
+          "maxAlpha": 1,
+          "anchor": [
+            156,
+            156
+          ]
+        }
+      ],
+      "grid": {
+        "columns": 4,
+        "rows": 4,
+        "xBoundaries": [
+          0,
+          314,
+          627,
+          941,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          314,
+          627,
+          941,
+          1254
+        ]
+      }
+    }
+  },
+  "links": {},
+  "notes": [],
+  "packaging": {
+    "generator": "built-in image_gen",
+    "alignment": "opacity-squared source anchors registered to fixed output center",
+    "rigidInterpolation": "none; painted poses held at explicit timings",
+    "effectsInterpolation": "premultiplied-alpha blending of 16 painted poses",
+    "movement": "in place; game supplies world translation"
+  }
+}

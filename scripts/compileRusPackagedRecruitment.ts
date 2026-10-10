@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, renameSync } from "node:fs";
 import baseline from "../src/skirmish/content/technologies.json";
 import { validatePlan } from "../src/skirmish/planning/TechnologyPlan";
 import { readTechnologyPlan } from "../src/skirmish/planning/TechnologyPlanMigration";
@@ -137,7 +137,7 @@ const technologies = civ.technologies.map((t) => {
   // Stone foundations remain free as in the base culture. Coastal Navigation keeps authored terms.
   if (
     t.age === "StoneAge" &&
-    ["factories-mines", "barracks-equipment"].includes(slug)
+    ["cities", "barracks-equipment"].includes(slug)
   ) {
     quote.gold = 0;
     quote.ticks = 0;
@@ -151,7 +151,7 @@ const technologies = civ.technologies.map((t) => {
     prerequisites: t.prerequisites,
     gold: t.gold ?? quote.gold,
     ticks: t.researchSeconds === null ? quote.ticks : t.researchSeconds * 20,
-    capabilities: [slug],
+    capabilities: slug === "roads" ? ["roads", "land-traders"] : [slug],
     description: t.description,
   };
 });
@@ -171,7 +171,7 @@ for (const t of baseline) {
           ? [
               "cargo-canoes",
               "port-sea-trade",
-              "port-sea-trade",
+              "warships",
               "coastal-navigation",
             ]
           : ["ports", "sea-traders", "warships", "ship-improvements"];
@@ -208,10 +208,12 @@ for (const t of previous.technologies) {
           : "siege",
     );
 }
+for (const age of ages) aliases[id(age, "land-traders")] = id(age, "roads");
 for (const [alias, target] of Object.entries(aliases))
   if (!exists.has(target)) throw new Error(`Unbound ${alias}: ${target}`);
+const output = "src/skirmish/content/russian-recruitment.json";
 writeFileSync(
-  "src/skirmish/content/russian-recruitment.json",
+  output + ".tmp",
   JSON.stringify(
     {
       schemaVersion: 2,
@@ -225,6 +227,7 @@ writeFileSync(
     2,
   ) + "\n",
 );
+renameSync(output + ".tmp", output);
 console.log(
   `${technologies.length} packaged technologies; ${units.length} troop recipes`,
 );

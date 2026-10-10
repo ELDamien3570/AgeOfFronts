@@ -1,0 +1,39 @@
+{
+  "generator": "built-in image_gen",
+  "jobs": [
+    {
+      "key": "HumveeIntercept",
+      "label": "Humvee interceptor impact",
+      "frames": 28,
+      "durations": [
+        35,
+        40,
+        45,
+        50,
+        60,
+        65,
+        75,
+        85,
+        90,
+        95,
+        100,
+        105,
+        105,
+        115,
+        101,
+        0
+      ],
+      "description": "A tight lightweight anti-drone/anti-missile aerial impact: keys1-2 small brilliant icy-white/amber star flash;3-5 compact pale orange sparks and tiny steel flecks;6-9 short soft light-gray circular puff, very small translucent pressure ring;10-15 delicate dissolving smoke. Peak diameter215px. Brighter and cleaner than cannon gray puff, smaller than SAM fire bloom. No terrain, dirt, crater, plane or drone silhouettes. Sixteen stages including final empty.",
+      "dimension": 314,
+      "category": "Effects",
+      "clip": "DetonateFramed",
+      "mode": "effect",
+      "prompt": "Use case: image-edit. Correct this16-frame4x4 transparent explosion atlas. It must have FOUR rows and FOUR equal314x314 cells on1254x1254 canvas. Each effect is independently centered inside its cell; reduce every effect and ALL glow/ring/wisp edges until TOTAL diameter is at most210px with50px CLEAR fully transparent cell margin. Do NOT let any glow or smoke touch a border or adjoining cell. Preserve distinct progressive flash-fire-smoke stages, but first key is smallflash, NOT full blast. Paint neutral gray/white smoke edges with no blue/purple halo. Last key16 bottom-right is COMPLETELY EMPTY transparent, remove even the tiny remaining smoke speck. All15nonempty cells fully contained. Strict vertical overhead, no ground or objects. No backdrop or grid lines. This remains the Humvee interceptor impact animation. Use15progressive poses plus empty final, readable luminous sparks and soft alpha smoke.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-6b008a7a-c3b0-4ddb-a4d4-8d1ad5bdadc5.png",
+      "supersedes": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-16d25dd4-c481-4ac9-996a-9d01ec77ea9f.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-16d25dd4-c481-4ac9-996a-9d01ec77ea9f.png"
+      ]
+    }
+  ]
+}

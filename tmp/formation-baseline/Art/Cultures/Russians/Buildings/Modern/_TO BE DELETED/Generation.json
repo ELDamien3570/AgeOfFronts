@@ -1,0 +1,631 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "Modern",
+  "generator": "built-in image_gen",
+  "status": "draft",
+  "artDirection": "Mixed Soviet-era brick/concrete industry and contemporary Russian facilities; strict overhead camera and distinct live building role silhouettes.",
+  "scope": "All 17 currently available Modern BuildingType roles. Static culture source icons for inspection; connected terrain atlas, animations, engine integration and publication are separate.",
+  "commonPrompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.",
+  "promptConstruction": "assets[].prompt is the exact full initial prompt; referenceImages records actual references; edits[] records any revisions.",
+  "assets": [
+    {
+      "id": "barracks",
+      "folder": "Barracks",
+      "category": "Barracks",
+      "role": "Infantry recruitment",
+      "features": [
+        "Two infantry training dummies",
+        "Rifle and protective-kit benches; parade markings"
+      ],
+      "subject": "CONTEMPORARY INFANTRY BARRACKS. Two separate long olive metal rectangular roof blocks across rear and left of paved drill yard, modest brick/concrete top trim. TWO padded human-shaped training dummies in court seen directly overhead with round helmet top and crossbar arms, no standing front faces. Front-right broad flat training bench displays THREE black/wood modern rifles parallel and large folded burgundy/olive protective vests with round helmets. Sparse straight white drill-box pavement lines, a central open muster area. Low wire-fence top line only around left/right/rear; broad front opening. No bullseye targets, firing lanes, tanks, cannons or factory equipment. Functional square footprint distinct from the old U courtyard.",
+      "original": "Barracks/Top-Down-Correction/Barracks_Modern.png",
+      "newFacility": false,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: CONTEMPORARY INFANTRY BARRACKS. Two separate long olive metal rectangular roof blocks across rear and left of paved drill yard, modest brick/concrete top trim. TWO padded human-shaped training dummies in court seen directly overhead with round helmet top and crossbar arms, no standing front faces. Front-right broad flat training bench displays THREE black/wood modern rifles parallel and large folded burgundy/olive protective vests with round helmets. Sparse straight white drill-box pavement lines, a central open muster area. Low wire-fence top line only around left/right/rear; broad front opening. No bullseye targets, firing lanes, tanks, cannons or factory equipment. Functional square footprint distinct from the old U courtyard.",
+      "referenceImages": [
+        "../Napoleonic/Barracks/Icon.png"
+      ],
+      "file": "Barracks/Icon.png",
+      "sourceFile": "Barracks/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Barracks/SourceArt/Icon-v2.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-f22d1ee6-ea51-44cf-9276-0f3ccf844c82.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-66f8243c-5e85-4429-a275-7e2bb78eff42.png",
+      "edits": [
+        {
+          "sourceFile": "Barracks/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-f22d1ee6-ea51-44cf-9276-0f3ccf844c82.png",
+          "prompt": "Edit camera ONLY of this Russian Modern barracks into TRUE EXACT 90-degree overhead PLAN. Preserve roof rectangles, paved white parade markings, two dummy locations, three rifles/vests/helmets bench, brick/cream roof top trim, olive roof palette and transparency. REMOVE ALL building facades/windows/front doors completely: the broad pale vertical strip under upper roof and left/right roof visible brick faces must vanish. Roof must occlude all vertical walls. Entrances just flush flat grey threshold TOP rectangles, no upright door faces or stoops. Fence has ONLY a narrow grey wire TOP line and ONE round TOP cap per pole; DELETE ALL long cylindrical pole shafts and gate-pillar height. Training dummies seen DIRECTLY from above: one round helmet TOP over short shoulder CROSSBAR TOP, torso and base completely hidden under helmet/shoulders, no front body/standing post. Benches rectangular TOP boards, no legs. Brick/cream accents all coplanar TOP strips, never fronts. Every footprint edge horizontal/vertical, no perspective. Very subtle short uniform contact outline only, no height shading. Keep all role details and layout, add nothing.",
+          "referenceImage": "Barracks/SourceArt/Icon-v1.png",
+          "reason": "Remove facades, standing fence posts and dummy bodies; establish exact overhead reference."
+        }
+      ],
+      "referenceImagesAtGeneration": [
+        "../EarlyModern/Barracks/Icon.png"
+      ]
+    },
+    {
+      "id": "city",
+      "folder": "City",
+      "category": "City",
+      "role": "Population and reserve growth",
+      "features": [
+        "Three concrete apartment roof blocks",
+        "Courtyard playground, public green and civic square"
+      ],
+      "subject": "MODERN RUSSIAN CITY / RESIDENTIAL NEIGHBORHOOD inspired by standardized panel-block estates mixed with older brick civic buildings. Three separate long FLAT light-grey concrete apartment roof rectangles with small square rooftop access rooms/vents viewed only from above; no facades or windows on sides, no green military roof. Arrange upper,left,right blocks around open courtyard. Lower-left small warm-red-brick civic hall with muted burgundy rectangular roof. Clear central playground: overhead burgundy swing-canopy rectangle and round sandbox ring, pale footpaths, TWO lush green tree-canopy circles and grass patches. Lower-right two small colorful parked civilian car roof tops. Crisp generous public court. No enclosure wall or military equipment. Large light apartment rooftops + green courtyard are unmistakable at small scale.",
+      "original": "City/Top-Down-Correction/City_Modern.png",
+      "newFacility": false,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: MODERN RUSSIAN CITY / RESIDENTIAL NEIGHBORHOOD inspired by standardized panel-block estates mixed with older brick civic buildings. Three separate long FLAT light-grey concrete apartment roof rectangles with small square rooftop access rooms/vents viewed only from above; no facades or windows on sides, no green military roof. Arrange upper,left,right blocks around open courtyard. Lower-left small warm-red-brick civic hall with muted burgundy rectangular roof. Clear central playground: overhead burgundy swing-canopy rectangle and round sandbox ring, pale footpaths, TWO lush green tree-canopy circles and grass patches. Lower-right two small colorful parked civilian car roof tops. Crisp generous public court. No enclosure wall or military equipment. Large light apartment rooftops + green courtyard are unmistakable at small scale.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "City/Icon.png",
+      "sourceFile": "City/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "City/SourceArt/Icon-v1.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-904c0777-a544-4a78-b11b-cf845936ae82.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-904c0777-a544-4a78-b11b-cf845936ae82.png"
+    },
+    {
+      "id": "archery",
+      "folder": "Archery Range",
+      "category": "Archery Range",
+      "role": "Marksman recruitment",
+      "features": [
+        "Three bullseye targets and long firing lanes",
+        "Modern rifles and low roofed equipment shelter"
+      ],
+      "subject": "MODERN RIFLE / MARKSMAN SHOOTING RANGE retaining the game's Archery Range role. Three huge burgundy/cream bullseye disks as deliberately flattened overhead target pads at upper-right, THREE very long straight separated sandy shooting lanes to lower-right firing line. Left long narrow olive-grey corrugated metal rectangular shelter rooftop with brick/concrete trim. Lower-left wide shallow bench displays THREE distinct dark modern precision rifles with scope TOPS laid parallel, round cartridge trays. Three shallow burgundy firing mats at bottom ends of lanes. Low fence TOP line, no tall wall. Target backstops shallow flat straw/sand rectangles, no upright faces or supports. Three targets + lanes define icon; no dummies, bows, tanks or artillery.",
+      "original": "Archery Range/Top-Down-Correction/Archery_Modern.png",
+      "newFacility": false,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: MODERN RIFLE / MARKSMAN SHOOTING RANGE retaining the game's Archery Range role. Three huge burgundy/cream bullseye disks as deliberately flattened overhead target pads at upper-right, THREE very long straight separated sandy shooting lanes to lower-right firing line. Left long narrow olive-grey corrugated metal rectangular shelter rooftop with brick/concrete trim. Lower-left wide shallow bench displays THREE distinct dark modern precision rifles with scope TOPS laid parallel, round cartridge trays. Three shallow burgundy firing mats at bottom ends of lanes. Low fence TOP line, no tall wall. Target backstops shallow flat straw/sand rectangles, no upright faces or supports. Three targets + lanes define icon; no dummies, bows, tanks or artillery.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Archery Range/Icon.png",
+      "sourceFile": "Archery Range/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Archery Range/SourceArt/Icon-v1.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-3cc2ac02-f032-40d7-97e1-95d31e551052.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-3cc2ac02-f032-40d7-97e1-95d31e551052.png"
+    },
+    {
+      "id": "depot",
+      "folder": "Vehicle Depot",
+      "category": "Vehicle Depot",
+      "role": "Armored vehicle recruitment and vehicle equipment",
+      "features": [
+        "Two armored vehicles in large service bays",
+        "Fuel tanks, spare tracks and maintenance gantry"
+      ],
+      "subject": "MODERN VEHICLE DEPOT. Broad olive-grey corrugated metal hangar ROOF rectangle across top, clear grey paved maintenance apron below. TWO enlarged olive tracked tank TOP silhouettes in separate white-line service bays, one turret/barrel pointing straight toward upper edge and the other toward lower edge, clearly tank roof, hatches and paired tracks, never exposed frontal elevation. Left side TWO large circular fuel tank TOP disks and hose reels. Right spare tank track loop and broad engine-component crate. Thin gantry crossbeam TOP strip across one bay, supports hidden as round top caps. No infantry rifle benches, target lanes, horses or firing artillery. Functional open vehicle yard, no fortress wall.",
+      "original": "Stables/Top-Down-Correction/Stables_Modern.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: MODERN VEHICLE DEPOT. Broad olive-grey corrugated metal hangar ROOF rectangle across top, clear grey paved maintenance apron below. TWO enlarged olive tracked tank TOP silhouettes in separate white-line service bays, one turret/barrel pointing straight toward upper edge and the other toward lower edge, clearly tank roof, hatches and paired tracks, never exposed frontal elevation. Left side TWO large circular fuel tank TOP disks and hose reels. Right spare tank track loop and broad engine-component crate. Thin gantry crossbeam TOP strip across one bay, supports hidden as round top caps. No infantry rifle benches, target lanes, horses or firing artillery. Functional open vehicle yard, no fortress wall.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Vehicle Depot/Icon.png",
+      "sourceFile": "Vehicle Depot/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Vehicle Depot/SourceArt/Icon-v2.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-a190eb45-7380-46cf-a876-f777ccaac783.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-c57f7244-715b-4677-8421-5a9be40f5f38.png",
+      "edits": [
+        {
+          "sourceFile": "Vehicle Depot/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-a190eb45-7380-46cf-a876-f777ccaac783.png",
+          "prompt": "Precise camera cleanup ONLY of this Russian Modern Vehicle Depot. Preserve two tank TOP silhouettes with opposite-facing long barrels, fuel tank locations/lids, spare track loop, engine crate, gantry crossbeam, hangar olive roof, pavement service bay markings and transparency. TRUE EXACT 90-degree NADIR PLAN. DELETE EVERY vertical hangar facade: grey strip, garage shutter fronts and burgundy door, below roof. Hangar roofs occlude ALL walls; entrance bays only plain flush rectangular concrete TOP patches, no doors or step risers. Gantry posts only ONE round TOP cap each aligned with crossbeam; DELETE cylindrical standing shafts and hanging hook chain under beam. Fuel tanks ONLY single circular lid TOPs; delete tall dark cylindrical side bands below circles. Tank barrels only closed/top-contour rod ends, remove black forward-facing muzzle circles on lower end. Track loop overhead unchanged. All cream/red building and boundary accents coplanar narrow TOP bands, no fascia below. Keep subtle contact outline, no height shadows. No added objects.",
+          "referenceImage": "Vehicle Depot/SourceArt/Icon-v1.png",
+          "reason": "Flatten hangar frontage, gantry supports and tanks; remove muzzle faces."
+        }
+      ]
+    },
+    {
+      "id": "factory",
+      "folder": "Factory",
+      "category": "Factory",
+      "role": "Trade goods and gold income",
+      "features": [
+        "Three chimney tops on large brick factory hall",
+        "Cable reels, machine goods and cargo pallets"
+      ],
+      "subject": "CIVILIAN INDUSTRIAL FACTORY recalling inherited Moscow red-brick electrical/cable/machine production plants in contemporary use. One broad olive-grey metal industrial hall ROOF, two smaller connected sawtooth roof-top rectangular sections, red brick TOP edging only. Exactly THREE big round chimney OPEN TOP discs along rear roof row; no chimney shafts or smoke. Front spacious concrete loading yard with TWO large burgundy cable reel TOP discs showing coiled copper rings, THREE organized pallet stacks of blue/cream boxed civilian goods and silver machine housings, one small civilian forklift TOP silhouette. Clear broad diagonal-striped loading bay. No rifles, shells, tanks, military missile canisters or bullseye targets. Multiple chimneys + packed civilian goods lead identity.",
+      "original": "Factory/Top-Down-Correction/Factory_Modern.png",
+      "newFacility": false,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: CIVILIAN INDUSTRIAL FACTORY recalling inherited Moscow red-brick electrical/cable/machine production plants in contemporary use. One broad olive-grey metal industrial hall ROOF, two smaller connected sawtooth roof-top rectangular sections, red brick TOP edging only. Exactly THREE big round chimney OPEN TOP discs along rear roof row; no chimney shafts or smoke. Front spacious concrete loading yard with TWO large burgundy cable reel TOP discs showing coiled copper rings, THREE organized pallet stacks of blue/cream boxed civilian goods and silver machine housings, one small civilian forklift TOP silhouette. Clear broad diagonal-striped loading bay. No rifles, shells, tanks, military missile canisters or bullseye targets. Multiple chimneys + packed civilian goods lead identity. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Factory/Icon.png",
+      "sourceFile": "Factory/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Factory/SourceArt/Icon-v2.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-75252e34-f302-4103-b8ba-4f67854dc8b0.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-64df95e8-1ea3-4e6b-8b67-14bdec17dd96.png",
+      "edits": [
+        {
+          "sourceFile": "Factory/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-75252e34-f302-4103-b8ba-4f67854dc8b0.png",
+          "prompt": "Precise camera cleanup ONLY of this Russian Modern civilian factory. Preserve THREE large circular chimney locations, main metal roof and two side sawtooth roof regions, cable reels, goods pallets, machinery and forklift, striped loading zone, layout and transparency. TRUE EXACT 90-degree nadir PLAN. Chimneys become ONLY three clean single open circular TOP rings with black center; DELETE cylindrical chimney shafts/outer curved side bands under rings. REMOVE broad red brick vertical frontage under all roof lower edges, no loading door frontage. All brick red and cream trim lie in ONE thin HORIZONTAL TOP plane, consistent equal width around building. Sawtooth roofs are crisp parallel TOP rectangular metal panels and seam strips, no upright triangular wall faces or side elevations. Loading thresholds plain flush grey TOP rectangles. Cable reels just circular copper coil TOP discs with subtle outline; no lower sidewall band. Forklift shows cab roof and forks TOPS only. Preserve all equipment, three chimneys and signature goods. Add nothing.",
+          "referenceImage": "Factory/SourceArt/Icon-v1.png",
+          "reason": "Flatten chimney shafts, industrial frontage, side-roof elevations and reels."
+        }
+      ]
+    },
+    {
+      "id": "port",
+      "folder": "Port",
+      "category": "Port",
+      "role": "Naval recruitment and maritime trade",
+      "features": [
+        "One large motor cargo vessel",
+        "Two piers, container stacks and quay warehouse"
+      ],
+      "subject": "MODERN RUSSIAN PORT. One SINGLE LARGER modern cargo vessel seen directly overhead, long navy-grey hull straight vertical, tapered bow at top, blocky light bridge roof, several large burgundy/cream shipping-container rectangles on deck, small crane boom TOP strip. Hull modern motor ship, NO sails. Ship between TWO long grey concrete pier fingers projecting down from upper cargo quay. Left upper warm-brick warehouse with olive metal ROOF, right upper stacked burgundy/blue containers and overhead quay crane arm with hidden supports. Only a shallow contained muted blue water patch beneath ship/piers within footprint, transparent outside. Vessel deck and dock shape instantly read; no additional small boats or warship weapon diagrams.",
+      "original": "Port/Top-Down-Correction/Port_Modern.png",
+      "newFacility": false,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: MODERN RUSSIAN PORT. One SINGLE LARGER modern cargo vessel seen directly overhead, long navy-grey hull straight vertical, tapered bow at top, blocky light bridge roof, several large burgundy/cream shipping-container rectangles on deck, small crane boom TOP strip. Hull modern motor ship, NO sails. Ship between TWO long grey concrete pier fingers projecting down from upper cargo quay. Left upper warm-brick warehouse with olive metal ROOF, right upper stacked burgundy/blue containers and overhead quay crane arm with hidden supports. Only a shallow contained muted blue water patch beneath ship/piers within footprint, transparent outside. Vessel deck and dock shape instantly read; no additional small boats or warship weapon diagrams. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Port/Icon.png",
+      "sourceFile": "Port/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Port/SourceArt/Icon-v2.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-3c30d436-b929-4577-aafa-1b4f727abe63.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-74f2328d-1a51-4f8b-b4ff-465ae7b001c3.png",
+      "edits": [
+        {
+          "sourceFile": "Port/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-3c30d436-b929-4577-aafa-1b4f727abe63.png",
+          "prompt": "Camera cleanup ONLY of Russian Modern port. Preserve ONE large cargo vessel seen overhead, its entire hull/deck/bridge and cargo, two piers, crane TOP shape, upper warehouse, truck, containers and contained blue water patch with transparent outside. TRUE EXACT 90-degree NADIR view. REMOVE visible red/blue VERTICAL container FRONT SIDES from every quay and ship container; containers only simple rectangular corrugated TOP surfaces, no body side below roof. Quay and both pier ends ONLY grey horizontal TOP pads bordered by thin edge outline; DELETE dark front faces and pier end side bands, no tall height shadow into water. Warehouse roof occludes ALL facades, brick/cream only TOP trim. Crane only boom/cab TOPS, no shaft/side/hanging chain. Keep boat silhouette unchanged and centered between piers. Add nothing.",
+          "referenceImage": "Port/SourceArt/Icon-v1.png",
+          "reason": "Flatten container front sides, crane base and pier ends."
+        }
+      ]
+    },
+    {
+      "id": "mine",
+      "folder": "Mine",
+      "category": "Mine",
+      "role": "Ore extraction",
+      "features": [
+        "Three concentric open-pit terraces",
+        "Excavator, haul truck and ore conveyor"
+      ],
+      "subject": "MODERN OPEN-PIT ORE MINE. Large open oval/quasi-circular excavation with THREE broad concentric exposed grey/brown horizontal terrace rings descending to dark mineral center; smooth overhead color bands, no visible vertical cliff risers or perspective side. One clear curved access ramp. Lower-left oversized yellow/olive excavator TOP with cab roof and articulated arm over pit, bucket seen above, tracks tucked underneath; lower-right one loaded ore HAUL TRUCK roof and flat exposed gravel bed TOP. Upper-left tiny olive service-shed roof, upper-right narrow overhead conveyor strip linking coarse ore pile to shed. Large pit is primary silhouette. No drill derrick, oil tanks, military gear or medieval hoist.",
+      "original": "Mine/Top-Down-Correction/Mine_Modern.png",
+      "newFacility": false,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: MODERN OPEN-PIT ORE MINE. Large open oval/quasi-circular excavation with THREE broad concentric exposed grey/brown horizontal terrace rings descending to dark mineral center; smooth overhead color bands, no visible vertical cliff risers or perspective side. One clear curved access ramp. Lower-left oversized yellow/olive excavator TOP with cab roof and articulated arm over pit, bucket seen above, tracks tucked underneath; lower-right one loaded ore HAUL TRUCK roof and flat exposed gravel bed TOP. Upper-left tiny olive service-shed roof, upper-right narrow overhead conveyor strip linking coarse ore pile to shed. Large pit is primary silhouette. No drill derrick, oil tanks, military gear or medieval hoist. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Mine/Icon.png",
+      "sourceFile": "Mine/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Mine/SourceArt/Icon-v2.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-91735e6d-8e37-4023-8763-313606a75a2b.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-557f4a4f-6132-4c14-bdf3-7155c3070651.png",
+      "edits": [
+        {
+          "sourceFile": "Mine/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-91735e6d-8e37-4023-8763-313606a75a2b.png",
+          "prompt": "Overhead camera refinement ONLY of Russian Modern open-pit mine. Preserve THREE broad concentric excavation terraces, curved ramp, ore center/pile, yellow excavator with loaded bucket, loaded haul truck, conveyor and olive utility shed. Exact perfect 90-degree NADIR view. Replace the broad upright cliff-face strips along the UPPER/northern inner terrace edges with sloped/textured earth TOP bands following the entire circular contour equally. Do not draw standing rocky vertical faces or perspective side elevation. Terrace shading concentric and uniform around center, thin contact texture, maintain convincing stepped extraction pit and ramp. Utility shed only roof TOP rectangle, remove bottom fascia/door below roof. Conveyor TOP belt with supports hidden. Vehicles roof/back TOPS unchanged, no new objects, transparent margins unchanged.",
+          "referenceImage": "Mine/SourceArt/Icon-v1.png",
+          "reason": "Remove upright cliff faces and shed fascia; retain circular terraces and ramp."
+        }
+      ]
+    },
+    {
+      "id": "siege-workshop",
+      "folder": "Siege Workshop",
+      "category": "Siege Workshop",
+      "role": "Artillery recruitment and siege equipment",
+      "features": [
+        "Two towed howitzers with different silhouettes",
+        "Barrel stock, shell trays and assembly shed"
+      ],
+      "subject": "MODERN ARTILLERY / SIEGE WORKSHOP. Rear-left medium olive corrugated metal ROOF workshop with red-brick trim, OPEN paved front-right assembly yard. TWO oversized olive TOWED HOWITZERS directly overhead, long gun barrel parallel to ground so reads straight rod pointing UP, breech TOP block, two thin wheel edges tucked underneath, split carriage trail legs forming broad downward V. One gun longer slender barrel, second shorter thicker field howitzer. Front-left neat tray of four large gold/brass artillery shell TOP cylinders laid flat, upper-right three replacement long steel barrels parallel in shallow rack. No tanks or truck chassis, factory cargo, rifles or missile tubes. Clear gun assembly silhouette and shells. No surrounding fortress/enclosure wall.",
+      "original": "Siege/Top-Down-Correction/Siege_Modern.png",
+      "newFacility": false,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: MODERN ARTILLERY / SIEGE WORKSHOP. Rear-left medium olive corrugated metal ROOF workshop with red-brick trim, OPEN paved front-right assembly yard. TWO oversized olive TOWED HOWITZERS directly overhead, long gun barrel parallel to ground so reads straight rod pointing UP, breech TOP block, two thin wheel edges tucked underneath, split carriage trail legs forming broad downward V. One gun longer slender barrel, second shorter thicker field howitzer. Front-left neat tray of four large gold/brass artillery shell TOP cylinders laid flat, upper-right three replacement long steel barrels parallel in shallow rack. No tanks or truck chassis, factory cargo, rifles or missile tubes. Clear gun assembly silhouette and shells. No surrounding fortress/enclosure wall. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Siege Workshop/Icon.png",
+      "sourceFile": "Siege Workshop/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Siege Workshop/SourceArt/Icon-v1.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-14c8d67c-5548-4ee6-82ff-f09aa5547de3.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-14c8d67c-5548-4ee6-82ff-f09aa5547de3.png"
+    },
+    {
+      "id": "arms-factory",
+      "folder": "Arms Factory",
+      "category": "Arms Factory",
+      "role": "Infantry equipment production",
+      "features": [
+        "Three rifle assembly benches",
+        "Ammunition trays and two industrial roof halls"
+      ],
+      "subject": "MODERN ARMS FACTORY, distinct from troop recruitment and civilian factory. Two adjoining brick/concrete industrial halls with olive-grey flat corrugated ROOF tops rear and left, exactly TWO round exhaust chimney OPEN TOPS with NO shafts. Foreground neat secured concrete assembly court with THREE broad shallow burgundy-bordered production tables: first THREE dark modern rifle receivers/stocks parallel, second THREE finished black rifles laid flat, third large organized copper cartridges and round helmet/vest TOP shapes. Thin overhead gantry rail along left, no tall supports. Weapons enlarged for readable silhouette; no training dummies, bullseye targets, tanks, artillery guns, shipping containers or medieval forge/anvil. Modest factory footprint open below, no stone wall.",
+      "original": "Arms Factory/Top-Down-Correction/ArmsFactory_Modern.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: MODERN ARMS FACTORY, distinct from troop recruitment and civilian factory. Two adjoining brick/concrete industrial halls with olive-grey flat corrugated ROOF tops rear and left, exactly TWO round exhaust chimney OPEN TOPS with NO shafts. Foreground neat secured concrete assembly court with THREE broad shallow burgundy-bordered production tables: first THREE dark modern rifle receivers/stocks parallel, second THREE finished black rifles laid flat, third large organized copper cartridges and round helmet/vest TOP shapes. Thin overhead gantry rail along left, no tall supports. Weapons enlarged for readable silhouette; no training dummies, bullseye targets, tanks, artillery guns, shipping containers or medieval forge/anvil. Modest factory footprint open below, no stone wall. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Arms Factory/Icon.png",
+      "sourceFile": "Arms Factory/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Arms Factory/SourceArt/Icon-v2.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-f0aae959-db45-4559-a2b0-b9eaa5301d6b.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-55b3f4bb-42eb-4889-bc03-b0beb1c12e81.png",
+      "edits": [
+        {
+          "sourceFile": "Arms Factory/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-f0aae959-db45-4559-a2b0-b9eaa5301d6b.png",
+          "prompt": "Precise camera cleanup ONLY of this Russian Modern Arms Factory. Preserve three large assembly tables with rifle components, finished rifles, ammo/helmets/vests; olive metal L roof, two round chimney holes, crane top rail, crates and transparency. Exact perfect 90-degree overhead PLAN. REMOVE broad red brick facade/front strip below upper roof and left roof bottom. Roofs occlude ALL vertical masonry, red brick and cream edging only narrow flat TOP strips. Chimneys single open TOP rings, no shafts. Grey entrances just flush TOP thresholds, no vertical step/door or faces. Crane rail only TOP strip. Shallow table TOP boards, no legs. Keep rifles and cartridges clearly readable. No new props or layout changes.",
+          "referenceImage": "Arms Factory/SourceArt/Icon-v1.png",
+          "reason": "Flatten arms factory brick fascia, threshold faces and chimneys."
+        }
+      ]
+    },
+    {
+      "id": "oil-well",
+      "folder": "Oil Well",
+      "category": "Oil Well",
+      "role": "Land-based oil extraction",
+      "features": [
+        "Two pumpjack beams",
+        "Two storage tanks and connected pipe tops"
+      ],
+      "subject": "ONSHORE OIL WELL / PUMPJACK SITE. TWO enlarged olive/dark-red pumpjack assemblies seen from perfectly directly overhead: each visible as horizontal long walking-beam TOP over compact rectangular concrete base, broad distinctive curved horsehead TOP end, crank TOP disc and drive motor block, all vertical supports completely occluded, no side elevation. Two large pale grey circular crude storage tank TOP disks upper-right, connected by thin coplanar black pipe TOP lines. Small olive utility hut ROOF lower-left, orderly concrete pads and restrained gravel patch. Pumpjacks more prominent than hut/tanks. No tall lattice oil derrick, excavator, ore pit, offshore sea or factory production tables.",
+      "original": "Oil Well/Top-Down-Correction/OilWell_Modern.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: ONSHORE OIL WELL / PUMPJACK SITE. TWO enlarged olive/dark-red pumpjack assemblies seen from perfectly directly overhead: each visible as horizontal long walking-beam TOP over compact rectangular concrete base, broad distinctive curved horsehead TOP end, crank TOP disc and drive motor block, all vertical supports completely occluded, no side elevation. Two large pale grey circular crude storage tank TOP disks upper-right, connected by thin coplanar black pipe TOP lines. Small olive utility hut ROOF lower-left, orderly concrete pads and restrained gravel patch. Pumpjacks more prominent than hut/tanks. No tall lattice oil derrick, excavator, ore pit, offshore sea or factory production tables. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Oil Well/Icon.png",
+      "sourceFile": "Oil Well/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Oil Well/SourceArt/Icon-v2.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-4075f2fe-b0fe-4e95-8a63-dbca5109a701.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-967debf8-6156-4849-a07d-514ca19226c1.png",
+      "edits": [
+        {
+          "sourceFile": "Oil Well/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-4075f2fe-b0fe-4e95-8a63-dbca5109a701.png",
+          "prompt": "Camera cleanup ONLY of Russian Modern oil-well site. Keep TWO pumpjack top-beams/horsehead shapes, motors and bases, both tank positions, pipes, hut, fencing, gravel/concrete pads and transparent margins. Exact perfect 90-degree NADIR orthographic view. TWO circular storage tanks must show ONLY ONE grey circular lid TOP each with center cap and outline. DELETE the thick dark cylindrical SIDE BODY/band extending below each lid circle. Every tank circle centered on its footprint, top outline not offset. Remove hut door/front trim below roof: flush top threshold only. Pump supports/motor bases just horizontal TOP plates, no vertical body faces. Roof/boundary strips all coplanar top bands. No tall shadows. No added equipment.",
+          "referenceImage": "Oil Well/SourceArt/Icon-v1.png",
+          "reason": "Remove exposed tank bodies and hut frontage; flatten pump support plates."
+        }
+      ]
+    },
+    {
+      "id": "oil-rig",
+      "folder": "Oil Rig",
+      "category": "Oil Rig",
+      "role": "Offshore oil extraction",
+      "features": [
+        "Square offshore deck and drill-lattice top",
+        "Large round helipad and pipe/storage deck"
+      ],
+      "subject": "OFFSHORE OIL RIG, fully top-down. ONE broad grey rectangular offshore platform DECK top with FOUR round corner pile TOP caps, shallow contained muted blue sea patch inside site footprint. Center-left open square olive/red drill tower seen ONLY as nested concentric square TOP truss sections centered exactly over drill floor, no tower height or upright faces. Right-upper prominent round burgundy/cream helipad ring WITHOUT letter or symbol, right-lower TWO large circular grey storage tank TOPS. Left-lower small olive service accommodation roof and neat yellow pipe bundle rectangles. Thin overhead crane boom, no shaft/support elevation. Deck/platform and lattice top distinguish it from onshore pumps. No ship or coastal pier, and no perspective leg shafts.",
+      "original": "Oil Rig/Top-Down-Correction/OilRig_Modern.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: OFFSHORE OIL RIG, fully top-down. ONE broad grey rectangular offshore platform DECK top with FOUR round corner pile TOP caps, shallow contained muted blue sea patch inside site footprint. Center-left open square olive/red drill tower seen ONLY as nested concentric square TOP truss sections centered exactly over drill floor, no tower height or upright faces. Right-upper prominent round burgundy/cream helipad ring WITHOUT letter or symbol, right-lower TWO large circular grey storage tank TOPS. Left-lower small olive service accommodation roof and neat yellow pipe bundle rectangles. Thin overhead crane boom, no shaft/support elevation. Deck/platform and lattice top distinguish it from onshore pumps. No ship or coastal pier, and no perspective leg shafts. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Oil Rig/Icon.png",
+      "sourceFile": "Oil Rig/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Oil Rig/SourceArt/Icon-v1.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-d8ec04cb-7420-4c02-87c3-dec6b44c71d2.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-d8ec04cb-7420-4c02-87c3-dec6b44c71d2.png"
+    },
+    {
+      "id": "airstrip",
+      "folder": "Military Airstrip",
+      "category": "Military Airstrip",
+      "role": "Aircraft recruitment",
+      "features": [
+        "Bold short runway and taxiway footprint",
+        "Two aircraft tops, hangar and circular radar array"
+      ],
+      "subject": "MILITARY AIRSTRIP. Icon uses compressed representative footprint: one wide long straight black RUNWAY from upper-right to lower-right with large white dash center line and paired WHITE threshold bars, absolutely NO numbers or text. Adjacent narrower grey taxiway to left with a single large OLIVE jet aircraft overhead wing/canopy/tail TOP silhouette on lower apron; second smaller olive aircraft silhouette upper apron. Upper-left broad olive metal hangar ROOF with concrete TOP edging, lower-left small rectangular operations roof and circular radar antenna TOP disk with hidden support. Paved airfield enclosed as compact grey polygon and thin grass verge, transparency outside; no city roofs or ground tanks. Runway and wings dominate and survive 48 px.",
+      "original": "Military Airstrip/Top-Down-Correction/MilitaryAirstrip_Modern.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: MILITARY AIRSTRIP. Icon uses compressed representative footprint: one wide long straight black RUNWAY from upper-right to lower-right with large white dash center line and paired WHITE threshold bars, absolutely NO numbers or text. Adjacent narrower grey taxiway to left with a single large OLIVE jet aircraft overhead wing/canopy/tail TOP silhouette on lower apron; second smaller olive aircraft silhouette upper apron. Upper-left broad olive metal hangar ROOF with concrete TOP edging, lower-left small rectangular operations roof and circular radar antenna TOP disk with hidden support. Paved airfield enclosed as compact grey polygon and thin grass verge, transparency outside; no city roofs or ground tanks. Runway and wings dominate and survive 48 px. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Military Airstrip/Icon.png",
+      "sourceFile": "Military Airstrip/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Military Airstrip/SourceArt/Icon-v1.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-6be53140-3f6b-48bc-b2c8-5e21576cb08e.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-6be53140-3f6b-48bc-b2c8-5e21576cb08e.png"
+    },
+    {
+      "id": "missile-silo",
+      "folder": "Missile Silo",
+      "category": "Missile Silo",
+      "role": "Strategic missile production and launch",
+      "features": [
+        "One large circular silo hatch",
+        "Rectangular control roof and service conduit"
+      ],
+      "subject": "STATIC MISSILE SILO SITE. ONE dominant LARGE light-grey circular armored hatch TOP centered in a broad circular concrete pad, hatch has radial segments, restrained burgundy hinge strip and a dark narrow central seam, entirely closed. Lower-left small olive rectangular control bunker ROOF with red-brick top edge. Upper-left small circular vent TOP, right-side small square service hatch linked by short dark pipe strip. Low wire-fence TOP line around irregular concrete pad with wide front service opening, no fence faces/posts. Intentionally sparse, ONE hatch distinguishes it from MIRV's four-cell complex. No upright rocket or exposed rocket body, no truck, target circles, cranes or helipad.",
+      "original": "Missile Silo/Top-Down-Correction/MissileSilo_Modern.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: STATIC MISSILE SILO SITE. ONE dominant LARGE light-grey circular armored hatch TOP centered in a broad circular concrete pad, hatch has radial segments, restrained burgundy hinge strip and a dark narrow central seam, entirely closed. Lower-left small olive rectangular control bunker ROOF with red-brick top edge. Upper-left small circular vent TOP, right-side small square service hatch linked by short dark pipe strip. Low wire-fence TOP line around irregular concrete pad with wide front service opening, no fence faces/posts. Intentionally sparse, ONE hatch distinguishes it from MIRV's four-cell complex. No upright rocket or exposed rocket body, no truck, target circles, cranes or helipad. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Missile Silo/Icon.png",
+      "sourceFile": "Missile Silo/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Missile Silo/SourceArt/Icon-v1.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-cb903ceb-4028-49e5-98af-b42e984b5869.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-cb903ceb-4028-49e5-98af-b42e984b5869.png"
+    },
+    {
+      "id": "mirv-launcher",
+      "folder": "MIRV Launch Complex",
+      "category": "MIRV Launch Complex",
+      "role": "Multi-warhead missile production and launch",
+      "features": [
+        "Four circular launch-cell hatches",
+        "Central hardened control block and service routes"
+      ],
+      "subject": "FIXED MIRV LAUNCH COMPLEX. FOUR large light-grey circular armored launch-cell hatch TOPS arranged clean two-by-two on broad rectangular concrete service apron; each hatch closed with subtle segmented radial seam and small burgundy hinge top strip. A compact olive/grey RECTANGULAR hardened control-block roof BETWEEN rear pair, and thin straight service routes joining cells. Tiny utility pipe/top vent strip at left. Low wire fence TOP line only, no vertical sides. The FOUR-circular-cell footprint is unmistakably different from ONE-hatch missile silo. Static illustration game role, not real engineering layout. No upright missile, rocket cutaway, warhead anatomy, tank truck, targeting maps, antennas with upright shafts, text or emblems.",
+      "original": "MIRV Launch Complex/Top-Down-Correction/Icon.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: FIXED MIRV LAUNCH COMPLEX. FOUR large light-grey circular armored launch-cell hatch TOPS arranged clean two-by-two on broad rectangular concrete service apron; each hatch closed with subtle segmented radial seam and small burgundy hinge top strip. A compact olive/grey RECTANGULAR hardened control-block roof BETWEEN rear pair, and thin straight service routes joining cells. Tiny utility pipe/top vent strip at left. Low wire fence TOP line only, no vertical sides. The FOUR-circular-cell footprint is unmistakably different from ONE-hatch missile silo. Static illustration game role, not real engineering layout. No upright missile, rocket cutaway, warhead anatomy, tank truck, targeting maps, antennas with upright shafts, text or emblems. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "MIRV Launch Complex/Icon.png",
+      "sourceFile": "MIRV Launch Complex/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "MIRV Launch Complex/SourceArt/Icon-v1.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-1218828b-f998-4170-b9b0-d3e7117ceb30.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-1218828b-f998-4170-b9b0-d3e7117ceb30.png"
+    },
+    {
+      "id": "gun-nest",
+      "folder": "Gun Nest",
+      "category": "Gun Nest",
+      "role": "Automatic ground defense",
+      "features": [
+        "Soviet DShK silhouette: finned barrel, muzzle brake, left feed housing and paired rear grips",
+        "Low front/side sandbag parapet with rear access and linked ammunition"
+      ],
+      "subject": "Soviet DShK-inspired fixed ground-defense nest with front and side parapet; fresh replacement of rejected generic gun-nest drafts.",
+      "original": "../../../Terrain/Modern Defenses/Gun Nests/AntiInfantry_N.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: SMALL MODERN FIXED HEAVY MACHINE-GUN NEST. ONE olive/dark steel heavy machine gun seen directly overhead, large receiver TOP and long barrel pointing straight UP, short mount TOP with hidden support, NO muzzle circle facing viewer. Compact horseshoe of large pale khaki sandbag TOP ovals around sides and bottom, thin grey concrete interior and broad upper firing gap. TWO burgundy/olive ammunition-box TOP rectangles with one short linked cartridge belt curve. Sparse sand/gravel pad, no building roof, tall posts, human crew, tank chassis, target, missile canisters, canopy or wall faces. Keep gun enlarged and outline extremely clear at 48 px. One defense footprint only. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Gun Nest/Icon.png",
+      "sourceFile": "Gun Nest/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Gun Nest/SourceArt/Icon-v4.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-90a8d0be-b18a-4de5-807a-2dddaf708e0a.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-304a21ea-0bda-472b-b269-60a3a1b7781c.png",
+      "edits": [
+        {
+          "sourceFile": "Gun Nest/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-aa069773-a603-4f09-8844-647b5041041c.png",
+          "prompt": "Use case: precise-object-edit. Edit target: this exact Russian Modern machine-gun nest icon. User request: the sandbags need to stretch out IN FRONT of the nest. The gun points UP toward the TOP of image; that is the FRONT. Extend BOTH left and right sandbag arms FORWARD toward the top edge, continuing the existing horseshoe into a long protective U whose two upper ends reach approximately the height of the gun's muzzle. Add several matching pale khaki sandbag TOP ovals to each arm, extending along the left and right sides of the exposed forward barrel area. The forward bags curve slightly inward at their upper tips but leave a clear central open firing channel between the arms; do not bridge across the barrel. Keep the existing rear/bottom arc and all current bags, dark/olive machine-gun silhouette, long upward-pointing barrel, receiver, mounting top, linked ammunition belt, two ammunition boxes, colors and painterly texture unchanged. Do not rotate, shorten or replace the gun. Sandbags visibly stretch substantially farther FORWARD than in the input, not just thicken the lower rear arc. Extend the underlying gravel pad ONLY directly beneath the new forward bag arms. EXACT PERFECT 90-degree nadir overhead plan; bag TOPS only, no upright side wall faces, no camera tilt or isometric perspective. Keep fully transparent background and generous clear canvas margins; everything including new forward bag tips stays within the square image. No humans, new weapon, roof, text, symbols, smoke, broad background or shadow outside footprint. Preserve crisp role readability at small RTS icon size.",
+          "referenceImage": "Gun Nest/SourceArt/Icon-v1.png",
+          "reason": "User requested sandbags stretching forward in front of the gun nest.",
+          "date": "2026-10-03",
+          "status": "rejected",
+          "rejectionReason": "User: terrible, start from scratch, that does not even look like a Soviet machine gun"
+        },
+        {
+          "sourceFile": "Gun Nest/SourceArt/Icon-v3.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-878ccc31-89c0-4afc-a8be-319af2103d3e.png",
+          "prompt": "Use case: stylized-concept. Create a COMPLETELY NEW hand-painted transparent RTS building icon for Age of Fronts, Russian Modern GUN NEST. Start from scratch; do not reuse the previous weapon or nest layout. Subject: a recognizable SOVIET DShK model 1938 HEAVY MACHINE GUN on a compact ground tripod in a compact field sandbag position. Weapon silhouette accuracy matters. Camera: TRUE EXACT 90-degree straight-down NADIR orthographic view, looking at top surfaces of gun, tripod, ammunition and sandbags. No front elevation, no isometric angle. Gun points straight UP toward top of image, barrel nearly horizontal to ground. Distinctive DShK: substantial dark steel rectangular receiver, a thick long air-cooled barrel with MANY CLOSELY SPACED CIRCUMFERENTIAL COOLING FINS (seen overhead as crisp transverse ribs), a short broad chunky CYLINDRICAL MUZZLE BRAKE at its end, compact prominent left-side rotary FEED MECHANISM visible from above, TWO short brown wooden rear SPADE GRIP tops, compact low heavy steel/olive tripod cradle with splayed ground leg TOPS. NO rifle shoulder butt, no modern carrying rail, no rectangular perforated Browning-style barrel shroud with oval vents, no fantasy turret or thin antenna barrel. Recognizable DShK silhouette as in Australian War Memorial Soviet DShK reference photograph P01595.071: finned barrel, stout muzzle and large feed housing. This is illustrative external game artwork, no engineering diagrams, dimensions, instructions or technical labels.\n\nPOSITION DESIGN: a LOW COMPACT semicircular sandbag PARAPET runs ACROSS THE FRONT (UPPER HALF) of the emplacement, curving down both left and right SIDES to protect the receiver and gun mount. OPEN REAR ACCESS at BOTTOM, no rear/bottom closing arc. Gun receiver/tripod located behind the FRONT parapet; gun barrel projects OVER the low top-center sandbags and muzzle extends slightly beyond front parapet. Sandbag protection is visibly IN FRONT of gunner's position, not stretched into long thin fingers. Use TWO low staggered TOP rows of modestly sized realistic khaki jute sandbags, about 20-26 visible bags total, varied subtle compression/seams, no giant inflated pillows, no tall wall faces. Clear front defensive arc + real Soviet heavy gun should define silhouette. ONE small olive ammunition box to left with short linked brass cartridge belt feeding the left gun housing; ONE closed spare ammunition crate to right. A compact worn tan earth/gravel pad only inside and just beneath parapet, transparent outside. No human crew, trench network, extra guns or unrelated equipment.\n\nFINISH: crisp painterly game-art texture matching Russian Modern buildings: warm khaki/brown earth, restrained olive support hardware and ammo boxes, gun dark blued gunmetal with restrained steel edge highlights, small wood brown grip accents. Strong large readable forms at 48/64/128 pixels. Gun substantial within site, about HALF site width/height as appropriate to real heavy gun proportions, not exaggerated billboard weapon. Composition centered and broadly rounded/square, generous fully TRANSPARENT margins, all objects contained. Every vertical support hidden beneath top contours; feet and sandbags only TOPS; perfectly round top caps no upright pole shafts. No visible muzzle mouth facing camera, no broad side cast shadow, no letters, insignia, stars, flags, backdrop, fake transparency grid, smoke or firing flash.",
+          "mode": "generate-from-scratch",
+          "referenceImages": [],
+          "researchReferences": [
+            "https://www.awm.gov.au/collection/C239374",
+            "https://www.awm.gov.au/collection/C340363"
+          ],
+          "reason": "User rejected prior revision and requested a fresh Soviet machine-gun nest; rebuilt around DShK external silhouette and front/side parapet.",
+          "date": "2026-10-03",
+          "status": "superseded-camera-refinement"
+        },
+        {
+          "sourceFile": "Gun Nest/SourceArt/Icon-v4.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-90a8d0be-b18a-4de5-807a-2dddaf708e0a.png",
+          "prompt": "Use case: precise-object-edit. Camera correction ONLY of this new Soviet DShK ground machine-gun nest. Preserve the accurate DShK weapon TOP silhouette absolutely: dark long finned/ribbed air-cooled barrel, broad short ported muzzle brake pointing UP, substantial rectangular receiver, left rotary feed housing and ammunition belt, paired brown rear spade grips, olive low ground tripod with splayed legs. Keep exactly the same front/side sandbag parapet shape and open REAR/BOTTOM access, no redesign or recolor. Change view to ABSOLUTELY EXACT 90-degree vertical NADIR orthographic PLAN. All TOP surfaces must occlude their vertical bodies. Remove the visible stacked sandbag FRONT FACES below the upper arc. Instead show TWO tightly staggered HORIZONTAL TOP rows of smaller compressed khaki jute sandbags following the front/side arc, positioned next to each other across parapet width in plan; NO side-wall stack rising above ground or front tier face below top row. Bags broad shallow flat pad tops with seams and modest highlights; never enormous inflated pillows. Front parapet still passes below gun barrel at upper-center; gun fires OVER low front bags. Left open ammunition box seen ONLY directly inside open TOP rectangle with cartridges/belt; delete its tall front/side box walls below opening. Right spare box only a simple rectangular olive TOP lid with straps/latch TOP, no standing box side. Mount support shafts completely occluded; tripod leg TOP strips and foot TOP pads only, no upright stalks. Rear brown spade grips seen only as two slim parallel rounded-rectangular wooden TOP handles, no end faces facing viewer. Lower half gun receiver and all components keep exact proportions and recognizable DShK identity. Earth pad uniform TOP texture, faint even contact shading, no tall cast shadows. Fully transparent margins unchanged. No added props, no humans, no front elevation, no three-quarter camera, no isometric slant.",
+          "referenceImage": "Gun Nest/SourceArt/Icon-v3.png",
+          "reason": "Flatten sandbag tiers, ammunition-box sides and supports while retaining fresh DShK silhouette.",
+          "date": "2026-10-03",
+          "status": "draft"
+        }
+      ]
+    },
+    {
+      "id": "trench",
+      "folder": "Trench",
+      "category": "Trench",
+      "role": "Infantry cover and defensive position",
+      "features": [
+        "Zigzag trench footprint",
+        "Sandbag parapets, duckboards and firing steps"
+      ],
+      "subject": "ONE REPRESENTATIVE MODERN FIELD TRENCH building icon. Compact wide ZIGZAG / DOGLEG channel viewed exactly 90-degree overhead, three connected straight segments with TWO right-angle offset turns. Dark earthen channel bordered by thick pale khaki sandbag TOP rows and packed brown spoil strips; grey/brown wooden duckboard TOP planks along trench bottom. Two broad flat squared firing-step pads inside bends; tiny burgundy/olive ammunition crate at one end. Every channel edge drawn as TOP boundary bands, no vertical wall elevations, no deep perspective or side faces, no soldiers, weapons firing, roof, tank or disconnected trench fragments. Connected zigzag + sandbag parapet is unmistakable at small preview. Source inspection representative static footprint, not a terrain connection atlas.",
+      "original": "../../../Terrain/Modern Defenses/Trenches/tiles/00-isolated.png",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: ONE REPRESENTATIVE MODERN FIELD TRENCH building icon. Compact wide ZIGZAG / DOGLEG channel viewed exactly 90-degree overhead, three connected straight segments with TWO right-angle offset turns. Dark earthen channel bordered by thick pale khaki sandbag TOP rows and packed brown spoil strips; grey/brown wooden duckboard TOP planks along trench bottom. Two broad flat squared firing-step pads inside bends; tiny burgundy/olive ammunition crate at one end. Every channel edge drawn as TOP boundary bands, no vertical wall elevations, no deep perspective or side faces, no soldiers, weapons firing, roof, tank or disconnected trench fragments. Connected zigzag + sandbag parapet is unmistakable at small preview. Source inspection representative static footprint, not a terrain connection atlas. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Trench/Icon.png",
+      "sourceFile": "Trench/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Trench/SourceArt/Icon-v1.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-02d16632-9492-46f8-968d-b6bcde5b25bb.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-02d16632-9492-46f8-968d-b6bcde5b25bb.png"
+    },
+    {
+      "id": "missile-defence",
+      "folder": "Missile Defence",
+      "category": "Missile Defence",
+      "role": "Automatic strategic missile interception",
+      "features": [
+        "Four-cell interceptor battery",
+        "Round radar array and command shelter"
+      ],
+      "subject": "STATIC MODERN MISSILE DEFENCE INSTALLATION. Concrete/grey paved pad with one large olive FOUR-CELL interceptor canister rack seen completely directly above: FOUR long rectangular canister TOP tubes lying parallel pointed straight UP with four squared rear caps; compact launcher turntable TOP below, no truck wheels or perspective front, launch tubes NOT upright toward viewer. Left prominent round circular radar antenna TOP disk with concentric ring detail and hidden support. Rear-left small olive flat command shelter ROOF with cable-top line to radar/rack. Small burgundy power pack rectangle. Four long tubes + circular radar dominate, clear static interception facility. No silo hatch circles, underground rocket cutaway, launcher truck, tank, target, flag, tall mast or forward-facing tube mouths.",
+      "original": "",
+      "newFacility": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE polished hand-painted transparent RTS BUILDING ICON for Age of Fronts, RUSSIAN culture, MODERN AGE. Visual direction is mixed inherited Soviet-era red brick/concrete industry and contemporary Russian facilities. Clean olive-grey corrugated metal roofs, weathered warm red brick top trim, pale grey concrete, organized asphalt or concrete work yards; restrained burgundy accents, no logos. Input reference is ONLY the painterly texture, clarity and exact overhead camera guide; create the new subject below with ITS OWN layout. Broad readable role equipment is the most important element; large shapes retain identity at 48, 64 and 128 pixels. CAMERA ABSOLUTE: true perfect 90-degree vertical NADIR orthographic PLAN, all outside footprint edges horizontal/vertical, roof footprints true rectangles, no trapezoids, no isometric tilt. NO visible building front or side elevations. Every wall/fence is just a narrow coplanar TOP strip, no vertical faces. Chimneys are circular OPEN TOP discs, NO shaft. Poles only round top caps; supports hidden. Vehicles show roof/back TOP surfaces only; guns barrels seen from above, no forward-facing mouths; circular wheels almost hidden under vehicle body. All machinery tops occlude their vertical bodies. Roof pitch shading stays inside perfectly rectangular footprints. Low compact game-art proportions, subtle even contact outlines only. One isolated coherent building site occupies about 80 percent of square canvas, centered, generous fully TRANSPARENT margins with every object contained. No backdrop, fake transparency checkerboard, horizon, people, lettering, numbers, flags, national emblems, Soviet stars, medieval ornament, onion domes, smoke cloud, tall side cast shadow or unrelated props. Do not add bastions, crenellations or perimeter masonry unless the subject explicitly requests it. Role design is illustrative game art, not an exact engineering or historical reconstruction.\n\nSUBJECT: STATIC MODERN MISSILE DEFENCE INSTALLATION. Concrete/grey paved pad with one large olive FOUR-CELL interceptor canister rack seen completely directly above: FOUR long rectangular canister TOP tubes lying parallel pointed straight UP with four squared rear caps; compact launcher turntable TOP below, no truck wheels or perspective front, launch tubes NOT upright toward viewer. Left prominent round circular radar antenna TOP disk with concentric ring detail and hidden support. Rear-left small olive flat command shelter ROOF with cable-top line to radar/rack. Small burgundy power pack rectangle. Four long tubes + circular radar dominate, clear static interception facility. No silo hatch circles, underground rocket cutaway, launcher truck, tank, target, flag, tall mast or forward-facing tube mouths. Critical overhead occlusion: no facade strip, windows, doors, garage shutter faces, loading dock step risers or standing support legs. Entrances only flush TOP threshold patches. Round tank side bodies and gun muzzle circles are hidden from this exact overhead camera, visible tank lids only. Keep every cream/red border accent in a SINGLE TOP plane. Do not copy unrelated props or layout from reference.",
+      "referenceImages": [
+        "Barracks/Icon.png"
+      ],
+      "file": "Missile Defence/Icon.png",
+      "sourceFile": "Missile Defence/SourceArt/Icon-v1.png",
+      "status": "draft",
+      "selectedSourceFile": "Missile Defence/SourceArt/Icon-v2.png",
+      "selectedGenerationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-b89df148-8b6f-46e0-a754-8188ce901341.png",
+      "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-cc496d1f-fd89-4577-b188-8b6b41edc00b.png",
+      "edits": [
+        {
+          "sourceFile": "Missile Defence/SourceArt/Icon-v2.png",
+          "generationFile": "C:/Users/Damien/.codex/generated_images/01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f/exec-b89df148-8b6f-46e0-a754-8188ce901341.png",
+          "prompt": "Camera cleanup ONLY of Russian Modern fixed missile-defence installation. Preserve FOUR parallel canister TOPS, round radar face TOP disk, rectangular command shelter, cable lines, power pack, paved bay markings, boundary top strips and transparency. Exact perfect 90-degree vertical NADIR PLAN. Command shelter roof occludes its body; DELETE thick lower green facade/sidewall band, retain narrow equal outline around roof. Radar round disc shows only circular TOP face and concentric details; delete dark cylindrical side-body crescent extending downward below disc. Launcher pedestal and canisters all flat TOP contours with very subtle even contact outlines, no vertical bodies/front cap elevations. Canister front/rear caps square TOP plates, no upright mouths. All boundary red/cream accents coplanar TOP strips. Maintain clarity and exact layout, add nothing.",
+          "referenceImage": "Missile Defence/SourceArt/Icon-v1.png",
+          "reason": "Flatten command shelter, radar body and canister pedestal."
+        }
+      ]
+    },
+    {
+      "id": "rail-terminal",
+      "folder": "Rail Terminal",
+      "category": "Rail Terminal",
+      "role": "Advanced rail and freight networks",
+      "file": "Rail Terminal/Icon.png",
+      "sourceFile": "Rail Terminal/SourceArt/Icon-v1.png",
+      "selectedSourceFile": "Rail Terminal/SourceArt/Icon-v1.png",
+      "generator": "built-in image_gen",
+      "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-fa18a061-4b6c-46fe-96a8-ff3a7a8c24e7.png",
+      "prompt": "Use case: stylized-concept. Create ONE new Russian MODERN building icon in image1's crisp hand-painted material style, reference only. Mixed Soviet brick/concrete and contemporary facilities, muted olive/grey-green roofs, grey paved yards, large clear role silhouettes. EXACT90degree vertical NADIR orthographic top-down roof PLAN. NO visible building facade, front doors, windows, vertical walls or upright shafts. Roof rectangle edges aligned to canvas axes, roof covers every wall. All posts and chimneys only flat top caps, no perspective, no isometric camera, no giant long shadows. Horizontal circles truly round, equipment overhead only. Complete compact centered footprint with at least7percent EMPTY transparent outer border. Genuine transparent alpha background, no artificial decorative frame, bright red fringe, text, labels, people or modern flags. SUBJECT: Contemporary Russian freight rail terminal: three long parallel tracks, dark-blue electric freight locomotive overhead with small pantograph top shape, two container wagons, grey-green warehouse roof alongside paved loading apron with container stacks in large coherent color blocks and one overhead forklift. No standing gantry sides or electric pole shafts. Rail and long wagon pattern dominant; no unrelated nuclear symbols.",
+      "referenceImages": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png"
+      ],
+      "status": "draft",
+      "date": "2026-10-07",
+      "technologyIds": [
+        "russian-advanced-rail-networks"
+      ],
+      "proposedBuildingRole": true,
+      "sha256": "2201e924aaee569acb11df1d63a15136b0dd9ef0547c52a0d4f74e8187442e1d"
+    },
+    {
+      "id": "drone-facility",
+      "folder": "Drone Facility",
+      "category": "Drone Facility",
+      "role": "Drone production and deployment",
+      "file": "Drone Facility/Icon.png",
+      "sourceFile": "Drone Facility/SourceArt/Icon-v1.png",
+      "selectedSourceFile": "Drone Facility/SourceArt/Icon-v1.png",
+      "generator": "built-in image_gen",
+      "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-60283105-712a-4019-b80c-1d6bc02ca456.png",
+      "prompt": "Use case: stylized-concept. Create ONE new Russian MODERN building icon in image1's crisp hand-painted material style, reference only. Mixed Soviet brick/concrete and contemporary facilities, muted olive/grey-green roofs, grey paved yards, large clear role silhouettes. EXACT90degree vertical NADIR orthographic top-down roof PLAN. NO visible building facade, front doors, windows, vertical walls or upright shafts. Roof rectangle edges aligned to canvas axes, roof covers every wall. All posts and chimneys only flat top caps, no perspective, no isometric camera, no giant long shadows. Horizontal circles truly round, equipment overhead only. Complete compact centered footprint with at least7percent EMPTY transparent outer border. Genuine transparent alpha background, no artificial decorative frame, bright red fringe, text, labels, people or modern flags. SUBJECT: Contemporary Russian drone support/production compound, low L-shaped grey concrete assembly facility with desaturated olive metal TOP roofs and rectangular vents; open paved yard contains TWO clearly large overhead quadcopter silhouettes on distinct square launch pads, plus one compact fixed-wing reconnaissance UAV on staging mat, large rechargeable battery cases and small wheeled service cart. Two quadcopters must be instantly recognizable by four round rotors surrounding center fuselage, no helicopter tail. No missile silos, fighter jets or regular aviation runway; no weapon payload diagrams.",
+      "referenceImages": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png"
+      ],
+      "status": "draft",
+      "date": "2026-10-07",
+      "technologyIds": [
+        "russian-battlefield-drones"
+      ],
+      "proposedBuildingRole": true,
+      "sha256": "af5836a5853ada69549853f693b778f83b43d24810d163a63f9dd997063b203b"
+    },
+    {
+      "id": "warehouse",
+      "folder": "Warehouse",
+      "category": "Warehouse",
+      "role": "Storage and loading throughput",
+      "file": "Warehouse/Icon.png",
+      "sourceFile": "Warehouse/SourceArt/Icon-v1.png",
+      "selectedSourceFile": "Warehouse/SourceArt/Icon-v1.png",
+      "generator": "built-in image_gen",
+      "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-66bdf20a-498f-4a48-848e-47e58d2db2a1.png",
+      "prompt": "Use case: stylized-concept. Create ONE new Russian MODERN building icon in image1's crisp hand-painted material style, reference only. Mixed Soviet brick/concrete and contemporary facilities, muted olive/grey-green roofs, grey paved yards, large clear role silhouettes. EXACT90degree vertical NADIR orthographic top-down roof PLAN. NO visible building facade, front doors, windows, vertical walls or upright shafts. Roof rectangle edges aligned to canvas axes, roof covers every wall. All posts and chimneys only flat top caps, no perspective, no isometric camera, no giant long shadows. Horizontal circles truly round, equipment overhead only. Complete compact centered footprint with at least7percent EMPTY transparent outer border. Genuine transparent alpha background, no artificial decorative frame, bright red fringe, text, labels, people or modern flags. SUBJECT: Contemporary Russian logistics warehouse: ONE huge rectangular grey-green roof covering most upper footprint with neat skylight bands and rooftop utility TOP boxes, large paved loading apron along lower strip, two top-down delivery trucks beside rectangular covered loading canopy, clear pallet stacks and two overhead forklifts. No factory chimneys, weapons, rails or cranes. Warehouse single-roof mass and goods loading distinguish from multiwingFactory. Tight role-focused realistic painted icon.",
+      "referenceImages": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png"
+      ],
+      "status": "draft",
+      "date": "2026-10-07",
+      "technologyIds": [
+        "russian-intelligent-warehouses"
+      ],
+      "proposedBuildingRole": true,
+      "sha256": "cb2ca1d2ad5114d684f2e661de1e717bbcaac2e9977b484e48702d11b677f0de"
+    },
+    {
+      "id": "anti-aircraft",
+      "folder": "Anti-Aircraft Emplacement",
+      "category": "Anti-Aircraft Emplacement",
+      "role": "Stationary anti-aircraft gun defence",
+      "file": "Anti-Aircraft Emplacement/Icon.png",
+      "sourceFile": "Anti-Aircraft Emplacement/SourceArt/Icon-v1.png",
+      "selectedSourceFile": "Anti-Aircraft Emplacement/SourceArt/Icon-v3.png",
+      "generator": "built-in image_gen",
+      "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-d5effaf5-bb66-4d48-b25d-148c49f8e4c8.png",
+      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-74e45131-6baf-4130-9288-742b1ac1900c.png",
+      "prompt": "Use case: stylized-concept. Create ONE new project-ready Russian MODERN stationary ANTI-AIRCRAFT GUN building icon. Input image 1 is existing Russian Modern Gun Nest STYLE, surface texture, palette and camera reference only: do NOT copy its single barrel or machine gun tripod. Input image 2 is Early Modern AA camera/role reference only: do NOT copy its single cannon or four-leg mobile carriage. Subject: a modernized ZU-23-inspired TWIN 23mm autocannon with TWO distinct long parallel barrels and separate prominent flash suppressors pointing toward the TOP of canvas, side-by-side rectangular receiver housings, visible paired outside olive ammunition feed boxes, compact optical aiming sensor head. The weapon is PERMANENTLY mounted on one broad circular steel rotating pedestal, bolted into a clean round concrete foundation. NO tow carriage, NO tires, NO wheels, NO truck, NO tracked vehicle, NO tow hitch, NO trailer arms. Twin barrels must be visibly separated all the way to their two muzzles and readable at 48/64/128px. Modern grey concrete and weathered olive metal. A low segmented sandbag arc around upper and side portions of the circular foundation, rear entrance at bottom and two small closed ammunition chests near the rear. Sparse gravel outside compact foundation. Do not add a roofed building, radar dish, missile tube or tall antenna. Camera EXACTLY 90-degree NADIR orthographic, directly straight DOWN, a literal plan projection. Show TOP SURFACES only. The fixed pedestal is a circular TOP disc, ZERO visible cylindrical sidewall, no upright shaft or front-facing wall. Barrels horizontal for clean top-plan visibility; not elevated toward the viewer. Top faces of sandbags only, minimal shallow contact shading, NO perspective convergence, NO isometric or oblique camera. Complete compact footprint centered on square canvas, at least 8 percent empty transparent border every side. Preserve genuine transparent alpha, no opaque background, no checkerboard, no fake red/yellow alpha edge fringe. No soldiers, text, flags, logos, explosions, extra guns, or unrelated objects. Realistic hand-painted RTS art matching the existing Russian Modern family, with ONE unmistakable stationary twin-cannon AA gun.",
+      "referenceImages": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Gun Nest/Icon.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Icon.png"
+      ],
+      "status": "draft",
+      "date": "2026-10-07",
+      "technologyIds": [],
+      "inheritedResearchIds": [
+        "russian-anti-aircraft-guns"
+      ],
+      "sha256": "e8090f2f6b57f726d4fc547103dc5ca0f11cc54039e4c0dba704e794f23c4c4b",
+      "edits": [
+        {
+          "version": 2,
+          "prompt": "Precise camera and framing edit of the attached Modern Russian stationary twin-barrel AA gun icon. KEEP both long distinct barrels, prominent paired flash suppressors, two separate olive receivers, two outside ammunition feeds/boxes, compact optical sensor, bolted circular fixed turntable, round concrete foundation and rear two closed ammunition chests. No wheels, vehicle or tow carriage. CHANGE ONLY the sandbags and framing: sandbag arc must show ONLY a SINGLE band of broad TOP faces; remove the lower front-facing sandbag row and all exposed vertical bag-front surfaces. Exact straight 90 degree NADIR orthographic plan projection, flat concrete disc and gun turntable with ZERO visible sidewall. Keep the paired barrels straight, parallel and aiming up. Scale the complete footprint slightly smaller on the same square transparent canvas so there is at least 7 percent clear transparent margin above the muzzle tips, below the ground patch, and at both sides. Preserve hand-painted textures and olive/concrete palette. No red/yellow edge fringe, no background, no people, text, flags, radar dish or missiles. One true transparent PNG.",
+          "referenceImages": [
+            "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-d5effaf5-bb66-4d48-b25d-148c49f8e4c8.png"
+          ],
+          "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-5a3e05bf-9a69-4afb-8128-fec27a30158d.png",
+          "sourceFile": "Anti-Aircraft Emplacement/SourceArt/Icon-v2.png",
+          "reason": "Strict nadir sandbag projection and safe outer framing",
+          "sha256": "60ac2e52c80b4e9005017a7ec4680a85cc6714235667c3eb0a4d1ed67ab1e1dd"
+        },
+        {
+          "version": 3,
+          "prompt": "Edit ONLY the GUN ELEVATION in this attached Modern Russian stationary twin-barrel anti-aircraft emplacement. User wants the barrels aimed upward at the sky. Both cannons must be ELEVATED steeply, approximately 65 degrees above the ground, rather than lying nearly horizontal. Camera remains EXACTLY directly overhead, looking straight DOWN at 90 degrees, with unchanged orthographic projection of the concrete circle and sandbag arc. Because the guns are elevated TOWARD the overhead camera, their visible projected lengths MUST become substantially SHORTER: muzzles terminate just ahead of the paired receivers, INSIDE the inner concrete ring rather than far beyond the sandbags. Each muzzle now shows a clearly visible dark CIRCULAR BORE opening aimed toward the viewer, surrounded by a metal muzzle rim and its perforated flash suppressor. Two distinct parallel barrels with matching elevation, side by side, never fused. Strong convincing foreshortening: show top-facing circular muzzle mouths and the compressed barrel tubes back to the two receivers, visibly aiming into the air. Preserve the same paired receivers, outside feed boxes, optical sensor, fixed rotating pedestal bolted into a circular concrete foundation, low single-band sandbag TOP faces, rear opening and two ammo chests. Do not tilt the overall camera or introduce isometric ground, upright wall faces, wheels, vehicle chassis, tow carriage, missiles, extra guns or people. Same weathered olive metal and grey concrete hand-painted RTS family. Maintain full generous transparent border on square canvas, genuine transparent alpha and clean edges. One PNG. Required visible change: SKYWARD GUN ELEVATION, NOT camera tilt.",
+          "referenceImages": [
+            "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Icon.png"
+          ],
+          "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-74e45131-6baf-4130-9288-742b1ac1900c.png",
+          "sourceFile": "Anti-Aircraft Emplacement/SourceArt/Icon-v3.png",
+          "reason": "User requested elevated barrels aimed skyward; retain straight overhead camera",
+          "sha256": "e8090f2f6b57f726d4fc547103dc5ca0f11cc54039e4c0dba704e794f23c4c4b"
+        }
+      ]
+    }
+  ],
+  "draftAssetCount": 17,
+  "generatedMasterCount": 28,
+  "lastAdditiveBatch": "Review/Stationary-AA-2026-10-07"
+}

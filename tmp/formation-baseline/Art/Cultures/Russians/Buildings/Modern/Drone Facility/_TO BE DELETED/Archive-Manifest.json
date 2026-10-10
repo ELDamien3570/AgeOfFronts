@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Modern/Drone Facility/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Modern/Drone Facility/Generation.json",
+      "archived": "Buildings/Modern/Drone Facility/_TO BE DELETED/Generation.json",
+      "sha256": "b5e9afb1860e2a2e5d1d20c504eef7451c6fd6a9766dcceb9341455e5c4d071a",
+      "size": 2664
+    },
+    {
+      "original": "Buildings/Modern/Drone Facility/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Modern/Drone Facility/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "af5836a5853ada69549853f693b778f83b43d24810d163a63f9dd997063b203b",
+      "size": 1785982
+    }
+  ]
+}

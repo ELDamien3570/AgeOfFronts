@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1210" height="708" viewBox="0 0 1210 708"><rect width="1210" height="708" fill="#202a2d"/><text x="26" y="41" font-family="Arial,sans-serif" font-size="24" fill="#ffffff">FORMATION MARKERS / FACTION TINT BASES</text><rect x="14" y="70" width="282" height="294" rx="10" fill="#334044"/>
+      <svg x="20" y="74" width="270" height="250" viewBox="0 0 512 512"><g id="faction-field" fill="#ffffff"><path d="M32 144H240L256 128L272 144H480V368H32Z"/></g>
+    <path id="facing" d="M246 150L256 138L266 150Z" fill="#000000"/>
+    <g id="unit-symbol" fill="#000000"><g transform="translate(256 248) scale(1.28)"><g transform="rotate(-45)"><path d="M0-92L18-65V31H42V49H14V81H22V97H-22V81H-14V49H-42V31H-18V-65Z"/></g><g transform="rotate(45)" stroke="#ffffff" stroke-width="7" paint-order="stroke fill"><path d="M0-92L18-65V31H42V49H14V81H22V97H-22V81H-14V49H-42V31H-18V-65Z"/></g></g></g></svg>
+      <text x="155" y="348" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#f2f5f4">Melee</text><rect x="314" y="70" width="282" height="294" rx="10" fill="#334044"/>
+      <svg x="320" y="74" width="270" height="250" viewBox="0 0 512 512"><g id="faction-field" fill="#ffffff"><path d="M32 144H240L256 128L272 144H480V368H32Z"/></g>
+    <path id="facing" d="M246 150L256 138L266 150Z" fill="#000000"/>
+    <g id="unit-symbol" fill="#000000"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M223 164Q426 256 223 348" stroke-width="24"/>
+  <path d="M223 164V348" stroke-width="12"/>
+  <path d="M129 256H390" stroke-width="20"/>
+  </g><path d="M416 256L369 224V288Z"/><path d="M156 256L126 230H104L134 256L104 282H126Z"/></g></svg>
+      <text x="455" y="348" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#f2f5f4">Ranged</text><rect x="614" y="70" width="282" height="294" rx="10" fill="#334044"/>
+      <svg x="620" y="74" width="270" height="250" viewBox="0 0 512 512"><g id="faction-field" fill="#ffffff"><path d="M32 144H240L256 128L272 144H480V368H32Z"/></g>
+    <path id="facing" d="M246 150L256 138L266 150Z" fill="#000000"/>
+    <g id="unit-symbol" fill="#000000"><path d="M108 354C124 321 147 285 162 253L128 264Q145 230 176 215L148 217Q175 188 216 177H250L270 152L279 183L303 159L299 206L350 262Q364 277 361 293Q358 310 342 312L329 311L302 287Q287 278 278 263Q272 297 291 328L316 354Z"/><ellipse cx="308" cy="238" rx="8" ry="6" transform="rotate(30 308 238)" fill="#ffffff"/></g></svg>
+      <text x="755" y="348" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#f2f5f4">Cavalry</text><rect x="914" y="70" width="282" height="294" rx="10" fill="#334044"/>
+      <svg x="920" y="74" width="270" height="250" viewBox="0 0 512 512"><g id="faction-field" fill="#ffffff"><path d="M32 144H240L256 128L272 144H480V368H32Z"/></g>
+    <path id="facing" d="M246 150L256 138L266 150Z" fill="#000000"/>
+    <g id="unit-symbol" fill="#000000"><g transform="translate(-35 12) scale(.83 .94)"><path d="M108 354C124 321 147 285 162 253L128 264Q145 230 176 215L148 217Q175 188 216 177H250L270 152L279 183L303 159L299 206L350 262Q364 277 361 293Q358 310 342 312L329 311L302 287Q287 278 278 263Q272 297 291 328L316 354Z"/><ellipse cx="308" cy="238" rx="8" ry="6" transform="rotate(30 308 238)" fill="#ffffff"/></g><g transform="translate(231 10) scale(.52 .96)"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M223 164Q426 256 223 348" stroke-width="24"/>
+  <path d="M223 164V348" stroke-width="12"/>
+  <path d="M129 256H390" stroke-width="20"/>
+  </g><path d="M416 256L369 224V288Z"/><path d="M156 256L126 230H104L134 256L104 282H126Z"/></g></g></svg>
+      <text x="1055" y="348" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#f2f5f4">Ranged cavalry</text><rect x="14" y="380" width="282" height="294" rx="10" fill="#334044"/>
+      <svg x="20" y="384" width="270" height="250" viewBox="0 0 512 512"><g id="faction-field" fill="#ffffff"><circle cx="256" cy="256" r="208"/><path d="M237 51L256 32L275 51Z"/></g>
+      <path id="facing" d="M241 59L256 41L271 59Z" fill="#000000"/>
+      <g id="unit-symbol" fill="#000000"><g fill="none" stroke="#000000" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M171 328L234 238L334 328ZM234 238V328M155 338H357"/>
+    </g><path d="M184 317L359 161" fill="none" stroke="#000000" stroke-width="26" stroke-linecap="round"/>
+    <circle cx="234" cy="272" r="25"/><circle cx="234" cy="272" r="8" fill="#ffffff"/>
+    <circle cx="155" cy="350" r="40"/><circle cx="357" cy="350" r="40"/>
+    <circle cx="155" cy="350" r="13" fill="#ffffff"/><circle cx="357" cy="350" r="13" fill="#ffffff"/>
+    <g transform="rotate(-30 370 152)"><ellipse cx="370" cy="152" rx="42" ry="25"/><ellipse cx="370" cy="144" rx="31" ry="7" fill="#ffffff"/></g></g></svg>
+      <text x="155" y="658" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#f2f5f4">Siege / catapult</text><rect x="314" y="380" width="282" height="294" rx="10" fill="#334044"/>
+      <svg x="320" y="384" width="270" height="250" viewBox="0 0 512 512"><g id="faction-field" fill="#ffffff"><path d="M144 32H240L256 16L272 32H368V480H144Z"/></g>
+      <path id="facing" d="M246 38L256 26L266 38Z" fill="#000000"/>
+      <g id="unit-symbol" fill="#000000"><path d="M256 58L272 112H240Z"/>
+    <g fill="none" stroke="#000000" stroke-width="18" stroke-linecap="square">
+      <path d="M207 178L172 207M305 178L340 207M207 258L172 287M305 258L340 287M207 338L172 367M305 338L340 367"/>
+    </g><path d="M256 86Q323 156 320 250L312 366Q302 415 256 444Q210 415 200 366L192 250Q189 156 256 86Z"/>
+    <path d="M256 126Q280 176 280 246L276 367Q270 392 256 408Q242 392 236 367L232 246Q232 176 256 126Z" fill="#ffffff"/>
+    <g stroke="#000000" stroke-width="18"><path d="M231 196H281M232 266H280M235 336H277"/></g></g></svg>
+      <text x="455" y="658" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#f2f5f4">Warship</text><rect x="614" y="380" width="282" height="294" rx="10" fill="#334044"/>
+      <svg x="620" y="384" width="270" height="250" viewBox="0 0 512 512"><g id="faction-field" fill="#ffffff"><path d="M144 32H240L256 16L272 32H368V480H144Z"/></g>
+      <path id="facing" d="M246 38L256 26L266 38Z" fill="#000000"/>
+      <g id="unit-symbol" fill="#000000"><path d="M256 78Q336 148 334 250L322 365Q313 420 256 450Q199 420 190 365L178 250Q176 148 256 78Z"/>
+    <path d="M256 122Q304 166 304 242L295 361Q289 396 256 419Q223 396 217 361L208 242Q208 166 256 122Z" fill="#ffffff"/>
+    <g fill="none" stroke="#000000" stroke-width="10" stroke-linejoin="miter">
+      <path d="M226 188H286V248H226ZM226 283H286V343H226Z"/>
+      <path d="M229 191L283 245M283 191L229 245M229 286L283 340M283 286L229 340"/>
+    </g></g></svg>
+      <text x="755" y="658" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#f2f5f4">Transport ship</text><text x="930" y="484" font-family="Arial,sans-serif" font-size="19" fill="#ffffff">512 px transparent PNGs</text><text x="930" y="518" font-family="Arial,sans-serif" font-size="19" fill="#ffffff">Editable SVG masters</text><text x="930" y="552" font-family="Arial,sans-serif" font-size="17" fill="#bac7c8">Solid white field / black symbols</text><text x="930" y="586" font-family="Arial,sans-serif" font-size="17" fill="#bac7c8">Bolder artwork for small markers</text></svg>

@@ -1,0 +1,112 @@
+{
+  "generationMethod": "built-in image_gen",
+  "date": "2026-09-30",
+  "pixelsCopiedWithoutModification": true,
+  "images": [
+    {
+      "id": "temperate-woodland",
+      "version": 1,
+      "selected": false,
+      "file": "temperate-woodland/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-f1990bfe-a1fd-47ac-8089-4a0bb77ed5f9.png"
+    },
+    {
+      "id": "temperate-woodland",
+      "version": 2,
+      "selected": true,
+      "file": "temperate-woodland/starter-atlas-v2.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-2f4aa88e-2d70-4cc8-ae3b-517f84e83b3c.png"
+    },
+    {
+      "id": "boreal-conifer",
+      "version": 1,
+      "selected": true,
+      "file": "boreal-conifer/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-3168e4cf-a1de-4867-b18f-062c471ab269.png"
+    },
+    {
+      "id": "tropical-moist",
+      "version": 1,
+      "selected": false,
+      "file": "tropical-moist/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-e06451c5-99ab-4ca6-bee6-794144a36aa6.png"
+    },
+    {
+      "id": "tropical-moist",
+      "version": 2,
+      "selected": true,
+      "file": "tropical-moist/starter-atlas-v2.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-7bf0ba7d-b934-4155-97ad-74df1db6fb2c.png"
+    },
+    {
+      "id": "mediterranean-scrub",
+      "version": 1,
+      "selected": true,
+      "file": "mediterranean-scrub/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-781d35e7-c5b3-46b6-9b73-9a2e0c2f4e14.png"
+    },
+    {
+      "id": "grassland-steppe",
+      "version": 1,
+      "selected": true,
+      "file": "grassland-steppe/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-13d6c0a3-b7c9-43c3-95d2-07db26d855dc.png"
+    },
+    {
+      "id": "savanna-dry-woodland",
+      "version": 1,
+      "selected": false,
+      "file": "savanna-dry-woodland/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-b24fe79b-cf0b-46e8-bb98-25b618578743.png"
+    },
+    {
+      "id": "savanna-dry-woodland",
+      "version": 2,
+      "selected": true,
+      "file": "savanna-dry-woodland/starter-atlas-v2.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-88a9e7fe-04f9-4bf9-8ba0-159b84320454.png"
+    },
+    {
+      "id": "desert-xeric",
+      "version": 1,
+      "selected": true,
+      "file": "desert-xeric/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-a787035e-3822-4306-bed3-45e085c06dab.png"
+    },
+    {
+      "id": "wetland-riparian",
+      "version": 1,
+      "selected": true,
+      "file": "wetland-riparian/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-440e1282-5a7a-4d73-9eac-1760b47e415a.png"
+    },
+    {
+      "id": "alpine",
+      "version": 1,
+      "selected": true,
+      "file": "alpine/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-6ee726b1-05b7-4bf0-8855-f2adc4f8486a.png"
+    },
+    {
+      "id": "tundra",
+      "version": 1,
+      "selected": true,
+      "file": "tundra/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-266eb724-614b-4438-9598-2d27a01003fa.png"
+    },
+    {
+      "id": "coastal",
+      "version": 1,
+      "selected": true,
+      "file": "coastal/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-6561773e-ce64-4c44-a4e1-f7315f28a0eb.png"
+    },
+    {
+      "id": "polar-ice",
+      "version": 1,
+      "selected": true,
+      "file": "polar-ice/starter-atlas-v1.png",
+      "originalGeneratedFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0efb7-d920-7f70-90d9-bda3bd205523\\exec-4a0ecaad-16d7-439c-bb97-c1287dad6997.png"
+    }
+  ]
+}

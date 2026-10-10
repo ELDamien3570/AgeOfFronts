@@ -4,9 +4,27 @@ Keeps source art untouched and records its hashes. Only complete four-clip actor
 enter the runtime catalogue; unavailable troops retain their gameplay icon.
 """
 from pathlib import Path
+import argparse
 import hashlib
 import json
 from PIL import Image
+from io import BytesIO
+
+def atomic_text(path, text):
+    if path.exists() and path.read_text(encoding="utf-8") == text:
+        return
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(text, encoding="utf-8")
+    temporary.replace(path)
+
+def atomic_image(path, image):
+    buffer = BytesIO()
+    image.save(buffer, format="PNG", optimize=True)
+    if path.exists() and path.read_bytes() == buffer.getvalue():
+        return
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_bytes(buffer.getvalue())
+    temporary.replace(path)
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "Art/Cultures/Russians/Units"
@@ -23,8 +41,22 @@ widths = {"StoneAge/Clubman": 340, "StoneAge/Javelinist": 330,
           "ClassicalAge/ShieldWarrior": 300, "ClassicalAge/Pikeman": 220,
           "ClassicalAge/RecurveArcher": 260, "ClassicalAge/LightCavalry": 164,
           "ClassicalAge/HorseArcher": 168}
-catalogue = {}
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--only", action="append", default=[], help="Rebuild only this source folder, retaining other generated actors")
+args = parser.parse_args()
+selected = set(args.only)
+if selected - set(bindings.values()):
+    raise ValueError(f"Unknown source folders: {sorted(selected - set(bindings.values()))}")
+source_overrides = {folder: folder + "/TopDownReview/animations.json" for folder in ("StoneAge/Javelinist", "BronzeAge/RiverArcher", "ClassicalAge/RecurveArcher", "BronzeAge/BronzeSpearman")}
+catalogue = json.loads((ROOT / "src/skirmish/content/RussianTroopActors.json").read_text(encoding="utf-8")) if selected else {}
 calibrations = json.loads((ROOT / "src/skirmish/content/RussianActorCalibration.json").read_text(encoding="utf-8"))
+approved = json.loads((ROOT / "src/skirmish/content/RussianVisualCalibration.json").read_text(encoding="utf-8"))
+mask_sheets = {}
+for manifest_path in sorted((SOURCE.parent / "FactionMasks").glob("*/manifest.json")):
+    mask_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    for unit in mask_manifest["units"]:
+        for sheet in unit["sheets"]:
+            mask_sheets[(manifest_path.parent / sheet["source"]).resolve()] = (manifest_path.parent / sheet["mask"].split("?")[0]).resolve()
 missing = []
 roster = json.loads((ROOT / "src/skirmish/content/russian-recruitment.json").read_text(encoding="utf-8"))
 for troop in roster["units"]:
@@ -32,8 +64,12 @@ for troop in roster["units"]:
     if binding not in bindings:
         missing.append({"binding": binding, "unit": troop["name"], "reason": "No dedicated authored asset binding"})
 for binding, folder in bindings.items():
+    if selected and folder not in selected:
+        continue
     mounted = binding.split(":")[1] in ("lightCavalry", "heavyCavalry", "rangedCavalry")
-    source = SOURCE / metadata.get(folder, folder + "/animations.json")
+    source = SOURCE / source_overrides.get(folder, metadata.get(folder, folder + "/animations.json"))
+    if folder in source_overrides and not source.exists():
+        raise FileNotFoundError(f"Required top-down review metadata: {source}")
     if not source.exists():
         missing.append({"binding": binding, "source": str(source.relative_to(ROOT)), "reason": "Missing metadata"})
         continue
@@ -54,13 +90,22 @@ for binding, folder in bindings.items():
     target.mkdir(exist_ok=True)
     runtime = {"actorCount": 1, "animations": [], "source": source.relative_to(ROOT).as_posix(),
                "metadataHash": hashlib.sha256(source.read_bytes()).hexdigest(), "hashes": {}}
-    for name in ("idle", "running", "attack", "death"):
+    for name in ("idle", "running", "attack", "death", "reload", "charge", "charge-attack", "hit"):
+        if name not in clips:
+            continue
         clip = clips[name]
         frames = clip["frames"]
+        missing_paths = [source.parent / frame.get("sheet", clip["file"]) for frame in frames if not (source.parent / frame.get("sheet", clip["file"])).exists()]
+        if missing_paths and name not in ("idle", "running", "attack", "death"):
+            missing.append({"binding": binding, "clip": name, "reason": "Authored metadata references unavailable sheet", "source": str(missing_paths[0].relative_to(ROOT))})
+            continue
         columns = min(6, len(frames))
         atlas = Image.new("RGBA", (frame_size*columns, frame_size*((len(frames)+columns-1)//columns)))
         baked = []
         sheets = {}
+        masks = {}
+        mask_atlas = Image.new("RGBA", atlas.size)
+        has_mask = False
         for i, frame in enumerate(frames):
             path = source.parent / frame.get("sheet", clip["file"])
             if path not in sheets:
@@ -70,15 +115,35 @@ for binding, folder in bindings.items():
             image = image.resize((frame_size, frame_size), Image.Resampling.LANCZOS)
             x, y = (i % columns)*frame_size, (i // columns)*frame_size
             atlas.paste(image, (x, y))
+            mask_path = mask_sheets.get(path.resolve())
+            if mask_path:
+                if path not in masks:
+                    masks[path] = Image.open(mask_path).convert("RGBA")
+                    if masks[path].size != sheets[path].size:
+                        raise ValueError(f"Mask dimensions differ: {mask_path}")
+                mask_crop = masks[path].crop((frame["x"], frame["y"], frame["x"]+frame["width"], frame["y"]+frame["height"]))
+                mask_atlas.paste(mask_crop.resize((frame_size, frame_size), Image.Resampling.LANCZOS), (x, y))
+                has_mask = True
             baked.append({"x": x, "y": y, "width": frame_size, "height": frame_size,
                           "pivot": {"x": frame["pivot"]["x"]*frame_size/frame["width"],
                                     "y": frame["pivot"]["y"]*frame_size/frame["height"]}})
-        atlas.save(target / (name + ".png"), optimize=True)
+        atomic_image(target / (name + ".png"), atlas)
+        if has_mask:
+            atomic_image(target / (name + ".mask.png"), mask_atlas)
+        # Fixed reviewed body anchors, never animated silhouette recentering.
+        anchors = approved.get(binding, {}).get("bodyAnchorsPx128", {})
+        anchor = anchors.get(name)
+        if anchor:
+            for frame in baked:
+                frame["pivot"] = {"x": anchor["x"]*frame_size/128, "y": anchor["y"]*frame_size/128}
         runtime["animations"].append({**clip, "id": name, "file": name + ".png", "frames": baked,
+                                      **({"mask": name + ".mask.png"} if has_mask else {}),
                                       "releaseFrame": min(clip.get("releaseFrame", 3), len(baked)-1)})
-    (target / "animations.json").write_text(json.dumps(runtime, indent=2)+"\n", encoding="utf-8")
+    atomic_text(target / "animations.json", json.dumps(runtime, indent=2)+"\n")
     calibration = calibrations.get(folder, {})
     member_scale = 0.24*340/widths.get(folder, 164 if mounted else 340)
+    if binding in approved and not calibration.get("vehicle"):
+        member_scale = approved[binding]["memberScale"]
     width_world = length_world = 0
     if calibration.get("vehicle"):
         # One fixed idle envelope per asset, never per-frame silhouette fitting.
@@ -102,16 +167,17 @@ for binding, folder in bindings.items():
                           "members": calibration.get("members", 6 if mounted else 12),
                           "widthWorld": width_world, "lengthWorld": length_world,
                           "releasePoints": calibration.get("releasePoints", [{"x": .5, "y": .7}]),
-                          "facingOffset": calibration.get("facingOffset", 0)}
-(ROOT / "src/skirmish/content/RussianTroopActors.json").write_text(json.dumps(catalogue, indent=2)+"\n", encoding="utf-8")
-print(f"Baked {len(catalogue)} complete actor sets")
+                          "facingOffset": approved.get(binding, {}).get("facingOffset", calibration.get("facingOffset", 0))}
+atomic_text(ROOT / "src/skirmish/content/RussianTroopActors.json", json.dumps(catalogue, indent=2)+"\n")
+print(f"Rebuilt {len(selected) if selected else len(catalogue)} actor sources; {len(catalogue)} registered actor sets")
 # Remove only generated actor copies superseded by the explicit catalogue.
 # Source art and preserved authoring/review versions are never deleted here.
 import shutil
 active = {entry["key"] for entry in catalogue.values()}
 for folder in OUT.iterdir():
-    if folder.is_dir() and folder.name not in active:
+    if not selected and folder.is_dir() and folder.name not in active:
         if folder.resolve().parent != OUT.resolve():
             raise RuntimeError("Runtime cleanup escaped its output directory")
         shutil.rmtree(folder)
-(OUT / "MissingAssets.json").write_text(json.dumps(missing, indent=2)+"\n", encoding="utf-8")
+if not selected:
+    atomic_text(OUT / "MissingAssets.json", json.dumps(missing, indent=2)+"\n")

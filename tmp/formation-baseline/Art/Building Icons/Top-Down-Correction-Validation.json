@@ -1,0 +1,1368 @@
+{
+  "generated_at_utc": "2026-09-30T07:34:53.082743+00:00",
+  "generator": "built-in image_gen",
+  "original_count": 42,
+  "originals_unchanged": 42,
+  "correction_count": 42,
+  "errors": [],
+  "passed": true,
+  "alpha_thresholds": {
+    "maximum_corner_alpha": 1,
+    "substantial_artwork_alpha_above": 32
+  },
+  "checks": [
+    "Filename correspondence",
+    "PNG decoding",
+    "RGBA mode",
+    "Corner alpha at most 1/255",
+    "Nonempty artwork",
+    "No substantial artwork clipped by canvas edge",
+    "Original SHA-256 unchanged"
+  ],
+  "images": [
+    {
+      "category": "City",
+      "filename": "City_BronzeAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "6a9af44556d72b1a56f0719186504bf923b86b867770617e193f261a9d1f0d73",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        9,
+        1218,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        88,
+        153,
+        1167,
+        1104
+      ]
+    },
+    {
+      "category": "City",
+      "filename": "City_ClassicalAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "a2ebe94aa66840a09c20f24659a81d7f1f8b81476c2a44d4919601d9133830d1",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        31,
+        1239,
+        1236
+      ],
+      "substantial_alpha_bounds": [
+        19,
+        35,
+        1236,
+        1218
+      ]
+    },
+    {
+      "category": "City",
+      "filename": "City_EarlyMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "5d67c0b2a953a24fc6c6a96e40a23bd89c8575eb89dc02cd080a970472fddccc",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        10,
+        1238,
+        1238
+      ],
+      "substantial_alpha_bounds": [
+        20,
+        12,
+        1235,
+        1235
+      ]
+    },
+    {
+      "category": "City",
+      "filename": "City_EarlyModern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "a9d67372fbbb9546d71192da48d0ec0492194103d42f0797b63505c3e3e5c2a0",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        32,
+        1241,
+        1246
+      ],
+      "substantial_alpha_bounds": [
+        16,
+        41,
+        1238,
+        1201
+      ]
+    },
+    {
+      "category": "City",
+      "filename": "City_LateMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "843916aea1906415781b295492f8438fc0bcbaf177f9a336aa4ef153101ba09d",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        19,
+        1208,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        53,
+        24,
+        1202,
+        1221
+      ]
+    },
+    {
+      "category": "City",
+      "filename": "City_Modern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "4f71ab224c9321c527decfa83ee7f0371926b1fed0d85517bb575dd4f89c0a0e",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        19,
+        1227,
+        1214
+      ],
+      "substantial_alpha_bounds": [
+        38,
+        54,
+        1217,
+        1195
+      ]
+    },
+    {
+      "category": "City",
+      "filename": "City_StoneAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "8c68a32e42da744454218880a360edecd9ff34e93ba1f8d1df006263d2d65131",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        49,
+        28,
+        1192,
+        1226
+      ],
+      "substantial_alpha_bounds": [
+        66,
+        30,
+        1189,
+        1209
+      ]
+    },
+    {
+      "category": "Barracks",
+      "filename": "Barracks_BronzeAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "b0e138a6fba53284266276873f5e0f4bdc08851e186d4f800d20a992abd037b8",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        31,
+        1209,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        53,
+        64,
+        1201,
+        1164
+      ]
+    },
+    {
+      "category": "Barracks",
+      "filename": "Barracks_ClassicalAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "befe078eca73cfeaa7f00bc0b8edf7465ae294daf5ac1a38999aa529f65fc932",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        77,
+        47,
+        1176,
+        1191
+      ],
+      "substantial_alpha_bounds": [
+        85,
+        80,
+        1169,
+        1145
+      ]
+    },
+    {
+      "category": "Barracks",
+      "filename": "Barracks_EarlyMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "dac34f16a2a01da45abae2c7e047fa56fc55c9620a28a765655e6996d74bec4d",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        30,
+        1238,
+        1222
+      ],
+      "substantial_alpha_bounds": [
+        40,
+        32,
+        1216,
+        1216
+      ]
+    },
+    {
+      "category": "Barracks",
+      "filename": "Barracks_EarlyModern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "b77901212a6efea89ae1a757a917664a01a41f96f2a7efaa2be6acd1e503ae9f",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        17,
+        61,
+        1208,
+        1246
+      ],
+      "substantial_alpha_bounds": [
+        50,
+        63,
+        1202,
+        1175
+      ]
+    },
+    {
+      "category": "Barracks",
+      "filename": "Barracks_LateMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "cdfb268d88534d4587dce4be5339dc43cdb9d08b2137924dcd642e8ae3f7ee8d",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        31,
+        33,
+        1226,
+        1222
+      ],
+      "substantial_alpha_bounds": [
+        34,
+        39,
+        1223,
+        1188
+      ]
+    },
+    {
+      "category": "Barracks",
+      "filename": "Barracks_Modern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "f3f8e7aeacd3f149a4173f986476702305af5705a62d150874401596eda37c51",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        3,
+        1222,
+        1230
+      ],
+      "substantial_alpha_bounds": [
+        85,
+        81,
+        1170,
+        1133
+      ]
+    },
+    {
+      "category": "Barracks",
+      "filename": "Barracks_StoneAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "ad9235955f7acd1be8dd4a25f2141ebbde65e14b37f8317772a4b0401820251b",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        21,
+        1224,
+        1199
+      ],
+      "substantial_alpha_bounds": [
+        41,
+        32,
+        1216,
+        1192
+      ]
+    },
+    {
+      "category": "Archery Range",
+      "filename": "Archery_BronzeAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "439ddd0e12b6430e91a09416ccf4276dbb9b75709fd1a48204c0f69b97526d70",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        57,
+        51,
+        1244,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        74,
+        67,
+        1183,
+        1115
+      ]
+    },
+    {
+      "category": "Archery Range",
+      "filename": "Archery_ClassicalAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "e232823d0a766d50ecacb7c2cec5ea15983cad40f848ed770740faf7b868220d",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        32,
+        5,
+        1236,
+        1246
+      ],
+      "substantial_alpha_bounds": [
+        37,
+        46,
+        1218,
+        1162
+      ]
+    },
+    {
+      "category": "Archery Range",
+      "filename": "Archery_EarlyMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "4306b352b7496016320595f7a7be8cd150c841fe1788a915f57c8ff7fa89625b",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        23,
+        1220,
+        1194
+      ],
+      "substantial_alpha_bounds": [
+        40,
+        28,
+        1211,
+        1190
+      ]
+    },
+    {
+      "category": "Archery Range",
+      "filename": "Archery_EarlyModern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "e5fbf35279fe99d1296bc7b8024992f05b6fc00606de650ce9473db9a5849caf",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        48,
+        1211,
+        1230
+      ],
+      "substantial_alpha_bounds": [
+        45,
+        55,
+        1208,
+        1205
+      ]
+    },
+    {
+      "category": "Archery Range",
+      "filename": "Archery_LateMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "26f5b1e7e0147890fa34eefd675ae8e4e89b434de4436d293f4615a75b054e53",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        21,
+        1224,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        65,
+        78,
+        1187,
+        1167
+      ]
+    },
+    {
+      "category": "Archery Range",
+      "filename": "Archery_Modern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "621d12ec6b0c53d9de11896e9dacee15b2fd87aaf9442262c03d2cfd946df6b2",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        15,
+        1192,
+        1182
+      ],
+      "substantial_alpha_bounds": [
+        73,
+        78,
+        1182,
+        1170
+      ]
+    },
+    {
+      "category": "Archery Range",
+      "filename": "Archery_StoneAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "bcdae30ce805d873e81ab1d1c4f00a9d5878366fad6d4781cf5b1e350dd45132",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        7,
+        5,
+        1249,
+        1235
+      ]
+    },
+    {
+      "category": "Factory",
+      "filename": "Factor_StoneAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "a2f7c73a2168bd0d6fd9d171aa11d7d38a196f703617d2bbda58e258e44efab0",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        21,
+        1238,
+        1222
+      ],
+      "substantial_alpha_bounds": [
+        24,
+        56,
+        1235,
+        1204
+      ]
+    },
+    {
+      "category": "Factory",
+      "filename": "Factory_BronzeAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "6ff8b5c6cd51a6a89695c15e45493a9885568dd2b66f1904e643b120158bab42",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1238,
+        1238
+      ],
+      "substantial_alpha_bounds": [
+        27,
+        70,
+        1234,
+        1195
+      ]
+    },
+    {
+      "category": "Factory",
+      "filename": "Factory_ClassicalAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "61973c3d08dbd35febc83a4ae86586adc24f4bd4289b8f7cda18e4b3a2920f71",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        33,
+        1236,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        33,
+        112,
+        1223,
+        1081
+      ]
+    },
+    {
+      "category": "Factory",
+      "filename": "Factory_EarlyMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "ee516f23c0f75f5c7a63aca3736ca60fc6f0f1eef4d8a7347c27cbf94a4ccb18",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        19,
+        1238,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        53,
+        67,
+        1193,
+        1182
+      ]
+    },
+    {
+      "category": "Factory",
+      "filename": "Factory_EarlyModern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "80e9e0c23777db2f7ecc25d1563b047da158c4ec40b77decd5ead746d9e7d987",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        19,
+        1227,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        196,
+        210,
+        1064,
+        1056
+      ]
+    },
+    {
+      "category": "Factory",
+      "filename": "Factory_LateMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "16b6dc48a5814a3b98c14bc910f050ae32d299a532bb829cddb2017afc95fa37",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        21,
+        1196,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        75,
+        43,
+        1191,
+        1212
+      ]
+    },
+    {
+      "category": "Factory",
+      "filename": "Factory_Modern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "dfcd3c79ec02605e04dc4679a01d816ef51ef5e8396f7c7a8227f26e6138de8d",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        19,
+        1178,
+        1147
+      ],
+      "substantial_alpha_bounds": [
+        77,
+        53,
+        1175,
+        1136
+      ]
+    },
+    {
+      "category": "Port",
+      "filename": "Port_BronzeAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "d6a4c761055fa264bf2a0626e417521fe9988a5de7d51b6fa36bb24ff6a1664b",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1222,
+        1222
+      ],
+      "substantial_alpha_bounds": [
+        53,
+        89,
+        1206,
+        1194
+      ]
+    },
+    {
+      "category": "Port",
+      "filename": "Port_ClassicalAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "32020f37d4d2fddfd56c73e3cc6a768e0b30d82c9c7a12e439bb8cf1122c55c5",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        55,
+        17,
+        1186,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        72,
+        60,
+        1181,
+        1219
+      ]
+    },
+    {
+      "category": "Port",
+      "filename": "Port_EarlyMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "23dc379bf97ad7ee34e01b5b2752eee6d14d4715df29d27350b8a234a82d33c6",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        15,
+        1236,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        23,
+        22,
+        1219,
+        1231
+      ]
+    },
+    {
+      "category": "Port",
+      "filename": "Port_EarlyModern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "1304f245ef2e6df161e0cdee7bdd044a2739462e20d79d239cbf043a8f9aaafa",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1234,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        77,
+        112,
+        1177,
+        1182
+      ]
+    },
+    {
+      "category": "Port",
+      "filename": "Port_LateMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "885bf5090b63949d19f8b7b475d21b85e7abfed30dc2bdaebccf5eb099aceb7d",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        23,
+        1228,
+        1214
+      ],
+      "substantial_alpha_bounds": [
+        28,
+        81,
+        1224,
+        1199
+      ]
+    },
+    {
+      "category": "Port",
+      "filename": "Port_Modern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "cfaa806fa0901a87c730d49b5109837273223d07dfb0ca89c61c2f9b02d2fe17",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        40,
+        1222,
+        1202
+      ],
+      "substantial_alpha_bounds": [
+        67,
+        123,
+        1188,
+        1139
+      ]
+    },
+    {
+      "category": "Port",
+      "filename": "Port_StoneAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "c92d42448c3ea35e172b382284d7c153c43b8667336dc1af788780f2fa872bd2",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        11,
+        7,
+        1245,
+        1244
+      ]
+    },
+    {
+      "category": "Stables",
+      "filename": "Stables_BronzeAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "f3b628abdbdfc7b7f21f877883a3f218acbe9589112eaac9909a9042bced9eaa",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        21,
+        1236,
+        1214
+      ],
+      "substantial_alpha_bounds": [
+        64,
+        70,
+        1189,
+        1165
+      ]
+    },
+    {
+      "category": "Stables",
+      "filename": "Stables_ClassicalAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "966870f3f73c78c12eb0b4597731771596962621cd43d81521f78c7ecbd7e270",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1253,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        61,
+        61,
+        1184,
+        1183
+      ]
+    },
+    {
+      "category": "Stables",
+      "filename": "Stables_EarlyMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "7cc1a50af38ca2e6ac7760aa0ec70c8d24122cffd4d4bbca3c607c451a92c218",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1253,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        60,
+        87,
+        1199,
+        1164
+      ]
+    },
+    {
+      "category": "Stables",
+      "filename": "Stables_EarlyModern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "edbba5c3f325d57353adca5cb7887c38fc809082f085ebe6e99ef00951ac49d2",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        77,
+        1176,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        84,
+        80,
+        1171,
+        1128
+      ]
+    },
+    {
+      "category": "Stables",
+      "filename": "Stables_LateMedieval.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "4abac60caaf7ca8b72b3ac1e7f394490c984f7c66c735224e1137fe8e2cffc05",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        9,
+        1254,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        162,
+        171,
+        1094,
+        1062
+      ]
+    },
+    {
+      "category": "Stables",
+      "filename": "Stables_Modern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "5bcbbb7e3620f372caead0fad1a20b92bc7ca83061a6e3cc210d53f954144350",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        41,
+        1242,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        70,
+        106,
+        1188,
+        1135
+      ]
+    },
+    {
+      "category": "Stables",
+      "filename": "Stables_StoneAge.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "686ac3ae346f31d7e8c2743b0e6b201b25e023464f8e3e3dcd2ddac0bbf5dbb1",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1238,
+        1254
+      ],
+      "substantial_alpha_bounds": [
+        15,
+        10,
+        1232,
+        1232
+      ]
+    }
+  ]
+}

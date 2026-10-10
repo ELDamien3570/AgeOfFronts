@@ -34,10 +34,9 @@ describe("quick research opportunities", () => {
     expect(cards().map((c) => c.id)).toEqual([
       "rus-stoneage-port-sea-trade",
       "rus-stoneage-roads",
-      "rus-stoneage-land-traders",
+      "rus-stoneage-factories-mines",
       "rus-stoneage-ranged",
       "rus-stoneage-mobile",
-      "rus-stoneage-fortifications",
     ]);
   });
   it("shows nodes only with sufficient funds and uses the shared tech-speed quote", () => {
@@ -47,7 +46,7 @@ describe("quick research opportunities", () => {
     m.players[0].gold = 67;
     const node = cards().find((c) => c.id === "rus-stoneage-port-sea-trade")!;
     expect(node.gold).toBe(67);
-    expect(node.seconds).toBe(6);
+    expect(node.seconds).toBe(Math.ceil(18/3));
     expect(node.reason).toBeNull();
     m.players[0].gold = 0;
     expect(cards()).toEqual([]);
@@ -69,7 +68,7 @@ describe("quick research opportunities", () => {
       cards()
         .filter((c) => c.tree === "naval")
         .map((c) => c.id),
-    ).toEqual(["rus-stoneage-coastal-navigation"]);
+    ).toEqual(["rus-stoneage-warships"]);
   });
   it("includes unfinished older-age research and uses the local player rather than player one", () => {
     const { m, vm } = fixture();
