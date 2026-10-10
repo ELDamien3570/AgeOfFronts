@@ -2425,11 +2425,14 @@ footer span:last-child {
 .command-category.military .category-actions { width: 246px; }
 .command-category.defense .category-actions { width: 146px; }
 .command-category.troops .category-actions { width: 246px; }
+.command-category.aviation,
+.command-category.ships { flex: 1 0 216px; }
 .command-category.aviation .category-actions,
-.command-category.ships .category-actions { width: 216px; }
+.command-category.ships .category-actions { width: 100%; }
 
 .command-row {
   display: flex;
+  justify-content: flex-start;
   gap: 0;
   overflow-x: auto;
 }
