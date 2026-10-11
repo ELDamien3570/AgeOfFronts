@@ -26,6 +26,29 @@ const intent: EngagementIntent = {
   target: { x: 3, y: 0 },
 };
 describe("independent formation engagement", () => {
+  it("keeps attack animation eligibility on the actual edge through turns and front-rank casualties",()=>{
+    const model=new FormationEngagement();
+    for(const [frame,heading] of [0,Math.PI/2,Math.PI].entries()){
+      const c=Math.cos(heading),s=Math.sin(heading),world=(x:number,y:number)=>({x:(x*c-y*s)*intent.footprint,y:(x*s+y*c)*intent.footprint});
+      const live=frame===2?slots.filter(p=>p.id<8).map(p=>({...p,y:p.id>=4?.16:-.16})):slots;
+      const target=world(0,1.2),opponents=[{center:target,soldiers:live.filter(p=>p.y>0).map(p=>({...world(p.x,.38),id:`enemy:${p.id}`}))}];
+      const result=model.sample(frame*100,anchor,live,{...intent,canonicalHeading:true,travelHeading:heading,target,opponents,meleeReach:.5,contactAdvance:.25});
+      expect(result.slots.filter(p=>p.front).map(p=>p.id)).toEqual(live.filter(p=>p.y>0).map(p=>p.id));
+      expect(result.slots.filter(p=>p.front).every(p=>Math.abs(p.angle)<.01)).toBe(true);
+    }
+  });
+  it("uses the canonical facing frame during contact and advances front fighters within reach bounds",()=>{
+    const model=new FormationEngagement(),base={...intent,canonicalHeading:true,meleeReach:.5,contactAdvance:.25,target:{x:0,y:2}};
+    model.sample(0,anchor,slots,{...base,travelHeading:0});
+    const result=model.sample(100,anchor,slots,{...base,travelHeading:Math.PI/2,target:{x:-2,y:0},opponents:[{center:{x:-2,y:0},soldiers:[{id:"enemy:1",x:-1.4,y:0}]}]});
+    expect(result.heading).toBe(Math.PI/2);
+    for(const p of result.slots){
+      const original=slots.find(s=>s.id===p.id)!;
+      expect(Math.hypot(p.x-original.x,p.y-original.y)*base.footprint).toBeLessThanOrEqual(.25+.001);
+    }
+    expect(result.slots.some(p=>p.y>slots.find(s=>s.id===p.id)!.y)).toBe(true);
+    expect(result.slots.filter(p=>p.front).every(p=>p.y>0)).toBe(true);
+  });
   it("faces the opposing frontage instead of converging outer melee troops on its center", () => {
     const model = new FormationEngagement();
     const contact = {

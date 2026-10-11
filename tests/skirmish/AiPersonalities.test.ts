@@ -131,8 +131,8 @@ describe("AI personality policies", () => {
     game.step();
     const job = game.recruitment.jobs.find(j => j.playerId === player.id)!;
     expect(job.kind).toBe("cavalry");
-    expect(player.reserves).toBe(reserves - 1000);
-    const cost = UNIT.get(job.definitionId!)!.cost;
+    expect(player.reserves).toBe(reserves - job.cost.reserves!);
+    const cost = job.cost;
     expect(player.gold).toBe(gold - (cost.gold ?? 0));
     expect(stock.horses).toBe(horses - (cost.items?.horses ?? 0));
     game.options.runAi = false;

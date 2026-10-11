@@ -3,6 +3,7 @@ import {
   factionDefaults,
   MAX_HUMAN_PLAYERS,
 } from "../FactionRules";
+import { isProceduralMap } from "../content/Maps";
 import { createEmpireProfile, type EmpireProfile } from "./EmpireProfile";
 import { STARTING_AGES, type StartingAge } from "../domain/Definitions";
 import {
@@ -24,7 +25,7 @@ export interface LobbySettings {
   readonly slots: number;
   readonly minimumHumans: number;
   readonly countdownSeconds: number;
-  readonly worldSize: 250 | 500 | 1000;
+  readonly worldSize: 250 | 500 | 1000 | 2000;
   /** Regular AI opponents, added to the humans. Base by map size; 0–14. */
   readonly aiCount: number;
   /** Minor tribes. Base by map size; 0–30. */
@@ -83,10 +84,12 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
   )
     throw new Error("The start timer must be between 15 and 300 seconds.");
   if (
-    ![250, 500, 1000].includes(settings.worldSize) ||
+    ![250, 500, 1000, 2000].includes(settings.worldSize) ||
     ![1, 2, 3].includes(settings.technologySpeed)
   )
     throw new Error("Choose a supported world size and technology speed.");
+  if (settings.worldSize === 2000 && !isProceduralMap(settings.mapId))
+    throw new Error("The 2000 map size is only available on procedural maps.");
   for (const [kind, label] of [
     ["aiCount", "AI opponents"],
     ["tribeCount", "tribes"],
@@ -145,7 +148,7 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
 export function migrateLobbySettings(saved: LobbySettings): LobbySettings {
   const settings: Record<string, unknown> = { ...saved };
   delete settings.fillVacanciesWithAi;
-  if ([250, 500, 1000].includes(saved.worldSize)) {
+  if ([250, 500, 1000, 2000].includes(saved.worldSize)) {
     const defaults = factionDefaults(saved.worldSize);
     if (settings.aiCount === undefined) settings.aiCount = defaults.aiCount;
     if (settings.tribeCount === undefined)

@@ -1,0 +1,703 @@
+{
+  "schemaVersion": 1,
+  "rulesVersion": 7,
+  "weapons": {
+    "stoneage-archer": {
+      "melee": {
+        "damageHp": 6,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 24,
+        "shotsPerReload": 1,
+        "reloadMs": 2500
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "infantry",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "stoneage-cavalry": {
+      "melee": {
+        "damageHp": 20,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "stoneage-infantry": {
+      "melee": {
+        "damageHp": 18,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "bronzeage-anticavalry": {
+      "melee": {
+        "damageHp": 12,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "mounted",
+        "damageHp": 20
+      },
+      "chargeMultiplier": 1
+    },
+    "bronzeage-archer": {
+      "melee": {
+        "damageHp": 6,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 24,
+        "shotsPerReload": 1,
+        "reloadMs": 2500
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "infantry",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "bronzeage-cavalry": {
+      "melee": {
+        "damageHp": 20,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "bronzeage-infantry": {
+      "melee": {
+        "damageHp": 18,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "classicalage-anticavalry": {
+      "melee": {
+        "damageHp": 12,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "mounted",
+        "damageHp": 20
+      },
+      "chargeMultiplier": 1
+    },
+    "classicalage-rangedcavalry": {
+      "melee": {
+        "damageHp": 8,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 24,
+        "shotsPerReload": 1,
+        "reloadMs": 2500
+      },
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "classicalage-archer": {
+      "melee": {
+        "damageHp": 6,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 24,
+        "shotsPerReload": 1,
+        "reloadMs": 2500
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "infantry",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "classicalage-cavalry": {
+      "melee": {
+        "damageHp": 20,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "classicalage-infantry": {
+      "melee": {
+        "damageHp": 18,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "earlymedieval-anticavalry": {
+      "melee": {
+        "damageHp": 12,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "mounted",
+        "damageHp": 20
+      },
+      "chargeMultiplier": 1
+    },
+    "earlymedieval-heavycavalry": {
+      "melee": {
+        "damageHp": 24,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "earlymedieval-rangedcavalry": {
+      "melee": {
+        "damageHp": 8,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 24,
+        "shotsPerReload": 1,
+        "reloadMs": 2500
+      },
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "earlymedieval-archer": {
+      "melee": {
+        "damageHp": 6,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 24,
+        "shotsPerReload": 1,
+        "reloadMs": 2500
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "infantry",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "earlymedieval-cavalry": {
+      "melee": {
+        "damageHp": 20,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "earlymedieval-infantry": {
+      "melee": {
+        "damageHp": 18,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "latemedieval-anticavalry": {
+      "melee": {
+        "damageHp": 12,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "mounted",
+        "damageHp": 20
+      },
+      "chargeMultiplier": 1
+    },
+    "latemedieval-heavycavalry": {
+      "melee": {
+        "damageHp": 24,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "latemedieval-rangedcavalry": {
+      "melee": {
+        "damageHp": 8,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 15,
+        "shotsPerReload": 1,
+        "reloadMs": 4000
+      },
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "latemedieval-archer": {
+      "melee": {
+        "damageHp": 6,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 15,
+        "shotsPerReload": 1,
+        "reloadMs": 4000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "infantry",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "latemedieval-cavalry": {
+      "melee": {
+        "damageHp": 20,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "latemedieval-infantry": {
+      "melee": {
+        "damageHp": 18,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "earlymodern-anticavalry": {
+      "melee": {
+        "damageHp": 12,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "mounted",
+        "damageHp": 20
+      },
+      "chargeMultiplier": 1
+    },
+    "earlymodern-heavycavalry": {
+      "melee": {
+        "damageHp": 24,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "earlymodern-rangedcavalry": {
+      "melee": {
+        "damageHp": 8,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 10,
+        "shotsPerReload": 1,
+        "reloadMs": 6000
+      },
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "napoleonic-archer": {
+      "melee": {
+        "damageHp": 6,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 10,
+        "shotsPerReload": 1,
+        "reloadMs": 6000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "infantry",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "napoleonic-cavalry": {
+      "melee": {
+        "damageHp": 20,
+        "rpm": 30,
+        "ranks": 1
+      },
+      "ranged": null,
+      "defence": {
+        "meleeHp": 3,
+        "rangedHp": 2
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "napoleonic-infantry": {
+      "melee": {
+        "damageHp": 18,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 12,
+        "rpm": 10,
+        "shotsPerReload": 1,
+        "reloadMs": 6000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 2
+    },
+    "modern-anticavalry": {
+      "melee": {
+        "damageHp": 12,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 8,
+        "rpm": 20,
+        "shotsPerReload": 1,
+        "reloadMs": 3000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "vehicle",
+        "damageHp": 20
+      },
+      "chargeMultiplier": 1
+    },
+    "earlymodern-archer": {
+      "melee": {
+        "damageHp": 6,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 8,
+        "rpm": 600,
+        "shotsPerReload": 47,
+        "reloadMs": 5000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "infantry",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "earlymodern-infantry": {
+      "melee": {
+        "damageHp": 18,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 8,
+        "rpm": 50,
+        "shotsPerReload": 5,
+        "reloadMs": 3000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "present-day-anticavalry": {
+      "melee": {
+        "damageHp": 12,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 8,
+        "rpm": 20,
+        "shotsPerReload": 1,
+        "reloadMs": 3000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "vehicle",
+        "damageHp": 20
+      },
+      "chargeMultiplier": 1
+    },
+    "modern-archer": {
+      "melee": {
+        "damageHp": 6,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 8,
+        "rpm": 600,
+        "shotsPerReload": 100,
+        "reloadMs": 5000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "infantry",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    },
+    "modern-infantry": {
+      "melee": {
+        "damageHp": 18,
+        "rpm": 30,
+        "ranks": 2
+      },
+      "ranged": {
+        "damageHp": 8,
+        "rpm": 600,
+        "shotsPerReload": 30,
+        "reloadMs": 3000
+      },
+      "defence": {
+        "meleeHp": 1,
+        "rangedHp": 0
+      },
+      "primaryBonus": {
+        "target": "ranged",
+        "damageHp": 4
+      },
+      "chargeMultiplier": 1
+    }
+  }
+}

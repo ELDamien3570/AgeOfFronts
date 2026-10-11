@@ -48,7 +48,7 @@ function allowedGrant(id:string,age:typeof AGES[number]):boolean {
 describe("Starting Tech Age Selector", () => {
   it("starts every human, AI and tribe with all technology and exactly one million gold in Post-Modern", () => {
     const { match } = createMatch("PostModern");
-    const expected = TECHNOLOGIES.map(t => t.id).sort();
+    const expected = TECHNOLOGIES.filter(t=>!t.optional).map(t => t.id).sort();
     expect(startingAgeName("PostModern")).toBe("Post-Modern");
     expect(match.players.some(p => !p.ai)).toBe(true);
     expect(match.players.some(p => p.ai && p.kind === "regular")).toBe(true);
@@ -60,7 +60,7 @@ describe("Starting Tech Age Selector", () => {
       expect([...state.completed].sort()).toEqual(expected);
       expect(state.research).toEqual({});
       expect(state.advancement).toBeNull();
-      expect(match.applyCommand({type:"research",playerId:player.id,technologyId:TECHNOLOGIES[TECHNOLOGIES.length - 1].id})).toContain("already completed");
+      expect(match.applyCommand({type:"research",playerId:player.id,technologyId:TECHNOLOGIES[0].id})).toContain("already completed");
     }
     const saved = match.checkpoint();
     match.restore(saved);
@@ -112,8 +112,8 @@ describe("Starting Tech Age Selector", () => {
     const state = startingProgression("BronzeAge");
     expect(state.age).toBe("BronzeAge");
 
-    const stoneTechs = TECHNOLOGIES.filter((t) => t.age === "StoneAge");
-    const bronzeTechs = TECHNOLOGIES.filter((t) => t.age === "BronzeAge");
+    const stoneTechs = TECHNOLOGIES.filter(t=>!t.optional).filter((t) => t.age === "StoneAge");
+    const bronzeTechs = TECHNOLOGIES.filter(t=>!t.optional).filter((t) => t.age === "BronzeAge");
 
     for (const tech of stoneTechs) {
       expect(state.completed).toContain(tech.id);
@@ -127,10 +127,10 @@ describe("Starting Tech Age Selector", () => {
     const state = startingProgression("ClassicalAge");
     expect(state.age).toBe("ClassicalAge");
 
-    const priorTechs = TECHNOLOGIES.filter(
+    const priorTechs = TECHNOLOGIES.filter(t=>!t.optional).filter(
       (t) => t.age === "StoneAge" || t.age === "BronzeAge",
     );
-    const classicalTechs = TECHNOLOGIES.filter((t) => t.age === "ClassicalAge");
+    const classicalTechs = TECHNOLOGIES.filter(t=>!t.optional).filter((t) => t.age === "ClassicalAge");
 
     for (const tech of priorTechs) {
       expect(state.completed).toContain(tech.id);
@@ -146,7 +146,7 @@ describe("Starting Tech Age Selector", () => {
       const state = startingProgression(age);
       expect(state.age).toBe(age);
 
-      for (const t of TECHNOLOGIES) {
+      for (const t of TECHNOLOGIES.filter(t=>!t.optional)) {
         const tIndex = AGES.indexOf(t.age);
         if (tIndex < i) {
           expect(state.completed).toContain(t.id);
@@ -164,7 +164,7 @@ describe("Starting Tech Age Selector", () => {
     expect(restored.checkpoint()).toEqual(saved);
     for (const player of restored.players) {
       const state = restored.expansion!.progression.states[player.id];
-      for (const tech of TECHNOLOGIES)
+      for (const tech of TECHNOLOGIES.filter(t=>!t.optional))
         expect(state.completed.includes(tech.id)).toBe(AGES.indexOf(tech.age) < AGES.indexOf(age) || (tech.age === age && allowedGrant(tech.id,age)));
       expect(Object.keys(state.research)).toHaveLength(0);
     }
@@ -185,7 +185,7 @@ describe("Starting Tech Age Selector", () => {
       expect(prog.age).toBe("BronzeAge");
 
       // All Stone Age technologies completed
-      const stoneTechs = TECHNOLOGIES.filter((t) => t.age === "StoneAge");
+      const stoneTechs = TECHNOLOGIES.filter(t=>!t.optional).filter((t) => t.age === "StoneAge");
       for (const tech of stoneTechs) {
         expect(prog.completed).toContain(tech.id);
       }
@@ -218,7 +218,7 @@ describe("Starting Tech Age Selector", () => {
       // Prior ages completed
       for (const age of AGES) {
         if (age === "Modern") continue;
-        const ageTechs = TECHNOLOGIES.filter((t) => t.age === age);
+        const ageTechs = TECHNOLOGIES.filter(t=>!t.optional).filter((t) => t.age === age);
         for (const tech of ageTechs) {
           expect(prog.completed).toContain(tech.id);
         }

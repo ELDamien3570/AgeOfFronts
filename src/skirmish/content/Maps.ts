@@ -75,6 +75,13 @@ export const PROCEDURAL_MAPS = [
     sourceWidth: 1,
     sourceHeight: 1,
   },
+  {
+    id: "continents",
+    name: "Continents",
+    assetRoot: "continents",
+    sourceWidth: 1,
+    sourceHeight: 1,
+  },
 ] as const;
 export type ProceduralMapId = (typeof PROCEDURAL_MAPS)[number]["id"];
 export function isProceduralMap(id: string): id is ProceduralMapId {

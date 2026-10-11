@@ -7,7 +7,7 @@ import {
 import { terrainNoise } from "./TerrainNoise";
 
 export interface ResourceGeographyInputs {
-  theme: "migration" | "black-forest";
+  theme: "migration" | "continents" | "black-forest";
   seed: number;
   heights: Float32Array;
   cover: Uint8Array;
@@ -35,7 +35,7 @@ export function addResourceGeography(
     throw new Error("Invalid resource geography inputs");
   const suitability = new Uint8Array(count * RESOURCE_SUITABILITY_ORDER.length),
     marine = new Uint8Array(count),
-    migration = inputs.theme === "migration",
+    migration = inputs.theme !== "black-forest",
     offsetX = (inputs.seed & 65535) + 317,
     offsetY = (inputs.seed >>> 16) + 719;
   const basins = inputs.landforms?.filter((f) => f.kind === "basin") ?? [];

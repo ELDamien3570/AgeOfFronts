@@ -18,7 +18,7 @@ function fixture(connected=false) {
   game.owners[game.players[0].base]=1;
   game.owners[game.players[1].base]=2;
   for(const p of game.players)game.addBuilding({id:game.allocateId(),playerId:p.id,type:"city",tile:p.base,remainingTicks:0,health:1000});
-  game.squads.filter(s=>s.playerId===tribe.id).forEach((s,i)=>game.updateSquad(s.id,{x:(35.5+i%2)*FIXED,y:(23.5+Math.floor(i/2))*FIXED,order:{type:"hold"},path:[],troops:1000}));
+  game.squads.filter(s=>s.playerId===tribe.id).forEach((s,i)=>game.updateSquad(s.id,{x:(35.5+i%2)*FIXED,y:(23.5+Math.floor(i/2))*FIXED,order:{type:"hold"},path:[],troops:12}));
   for(const s of game.squads.filter(s=>s.playerId!==tribe.id))game.updateSquad(s.id,{x:5.5*FIXED,y:(s.playerId===1?5.5:42.5)*FIXED,order:{type:"hold"},path:[]});
   game.expansion!.progression.states[tribe.id].completed.push("stoneage-cargo-canoes");
   game.restore(game.checkpoint());
@@ -78,7 +78,7 @@ describe("bounded frontier and river expansion",()=>{
     const {game,map,tribe}=fixture();
     for(let y=20;y<29;y++)for(let x=41;x<46;x++)game.owners[map.ref(x,y)]=tribe.id;
     const enemy=game.squads.find(s=>s.playerId===1)!;
-    game.updateSquad(enemy.id,{x:43.5*FIXED,y:24.5*FIXED,troops:100});game.tick=56;
+    game.updateSquad(enemy.id,{x:43.5*FIXED,y:24.5*FIXED,troops:2});game.tick=56;
     let crossings=0;
     for(let tick=0;tick<900;tick++){game.step();crossings=Math.max(crossings,afloat(game,tribe.id));}
     expect(crossings).toBeGreaterThan(0);expect(crossings).toBeLessThanOrEqual(4);

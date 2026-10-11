@@ -3,6 +3,35 @@ export interface CollisionPoint {
   y: number;
 }
 
+/** Clip against a CCW convex body's half planes, expanded by projectile radius. */
+export function polygonSweepEntry(
+  from: CollisionPoint,
+  to: CollisionPoint,
+  polygon: readonly CollisionPoint[],
+  radius = 0,
+): number | null {
+  let enter = 0,
+    leave = 1;
+  for (let i = 0; i < polygon.length; i++) {
+    const a = polygon[i],
+      b = polygon[(i + 1) % polygon.length],
+      nx = -(b.y - a.y),
+      ny = b.x - a.x;
+    const start =
+        nx * (from.x - a.x) + ny * (from.y - a.y) + radius * Math.hypot(nx, ny),
+      delta = nx * (to.x - from.x) + ny * (to.y - from.y);
+    if (Math.abs(delta) < 1e-10) {
+      if (start < 0) return null;
+      continue;
+    }
+    const t = -start / delta;
+    if (delta > 0) enter = Math.max(enter, t);
+    else leave = Math.min(leave, t);
+    if (enter > leave) return null;
+  }
+  return enter <= 1 && leave >= 0 ? Math.max(0, enter) : null;
+}
+
 /** First contact, including start overlaps and a zero-length sweep. */
 export function circleSweepEntry(
   from: CollisionPoint,

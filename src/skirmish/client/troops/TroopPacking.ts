@@ -30,12 +30,16 @@ export function actorFormationSlots(
       scale,
     }));
   }
-  const slots = formationSlots(layout, mounted ? 6 : 12, shape, 1, mounted);
+  const slots = formationSlots(layout, actor?.members ?? (mounted ? 6 : 12), shape, 1, mounted);
   if (!mounted) return slots.map((slot) => ({ ...slot, scale }));
   if (shape === "mass") {
     // Horse-length clearance in every direction: a crowd must remain readable
     // as riders turn, rather than depending on mounts always facing forward.
     const radius = scale * (400 / 512) + 0.12 / (2 / 0.75);
+    if(slots.length>6){
+      const columns=Math.ceil(Math.sqrt(slots.length)),rows=Math.ceil(slots.length/columns),pitch=radius*1.5;
+      return slots.map((slot,index)=>({...slot,x:(index%columns-(columns-1)/2)*pitch,y:(Math.floor(index/columns)-(rows-1)/2)*pitch,row:Math.floor(index/columns),scale}));
+    }
     return slots.map((slot, index) => {
       const angle = Math.PI / 6 + (index * Math.PI) / 3;
       const x = Math.cos(angle) * radius,

@@ -1,3 +1,4 @@
+import { readyFraction } from './Manpower';
 import { FIXED, type Player, type Squad } from "../Protocol";
 import { buildingTechnology } from "../content/Buildings";
 import { affordableAiCost } from "./AiBudgetLedger";
@@ -216,7 +217,7 @@ export class AiModernFronts {
   private suitable(squad: Squad, section: ModernSection): boolean {
     return (
       squad.playerId === section.playerId &&
-      squad.troops >= 700 &&
+      readyFraction(squad) >= .7 &&
       squad.embarkedOn === null &&
       !squad.refit &&
       !squad.charge &&
@@ -320,7 +321,7 @@ export class AiModernFronts {
     }
     if (
       scan.enemyTroops >
-        Math.max(2000, current.reduce((sum, s) => sum + s.troops, 0) * 2) &&
+        Math.max(24, current.reduce((sum, s) => sum + s.troops, 0) * 2) &&
       section.members.length
     ) {
       this.withdraw(section, "Overmatched front");

@@ -16,7 +16,7 @@ export const MIGRATION_THEME = Object.freeze({
     [7, 0.055],
     [11, 0.025],
   ] as const,
-  smallIslandCounts: { 250: [3, 5], 500: [8, 12], 1000: [20, 30] } as const,
+  smallIslandCounts: { 250: [3, 5], 500: [8, 12], 1000: [20, 30], 2000: [45, 65] } as const,
   smallIslandRadius: [6, 12] as const,
   islandPlacementAttempts: 600,
   minimumMainlandAreaRatio: 0.006,

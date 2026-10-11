@@ -1,0 +1,51 @@
+{
+  "mode": "stationary",
+  "trial": 0,
+  "recordedAt": "2026-10-11T00:49:35.741Z",
+  "node": "v24.18.0",
+  "source": [
+    {
+      "path": "src/skirmish/Simulation.ts",
+      "sha256": "8bcd44a0d99c56d041dce53018a27258c17a6e32944ba294dd11a4e7c1dfa169"
+    },
+    {
+      "path": "src/skirmish/domain/FormationGeometry.ts",
+      "sha256": "bb0b024a3535613a14d4ebd3f97b42ad4d433cd555312cb37439c074099febeb"
+    },
+    {
+      "path": "src/skirmish/domain/FormationContact.ts",
+      "sha256": "efdf2d216498d973eec9822a23fffe03cbc14870ba577ef38a154cb518f6c819"
+    },
+    {
+      "path": "src/skirmish/domain/FormationProfiles.ts",
+      "sha256": "d0f7b3c5b5c6ad761d4717c5026cefd89cd7fd911235869e188db698b4fb3a40"
+    },
+    {
+      "path": "src/skirmish/LocalAvoidance.ts",
+      "sha256": "bc5fc9585c7d735dd9d0271490bdbc835915fed61632daec5cd65bc8348ac0ec"
+    },
+    {
+      "path": "src/skirmish/FormationLocomotion.ts",
+      "sha256": "7c64959e5ae7d54da8cacc5dc92c9f714495a0e164832456a736901f065e2b09"
+    }
+  ],
+  "results": [
+    {
+      "population": 400,
+      "factions": 2,
+      "samples": 160,
+      "p95": 59.49279999999999,
+      "mean": 19.6476725,
+      "reformMoves": 3818
+    },
+    {
+      "population": 1000,
+      "factions": 10,
+      "samples": 160,
+      "p95": 146.2563999999984,
+      "mean": 42.14507187499997,
+      "reformMoves": 9640
+    }
+  ],
+  "qualification": "Headless paired moving-reform control; Phase 1 population/placement pattern adapted to recipe-sized squads. Not a historical before/after or rendered-load certification."
+}

@@ -1,3 +1,5 @@
+import { formationDoctrine, columnLayout } from "./FormationGeometry";
+import type { Squad } from "../Protocol";
 import type { AttackProfile, TargetTag, UnitDefinition } from "./Definitions";
 export const XP_THRESHOLDS = [0, 500, 1500, 3500, 7000, 12000, 20000] as const;
 export const PROMOTION_ATTACK = [
@@ -11,6 +13,7 @@ export function promotionLevel(xp: number): number {
   return level;
 }
 export interface Defence {
+  soldiers?: boolean;
   tags: readonly TargetTag[];
   armourKind?: "points" | "percentage";
   meleeArmour: number;
@@ -38,24 +41,30 @@ export function scaledAttack(
   xp = 0,
 ): AttackProfile {
   const scale = attackStrength(strength, capacity, xp);
+  const scaleValue = (n: number) =>
+    profile.perSoldier
+      ? Math.floor(
+          (Math.round(n * 1000) *
+            Math.max(0, Math.min(strength, capacity)) *
+            PROMOTION_ATTACK[promotionLevel(xp) - 1]) /
+            Math.max(1, capacity * 10000),
+        ) / 1000
+      : Math.floor(n * scale);
   return {
     ...profile,
-    damage: Math.floor(profile.damage * scale),
+    damage: scaleValue(profile.damage),
     bonuses: Object.fromEntries(
-      Object.entries(profile.bonuses).map(([tag, n]) => [
-        tag,
-        Math.floor(n * scale),
-      ]),
+      Object.entries(profile.bonuses).map(([tag, n]) => [tag, profile.perSoldier ? n : scaleValue(n)]),
     ),
   };
 }
-// Troops use flat melee/pierce armour and independent bonus-class armour.
-// Hulls and structures retain basis-point resistance. Cover is always a
-// percentage; it never changes the units of a defence's base armour.
+// Soldier armour subtracts from each contributor before aggregation; one
+// primary-class bonus bypasses it. Legacy aggregate weapons retain their own
+// hull/structure and bonus-resistance path. Cover mitigates the final aggregate.
 export function damageAmount(
   profile: AttackProfile,
   defence: Defence,
-  troops = 1000,
+  troops = profile.perSoldier ? 1 : 1000,
   xp = 0,
   capacity = 1000,
   committedStrength?: number,
@@ -69,6 +78,52 @@ export function damageAmount(
   // Promotion changes the displayed per-unit weapon before armour. Surviving
   // troop count scales the resolved per-unit damage, not armour penetration.
   const attack = xp ? scaledAttack(profile, 1000, 1000, xp) : profile;
+  if (profile.perSoldier) {
+    const contributors = committedStrength ?? troops;
+    if (!attack.damage || contributors <= 0) return 0;
+    const armour = Math.max(
+      0,
+      attack.channel === "melee" ? defence.meleeArmour : defence.rangedArmour,
+    );
+    const penetration = Math.max(0, Math.min(10000, attack.penetration));
+    // Primary class is exclusive; permission tags never multiply counter bonuses.
+    const primary = primaryCounterClass(defence.tags);
+    const bonus = primary
+      ? Math.max(
+          0,
+          (attack.bonuses[primary] ?? 0) -
+            (defence.soldiers === false
+              ? (defence.bonusResistance[primary] ?? 0)
+              : 0),
+        )
+      : 0;
+    const damageSubunits = Math.round(attack.damage * 1000);
+    const base =
+      defence.armourKind === "points"
+        ? Math.max(
+            defence.soldiers === false ? 0 : 1000,
+            damageSubunits -
+              Math.floor(
+                (Math.round(armour * 1000) * (10000 - penetration)) / 10000,
+              ),
+          )
+        : Math.floor(
+            (damageSubunits *
+              (10000 -
+                Math.floor(
+                  (Math.min(MAX_ARMOUR, armour) * (10000 - penetration)) /
+                    10000,
+                ))) /
+              10000,
+          );
+    const cover = Math.min(MAX_ARMOUR, Math.max(0, defence.cover ?? 0));
+    return (
+      Math.floor(
+        ((base + Math.round(bonus * 1000)) * contributors * (10000 - cover)) /
+          10000,
+      ) / 1000
+    );
+  }
   const armour = Math.max(
     0,
     attack.channel === "melee" ? defence.meleeArmour : defence.rangedArmour,
@@ -98,9 +153,46 @@ export function damageAmount(
   return Math.max(
     1,
     Math.floor(
-      damage * (committedStrength ?? attackStrength(troops, capacity)) *
-      100 / (defence.healthPercent ?? 100),
+      (damage * (committedStrength ?? attackStrength(troops, capacity)) * 100) /
+        (defence.healthPercent ?? 100),
     ),
+  );
+}
+export function primaryCounterClass(
+  tags: readonly TargetTag[],
+): TargetTag | undefined {
+  return (
+    [
+      "wall",
+      "structure",
+      "ship",
+      "aircraft",
+      "vehicle",
+      "siege",
+      "mounted",
+      "ranged",
+      "infantry",
+    ] as const
+  ).find((tag) => tags.includes(tag));
+}
+/** Non-contact estimate for AI, projectiles and legacy fixtures. Live formation melee uses FormationContact.contactParticipants. */
+export function attackContributors(
+  squad: Pick<Squad, "troops" | "manpower" | "formation" | "definitionId">,
+  profile: AttackProfile,
+  target?: Pick<Squad, "troops" | "manpower">,
+): number {
+  if (!profile.perSoldier)
+    return (1000 * squad.troops) / (squad.manpower?.capacity ?? 1000);
+  const column=squad.formation?.shape==="column" || squad.formation?.transition?.from==="column";
+  const columnWidth=columnLayout(formationDoctrine(squad.definitionId)).columns;
+  if (profile.channel === "ranged") return column ? Math.min(squad.troops,columnWidth*2):squad.troops;
+  const width = column ? columnWidth : Math.ceil(Math.sqrt(squad.manpower?.capacity ?? squad.troops));
+  const targetWidth = target
+    ? Math.ceil(Math.sqrt(target.manpower?.capacity ?? target.troops))
+    : width;
+  return Math.min(
+    squad.troops,
+    Math.min(width, targetWidth) * (profile.ranks ?? 2),
   );
 }
 /** Every hull, including a squad afloat in its faction's transport. */
@@ -111,7 +203,11 @@ export const SHIP_DEFENCE: Defence = {
   bonusResistance: {},
 };
 export function defenceOf(definition: UnitDefinition, cover = 0): Defence {
-  return { ...definition, cover };
+  return {
+    ...definition,
+    soldiers: definition.formationRecipe?.model === "soldiers",
+    cover,
+  };
 }
 export function attackInterval(
   profile: AttackProfile,

@@ -49,7 +49,7 @@ const complete = (m: Skirmish) => {
   for (const p of m.players) {
     const s = m.expansion!.progression.states[p.id];
     s.age = "Modern";
-    s.completed = TECHNOLOGIES.map((t) => t.id);
+    s.completed = TECHNOLOGIES.filter(t=>!t.optional).map((t) => t.id);
     p.gold = 10000000;
     p.reserves = 100000;
   }
@@ -106,7 +106,7 @@ describe("age progression and authoritative definitions", () => {
     for (const age of AGES)
       for (const tree of TREES)
         expect(
-          TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree),
+          TECHNOLOGIES.filter((t) => !t.optional && t.age === age && t.tree === tree),
         ).toHaveLength(treeWorkload(age, tree));
   });
   it("opens with three flint infantry and their required research grants and a completed city per faction", () => {
@@ -271,7 +271,7 @@ describe("supply conservation and deployment", () => {
     expect(e.supply.inventories[2].bronze).toBe(0);
     expect(inv.copper).toBe(0);
   });
-  it("requires a weapon kit and building tier, then spends a single kit and 1,000 reserves", () => {
+  it("requires a weapon kit and building tier, then spends a single kit and 24 reserves", () => {
     const m = make();
     complete(m);
     const p = m.players[0],
@@ -296,7 +296,7 @@ describe("supply conservation and deployment", () => {
       }),
     ).toBeNull();
     expect(inv["equipment:bronzeage"]).toBe(0);
-    expect(p.reserves).toBe(before - 1000);
+    expect(p.reserves).toBe(before - 24);
     expect(
       m.applyCommand({
         type: "recruit",
@@ -312,7 +312,7 @@ describe("supply conservation and deployment", () => {
     const own = m.squads.filter((s) => s.playerId === 1),
       p = m.players[0],
       inv = m.expansion!.supply.inventories[1];
-    m.updateSquad(own[0].id, { troops: 450 });
+    m.updateSquad(own[0].id, { troops: 5 });
     m.updateSquad(own[0].id, { xp: 7000 });
     inv["equipment:bronzeage"] = 1;
     const gold = p.gold;
@@ -340,7 +340,7 @@ describe("supply conservation and deployment", () => {
     expect(own[0].xp).toBe(7000);
     step(m, 200);
     expect(own[0].definitionId).toBe("bronzeage-infantry");
-    expect(own[0].troops).toBe(450);
+    expect(own[0].troops).toBe(5);
     expect(own[0].xp).toBe(0);
     expect(inv["equipment:bronzeage"]).toBe(0);
   });
@@ -523,7 +523,7 @@ describe("allied protection and fortifications", () => {
       }),
     ).not.toBeNull();
     m.expansion!.battle.fight([]);
-    expect(t.troops).toBe(1000);
+    expect(t.troops).toBe(12);
     expect(t.playerId).toBe(b.id);
     expect(a.eliminated).toBe(false);
   });

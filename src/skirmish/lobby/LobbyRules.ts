@@ -22,7 +22,7 @@ export const MAP_CAMP_LIMITS: Partial<
     PlayableMapId,
     Partial<
       Record<
-        250 | 500 | 1000,
+        250 | 500 | 1000 | 2000,
         { regularCost: number; tribeCost: number; budget: number }
       >
     >

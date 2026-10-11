@@ -1,3 +1,4 @@
+import { readyFraction } from './Manpower';
 import type { Player } from "../Protocol";
 import type { Expansion } from "./Expansion";
 export interface AiForceReadiness {
@@ -29,7 +30,7 @@ export function forceReadiness(
   for (const squad of expansion.world.squadFacts().aliveByOwner(player.id)) {
     const lease = expansion.economy.assets.leases.get(`squad:${squad.id}`);
     if (
-      squad.troops < 500 ||
+      readyFraction(squad) < .5 ||
       squad.embarkedOn !== null ||
       squad.refit ||
       squad.charge ||
@@ -47,7 +48,7 @@ export function forceReadiness(
   }
   const own = expansion.world.buildingFacts().byOwner(player.id);
   result.logistics =
-    player.reserves >= 1000 ||
+    player.reserves >= 12 ||
     own.some(
       (b) =>
         ["city", "depot", "barracks"].includes(b.type) &&

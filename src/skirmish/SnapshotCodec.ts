@@ -1,3 +1,7 @@
+import { FORMATION_SHAPES, validateFormation } from "./domain/FormationGeometry";
+import { validateWeaponState } from "./domain/WeaponTiming";
+import { validateMeleeStrike } from "./domain/MeleeStrike";
+import { FORMATION_RULES_VERSION, validateManpower } from './domain/Manpower';
 import type { TileChangeJournal } from "./TileChangeJournal";
 import type { EntityChangeJournal } from "./EntityChangeJournal";
 import type { ReplicatedEntities } from "./ReplicatedEntities";
@@ -19,7 +23,7 @@ export type SnapshotSource = Omit<Snapshot, "buildings" | "squads" | "ships"> & 
   readonly ships: readonly Snapshot["ships"][number][];
 };
 
-export const SNAPSHOT_LAYOUT = Object.freeze({ squadStride: 14, orderStride: 6, buildingStride: 5 });
+export const SNAPSHOT_LAYOUT = Object.freeze({ squadStride: 14, orderStride: 8, buildingStride: 5 });
 const { squadStride: SQUAD_STRIDE, orderStride: ORDER_STRIDE, buildingStride: BUILDING_STRIDE } = SNAPSHOT_LAYOUT;
 const SQUAD_TYPES: SquadType[] = ["infantry", "archer", "cavalry"];
 const BUILDING_TYPES = Object.keys(BUILDING_RULES) as BuildingType[];
@@ -66,6 +70,7 @@ function writeOrder(output: Int32Array, at: number, order: Order) {
     output[at + 4] = order.y!;
     output[at + 5] = 1;
   }
+  if(order.type==="move" && order.formationIntent){output[at+6]=FORMATION_SHAPES.indexOf(order.formationIntent.shape)+1;output[at+7]=order.formationIntent.frontage??0;}
   if ((order.type === "move" || order.type === "hold") && order.facing !== undefined) {
     output[at+2]=Math.round(order.facing*1e6);
     output[at+5]|=2;
@@ -78,6 +83,7 @@ function readOrder(input: Int32Array, at: number): Order {
     return {
       type,
       tile: input[at + 1],
+      ...(input[at+6]?{formationIntent:{shape:FORMATION_SHAPES[input[at+6]-1],...(input[at+7]?{frontage:input[at+7]}:{})}}:{}),
       ...(input[at + 5] & 1 ? { x: input[at + 3], y: input[at + 4] } : {}),
       ...(input[at + 5] & 2 ? { facing: input[at+2]/1e6 } : {}),
     };
@@ -330,6 +336,7 @@ export class SnapshotEncoder {
     this.previousRoadRevision = source.expansion?.roadRevision ?? -1;
     return {
       reset,
+      formationRulesVersion:FORMATION_RULES_VERSION,
       barrierChanges,
       entityMode: facts ? (selected.full ? "full" : "delta") : undefined,
       removedSquads: facts && selected.squads.removed.length ? new Int32Array(selected.squads.removed) : undefined,
@@ -346,7 +353,7 @@ export class SnapshotEncoder {
       expansion,
       expansionMode:metadata?(metadata.full?"full":"delta"):undefined,
       details: packSnapshotDetails(
-        source.expansion ?? selected.squads.rows.some(s => s.planningPaused === true || s.movementStatus !== undefined) ? selected.squads.rows : undefined,
+        source.expansion ?? selected.squads.rows.some(s => s.planningPaused === true || s.movementStatus !== undefined || s.meleeStrike !== undefined) ? selected.squads.rows : undefined,
         source.expansion ? selected.buildings.rows : undefined,
         selected.ships.rows, source.volleys,
       ),
@@ -390,6 +397,10 @@ export class SnapshotDecoder {
   private readonly buildings = new Map<number, Building>();
   validate(packet: SnapshotPacket): void {
     if (packet.details) validateSnapshotDetails(packet.details);
+    if(packet.orders.length%ORDER_STRIDE)throw new Error("Invalid order stride");
+    for(let at=0;at<packet.orders.length;at+=ORDER_STRIDE){const shape=packet.orders[at+6],width=packet.orders[at+7];
+      if(shape<0||shape>FORMATION_SHAPES.length||width<0||width>128*256||(!shape&&width)||shape&&packet.orders[at]!==2)throw new Error("Invalid order formation intent");
+    }
     validateBarrierChanges(packet);
     if (packet.barrierChanges && !this.expansionMetadata && !packet.expansion?.barriers)
       throw new Error("Barrier delta has no metadata baseline");
@@ -403,8 +414,11 @@ export class SnapshotDecoder {
     }
   }
   decode(packet: SnapshotPacket,copyArrays=true,includeChangedTiles=true): Snapshot {
+    if(packet.expansion && packet.formationRulesVersion!==FORMATION_RULES_VERSION)throw new Error('Unsupported formation rules version');
     this.validate(packet);
     const records = packet.details ? unpackSnapshotDetails(packet.details) : packet;
+    for(const detail of records.squadDetails??[])validateMeleeStrike(detail.meleeStrike,packet.tick);
+    if(packet.expansion){const details=new Map((records.squadDetails??[]).map(s=>[s.id,s]));for(let at=0;at<packet.squads.length;at+=SQUAD_STRIDE){validateManpower(details.get(packet.squads[at])?.manpower,packet.squads[at+4]);validateWeaponState(details.get(packet.squads[at])?.weaponState);validateFormation(details.get(packet.squads[at])?.formation,details.get(packet.squads[at])?.definitionId,packet.squads[at+4]);validateMeleeStrike(details.get(packet.squads[at])?.meleeStrike,packet.tick);}}
     const full = packet.reset || packet.entityMode !== "delta";
     const checkCapacity = (current: ReadonlyMap<number, unknown>, ids: Iterable<number>,
       removed: Int32Array | undefined, limit: number) => {

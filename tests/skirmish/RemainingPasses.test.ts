@@ -1,3 +1,5 @@
+import { createManpower } from "../../src/skirmish/domain/Manpower";
+import { UNIT } from "../../src/skirmish/content/Units";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { AttackApproaches } from "../../src/skirmish/AttackApproaches";
@@ -79,7 +81,7 @@ describe("remaining gameplay passes", () => {
           game.updateSquad(s.id, {
             x: (threatened ? 34.5 : 90.5) * FIXED,
             y: (18.5 + 7 * i) * FIXED,
-            troops: 100000,
+            definitionId:"earlymedieval-infantry",troops:96,manpower:createManpower(UNIT.get("earlymedieval-infantry")!,"enlarged"),
           }),
         );
       e.progression.states[ai.id].completed.push("rus-stoneage-cargo-canoes");

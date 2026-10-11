@@ -21,6 +21,7 @@ export const WORLD_FACTION_DEFAULTS = Object.freeze({
   250: Object.freeze({ aiCount: 6, tribeCount: 20 }),
   500: Object.freeze({ aiCount: 10, tribeCount: 25 }),
   1000: Object.freeze({ aiCount: 14, tribeCount: 30 }),
+  2000: Object.freeze({ aiCount: 14, tribeCount: 30 }),
 });
 export type FactionWorldSize = keyof typeof WORLD_FACTION_DEFAULTS;
 export const MAX_HUMAN_PLAYERS = 20;
@@ -78,7 +79,7 @@ export function canPromoteTribe(
 export function tribeCountFor(width: number, height: number): number {
   const extent = Math.max(width, height);
   return WORLD_FACTION_DEFAULTS[
-    extent <= 375 ? 250 : extent <= 750 ? 500 : 1000
+    extent <= 375 ? 250 : extent <= 750 ? 500 : extent <= 1500 ? 1000 : 2000
   ].tribeCount;
 }
 /** Tribes a match deploys: the explicit count, else the map default. */

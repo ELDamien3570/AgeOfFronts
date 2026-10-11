@@ -1,9 +1,11 @@
+import { createManpower } from "../../src/skirmish/domain/Manpower";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { squadSymbol } from "../../src/skirmish/client/MapSymbols";
 import { squadFormationType } from "../../src/skirmish/client/FormationArtwork";
 import { ARTWORK_CATALOG } from "../../src/skirmish/client/ArtworkCatalog";
+import { javelinThrowTime } from "../../src/skirmish/client/troops/TroopVolley";
 import {
   combatTargets,
   impactSize,
@@ -38,7 +40,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
       enemy = m.squads.find((s) => s.playerId === 2)!;
     m.updateSquad(enemy.id, { definitionId: "modern-archer" });
     m.updateSquad(enemy.id, { kind: "archer" });
-    m.updateSquad(enemy.id, { troops: 600 });
+    m.updateSquad(enemy.id, { troops: 1, manpower: {...createManpower(UNITS.find(u=>u.id==="modern-archer")!),wounds:32000} });
     m.expansion!.progression.states[2].completed = TECHNOLOGIES.map(
       (t) => t.id,
     );
@@ -57,7 +59,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
     if (card.mode !== "detail") throw new Error("Expected detail");
     expect(card.card.title).toContain("RPL-20 Crew");
     expect(card.card.subtitle).toContain("read only");
-    expect(card.card.meter?.value).toBe(600);
+    expect(card.card.meter?.value).toBe(48);
     expect(
       card.card.stats.find((s) => s.label === "Ranged Armour")?.value,
     ).toContain("points");
@@ -164,19 +166,15 @@ describe("read-only enemy inspection and weapon presentation", () => {
   it("shows the release pose on the shot tick and winds up just before the next ranged shot", () => {
     const m = setup(),
       squad = m.squads[0];
-    m.updateSquad(squad.id, { definitionId: "earlymodern-archer" });
+    m.updateSquad(squad.id, { definitionId: "stoneage-archer" });
     m.updateSquad(squad.id, { lastAttackTick: 100 });
     m.updateSquad(squad.id, { nextAttackTick: 140 });
     m.updateSquad(squad.id, { fighting: true });
-    expect(squadArtworkPose(squad, 100)).toEqual({
-      clip: "attack",
-      elapsed: 10,
-    });
-    expect(squadArtworkPose(squad, 110).clip).toBe("idle");
-    expect(squadArtworkPose(squad, 135)).toEqual({
-      clip: "attack",
-      elapsed: 5,
-    });
+    // Individual actor clips supersede the removed baked infantry atlas.
+    const clip={id:'attack',file:'attack.png',frameCount:6,fps:10,releaseFrame:5,frames:[]};
+    expect(javelinThrowTime(squad,100,clip)).toBe(500);
+    expect(javelinThrowTime(squad,110,clip)).toBeUndefined();
+    expect(javelinThrowTime(squad,135,clip)).toBe(250);
     expect(squad.lastAttackTick).toBe(100);
   });
   it("shows own committed missile and bombing targets and removes resolved or foreign targets", () => {

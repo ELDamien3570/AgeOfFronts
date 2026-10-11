@@ -1,3 +1,4 @@
+import { remainingHealth, HEALTH_SCALE } from "../../src/skirmish/domain/Manpower";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED } from "../../src/skirmish/Protocol";
@@ -33,8 +34,10 @@ function match() {
     battle: m.expansion!.battle,
   };
 }
+// Collision fixtures exercise retained aggregate/hull damage independently of soldier tuning.
 const profile: AttackProfile = {
   ...defaultUnit("archer").attack,
+  perSoldier: false,
   damage: 100,
   bonuses: {},
   projectile: { diameter: FIXED / 4, speed: FIXED * 30, blastRadius: 0 },
@@ -91,9 +94,9 @@ describe("swept projectile contacts", () => {
     battle.fire(source, { x: 30 * FIXED, y: source.y }, profile, 100);
     m.tick++;
     battle.advanceProjectiles();
-    expect(enemies[0].troops).toBeLessThan(1000);
-    expect(enemies[1].troops).toBe(1000);
-    expect(source.xp).toBe(1000 - enemies[0].troops);
+    expect(remainingHealth(enemies[0])).toBeLessThan(1200000);
+    expect(enemies[1].troops).toBe(12);
+    expect(source.xp).toBe((1200000-remainingHealth(enemies[0]))/HEALTH_SCALE);
     const health = enemies[0].troops,
       xp = source.xp;
     m.tick++;
@@ -119,10 +122,10 @@ describe("swept projectile contacts", () => {
     );
     m.tick++;
     battle.advanceProjectiles();
-    expect(enemies[0].troops).toBe(1000);
-    expect(enemies[1].troops).toBeLessThan(1000);
+    expect(enemies[0].troops).toBe(12);
+    expect(remainingHealth(enemies[1])).toBeLessThan(1200000);
     const xp = source.xp;
-    battle.fire(source, { x: 30 * FIXED, y: 20 * FIXED }, profile, 100);
+    battle.fire(source, { x: 30 * FIXED, y: 26 * FIXED }, profile, 100);
     m.tick++;
     battle.advanceProjectiles();
     expect(source.xp).toBe(xp);
@@ -153,7 +156,7 @@ describe("swept projectile contacts", () => {
     expect(children.reduce((n, p) => n + p.damage, 0)).toBe(100);
     m.tick++;
     battle.advanceProjectiles();
-    expect(enemies[0].troops).toBeLessThan(1000);
+    expect(remainingHealth(enemies[0])).toBeLessThan(1200000);
     expect(source.xp ?? 0).toBe(0);
   });
   it("blocks a grazing projectile on a neighbouring wall tile", () => {
@@ -193,7 +196,7 @@ describe("swept projectile contacts", () => {
     battle.fire(source, { x: 30 * FIXED, y: source.y }, profile, 100);
     m.tick++;
     battle.advanceProjectiles();
-    expect(enemies[0].troops).toBe(1000);
+    expect(enemies[0].troops).toBe(12);
     expect(battle.projectiles[0].impacted).toBe(true);
     expect(battle.projectiles[0].x).toBeLessThan(10 * FIXED);
     const wall = forts.barriers[0],

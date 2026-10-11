@@ -27,10 +27,10 @@ const civ = saved.civilizations.find(
 )!;
 describe("approved Rus runtime tree", () => {
   it("matches every saved prerequisite and includes no obsolete research tolls", () => {
-    expect(TECHNOLOGIES.map((t) => t.id)).toEqual(
+    expect(TECHNOLOGIES.filter(t=>!t.optional).map((t) => t.id)).toEqual(
       civ.technologies.map((t) => t.id),
     );
-    for (const t of TECHNOLOGIES)
+    for (const t of TECHNOLOGIES.filter(t=>!t.optional))
       expect(t.prerequisites).toEqual(
         civ.technologies.find((n) => n.id === t.id)!.prerequisites,
       );

@@ -1,3 +1,4 @@
+import { recruitmentVariant } from '../content/FormationRecipes';
 import { availableGold } from "./Gold";
 import type { Player, Ship, Squad } from "../Protocol";
 import { defaultUnit, UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
@@ -37,6 +38,7 @@ type RefitSquad = Pick<
   | "id"
   | "playerId"
   | "definitionId"
+  | "manpower"
   | "kind"
   | "embarkedOn"
   | "refit"
@@ -153,24 +155,24 @@ export function quoteLandRefits<T extends RefitSquad>(
         (u) =>
           u.line === current.line &&
           u.role === current.role &&
-          u.troopClass === current.troopClass &&
+          u.troopClass === current.troopClass && u.formationRecipe?.model===current.formationRecipe?.model &&
           AGES.indexOf(u.age) > AGES.indexOf(current.age) &&
           context.research.includes(u.technologyId),
       ).sort((a, b) => AGES.indexOf(b.age) - AGES.indexOf(a.age));
       return targets.find((u) =>
-        affordableRefitCount(unitRefitCost(u), availableGold(context.player),
+        affordableRefitCount(unitRefitCost(u,1,recruitmentVariant(u.id,context.research)), availableGold(context.player),
           context.inventory, 1) > 0,
       ) ?? targets[0];
     },
     (s) =>
       s.playerId === context.player.id &&
       s.embarkedOn === null &&
-      !s.refit &&
+      !s.refit && !s.manpower?.enlargement &&
       !s.moved &&
       !s.fighting &&
       owners[Math.floor(s.y / 256) * width + Math.floor(s.x / 256)] ===
         context.player.id,
-    unitRefitCost,
+    (d,n)=>unitRefitCost(d,n,recruitmentVariant(d.id,context.research)),
     context,
     selected.every((s) => AGES.indexOf(definition(s).age) === AGES.length - 1)
       ? "Maximum tier reached"

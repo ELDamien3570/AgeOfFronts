@@ -39,7 +39,7 @@ export function startingProgression(
   const ageIndex = AGES.indexOf(age);
   const completed = new Set<string>(DEFAULT_CULTURE.startingTechnologies.map(canonicalTechnologyId));
   for (const t of TECHNOLOGIES) {
-    if (startingAge === "PostModern" || AGES.indexOf(t.age) < ageIndex) {
+    if (!t.optional && (startingAge === "PostModern" || AGES.indexOf(t.age) < ageIndex)) {
       completed.add(t.id);
     }
   }
@@ -85,7 +85,7 @@ export function researchRejection(
 export function treeCompletion(state: ProgressionState, tree: Tree): number {
   return TECHNOLOGIES.filter(
     (t) =>
-      t.age === state.age && t.tree === tree && state.completed.includes(t.id),
+      t.age === state.age && t.tree === tree && !t.optional && state.completed.includes(t.id),
   ).length;
 }
 export function advanceRejection(
@@ -112,7 +112,7 @@ export function advanceRejection(
 export function progressionRaceStarted(states: Record<number, ProgressionState>, age: ProgressionState["age"]): boolean {
   return age !== "Modern" && Object.values(states).some(state =>
     AGES.indexOf(state.age) > AGES.indexOf(age) || TREES.filter(tree =>
-      TECHNOLOGIES.filter(t => t.age === age && t.tree === tree)
+      TECHNOLOGIES.filter(t => t.age === age && t.tree === tree && !t.optional)
         .every(t => state.completed.includes(t.id))).length >= 2);
 }
 export class Progression {

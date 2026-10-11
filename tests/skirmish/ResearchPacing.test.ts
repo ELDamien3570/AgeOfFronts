@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { ADVANCES, TECHNOLOGIES } from "../../src/skirmish/content/Technology";
+import formations from "../../src/skirmish/content/formation-recipes.json";
 import data from "../../src/skirmish/content/russian-recruitment.json";
 
 describe("research pacing contract", () => {
   it("preserves authored independent research durations and seven paid age transitions", () => {
     for (const technology of TECHNOLOGIES) {
-      expect(technology.ticks).toBe(data.technologies.find(t => t.id === technology.id)!.ticks);
+      expect(technology.ticks).toBe([...data.technologies,...formations.technologies].find(t => t.id === technology.id)!.ticks);
       expect(Number.isSafeInteger(technology.ticks)).toBe(true);
       expect(technology.ticks).toBeGreaterThanOrEqual(0);
     }

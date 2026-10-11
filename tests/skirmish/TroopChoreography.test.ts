@@ -7,6 +7,34 @@ import {
 } from "./browser/TroopPrototypeModel";
 
 describe("cosmetic troop choreography", () => {
+  it("closes authoritative casualty gaps cosmetically without restarting every frame",()=>{
+    const source=Array.from({length:4},(_,id)=>({x:id*.2,y:0,row:0,scale:.2})),motion=new TroopChoreography(source,0,0);
+    const destination=source.slice(0,3).map(p=>({...p,x:p.x-.1}));
+    motion.applyAuthoritative(destination,3,100);
+    const start=motion.formationSoldiers(100);
+    motion.applyAuthoritative(destination,3,400);
+    const middle=motion.formationSoldiers(400);
+    const end=motion.formationSoldiers(600);
+    expect(start.map(p=>p.x)).not.toEqual(end.map(p=>p.x));
+    expect(middle.map(p=>p.x)).not.toEqual(start.map(p=>p.x));
+    expect(end.map(p=>p.x)).toEqual(destination.map(p=>p.x));
+    expect(new Set(end.map(p=>p.id)).size).toBe(3);
+  });
+  it("keeps surviving identities while enlargement adds members and refit reduces capacity", () => {
+    const initial=formationSlots(layout,12,"mass");
+    const motion=new TroopChoreography(initial,0,0,8);
+    const identities=motion.soldiers(0).map(s=>s.id);
+    motion.reshape(formationSlots(layout,24,"mass"),100);
+    motion.advance(200,20);
+    const enlarged=motion.soldiers(5000);
+    expect(enlarged).toHaveLength(20);
+    expect(identities.every(id=>enlarged.some(s=>s.id===id))).toBe(true);
+    expect(new Set(enlarged.map(s=>s.id)).size).toBe(20);
+    motion.reshape(formationSlots(layout,8,"mass"),6000);
+    motion.advance(6100,8);
+    expect(motion.soldiers(12000)).toHaveLength(8);
+    expect(motion.soldiers(12000).every(s=>Number.isFinite(s.x+s.y))).toBe(true);
+  });
   it("resumes detail with current strength, complete front ranks, and no fabricated deaths", () => {
     const slots = formationSlots(layout, 12, "line");
     const motion = new TroopChoreography(slots, 2, 10000, 7);

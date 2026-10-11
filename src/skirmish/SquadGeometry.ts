@@ -9,11 +9,15 @@ export const ARRIVAL_TOLERANCE = 2;
 export function squadRadius(kind: SquadType): number {
   return Math.round(FIXED * (kind === "cavalry" ? 0.48 : 0.45));
 }
-export type SquadGeometry = Pick<Squad, "kind" | "playerId">;
+export type SquadGeometry = Pick<Squad, "kind" | "playerId"> & Partial<Pick<Squad,"formation"|"definitionId"|"afloat">>;
 export type FactionHostility = (a: number, b: number) => boolean;
 export function squadSeparation(a: SquadGeometry, b: SquadGeometry, hostile?: FactionHostility): number {
   if (a.playerId === b.playerId || (hostile && !hostile(a.playerId, b.playerId))) return 0;
-  const radius = squadRadius(a.kind) + squadRadius(b.kind);
+  // Authoritative ground bodies use exact swept formation collision. A second
+  // root disc is not an inscribed body (especially for jittered single soldiers
+  // or bent columns), and can prevent otherwise legal physical contact.
+  const radiusOf=(s:SquadGeometry)=>s.formation && !s.afloat?0:squadRadius(s.kind);
+  const radius = radiusOf(a) + radiusOf(b);
   return Math.round(radius) + COLLISION_SKIN;
 }
 export function meleeContact(a: SquadType, b: SquadType): number {

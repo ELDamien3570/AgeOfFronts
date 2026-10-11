@@ -350,13 +350,13 @@ export class EmpireHudView {
           "support",
           u.id,
           quote.reason,
-          `${u.cost.gold ?? 0} gold · 1,000 reserves\nResearch: ${vm.technologyName(u.technologyId)}\nBuilding: ${BUILDING_RULES[u.building].name} · ${AGE_NAMES[AGES.indexOf(u.age)]} or later\n${Object.entries(
-            u.cost.items ?? {},
+          `${quote.cost?.gold ?? 0} gold · ${quote.cost?.reserves ?? 0} reserves\n${u.formationRecipe?.model==='soldiers'?`${quote.capacity} soldiers`:'Hull / support actor'}\nResearch: ${vm.technologyName(u.technologyId)}\nBuilding: ${BUILDING_RULES[u.building].name} · ${AGE_NAMES[AGES.indexOf(u.age)]} or later\n${Object.entries(
+            quote.cost?.items ?? {},
           )
             .map(([id, n]) => `${n} ${vm.itemName(id)}`)
             .join(
               " · ",
-            )}\n${u.attack.damage} ${u.attack.channel} damage · ${u.attack.range / 256} cells range · ${u.attack.reloadTicks / 20}s reload`,
+            )}\n${u.attack.damage} ${u.attack.channel} damage${u.attack.perSoldier ? " per soldier" : ""} · ${u.attack.range / 256} cells range · ${u.attack.perSoldier ? `${u.attack.rpm} RPM · ${u.attack.shotsPerReload} shots · ${(u.attack.reloadMs ?? 0)/1000}s reload` : `${u.attack.reloadTicks / 20}s reload`}`,
           u.id,
         );
       })

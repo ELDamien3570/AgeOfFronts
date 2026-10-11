@@ -250,7 +250,7 @@ describe("reviewed heightmap content contract", () => {
     expect(match.tick).toBe(1);
   });
   it("shares map identities between gameplay and lobbies, retains Mediterranean links, and retires base maps", () => {
-    expect(LOBBY_MAP_IDS).toEqual([...HEIGHTMAP_MAPS.map((map) => map.id), "black-forest", "migration"]);
+    expect(LOBBY_MAP_IDS).toEqual([...HEIGHTMAP_MAPS.map((map) => map.id), "black-forest", "migration", "continents"]);
     expect(MAPS.map((map) => map.id)).toEqual([
       "heightmap-test1",
       "africa",
@@ -262,6 +262,7 @@ describe("reviewed heightmap content contract", () => {
       "middle-east",
       "black-forest",
       "migration",
+      "continents",
       "thebox",
     ]);
     expect(MAPS[0].name).toBe("Mediterranean");

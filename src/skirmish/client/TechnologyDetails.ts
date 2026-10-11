@@ -56,9 +56,9 @@ const cost = (value: Cost) =>
 function weapon(attack: AttackProfile, moving = false): string {
   if (!attack.targets.length) return "No direct attack";
   return [
-    `${number(attack.damage)} ${attack.channel} attack`,
+    `${number(attack.damage)} ${attack.channel} attack${attack.perSoldier ? " per soldier" : ""}`,
     `${number(attack.range / FIXED)}-tile range`,
-    `${number(attack.reloadTicks / TICKS_PER_SECOND)}s reload`,
+    attack.perSoldier ? `${attack.rpm} RPM · ${attack.shotsPerReload} shots/reload · ${number((attack.reloadMs ?? 0)/1000)}s reload` : `${number(attack.reloadTicks / TICKS_PER_SECOND)}s reload`,
     moving && attack.movingReloadPercent !== 100
       ? `${number(attackInterval(attack, true) / TICKS_PER_SECOND)}s while moving`
       : "",
@@ -104,7 +104,7 @@ export function technologyDetails(technology: Technology): string[] {
     );
     if (unit.charge)
       lines.push(
-        `Charge: ${number(unit.charge.damage)} attack · ${unit.charge.speedPercent}% movement · ${number(unit.charge.cooldownTicks / TICKS_PER_SECOND)}s cooldown`,
+        `Charge: ${unit.meleeAttack ? `${unit.chargeMultiplier}× melee per soldier` : `${number(unit.charge.damage)} attack`} · ${unit.charge.speedPercent}% movement · ${number(unit.charge.cooldownTicks / TICKS_PER_SECOND)}s cooldown`,
       );
   }
   for (const vessel of VESSELS.filter((vessel) => vessel.technologyId === id)) {
@@ -137,7 +137,7 @@ export function technologyDetails(technology: Technology): string[] {
       `Army capacity: ${army.capacity} squads${id === ARMY_TECHNOLOGY ? "" : " (requires Armies)"}`,
     );
   if (buildings.includes("city"))
-    lines.push(`City: +${cityReserveIncome(age)} reserves/s at this tier`);
+    lines.push(`City: +${cityReserveIncome(age)*12/1000} reserves/s at this tier`);
   if (buildings.includes("mine") || buildings.includes("oil-well"))
     lines.push(
       `Extraction: ${extractionYieldMultiplier(age)}× deposit yield per completed extractor of this tier`,
@@ -172,7 +172,7 @@ export function technologyDetails(technology: Technology): string[] {
   }
   if (role === "cities") {
     lines.push(
-      `City: +${cityReserveIncome(age, [id])} reserves/s at this tier`,
+      `City: +${cityReserveIncome(age,[id])*12/1000} reserves/s at this tier`,
     );
     if (!ageIndex)
       lines.push(

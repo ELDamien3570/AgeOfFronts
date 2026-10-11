@@ -1,3 +1,5 @@
+import { recruitmentVariant } from '../content/FormationRecipes';
+import { scaledRecipeCost } from './Manpower';
 import { researchUtility, type ResearchOpportunity } from "./AiResearchUtility";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import type { BuildingType, Command } from "../Protocol";
@@ -111,7 +113,7 @@ export function economicCandidates(
     .reduce((n, [, count]) => n + count, 0);
   const reserveShortage = Math.max(
     0,
-    Math.min(8, coreMissing) * 1000 - (snapshot.liquid.reserves ?? 0),
+    Math.min(8, coreMissing) * 12 - (snapshot.liquid.reserves ?? 0),
   );
   const materialShortage = Object.entries(demand.equipment).some(
     ([id, n]) =>
@@ -152,7 +154,7 @@ export function economicCandidates(
       value +=
         snapshot.headroom > 0 &&
         availableKits > 0 &&
-        (snapshot.liquid.reserves ?? 0) >= 1000 &&
+        (snapshot.liquid.reserves ?? 0) >= 12 &&
         snapshot.trainingTicks > 400
           ? 4500
           : 0;
@@ -231,7 +233,7 @@ export function economicCandidates(
         (u) =>
           u.role === role &&
           snapshot.research.includes(u.technologyId) &&
-          Object.entries(u.cost.items ?? {}).every(
+          Object.entries(scaledRecipeCost(u,recruitmentVariant(u.id,snapshot.research)).items ?? {}).every(
             ([id, n]) => (snapshot.liquid.items?.[id] ?? 0) >= n,
           ) &&
           snapshot.buildings.some(
@@ -267,7 +269,7 @@ export function economicCandidates(
         buildingId: producer.id,
         definitionId: unit.id,
       },
-      unit.cost,
+      scaledRecipeCost(unit,recruitmentVariant(unit.id,snapshot.research)),
       snapshot.threatTroops > 0 ? 10000 : 4000,
       `force-deficit:${role}`,
       400,
@@ -278,7 +280,7 @@ export function economicCandidates(
   const outstanding=(trees:readonly import("./Definitions").Tree[]):Set<string>=> {
     const work=new Set<string>();
     const visit=(id:string)=>{if(state.completed.includes(id)||work.has(id))return;work.add(id);TECHNOLOGIES.find(t=>t.id===id)!.prerequisites.forEach(visit);};
-    TECHNOLOGIES.filter(t=>t.age===state.age&&trees.includes(t.tree)).forEach(t=>visit(t.id));
+    TECHNOLOGIES.filter(t=>t.age===state.age&&!t.optional&&trees.includes(t.tree)).forEach(t=>visit(t.id));
     return work;
   };
   const pairs=TREES.flatMap((a,i)=>TREES.slice(i+1).map(b=>({trees:[a,b] as import("./Definitions").Tree[],work:outstanding([a,b])})))
@@ -331,7 +333,7 @@ export function economicCandidates(
       Number(b.kind === "advance") - Number(a.kind === "advance") ||
       Number(b.reason.includes("progression-race:")) - Number(a.reason.includes("progression-race:")) ||
       Number(b.reason.includes("production-prerequisite:")) - Number(a.reason.includes("production-prerequisite:")) ||
-      (snapshot.readyTroops >= 4000 && snapshot.threatTroops <= snapshot.readyTroops / 2 ?
+      (snapshot.readyTroops >= 48 && snapshot.threatTroops <= snapshot.readyTroops / 2 ?
         Number(b.priority === "committed") - Number(a.priority === "committed") : 0) ||
       b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );

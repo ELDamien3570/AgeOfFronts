@@ -1,3 +1,5 @@
+import { scaledRecipeCost, recipeCapacity } from '../domain/Manpower';
+import { recruitmentVariant } from '../content/FormationRecipes';
 import { availableGold } from "../domain/Gold";
 import { squadCap, shipCap } from "../FactionRules";
 import type { ShipType, Snapshot, SquadType } from "../Protocol";
@@ -67,6 +69,8 @@ export class SkirmishViewModel {
     enabled: boolean;
     reason: string;
     definitionId: string | undefined;
+    cost: import('../domain/Definitions').Cost | undefined;
+    capacity: number | undefined;
     buildingIds: number[] | undefined;
   } {
     const naval = kind === "warship";
@@ -120,6 +124,9 @@ export class SkirmishViewModel {
     const vesselDefinition =
       this.state.expansion && naval ? VESSEL.get(definitionId) : undefined;
     const definition = landDefinition ?? vesselDefinition;
+    const variant=landDefinition?recruitmentVariant(landDefinition.id,this.state.expansion!.progression[this.playerId].completed):"base";
+    const cost=landDefinition?scaledRecipeCost(landDefinition,variant):vesselDefinition?.cost;
+    const capacity=landDefinition?recipeCapacity(landDefinition,variant):undefined;
     const scope = this.selection.selectedBuildings?.size ? this.selection.selectedBuildings : undefined;
     const workloads = new Map<number, number>();
     for (const job of this.state.expansion?.recruitment ?? []) workloads.set(job.buildingId, (workloads.get(job.buildingId) ?? 0) + job.remainingTicks);
@@ -181,8 +188,8 @@ export class SkirmishViewModel {
       reason = `Needs a completed friendly ${BUILDING_RULES[landDefinition?.building ?? (naval ? "port" : kind === "infantry" ? "barracks" : kind === "archer" ? "archery" : "stables")].name.toLowerCase()}${definition ? ` (${AGE_NAMES[AGES.indexOf(definition.age)]} or later)` : ""}`;
     else if (naval && availableGold(this.player) < SHIP_RULES[kind].cost)
       reason = "Not enough gold";
-    else if (!naval && this.player.reserves < SQUAD_TROOPS)
-      reason = "Needs 1,000 reserve troops";
+    else if (!naval && this.player.reserves < (landDefinition?.cost.reserves ?? SQUAD_TROOPS))
+      reason = this.state.expansion ? `Needs ${landDefinition?.cost.reserves??12} reserve soldiers` : "Needs 1,000 reserve troops";
     else if (
       naval &&
       this.state.ships.filter((s) => s.playerId === this.playerId && s.kind === kind).length +
@@ -196,13 +203,14 @@ export class SkirmishViewModel {
         costRejection(
           this.player,
           this.state.expansion!.inventories[this.player.id],
-          definition.cost,
+          cost!,
         ) ?? "";
     return {
       building,
       enabled: reason === "",
       reason,
       definitionId: definition?.id,
+      cost,capacity,
       buildingIds: scope ? [...scope] : undefined,
     };
   }
@@ -210,8 +218,8 @@ export class SkirmishViewModel {
   get replenishableSquads() {
     return this.selectedSquads.filter(
       (s) =>
-        s.troops < SQUAD_TROOPS &&
-        !s.refit &&
+        s.troops < (s.manpower?.capacity ?? SQUAD_TROOPS) &&
+        !s.refit && !s.manpower?.enlargement &&
         this.state.owners[
           Math.floor(s.y / FIXED) * this.state.width + Math.floor(s.x / FIXED)
         ] === this.playerId,

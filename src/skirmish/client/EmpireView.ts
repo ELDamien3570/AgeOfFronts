@@ -136,7 +136,7 @@ export class EmpireView {
 
     root
       .querySelector("#refit-actions")!
-      .addEventListener("click", () => this.upgrade());
+      .addEventListener('click',(event)=>{const b=(event.target as HTMLElement).closest<HTMLButtonElement>('button');if(!b||b.disabled)return;if(b.dataset.enlarge!==undefined)this.enlarge();else if(b.dataset.cancelEnlarge!==undefined&&this.vm)this.actions.command({type:'cancel-enlarge',playerId:this.playerId,squadIds:this.vm.enlargingIds});else this.upgrade();});
 
     root
       .querySelector("#empire-content")!
@@ -260,22 +260,26 @@ export class EmpireView {
         );
     const actions = this.root.querySelector<HTMLElement>("#refit-actions")!;
 
-    actions.hidden = !refit;
-    if (!refit) { actions.replaceChildren(); delete actions.dataset.key; }
-    if (
-      refit &&
-      actions.dataset.key !==
-        `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
-    ) {
-      actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`;
-      const detail = escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`);
-      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>Ctrl U</kbd></button><small class="refit-popup">${detail}</small>`;
+    const enlargement=vm.selection.selected.size?vm.enlargement(focus?.startsWith('squad:')?Number(focus.split(':')[1]):undefined):null;
+    const pending=vm.enlargingIds;
+    actions.hidden=!refit&&!enlargement&&!pending.length;
+    const key=JSON.stringify({refit,enlargement,pending});
+    if(actions.dataset.key!==key){actions.dataset.key=key;
+      const upgrade=refit?`<button ${refit.reason||!refit.target?'disabled':''} title="${escape(refit.reason??refit.target!.name)}">Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>Ctrl U</kbd></button>`:'';
+      const detail=enlargement?enlargement.reason??`+${enlargement.terms.added} soldiers per squad · ${fmt(enlargement.cost.gold??0)} gold · ${enlargement.cost.reserves??0} reserves · ${Math.ceil(enlargement.terms.ticks/20)}s · existing casualties retained`:'';
+      const enlarge=enlargement?`<button data-enlarge ${enlargement.reason?'disabled':''} title="${escape(detail)}">Enlarge ${enlargement.selected.length}/${enlargement.totalCount}</button>`:'';
+      actions.innerHTML=upgrade+enlarge+(pending.length?'<button data-cancel-enlarge>Cancel enlargement</button>':'');
     }
 
     if (this.panel && performance.now() - this.lastRender > 500)
       this.render(false);
   }
 
+  enlarge():void {
+    if(!this.vm)return;const focus=this.actions.focusedRef(),quote=this.vm.enlargement(focus?.startsWith('squad:')?Number(focus.split(':')[1]):undefined);
+    if(quote&&!quote.reason)this.actions.command({type:'enlarge',playerId:this.playerId,definitionId:quote.target.id,squadIds:quote.selected.map(s=>s.id)});
+    else this.actions.notify(quote?.reason??'No compatible enlargement');
+  }
   upgrade(): void {
     if (!this.vm) return;
     const focus = this.actions.focusedRef();

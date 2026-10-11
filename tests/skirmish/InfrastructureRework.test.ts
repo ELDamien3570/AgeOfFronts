@@ -26,7 +26,7 @@ describe("requested infrastructure rework",()=>{
  it("matches the saved planner and has the requested economics/warfare graph in every age",()=>{
    const plan=JSON.parse(readFileSync("skirmish/plans/technology-plan.json","utf8"));
    const civ=plan.civilizations.find((c:any)=>c.id==="russians-rus-eight-age-rework");
-   for(const t of TECHNOLOGIES){const saved=civ.technologies.find((s:any)=>s.id===t.id);expect(t.prerequisites).toEqual(saved.prerequisites);expect(t.name).toBe(saved.name);expect(t.name).not.toMatch(/[âÃÂ�]/);}
+   for(const t of TECHNOLOGIES.filter(t=>!t.optional)){const saved=civ.technologies.find((s:any)=>s.id===t.id);expect(t.prerequisites).toEqual(saved.prerequisites);expect(t.name).toBe(saved.name);expect(t.name).not.toMatch(/[âÃÂ�]/);}
    for(const age of AGES){
      const city=tech(age,"cities"),roads=tech(age,"roads"),metal=tech(age,"factories-mines"),fort=tech(age,"fortifications");
      expect(roads.prerequisites).toEqual([city.id]);expect(metal.prerequisites).toEqual([city.id]);

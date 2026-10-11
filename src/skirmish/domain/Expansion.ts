@@ -1,3 +1,6 @@
+import { createManpower, recipeCapacity } from './Manpower';
+import { recruitmentVariant } from '../content/FormationRecipes';
+import { quoteEnlargement } from './Enlargement';
 import { SpatialGrid } from "../SpatialGrid";
 import { flightTicks, flightSpeed, flightReachable, aircraftTechnology, missionKind, FLIGHT_RULES, aircraftRecruitmentCost } from "../content/FlightOperations";
 import { shoreTransportDefinition } from "../content/ShoreTransport";
@@ -103,6 +106,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   ownedLandNearest(playerId: number, anchor: number, limit: number, after?: number): number[];
   buildingSite(playerId: number, type: BuildingType, tile: number, age?: Age): string | null;
   squadCapacity(player: Player): number;
+  canDeploy?(squad:Squad,troops:number,definitionId?:string):boolean;
   aiGeneration(playerId: number): number;
   ship(id:number):Ship | undefined;
   building(id:number):Building | undefined;
@@ -617,6 +621,23 @@ export class Expansion {
       }
       return null;
     }
+    if(command.type==='cancel-enlarge') {
+      let count=0;
+      for(const id of [...new Set(command.squadIds)]) {const s=world.squad(id),job=s?.manpower?.enlargement;if(!s||s.playerId!==player.id||!job)continue;
+        player.gold+=job.cost.gold??0;player.reserves+=job.cost.reserves??0;
+        for(const [item,n] of Object.entries(job.cost.items??{}))this.supply.inventories[player.id][item]=(this.supply.inventories[player.id][item]??0)+n;
+        world.updateSquad(id,{manpower:{...s.manpower!,enlargement:null}});count++;
+      }return count?null:'No enlargement to cancel';
+    }
+    if(command.type==='enlarge') {
+      const selected=[...new Set(command.squadIds)].map(id=>world.squad(id)).filter((s):s is Squad=>!!s&&s.definitionId===command.definitionId);
+      const quote=quoteEnlargement(selected,undefined,player,this.progression.states[player.id].completed,this.supply.inventories[player.id],world.owners,world.map.width());
+      if(!quote||quote.reason)return quote?.reason??'Research a larger compatible recipe first';
+      if(quote.selected.some(s=>world.canDeploy && !world.canDeploy(world.squad(s.id)!,s.troops+quote.terms.added)))return 'There is no room to enlarge this formation';
+      spend(player,this.supply.inventories[player.id],quote.cost);
+      for(const s of quote.selected){world.updateSquad(s.id,{manpower:{...s.manpower!,enlargement:{definitionId:quote.target.id,targetCapacity:quote.target.formationRecipe!.enlargedCapacity,added:quote.terms.added,cost:paidCost(player,quote.terms.cost),totalTicks:quote.terms.ticks,remainingTicks:quote.terms.ticks}},order:{type:'hold'},queuedOrders:[],charge:null});world.installSquadPath(s.id,[]);}
+      return null;
+    }
     if (command.type === "refit") {
       const target = UNIT.get(command.definitionId),
         selected = [...new Set(command.squadIds)].map((id) =>
@@ -624,13 +645,14 @@ export class Expansion {
         );
       if (!target || !this.progression.has(player.id, target.technologyId))
         return "Research the requested refit first";
-      const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.afloat&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&this.unit(s).troopClass===target.troopClass&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.afloat&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&this.unit(s).troopClass===target.troopClass&&this.unit(s).formationRecipe?.model===target.formationRecipe?.model&&!s.manpower?.enlargement&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible stationary group on owned land, out of combat";
-      const count=affordableRefitCount(unitRefitCost(target),availableGold(player),this.supply.inventories[player.id],eligible.length);
-      if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target))??"No affordable refit";
-      spend(player,this.supply.inventories[player.id],unitRefitCost(target,count));
+      const count=affordableRefitCount(unitRefitCost(target,1,recruitmentVariant(target.id,this.progression.states[player.id].completed)),availableGold(player),this.supply.inventories[player.id],eligible.length);
+      if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target,1,recruitmentVariant(target.id,this.progression.states[player.id].completed)))??"No affordable refit";
+      if(eligible.slice(0,count).some(s=>world.canDeploy && !world.canDeploy(s,Math.min(s.troops,recipeCapacity(target,recruitmentVariant(target.id,this.progression.states[player.id].completed))),target.id)))return "There is no room for this refitted formation";
+      spend(player,this.supply.inventories[player.id],unitRefitCost(target,count,recruitmentVariant(target.id,this.progression.states[player.id].completed)));
       for(const s of eligible.slice(0,count)){
-        world.updateSquad(s.id,{refit:{targetId:target.id,totalTicks:200,remainingTicks:200},order:{type:"hold"},queuedOrders:[],charge:null});
+        world.updateSquad(s.id,{refit:{targetId:target.id,recipeVariant:recruitmentVariant(target.id,this.progression.states[player.id].completed),totalTicks:200,remainingTicks:200},order:{type:"hold"},queuedOrders:[],charge:null});
         world.installSquadPath(s.id,[]);
       }
       return null;
@@ -653,7 +675,7 @@ export class Expansion {
             !s ||
             s.playerId !== player.id ||
             s.embarkedOn !== null ||
-            Boolean(s.refit) ||
+            Boolean(s.refit) || Boolean(s.manpower?.enlargement) ||
             !this.unit(s).charge ||
             (s.chargeReadyTick ?? 0) > world.tick ||
             Boolean(s.charge) ||
@@ -894,7 +916,7 @@ export class Expansion {
         this.unit(s).role === "launcher" &&
         payload === "mirv" &&
         s.troops > 0 &&
-        !s.refit &&
+        !s.refit && !s.manpower?.enlargement &&
         !s.fighting &&
         !s.charge &&
         s.order.type === "hold" &&
@@ -1001,11 +1023,28 @@ export class Expansion {
         : { refit: { ...s.refit, remainingTicks } });
     }
     for (const s of world.squads) {
+      const enlargement=s.manpower?.enlargement;
+      if(enlargement) {
+        if(s.fighting||s.embarkedOn!==null||s.afloat||world.owners[world.tileOf(s)]!==s.playerId){this.command(world.players.find(p=>p.id===s.playerId)!,{type:'cancel-enlarge',playerId:s.playerId,squadIds:[s.id]});continue;}
+        if(enlargement.remainingTicks<=1 && world.canDeploy && !world.canDeploy(s,s.troops+enlargement.added))continue;
+        const remainingTicks=enlargement.remainingTicks-1;
+        world.updateSquad(s.id,{...(remainingTicks<=0?{troops:s.troops+enlargement.added}:{}),manpower:{...s.manpower!,...(remainingTicks<=0?{capacity:enlargement.targetCapacity,variant:'enlarged',revision:s.manpower!.revision+1,enlargement:null}:{enlargement:{...enlargement,remainingTicks}})}});
+        continue;
+      }
       if (s.refit) {
+        if(s.fighting || s.moved || s.embarkedOn!==null || s.afloat || world.owners[world.tileOf(s)]!==s.playerId) continue;
         const remainingTicks = s.refit.remainingTicks - 1;
         if (remainingTicks <= 0) {
           const target = UNIT.get(s.refit.targetId)!;
-          world.updateSquad(s.id, { definitionId: target.id, kind: target.line, xp: 0, nextAttackTick: world.tick, refit: null });
+          const variant=s.refit.recipeVariant??'base';
+          const manpower=createManpower(target,variant),retained=Math.min(s.troops,manpower.capacity),surplus=s.troops-retained;
+          if(world.canDeploy && !world.canDeploy(s,retained,target.id))continue;
+          const player=world.players.find(p=>p.id===s.playerId)!;
+          if(s.manpower?.model==='soldiers'){player.reserves+=surplus;manpower.wounds=Math.min(manpower.hp-1,Math.ceil(s.manpower.wounds*manpower.hp/s.manpower.hp));}
+          else if(s.manpower)manpower.hullHealth=Math.floor((s.manpower.hullHealth??s.manpower.hp)*manpower.hp/s.manpower.hp);
+          manpower.revision=(s.manpower?.revision??0)+1;
+          if(this.unit(s).tags.includes('mounted')&&surplus)this.supply.inventories[s.playerId].horses=(this.supply.inventories[s.playerId].horses??0)+surplus;
+          world.updateSquad(s.id, { definitionId: target.id, kind: target.line, troops:retained,manpower,xp: 0, nextAttackTick:Math.max(world.tick,s.nextAttackTick??0),refit: null });
         } else world.updateSquad(s.id, { refit: { ...s.refit, remainingTicks } });
       }
       if (s.charge?.phase === "preparing" && chargeAligned(s) && (s.locomotion?.speed ?? 0) === 0 &&
@@ -1032,7 +1071,7 @@ export class Expansion {
     for (const s of this.world.squads)
       if (this.unit(s).role === "launcher")
         this.world.updateSquad(s.id, { deploymentTicks: s.troops > 0 &&
-          !s.refit &&
+          !s.refit && !s.manpower?.enlargement &&
           !s.charge &&
           s.embarkedOn === null &&
           !s.moved &&
@@ -1503,7 +1542,7 @@ export class Expansion {
     for (const s of squads.filter(
       (s) =>
         this.unit(s).attack.bonuses.structure &&
-        !s.refit &&
+        !s.refit && !s.manpower?.enlargement &&
         !this.modernization.holds(s.id),
     )) {
       const target = this.world.buildings

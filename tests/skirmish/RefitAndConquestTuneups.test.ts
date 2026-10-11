@@ -6,6 +6,7 @@ import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { UNITS } from "../../src/skirmish/content/Units";
 import { affordableRefitCount } from "../../src/skirmish/domain/RefitQuote";
+import { createManpower } from "../../src/skirmish/domain/Manpower";
 import { unitRefitCost } from "../../src/skirmish/domain/Refitting";
 function fixture() {
   const data = new Uint8Array(64 * 64).fill(133);
@@ -22,7 +23,7 @@ function fixture() {
   player.gold = 1600;
   e.progression.states[1].age = "BronzeAge";
   e.progression.states[1].completed = TECHNOLOGIES.filter((t) =>
-    ["StoneAge", "BronzeAge"].includes(t.age),
+    !t.optional && ["StoneAge", "BronzeAge"].includes(t.age),
   ).map((t) => t.id);
   const original = game.squads.find((s) => s.playerId === 1)!;
   for (const s of [...game.squads])
@@ -32,7 +33,8 @@ function fixture() {
       ...original,
       id: game.allocateId(),
       definitionId: "stoneage-infantry",
-      troops: 1000,
+      troops: 12,
+      manpower: createManpower(UNITS.find(u=>u.id==="stoneage-infantry")!),
       x: (20 + i + 0.5) * FIXED,
       y: 20.5 * FIXED,
       order: { type: "hold" },
@@ -56,13 +58,13 @@ describe("mass refit and completed-asset survival", () => {
     const f = fixture();
     f.e.progression.states[1].age = "EarlyMedieval";
     f.e.progression.states[1].completed = TECHNOLOGIES.filter((t) =>
-      ["StoneAge", "BronzeAge", "ClassicalAge", "EarlyMedieval"].includes(t.age),
+      !t.optional && ["StoneAge", "BronzeAge", "ClassicalAge", "EarlyMedieval"].includes(t.age),
     ).map((t) => t.id);
     const target = UNITS.find((u) => u.id === "earlymedieval-infantry")!;
     const cost = unitRefitCost(target);
     f.player.gold = 10000;
     f.e.supply.inventories[1] = { ...cost.items };
-    f.game.updateSquad(f.squads[0].id, { troops: 450, xp: 7000 });
+    f.game.updateSquad(f.squads[0].id, { troops: 5, xp: 7000 });
     const vm = new EmpireViewModel(f.game.snapshot(), {
       selected: new Set(f.squads.map((s) => s.id)),
       selectedShips: new Set(), selectedBuilding: null,
@@ -79,7 +81,7 @@ describe("mass refit and completed-asset survival", () => {
     for (let i = 0; i < 200; i++) f.game.step();
     const upgraded = f.game.squad(f.squads[0].id)!;
     expect(upgraded.definitionId).toBe(target.id);
-    expect(upgraded.troops).toBe(450);
+    expect(upgraded.troops).toBe(5);
     expect(upgraded.xp).toBe(0);
     expect(upgraded.refit).toBeNull();
   });

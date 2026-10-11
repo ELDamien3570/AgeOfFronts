@@ -1,3 +1,4 @@
+import formationDoctrines from "./formation-doctrines.json";
 import { ATOMIC_ATTACK,DRONE_ATTACK,NAVAL_AIR_ATTACK } from "./ModernWeapons";
 import { FLIGHT_RULES } from "./FlightOperations";
 import { buildingFootprint } from "../BuildingFootprint";
@@ -104,7 +105,8 @@ export const CONTENT_HASH = hash({
     attack: PROMOTION_ATTACK,
     maxArmour: MAX_ARMOUR,
   },
-  combatRevision: 5,
+  combatRevision: 8,
+  formationDoctrines,
   flights:{rules:FLIGHT_RULES,atomic:ATOMIC_ATTACK,drone:DRONE_ATTACK,navalAir:NAVAL_AIR_ATTACK},
   nuclearLand:{reserveLossPerCell:NUCLEAR_RESERVE_LOSS_PER_CELL,troopLossPerCell:FALLOUT_TROOP_LOSS_PER_CELL},
   shoreTransportRevision: 1,

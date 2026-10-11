@@ -137,9 +137,10 @@ describe("authoritative formation locomotion", () => {
       locomotion: { heading: 0, targetHeading: 0, speed: 0 },
     };
     const goal = { x: squad.x, y: squad.y + 10 * FIXED };
-    const held = formationLocomotion(squad, { squad, goal, speed: 24 }, 24);
+    const held = formationLocomotion(squad, undefined, 24);
     expect(held.motion.speed).toBe(0);
     expect(held.intent.preferredVelocity).toEqual({ x: 0, y: 0 });
+    expect(formationLocomotion(squad,{squad,goal,speed:24},24).motion.speed).toBeGreaterThan(0);
     const moving = { ...squad, order: { type: "move" as const, tile: 1 } };
     expect(
       formationLocomotion(moving, { squad: moving, goal, speed: 24 }, 24).motion

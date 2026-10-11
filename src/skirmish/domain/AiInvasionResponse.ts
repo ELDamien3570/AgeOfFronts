@@ -1,3 +1,4 @@
+import { readyFraction } from './Manpower';
 import { MAX_ORDER_SQUADS } from "../FactionRules";
 import { type Player, type Squad } from "../Protocol";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
@@ -128,7 +129,7 @@ export class AiInvasionResponse {
       this.diagnostics.work++;
       if (
         !squad ||
-        squad.troops < 200 ||
+        readyFraction(squad)<.2 ||
         squad.embarkedOn !== null ||
         squad.refit ||
         squad.charge

@@ -1,3 +1,5 @@
+import { formationRenderPose, type FormationRenderPose } from "../FormationRenderPose";
+import { formationDoctrine } from "../../domain/FormationGeometry";
 import footLayout from "../../../../Art/Cultures/Russians/FormationLayouts/Clubman.json";
 import rangedLayout from "../../../../Art/Cultures/Russians/FormationLayouts/Javelinist.json";
 import mountedLayout from "../../../../Art/Cultures/Russians/FormationLayouts/MountedSpearman.json";
@@ -21,18 +23,21 @@ import { SoldierDrawQueue } from "../SoldierDrawQueue";
 import { SoldierSelectionIndex } from "../SoldierSelectionIndex";
 import { troopAssetUrl } from "./TroopAssetUrls";
 import { TroopChoreography } from "./TroopChoreography";
+import { committedMeleeActors } from "./TroopMeleeStrike";
 import {
   clipFrame,
   resolveFormation,
   type ActorClip,
   type ActorManifest,
   type FormationLayout,
+  type FormationSlot,
   type ManualFormation,
 } from "./TroopFormationModel";
 import { actorFormationSlots } from "./TroopPacking";
 import { TroopRemains } from "./TroopRemains";
 import {
   javelinThrowTime,
+  reloadClipTime,
   throwTiming,
   TroopVolley,
   type VolleyThrower,
@@ -82,6 +87,12 @@ function loadSharedImage(src: string): Promise<HTMLImageElement> {
 }
 export class TroopActors {
   formation: ManualFormation = "line";
+  private readonly sharedLayouts = new WeakMap<FormationRenderPose["slots"],Map<string,FormationSlot[]>>();
+  private sharedActorSlots(pose:FormationRenderPose,scale:number,capacity:number):FormationSlot[]{
+    let variants=this.sharedLayouts.get(pose.slots);if(!variants)this.sharedLayouts.set(pose.slots,variants=new Map());
+    const key=scale+":"+capacity;let slots=variants.get(key);if(!slots){slots=Array.from({length:capacity},(_,i)=>{const slot=pose.slots[Math.min(i,pose.slots.length-1)];return {...slot,x:slot.x/FIXED/(2/0.75),y:slot.y/FIXED/(2/0.75),scale,angle:0};});variants.set(key,slots);}
+    return slots;
+  }
   private assets = new Map<
     string,
     { clip: ActorClip; image: HTMLImageElement; mask?: HTMLImageElement }
@@ -111,6 +122,8 @@ export class TroopActors {
   private readonly volleys = new TroopVolley();
   private readonly shells = new TroopVolley();
   private readonly throwers = new Map<number, VolleyThrower[]>();
+  /** Latest drawn soldier positions per squad, so bullets can land on live targets. */
+  private readonly bodies = new Map<number, { id: number; x: number; y: number }[]>();
   private readonly contacts = new Map<
     number,
     {
@@ -140,6 +153,7 @@ export class TroopActors {
     this.headings.clear();
     this.contacts.clear();
     this.throwers.clear();
+    this.bodies.clear();
     this.volleys.clear();
     this.shells.clear();
     this.drawQueue.clear();
@@ -193,18 +207,14 @@ export class TroopActors {
       troop.mounted,
       false,
     );
-    const slots = actorFormationSlots(
+    const slots = squad.formation ? formationRenderPose(squad,0).slots.map(slot=>({...slot,x:slot.x/FIXED/(2/0.75),y:slot.y/FIXED/(2/0.75),scale:troop.memberScale,angle:0})) : actorFormationSlots(
       layout,
       troop.mounted,
       shape,
       troop.memberScale,
-      troop,
+      {...troop,members:squad.manpower?.capacity ?? troop.members},
     );
-    const count = Math.ceil(
-      ((troop.members ?? (troop.mounted ? 6 : 12)) *
-        Math.max(0, squad.troops)) /
-        1000,
-    );
+    const count = squad.manpower ? Math.max(0,squad.troops) : Math.ceil(((troop.members ?? (troop.mounted ? 6 : 12))*Math.max(0,squad.troops))/1000);
     const members = new TroopChoreography(slots, squad.id, 0, count).soldiers(
       0,
     );
@@ -304,6 +314,7 @@ export class TroopActors {
     this.volleys.clear();
     this.shells.clear();
     this.throwers.clear();
+    this.bodies.clear();
     this.contacts.clear();
     this.drawQueue.clear();
     this.selectionIndex.clear();
@@ -438,6 +449,15 @@ export class TroopActors {
       contact?.threats.push({ x: squad.x / FIXED, y: squad.y / FIXED });
       contact?.opponents.push(opponentPoses.get(squad.id)!);
     }
+    for(const squad of snapshot.squads){
+      const contact=this.contacts.get(squad.id);if(!contact || !squad.meleeStrike || snapshot.tick-squad.meleeStrike.tick>60)continue;
+      for(const strike of squad.meleeStrike.contacts){
+        const opponent=strike.targetId===undefined?undefined:opponentPoses.get(strike.targetId);
+        const point=opponent?.center??{x:strike.toX/FIXED,y:strike.toY/FIXED};
+        if(!contact.threats.some(p=>p.x===point.x && p.y===point.y))contact.threats.push(point);
+        if(opponent && !contact.opponents.includes(opponent))contact.opponents.push(opponent);
+      }
+    }
     const ids = new Set(snapshot.squads.map((squad) => squad.id));
     for (const [id, state] of this.motions)
       if (!ids.has(id)) {
@@ -447,6 +467,7 @@ export class TroopActors {
           this.captureDeath(id, state, soldier, now);
         this.motions.delete(id);
         this.throwers.delete(id);
+        this.bodies.delete(id);
       }
     for(const id of this.ownerBySquad.keys())if(!ids.has(id))this.ownerBySquad.delete(id);
   }
@@ -475,6 +496,9 @@ export class TroopActors {
       troop.projectile !== "bullet" &&
         troop.projectile !== "shell" &&
         troop.projectile !== "rocket",
+      undefined,
+      undefined,
+      volley.targetId === undefined ? undefined : this.bodies.get(volley.targetId),
     )) {
       const p = project(flight.x, flight.y);
       if (p.x < -20 || p.y < -20 || p.x > width + 20 || p.y > height + 20)
@@ -741,6 +765,7 @@ export class TroopActors {
     tileSize: number,
     tick: number,
     worldPosition: { x: number; y: number },
+    suppliedPose?: FormationRenderPose,
   ): boolean => {
     const troop = this.byDefinitionId.get(squad.definitionId ?? "");
     if (!this.detailed || !troop) return false;
@@ -760,13 +785,11 @@ export class TroopActors {
     this.frameScale = tileSize;
     const mounted = troop.mounted;
     const ranged = troop.ranged;
-    const soldierCount = troop.members ?? (troop.mounted ? 6 : 12);
-    const shape = resolveFormation(
-      this.options?.formationForSquad?.(squad) ??
-        (squad.playerId === this.playerId ? this.formation : "line"),
-      mounted,
-      !troop.vehicle && !!squad.charge && squad.charge.phase !== "recovery",
-    );
+    const soldierCount = squad.manpower?.capacity ?? troop.members ?? (troop.mounted ? 6 : 12);
+    const sharedPose = squad.formation ? suppliedPose ?? formationRenderPose(squad,tick,worldPosition) : undefined;
+    const sharedSlots = sharedPose ? this.sharedActorSlots(sharedPose,troop.memberScale,soldierCount) : undefined;
+    const shape = sharedPose?.geometry.shape ?? resolveFormation(
+      this.options?.formationForSquad?.(squad) ?? (squad.playerId === this.playerId ? this.formation : "line"),mounted,!troop.vehicle && !!squad.charge && squad.charge.phase !== "recovery");
     const mobile = shape === "mass";
     const laneTravel =
       !!this.options?.reformInPlace &&
@@ -782,20 +805,21 @@ export class TroopActors {
       state.name = name;
       state.shape = "";
       this.throwers.delete(squad.id);
+      this.bodies.delete(squad.id);
     }
     if (!state) {
       state = {
         motion: new TroopChoreography(
-          actorFormationSlots(
+          sharedSlots ?? actorFormationSlots(
             this.layouts.get(name)!,
             troop.mounted,
             shape,
             troop.memberScale,
-            troop,
+            {...troop,members:squad.manpower?.capacity ?? troop.members},
           ),
           squad.id,
           now,
-          Math.ceil((soldierCount * Math.max(0, squad.troops)) / 1000),
+          squad.manpower ? Math.max(0,squad.troops) : Math.ceil((soldierCount * Math.max(0, squad.troops)) / 1000),
         ),
         shape,
         walkers: new FormationSoldierMotion(squad.id),
@@ -807,21 +831,23 @@ export class TroopActors {
       };
       this.motions.set(squad.id, state);
     }
-    if (state.shape !== shape) {
+    if (!sharedPose && state.shape !== shape || state.motion.capacity !== soldierCount) {
       state.motion.reshape(
-        actorFormationSlots(
+        sharedSlots ?? actorFormationSlots(
           this.layouts.get(name)!,
           troop.mounted,
           shape,
           troop.memberScale,
-          troop,
+          {...troop,members:squad.manpower?.capacity ?? troop.members},
         ),
         now,
       );
       state.shape = shape;
     }
-    const travelFacing = this.headings.angle(squad.id, now);
-    angle = mobile ? 0 : laneTravel ? state.angle : travelFacing;
+    if(sharedSlots)state.motion.applyAuthoritative(sharedSlots,squad.troops,now);
+    const presentedMembers=()=>sharedPose?state!.motion.formationSoldiers(now):state!.motion.soldiers(now);
+    const travelFacing = sharedPose?.geometry.angle ?? this.headings.angle(squad.id, now);
+    angle = sharedPose?.geometry.angle ?? (mobile ? 0 : laneTravel ? state.angle : travelFacing);
     const contact = this.contacts.get(squad.id);
     const intent = {
       active: squad.fighting && squad.order.type !== "move",
@@ -830,6 +856,9 @@ export class TroopActors {
       ranged: ranged,
       square: shape === "square",
       travelHeading: angle,
+      canonicalHeading:!!sharedPose,
+      meleeReach:sharedPose?(UNIT.get(squad.definitionId??"")?.meleeAttack?.range??0)/FIXED:undefined,
+      contactAdvance:sharedPose?Math.min(formationDoctrine(squad.definitionId).bodyDepth/(2*FIXED),(UNIT.get(squad.definitionId??"")?.meleeAttack?.range??0)/(2*FIXED)):undefined,
       reformInPlace: this.options?.reformInPlace,
       travelling:
         squad.order.type === "move" ||
@@ -848,7 +877,7 @@ export class TroopActors {
       Math.sin(state.angle - angle),
       Math.cos(state.angle - angle),
     );
-    if (reforming && Math.abs(frameDelta) > 0.001) {
+    if (!sharedPose && reforming && Math.abs(frameDelta) > 0.001) {
       // Capture falls in the old frame before changing its coordinate basis.
       for (const corpse of state.motion.dead(now))
         this.captureDeath(squad.id, state, corpse, now - corpse.age);
@@ -857,12 +886,12 @@ export class TroopActors {
     let engagement = state.engagement.sample(
       now,
       worldPosition,
-      state.motion.soldiers(now),
+      presentedMembers(),
       intent,
     );
-    state.motion.advance(
+    if(!sharedPose)state.motion.advance(
       now,
-      Math.ceil((soldierCount * Math.max(0, squad.troops)) / 1000),
+      squad.manpower ? Math.max(0,squad.troops) : Math.ceil((soldierCount * Math.max(0, squad.troops)) / 1000),
       engagement.engaged
         ? { angle: engagement.casualtyAngle, front: engagement.front }
         : undefined,
@@ -870,10 +899,10 @@ export class TroopActors {
     engagement = state.engagement.sample(
       now,
       worldPosition,
-      state.motion.soldiers(now),
+      presentedMembers(),
       intent,
     );
-    angle = engagement.heading;
+    angle = sharedPose?.geometry.angle ?? engagement.heading;
     state.anchor = { ...worldPosition };
     state.angle = angle;
     const pose = squadArtworkPose(squad, tick);
@@ -938,20 +967,21 @@ export class TroopActors {
             angle: travelFacing - angle,
           }))
         : engagement.slots;
-    const throwTime = ranged
+    const lastWasMelee=squad.meleeStrike && squad.meleeStrike.tick>=(squad.lastAttackTick??-Infinity);
+    const throwTime = ranged && !lastWasMelee
       ? javelinThrowTime(squad, tick, this.assets.get(`${name}:attack`)!.clip)
       : undefined;
     const planted =
       throwTime !== undefined
         ? new Set(slots.map((slot) => slot.id))
         : undefined;
-    const soldiers = state.walkers.sample(now, worldPosition, angle, slots, {
+    let soldiers = state.walkers.sample(now, worldPosition, angle, slots, {
       footprint,
       mounted,
       // A move order out of contact is travel: walk it rather than strafe it.
       engaged: mobile ? engagement.engaged : intent.active,
       looseTravel:
-        !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
+        !sharedPose && !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
       travelLanes:
         !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
       planted,
@@ -959,6 +989,18 @@ export class TroopActors {
       carrierRelative: true,
       reformInPlace: this.options?.reformInPlace,
     });
+    if(sharedPose){
+      // Preserve cosmetic engagement steps and independent opponent attention.
+      const targets=new Map(engagement.slots.map(p=>[p.id,p]));
+      const c=Math.cos(angle),s=Math.sin(angle);
+      soldiers=soldiers.map(member=>{
+        const slot=targets.get(member.id)!;
+        const x=worldPosition.x+(slot.x*c-slot.y*s)*footprint,y=worldPosition.y+(slot.x*s+slot.y*c)*footprint;
+        const residual=sharedPose.geometry.shape==='column'?0:Math.min(.375,formationDoctrine(squad.definitionId).bodyWidth/(2*FIXED));
+        return {...member,x:x+Math.max(-residual,Math.min(residual,member.x-x)),y:y+Math.max(-residual,Math.min(residual,member.y-y))};
+      });
+      sharedPose.liveSlots=soldiers;
+    }
     const walking = this.assets.get(`${name}:running`)!.clip;
     if (soldiers.length) {
       const minX = Math.min(...soldiers.map(s => s.x - footprint*s.scale/2));
@@ -970,16 +1012,20 @@ export class TroopActors {
       walking.durations?.reduce((sum, duration) => sum + duration, 0) ??
       (walking.frameCount * 1000) / (walking.fps ?? 6);
     const throwers: VolleyThrower[] = [];
+    const meleeClipKey=(ranged || squad.charge?.phase==='recovery') && this.assets.has(`${name}:charge-attack`)?'charge-attack':'attack';
+    const meleeClip=this.assets.get(`${name}:${meleeClipKey}`)!.clip;
+    const committed=committedMeleeActors(squad.meleeStrike,tick,meleeClip,soldiers,footprint);
     for (const soldier of soldiers) {
+      const strike=committed.get(soldier.id);
       const moving = soldier.speed > 0.001 || soldier.turning;
       const definition = UNIT.get(squad.definitionId ?? "");
       const cycle = definition && weaponCycle(definition);
       const timing = throwTiming(this.assets.get(`${name}:attack`)!.clip);
-      const reloadStart = (squad.reloadStartedTick ?? Infinity)*50 + timing.duration-timing.release;
-      const reloadEnd = (squad.nextAttackTick ?? 0)*50 - timing.release;
+      const reloadStart = (squad.weaponState?.ranged?.reloadStartedTick ?? squad.reloadStartedTick ?? Infinity)*50 + timing.duration-timing.release;
+      const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*50 - timing.release;
       const reloading = cycle && this.assets.has(`${name}:reload`) && tick*50 >= reloadStart && tick*50 < reloadEnd;
-      const bayonet = definition?.age === "Napoleonic" && definition.troopClass === "frontline" && squad.charge?.phase === "recovery" && this.assets.has(`${name}:charge-attack`);
-      const clip = bayonet ? "charge-attack" : reloading ? "reload" :
+      const bayonet = !squad.meleeStrike && definition?.age === "Napoleonic" && definition.troopClass === "frontline" && squad.charge?.phase === "recovery" && this.assets.has(`${name}:charge-attack`);
+      const clip = strike ? meleeClipKey : bayonet ? "charge-attack" : reloading ? "reload" :
         ranged && throwTime !== undefined
           ? "attack"
           : moving
@@ -987,13 +1033,13 @@ export class TroopActors {
             : (
                   ranged
                     ? throwTime !== undefined
-                    : soldier.front &&
+                    : !squad.meleeStrike && soldier.front &&
                       (soldier.facingError ?? 0) < Math.PI / 6 &&
                       pose.clip === "attack"
                 )
               ? "attack"
               : "idle";
-      const time = clip === "charge-attack" ? (tick-(squad.lastAttackTick ?? tick))*50 : clip === "reload" ? (tick*50-reloadStart)/Math.max(1,reloadEnd-reloadStart)*throwTiming(this.assets.get(`${name}:reload`)!.clip).duration :
+      const time = strike ? strike.time : clip === "charge-attack" ? (tick-(squad.lastAttackTick ?? tick))*50 : clip === "reload" ? reloadClipTime(this.assets.get(`${name}:reload`)!.clip, tick*50-reloadStart, reloadEnd-reloadStart, definition?.age === "Napoleonic") :
         clip === "attack"
           ? (throwTime ?? pose.elapsed * 50)
           : clip === "running"
@@ -1004,9 +1050,10 @@ export class TroopActors {
                 duration) +
               duration
             : now + squad.id * 73 + soldier.id * 19;
-      draw(soldier, soldier.scale, clip, time);
-      if (ranged) throwers.push({ ...soldier, throwing: clip === "attack" });
+      draw(strike?{...soldier,angle:strike.angle}:soldier, soldier.scale, clip, time);
+      if (ranged) throwers.push({ ...soldier, throwing: !strike && clip === "attack" });
     }
+    this.bodies.set(squad.id, soldiers.map((soldier) => ({ id: soldier.id, x: soldier.x, y: soldier.y })));
     if (ranged) this.throwers.set(squad.id, throwers);
     return true;
   };

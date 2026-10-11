@@ -18,7 +18,7 @@ function setup() {
     e = m.expansion!,
     stock = e.supply.inventories[p.id];
   e.progression.states[p.id].age = "Modern";
-  e.progression.states[p.id].completed = TECHNOLOGIES.map((t) => t.id);
+  e.progression.states[p.id].completed = TECHNOLOGIES.filter(t=>!t.optional).map((t) => t.id);
   p.gold = 1000000;
   p.reserves = 0;
   for (const squad of m.squads) {

@@ -1,9 +1,10 @@
+import { formationLayoutKey } from "./domain/FormationGeometry";
 import type { GameMap } from "../core/game/GameMap";
 import { FIXED, type Squad } from "./Protocol";
 import { tilePoint } from "./SquadGeometry";
 import type { WorldPoint } from "./SpatialGrid";
 
-export type FormationReservation = Pick<Squad, "id" | "kind" | "playerId"> & WorldPoint;
+export type FormationReservation = Pick<Squad, "id" | "kind" | "playerId"> & WorldPoint & {geometryRevision?:string};
 type MutableReservation = { -readonly [K in keyof FormationReservation]: FormationReservation[K] };
 export function formationBucket(point: WorldPoint): string {
   return `${Math.floor(point.x / (4 * FIXED))}:${Math.floor(point.y / (4 * FIXED))}`;
@@ -34,10 +35,11 @@ export class FormationOccupancy {
     let points=this.points.get(squad.id);
     if(!points)this.points.set(squad.id,points=[]);
     let count=0;
+    const geometryRevision=formationLayoutKey(squad);
     const append=(x:number,y:number)=>{
       const point=points![count];
-      if(!point)points![count]={id:squad.id,kind:squad.kind,playerId:squad.playerId,x,y};
-      else {point.kind=squad.kind;point.playerId=squad.playerId;point.x=x;point.y=y;}
+      if(!point)points![count]={id:squad.id,kind:squad.kind,playerId:squad.playerId,x,y,geometryRevision};
+      else {point.kind=squad.kind;point.playerId=squad.playerId;point.x=x;point.y=y;point.geometryRevision=geometryRevision;}
       count++;
     };
     if (squad.embarkedOn === null) {

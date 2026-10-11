@@ -17,7 +17,7 @@ describe("reserve income", () => {
         const player = match.players[0];
         player.reserves = reserves;
         const recruited = player.recruited;
-        for (let i = 0; i < TICKS_PER_SECOND; i++) match.step();
+        for (let i = 0; i < TICKS_PER_SECOND*10; i++) match.step();
         if (reserves === 0) {
           income = player.reserves;
           expect(income).toBeGreaterThan(0);

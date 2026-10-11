@@ -1,3 +1,4 @@
+import { remainingHealth, maximumHealth } from "../../src/skirmish/domain/Manpower";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED } from "../../src/skirmish/Protocol";
@@ -31,7 +32,7 @@ describe("nuclear land damage", () => {
     expect(cells.length).toBe(81);
     for (const player of game.players) {
       const lost = cells.filter(([, owner]) => owner === player.id).length;
-      expect(player.reserves).toBe(100000 - lost * 100);
+      expect(player.reserves).toBe(100000 - Math.ceil(lost * 1.2));
       expect(player.land).toBe(before[player.id - 1] - lost);
     }
     expect(cells.every(([tile]) => game.owners[tile] === 0)).toBe(true);
@@ -59,7 +60,7 @@ describe("nuclear land damage", () => {
     game.updateSquad(squad.id, {
       x: 30.5 * FIXED,
       y: 30.5 * FIXED,
-      troops: 1000,
+      troops: 12,
       order: { type: "hold" },
     });
     game.nuclearBlast(squad.x, squad.y, 2 * FIXED);
@@ -71,12 +72,12 @@ describe("nuclear land damage", () => {
       capture.capture();
     }
     expect(game.wasteland.size).toBe(0);
-    expect(game.squad(squad.id)!.troops).toBe(1000 - count * 10);
+    expect(remainingHealth(game.squad(squad.id)!)).toBe(maximumHealth(squad)*(1000-count*10)/1000);
     for (let tick = 0; tick < 60; tick++) {
       game.tick++;
       capture.capture();
     }
-    expect(game.squad(squad.id)!.troops).toBe(1000 - count * 10);
+    expect(remainingHealth(game.squad(squad.id)!)).toBe(maximumHealth(squad)*(1000-count*10)/1000);
     expect(game.snapshot().expansion!.fallout).toHaveLength(0);
   });
   it("keeps contested fallout contaminated until one side can actually capture it", () => {
@@ -93,8 +94,8 @@ describe("nuclear land damage", () => {
     const capture = game as unknown as { capture(): void };
     for (let i = 0; i < 60; i++) capture.capture();
     expect(game.wasteland.size).toBe(13);
-    expect(game.squad(one.id)!.troops).toBe(1000);
-    expect(game.squad(two.id)!.troops).toBe(1000);
+    expect(game.squad(one.id)!.troops).toBe(12);
+    expect(game.squad(two.id)!.troops).toBe(12);
   });
   it("gives a quiet AI a stable cleanup order and releases it when an invasion starts", () => {
     const game = fixture(),
@@ -107,7 +108,7 @@ describe("nuclear land damage", () => {
         id: game.allocateId(),
         x: 60.5 * FIXED,
         y: 40.5 * FIXED,
-        troops: 1000,
+        troops: 12,
         order: { type: "hold" },
       });
     game.nuclearBlast(70.5 * FIXED, 40.5 * FIXED, 3 * FIXED);

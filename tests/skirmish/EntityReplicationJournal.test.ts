@@ -106,7 +106,7 @@ describe("independent bounded entity replication", () => {
       live.encode(game.replicationSource(), game.tileChanges, facts),
     );
     const squad = game.squads[0];
-    game.updateSquad(squad.id, { troops: 321 });
+    game.updateSquad(squad.id, { troops: 4 });
     facts.squads.journal.record(squad.id, "change");
     new SnapshotEncoder(true).encode(
       game.replicationSource(),
@@ -117,7 +117,7 @@ describe("independent bounded entity replication", () => {
     expect(next.entityMode).toBe("delta");
     expect(
       decoder.decode(next).squads.find((s) => s.id === squad.id)?.troops,
-    ).toBe(321);
+    ).toBe(4);
     for (let id = 300; id < 305; id++)
       facts.squads.journal.record(id, "remove");
     const overflow = live.encode(
@@ -143,7 +143,7 @@ describe("independent bounded entity replication", () => {
       decoder.decode(
         live.encode(game.replicationSource(), game.tileChanges, facts),
       ).squads[0].troops,
-    ).toBe(321);
+    ).toBe(4);
   });
   it("retains remove history across re-add and invalidates old cursors", () => {
     const journal = new EntityChangeJournal(2);

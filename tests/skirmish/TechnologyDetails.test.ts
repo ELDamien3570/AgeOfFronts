@@ -25,7 +25,7 @@ describe("technology inspection", () => {
   });
   it("shows cavalry equipment, production inputs and the halved base cycle", () => {
     expect(text("rus-bronzeage-mobile")).toContain(
-      "20 horses + 2 Bronze Age equipment",
+      "8 horses + 2 Bronze Age equipment",
     );
     expect(text("rus-bronzeage-barracks-equipment")).toContain(
       "12 bronze → 1 Bronze Age equipment · 10s base cycle at Blacksmith",

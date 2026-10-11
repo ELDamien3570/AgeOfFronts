@@ -1,5 +1,7 @@
 import { FIXED, type Squad } from "./Protocol";
 import type { WorldPoint } from "./SpatialGrid";
+import { formationApproach } from "./domain/FormationContact";
+import { formationEnvelope } from "./domain/FormationGeometry";
 import { meleeContact } from "./SquadGeometry";
 
 export interface ApproachEnvironment {
@@ -59,6 +61,7 @@ export class AttackApproaches {
       owner: number,
       output: ApproachEnvironment,
     ) => void,
+    geometry?: {tick:number;reach:(s:Squad)=>number},
   ): void {
     this.slots.clear();
     this.loads.clear();
@@ -100,6 +103,10 @@ export class AttackApproaches {
         for (const squad of row) signature.push(squad.id, kinds[squad.kind]);
         for (const value of state.values) signature.push(value);
       }
+      if(geometry){for(const squad of [target,...row]){const t=squad.formation?.transition, progress=t?Math.min(4,Math.max(0,Math.floor((geometry.tick-t.startTick)*4/t.duration))):0;
+        const body=formationEnvelope(squad,t?t.startTick+progress*t.duration/4:geometry.tick);
+        signature.push(squad.troops,squad.formation?.revision??0,body.width,body.depth,body.angle,progress);}}
+      for(const squad of row)signature.push(Math.round(Math.atan2(squad.y-target.y,squad.x-target.x)*8/Math.PI));
       const cached = this.cache.get(key);
       if (
         environment &&
@@ -111,22 +118,30 @@ export class AttackApproaches {
         continue;
       }
       const points = new Map<number, WorldPoint>();
-      const sectors = Math.min(8, row.length);
-      // World-fixed sectors avoid rotating the ring as its first member walks around it.
-      const anchor = 0;
+      const sectors = 8;
+      const bearing=(s:Squad)=>Math.atan2(s.y-target.y,s.x-target.x);
+      const mean=Math.atan2(row.reduce((v,s)=>v+Math.sin(bearing(s)),0),row.reduce((v,s)=>v+Math.cos(bearing(s)),0));
+      const anchor=Math.round(mean/(Math.PI/8))*Math.PI/8;
+      const delta=(angle:number)=>Math.atan2(Math.sin(angle),Math.cos(angle));
+      row.sort((a,b)=>delta(bearing(a)-anchor)-delta(bearing(b)-anchor)||a.id-b.id);
+      const rotations:number[]=[];
+      for(let start=0;start<row.length;start+=sectors){let best=0,error=Infinity;
+        for(let rotation=0;rotation<sectors;rotation++){let score=0;for(let i=0;i<Math.min(sectors,row.length-start);i++)score+=delta(anchor+(i+rotation)*Math.PI*2/sectors-bearing(row[start+i]))**2;
+          if(score<error){error=score;best=rotation;}}rotations.push(best);}
       const assigned: WorldPoint[] = [];
       row.forEach((s, i) => {
         // Certify a bounded set of local sectors; occupied sectors use an outer queue.
         // Do not assign positions inside another enemy's body or impassable terrain.
-        for (let ring = 0; ring < 4; ring++)
+        for (let ring = Math.floor(i/sectors); ring < Math.floor(i/sectors)+4; ring++)
           for (let offset = 0; offset < sectors; offset++) {
             const angle =
-              anchor + (((i + offset) % sectors) * Math.PI * 2) / sectors;
+              anchor + (((i + rotations[Math.floor(i/sectors)] + (offset%2?Math.ceil(offset/2):-offset/2)) % sectors) * Math.PI * 2) / sectors;
             const radius =
               Math.max(1, meleeContact(s.kind, target.kind) - 4) + ring * FIXED;
+            const boundary=geometry && s.formation && target.formation ? formationApproach(s,target,geometry.tick,geometry.reach(s),angle) : undefined;
             const point = {
-              x: Math.round(target.x + Math.cos(angle) * radius),
-              y: Math.round(target.y + Math.sin(angle) * radius),
+              x: boundary?Math.round(boundary.x+Math.cos(angle)*ring*FIXED):Math.round(target.x + Math.cos(angle) * radius),
+              y: boundary?Math.round(boundary.y+Math.sin(angle)*ring*FIXED):Math.round(target.y + Math.sin(angle) * radius),
             };
             if (
               !valid(s, point) ||

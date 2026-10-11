@@ -1,3 +1,4 @@
+import { MOTION } from "../content/TacticalRules";
 import { FIXED, type Snapshot } from "../Protocol";
 
 type Squad = Snapshot["squads"][number];
@@ -126,7 +127,7 @@ export class FormationHeading {
           state.anchorX = squad.x;
           state.anchorY = squad.y;
         }
-        if (Math.hypot(goal.x - squad.x, goal.y - squad.y) >= FIXED / 4)
+        if (Math.hypot(goal.x - squad.x, goal.y - squad.y) >= MOTION.arrivalDeadband)
           state.desired =
             state.travelAngle ??
             Math.atan2(goal.y - squad.y, goal.x - squad.x) - Math.PI / 2;
@@ -136,7 +137,7 @@ export class FormationHeading {
       state.travelAngle = undefined;
       if (goal) {
         // Retain facing on arrival; a point a few fixed units behind is noise.
-        if (Math.hypot(goal.x - squad.x, goal.y - squad.y) >= FIXED / 4)
+        if (Math.hypot(goal.x - squad.x, goal.y - squad.y) >= MOTION.arrivalDeadband)
           state.desired =
             Math.atan2(goal.y - squad.y, goal.x - squad.x) - Math.PI / 2;
         state.anchorX = squad.x;

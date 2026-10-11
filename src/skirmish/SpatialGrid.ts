@@ -11,6 +11,7 @@ export class SpatialGrid<T extends WorldPoint> {
   // need clearing, so cost follows occupancy and not explored map history.
   private readonly active: T[][] = [];
   private tracking = false;
+  private maximumExtent=0;
   private readonly columns: number;
   private readonly rows: number;
   private readonly partitions: (number | undefined)[];
@@ -20,6 +21,7 @@ export class SpatialGrid<T extends WorldPoint> {
     height: number,
     private readonly cellSize: number,
     private readonly partition?: (item: T) => number,
+    private readonly extent?: (item:T)=>number,
   ) {
     this.columns = Math.ceil(width / cellSize);
     this.rows = Math.ceil(height / cellSize);
@@ -28,6 +30,7 @@ export class SpatialGrid<T extends WorldPoint> {
   }
 
   rebuild(items: Iterable<T>): void {
+    this.maximumExtent=0;
     if (this.tracking) {
       for (const bucket of this.active) bucket.length = 0;
       this.active.length = 0;
@@ -41,6 +44,7 @@ export class SpatialGrid<T extends WorldPoint> {
   }
 
   insert(item: T): void {
+    this.maximumExtent=Math.max(this.maximumExtent,this.extent?.(item)??0);
     const key =
       Math.floor(item.x / this.cellSize) +
       Math.floor(item.y / this.cellSize) * this.columns;
@@ -127,6 +131,13 @@ export class SpatialGrid<T extends WorldPoint> {
       }
   }
 
+  /** Conservative envelope candidates; callers retain their own exact legality. */
+  queryOverlaps(x:number,y:number,radius:number,result:T[],excludedPartition?:number):void {
+    this.query(x,y,radius+this.maximumExtent,result,excludedPartition);
+    let count=0;
+    for(const item of result)if((item.x-x)**2+(item.y-y)**2 <= (radius+(this.extent?.(item)??0))**2)result[count++]=item;
+    result.length=count;
+  }
   /** Bounded advisory neighborhood. Exact collision queries must use query(). */
   sample(x:number,y:number,radius:number,result:T[],accept:(item:T)=>boolean,limit:number,maximumReads:number,offset=0):void {
     result.length=0;

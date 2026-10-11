@@ -198,13 +198,13 @@ export class AiOperations {
         this.transition(player, r, "recovery"); continue;
       }
       if (tick < r.nextThink) continue;
-      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=1000}:${diplomacyKey}:${r.territorialRevision??0}:${ageKey}`;
+      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=12}:${diplomacyKey}:${r.territorialRevision??0}:${ageKey}`;
       if(r.phase==="peace" && !r.threats.length && r.sleepKey===sleepKey){r.nextThink=tick+200;continue;}
       r.readiness=forceReadiness(this.expansion,player,2);
       const invasionTroops=r.threats.reduce((sum,t)=>sum+world.squadFacts().aliveByOwner(t.rival)
         .filter(s=>s.embarkedOn===null && world.owners[world.tileOf(s)]===player.id &&
           world.map.euclideanDistSquared(world.tileOf(s),t.tile)<=16**2).reduce((n,s)=>n+s.troops,0),0);
-      const defending=invasionTroops>Math.max(2000,r.readiness.troops/3);
+      const defending=invasionTroops>Math.max(24,r.readiness.troops/3);
       if (r.phase === "war") {
         const buildings = target ? conquestBuildings(world.buildingFacts().byOwner(target.id), target.ai).length : Infinity;
         const enemies = target ? world.squadFacts().byOwner(target.id).filter(s => s.troops > 0).length : Infinity;

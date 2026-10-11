@@ -88,10 +88,10 @@ export function economicSnapshot(input: {
     recruitment,
     force: new AiForceInventory(player.id, squads, recruitment),
     reserveIncome:
-      baseReserveIncome(age) +
+      (baseReserveIncome(age) +
       completed
         .filter((b) => b.type === "city")
-        .reduce((n, b) => n + cityReserveIncome(b.age ?? "StoneAge",input.research), 0),
+        .reduce((n, b) => n + cityReserveIncome(b.age ?? "StoneAge",input.research), 0))*12/1000,
     goldIncome:
       20 + Math.floor(player.land / (40 * (input.territoryIncomeScale ?? 1))),
     cap: input.cap,

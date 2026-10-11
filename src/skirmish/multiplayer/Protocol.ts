@@ -50,7 +50,7 @@ const settings = z
     slots: z.number().int().min(2).max(MAX_HUMAN_PLAYERS),
     minimumHumans: z.number().int().min(1).max(MAX_HUMAN_PLAYERS),
     countdownSeconds: z.number().int().min(15).max(300),
-    worldSize: z.union([z.literal(250), z.literal(500), z.literal(1000)]),
+    worldSize: z.union([z.literal(250), z.literal(500), z.literal(1000), z.literal(2000)]),
     // Exact per-size ranges are enforced by validateLobbySettings.
     aiCount: z.number().int().min(0).max(MAX_AI_OPPONENTS),
     tribeCount: z.number().int().min(0).max(MAX_TRIBES),

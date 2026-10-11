@@ -1,3 +1,5 @@
+import { recruitmentVariant } from '../content/FormationRecipes';
+import { scaledRecipeCost } from './Manpower';
 import { restoreMap } from "../StateTransfer";
 import type { Building, Player, Squad } from "../Protocol";
 import { producerCompatible } from "../content/Buildings";
@@ -54,7 +56,7 @@ export function militaryProduction(
   };
   for (const unit of newestMilitaryUnits(research)) {
     const core = ["frontline", "ranged", "mounted"].includes(unit.role);
-    for (const [id, n] of Object.entries(unit.cost.items ?? {}))
+    for (const [id, n] of Object.entries(scaledRecipeCost(unit,recruitmentVariant(unit.id,research)).items ?? {}))
       demand(
         id,
         n * (core ? Math.max(6, Math.min(20, Math.ceil(squadCount / 4))) : 2),
@@ -116,7 +118,7 @@ export interface ModernizationLease {
 /** One class-preserving candidate order shared by kit demand and refit leases.
  * Availability policy belongs to the caller; no free equipment or era jumps. */
 export function modernizationTarget(current: UnitDefinition, research: readonly string[], attainable: (unit: UnitDefinition) => boolean): UnitDefinition | undefined {
-  return [...UNITS].reverse().find(u => u.line === current.line &&
+  return [...UNITS].reverse().find(u => u.line === current.line && u.formationRecipe?.model === current.formationRecipe?.model &&
     (u.troopClass ?? u.role) === (current.troopClass ?? current.role) &&
     AGES.indexOf(u.age) > AGES.indexOf(current.age) && research.includes(u.technologyId) && attainable(u));
 }
@@ -158,7 +160,7 @@ export class AiModernization {
       const lease = this.leases.get(squad.id);
       const target = lease && UNIT.get(lease.targetId);
       if (!target || squad.refit) continue;
-      const cost = unitRefitCost(target);
+      const cost = unitRefitCost(target,undefined,recruitmentVariant(target.id,research));
       gold -= cost.gold ?? 0;
       for (const [id,n] of Object.entries(cost.items ?? {})) remaining[id] = (remaining[id] ?? 0)-n;
     }
@@ -169,17 +171,18 @@ export class AiModernization {
       if (
         this.holds(squad.id) ||
         squad.refit ||
+        squad.manpower?.enlargement ||
         squad.charge
       )
         continue;
       const current = UNIT.get(squad.definitionId ?? "stoneage-" + squad.kind)!;
       if (!current) continue;
       const target = modernizationTarget(current, research, u => {
-        const cost = unitRefitCost(u);
+        const cost = unitRefitCost(u,undefined,recruitmentVariant(u.id,research));
         return gold >= (cost.gold ?? 0) && Object.entries(cost.items ?? {}).every(([id,n]) => (remaining[id] ?? 0) >= n);
       });
       if (!target) continue;
-      const cost = unitRefitCost(target);
+      const cost = unitRefitCost(target,undefined,recruitmentVariant(target.id,research));
       if (
         gold < cost.gold! ||
         Object.entries(cost.items ?? {}).some(

@@ -1,3 +1,4 @@
+import { readyFraction } from './Manpower';
 import { UNITS } from "../content/Units";
 import { AiDefenseOutline, type DefenseOutlineState } from "./AiDefenseOutline";
 import type { Player } from "../Protocol";
@@ -309,7 +310,7 @@ export class AiDefenseDirector {
         .filter(
           (s) =>
             s.playerId === player.id &&
-            s.troops >= 700 &&
+            readyFraction(s)>=.7 &&
             s.embarkedOn === null &&
             !s.refit &&
             (!s.fighting || assets.owns(`squad:${s.id}`, project.id)) &&
@@ -327,7 +328,7 @@ export class AiDefenseDirector {
           s.playerId === player.id &&
           s.embarkedOn === null &&
           !s.refit &&
-          s.troops >= 700,
+          readyFraction(s)>=.7,
       ).length;
     if (
       suitable.length < 2 ||

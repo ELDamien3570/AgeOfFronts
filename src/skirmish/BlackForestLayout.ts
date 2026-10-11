@@ -35,7 +35,7 @@ export function blackForestLayout(
   seed: number,
 ): BlackForestLayout {
   if (
-    ![250, 500, 1000].includes(size) ||
+    ![250, 500, 1000, 2000].includes(size) ||
     !Number.isInteger(seed) ||
     seed < 0 ||
     seed > 0x7fffffff

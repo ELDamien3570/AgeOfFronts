@@ -1,3 +1,4 @@
+import { remainingHealth, HEALTH_SCALE } from "../../src/skirmish/domain/Manpower";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -21,7 +22,7 @@ function fixture() {
   for (const p of game.players) {
     p.gold = 1e7;
     e.progression.states[p.id].age = "Modern";
-    e.progression.states[p.id].completed = TECHNOLOGIES.map(t => t.id);
+    e.progression.states[p.id].completed = TECHNOLOGIES.filter(t=>!t.optional).map(t => t.id);
   }
   return {game,e};
 }
@@ -138,7 +139,7 @@ describe("equipment and strategic weapons", () => {
     expect(impactSize("impact-hydrogen",p.blastRadius,10)).toBe(4*impactSize("impact-hydrogen",7*FIXED,10));
     game.tick=720; e.battle.advanceProjectiles();
     expect(game.squad(inside.id)).toBeUndefined();
-    expect(game.squad(outside.id)!.troops).toBe(1000);
+    expect(game.squad(outside.id)!.troops).toBe(12);
   });
   it("bombs a ground squad three tiles away using the doubled bomber radius", () => {
     const {game,e}=fixture(),field=building(game,"airstrip",50,40),bomber=plane(game,field);
@@ -204,7 +205,7 @@ describe("conquest credit", () => {
     const factory=building(game,"factory",70,70,2);
     const hull=game.addShip({id:game.allocateId(),playerId:2,kind:"warship",health:1,x:0,y:0,
       destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false});
-    const ground=new DamageLedger(); for(const s of game.squads) if(s.playerId===2)ground.add(s.id,1,s.troops);
+    const ground=new DamageLedger(); for(const s of game.squads) if(s.playerId===2)ground.add(s.id,1,remainingHealth(s)/(s.manpower?HEALTH_SCALE:1));
     game.resolveLandDamage(ground);
     const unrelated=new DamageLedger(); unrelated.add(factory.id,3,5000); unrelated.add(hull.id,3,1);
     game.recordMilitaryLosses([factory],unrelated); game.resolveNavalDamage(unrelated);

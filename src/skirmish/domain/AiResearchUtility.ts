@@ -142,7 +142,7 @@ export function researchUtility(
   if (technology.tree === "economic") {
     if (
       buildingTechnology("city", snapshot.age) === technology.id &&
-      snapshot.reserveIncome < 50
+      snapshot.reserveIncome < .6
     ) {
       benefit += 5000;
       reasons.push("reserve-income");

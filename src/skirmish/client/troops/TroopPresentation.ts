@@ -1,3 +1,6 @@
+import { eligibleShape } from "../../domain/FormationProfiles";
+import { formationDoctrine } from "../../domain/FormationGeometry";
+import type { Command } from "../../Protocol";
 import { UNIT } from "../../content/Units";
 import type { Snapshot } from "../../Protocol";
 import type { LocalSkirmishPresentation } from "../LocalSkirmishProfile";
@@ -11,18 +14,19 @@ export const TROOP_DETAIL_CUTOFF = 12;
 /** Client-only attachment: aggregate snapshots remain the network/simulation unit. */
 export function installTroopPresentation(
   renderer: Renderer,
+  sendCommand?: (command:Command)=>void,
 ): LocalSkirmishPresentation {
   let nextControls = 0;
   let time = 0,
     previousFrame: number | undefined,
     latest: Snapshot | undefined;
-  const formations = new Map<number, ManualFormation>();
+
   const actors = new TroopActors(() => time, {
     reformInPlace: true,
     groundElevationAt: (x, y) => renderer.groundElevationAt(x, y),
     troops: [...RUSSIAN_TROOP_ACTORS.values()],
     byDefinitionId: RUSSIAN_TROOP_ACTORS,
-    formationForSquad: (squad) => formations.get(squad.id) ?? "mass",
+    formationForSquad: (squad) => squad.formation?.shape ?? formationDoctrine(squad.definitionId).defaultShape,
   });
   actors.isSelected = (id) =>
     renderer.selected.has(id) || renderer.inspectedSquadId === id;
@@ -54,21 +58,19 @@ export function installTroopPresentation(
     );
   }
   document.addEventListener("click", (event) => {
+    const unlock=(event.target as HTMLElement).closest<HTMLButtonElement>("button[data-formation-unlock]");
+    if(unlock && !unlock.disabled && sendCommand){for(const squad of selected())sendCommand({type:"formation",playerId:latest?.localPlayerId??1,squadIds:[squad.id],shape:squad.formation?.deployedShape??squad.formation?.shape??formationDoctrine(squad.definitionId).defaultShape,shapeLock:false});return;}
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
       "button[data-shape]",
     );
-    if (!button) return;
+    if (!button || button.disabled || !sendCommand) return;
     const shape = button.dataset.shape as ManualFormation;
-    for (const squad of selected()) {
-      const art = RUSSIAN_TROOP_ACTORS.get(squad.definitionId ?? "")!;
-      const mounted = art.mounted || art.vehicle;
-      if (!mounted || shape === "mass" || shape === "line")
-        formations.set(squad.id, shape);
-    }
+    const squads=selected();
+    if(squads.length && squads.every(s=>formationDoctrine(s.definitionId).shapes.includes(shape)))sendCommand({type:"formation",playerId:latest?.localPlayerId??1,squadIds:squads.map(s=>s.id),shape});
   });
   return {
     reset() {
-      formations.clear();
+
       actors.clear();
       latest = undefined;
       time = 0;
@@ -79,9 +81,7 @@ export function installTroopPresentation(
       time = Math.max(time, snapshot.tick * 50);
       actors.setDetailed(renderer.pixelsPerCell >= TROOP_DETAIL_CUTOFF);
       actors.prune(snapshot);
-      const ids = new Set(snapshot.squads.map((squad) => squad.id));
-      for (const id of formations.keys())
-        if (!ids.has(id)) formations.delete(id);
+
     },
     beginFrame(now, speed, paused) {
       if (latest && !paused && previousFrame !== undefined)
@@ -101,24 +101,21 @@ export function installTroopPresentation(
       if (now < nextControls) return;
       nextControls = now + 150;
       const squads = selected();
+      const unlock=document.querySelector<HTMLButtonElement>("button[data-formation-unlock]");if(unlock){unlock.disabled=!squads.some(s=>s.formation?.shapeLock)||squads.some(s=>!!s.formation?.transition||!!s.charge||!!s.refit||!!s.manpower?.enlargement);unlock.setAttribute("aria-pressed",String(!!squads.length&&squads.every(s=>!s.formation?.shapeLock)));}
       for (const button of document.querySelectorAll<HTMLButtonElement>(
         "button[data-shape]",
       )) {
         const shape = button.dataset.shape as ManualFormation;
         button.disabled =
           !squads.length ||
-          (squads.every((squad) => {
-            const art = RUSSIAN_TROOP_ACTORS.get(squad.definitionId ?? "")!;
-            return art.mounted || art.vehicle;
-          }) &&
-          shape !== "mass" &&
-          shape !== "line");
+          squads.some(s=>eligibleShape(s.troops,formationDoctrine(s.definitionId),shape)!==shape||!!s.refit||!!s.manpower?.enlargement||!!s.charge||s.embarkedOn!==null||!!s.formation?.transition&&!s.formation.automatic);
+        button.title=squads.some(s=>s.formation?.automatic)?`Will deploy as ${shape}`:shape;
         button.setAttribute(
           "aria-pressed",
           String(
             !!squads.length &&
               squads.every(
-                (squad) => (formations.get(squad.id) ?? "mass") === shape,
+                (squad) => (squad.formation?.automatic?squad.formation.deployedShape:squad.formation?.shape ?? formationDoctrine(squad.definitionId).defaultShape) === shape,
               ),
           ),
         );

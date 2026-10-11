@@ -2,6 +2,7 @@ import type { BlackForestMap } from "../BlackForestMap";
 import { TerrainType } from "../../core/game/Game";
 import type { Deposit } from "../domain/Definitions";
 import { generateDeposits } from "../domain/DepositGeneration";
+import type { ContinentsMap } from "../ContinentsMap";
 import type { MigrationMap } from "../MigrationMap";
 import { generateProceduralMap } from "../ProceduralMaps";
 import { terrainSpeed } from "../Terrain";
@@ -27,7 +28,7 @@ const canvas = document.querySelector<HTMLCanvasElement>("#map")!,
 const groundLayer = new GroundLayer(canvas),
   groundCanvas =
     canvas.parentElement!.querySelector<HTMLCanvasElement>(".ground-layer");
-let loaded: BlackForestMap | MigrationMap,
+let loaded: BlackForestMap | MigrationMap | ContinentsMap,
   ground: PaintedTerrain,
   scale = 1,
   offsetX = 0,
@@ -148,7 +149,12 @@ async function generate() {
     document.querySelector("#pond-count")!.textContent =
       "ponds" in next
         ? `${next.ponds.length} / ${next.layout.clearings.length}`
-        : `${next.layout.mainlands.length} mainland${next.layout.mainlands.length === 1 ? "" : "s"} · ${next.layout.rivers.filter((river) => river.kind === "river").length} rivers`;
+        : `${next.layout.mainlands.length} ${"lakes" in next.layout ? "continent" : "mainland"}${next.layout.mainlands.length === 1 ? "" : "s"} · ${next.layout.rivers.filter((river) => river.kind === "river").length} rivers${"lakes" in next.layout ? ` · ${next.layout.lakes.length} lakes` : ""}`;
+    const climates = document.querySelector("#climates");
+    if (climates && "profiles" in next.layout)
+      climates.textContent = next.layout.profiles
+        .map((p) => `${p.climate}${p.ruggedness > 0.6 ? " (rugged)" : p.ruggedness < 0.25 ? " (flat)" : ""}`)
+        .join(" · ");
     const topography = document.querySelector("#topography");
     if (topography) {
       let peak = 0,
@@ -308,7 +314,7 @@ canvas.addEventListener("pointermove", (event) => {
   const tile = loaded.map.ref(x, y),
     cover = loaded.forest!.cover[tile];
   hover.textContent = loaded.map.isWater(tile)
-    ? theme === "migration"
+    ? theme !== "black-forest"
       ? loaded.elevation!.values[tile] > 0
         ? "River"
         : "Open sea"
@@ -316,7 +322,7 @@ canvas.addEventListener("pointermove", (event) => {
     : loaded.map.isImpassable(tile)
       ? "Impassable mountain ridge"
       : `${cover > 140 ? "Dense woodland" : cover > 30 ? "Forest edge" : "Open ground"} · ${Math.round((terrainSpeed(loaded.map, tile) / 56) * 100)}% movement speed`;
-  if (theme === "migration")
+  if (theme !== "black-forest")
     hover.textContent += ` · ${Math.round(loaded.elevation!.values[tile])} m elevation`;
 });
 canvas.addEventListener(

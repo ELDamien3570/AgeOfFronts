@@ -80,6 +80,7 @@ export interface Cost {
   items?: Readonly<Inventory>;
 }
 export interface Technology {
+  optional?: boolean;
   id: string;
   name: string;
   age: Age;
@@ -108,6 +109,11 @@ export interface ProgressionState {
   } | null;
 }
 export interface AttackProfile {
+  perSoldier?: boolean;
+  ranks?: number;
+  rpm?: number;
+  shotsPerReload?: number;
+  reloadMs?: number;
   channel: "melee" | "ranged";
   damage: number;
   range: number;
@@ -128,6 +134,10 @@ export interface ChargeProfile {
   penetration: number;
 }
 export interface UnitDefinition {
+  meleeAttack?: AttackProfile;
+  rangedAttack?: AttackProfile;
+  chargeMultiplier?: number;
+  formationRecipe?: import('./Manpower').FormationRecipe;
   id: string;
   name: string;
   age: Age;
@@ -195,6 +205,8 @@ export interface ProductionJob {
   owner: number;
 }
 export interface RecruitmentJob {
+  recipeVariant?: import('./Manpower').RecipeVariant;
+  capacity?: number;
   id: number;
   playerId: number;
   buildingId: number;
@@ -213,6 +225,7 @@ export interface Deposit {
   yieldPerSecond: number;
 }
 export interface RefitJob {
+  recipeVariant?: import('./Manpower').RecipeVariant;
   targetId: string;
   remainingTicks: number;
   totalTicks: number;
@@ -300,6 +313,7 @@ export interface Projectile {
   playerId: number;
   sourceId: number;
   sourceKind: CombatSourceKind;
+  perSoldier?: boolean;
   attackScale?: number;
   definitionId?: string;
   originTile?: number;

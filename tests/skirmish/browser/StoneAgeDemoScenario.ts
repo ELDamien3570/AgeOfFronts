@@ -1,3 +1,5 @@
+import { UNIT } from "../../../src/skirmish/content/Units";
+import { createManpower } from "../../../src/skirmish/domain/Manpower";
 import { FIXED } from "../../../src/skirmish/Protocol";
 import { Skirmish } from "../../../src/skirmish/Simulation";
 import {
@@ -55,7 +57,8 @@ export function stoneAgeDemo(): Skirmish {
         playerId,
         x: Math.round(x * FIXED),
         y: Math.round(y * FIXED),
-        troops: 1000,
+        troops: UNIT.get(demoTroopId(troop))!.formationRecipe!.capacity,
+        manpower:createManpower(UNIT.get(demoTroopId(troop))!),
         kind: troop.kind,
         definitionId: demoTroopId(troop),
         order: { type: "hold" },

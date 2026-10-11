@@ -47,6 +47,7 @@ describe("local lobby preview", () => {
       "middle-east",
       "black-forest",
       "migration",
+      "continents",
     ]);
     expect(vm.rules.slots).toBe(MAX_HUMAN_PLAYERS);
     // Base lobbies use the 500-cell defaults: 10 AI opponents and 25 tribes.

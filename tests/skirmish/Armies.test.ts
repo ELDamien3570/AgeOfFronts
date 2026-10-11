@@ -1,3 +1,4 @@
+import { TERRAIN } from "../../src/skirmish/content/TacticalRules";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ArmyViewModel } from "../../src/skirmish/client/ArmyViewModel";
@@ -6,6 +7,10 @@ import {
   TECHNOLOGIES,
   technologyAt,
 } from "../../src/skirmish/content/Technology";
+import {
+  certifyFootprint,
+  formationFootprints,
+} from "../../src/skirmish/domain/FormationContact";
 import {
   advanceRejection,
   researchRejection,
@@ -26,7 +31,14 @@ const make = (
 ) => {
   const match = new Skirmish(
     new GameMapImpl(96, 64, data, data.filter((v) => v & 128).length),
-    { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1", deferredPlanning },
+    {
+      seed: 47,
+      aiCount: 1,
+      tribes: false,
+      runAi: false,
+      ruleset: "ages-v1",
+      deferredPlanning,
+    },
   );
   const e = match.expansion!;
   const own = match.squads.find((s) => s.playerId === 1)!;
@@ -267,7 +279,7 @@ describe("persistent armies and Bronze tree", () => {
       expect(own.every((s) => Math.abs(s.x - 60.5 * FIXED) < 24 * FIXED)).toBe(
         true,
       );
-      expect(own.reduce((n, s) => n + s.troops, 0)).toBe(count * 1000);
+      expect(own.reduce((n, s) => n + s.troops, 0)).toBe(count * 12);
     },
   );
   it("keeps manual hold priority when auto tactics are enabled", () => {
@@ -353,6 +365,13 @@ describe("persistent armies and Bronze tree", () => {
     for (let t = 0; t < 1800; t++) {
       m.step();
       expect(own.every((s) => m.map.isLand(m.tileOf(s)))).toBe(true);
+      expect(
+        own.every(
+          (s) =>
+            !s.formation ||
+            formationFootprints(s, m.tick).every(poly=>certifyFootprint(m.map, poly, () => false,false,TERRAIN.softHold)),
+        ),
+      ).toBe(true);
     }
     expect(m.expansion!.armies.armies[0].state).toBe("holding");
     expect(own.every((s) => s.x > 50 * FIXED)).toBe(true);
@@ -362,17 +381,27 @@ describe("persistent armies and Bronze tree", () => {
       const m = make(6, false, undefined, true);
       if (army) expect(create(m)).toBeNull();
       expect(
-        m.applyCommand({ type: "order", playerId: 1, squadIds: ids(m), order: { type: "move", tile: m.map.ref(70, 31) }, append: false }),
+        m.applyCommand({
+          type: "order",
+          playerId: 1,
+          squadIds: ids(m),
+          order: { type: "move", tile: m.map.ref(70, 31) },
+          append: false,
+        }),
       ).toBeNull();
       for (let t = 1; t <= 1200; t++) {
         m.step();
         const own = m.squads.filter((s) => s.playerId === 1);
-        if ((!army || m.expansion!.armies.armies[0].state === "holding") && own.every((s) => s.order.type === "hold" && s.x > 65 * FIXED))
+        if (
+          (!army || m.expansion!.armies.armies[0].state === "holding") &&
+          own.every((s) => s.order.type === "hold" && s.x > 65 * FIXED)
+        )
           return t;
       }
       return Infinity;
     };
-    const squads = arrival(false), army = arrival(true);
+    const squads = arrival(false),
+      army = arrival(true);
     expect(squads).toBeLessThan(Infinity);
     // The column waits for its rear and deploys, but never crawls.
     expect(army).toBeLessThan(squads * 1.6);
@@ -384,12 +413,24 @@ describe("persistent armies and Bronze tree", () => {
     const m = make(8, false, data, true);
     create(m);
     expect(
-      m.applyCommand({ type: "army-order", playerId: 1, armyId: 1, order: { type: "move", tile: m.map.ref(65, 30) } }),
+      m.applyCommand({
+        type: "army-order",
+        playerId: 1,
+        armyId: 1,
+        order: { type: "move", tile: m.map.ref(65, 30) },
+      }),
     ).toBeNull();
     const own = m.squads.filter((s) => s.playerId === 1);
     for (let t = 0; t < 1800; t++) {
       m.step();
       expect(own.every((s) => m.map.isLand(m.tileOf(s)))).toBe(true);
+      expect(
+        own.every(
+          (s) =>
+            !s.formation ||
+            formationFootprints(s, m.tick).every(poly=>certifyFootprint(m.map, poly, () => false,false,TERRAIN.softHold)),
+        ),
+      ).toBe(true);
     }
     expect(m.expansion!.armies.armies[0].state).toBe("holding");
     expect(own.every((s) => s.x > 50 * FIXED)).toBe(true);

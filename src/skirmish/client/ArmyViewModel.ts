@@ -1,3 +1,4 @@
+import { remainingHealth, maximumHealth, HEALTH_SCALE } from '../domain/Manpower';
 import { armyCapacity } from "../content/Armies";
 import { defaultUnit, UNIT } from "../content/Units";
 import type { Army } from "../domain/Definitions";
@@ -88,8 +89,8 @@ export class ArmyViewModel {
     return {
       count: members.length,
       capacity: this.capacity,
-      strength: members.reduce((sum, s) => sum + s.troops, 0),
-      maximum: members.length * SQUAD_TROOPS,
+      strength: members.reduce((sum, s) => sum + remainingHealth(s)/(s.manpower?HEALTH_SCALE:1), 0),
+      maximum: members.reduce((sum,s)=>sum+maximumHealth(s)/(s.manpower?HEALTH_SCALE:1),0),
       suspended: members.filter((s) => s.embarkedOn !== null || s.refit).length,
       roles: [...roles].map(([role, count]) => `${count} ${role}`).join(" · "),
       status:

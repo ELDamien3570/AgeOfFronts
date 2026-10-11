@@ -84,7 +84,7 @@ describe("authoritative recruitment queues", () => {
       p = m.players[0];
     for (let i = 0; i < 5; i++) expect(train(m)).toBeNull();
     expect(p.gold).toBe(99700);
-    expect(p.reserves).toBe(95000);
+    expect(p.reserves).toBe(99940);
     const initial = m.squads.filter((s) => s.playerId === 1).length;
     for (let i = 0; i < 239; i++) m.step();
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(initial);
@@ -93,7 +93,7 @@ describe("authoritative recruitment queues", () => {
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(initial + 1);
     expect(m.recruitment.jobs).toHaveLength(4);
     expect(m.recruitment.jobs[0].remainingTicks).toBe(240);
-    expect(p.reserves).toBe(95240); // twelve seconds of base plus starting-city reserve income
+    expect(p.reserves).toBe(99942); // twelve seconds of base plus starting-city reserve income
     const decoded = new SnapshotDecoder().decode(
       new SnapshotEncoder().encode(m.snapshot()),
     );

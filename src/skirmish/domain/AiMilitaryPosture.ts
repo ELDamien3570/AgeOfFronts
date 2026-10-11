@@ -18,7 +18,7 @@ export function militaryPosture(
         0,
         ...TECHNOLOGIES.filter(
           (t) =>
-            t.age === snapshot.age &&
+            !t.optional && t.age === snapshot.age &&
             t.tree === tree &&
             !snapshot.research.includes(t.id),
         ).map((t) => t.gold),

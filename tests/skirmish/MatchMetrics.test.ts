@@ -64,35 +64,35 @@ describe("authoritative match metrics", () => {
     const m = match(),
       victim = m.squads.find((s) => s.playerId === 2)!,
       hits = new DamageLedger();
-    m.updateSquad(victim.id, { troops: 101 });
-    hits.add(victim.id, 1, 300);
-    hits.add(victim.id, 3, 100);
+    m.updateSquad(victim.id, { troops: 11 });
+    hits.add(victim.id, 1, 900);
+    hits.add(victim.id, 3, 300);
     m.resolveLandDamage(hits);
-    expect(m.players[1].losses).toBe(101);
-    expect(m.players[0].kills).toBe(76);
-    expect(m.players[2].kills).toBe(25);
+    expect(m.players[1].losses).toBe(11);
+    expect(m.players[0].kills).toBe(9);
+    expect(m.players[2].kills).toBe(2);
     m.resolveLandDamage(hits);
-    expect(m.players[0].kills).toBe(76);
+    expect(m.players[0].kills).toBe(9);
   });
   it("counts partial losses and simultaneous mutual kills as soldiers", () => {
     const m = match(),
       a = m.squads.find((s) => s.playerId === 1)!,
       b = m.squads.find((s) => s.playerId === 2)!;
     const partial = new DamageLedger();
-    partial.add(b.id, 1, 40);
+    partial.add(b.id, 1, 400);
     m.resolveLandDamage(partial);
-    expect(m.players[0].kills).toBe(40);
-    expect(m.players[1].losses).toBe(40);
-    m.updateSquad(a.id, { troops: 80 });
-    m.updateSquad(b.id, { troops: 90 });
+    expect(m.players[0].kills).toBe(4);
+    expect(m.players[1].losses).toBe(4);
+    m.updateSquad(a.id, { troops: 8 });
+    m.updateSquad(b.id, { troops: 9 });
     const mutual = new DamageLedger();
     mutual.add(a.id, 2, 999);
     mutual.add(b.id, 1, 999);
     m.resolveLandDamage(mutual);
-    expect(m.players[0].kills).toBe(130);
-    expect(m.players[0].losses).toBe(80);
-    expect(m.players[1].kills).toBe(80);
-    expect(m.players[1].losses).toBe(130);
+    expect(m.players[0].kills).toBe(13);
+    expect(m.players[0].losses).toBe(8);
+    expect(m.players[1].kills).toBe(8);
+    expect(m.players[1].losses).toBe(13);
   });
   it("counts embarked soldiers on sinking, excluding ship health", () => {
     const m = match(),
@@ -112,19 +112,19 @@ describe("authoritative match metrics", () => {
     });
 
     m.updateSquad(passenger.id, { embarkedOn: ship.id });
-    m.updateSquad(passenger.id, { troops: 700 });
+    m.updateSquad(passenger.id, { troops: 7 });
     const hits = new DamageLedger();
-    hits.add(ship.id, 1, 300);
-    hits.add(ship.id, 3, 100);
+    hits.add(ship.id, 1, 900);
+    hits.add(ship.id, 3, 300);
     m.resolveNavalDamage(hits);
-    expect(m.players[1].losses).toBe(700);
-    expect(m.players[0].kills).toBe(525);
-    expect(m.players[2].kills).toBe(175);
+    expect(m.players[1].losses).toBe(7);
+    expect(m.players[0].kills).toBe(6);
+    expect(m.players[2].kills).toBe(1);
     m.addShip({ ...ship, id: m.allocateId(), health: 100 });
     const empty = new DamageLedger();
     empty.add(m.ships[0].id, 1, 1000);
     m.resolveNavalDamage(empty);
-    expect(m.players[0].kills).toBe(525);
+    expect(m.players[0].kills).toBe(6);
   });
   it("records cargo captures immediately at load value, without double settlement", () => {
     const { m, e, actor } = shipment(),
@@ -183,7 +183,7 @@ describe("authoritative match metrics", () => {
     actor.waitTicks = 0;
     tradeStep(m);
     const hits = new DamageLedger();
-    hits.add(m.squads.find((s) => s.playerId === 1)!.id, 2, 42);
+    hits.add(m.squads.find((s) => s.playerId === 1)!.id, 2, 400);
     m.resolveLandDamage(hits);
     const saved = m.checkpoint();
     e.trade.capturedValue[2] = 999;
@@ -194,13 +194,13 @@ describe("authoritative match metrics", () => {
     );
     const metrics = new MatchMetricsViewModel(snapshot, 2);
     expect(metrics).toMatchObject({
-      kills: 42,
+      kills: 4,
       deaths: 0,
       tradeCaptured: 500,
       tradeLost: 0,
     });
     expect(new MatchMetricsViewModel(snapshot, 1)).toMatchObject({
-      deaths: 42,
+      deaths: 4,
       tradeLost: 500,
     });
     delete snapshot.players[1].kills;

@@ -1,3 +1,4 @@
+import { remainingHealth, HEALTH_SCALE } from "../../src/skirmish/domain/Manpower";
 import { claimBuildingFootprint } from "./BuildingFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -144,7 +145,7 @@ describe("complete conquest", () => {
     const ship = game.addShip(emptyShip(game.allocateId(), enemy.id, "warship", SHIP_RULES.warship.health));
     place(game, ship, 20, 2);
     const victims = game.squads.filter(s => s.playerId !== 1), damage = new DamageLedger();
-    for (const squad of victims) damage.add(squad.id, 1, squad.troops);
+    for (const squad of victims) damage.add(squad.id, 1, remainingHealth(squad)/(squad.manpower?HEALTH_SCALE:1));
     game.resolveLandDamage(damage);
     game.step();
     expect(enemy.eliminated).toBe(true);

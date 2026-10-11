@@ -1,3 +1,5 @@
+import { recruitmentVariant } from '../content/FormationRecipes';
+import { scaledRecipeCost } from './Manpower';
 import { buildingCost, buildingTechnology } from "../content/Buildings";
 import { packageTechnology } from "../content/Technology";import { UNIT, UNITS } from "../content/Units";
 import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
@@ -75,7 +77,7 @@ export function militaryDemand(
               (b.health ?? 1) > 0 &&
               AGES.indexOf(b.age ?? "StoneAge") >= AGES.indexOf(u.age),
           )) &&
-          Object.entries(u.cost.items ?? {}).every(([id, n]) =>
+          Object.entries(scaledRecipeCost(u,recruitmentVariant(u.id,snapshot.research)).items ?? {}).every(([id, n]) =>
             dependencies.available(id, n),
           ),
       );
@@ -91,7 +93,7 @@ export function militaryDemand(
       Math.min(snapshot.headroom, missing) +
         (snapshot.headroom > 0 ? (snapshot.threatTroops > 0 ? 2 : 1) : 0),
     );
-    for (const [id, n] of Object.entries(unit.cost.items ?? {}))
+    for (const [id, n] of Object.entries(scaledRecipeCost(unit,recruitmentVariant(unit.id,snapshot.research)).items ?? {}))
       result.equipment[id] = (result.equipment[id] ?? 0) + buffer * n;
   }
   let upgrades = Math.max(1, Math.ceil(snapshot.squads.length / 4));
@@ -100,13 +102,13 @@ export function militaryDemand(
     const current = UNIT.get(squad.definitionId ?? `stoneage-${squad.kind}`);
     if (!current) continue;
       const target = modernizationTarget(current, snapshot.research, (u) =>
-          Object.entries(unitRefitCost(u).items ?? {}).every(([id, n]) =>
+          Object.entries(unitRefitCost(u,undefined,recruitmentVariant(u.id,snapshot.research)).items ?? {}).every(([id, n]) =>
             dependencies.available(id, n),
           ),
       );
     if (!target) continue;
     upgrades--;
-    for (const [id, n] of Object.entries(unitRefitCost(target).items ?? {}))
+    for (const [id, n] of Object.entries(unitRefitCost(target,undefined,recruitmentVariant(target.id,snapshot.research)).items ?? {}))
       result.equipment[id] = (result.equipment[id] ?? 0) + n;
     }
     if (snapshot.age === "Modern") {

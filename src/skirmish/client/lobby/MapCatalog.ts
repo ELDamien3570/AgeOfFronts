@@ -59,6 +59,10 @@ const presentation: Record<
     terrain: "Dense conifers, open glades & winding woodland paths",
     description: "A new seeded forest each match. Advance quickly through clearings or push through slower woodland.",
   },
+  continents: {
+    terrain: "Earth-like continents, mountain ranges, rivers & ocean-linked lakes",
+    description: "Four or five continents on the largest maps, each with its own climate, from frozen tundra to deserts and dense jungle. Rivers run from the peaks to the sea.",
+  },
   migration: {
     terrain: "River-cut mainlands, coastal islands & winding sea channels",
     description: "Choose an island foothold or settle a mainland. Larger maps add more small islands; each seed varies the coasts, rivers and mainland splits.",

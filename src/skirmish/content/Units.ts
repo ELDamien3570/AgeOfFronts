@@ -16,11 +16,13 @@ import {
   type EquipmentKind,
 } from "./Equipment";
 import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
+import { FORMATION_RECIPES } from './FormationRecipes';
 import {
   canonicalTechnologyId,
   packageTechnology,
   TECHNOLOGY,
 } from "./Technology";
+import { applySoldierWeapons } from "./SoldierWeapons";
 import { weaponCycle } from "./WeaponCycles";
 const ground: readonly TargetTag[] = [
   "infantry",
@@ -360,7 +362,7 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
       blastRadius: 0,
     };
   const cycle = weaponCycle(unit);
-  if (cycle && rangedAttack) {
+  if (cycle && rangedAttack && vehicle) {
     const sustained =
       ((cycle.rounds - 1) * cycle.interval + cycle.reload) / cycle.rounds;
     const multiplier = Math.min(1, sustained / unit.attack.reloadTicks);
@@ -399,6 +401,13 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
 }
 for (const unit of UNITS)
   unit.technologyId = canonicalTechnologyId(unit.technologyId);
+for (const unit of UNITS) {
+  const recipe=FORMATION_RECIPES[unit.id];
+  if (!recipe) throw new Error(`Missing formation recipe ${unit.id}`);
+  unit.formationRecipe=recipe;
+  if (recipe.model === "soldiers") applySoldierWeapons(unit);
+  unit.cost={...unit.cost,reserves:recipe.reserveCost,items:{...unit.cost.items,...(unit.tags.includes('mounted')?{horses:recipe.capacity}:{})}};
+}
 UNITS.sort(
   (a, b) =>
     AGES.indexOf(a.age) - AGES.indexOf(b.age) ||

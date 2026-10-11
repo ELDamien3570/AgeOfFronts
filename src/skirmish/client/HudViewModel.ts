@@ -1,3 +1,5 @@
+import { soldierWeaponStats } from "./WeaponStats";
+import { remainingHealth, maximumHealth, HEALTH_SCALE } from '../domain/Manpower';
 import { buildingPreviewArtworkId } from "./ArtworkCatalog";
 import { availableGold } from "../domain/Gold";
 import type { BuildingType, ShipType, SquadType } from "../Protocol";
@@ -159,7 +161,7 @@ function createShipCard(kind: ShipType): HudCard {
     description: "Automatically attacks enemy ships and squads afloat in range. Damage decreases with hull health. Ships sail only on water.",
   };
 }
-function createBuildingCard(kind: BuildingType): HudCard {
+function createBuildingCard(kind: BuildingType, reserveScale=1): HudCard {
   const rule = BUILDING_RULES[kind];
   return {
     title: rule.name,
@@ -169,7 +171,7 @@ function createBuildingCard(kind: BuildingType): HudCard {
       stat("Construction cost", `${fmt(rule.cost)} gold`),
       stat("Build time", `${rule.ticks / TICKS_PER_SECOND} sec`),
       ...(rule.reserveIncome
-        ? [stat("Reserve income", `+${rule.reserveIncome} / sec`)]
+        ? [stat("Reserve income", `+${fmt(rule.reserveIncome*reserveScale)} / sec`)]
         : []),
       ...(rule.goldIncome
         ? [stat("Gold income", `+${rule.goldIncome} / sec`)]
@@ -202,9 +204,11 @@ const buildingCards = Object.fromEntries(
   ]),
 ) as Record<BuildingType, HudCard>;
 
-function unitCard(unit: UnitDefinition, xp = 0): HudCard {
+function unitCard(unit: UnitDefinition, xp = 0, capacity=unit.formationRecipe!.capacity): HudCard {
   const a = scaledAttack(unit.attack, 1000, 1000, xp);
   const stats = [
+    stat('Recipe capacity',String(capacity)),
+    ...(unit.formationRecipe!.model==='soldiers'?[stat('Health per soldier',String(unit.formationRecipe!.soldierHp))]:[]),
     stat("Unit age", AGE_NAMES[AGES.indexOf(unit.age)]),
     stat(
       "Melee Armour",
@@ -218,12 +222,13 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
         ? `${unit.rangedArmour} points`
         : `${unit.rangedArmour / 100}%`,
     ),
+    ...(unit.meleeAttack ? soldierWeaponStats(unit,xp).map(([name,value])=>stat(name,value)) : []),
     stat("Melee Attack", a.channel === "melee" ? fmt(a.damage) : "—"),
     stat("Ranged Attack", a.channel === "ranged" ? fmt(a.damage) : "—"),
     stat("Range", `${fmt(a.range / FIXED)} cells`),
     stat("Targets", a.targets.join(", ")),
     stat(
-      "Reload Time",
+      unit.meleeAttack ? "Shot cadence" : "Reload Time",
       `${a.reloadTicks / 20}s · ${(a.reloadTicks * a.movingReloadPercent) / 2000}s moving`,
     ),
     stat("Speed", `${unit.speedPercent}% · terrain applies`),
@@ -262,7 +267,7 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
     ...(unit.charge
       ? [
           stat("Charge Speed", `${unit.charge.speedPercent}%`),
-          stat("Charge Damage", String(unit.charge.damage)),
+          stat("Charge Damage", unit.meleeAttack ? `${unit.chargeMultiplier}× per-soldier melee` : String(unit.charge.damage)),
           stat("Charge Reload Time", `${unit.charge.cooldownTicks / 20}s`),
         ]
       : []),
@@ -276,7 +281,7 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
     stats,
     description: unit.placeholder
       ? "Temporary presentation · authoritative stats shown above."
-      : "Damage is per attack at full strength. Armour protects the base channel; target bonuses have separate resistance.",
+      : unit.meleeAttack ? "Damage is per contributing soldier. Armour leaves at least 1 base HP; one matching class bonus bypasses ordinary armour. RPM excludes magazine reload; the next shot waits for both cadence and reload." : "Damage is per attack at full strength. Hull defence uses its own resistance rules.",
     compact: {
       stats: [
         stat(
@@ -287,7 +292,7 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
           "Building",
           `${BUILDING_RULES[unit.building].name} · ${AGE_NAMES[AGES.indexOf(unit.age)]} or later`,
         ),
-        stat("Cost", `${unit.cost.gold ?? 0} gold · 1,000 reserves`),
+        stat("Cost", `${unit.cost.gold ?? 0} gold · ${unit.cost.reserves ?? 0} reserves`),
         stat(
           "Supplies",
           Object.entries(unit.cost.items ?? {})
@@ -371,11 +376,7 @@ export class HudViewModel {
         ...(choice.definitionId
           ? land
             ? unitCard(
-                unitEffects(
-                  UNIT.get(choice.definitionId)!,
-                  this.game.state.expansion!.progression[this.playerId]
-                    .completed,
-                ),
+                {...unitEffects(UNIT.get(choice.definitionId)!,this.game.state.expansion!.progression[this.playerId].completed),cost:choice.cost!},0,choice.capacity,
               )
             : vesselCard(
                 choice.definitionId,
@@ -397,7 +398,7 @@ export class HudViewModel {
           )
         : undefined;
       return {
-        ...buildingCards[build.kind],
+        ...createBuildingCard(build.kind,this.game.state.expansion?12/1000:1),
         definitionId: this.game.state.expansion
           ? buildingPreviewArtworkId(build.kind, choice?.age ?? this.game.state.expansion.progression[this.playerId].age)
           : undefined,
@@ -470,7 +471,7 @@ export class HudViewModel {
         title: "Replenish selected squads",
         subtitle: "R · manual reinforcement",
         stats: [
-          stat("Transfer rate", `${REPLENISH_PER_SECOND} reserves / sec`),
+          stat("Transfer rate", `${this.game.state.expansion ? REPLENISH_PER_SECOND * 12 / 1000 : REPLENISH_PER_SECOND} reserves / sec`),
           stat("Combat cooldown", `${REPLENISH_DELAY / TICKS_PER_SECOND} sec`),
           stat("Eligible squads", String(this.game.replenishableSquads.length)),
         ],
@@ -572,7 +573,7 @@ export class HudViewModel {
               UNIT.get(s.definitionId)!,
               state.expansion!.progression[s.playerId].completed,
             ),
-            s.xp,
+            s.xp,s.manpower?.capacity,
           )
         : squadCards[s.kind]),
       ref: `squad:${s.id}`,
@@ -588,12 +589,16 @@ export class HudViewModel {
       // Afloat, the transport's hull takes every hit; soldiers are lost with it.
       meter: s.afloat
         ? { label: "Hull health", value: s.afloat.hull, max: s.afloat.maxHull }
-        : { label: "Troop strength", value: s.troops, max: SQUAD_TROOPS },
+        : { label: s.manpower ? s.manpower.model==='hull'?'Hull health':'Formation health' : 'Troop strength', value:remainingHealth(s)/(s.manpower?HEALTH_SCALE:1),max:maximumHealth(s)/(s.manpower?HEALTH_SCALE:1) },
       status:
         "planningPaused" in s && s.planningPaused === true
           ? "Route paused - choose a shorter waypoint"
-          : s.refit
-            ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)}s`
+          : s.manpower?.enlargement
+            ? `Enlarging · ${Math.ceil(s.manpower.enlargement.remainingTicks/20)}s`
+            : s.refit
+            ? s.fighting || s.moved || s.afloat || s.embarkedOn!==null || state.owners[Math.floor(s.y/FIXED)*state.width+Math.floor(s.x/FIXED)]!==s.playerId
+              ? 'Refit paused · needs stationary owned land outside combat'
+              : `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)}s`
             : s.charge
               ? `Charge · ${s.charge.phase}`
               : s.afloat
@@ -631,6 +636,7 @@ export class HudViewModel {
               ),
             ]
           : []),
+        ...(s.manpower ? [stat(s.manpower.model==='hull'?'Vehicles':'Soldiers',`${s.troops}/${s.manpower.capacity}`),stat('Health per soldier',s.manpower.model==='soldiers'?fmt(s.manpower.hp/HEALTH_SCALE):'Hull'),stat('Remaining health',fmt(remainingHealth(s)/HEALTH_SCALE))] : []),
         stat("Queued orders", String(s.queuedOrders.length)),
         ...(s.movementStatus ? [stat("Movement", s.movementStatus.reason),
           stat("Waiting", `${Math.max(0,Math.floor((state.tick-s.movementStatus.since)/20))}s`),
@@ -642,7 +648,7 @@ export class HudViewModel {
                   UNIT.get(s.definitionId)!,
                   state.expansion!.progression[s.playerId].completed,
                 ),
-                s.xp,
+                s.xp,s.manpower?.capacity,
               ).stats,
               stat(
                 "Promotion",
@@ -746,7 +752,7 @@ export class HudViewModel {
       const tradeSite = state.expansion?.tradeSites?.find(
         s => s.playerId === b.playerId && s.tile === b.tile && (s.kind ?? (s.naval ? "port" : "factory")) === b.type);
       return {
-        ...buildingCards[b.type],
+        ...createBuildingCard(b.type,state.expansion?12/1000:1),
         ref: `building:${b.id}`,
         kind: b.type,
         definitionId: b.age
@@ -774,7 +780,7 @@ export class HudViewModel {
                   ? [
                       stat(
                         "Combined reserve income",
-                        `+${fmt(completed * BUILDING_RULES[b.type].reserveIncome)} / sec`,
+                        `+${fmt(completed * BUILDING_RULES[b.type].reserveIncome * (state.expansion ? 12 / 1000 : 1))} / sec`,
                       ),
                     ]
                   : []),
@@ -790,7 +796,7 @@ export class HudViewModel {
                   (s) => !["Reserve income", "Gold income"].includes(s.label),
                 ),
               ]
-            : buildingCards[b.type].stats,
+            : createBuildingCard(b.type,state.expansion?12/1000:1).stats,
         status: remaining
           ? `${Math.ceil(remaining / TICKS_PER_SECOND)} sec until ${stack.length > 1 ? "all copies are ready" : "ready"}`
           : "Ready",
@@ -814,7 +820,7 @@ export class HudViewModel {
                   ? [
                       stat(
                         "Reserve income",
-                        `+${stack.filter((b) => !b.remainingTicks).reduce((sum, b) => sum + cityReserveIncome(b.age ?? "StoneAge"), 0)} / sec`,
+                        `+${stack.filter((b) => !b.remainingTicks).reduce((sum, b) => sum + cityReserveIncome(b.age ?? "StoneAge"), 0) * (state.expansion ? 12 / 1000 : 1)} / sec`,
                       ),
                     ]
                   : b.type === "factory"

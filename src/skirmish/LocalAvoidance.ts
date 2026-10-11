@@ -1,3 +1,4 @@
+import { MOTION } from "./content/TacticalRules";
 import type { GameMap } from "../core/game/GameMap";
 import { CrowdRecovery } from "./CrowdRecovery";
 import { CrowdVelocity } from "./CrowdVelocity";
@@ -152,13 +153,14 @@ export class LocalAvoidance {
     restrictions?: (squad: Squad, end: WorldPoint) => boolean,
     idleReason?: (squad: Squad) => MovementBlockReason,
   ): void {
+    const fallback=new Set<number>();
     const allowed = (squad: Squad, end: WorldPoint) => {
       const intent = this.motion.get(squad.id)?.intent;
       if (intent?.movementHeading !== undefined) {
         const dx = end.x - squad.x, dy = end.y - squad.y, length = Math.hypot(dx, dy);
         if (length > intent.speed + 1) return false;
         if (length > 1 && (-Math.sin(intent.movementHeading) * dx + Math.cos(intent.movementHeading) * dy) / length
-          < Math.cos(FORMATION_MOTION.steeringCone)) return false;
+          < Math.cos(fallback.has(squad.id)?MOTION.fallbackCone:FORMATION_MOTION.steeringCone)-1e-9) return false;
       }
       return traversable(this.map, squad, end, squadRadius(squad.kind), this.amphibious(squad.playerId)) &&
         (!restrictions || restrictions(squad, end));
@@ -422,9 +424,12 @@ export class LocalAvoidance {
       let bestX = 0,
         bestY = 0,
         bestScore = Infinity;
-      for (const fraction of [1, 0.5, 0]) {
+      for(let pass=0;pass<2;pass++){
+      if(pass){if(bestX||bestY||row.intent?.movementHeading===undefined)break;fallback.add(squad.id);bestScore=Infinity;}
+      for (const fraction of pass?[0.5]:[1, 0.5, 0]) {
         for (const turn of TURNS) {
           if (!fraction && turn !== TURNS[0]) continue;
+          if(pass && turn.cos < -1e-9)continue;
           const vx = Math.round(
               (desired.x * turn.cos - desired.y * turn.sin) * fraction,
             ),
@@ -471,6 +476,7 @@ export class LocalAvoidance {
             bestScore = score;
           }
         }
+      }
       }
       if (!bestX && !bestY) recordConstraints();
       row.proposed.x = bestX;

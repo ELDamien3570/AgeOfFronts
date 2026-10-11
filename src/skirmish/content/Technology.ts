@@ -6,7 +6,8 @@ import {
   type Tree,
 } from "../domain/Definitions";
 import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
-export const TECHNOLOGIES = RUSSIAN_RECRUITMENT.technologies as Technology[];
+import { CAPACITY_TECHNOLOGIES } from './FormationRecipes';
+export const TECHNOLOGIES = [...RUSSIAN_RECRUITMENT.technologies,...CAPACITY_TECHNOLOGIES] as Technology[];
 export function canonicalTechnologyId(id: string): string {
   return (RUSSIAN_RECRUITMENT.aliases as Record<string, string>)[id] ?? id;
 }
@@ -37,7 +38,7 @@ export const ADVANCES = [
   { gold: 120_000, ticks: 1700 },
 ] as const;
 export function treeWorkload(age: Age, tree: Tree): number {
-  return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree).length;
+  return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree && !t.optional).length;
 }
 export function validateTechnologies(): void {
   if (TECHNOLOGY.size !== TECHNOLOGIES.length)
@@ -62,7 +63,7 @@ export function validateTechnologies(): void {
   for (const age of AGES)
     for (const tree of TREES) {
       const nodes = TECHNOLOGIES.filter(
-        (t) => t.age === age && t.tree === tree,
+        (t) => t.age === age && t.tree === tree && !t.optional,
       );
       const count = nodes.length;
       if (
@@ -73,5 +74,6 @@ export function validateTechnologies(): void {
         throw new Error("Invalid tree workload");
       for (const t of nodes) visit(t.id);
     }
+  for(const t of TECHNOLOGIES.filter(t=>t.optional))visit(t.id);
 }
 validateTechnologies();

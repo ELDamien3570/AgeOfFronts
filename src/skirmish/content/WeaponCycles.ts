@@ -2,7 +2,8 @@ import type { UnitDefinition } from "../domain/Definitions";
 
 /** Compiled squad-level weapon timing. Renderers observe this state; clips never
  * trigger damage. Reloads survive order changes and target loss. */
-export function weaponCycle(unit: Pick<UnitDefinition, "age" | "troopClass">) {
+export function weaponCycle(unit: Pick<UnitDefinition, "age" | "troopClass" | "rangedAttack">) {
+  if (unit.rangedAttack) return { interval:1200/unit.rangedAttack.rpm!, reload:Math.ceil(unit.rangedAttack.reloadMs!/50), rounds:unit.rangedAttack.shotsPerReload! };
   const cls = unit.troopClass;
   const gun =
     unit.age === "Napoleonic" &&

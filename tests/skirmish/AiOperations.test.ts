@@ -175,7 +175,7 @@ describe("optional AI strategic operations", () => {
     const f = fixture(), a = f.m.squads.find(s => s.playerId === 2)!, b = f.m.squads.find(s => s.playerId === 3)!;
     const damage = new DamageLedger(); damage.add(a.id, 1, 10); damage.add(a.id, 4, 10);
     f.m.resolveLandDamage(damage);
-    expect(a.troops).toBe(980); expect(b.troops).toBe(1000);
+    expect(a.troops).toBe(12); expect(a.manpower!.wounds).toBe(20000); expect(b.troops).toBe(12);
     expect(f.ops.state(3)).toBeUndefined(); expect(f.ops.canTarget(2, 1)).toBe(true); expect(f.ops.canTarget(2, 4)).toBe(true);
     const tile = f.m.tileOf(a);
     expect(f.ops.canEnter(2, 1, tile)).toBe(true);

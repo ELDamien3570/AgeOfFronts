@@ -1,5 +1,5 @@
+import { MOTION } from "./content/TacticalRules";
 import {
-  FORMATION_MOVEMENT,
   formationMovementProfile,
 } from "./FormationMovementProfile";
 import type { MovementIntent } from "./LocalAvoidance";
@@ -13,14 +13,7 @@ export interface FormationMotion {
   /** Fixed world units per simulation tick, after collision admission. */
   speed: number;
 }
-export const FORMATION_MOTION = {
-  turnRate: FORMATION_MOVEMENT.foot.squadTurnRate / TICKS_PER_SECOND,
-  prepareTicks: 4 * TICKS_PER_SECOND,
-  pivotThreshold: Math.PI / 9,
-  launchAlignment: Math.PI / 15,
-  chargeAlignment: Math.PI / 15,
-  steeringCone: Math.PI / 7,
-} as const;
+export const FORMATION_MOTION = MOTION;
 export const headingDifference = (a: number, b: number) =>
   Math.atan2(Math.sin(b - a), Math.cos(b - a));
 export const pointHeading = (from: WorldPoint, to: WorldPoint) =>
@@ -44,7 +37,7 @@ export function formationLocomotion(
   let speed = previous?.speed ?? 0;
   const preparing = squad.charge?.phase === "preparing";
   const engagedHold =
-    squad.fighting && squad.order.type !== "move" && !squad.charge;
+    squad.fighting && !intent && !squad.charge;
   const goal = preparing
     ? squad.charge!
     : engagedHold
@@ -57,8 +50,8 @@ export function formationLocomotion(
           (intent?.stopDistance ?? 0),
       )
     : 0;
-  if (goal && remaining > 0.5) targetHeading = pointHeading(squad, goal);
-  else if (!goal)
+  if (goal && (intent?.passThrough || remaining > MOTION.arrivalDeadband || speed > Math.max(2,maximum*.1))) targetHeading = pointHeading(squad, goal);
+  else if (!goal || remaining <= MOTION.arrivalDeadband)
     targetHeading =
       squad.order.type === "hold" && squad.order.facing !== undefined
         ? squad.order.facing
@@ -135,8 +128,12 @@ export function formationLocomotion(
       speed = remaining;
     }
     if (squad.refit || squad.afloat) nextX = nextY = speed = 0;
-    if (speed > 0.001)
-      heading = normalize(Math.atan2(nextY, nextX) - Math.PI / 2);
+    if (speed >= brake) heading = normalize(Math.atan2(nextY,nextX)-Math.PI/2);
+    else heading=normalize(heading+Math.max(-profile.reformTurnRate/TICKS_PER_SECOND,Math.min(profile.reformTurnRate/TICKS_PER_SECOND,headingDifference(heading,targetHeading))));
+    if(goal && !squad.refit && !squad.afloat && !intent?.passThrough && remaining<=MOTION.arrivalDeadband && speed<=brake){
+      const length=Math.hypot(goal.x-squad.x,goal.y-squad.y),travel=Math.min(brake,length);
+      nextX=length?(goal.x-squad.x)*travel/length:0;nextY=length?(goal.y-squad.y)*travel/length:0;speed=travel;
+    }
     const velocity = { x: Math.round(nextX) || 0, y: Math.round(nextY) || 0 };
     return {
       motion: { heading, targetHeading: normalize(targetHeading), speed },
@@ -149,7 +146,7 @@ export function formationLocomotion(
           y: squad.y + velocity.y,
         },
         preferredVelocity: velocity,
-        movementHeading: heading,
+        movementHeading: remaining<=MOTION.arrivalDeadband && !intent?.passThrough ? undefined:heading,
       },
     };
   }
@@ -194,6 +191,8 @@ export function formationLocomotion(
     x: Math.round(-Math.sin(heading) * travel) || 0,
     y: Math.round(Math.cos(heading) * travel) || 0,
   };
+  const tail=goal && !squad.refit && !squad.afloat && !preparing && !squad.charge && !engagedHold && remaining<=MOTION.arrivalDeadband && speed<=brake;
+  if(tail){const length=Math.hypot(goal!.x-squad.x,goal!.y-squad.y),step=Math.min(brake,length);velocity.x=length?Math.round((goal!.x-squad.x)*step/length):0;velocity.y=length?Math.round((goal!.y-squad.y)*step/length):0;speed=step;}
   return {
     motion: { heading, targetHeading: normalize(targetHeading), speed },
     intent: {
@@ -205,7 +204,7 @@ export function formationLocomotion(
         y: squad.y + velocity.y,
       },
       preferredVelocity: velocity,
-      movementHeading: heading,
+      movementHeading: tail?undefined:heading,
     },
   };
 }

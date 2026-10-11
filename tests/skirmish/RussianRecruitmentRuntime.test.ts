@@ -38,7 +38,7 @@ describe("all Russian troop recruitment in normal skirmish", () => {
         e = m.expansion!,
         state = e.progression.states[p.id];
       state.age = u.age;
-      state.completed = TECHNOLOGIES.filter((t) => t.id !== u.technologyId).map(
+      state.completed = TECHNOLOGIES.filter((t) => !t.optional && t.id !== u.technologyId).map(
         (t) => t.id,
       );
       p.gold = 1000000;
@@ -82,7 +82,7 @@ describe("all Russian troop recruitment in normal skirmish", () => {
       expect(vm.recruitment(u.line).enabled).toBe(true);
       expect(m.applyCommand(cmd)).toBeNull();
       expect(p.gold).toBe(1000000 - u.cost.gold!);
-      expect(p.reserves).toBe(99000);
+      expect(p.reserves).toBe(100000-u.cost.reserves!);
       expect(m.recruitment.jobs[0]).toMatchObject({
         definitionId: u.id,
         totalTicks: u.trainingSeconds! * 20,

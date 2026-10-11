@@ -1,9 +1,10 @@
+import { formationEnvelope } from "./domain/FormationGeometry";
 import { FIXED, type Ship, type Squad } from "./Protocol";
 import { SpatialGrid } from "./SpatialGrid";
 import type { UnitQueries } from "./UnitIndex";
 
 export type SpatialQueries<T extends { x: number; y: number }> = Readonly<
-  Pick<SpatialGrid<T>, "query" | "mayContain" | "sample">
+  Pick<SpatialGrid<T>, "query" | "queryOverlaps" | "mayContain" | "sample">
 >;
 export type SpatialPhase = "combat" | "trade" | "projectiles";
 export interface PhaseSpatialFacts {
@@ -46,6 +47,7 @@ export class PhaseSpatialViews {
         height * FIXED,
         4 * FIXED,
         (row) => row.playerId,
+        (row)=>"troops" in row && row.formation ? formationEnvelope(row,this.world.tick).broadRadius : 0,
       ),
       revision: -1,
     });

@@ -1,3 +1,4 @@
+import { readyFraction } from './Manpower';
 import { researchRejection, advanceRejection, progressionRaceStarted } from "./Progression";
 import { TECHNOLOGY } from "../content/Technology";
 import { researchUtility } from "./AiResearchUtility";
@@ -316,7 +317,7 @@ export class AiEconomicDirector {
       Math.min(
         8,
         Math.ceil(
-          this.losses.sample(player.id, world.tick, player.losses) / 1000,
+          this.losses.sample(player.id, world.tick, player.losses) / 12,
         ),
       ),
       this.ledger.protected(player.id).items??{},
@@ -488,7 +489,7 @@ export class AiEconomicDirector {
       if (world.map.euclideanDistSquared(world.tileOf(squad),city.tile)>6**2 && !(squad.order.type==="move" && world.map.euclideanDistSquared(squad.order.tile,city.tile)<=6**2)) {
         const tile=world.ownedLandNearest(player.id,city.tile,16).find(t=>world.paths.walkable(t));
         if (tile!==undefined) world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"move",tile,x:(world.map.x(tile)+0.5)*FIXED,y:(world.map.y(tile)+0.5)*FIXED}});
-      } else if (squad.troops<900 && squad.order.type!=="replenish" && world.owners[world.tileOf(squad)]===player.id && player.reserves>=1000-squad.troops)
+      } else if (readyFraction(squad)<.9 && squad.order.type!=="replenish" && world.owners[world.tileOf(squad)]===player.id && player.reserves>=(squad.manpower?.capacity??1000)-squad.troops)
         world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"replenish"}});
     }
     this.assets.retain(controller,selected);

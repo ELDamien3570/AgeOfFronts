@@ -1,3 +1,4 @@
+import { soldierWeaponStats } from "../WeaponStats";
 import { TECHNOLOGIES, TECHNOLOGY } from "../../content/Technology";
 import { UNITS } from "../../content/Units";
 import { supplyItemName } from "../../content/Equipment";
@@ -59,12 +60,16 @@ export class TroopCatalogViewModel {
       role: unit.role,
       selected: this.compared.has(id),
       stats: [
+        ['Soldiers / base recipe',unit.formationRecipe!.model==='soldiers'?String(unit.formationRecipe!.capacity):'Vehicle / support'],
+        ['Health per soldier',unit.formationRecipe!.model==='soldiers'?String(unit.formationRecipe!.soldierHp):'Hull'],
+        ['Larger recipe',String(unit.formationRecipe!.enlargedCapacity)],
         ["Gold", String(unit.cost.gold ?? 0)],
         ["Reserves", String(unit.cost.reserves ?? 0)],
+        ...soldierWeaponStats(unit,XP_THRESHOLDS[this.level - 1] ?? 0).filter(()=>!!unit.meleeAttack),
         ["Damage / attack", `${attack.damage} ${attack.channel}`],
-        ["Reload", `${attack.reloadTicks / TICKS_PER_SECOND}s`],
+        [unit.meleeAttack ? "Shot cadence" : "Reload", `${attack.reloadTicks / TICKS_PER_SECOND}s`],
         [
-          "Moving reload",
+          unit.meleeAttack ? "Moving cadence" : "Moving reload",
           `${(attack.reloadTicks * attack.movingReloadPercent) / (100 * TICKS_PER_SECOND)}s`,
         ],
         ["Range", `${attack.range / FIXED} cells`],
@@ -126,7 +131,7 @@ export class TroopCatalogViewModel {
           ? [
               [
                 "Charge",
-                `${unit.charge.damage} damage · ${unit.charge.cooldownTicks / TICKS_PER_SECOND}s cooldown`,
+                `${unit.meleeAttack ? `${unit.chargeMultiplier}× melee` : `${unit.charge.damage} damage`} · ${unit.charge.cooldownTicks / TICKS_PER_SECOND}s cooldown`,
               ],
               ["Charge speed", `${unit.charge.speedPercent}%`],
               ["Charge radius", `${unit.charge.radius / FIXED} cells`],

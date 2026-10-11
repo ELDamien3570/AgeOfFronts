@@ -1,3 +1,7 @@
+import { certifyFootprint, formationFootprint } from "../domain/FormationContact";
+import { facingOf } from "../domain/FormationGeometry";
+import { TERRAIN } from "../content/TacticalRules";
+import { layoutBattleLine } from "../domain/BattleLineLayout";
 import { installTroopPresentation } from "./troops/TroopPresentation";
 import { FORMATION_MOVEMENT } from "../content/FormationMovement";
 import { isProceduralMap } from "../ProceduralMaps";
@@ -117,7 +121,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
       .join(
         "",
-      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${STARTING_AGES.map(a => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${startingAgeName(a)}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button><button id="controls-toggle" type="button" aria-expanded="false">Controls</button></div>
+      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option><option value="2000">2000 cells · procedural maps only</option></select></label><label>Starting age<select id="starting-age">${STARTING_AGES.map(a => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${startingAgeName(a)}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button><button id="controls-toggle" type="button" aria-expanded="false">Controls</button></div>
 
     <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD</button><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button></div>
 
@@ -180,7 +184,7 @@ const canvas = element<HTMLCanvasElement>("battlefield");
 const campLoss = new CampLossPresentation();
 
 const renderer = new Renderer(canvas, campLoss);
-const localPresentation = localProfile?.install(renderer) ?? installTroopPresentation(renderer);
+const localPresentation = localProfile?.install(renderer) ?? installTroopPresentation(renderer, command);
 const formationDrawing = localProfile?.formationDrawing ?? true;
 
 // Ground style is a per-browser preference: animated or still water on the
@@ -451,6 +455,8 @@ async function start(): Promise<void> {
 
   try {
     const mapId = element<HTMLSelectElement>("map").value;
+    if (element<HTMLSelectElement>("world-size").value === "2000" && !isProceduralMap(mapId))
+      element<HTMLSelectElement>("world-size").value = "1000";
 
     const requestedSeed = (onlineQuery.has("diagnostics") || isProceduralMap(mapId)) && onlineQuery.has("seed")
       ? Number(onlineQuery.get("seed")) : NaN;
@@ -1360,8 +1366,7 @@ function drawnDeployment(
   );
   if (!members.length || members.length !== renderer.selected.size)
     return undefined;
-  const line = deploymentLine(
-    members.map((s) => {
+  const lineMembers = members.map((s) => {
       const last = s.queuedOrders[s.queuedOrders.length - 1] ?? s.order;
       const origin =
         append && last.type === "move"
@@ -1372,19 +1377,20 @@ function drawnDeployment(
                 (Math.floor(last.tile / snapshot!.width) + 0.5) * FIXED,
             }
           : { x: s.x, y: s.y };
-      return { id: s.id, origin };
-    }),
-    {
-      start,
-      end: { x: Math.round(end.x * FIXED), y: Math.round(end.y * FIXED) },
-    },
-  );
+      return { id: s.id, origin, squad:s };
+    });
+  const gesture={start,end:{x:Math.round(end.x*FIXED),y:Math.round(end.y*FIXED)}};
+  const line=snapshot.expansion?layoutBattleLine(lineMembers,gesture):deploymentLine(lineMembers,gesture);
   if (!line) return undefined;
-  const valid = [...line.slots.values()].every((point) => {
+  const walls=new Set(snapshot.expansion?.barriers.filter(w=>w.kind!=="trench"&&w.health>0&&w.remainingTicks===0).flatMap(w=>w.tiles)??[]);
+  const tactical="layouts" in line?line as import("../domain/BattleLineLayout").BattleLineDeployment:undefined;
+  const valid = [...line.slots.entries()].every(([id,point]) => {
     const x = Math.floor(point.x / FIXED),
       y = Math.floor(point.y / FIXED),
       map = currentMap!.map;
-    return map.isValidCoord(x, y) && map.isLand(map.ref(x, y));
+    if(!map.isValidCoord(x,y)||!map.isLand(map.ref(x,y)))return false;
+    if(tactical){const squad=members.find(s=>s.id===id)!,plan=tactical.layouts.get(id)!;return certifyFootprint(map,formationFootprint({...squad,...point,formation:{...squad.formation!,shape:plan.shape,frontage:plan.frontage,facing:facingOf(line.facing),transition:undefined,trail:undefined}},snapshot!.tick),tile=>walls.has(tile),true);}
+    return true;
   });
   return { line, valid, ids: members.map((s) => s.id) };
 }
@@ -1473,8 +1479,7 @@ canvas.addEventListener("pointermove", (event) => {
     drag.moved = true;
 
   if (drag.button===2 && drag.moved && drag.lineStart) {
-    const deployment=drawnDeployment(drag.lineStart,renderer.world(p.x,p.y),drag.shift);
-    renderer.deploymentPreview=deployment ? {line:deployment.line,valid:deployment.valid,color:COLORS[localPlayerId]} : undefined;
+    deploymentPreviewPending=true;
   }
   if (drag.button === 1) renderer.pan(p.x - drag.lastX, p.y - drag.lastY);
   else if (drag.button === 0 && drag.moved)
@@ -2004,6 +2009,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+let deploymentPreviewPending=false,previewTick=-1;
 let previousFrame: number | undefined;
 let nextClientDiagnosticsAt = 0;
 function frame(now: number): void {
@@ -2017,6 +2023,7 @@ function frame(now: number): void {
   }
   const pan = cameraPan.step(now);
   if (pan.x || pan.y) renderer.pan(pan.x, pan.y);
+  if(drag?.button===2&&drag.moved&&drag.lineStart&&(deploymentPreviewPending||previewTick!==snapshot?.tick)){const deployment=drawnDeployment(drag.lineStart,renderer.world(drag.lastX,drag.lastY),drag.shift);renderer.deploymentPreview=deployment?{line:deployment.line,valid:deployment.valid,color:COLORS[localPlayerId]}:undefined;deploymentPreviewPending=false;previewTick=snapshot?.tick??-1;}
   localPresentation?.beginFrame(now, speed, paused);
   if (renderer.draw(now, speed, paused)) {
     updateCampLossLabels(now);
@@ -2044,7 +2051,7 @@ const launchMap = new URLSearchParams(window.location.search).get("map");
 if (MAPS.some((map) => map.id === launchMap))
   element<HTMLSelectElement>("map").value = launchMap!;
 const launchSize = onlineQuery.get("size");
-if (["250", "500", "1000"].includes(launchSize ?? ""))
+if (["250", "500", "1000", "2000"].includes(launchSize ?? ""))
   element<HTMLSelectElement>("world-size").value = launchSize!;
 
 localProfile?.initializeControls();

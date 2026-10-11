@@ -1,3 +1,4 @@
+import { literalSquadFixture } from "./UnitFixtures";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { buildingCost } from "../../src/skirmish/content/Buildings";
@@ -54,7 +55,7 @@ function fixture(water = false) {
     y = 10,
     owner = player.id,
   ): Squad =>
-    game.addSquad({
+    game.addSquad(literalSquadFixture({
       ...template,
       id: game.allocateId(),
       playerId: owner,
@@ -69,7 +70,7 @@ function fixture(water = false) {
       embarkedOn: null,
       refit: null,
       structureTarget: null,
-    });
+    }));
   const building = (
     owner: number,
     type: "port" | "factory" | "city" | "barracks" | "tower",
@@ -201,7 +202,7 @@ describe("remaining strategic plans", () => {
       armyId: army.id,
       target: 1,
       targetTile: f.map.ref(70, 10),
-      initialTroops: 3000,
+      initialTroops: own.reduce((n,s)=>n+(s.manpower?.model==="hull"?12:s.troops),0),
       reason: "fixture",
       maneuver: {
         enemy: enemy.id,
@@ -667,7 +668,7 @@ describe("supported land breach and recovery ownership", () => {
       armyId: army.id,
       target: 1,
       targetTile: tower.tile,
-      initialTroops: 3000,
+      initialTroops: own.reduce((n,s)=>n+s.troops,0),
       reason: "fixture",
       breach: {
         scan: 81,
@@ -723,7 +724,7 @@ describe("supported land breach and recovery ownership", () => {
       members: own.map((s) => s.id),
       target: 1,
       targetTile: f.map.ref(70, 10),
-      initialTroops: 2000,
+      initialTroops: own.reduce((n,s)=>n+s.troops,0),
       reason: "fixture",
     };
     planner.objectives.set(f.player.id, plan);

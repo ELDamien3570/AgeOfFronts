@@ -42,12 +42,12 @@ describe("opening economy and troop catalogue", () => {
         game.squads
           .filter((s) => s.playerId === p.id)
           .reduce((n, s) => n + s.troops, 0),
-    ).toBe(STARTING_AGE_TROOPS + 3000);
+    ).toBe(Math.floor(STARTING_AGE_TROOPS*12/1000) + 36);
     const before = p.reserves;
     expect(game.buildings.filter(b => b.playerId === p.id && b.type === "city")).toHaveLength(1);
     for (let i = 0; i < 20; i++) game.step();
     expect(p.reserves - before).toBe(
-      baseReserveIncome("StoneAge") + cityReserveIncome("StoneAge"),
+      Math.floor((baseReserveIncome("StoneAge") + cityReserveIncome("StoneAge"))*12/1000),
     );
   });
   it("rejects unaffordable recruitment in both AI choice and the domain without spending reserves", () => {

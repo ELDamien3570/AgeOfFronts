@@ -1,3 +1,4 @@
+import { quoteEnlargement } from '../domain/Enlargement';
 import {
   buildingCost,
   buildingTechnology,
@@ -383,6 +384,10 @@ export class EmpireViewModel {
   }
   /** Legacy inspection API; building upgrades are exclusively research-driven. */
   buildingUpgrade(): ReturnType<typeof quoteBuildingUpgrades> | null { return null; }
+  enlargement(focusedId?:number) {
+    return quoteEnlargement(this.state.squads.filter(s=>this.selection.selected.has(s.id)),focusedId,this.player,this.progression.completed,this.inventory,this.state.owners,this.state.width);
+  }
+  get enlargingIds(){return this.state.squads.filter(s=>s.playerId===this.playerId&&this.selection.selected.has(s.id)&&s.manpower?.enlargement).map(s=>s.id);}
   refit(focusedId?: number) {
     const selected = this.state.squads.filter(
       (s) => s.playerId === this.playerId && this.selection.selected.has(s.id),

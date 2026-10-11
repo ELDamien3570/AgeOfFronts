@@ -50,7 +50,7 @@ export interface MigrationLayout {
 
 /** Geometry owns land/water topology; appearance and resources consume its fields. */
 export function buildMigrationLayout(
-  size: 250 | 500 | 1000,
+  size: 250 | 500 | 1000 | 2000,
   seed: number,
 ): {
   layout: MigrationLayout;

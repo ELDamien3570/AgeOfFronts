@@ -29,10 +29,11 @@ export type Order =
   | { type: "hold"; facing?: number }
   | { type: "replenish" }
   // Formation coordinates are assigned by the domain, never trusted from commands.
-  | { type: "move"; tile: number; x?: number; y?: number; facing?: number }
+  | { type: "move"; tile: number; x?: number; y?: number; facing?: number; formationIntent?: {shape:import("./domain/FormationGeometry").FormationShape;frontage?:number} }
   | { type: "attack"; targetId: number };
 
 export type Command =
+  | { type:"formation";playerId:number;squadIds:number[];shape:import("./domain/FormationGeometry").FormationShape;facing?:number;frontage?:number;shapeLock?:boolean }
   | { type: "create-army"; playerId: number; squadIds: number[] }
   | {
       type: "army-members";
@@ -190,6 +191,8 @@ export type Command =
       tile: number;
       append?: boolean;
     }
+  | { type: 'enlarge'; playerId:number; squadIds:number[]; definitionId:string }
+  | { type: 'cancel-enlarge'; playerId:number; squadIds:number[] }
   | { type: "stop-ships"; playerId: number; shipIds: number[] }
   | {
       type: "order";
@@ -214,6 +217,7 @@ export interface MovementStatus {
 }
 
 export interface Squad {
+  readonly manpower?: Readonly<import('./domain/Manpower').ManpowerState>;
   readonly id: number;
   readonly playerId: number;
   readonly x: number;
@@ -223,6 +227,7 @@ export interface Squad {
   readonly embarkedOn: number | null;
   readonly lastCombatTick: number;
   readonly moved: boolean;
+  readonly formation?: Readonly<import("./domain/FormationGeometry").FormationState>;
   readonly locomotion?: Readonly<import("./FormationLocomotion").FormationMotion>;
   readonly firingCharge: number;
   readonly order: Readonly<Order>;
@@ -238,6 +243,8 @@ export interface Squad {
   readonly xp?: number;
   readonly nextAttackTick?: number;
   readonly lastAttackTick?: number;
+  readonly meleeStrike?: import("./domain/MeleeStrike").MeleeStrike;
+  readonly weaponState?: import("./domain/WeaponTiming").WeaponState;
   readonly magazineShots?: number;
   readonly reloadStartedTick?: number;
   readonly planningPaused?: boolean;
@@ -261,6 +268,7 @@ export interface Afloat {
 }
 
 export interface Player {
+  reserveRemainder?: number;
   id: number;
   name: string;
   /** Optional lobby palette reservation; absent in older matches. */
@@ -459,6 +467,7 @@ export interface Snapshot {
 }
 
 export interface SnapshotPacket {
+  formationRulesVersion?: number;
   /** Versioned transferable presentation records; legacy object details remain readable. */
   details?: import("./SnapshotDetails").PackedSnapshotDetails;
   barrierChanges?: { reset: boolean; rows: NonNullable<Snapshot["expansion"]>["barriers"]; removed: Int32Array;
@@ -489,12 +498,16 @@ export interface SnapshotPacket {
     depositOwners?: Int32Array;
   };
   squadDetails?: {
+    formation?: Squad["formation"];
+    manpower?: Squad['manpower'];
     id: number;
     definitionId?: string;
     xp?: number;
     deploymentTicks?: number;
     lastAttackTick?: number;
+    meleeStrike?: import("./domain/MeleeStrike").MeleeStrike;
     nextAttackTick?: number;
+    weaponState?: import("./domain/WeaponTiming").WeaponState;
     magazineShots?: number;
     reloadStartedTick?: number;
     planningPaused?: boolean;

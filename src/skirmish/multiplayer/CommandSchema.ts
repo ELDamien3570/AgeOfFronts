@@ -1,3 +1,4 @@
+import { FORMATION_SHAPES, TURN } from "../domain/FormationGeometry";
 import { z } from "zod";
 import { AGES } from "../domain/Definitions";
 import { BUILDING_RULES } from "../Rules";
@@ -39,6 +40,7 @@ const armyOrder = z.union([
 ]);
 /** Transport shape validation; domain code still decides ownership, legality and price. */
 export const commandSchema = z.discriminatedUnion("type", [
+  command("formation", {squadIds:ids,shape:z.enum(FORMATION_SHAPES),facing:z.number().int().min(0).max(TURN-1).optional(),frontage:z.number().int().positive().max(128*256).optional(),shapeLock:z.boolean().optional()}),
   command("create-army", { squadIds: ids }),
   command("army-members", {
     armyId: id,
@@ -65,6 +67,8 @@ export const commandSchema = z.discriminatedUnion("type", [
   command("trade-pause", { naval: z.boolean(), paused: z.boolean() }),
   command("trade-block", { otherId: id, blocked: z.boolean(), naval: z.boolean().optional() }),
   command("refit", { squadIds: ids, definitionId: text }),
+  command('enlarge', {squadIds:ids,definitionId:text}),
+  command('cancel-enlarge', {squadIds:ids}),
   command("charge", { squadIds: squadOrderIds, ...point, targetId: id.optional(), fallbackOrder: z.union([
     z.object({type: z.literal("move"), tile: id}).strict(),
     z.object({type: z.literal("attack"), targetId: id}).strict(),

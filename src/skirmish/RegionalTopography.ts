@@ -35,6 +35,8 @@ export function createRegionalTopography(
   size: number,
   seed: number,
   recipe: RegionalTopographyRecipe,
+  /** Pre-authored landforms replace random placement, e.g. per-continent geology. */
+  authored?: readonly Landform[],
 ) {
   if (
     !Number.isInteger(size) ||
@@ -85,14 +87,10 @@ export function createRegionalTopography(
   const random = new PseudoRandom(seed ^ 0x658fc731),
     nx = random.nextInt(-10000, 10000),
     ny = random.nextInt(-10000, 10000),
-    features: Landform[] = [];
-  for (const kind of [
-    "range",
-    "massif",
-    "plateau",
-    "basin",
-    "plain",
-  ] as const) {
+    features: Landform[] = authored ? [...authored] : [];
+  for (const kind of authored
+    ? []
+    : (["range", "massif", "plateau", "basin", "plain"] as const)) {
     const [minimum, maximum] = recipe.counts[kind],
       count = random.nextInt(minimum, maximum + 1);
     for (let i = 0; i < count; i++) {

@@ -330,6 +330,8 @@ export default defineConfig(({ mode }) => {
       // reintroducing the same stray-file problem this is here to fix.
       exclude: [
         ...configDefaults.exclude,
+        "**/.codex/**",
+        "tests/skirmish/**",
         "**/.worktrees/**",
         "**/.claude/worktrees/**",
       ],

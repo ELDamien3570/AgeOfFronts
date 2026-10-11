@@ -34,8 +34,8 @@ export interface FormationSlot {
   scale: number;
   angle?: number;
 }
-export type ManualFormation = "mass" | "line" | "shield-wall" | "square";
-export type FormationShape = ManualFormation | "wedge";
+export type ManualFormation = import("../../domain/FormationGeometry").FormationShape;
+export type FormationShape = ManualFormation;
 
 export function resolveFormation(
   selected: ManualFormation,

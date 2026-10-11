@@ -18,12 +18,16 @@ export class TechnologyViewModel {
   get trees() {
     return TREES.map((tree) => {
       const nodes = this.empire.nodes(this.age).filter((n) => n.tree === tree);
+      const requiredNodes = nodes.filter((n) => !n.optional);
+      const slotRow = (slot: number) => slot <= 1 ? 0 : slot <= 3 ? 1 : slot - 2;
+      const optionalStart = Math.max(...requiredNodes.map((n) => slotRow(n.slot))) + 1;
+      const optionalNodes = nodes.filter((n) => n.optional);
       // The next age's root identifies the main progression endpoint, even
       // when isolated upgrades appear below it. Modern has no successor age.
       const nextAge = AGES[AGES.indexOf(this.age) + 1];
       const successor = TECHNOLOGIES.find(n => n.age === nextAge && n.tree === tree && n.slot === 1);
-      const endpoint = nodes.find(n => successor?.prerequisites.includes(n.id))
-        ?? nodes.reduce((last, n) => n.slot > last.slot ? n : last);
+      const endpoint = requiredNodes.find(n => successor?.prerequisites.includes(n.id))
+        ?? requiredNodes.reduce((last, n) => n.slot > last.slot ? n : last);
       const job = this.empire.progression.research[tree];
       return {
         tree,
@@ -37,10 +41,10 @@ export class TechnologyViewModel {
             : n.researching
               ? `${Math.ceil(job!.remainingTicks / 20)}s remaining`
               : (n.reason ?? "Available"),
-          // Stable catalogue slots determine layout only. Edges use real IDs.
-          row: n.slot <= 1 ? 0 : n.slot <= 3 ? 1 : n.slot - 2,
-          column: n.slot === 3 ? 2 : 1,
-          span: n.slot === 2 || n.slot === 3 ? 1 : 2,
+          // Reserved optional slots do not create gaps in the visible catalogue.
+          row: n.optional ? optionalStart + optionalNodes.indexOf(n) : slotRow(n.slot),
+          column: !n.optional && n.slot === 3 ? 2 : 1,
+          span: !n.optional && (n.slot === 2 || n.slot === 3) ? 1 : 2,
         })),
         completed: nodes.filter((n) => n.completed).length,
         total: nodes.length,

@@ -1,0 +1,591 @@
+{
+  "schemaVersion": 1,
+  "rulesVersion": 7,
+  "recipes": {
+    "stoneage-siege": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "stoneage-archer": {
+      "model": "soldiers",
+      "capacity": 12,
+      "enlargedCapacity": 24,
+      "soldierHp": 80,
+      "reserveCost": 12,
+      "technologyId": "formation-capacity-stoneage"
+    },
+    "stoneage-cavalry": {
+      "model": "soldiers",
+      "capacity": 4,
+      "enlargedCapacity": 6,
+      "soldierHp": 300,
+      "reserveCost": 4,
+      "technologyId": "formation-capacity-stoneage"
+    },
+    "stoneage-infantry": {
+      "model": "soldiers",
+      "capacity": 12,
+      "enlargedCapacity": 24,
+      "soldierHp": 100,
+      "reserveCost": 12,
+      "technologyId": "formation-capacity-stoneage"
+    },
+    "bronzeage-anticavalry": {
+      "model": "soldiers",
+      "capacity": 24,
+      "enlargedCapacity": 48,
+      "soldierHp": 100,
+      "reserveCost": 24,
+      "technologyId": "formation-capacity-bronzeage"
+    },
+    "bronzeage-field-support": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "bronzeage-siege": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "bronzeage-archer": {
+      "model": "soldiers",
+      "capacity": 24,
+      "enlargedCapacity": 48,
+      "soldierHp": 80,
+      "reserveCost": 24,
+      "technologyId": "formation-capacity-bronzeage"
+    },
+    "bronzeage-cavalry": {
+      "model": "soldiers",
+      "capacity": 8,
+      "enlargedCapacity": 12,
+      "soldierHp": 300,
+      "reserveCost": 8,
+      "technologyId": "formation-capacity-bronzeage"
+    },
+    "bronzeage-infantry": {
+      "model": "soldiers",
+      "capacity": 24,
+      "enlargedCapacity": 48,
+      "soldierHp": 100,
+      "reserveCost": 24,
+      "technologyId": "formation-capacity-bronzeage"
+    },
+    "classicalage-anticavalry": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 72,
+      "soldierHp": 100,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-classicalage"
+    },
+    "classicalage-field-support": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "classicalage-rangedcavalry": {
+      "model": "soldiers",
+      "capacity": 9,
+      "enlargedCapacity": 14,
+      "soldierHp": 220,
+      "reserveCost": 9,
+      "technologyId": "formation-capacity-classicalage"
+    },
+    "classicalage-siege": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "classicalage-archer": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 72,
+      "soldierHp": 80,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-classicalage"
+    },
+    "classicalage-cavalry": {
+      "model": "soldiers",
+      "capacity": 12,
+      "enlargedCapacity": 18,
+      "soldierHp": 300,
+      "reserveCost": 12,
+      "technologyId": "formation-capacity-classicalage"
+    },
+    "classicalage-infantry": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 72,
+      "soldierHp": 100,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-classicalage"
+    },
+    "earlymedieval-anticavalry": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 48,
+      "soldierHp": 100,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-earlymedieval"
+    },
+    "earlymedieval-field-support": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "earlymedieval-heavycavalry": {
+      "model": "soldiers",
+      "capacity": 10,
+      "enlargedCapacity": 15,
+      "soldierHp": 450,
+      "reserveCost": 10,
+      "technologyId": "formation-capacity-earlymedieval"
+    },
+    "earlymedieval-rangedcavalry": {
+      "model": "soldiers",
+      "capacity": 12,
+      "enlargedCapacity": 18,
+      "soldierHp": 220,
+      "reserveCost": 12,
+      "technologyId": "formation-capacity-earlymedieval"
+    },
+    "earlymedieval-siege": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "earlymedieval-archer": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 48,
+      "soldierHp": 80,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-earlymedieval"
+    },
+    "earlymedieval-cavalry": {
+      "model": "soldiers",
+      "capacity": 16,
+      "enlargedCapacity": 24,
+      "soldierHp": 300,
+      "reserveCost": 16,
+      "technologyId": "formation-capacity-earlymedieval"
+    },
+    "earlymedieval-infantry": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 48,
+      "soldierHp": 100,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-earlymedieval"
+    },
+    "latemedieval-anticavalry": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 48,
+      "soldierHp": 100,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-latemedieval"
+    },
+    "latemedieval-field-support": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "latemedieval-heavycavalry": {
+      "model": "soldiers",
+      "capacity": 10,
+      "enlargedCapacity": 15,
+      "soldierHp": 450,
+      "reserveCost": 10,
+      "technologyId": "formation-capacity-latemedieval"
+    },
+    "latemedieval-rangedcavalry": {
+      "model": "soldiers",
+      "capacity": 12,
+      "enlargedCapacity": 18,
+      "soldierHp": 220,
+      "reserveCost": 12,
+      "technologyId": "formation-capacity-latemedieval"
+    },
+    "latemedieval-siege": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "latemedieval-archer": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 48,
+      "soldierHp": 80,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-latemedieval"
+    },
+    "latemedieval-cavalry": {
+      "model": "soldiers",
+      "capacity": 16,
+      "enlargedCapacity": 24,
+      "soldierHp": 300,
+      "reserveCost": 16,
+      "technologyId": "formation-capacity-latemedieval"
+    },
+    "latemedieval-infantry": {
+      "model": "soldiers",
+      "capacity": 36,
+      "enlargedCapacity": 48,
+      "soldierHp": 100,
+      "reserveCost": 36,
+      "technologyId": "formation-capacity-latemedieval"
+    },
+    "earlymodern-anticavalry": {
+      "model": "soldiers",
+      "capacity": 48,
+      "enlargedCapacity": 72,
+      "soldierHp": 100,
+      "reserveCost": 48,
+      "technologyId": "formation-capacity-napoleonic"
+    },
+    "earlymodern-heavycavalry": {
+      "model": "soldiers",
+      "capacity": 14,
+      "enlargedCapacity": 21,
+      "soldierHp": 450,
+      "reserveCost": 14,
+      "technologyId": "formation-capacity-napoleonic"
+    },
+    "earlymodern-rangedcavalry": {
+      "model": "soldiers",
+      "capacity": 18,
+      "enlargedCapacity": 27,
+      "soldierHp": 220,
+      "reserveCost": 18,
+      "technologyId": "formation-capacity-napoleonic"
+    },
+    "napoleonic-field-support": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "napoleonic-siege": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "napoleonic-archer": {
+      "model": "soldiers",
+      "capacity": 48,
+      "enlargedCapacity": 72,
+      "soldierHp": 80,
+      "reserveCost": 48,
+      "technologyId": "formation-capacity-napoleonic"
+    },
+    "napoleonic-cavalry": {
+      "model": "soldiers",
+      "capacity": 24,
+      "enlargedCapacity": 36,
+      "soldierHp": 300,
+      "reserveCost": 24,
+      "technologyId": "formation-capacity-napoleonic"
+    },
+    "napoleonic-infantry": {
+      "model": "soldiers",
+      "capacity": 48,
+      "enlargedCapacity": 72,
+      "soldierHp": 100,
+      "reserveCost": 48,
+      "technologyId": "formation-capacity-napoleonic"
+    },
+    "earlymodern-field-support": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "earlymodern-siege": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "modern-anti-air": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "modern-anticavalry": {
+      "model": "soldiers",
+      "capacity": 3,
+      "enlargedCapacity": 4,
+      "soldierHp": 100,
+      "reserveCost": 3,
+      "technologyId": "formation-capacity-earlymodern"
+    },
+    "modern-heavycavalry": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "modern-rangedcavalry": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "earlymodern-archer": {
+      "model": "soldiers",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 80,
+      "reserveCost": 1
+    },
+    "earlymodern-cavalry": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "earlymodern-infantry": {
+      "model": "soldiers",
+      "capacity": 11,
+      "enlargedCapacity": 16,
+      "soldierHp": 100,
+      "reserveCost": 11,
+      "technologyId": "formation-capacity-earlymodern"
+    },
+    "modern-field-support": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "modern-launcher": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "modern-siege": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "present-day-anticavalry": {
+      "model": "soldiers",
+      "capacity": 3,
+      "enlargedCapacity": 4,
+      "soldierHp": 100,
+      "reserveCost": 3,
+      "technologyId": "formation-capacity-modern"
+    },
+    "present-day-heavycavalry": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "present-day-rangedcavalry": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "modern-archer": {
+      "model": "soldiers",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 80,
+      "reserveCost": 1
+    },
+    "modern-cavalry": {
+      "model": "hull",
+      "capacity": 1,
+      "enlargedCapacity": 1,
+      "soldierHp": 1000,
+      "reserveCost": 12
+    },
+    "modern-infantry": {
+      "model": "soldiers",
+      "capacity": 8,
+      "enlargedCapacity": 12,
+      "soldierHp": 100,
+      "reserveCost": 8,
+      "technologyId": "formation-capacity-modern"
+    }
+  },
+  "technologies": [
+    {
+      "id": "formation-capacity-stoneage",
+      "age": "StoneAge",
+      "name": "Larger formations",
+      "tree": "warfare",
+      "slot": 100,
+      "prerequisites": [
+        "rus-stoneage-barracks-equipment"
+      ],
+      "gold": 500,
+      "ticks": 1200,
+      "capabilities": [
+        "formation-capacity"
+      ],
+      "description": "Unlock larger troop recipes and paid enlargement for eligible squads.",
+      "optional": true
+    },
+    {
+      "id": "formation-capacity-bronzeage",
+      "age": "BronzeAge",
+      "name": "Larger formations",
+      "tree": "warfare",
+      "slot": 100,
+      "prerequisites": [
+        "rus-bronzeage-barracks-equipment"
+      ],
+      "gold": 5000,
+      "ticks": 1200,
+      "capabilities": [
+        "formation-capacity"
+      ],
+      "description": "Unlock larger troop recipes and paid enlargement for eligible squads.",
+      "optional": true
+    },
+    {
+      "id": "formation-capacity-classicalage",
+      "age": "ClassicalAge",
+      "name": "Larger formations",
+      "tree": "warfare",
+      "slot": 100,
+      "prerequisites": [
+        "rus-classicalage-barracks-equipment"
+      ],
+      "gold": 8334,
+      "ticks": 1200,
+      "capabilities": [
+        "formation-capacity"
+      ],
+      "description": "Unlock larger troop recipes and paid enlargement for eligible squads.",
+      "optional": true
+    },
+    {
+      "id": "formation-capacity-earlymedieval",
+      "age": "EarlyMedieval",
+      "name": "Larger formations",
+      "tree": "warfare",
+      "slot": 100,
+      "prerequisites": [
+        "rus-earlymedieval-barracks-equipment"
+      ],
+      "gold": 13334,
+      "ticks": 1200,
+      "capabilities": [
+        "formation-capacity"
+      ],
+      "description": "Unlock larger troop recipes and paid enlargement for eligible squads.",
+      "optional": true
+    },
+    {
+      "id": "formation-capacity-latemedieval",
+      "age": "LateMedieval",
+      "name": "Larger formations",
+      "tree": "warfare",
+      "slot": 100,
+      "prerequisites": [
+        "rus-latemedieval-barracks-equipment"
+      ],
+      "gold": 20000,
+      "ticks": 1200,
+      "capabilities": [
+        "formation-capacity"
+      ],
+      "description": "Unlock larger troop recipes and paid enlargement for eligible squads.",
+      "optional": true
+    },
+    {
+      "id": "formation-capacity-napoleonic",
+      "age": "Napoleonic",
+      "name": "Larger formations",
+      "tree": "warfare",
+      "slot": 100,
+      "prerequisites": [
+        "rus-napoleonic-barracks-equipment"
+      ],
+      "gold": 29168,
+      "ticks": 1200,
+      "capabilities": [
+        "formation-capacity"
+      ],
+      "description": "Unlock larger troop recipes and paid enlargement for eligible squads.",
+      "optional": true
+    },
+    {
+      "id": "formation-capacity-earlymodern",
+      "age": "EarlyModern",
+      "name": "Larger formations",
+      "tree": "warfare",
+      "slot": 100,
+      "prerequisites": [
+        "rus-earlymodern-barracks-equipment"
+      ],
+      "gold": 41668,
+      "ticks": 1200,
+      "capabilities": [
+        "formation-capacity"
+      ],
+      "description": "Unlock larger troop recipes and paid enlargement for eligible squads.",
+      "optional": true
+    },
+    {
+      "id": "formation-capacity-modern",
+      "age": "Modern",
+      "name": "Larger formations",
+      "tree": "warfare",
+      "slot": 100,
+      "prerequisites": [
+        "rus-modern-barracks-equipment"
+      ],
+      "gold": 52085,
+      "ticks": 1425,
+      "capabilities": [
+        "formation-capacity"
+      ],
+      "description": "Unlock larger troop recipes and paid enlargement for eligible squads.",
+      "optional": true
+    }
+  ]
+}

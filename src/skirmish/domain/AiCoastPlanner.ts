@@ -1,3 +1,4 @@
+import { readyFraction } from './Manpower';
 import { buildingGroundBounds, buildingFootprint } from "../BuildingFootprint";
 import { buildingCost, buildingTechnology } from "../content/Buildings";
 import { FIXED, type Player } from "../Protocol";
@@ -300,7 +301,7 @@ export class AiCoastPlanner {
           .byOwner(player.id)
           .filter(
             (s) =>
-              s.troops >= 700 &&
+              readyFraction(s) >= .7 &&
               !s.fighting &&
               !s.refit &&
               !s.structureTarget &&

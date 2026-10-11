@@ -10,6 +10,11 @@ interface Facts {
   alive: boolean;
   carrier: number | null;
   ordinal: number;
+  troops?:number;
+  capacity?:number;
+  variant?:string;
+  formation?:Squad["formation"];
+  chargePhase?:string;
 }
 class Bucket<T extends Unit> {
   readonly rows: T[] = [];
@@ -100,6 +105,7 @@ export class UnitIndex<T extends Unit> {
       alive: "troops" in record ? record.troops > 0 : record.health > 0,
       carrier: "embarkedOn" in record ? record.embarkedOn : null,
       ordinal,
+      ...("troops" in record ? {troops:record.troops,capacity:record.manpower?.capacity,variant:record.manpower?.variant,formation:record.formation,chargePhase:record.charge?.phase}:{}),
     };
   }
   private key(owner: number, value: string | undefined): string {
@@ -151,8 +157,9 @@ export class UnitIndex<T extends Unit> {
       throw new Error("Unowned unit change");
     const alive = "troops" in record ? record.troops > 0 : record.health > 0;
     const carrier = "embarkedOn" in record ? record.embarkedOn : null;
+    const geometryChanged = "troops" in record && (before.troops!==record.troops || before.capacity!==record.manpower?.capacity || before.variant!==record.manpower?.variant || before.formation!==record.formation || before.chargePhase!==record.charge?.phase);
     if (before.x !== record.x || before.y !== record.y || before.owner !== record.playerId ||
-      before.kind !== record.kind || before.alive !== alive || before.carrier !== carrier)
+      before.kind !== record.kind || before.alive !== alive || before.carrier !== carrier || geometryChanged || before.definition!==record.definitionId)
       this.spatialRevision++;
     const after = before.owner !== record.playerId || before.kind !== record.kind ||
       before.definition !== record.definitionId || before.alive !== alive || before.carrier !== carrier
@@ -176,6 +183,7 @@ export class UnitIndex<T extends Unit> {
       this.cargoRevision++;
     }
     this.facts.set(record.id, after);
+    if("troops" in record){after.troops=record.troops;after.capacity=record.manpower?.capacity;after.variant=record.manpower?.variant;after.formation=record.formation;after.chargePhase=record.charge?.phase;}
     after.x = record.x;
     after.y = record.y;
     this.dynamicRevision++;

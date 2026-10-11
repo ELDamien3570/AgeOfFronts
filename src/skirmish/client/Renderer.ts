@@ -1,3 +1,10 @@
+import type { BattleLineDeployment } from "../domain/BattleLineLayout";
+import { formationFootprint } from "../domain/FormationContact";
+import { facingOf } from "../domain/FormationGeometry";
+import { FormationAngleSamples } from "./FormationAngleSamples";
+import { formationRenderPose, formationPoseContains, type FormationRenderPose } from "./FormationRenderPose";
+import { formationEnvelope, geometryKey } from "../domain/FormationGeometry";
+import { strengthFraction, legacyWeaponStrength } from '../domain/Manpower';
 
 import type { GameMap } from "../../core/game/GameMap";
 import { buildingFootprint, buildingGroundBounds } from "../BuildingFootprint";
@@ -88,7 +95,7 @@ const SELECTED_UNIT_COLOR = "#c4ff36";
 export class Renderer {
   groundElevationAt: (x: number, y: number) => number = () => 0;
   /** Optional client artwork pass; returning true replaces only this squad's artwork. */
-  squadArtworkOverride?: (ctx: CanvasRenderingContext2D, squad: Snapshot["squads"][number], position: { x: number; y: number }, angle: number, tileSize: number, visualTick: number, worldPosition: { x: number; y: number }) => boolean;
+  squadArtworkOverride?: (ctx: CanvasRenderingContext2D, squad: Snapshot["squads"][number], position: { x: number; y: number }, angle: number, tileSize: number, visualTick: number, worldPosition: { x: number; y: number }, formationPose?: FormationRenderPose) => boolean;
   squadProjectileArtwork?: (ctx: CanvasRenderingContext2D, projectile: import("../domain/Definitions").Projectile, tick: number, tileSize: number,
     project: (x: number, y: number) => { x: number; y: number }) => boolean;
   /** True: individual art, false: formation icon, undefined: normal unit artwork. */
@@ -103,6 +110,7 @@ export class Renderer {
   hoveredAircraftId: number | null = null;
   /** When set, collect all squad overrides before flushing globally sorted sprites. */
   squadArtworkFlush?: (ctx: CanvasRenderingContext2D) => void;
+  private readonly formationPoses = new Map<number,FormationRenderPose>();
   private readonly healthLoss = new HealthLossTrail();
   private readonly deferredSquadArtwork = new Set<number>();
   /** Optional individual-soldier volley pass; true suppresses the legacy emitters. */
@@ -183,6 +191,7 @@ export class Renderer {
   private resources?: ResourceViewModel;
   private occupiedBuildingTiles = new Set<number>();
   private readonly buildingFacts = new BuildingFacts();
+  private readonly formationAngles = new FormationAngleSamples();
   private readonly squadSamples = new RenderSamples<Snapshot["squads"][number]>();
   private receivedAt = 0;
   // Smoothed real time between snapshots. Interpolating over this, not over the
@@ -330,6 +339,7 @@ export class Renderer {
     this.resources = undefined;
     this.receivedAt = 0;
     this.squadSamples.clear();
+    this.formationAngles.clear();
     this.presentation.reset();
     this.boats.reset();
     this.impacts.reset();
@@ -368,11 +378,12 @@ export class Renderer {
     // Each glide covers the server time its tick span represents.
     const arrivedAt = performance.now(),
       spanTicks = this.snapshot ? Math.max(1, snapshot.tick - this.snapshot.tick) : 1;
+    this.formationAngles.update(snapshot.squads,snapshot.tick,this.squadSamples.progress(arrivedAt));
     this.squadSamples.update(snapshot.squads, snapshot.tick, arrivedAt,
       Math.min(600, Math.max(50, (spanTicks * 50) / Math.max(1, this.drawSpeed))));
     this.combatMarkers = combatTargets(snapshot);
     this.snapshot = snapshot;
-    this.healthLoss.update(snapshot.squads.map(s => ({id:s.id,strength:s.afloat ? s.afloat.hull/s.afloat.maxHull : s.troops/1000})),snapshot.tick);
+    this.healthLoss.update(snapshot.squads.map(s => ({id:s.id,strength:s.afloat ? s.afloat.hull/s.afloat.maxHull : strengthFraction(s)})),snapshot.tick);
     this.buildingGuns.update(snapshot.buildings, snapshot.volleys, snapshot.tick);
     this.aircraftArtworkIds.clear();
     if (snapshot.expansion?.aircraft.length) {
@@ -595,9 +606,10 @@ export class Renderer {
       }
       const p = this.screen(squad.x / FIXED, squad.y / FIXED);
       const d = (p.x - x) ** 2 + (p.y - y) ** 2;
+      if(squad.formation && !squad.afloat){const pose=this.currentFormationPose(squad);if(formationPoseContains(pose,world)&&d<distance){best=squad;distance=d;}}
       const { hitRadius } = squadSymbol(
         this.scale,
-        squad.troops,
+        legacyWeaponStrength(squad),
         this.squadArtworkDetailed?.(squad, this.scale) === false ? false : !!(squad.definitionId
           ? this.eraArtwork.get(squad.definitionId)
           : this.artwork.get(squad.kind)),
@@ -620,11 +632,16 @@ export class Renderer {
     const a = this.world(Math.min(x1,x2), Math.min(y1,y2));
     const b = this.world(Math.max(x1,x2), Math.max(y1,y2));
     if (this.squadArtworkIntersectsBox?.(squad, {x1:a.x,y1:a.y,x2:b.x,y2:b.y})) return true;
+    if(squad.formation && !squad.afloat){const bounds=this.currentFormationPose(squad).bounds;if(bounds.right>=a.x&&bounds.left<=b.x&&bounds.bottom>=a.y&&bounds.top<=b.y)return true;}
     const p = this.screen(squad.x / FIXED, squad.y / FIXED);
     return ( p.x >= Math.min(x1,x2) && p.x <= Math.max(x1,x2) && p.y >= Math.min(y1,y2) && p.y <= Math.max(y1,y2)
     );
   }
 
+  private currentFormationPose(squad:Snapshot["squads"][number]):FormationRenderPose {
+    const cached=this.formationPoses.get(squad.id);
+    return cached?.geometry.revision===geometryKey(squad)?cached:formationRenderPose(squad,this.snapshot?.tick??0);
+  }
   private spriteSize(troops: number): number {
     return squadSpriteSize(this.scale, troops);
   }
@@ -640,7 +657,7 @@ export class Renderer {
             this.screen(s.x / FIXED, s.y / FIXED),
             squadSymbol(
               this.scale,
-              s.troops,
+              legacyWeaponStrength(s),
               !!(s.definitionId
                 ? this.eraArtwork.get(s.definitionId)
                 : this.artwork.get(s.kind)),
@@ -1181,8 +1198,8 @@ export class Renderer {
         ctx.lineWidth = 4;
         ctx.strokeStyle = "#10212bcc";
         ctx.fillStyle = "#eaf0ec";
-        ctx.strokeText(`${player.name} Â· camp lost`, p.x, p.y - 16);
-        ctx.fillText(`${player.name} Â· camp lost`, p.x, p.y - 16);
+        ctx.strokeText(`${player.name} · camp lost`, p.x, p.y - 16);
+        ctx.fillText(`${player.name} · camp lost`, p.x, p.y - 16);
         ctx.restore();
       }
     }
@@ -1270,7 +1287,7 @@ export class Renderer {
       if (count > 1) {
         ctx.font = "bold 10px system-ui";
         ctx.textAlign = "center";
-        const badge = `Ã—${count}`,
+        const badge = `×${count}`,
           width = ctx.measureText(badge).width + 8;
         ctx.fillStyle = "#10212bea";
         ctx.fillRect(p.x + size / 3 - width / 2, p.y - size / 2 - 6, width, 14);
@@ -1302,8 +1319,8 @@ export class Renderer {
       if (selected || this.scale >= 14) {
         const label =
           rules.name +
-          (count > 1 ? ` Ã—${count}` : "") +
-          (remainingTicks ? ` Â· ${Math.ceil(remainingTicks / 20)}s` : "");
+          (count > 1 ? ` ×${count}` : "") +
+          (remainingTicks ? ` · ${Math.ceil(remainingTicks / 20)}s` : "");
         ctx.font = "600 10px system-ui";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
@@ -1372,6 +1389,7 @@ export class Renderer {
       if (visibleInViewport(p, 24, this.width, this.height))
         this.combatEffects.target(ctx, target, p, visualTick);
     }
+    this.formationPoses.clear();
     const renderedSquads = snapshot.squads
       .filter((squad) => squad.embarkedOn === null)
       .map((squad) => {
@@ -1382,8 +1400,9 @@ export class Renderer {
         );
         const selected =
           this.selected.has(squad.id) || this.inspectedSquadId === squad.id;
-        const viewRadius = Math.max(squadViewRadius(this.scale, squad.troops, selected),
-          this.squadArtworkViewRadius?.(squad, this.scale) ?? 0);
+        const viewRadius = Math.max(squadViewRadius(this.scale, legacyWeaponStrength(squad), selected),
+          this.squadArtworkViewRadius?.(squad, this.scale) ?? 0,
+          squad.formation && !squad.afloat ? (formationEnvelope(squad,visualTick).broadRadius/FIXED+1)*this.scale : 0);
         if (!visibleInViewport(p, viewRadius, this.width, this.height))
           return undefined;
         // Afloat, a squad is drawn as its faction's transport for this age.
@@ -1400,7 +1419,7 @@ export class Renderer {
             );
         const symbol = squadSymbol(
           this.scale,
-          squad.troops,
+          legacyWeaponStrength(squad),
           !!activeImage || customArtwork === true,
           formationType,
         );
@@ -1421,13 +1440,15 @@ export class Renderer {
           ? UNIT.get(squad.definitionId)
           : undefined;
         const image = symbol.artwork ? activeImage : undefined;
-        return { squad, p, selected, symbol, image, definition, formationType, customArtwork };
+        const formationPose=squad.formation && !squad.afloat ? formationRenderPose(squad,visualTick,this.world(p.x,p.y),this.formationAngles.angle(squad.id,blend)) : undefined;
+        if(formationPose)this.formationPoses.set(squad.id,formationPose);
+        return { squad, p, selected, symbol, image, definition, formationType, customArtwork, formationPose };
       })
       .filter(
         (entry): entry is NonNullable<typeof entry> => entry !== undefined,
       );
     // All ground indicators precede every soldier, regardless of unit order.
-    for (const { squad, p, selected, symbol, image, customArtwork } of renderedSquads) {
+    for (const { squad, p, selected, symbol, image, customArtwork, formationPose } of renderedSquads) {
       if (
         !squad.afloat &&
         (squad.definitionId
@@ -1453,6 +1474,12 @@ export class Renderer {
         ctx.setLineDash([7, 4]);
         ctx.stroke();
         ctx.setLineDash([]);
+      }
+      if(formationPose && (selected||squad.fighting||squad.combatTargetId!==null)){
+        ctx.save();ctx.strokeStyle=selected?SELECTED_UNIT_COLOR:COLORS[squad.playerId]+"88";ctx.lineWidth=1;
+        for(const poly of formationPose.footprints){ctx.beginPath();poly.forEach((point,i)=>{const q=this.screen(point.x,point.y);if(i)ctx.lineTo(q.x,q.y);else ctx.moveTo(q.x,q.y);});ctx.closePath();ctx.stroke();}
+        const front=this.screen(formationPose.anchors.front.x,formationPose.anchors.front.y);
+        ctx.beginPath();ctx.arc(front.x,front.y,2,0,Math.PI*2);ctx.fillStyle=ctx.strokeStyle;ctx.fill();ctx.restore();
       }
       if (selected) {
         if (!customArtwork) {
@@ -1522,9 +1549,9 @@ export class Renderer {
     if (this.squadArtworkFlush && this.squadArtworkOverride) {
       deferredArtwork = this.deferredSquadArtwork;
       deferredArtwork.clear();
-      for (const { squad, p } of renderedSquads) {
+      for (const { squad, p, formationPose } of renderedSquads) {
         if (!squad.afloat && this.squadArtworkOverride(
-          ctx, squad, p, this.presentation.angle(squad.id), this.scale, visualTick, this.world(p.x, p.y),
+          ctx, squad, p, this.presentation.angle(squad.id), this.scale, visualTick, this.world(p.x, p.y), formationPose,
         )) deferredArtwork.add(squad.id);
       }
       this.squadArtworkFlush(ctx);
@@ -1537,6 +1564,7 @@ export class Renderer {
       image,
       definition,
       formationType,
+      formationPose,
     } of renderedSquads) {
       if (
         definition &&
@@ -1573,10 +1601,10 @@ export class Renderer {
           );
         }
       }
-      const radius = 4 + (2 * squad.troops) / 1_000;
-      const spriteSize = squad.afloat ? shipSpriteSize(this.scale, "transport") : this.spriteSize(squad.troops);
+      const radius = 4 + (2 * legacyWeaponStrength(squad)) / 1_000;
+      const spriteSize = squad.afloat ? shipSpriteSize(this.scale, "transport") : this.spriteSize(legacyWeaponStrength(squad));
       // Afloat, the bar is the hull: every hit lands there until it sinks.
-      const strength = squad.afloat ? squad.afloat.hull / squad.afloat.maxHull : squad.troops / 1_000;
+      const strength = squad.afloat ? squad.afloat.hull / squad.afloat.maxHull : strengthFraction(squad);
       // Recovered charge cooldown (full = ready); undefined hides the bar for
       // units without a charge attack, and while afloat.
       const charge = squad.afloat ? undefined : chargeReadiness(squad, snapshot.tick);
@@ -1584,9 +1612,7 @@ export class Renderer {
         ctx, squad, p, this.presentation.angle(squad.id), this.scale, visualTick, this.world(p.x, p.y),
       );
       const showStatus = selected || this.hoveredSquadId === squad.id;
-      const labelPose =individualArtwork
-        ? this.squadLabelPose?.(squad.id)
-        : undefined;
+      const labelPose = formationPose ? {x:formationPose.root.x,y:formationPose.root.y,bottom:formationPose.bounds.bottom,width:formationPose.bounds.right-formationPose.bounds.left} : individualArtwork ? this.squadLabelPose?.(squad.id) : undefined;
       const labelPoint = labelPose
         ? this.screen(labelPose.x, labelPose.bottom)
         : p;
@@ -1776,16 +1802,18 @@ export class Renderer {
           ? definition.attack.channel === "melee"
           : squad.kind !== "archer")
       ) {
-        const target = this.squadSamples.get(squad.combatTargetId ?? -1)?.current;
-        if (target) {
-          const contact = this.screen(
-            (squad.x + target.x) / (2 * FIXED),
-            (squad.y + target.y) / (2 * FIXED),
-          );
+        const shots=snapshot.volleys.filter(v=>v.squadId===squad.id && v.melee && !v.impact && visualTick-v.tick>=0 && visualTick-v.tick<10);
+        const shot=shots[shots.length-1];
+        const target=shot?this.squadSamples.get(shot.targetId??-1)?.current:undefined;
+        if(shot){
+          const targetPose=target?.formation?this.currentFormationPose(target):undefined;
+          const sourceDelta=formationPose?{x:formationPose.root.x-squad.x/FIXED,y:formationPose.root.y-squad.y/FIXED}:{x:0,y:0};
+          const targetDelta=target && targetPose?{x:targetPose.root.x-target.x/FIXED,y:targetPose.root.y-target.y/FIXED}:{x:0,y:0};
+          const contact=this.screen((shot.fromX+shot.toX)/(2*FIXED)+(sourceDelta.x+targetDelta.x)/2,(shot.fromY+shot.toY)/(2*FIXED)+(sourceDelta.y+targetDelta.y)/2);
           this.combatEffects.melee(
             ctx,
             contact,
-            visualTick - (squad.lastAttackTick ?? -Infinity),
+            visualTick - shot.tick,
             squad.id,
           );
         }
@@ -1800,6 +1828,7 @@ export class Renderer {
       ctx.strokeText(String(squad.troops), labelPoint.x, labelY);
         ctx.fillStyle = "#f2f5ed";
       ctx.fillText(String(squad.troops), labelPoint.x, labelY);
+        if(squad.formation?.blocked){ctx.fillStyle="#ffc078";ctx.fillText("Deployment blocked",labelPoint.x,labelY+13);}
       }
     }
     for (const ship of snapshot.ships) {
@@ -1973,13 +2002,13 @@ export class Renderer {
       ctx.strokeStyle = "#10212b";
       const repairInfo =
         ship.repairState === "repairing"
-          ? " Â· repairing"
+          ? " · repairing"
           : ship.repairState === "returning-to-dock"
-            ? " Â· docking"
+            ? " · docking"
             : ship.repairState === "waiting-for-dock"
-              ? " Â· dock full"
+              ? " · dock full"
               : "";
-      const label = `${ship.health} HP${repairInfo}${ship.fighting ? " âš”" : ""}`;
+      const label = `${ship.health} HP${repairInfo}${ship.fighting ? " ⚔" : ""}`;
       const labelY = p.y + (drawnShipSize ? drawnShipSize * 0.42 + 10 : 22);
       ctx.strokeText(label, p.x, labelY);
       ctx.fillStyle = "#eaf3ef";
@@ -2299,9 +2328,17 @@ export class Renderer {
       ctx.strokeStyle=tint+"b3";
       ctx.fillStyle=tint+"40";
       ctx.lineWidth=1.25;
+      const tactical="layouts" in line?line as BattleLineDeployment:undefined;
+      if(tactical?.warnings.length){ctx.strokeStyle="#f4bb65";ctx.fillStyle="#f4bb6530";}
+      if(tactical){const a=this.screen(tactical.gesture.start.x/FIXED,tactical.gesture.start.y/FIXED),b=this.screen(tactical.gesture.end.x/FIXED,tactical.gesture.end.y/FIXED);ctx.globalAlpha=.25;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.globalAlpha=1;}
       for (const [id, slot] of line.slots) {
         const squad =snapshot.squads.find((s) => s.id === id);
         if(!squad) continue;
+        if(tactical){const plan=tactical.layouts.get(id)!;
+          const polygon=formationFootprint({...squad,...slot,formation:{...squad.formation!,shape:plan.shape,frontage:plan.frontage,facing:facingOf(line.facing),transition:undefined,trail:undefined}},snapshot.tick);
+          ctx.beginPath();polygon.forEach((p,i)=>{const q=this.screen(p.x/FIXED,p.y/FIXED);if(i)ctx.lineTo(q.x,q.y);else ctx.moveTo(q.x,q.y);});ctx.closePath();ctx.fill();ctx.stroke();
+          const label=this.screen(slot.x/FIXED,slot.y/FIXED);ctx.font="10px system-ui";ctx.fillStyle=tactical.warnings.length?"#f4bb65":tint;ctx.textAlign="center";ctx.fillText(({mass:"▦",line:"═","shield-wall":"▰",square:"□",wedge:"▽","modern-loose":"⁙",column:"║"})[plan.shape],label.x,label.y+3);ctx.fillStyle=tactical.warnings.length?"#f4bb6530":tint+"40";continue;
+        }
         const circles =this.squadDeploymentPreview?.(squad,slot,line.facing) ?? [{ x: slot.x / FIXED, y: slot.y / FIXED, radius: 0.35 }];
         for(const circle of circles) {
           const p=this.screen(circle.x,circle.y);
@@ -2311,6 +2348,7 @@ export class Renderer {
           ctx.stroke();
         }
       }
+      if(tactical?.warnings.length){const p=this.screen(line.start.x/FIXED,line.start.y/FIXED);ctx.fillStyle="#f4bb65";ctx.font="11px system-ui";ctx.textAlign="left";ctx.fillText(tactical.warnings.join(" · "),p.x,p.y-12);}
       ctx.restore();
     }
     if (this.selectionBox) {

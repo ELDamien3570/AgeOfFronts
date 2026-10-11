@@ -37,6 +37,7 @@ describe("quick research opportunities", () => {
       "rus-stoneage-factories-mines",
       "rus-stoneage-ranged",
       "rus-stoneage-mobile",
+      "formation-capacity-stoneage",
     ]);
   });
   it("shows nodes only with sufficient funds and uses the shared tech-speed quote", () => {

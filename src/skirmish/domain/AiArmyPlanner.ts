@@ -1,3 +1,4 @@
+import { readyFraction, strengthFraction, manpowerCount } from './Manpower';
 import { flankCandidate, approachCandidate } from "./AiTacticalRoutes";
 import { AiInvasionResponse } from "./AiInvasionResponse";
 import { structureAim } from "./StructureTargeting";
@@ -98,12 +99,13 @@ export class AiArmyPlanner {
     const { world } = this.expansion;
     return (
       squad.playerId === plan.playerId &&
-      squad.troops >=
+      strengthFraction(squad) >=
         AI_DOCTRINES[
           personalityOf(world.players.find((p) => p.id === plan.playerId)!).id
-        ].minimumHealth &&
+        ].minimumHealth / 1000 &&
       squad.embarkedOn === null &&
       !squad.refit &&
+      !squad.manpower?.enlargement &&
       !squad.charge &&
       !squad.structureTarget &&
       !squad.fighting &&
@@ -261,7 +263,7 @@ export class AiArmyPlanner {
       });
       plan.members = available.slice(0, maximum).map((s) => s.id);
       plan.initialTroops = plan.members.reduce(
-        (n, id) => n + world.squad(id)!.troops,
+        (n, id) => { const squad=world.squad(id)!;return n+manpowerCount(this.expansion.unit(squad),squad.manpower?.model,squad.troops); },
         0,
       );
       if (
@@ -336,7 +338,7 @@ export class AiArmyPlanner {
       return this.diagnostics.work;
     }
     const target = world.players.find((p) => p.id === plan!.target),
-      troops = members.reduce((n, s) => n + s.troops, 0);
+      troops = members.reduce((n, s) => n + manpowerCount(this.expansion.unit(s),s.manpower?.model,s.troops), 0);
     if(operations.finishing(player.id,plan.target ?? 0) && plan.deadline < world.tick+200) {
       plan.deadline=world.tick+200;
       this.economy.assets.acquire(members.map(s=>({...this.economy.assets.leases.get(`squad:${s.id}`)!,expiresTick:plan!.deadline+800})));
@@ -431,9 +433,9 @@ export class AiArmyPlanner {
         this.economy.routes.release(plan.id);plan.phase="advance";plan.breach=undefined;
         if(plan.targetTile!==undefined)this.order(plan,{type:"move",tile:plan.targetTile});plan.reason="Breach opened or structure access changed";
       } else {
-        const shooters=b.shooters.map(id=>world.squad(id)).filter((s):s is Squad=>!!s&&s.playerId===player!.id&&s.troops>=500);
+        const shooters=b.shooters.map(id=>world.squad(id)).filter((s):s is Squad=>!!s&&s.playerId===player!.id&&readyFraction(s)>=.5);
         const tiles=wall?.tiles??[building!.tile],range=Math.min(...shooters.map(s=>this.expansion.unit(s).attack.range));
-        if(!shooters.length || members.filter(s=>this.expansion.unit(s).role==="frontline"&&s.troops>=500).length<2 || world.tick-b.since>600){
+        if(!shooters.length || members.filter(s=>this.expansion.unit(s).role==="frontline"&&readyFraction(s)>=.5).length<2 || world.tick-b.since>600){
           this.order(plan,{type:"regroup",tile:plan.home??player.base});plan.phase="recover";plan.since=world.tick;plan.reason="Breach support lost; protecting survivors";
         } else if(b.tile===undefined){
           const tile=approachCandidate(world.map,tiles[0],range,b.cursor);this.diagnostics.work++;
@@ -478,7 +480,7 @@ export class AiArmyPlanner {
         plan.phase === "advance"
       ) {
         if(doctrine.engagement.startsWith("flank") && members.some(s=>this.expansion.unit(s).role==="mounted") &&
-          members.filter(s=>this.expansion.unit(s).role==="frontline"&&s.troops>=500).length>=2){
+          members.filter(s=>this.expansion.unit(s).role==="frontline"&&readyFraction(s)>=.5).length>=2){
           this.order(plan,{type:"hold"});plan.phase="flank";plan.maneuver={enemy:enemy.id,targetTile:world.tileOf(enemy),start:world.tileOf(army!),cursor:0,since:world.tick};
           plan.reason="Certifying a supported flank rather than only offsetting formation slots";
         } else {this.order(plan,{type:doctrine.engagement==="fire-retreat"?"fire-retreat":"attack",targetId:enemy.id});plan.phase="engage";plan.since=world.tick;}
@@ -527,7 +529,7 @@ export class AiArmyPlanner {
         playerId: player.id,
         armyId: army!.id,
       });
-      const wounded=members.filter(s=>world.owners[world.tileOf(s)]===player!.id && s.troops<900 && !s.fighting);
+      const wounded=members.filter(s=>world.owners[world.tileOf(s)]===player!.id && readyFraction(s)<.9 && !s.fighting);
       if(wounded.length && player.reserves>0 && !(plan.rejoined??0)){
         this.economy.assets.acquire(members.map(s=>({asset:`squad:${s.id}` as const,playerId:player!.id,generation:plan!.generation,controller:plan!.id,
           priority:"recovery" as const,createdTick:world.tick,expiresTick:world.tick+1000})));
@@ -535,7 +537,7 @@ export class AiArmyPlanner {
         plan.phase="replenish";plan.since=world.tick;plan.reason="Replenishing survivors using actual reserves";
       } else {plan.phase="complete";plan.nextThink=world.tick+400;plan.reason="Survivors returned and objective leases released";this.diagnostics.completed++;}
     } else if(plan.phase==="replenish" || plan.phase==="refit"){
-      if(members.some(s=>s.refit) || (members.some(s=>s.troops<900)&&player.reserves>0&&world.tick-plan.since<600)){
+      if(members.some(s=>s.refit) || (members.some(s=>readyFraction(s)<.9)&&player.reserves>0&&world.tick-plan.since<600)){
         plan.nextThink=world.tick+40;return this.diagnostics.work;
       }
       const replacement=members.find(s=>!s.refit&&!s.fighting&&world.owners[world.tileOf(s)]===player!.id &&
@@ -551,7 +553,7 @@ export class AiArmyPlanner {
       }
       if(plan.purpose!=="coast"&&target&&!target.eliminated&&world.hostile(player.id,target.id)&&
         (!operations.enabled(player)||operations.canTarget(player.id,target.id))&&world.tick<plan.deadline&&
-        members.length>=2&&members.every(s=>s.troops>=800)){
+        members.length>=2&&members.every(s=>readyFraction(s)>=.8)){
         world.applyCommand({type:"order",playerId:player.id,squadIds:members.map(s=>s.id),order:{type:"hold"}});
         const rejection=world.applyCommand({type:"create-army",playerId:player.id,squadIds:members.map(s=>s.id)});
         if(!rejection){this.economy.assets.acquire(members.map(s=>({asset:`squad:${s.id}` as const,playerId:player!.id,generation:plan!.generation,controller:plan!.id,priority:"operation" as const,createdTick:world.tick,expiresTick:plan!.deadline+800})));plan.armyId=armies.armyOf(members[0].id)!.id;plan.phase="assemble";plan.since=world.tick;plan.initialTroops=troops;plan.rejoined=1;plan.reason="Recovered supported roster rejoining once";

@@ -164,7 +164,7 @@ describe("minor tribes", () => {
 
     const ageGame = match(1, false, true, 240, undefined, "ages-v1");
     const ageTribe = ageGame.players.find((p) => p.kind === "tribe")!;
-    expect(ageTribe.reserves).toBe(2000);
+    expect(ageTribe.reserves).toBe(24);
     expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold);
     expect(ageGame.buildings.find(b => b.playerId === ageTribe.id)?.type).toBe("city");
     const site = startingCamp(ageGame.map, ageGame.paths, ageTribe.base, 6)!;
@@ -179,7 +179,7 @@ describe("minor tribes", () => {
         buildingId: ageCamp.id,
       }),
     ).toBeNull();
-    expect(ageTribe.reserves).toBe(1000);
+    expect(ageTribe.reserves).toBe(12);
     expect(ageTribe.gold).toBe(fundedGold - 60);
     expect(
       ageGame.applyCommand({

@@ -31,6 +31,7 @@ export class TroopChoreography {
   private corpses: (FormationSlot & { id: number; started: number })[] = [];
   private nextDeath: number;
   private sequence = 0;
+  private nextMemberId = 0;
   constructor(
     private slots: FormationSlot[],
     readonly variant: number,
@@ -53,10 +54,57 @@ export class TroopChoreography {
       .map((_, id) => ({ id, slot: id }))
       .filter((m) => active.has(m.slot));
     this.nextDeath = now + (variant % 5) * 120;
+    this.nextMemberId=slots.length;
+  }
+  /** Shared templates own layout; existing tracks contribute bounded residuals only. */
+  setAuthoritativeSlots(slots:FormationSlot[],now:number):void {
+    if(slots.length!==this.slots.length)this.reshape(slots,now);
+    else this.slots=slots;
+  }
+  formationSoldiers(now:number):PresentedSoldier[] {
+    const members=new Map(this.members.map(m=>[m.id,m.slot]));
+    return this.soldiers(now).map(p=>{
+      const slot=this.slots[members.get(p.id)!];
+      return {...p,x:slot.x+Math.max(-0.12,Math.min(0.12,p.x-slot.x)),y:slot.y+Math.max(-0.12,Math.min(0.12,p.y-slot.y))};
+    });
+  }
+  /** Authoritative headcount and template in one step. Casualties fall from the
+   * front; survivors keep their place and are re-seated by minimum travel, so a
+   * re-templated formation never shuffles or crosses its members. */
+  applyAuthoritative(slots:FormationSlot[],desired:number,now:number):void {
+    this.corpses=this.corpses.filter(c=>now-c.started<2600);
+    const old=this.slots,target=Math.min(desired,slots.length),before=this.members.length;
+    if(this.members.length>target){
+      const place=(m:Member)=>old[m.slot]??slots[m.slot];
+      const order=[...this.members].sort((a,b)=>place(b).y-place(a).y||Math.abs(place(a).x)-Math.abs(place(b).x)||a.id-b.id);
+      const victims=new Set(order.slice(0,this.members.length-target));
+      for(const m of victims)this.corpses.push({...this.pose(m,now),id:m.id,started:now});
+      this.members=this.members.filter(m=>!victims.has(m));
+    }
+    while(this.members.length<target){
+      let rear=0;
+      for(let i=1;i<old.length;i++)if(old[i].y<old[rear].y)rear=i;
+      this.members.push({id:this.nextMemberId++,slot:rear});
+    }
+    const n=this.members.length;
+    const unchanged=old.length===slots.length&&n===before&&slots.every((s,i)=>s.x===old[i].x&&s.y===old[i].y&&(s.angle??0)===(old[i].angle??0));
+    if(unchanged&&this.members.every(m=>m.slot<n)){this.slots=slots;return;}
+    const sources=this.members.map(m=>this.pose(m,now));
+    this.slots=slots;
+    const assignment=minimumTravelAssignment(sources,slots.slice(0,n));
+    for(let j=0;j<n;j++){
+      const source=sources[assignment[j]],m=this.members[assignment[j]];m.slot=j;
+      // Casualty gap closure is cosmetic and cannot restart a domain reform.
+      m.track=n<before?{from:source,via:{...slots[j],x:(source.x+slots[j].x)/2,y:(source.y+slots[j].y)/2},to:slots[j],start:now,duration:450}:undefined;
+    }
+  }
+  advanceAuthoritative(now:number,desired:number):void {
+    this.applyAuthoritative(this.slots,desired,now);
   }
   get count(): number {
     return this.members.length;
   }
+  get capacity():number { return this.slots.length; }
   private pose(member: Member, now: number): FormationSlot {
     const track = member.track;
     if (!track) return this.slots[member.slot];
@@ -196,7 +244,7 @@ export class TroopChoreography {
       })
     )
       return;
-    const poses = this.members.map((member) => ({
+    const poses = this.members.slice(0,slots.length).map((member) => ({
       member,
       pose: this.pose(member, now),
     }));
@@ -207,23 +255,12 @@ export class TroopChoreography {
         (a, b) =>
           b.slot.row - a.slot.row || b.slot.y - a.slot.y || a.slot.x - b.slot.x,
       )
-      .slice(0, this.members.length);
+      .slice(0, poses.length);
+    this.members=poses.map(p=>p.member);
     this.slots = slots;
-    for (const destination of destinations) {
-      let nearest = 0;
-      for (let i = 1; i < poses.length; i++)
-        if (
-          Math.hypot(
-            poses[i].pose.x - destination.slot.x,
-            poses[i].pose.y - destination.slot.y,
-          ) <
-          Math.hypot(
-            poses[nearest].pose.x - destination.slot.x,
-            poses[nearest].pose.y - destination.slot.y,
-          )
-        )
-          nearest = i;
-      const { member, pose } = poses.splice(nearest, 1)[0];
+    const assignment=minimumTravelAssignment(poses.map(p=>p.pose),destinations.map(d=>d.slot));
+    for (const [index,destination] of destinations.entries()) {
+      const { member, pose } = poses[assignment[index]];
       member.slot = destination.index;
       this.track(
         member,
@@ -242,6 +279,11 @@ export class TroopChoreography {
     contact?: { angle?: number; front: ReadonlySet<number> },
   ): void {
     this.corpses = this.corpses.filter((corpse) => now - corpse.started < 2600);
+    if(desired>this.members.length){
+      const used=new Set(this.members.map(m=>m.slot));
+      const free=this.slots.map((slot,index)=>({slot,index})).filter(s=>!used.has(s.index)).sort((a,b)=>b.slot.row-a.slot.row||a.slot.x-b.slot.x);
+      for(const {index} of free.slice(0,Math.min(desired,this.slots.length)-this.members.length))this.members.push({id:this.nextMemberId++,slot:index});
+    }
     for (const member of this.members) this.pose(member, now);
     if (
       this.members.length <= desired ||

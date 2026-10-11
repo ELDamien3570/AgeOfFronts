@@ -1,3 +1,4 @@
+import { literalSquadFixture } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { VESSELS } from "../../src/skirmish/content/Units";
@@ -37,7 +38,7 @@ function fixture(sea = false) {
   for (const s of [...game.squads]) game.removeSquad(s.id);
   for (const b of [...game.buildings]) game.removeBuilding(b.id);
   const add = (definitionId = "stoneage-infantry", x = 30, owner = player.id) =>
-    game.addSquad({
+    game.addSquad(literalSquadFixture({
       ...template,
       id: game.allocateId(),
       playerId: owner,
@@ -53,7 +54,7 @@ function fixture(sea = false) {
       moved: false,
       fighting: false,
       embarkedOn: null,
-    });
+    }));
   const ship = (owner = 1, x = 30) =>
     game.addShip({
       id: game.allocateId(),
@@ -201,7 +202,7 @@ describe("responsive AI and naval movement", () => {
       combatAdvantage(combatCohorts(f.e, advanced), combatCohorts(f.e, bronze));
     expect(compare()).toBeGreaterThan(1.25);
     const strong = compare();
-    for (const s of advanced) f.game.updateSquad(s.id, { troops: 100 });
+    for (const s of advanced) f.game.updateSquad(s.id, { troops: 1 });
     expect(compare()).toBeLessThan(strong);
     expect(combatAdvantage([], combatCohorts(f.e, bronze))).toBe(0);
   });

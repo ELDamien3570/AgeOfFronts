@@ -1,3 +1,4 @@
+import { readyFraction } from './Manpower';
 import type { Building, BuildingType } from "../Protocol";
 import { FIXED } from "../Protocol";
 import { tilePoint } from "../SquadGeometry";
@@ -270,12 +271,12 @@ export class AiRecovery {
         economy.assets.release(controller);this.cleanup.delete(player.id);
       };
       if(!player.ai || player.eliminated){release();continue;}
-      if(own.length<5 || player.reserves<29*FALLOUT_TROOP_LOSS_PER_CELL || economy.military.armyPlanner.invasion.active(player.id)) {release();continue;}
+      if(own.length<5 || player.reserves<Math.ceil(29*FALLOUT_TROOP_LOSS_PER_CELL*12/1000) || economy.military.armyPlanner.invasion.active(player.id)) {release();continue;}
       const squad=(old && world.squad(old.squadId)) ?? own.find(s=>s.embarkedOn===null && !s.refit && !s.fighting && s.order.type==="hold" && this.expansion.unit(s).canCapture && !economy.assets.held(`squad:${s.id}`) && !this.expansion.armies.armyOf(s.id));
       if(!squad || squad.playerId!==player.id || squad.embarkedOn!==null || squad.refit || squad.fighting || world.nearbyArmyEnemies(squad,12*FIXED,player.id).length) {release();continue;}
       if(!economy.assets.acquire([{asset:`squad:${squad.id}`,playerId:player.id,generation:world.aiGeneration(player.id),controller,priority:"patrol",createdTick:world.tick,expiresTick:world.tick+180}])){release();continue;}
       this.cleanup.set(player.id,{squadId:squad.id,tile:old?.tile??world.tileOf(squad)});
-      if(squad.troops<800) {
+      if(readyFraction(squad)<.8) {
         const tile=world.ownedLandNearest(player.id,world.tileOf(squad),32).find(t=>world.paths.walkable(t) && world.squadPaths(player.id).connected(world.tileOf(squad),t));
         if(tile===undefined){release();continue;}
         if(world.owners[world.tileOf(squad)]===player.id) {

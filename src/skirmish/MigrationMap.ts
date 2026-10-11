@@ -16,7 +16,7 @@ export interface MigrationMap extends LoadedMap {
 /** Landforms first, with a reserved sea moat. No forced starts or special economy. */
 export function generateMigration(size = 500, seed = 0): MigrationMap {
   if (
-    ![250, 500, 1000].includes(size) ||
+    ![250, 500, 1000, 2000].includes(size) ||
     !Number.isInteger(seed) ||
     seed < 0 ||
     seed > 0x7fffffff
@@ -31,7 +31,7 @@ export function generateMigration(size = 500, seed = 0): MigrationMap {
     aridity = new Uint8Array(count).fill(20),
     families = new Uint8Array(count),
     { layout, shore, heights } = buildMigrationLayout(
-      size as 250 | 500 | 1000,
+      size as 250 | 500 | 1000 | 2000,
       seed,
     ),
     { regions } = layout,

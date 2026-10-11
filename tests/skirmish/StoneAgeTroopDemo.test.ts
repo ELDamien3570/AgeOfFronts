@@ -59,7 +59,7 @@ describe("four-faction troop load demo", () => {
       ).toHaveLength(50);
     expect(
       game.squads.every(
-        (s) => s.troops === 1000 && DEMO_TROOP_BY_ID.has(s.definitionId!),
+        (s) => s.troops === s.manpower?.capacity && DEMO_TROOP_BY_ID.has(s.definitionId!),
       ),
     ).toBe(true);
     const horseArcher = game.squads.find(

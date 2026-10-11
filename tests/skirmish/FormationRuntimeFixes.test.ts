@@ -3,8 +3,9 @@ import {GameMapImpl} from "../../src/core/game/GameMap";
 import {Skirmish} from "../../src/skirmish/Simulation";
 import {FIXED} from "../../src/skirmish/Protocol";
 import {TECHNOLOGIES} from "../../src/skirmish/content/Technology";
+import {createManpower} from "../../src/skirmish/domain/Manpower";
 import {UNIT} from "../../src/skirmish/content/Units";
-import {afterWeaponShot} from "../../src/skirmish/content/WeaponCycles";
+import {commitWeaponShot} from "../../src/skirmish/domain/WeaponTiming";
 import {AiModernization} from "../../src/skirmish/domain/AiMilitaryDevelopment";
 import {FormationSoldierMotion} from "../../src/skirmish/client/FormationSoldierMotion";
 import {packSnapshotDetails,unpackSnapshotDetails} from "../../src/skirmish/SnapshotDetails";
@@ -35,22 +36,25 @@ describe("formation review runtime contracts",()=>{
     expect(result[7]).toBe(123);expect(result[4]).toBeCloseTo(50,0);expect(result[6]).toBeCloseTo(50,0);
     expect([...result.slice(8)]).toEqual([...source.slice(8)]);
   });
-  it("fires three rifle volleys before reload and retains magazine state across snapshot/recovery",()=>{
-    const unit=UNIT.get("modern-infantry")!;
-    const a=afterWeaponShot(unit,0,100,20),b=afterWeaponShot(unit,a.magazineShots,120,20),c=afterWeaponShot(unit,b.magazineShots,140,20);
-    expect(a).toMatchObject({magazineShots:1,nextAttackTick:120});expect(b.magazineShots).toBe(2);
-    expect(c).toMatchObject({magazineShots:0,reloadStartedTick:140,nextAttackTick:200});
-    const game=fixture(),squad=game.squads[0];game.updateSquad(squad.id,{definitionId:unit.id,...b});
+  it("fires the authored 30-round rifle magazine and retains phase across snapshot/recovery",()=>{
+    const unit=UNIT.get("modern-infantry")!, weapon=unit.rangedAttack!;
+    const a=commitWeaponShot(weapon,undefined,100,false)!;
+    const b=commitWeaponShot(weapon,a,102,false)!;
+    expect(a.ranged).toMatchObject({shots:1,nextTick:102});
+    let cycle=b;
+    for(let shot=2;shot<30;shot++)cycle=commitWeaponShot(weapon,cycle,100+shot*2,false)!;
+    expect(cycle.ranged).toMatchObject({shots:0,reloadStartedTick:158,nextTick:218});
+    const game=fixture(),squad=game.squads[0];game.updateSquad(squad.id,{definitionId:unit.id,troops:unit.formationRecipe!.capacity,manpower:createManpower(unit),weaponState:b});
     const packed=packSnapshotDetails(game.snapshot().squads,[],[],[]);
-    expect(unpackSnapshotDetails(packed).squadDetails?.find(s=>s.id===squad.id)?.magazineShots).toBe(2);
-    const restored=fixture();restored.restore(game.checkpoint());expect(restored.squad(squad.id)?.magazineShots).toBe(2);
+    expect(unpackSnapshotDetails(packed).squadDetails?.find(s=>s.id===squad.id)?.weaponState).toEqual(b);
+    const restored=fixture();restored.restore(game.checkpoint());expect(restored.squad(squad.id)?.weaponState).toEqual(b);
   });
   it("upgrades into available intermediate kits without converting spear units into regular infantry",()=>{
     const game=fixture(),p=game.players[0],squad=game.squads[0],planner=new AiModernization();p.gold=1_000_000;
-    planner.reserve(p,[squad],TECHNOLOGIES.map(t=>t.id),{"equipment:bronzeage":1},0);
+    planner.reserve(p,[squad],TECHNOLOGIES.filter(t=>!t.optional).map(t=>t.id),{"equipment:bronzeage":1},0);
     expect(planner.leases.get(squad.id)?.targetId).toBe("bronzeage-infantry");
     const spear=Object.assign({},squad,{definitionId:"bronzeage-anticavalry"});planner.leases.clear();
-    planner.reserve(p,[spear],TECHNOLOGIES.map(t=>t.id),{"equipment:classicalage":1},0);
+    planner.reserve(p,[spear],TECHNOLOGIES.filter(t=>!t.optional).map(t=>t.id),{"equipment:classicalage":1},0);
     const target=UNIT.get(planner.leases.get(squad.id)!.targetId)!;expect(target.troopClass).toBe("antiCavalry");
   });
   it("keeps casualty/contact identities in the packed stream and salvages old equipment only on explicit orders",()=>{

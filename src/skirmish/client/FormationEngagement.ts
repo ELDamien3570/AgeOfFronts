@@ -13,6 +13,11 @@ export interface EngagementIntent {
   ranged: boolean;
   square: boolean;
   travelHeading: number;
+  /** Shared canonical poses already own bounded squad turning. */
+  canonicalHeading?: boolean;
+  /** World units; optional for legacy preview choreography. */
+  meleeReach?: number;
+  contactAdvance?: number;
   reformInPlace?: boolean;
   travelling?: boolean;
   footprint: number;
@@ -68,6 +73,7 @@ export class FormationEngagement {
     intent: EngagementIntent,
   ) {
     this.heading ??= intent.travelHeading;
+    if(intent.canonicalHeading)this.heading=intent.travelHeading;
     const dt =
       this.previous === undefined
         ? 0
@@ -95,7 +101,7 @@ export class FormationEngagement {
       };
     };
     const targets = engaged
-      ? (intent.square
+      ? (!intent.ranged
           ? [intent.target!, ...(intent.threats ?? [])]
           : [intent.target!]
         ).map(local)
@@ -122,7 +128,7 @@ export class FormationEngagement {
       this.candidate = undefined;
     }
     const edges = targets.map((target, index) =>
-      index === 0
+      intent.canonicalHeading ? Math.atan2(target.y,target.x)/(Math.PI/4) : index === 0
         ? this.sector!
         : Math.round(Math.atan2(target.y, target.x) / (Math.PI / 4)),
     );
@@ -189,16 +195,17 @@ export class FormationEngagement {
     }));
     const presented = slots.map((slot) => {
       const shift = this.offset(slot.id, now);
-      const x = slot.x + shift.x,
+      let x = slot.x + shift.x,
         y = slot.y + shift.y;
       let angle =
         intent.reformInPlace && intent.travelling && !engaged
           ? 0
           : (slot.angle ?? 0);
+      let inMeleeContact=!intent.canonicalHeading || intent.meleeReach===undefined;
       if (engaged && (!intent.square || intent.ranged || front.has(slot.id))) {
         // Square defenders retain their own edge's attention, including rear attacks.
         let target =
-          intent.square && !intent.ranged
+          !intent.ranged
             ? targets
                 .filter((_, i) => onEdge(slot, edges[i]))
                 .sort(
@@ -242,6 +249,16 @@ export class FormationEngagement {
             target = chosen;
           } else this.attention.delete(slot.id);
         } else this.attention.delete(slot.id);
+        if(target && !intent.ranged && front.has(slot.id) && intent.contactAdvance!==undefined){
+          const dx=target.x-x,dy=target.y-y,distance=Math.hypot(dx,dy);
+          // Close only a bounded fraction of a legal contact gap. This is a
+          // cosmetic front-rank step, never navigation or damage authority.
+          const reach=(intent.meleeReach??0)/intent.footprint+slot.scale;
+          const advance=Math.min(intent.contactAdvance/intent.footprint,Math.max(0,(distance-reach)/2));
+          if(distance>0){x+=dx/distance*advance;y+=dy/distance*advance;}
+        }
+        if(target && !intent.ranged && intent.canonicalHeading && intent.meleeReach!==undefined)
+          inMeleeContact=Math.hypot(target.x-x,target.y-y)<=intent.meleeReach/intent.footprint+slot.scale;
         if (target)
           angle = Math.atan2(target.y - y, target.x - x) - Math.PI / 2;
       }
@@ -251,7 +268,7 @@ export class FormationEngagement {
         y,
         angle,
         step: Math.hypot(shift.x, shift.y) > 0.001,
-        front: engaged ? intent.ranged || front.has(slot.id) : slot.front,
+        front: engaged ? intent.ranged || front.has(slot.id) && inMeleeContact : slot.front,
       };
     });
     return {

@@ -1,3 +1,4 @@
+import { remainingHealth, HEALTH_SCALE } from "../../src/skirmish/domain/Manpower";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
@@ -40,7 +41,7 @@ function complete(m: Skirmish) {
   for (const p of m.players) {
     const state = m.expansion!.progression.states[p.id];
     state.age = "Modern";
-    state.completed = TECHNOLOGIES.map((t) => t.id);
+    state.completed = TECHNOLOGIES.filter(t=>!t.optional).map((t) => t.id);
     p.gold = 1e7;
     p.reserves = 100000;
   }
@@ -161,7 +162,7 @@ describe("integrated shipments and military progression", () => {
         ledger = new DamageLedger();
       enemy.kind = tribal ? "tribe" : "regular";
       for (const city of m.buildings.filter(b => b.playerId === enemy.id && b.type === "city")) m.removeBuilding(city.id);
-      for (const victim of victims) ledger.add(victim.id, 1, 1000);
+      for (const victim of victims) ledger.add(victim.id, 1, remainingHealth(victim)/HEALTH_SCALE);
       m.resolveLandDamage(ledger);
       m.step();
       expect(enemy.eliminated).toBe(true);
@@ -337,7 +338,7 @@ describe("integrated shipments and military progression", () => {
     e.battle.fire(source, { x: 25.5 * FIXED, y: source.y }, profile, 100);
     m.tick++;
     e.battle.advanceProjectiles();
-    expect(target.troops).toBe(1000);
+    expect(target.troops).toBe(12);
     expect(e.fortifications.barriers[0].health).toBeLessThan(
       e.fortifications.barriers[0].maxHealth,
     );

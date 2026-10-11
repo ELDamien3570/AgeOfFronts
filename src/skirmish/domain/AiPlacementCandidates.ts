@@ -1,3 +1,5 @@
+import { recruitmentVariant } from '../content/FormationRecipes';
+import { scaledRecipeCost } from './Manpower';
 import { buildingFootprint } from "../BuildingFootprint";
 import type { Coast } from "../CoastIndex";
 import type { BuildingType, Player } from "../Protocol";
@@ -130,7 +132,7 @@ export class AiPlacementCandidates {
         const unit=[...UNITS].reverse().find(u=>u.role===role && snapshot.research.includes(u.technologyId));
         if (!unit) continue;
         const deficit=Math.max(0,(desired??0)-snapshot.force.role(unit.role));
-        for (const [item,n] of Object.entries(unit.cost.items??{})) {
+        for (const [item,n] of Object.entries(scaledRecipeCost(unit,recruitmentVariant(unit.id,snapshot.research)).items??{})) {
           required.set(item,(required.get(item)??0)+deficit*n);
         }
       }
@@ -195,14 +197,14 @@ export class AiPlacementCandidates {
       if (type === "city" && !count) objective = 5000;
       if (missingProducer) objective = Math.max(objective, 12000);
       if (posture.wealthy && Math.min(12,support.get(type)??0)>count) objective=Math.max(objective,9000);
-      if (posture.wealthy && type==="city" && missing>0 && snapshot.reserveIncome+(snapshot.liquid.reserves??0)/300<missing*1000/300 && count<12)
-        objective=Math.max(objective,9000+Math.min(4000,Math.ceil((missing*1000/300-snapshot.reserveIncome)/cityReserveIncome(snapshot.age))*500));
+      if (posture.wealthy && type==="city" && missing>0 && snapshot.reserveIncome+(snapshot.liquid.reserves??0)/300<missing*12/300 && count<12)
+        objective=Math.max(objective,9000+Math.min(4000,Math.ceil((missing*12/300-snapshot.reserveIncome)/(cityReserveIncome(snapshot.age)*12/1000))*500));
       if (["airstrip","nuclear-facility","drone-facility"].includes(type) && ["EarlyModern","Modern"].includes(snapshot.age) && count < 2)
         objective=Math.max(objective,8000);
       if (["missile-silo","mirv-launcher"].includes(type) && snapshot.age === "Modern" && count < 2)
         objective=Math.max(objective,7000);
       if(type === "anti-air-emplacement" && count<2 && this.expansion.aircraft.some(a=>a.health>0 && a.state!=="ready" && a.definitionId!=="drone" && this.expansion.diplomacy.hostile(player.id,a.playerId)))objective=Math.max(objective,8500);
-      const safeGrowth = snapshot.threatTroops <= snapshot.readyTroops / 2 && snapshot.readyTroops >= 4000;
+      const safeGrowth = snapshot.threatTroops <= snapshot.readyTroops / 2 && snapshot.readyTroops >= 48;
       const factories = snapshot.buildings.filter(b => b.type === "factory").length;
       const ports = snapshot.buildings.filter(b => b.type === "port").length;
       const productiveLand = this.expansion.economy.tradeQuotes.best(player.id,false);

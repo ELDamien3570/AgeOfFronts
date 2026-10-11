@@ -145,6 +145,10 @@ export function hudMarkup(): string {
           </svg>
           <span class="order-label">Square</span>
         </button>
+        <button type="button" class="order-btn" data-shape="modern-loose" title="Dispersed modern formation"><svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true"><circle cx="3" cy="3" r="1.3"/><circle cx="12" cy="2" r="1.3"/><circle cx="7" cy="10" r="1.3"/><circle cx="17" cy="9" r="1.3"/></svg><span class="order-label">Loose</span></button>
+        <button type="button" class="order-btn" data-shape="wedge" title="Charge wedge"><svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true"><path d="M3 3l7 9 7-9" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="order-label">Wedge</span></button>
+        <button type="button" class="order-btn" data-formation-unlock title="Allow drawn battle lines to choose a formation"><span class="order-label">Auto shape</span></button>
+        <button type="button" class="order-btn" data-shape="column" title="Marching column template"><svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true"><path d="M8 1v12M12 1v12" stroke="currentColor" stroke-width="2"/></svg><span class="order-label">Column</span></button>
         <button type="button" class="order-btn" id="hold" title="Hold position (T)" data-hud-tip="hold">
           <svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true">
             <rect x="5.5" y="2.5" width="9" height="9" rx="1.5" />

@@ -270,8 +270,8 @@ describe("stable staffed Modern fronts", () => {
     }
     const section = f.controller.sections.get(2)!;
     expect(section.phase).toBe("holding");
-    f.game.updateSquad(f.game.squad(section.members[0])!.id, { troops: 100 });
-    f.game.updateSquad(f.game.squad(section.members[1])!.id, { troops: 100 });
+    f.game.updateSquad(f.game.squad(section.members[0])!.id, { troops: 1 });
+    f.game.updateSquad(f.game.squad(section.members[1])!.id, { troops: 1 });
     f.game.tick = section.nextDecision;
     f.controller.step(32);
     expect(section.phase).toBe("withdrawn");

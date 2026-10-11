@@ -13,7 +13,7 @@ function fixture() {
   const victim=game.squads.find(s=>s.playerId===2)!;
   for (const squad of game.squads)
     if (squad.id!==victim.id) game.updateSquad(squad.id,{x:90.5*FIXED,y:70.5*FIXED});
-  game.updateSquad(victim.id,{x:45.5*FIXED,y:40.5*FIXED,troops:1000,
+  game.updateSquad(victim.id,{x:45.5*FIXED,y:40.5*FIXED,troops:12,
     afloat:{hull:8000,maxHull:8000,vesselId:"modern-transport"}});
   const ship=game.addShip({id:game.allocateId(),kind:"warship",playerId:2,
     x:45.5*FIXED,y:40.5*FIXED,health:8000,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false});
@@ -53,7 +53,7 @@ describe("air and strategic naval blast targets",()=>{
         game.updateShip(ship.id,{playerId:owner});
       }
       const ground=game.squads.find(s=>s.id!==victim.id)!;
-      game.updateSquad(ground.id,{playerId:owner,x:46.5*FIXED,y:40.5*FIXED,troops:1000});
+      game.updateSquad(ground.id,{playerId:owner,x:46.5*FIXED,y:40.5*FIXED,troops:12});
       const building=game.addBuilding({id:game.allocateId(),playerId:owner,type:"factory",
         tile:game.map.ref(45,40),remainingTicks:0,age:"StoneAge",health:10000,maxHealth:10000});
       const wall=game.expansion!.fortifications.addBarrier({id:game.allocateId(),playerId:owner,
@@ -61,14 +61,14 @@ describe("air and strategic naval blast targets",()=>{
       fire(payload);
       expect(game.squad(victim.id)?.afloat?.hull??0).toBeLessThan(8000);
       expect(game.ship(ship.id)?.health??0).toBeLessThan(8000);
-      expect(game.squad(ground.id)?.troops??0).toBeLessThan(1000);
+      expect(game.squad(ground.id)?.troops??0).toBeLessThan(12);
       expect(game.buildings.find(b=>b.id===building.id)?.health??0).toBeLessThan(10000);
       expect(wall.health).toBeLessThan(10000);
     });
   it("damages both transport hulls and warships with a bombing run",()=>{
     const {game,victim,ship,fire}=fixture();fire("bomb");
     expect(game.squad(victim.id)!.afloat!.hull).toBe(5900);
-    expect(game.squad(victim.id)!.troops).toBe(1000);
+    expect(game.squad(victim.id)!.troops).toBe(12);
     expect(game.ship(ship.id)!.health).toBe(5900);
   });
   it.each(["icbm","hydrogen","warhead"] as const)("sinks a full transport hull and warship with %s",payload=>{
@@ -77,7 +77,7 @@ describe("air and strategic naval blast targets",()=>{
     fire(payload);
     expect(game.squad(victim.id)).toBeUndefined();
     expect(game.ship(ship.id)).toBeUndefined();
-    expect(game.players[1].losses-losses).toBe(1000);
+    expect(game.players[1].losses-losses).toBe(12);
   });
   it.each(["bomb","icbm","hydrogen","warhead"] as const)("destroys friendly and enemy land/sea traders with %s, without duplicate cargo loss or payment",payload=>{
     const {game,fire}=fixture(),trade=game.expansion!.trade;

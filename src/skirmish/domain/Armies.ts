@@ -1,3 +1,4 @@
+import { formationLayoutKey } from "./FormationGeometry";
 import { FormationOccupancy } from "../FormationOccupancy";
 import { CohortAdmission } from "./CohortAdmission";
 import { FormationPlanning, type FormationPlanningState } from "../FormationPlanning";
@@ -45,6 +46,7 @@ export interface ArmyWorld {
   ordinarySpeed(squad: Squad): number;
   hostile(a: number, b: number): boolean;
   armyBlocked(tile: number, playerId: number): boolean;
+  formationFits?(squad:Squad,point:WorldPoint,heading?:number):boolean;
   nearbyArmyEnemies(
     point: WorldPoint,
     radius: number,
@@ -81,6 +83,7 @@ interface March {
     facing: number;
     flank: number;
     slots: Map<number, WorldPoint>;
+    geometry?: string;
   };
   columnIds: number[];
   route: WorldPoint[];
@@ -96,7 +99,7 @@ interface March {
 }
 /** Longest retarget, in cells, a member may take without corridor admission. */
 const DIRECT_STEP = 3;
-const active = (s: Squad) => s.troops > 0 && s.embarkedOn === null && !s.refit;
+const active = (s: Squad) => s.troops > 0 && s.embarkedOn === null && !s.refit && !s.manpower?.enlargement;
 const attackOrder = (
   o: ArmyOrder,
 ): o is Extract<ArmyOrder, { targetId: number }> => "targetId" in o;
@@ -124,7 +127,7 @@ export class Armies {
   private readonly leaderAdmissions=new Map<number,ArmyLeaderAdmission>();
   private readonly cohortArmies=new Map<number,{armyId:number;revision:number;leaderId?:number}>();
   private occupancy?: FormationOccupancy;
-  private readonly slotPlanning=new Map<number,{revision:number;formation:FormationPlanningState}>();
+  private readonly slotPlanning=new Map<number,{revision:number;geometry?:string;formation:FormationPlanningState}>();
   private readonly cohorts?:CohortAdmission;
   constructor(
     private readonly world: ArmyWorld,
@@ -195,9 +198,9 @@ export class Armies {
   private planSlots(army:Army,center:number,members:Squad[],ideals:Map<number,WorldPoint>):Map<number,WorldPoint>|null|undefined {
     if(!this.world.domainRoutes)return this.world.armySlots(center,members,ideals);
     let plan=this.slotPlanning.get(army.id);
-    if(plan && plan.revision!==army.revision){this.slotPlanning.delete(army.id);plan=undefined;}
+    if(plan && (plan.revision!==army.revision || plan.geometry!==JSON.stringify(members.map(formationLayoutKey)))){this.slotPlanning.delete(army.id);plan=undefined;}
     if(!plan){
-      plan={revision:army.revision,formation:new FormationPlanning(this.world.map,this.world.squadPaths(army.playerId),center,members.map(squad=>({squad,origin:squad})),()=>this.world.squads,Infinity,ideals).state};
+      plan={revision:army.revision,geometry:JSON.stringify(members.map(formationLayoutKey)),formation:new FormationPlanning(this.world.map,this.world.squadPaths(army.playerId),center,members.map(squad=>({squad,origin:squad})),()=>this.world.squads,Infinity,ideals).state};
       this.slotPlanning.set(army.id,plan);return undefined;
     }
     if(plan.formation.phase!=="done" && plan.formation.phase!=="failed")return undefined;
@@ -240,7 +243,7 @@ export class Armies {
     for(const [id,plan] of this.slotPlanning){
       if(used>=budget)break;
       const army=this.byArmyId.get(id);
-      if(!army || army.revision!==plan.revision){this.slotPlanning.delete(id);continue;}
+      if(!army || army.revision!==plan.revision || plan.geometry!==JSON.stringify(this.members(army).filter(active).map(formationLayoutKey))){this.slotPlanning.delete(id);continue;}
       const formation=new FormationPlanning(this.world.map,this.world.squadPaths(army.playerId),plan.formation.center,[],()=>this.world.squads,Infinity,undefined,plan.formation,undefined,occupancy);
       used+=formation.step(Math.min(16,budget-used),t=>this.world.armyBlocked(t,army.playerId));
     }
@@ -575,7 +578,7 @@ export class Armies {
       march &&
       !squad.fighting &&
       !squad.charge &&
-      !squad.refit
+      !squad.refit && !squad.manpower?.enlargement
       ? march.speed
       : ordinary;
   }
@@ -634,6 +637,20 @@ export class Armies {
         !traversable(this.world.map, center, point, squadRadius(sorted[i].kind), this.world.squadPaths(army.playerId).amphibious)
       )
         point = this.onRoute(march, march.cursor - i * FIXED * 0.95);
+      if(this.world.formationFits && !this.world.formationFits(sorted[i],point,angle-Math.PI/2)){
+        // Certify a bounded lateral adjustment of the existing army column.
+        // This changes aggregate slot placement, never individual soldier paths.
+        for(let step=1;step<=4;step++){
+          let found=false;
+          for(const sign of [1,-1]){
+            const adjusted={x:Math.round(point.x-Math.sin(angle)*step*FIXED/2*sign),y:Math.round(point.y+Math.cos(angle)*step*FIXED/2*sign)};
+            if(this.world.formationFits(sorted[i],adjusted,angle-Math.PI/2) && standable(this.world.map,adjusted,squadRadius(sorted[i].kind),this.world.squadPaths(army.playerId).amphibious)){
+              point=adjusted;found=true;break;
+            }
+          }
+          if(found)break;
+        }
+      }
       ideals.set(sorted[i].id, point);
     }
     if (!march.columnIds.length) march.columnIds = sorted.map((s) => s.id);
@@ -684,6 +701,7 @@ export class Armies {
     if (
       cached &&
       cached.flank === flank &&
+      cached.geometry === JSON.stringify(members.map(s=>[s.id,formationLayoutKey(s)])) &&
       Math.abs(cached.facing - army.facing) < 0.3 &&
       distanceSquared(cached.point, point) < FIXED * FIXED &&
       members.every((s) => cached.slots.has(s.id))
@@ -777,6 +795,7 @@ export class Armies {
         facing: army.facing,
         flank,
         slots: new Map(slots),
+        geometry: JSON.stringify(members.map(s=>[s.id,formationLayoutKey(s)])),
       };
     return slots;
   }

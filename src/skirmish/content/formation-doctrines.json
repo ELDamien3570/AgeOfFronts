@@ -1,0 +1,1324 @@
+{
+  "schemaVersion": 1,
+  "rulesVersion": 7,
+  "shapeProfiles": {
+    "mass": {
+      "minRanks": 1,
+      "aspectBp": {
+        "min": 5000,
+        "preferred": 10000,
+        "max": 20000
+      },
+      "lateralPitchBp": {
+        "min": 9000,
+        "preferred": 10000,
+        "max": 12000
+      },
+      "rankPitchBp": 10000
+    },
+    "line": {
+      "minRanks": 2,
+      "aspectBp": {
+        "min": 12500,
+        "preferred": 25000,
+        "max": 40000
+      },
+      "lateralPitchBp": {
+        "min": 8500,
+        "preferred": 10000,
+        "max": 12500
+      },
+      "rankPitchBp": 10000
+    },
+    "shield-wall": {
+      "minRanks": 2,
+      "aspectBp": {
+        "min": 15000,
+        "preferred": 30000,
+        "max": 40000
+      },
+      "lateralPitchBp": {
+        "min": 7000,
+        "preferred": 7500,
+        "max": 8500
+      },
+      "rankPitchBp": 9000
+    },
+    "modern-loose": {
+      "minRanks": 1,
+      "aspectBp": {
+        "min": 10000,
+        "preferred": 15000,
+        "max": 40000
+      },
+      "lateralPitchBp": {
+        "min": 15000,
+        "preferred": 17500,
+        "max": 22000
+      },
+      "rankPitchBp": 17500
+    }
+  },
+  "doctrines": {
+    "stoneage-siege": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "stoneage-archer": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "stoneage-cavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 9500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "stoneage-infantry": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "bronzeage-anticavalry": {
+      "shapes": [
+        "mass",
+        "column",
+        "shield-wall"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": true,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "bronzeage-field-support": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "bronzeage-siege": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "bronzeage-archer": {
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "bronzeage-cavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 9500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "bronzeage-infantry": {
+      "shapes": [
+        "mass",
+        "column",
+        "shield-wall"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": true,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "classicalage-anticavalry": {
+      "shapes": [
+        "mass",
+        "column",
+        "shield-wall"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": true,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "classicalage-field-support": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "classicalage-rangedcavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 9500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "classicalage-siege": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "classicalage-archer": {
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "classicalage-cavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 9500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "classicalage-infantry": {
+      "shapes": [
+        "mass",
+        "column",
+        "shield-wall"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": true,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "earlymedieval-anticavalry": {
+      "shapes": [
+        "mass",
+        "column",
+        "shield-wall",
+        "square"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": true,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "earlymedieval-field-support": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "earlymedieval-heavycavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 9500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "earlymedieval-rangedcavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 8300
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "earlymedieval-siege": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "earlymedieval-archer": {
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "earlymedieval-cavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 7500,
+            "max": 7500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "earlymedieval-infantry": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "latemedieval-anticavalry": {
+      "shapes": [
+        "mass",
+        "column",
+        "shield-wall",
+        "square"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": true,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "latemedieval-field-support": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "latemedieval-heavycavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 9500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "latemedieval-rangedcavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 8300
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "latemedieval-siege": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "latemedieval-archer": {
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "latemedieval-cavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 7500,
+            "max": 7500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "latemedieval-infantry": {
+      "shapes": [
+        "mass",
+        "column",
+        "shield-wall"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": true,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "earlymodern-anticavalry": {
+      "shapes": [
+        "mass",
+        "column",
+        "square",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "earlymodern-heavycavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 9500
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "earlymodern-rangedcavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 8000,
+            "max": 8300
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "napoleonic-field-support": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "napoleonic-siege": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "napoleonic-archer": {
+      "shapes": [
+        "mass",
+        "column",
+        "line"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "napoleonic-cavalry": {
+      "shapeProfiles": {
+        "mass": {
+          "minRanks": 1,
+          "aspectBp": {
+            "min": 5000,
+            "preferred": 10000,
+            "max": 20000
+          },
+          "lateralPitchBp": {
+            "min": 8000,
+            "preferred": 9000,
+            "max": 10000
+          },
+          "rankPitchBp": 10000
+        },
+        "line": {
+          "minRanks": 2,
+          "aspectBp": {
+            "min": 12500,
+            "preferred": 25000,
+            "max": 40000
+          },
+          "lateralPitchBp": {
+            "min": 7500,
+            "preferred": 7750,
+            "max": 7750
+          },
+          "rankPitchBp": 10000
+        }
+      },
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": true,
+      "hull": false,
+      "spacing": 320,
+      "bodyWidth": 230,
+      "bodyDepth": 320,
+      "transitionTicks": 30
+    },
+    "napoleonic-infantry": {
+      "shapes": [
+        "mass",
+        "column",
+        "line",
+        "wedge"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "earlymodern-field-support": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "earlymodern-siege": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "modern-anti-air": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "modern-anticavalry": {
+      "shapes": [
+        "mass",
+        "column",
+        "modern-loose"
+      ],
+      "defaultShape": "modern-loose",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "modern-heavycavalry": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "modern-rangedcavalry": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "earlymodern-archer": {
+      "shapes": [
+        "mass",
+        "column",
+        "modern-loose"
+      ],
+      "defaultShape": "modern-loose",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "earlymodern-cavalry": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "earlymodern-infantry": {
+      "shapes": [
+        "mass",
+        "column",
+        "modern-loose"
+      ],
+      "defaultShape": "modern-loose",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "modern-field-support": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "modern-launcher": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "modern-siege": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "present-day-anticavalry": {
+      "shapes": [
+        "mass",
+        "column",
+        "modern-loose"
+      ],
+      "defaultShape": "modern-loose",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "present-day-heavycavalry": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "present-day-rangedcavalry": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "modern-archer": {
+      "shapes": [
+        "mass",
+        "column",
+        "modern-loose"
+      ],
+      "defaultShape": "modern-loose",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    },
+    "modern-cavalry": {
+      "shapes": [
+        "mass",
+        "column"
+      ],
+      "defaultShape": "mass",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": true,
+      "spacing": 128,
+      "bodyWidth": 512,
+      "bodyDepth": 768,
+      "transitionTicks": 20
+    },
+    "modern-infantry": {
+      "shapes": [
+        "mass",
+        "column",
+        "modern-loose"
+      ],
+      "defaultShape": "modern-loose",
+      "shieldEquipment": false,
+      "mounted": false,
+      "hull": false,
+      "spacing": 128,
+      "bodyWidth": 128,
+      "bodyDepth": 128,
+      "transitionTicks": 20
+    }
+  }
+}
