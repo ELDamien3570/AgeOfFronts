@@ -5,6 +5,20 @@ const front=new Set(slots.filter(p=>p.x>.39||p.y>.39).map(p=>p.id));
 const offsets=new Map(slots.filter(p=>front.has(p.id)).map(p=>[p.id,{x:p.x>.39?.15:0,y:p.y>.39?.15:0}]));
 const options={enabled:true,square:false,limit:.4};
 describe('bounded reserve press',()=>{
+  it('compresses all reserve ranks toward contact within the same envelope',()=>{
+    const deep=Array.from({length:35},(_,id)=>({id,x:(id%5-2)*.2,y:(Math.floor(id/5)-3)*.2,scale:.24,front:false}));
+    const edge=new Set(deep.filter(p=>p.y>.59).map(p=>p.id));
+    const contact=new Map([...edge].map(id=>[id,{x:.04,y:.12}]));
+    const model=new ReservePress();let result=model.sample(0,deep,[2],edge,contact,{...options,crowd:true});
+    for(let i=0;i<150;i++)result=model.sample(.1,deep,[2],edge,contact,{...options,crowd:true});
+    expect(result.get(2)!.y).toBeGreaterThan(.25);
+    expect(result.get(27)!.y).toBeGreaterThan(.1);
+    expect(result.get(27)!.x).toBeGreaterThan(0);
+    for(const p of result.values())expect(Math.hypot(p.x,p.y)).toBeLessThanOrEqual(.400001);
+    const before=result;
+    const changed=model.sample(0,deep,[4],new Set(),new Map(),{...options,crowd:true});
+    for(const p of deep)expect([changed.get(p.id)!.x,changed.get(p.id)!.y]).toEqual([before.get(p.id)!.x,before.get(p.id)!.y]);
+  });
   it('supports both contacted edges with decreasing movement in deeper ranks',()=>{
     const model=new ReservePress();let result=model.sample(0,slots,[0,2],front,offsets,options);
     for(let i=0;i<80;i++)result=model.sample(.1,slots,[0,2],front,offsets,options);

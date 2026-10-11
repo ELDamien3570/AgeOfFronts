@@ -15,6 +15,7 @@ export const TROOP_DETAIL_CUTOFF = 12;
 export function installTroopPresentation(
   renderer: Renderer,
   sendCommand?: (command:Command)=>void,
+  reviewOptions?: { infantryCrowdPress?: () => boolean },
 ): LocalSkirmishPresentation {
   let nextControls = 0;
   let time = 0,
@@ -23,6 +24,7 @@ export function installTroopPresentation(
 
   const actors = new TroopActors(() => time, {
     reformInPlace: true,
+    infantryCrowdPress: reviewOptions?.infantryCrowdPress ?? (() => true),
     groundElevationAt: (x, y) => renderer.groundElevationAt(x, y),
     troops: [...RUSSIAN_TROOP_ACTORS.values()],
     byDefinitionId: RUSSIAN_TROOP_ACTORS,

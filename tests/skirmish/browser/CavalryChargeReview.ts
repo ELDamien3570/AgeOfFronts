@@ -8,7 +8,13 @@ import { OrderGesture } from '../../../src/skirmish/client/OrderGesture';
 import { canCharge } from '../../../src/skirmish/client/ChargeReadiness';
 const orderGesture=new OrderGesture();
 const canvas=document.querySelector('canvas')!;
-const renderer=new Renderer(canvas),actors=installTroopPresentation(renderer);
+const crowdControl=document.createElement('label');
+crowdControl.style.cssText='position:absolute;right:18px;bottom:14px;z-index:5;background:#101c24e8;padding:10px;border:1px solid #607c8b';
+crowdControl.innerHTML='<input id="crowd" type="checkbox" checked> Infantry crowd pressure (prototype)';
+document.body.append(crowdControl);
+const renderer=new Renderer(canvas),actors=installTroopPresentation(renderer,undefined,{
+  infantryCrowdPress:()=>document.querySelector<HTMLInputElement>('#crowd')?.checked??false,
+});
 type Mode='battle'|'front'|'flank'|'spears'|'melee'|'manual'|'corner'|'last'|'double'|'large';
 function create(mode:Mode){
   if(mode==='large')return formationBattleReviewScene();

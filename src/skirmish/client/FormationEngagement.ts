@@ -14,6 +14,7 @@ export interface EngagementIntent {
   active: boolean;
   charging: boolean;
   mounted?: boolean;
+  crowdPress?: boolean;
   ranged: boolean;
   square: boolean;
   travelHeading: number;
@@ -144,6 +145,7 @@ export class FormationEngagement {
     const reserveSteps=this.reservePress.sample(dt,slots,edges,front,this.contactOffsets,{
       enabled:engaged&&!intent.ranged&&!intent.mounted,square:intent.square,layout:intent.layout,
       limit:intent.contactAdvance===undefined?undefined:intent.contactAdvance/intent.footprint,
+      crowd:intent.crowdPress,
     });
     const ids = new Set(slots.map((s) => s.id));
     for (const id of this.attention.keys())
@@ -219,7 +221,8 @@ export class FormationEngagement {
           // Close only a bounded fraction of a legal contact gap. This is a
           // cosmetic front-rank step, never navigation or damage authority.
           const reach=(intent.meleeReach??0)/intent.footprint+slot.scale;
-          const advance=Math.min(intent.contactAdvance/intent.footprint,Math.max(0,distance-reach*.85));
+          const crowd=intent.crowdPress&&!intent.mounted&&!intent.ranged;
+          const advance=Math.min(intent.contactAdvance/intent.footprint,Math.max(0,distance-reach*(crowd ? .65 : .85)));
           if(distance>0)contactGoal={x:dx/distance*advance,y:dy/distance*advance};
         }
       }

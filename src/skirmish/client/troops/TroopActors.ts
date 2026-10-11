@@ -78,6 +78,7 @@ export interface TroopActorOptions {
   troops: readonly TroopActorDefinition[];
   byDefinitionId: ReadonlyMap<string, TroopActorDefinition>;
   reformInPlace?: boolean;
+  infantryCrowdPress?: () => boolean;
   groundElevationAt?: (x: number, y: number) => number;
   formationForSquad?: (squad: Snapshot["squads"][number]) => ManualFormation;
 }
@@ -127,6 +128,11 @@ export class TroopActors {
     }
   >();
   private readonly detailedInFrame = new Set<number>();
+  /** Visibility is published only by a completed draw. beginFrame can be
+   * followed by a throttled renderer frame, so its empty set is not culling. */
+  private readonly completedDetail = new Set<number>();
+  /** Snapshot history stays current even when actor detail is culled. */
+  private casualtySnapshot?: Snapshot;
   private readonly chargeCohorts = new Map<number,{tick:number;sourceId:number;role:string;ids:Set<number>}>();
   private readonly cavalryCohorts=new Map<number,Map<number,CavalryCohort>>();
   private readonly cavalryContinuity=new Map<number,CavalryPoseContinuity>();
@@ -168,6 +174,7 @@ export class TroopActors {
   setDetailed(enabled: boolean): boolean {
     if (enabled === this.detailed) return false;
     this.detailed = enabled;
+    this.completedDetail.clear();
     this.motions.clear();
     this.headings.clear();
     this.contacts.clear();
@@ -253,6 +260,8 @@ export class TroopActors {
     this.selectionIndex.beginFrame();
   }
   flush = (ctx: CanvasRenderingContext2D): void => {
+    this.completedDetail.clear();
+    for(const id of this.detailedInFrame)this.completedDetail.add(id);
     for(const id of this.cavalryContinuity.keys())if(!this.detailedInFrame.has(id))this.cavalryContinuity.delete(id);
     const started = performance.now();
     const entries = this.detailed ? this.drawQueue.sort() : [];
@@ -334,6 +343,8 @@ export class TroopActors {
     this.byDefinitionId = new Map([...options.byDefinitionId].map(([id, troop]) => [id, scaleTroop(troop)]));
   }
   clear(): void {
+    this.completedDetail.clear();
+    this.casualtySnapshot=undefined;
     this.chargeCohorts.clear();
     this.cavalryCohorts.clear();
     this.cavalryContinuity.clear();
@@ -428,6 +439,19 @@ export class TroopActors {
   prune(snapshot: Snapshot): void {
     const now = this.clock();
     this.playerId = snapshot.localPlayerId ?? 1;
+    const current=new Map(snapshot.squads.map(s=>[s.id,s]));
+    for(const old of this.casualtySnapshot?.squads??[]){
+      const next=current.get(old.id),troop=this.byDefinitionId.get(old.definitionId??'');
+      if(!troop)continue;
+      const count=(s:Snapshot['squads'][number])=>s.manpower?Math.max(0,s.troops):Math.ceil((troop.members??(troop.mounted?6:12))*Math.max(0,s.troops)/1000);
+      const before=count(old),after=next?count(next):0;
+      const visible=this.detailed&&this.completedDetail.has(old.id)&&this.motions.has(old.id);
+      if(before>after&&!visible)this.captureOffscreenLoss(next??old,before-after,before,snapshot.tick,now,troop);
+      // An undrawn motion history cannot be reused as current soldier poses.
+      // Reentry starts at current strength without replaying missed losses.
+      if(!visible){this.motions.delete(old.id);this.bodies.delete(old.id);this.throwers.delete(old.id);this.cavalryContinuity.delete(old.id);}
+    }
+    this.casualtySnapshot=snapshot;
     if (!this.detailed) {this.ownerBySquad.clear();this.chargeCohorts.clear();this.cavalryCohorts.clear();this.cavalryContinuity.clear();return;}
     for (const squad of snapshot.squads) this.ownerBySquad.set(squad.id, squad.playerId);
     this.headings.update(snapshot, now);
@@ -451,7 +475,7 @@ export class TroopActors {
     const opponentPoses = new Map<number, EngagementOpponents>();
     for (const squad of snapshot.squads) {
       const state = this.motions.get(squad.id);
-      const soldiers = state && this.detailedInFrame.has(squad.id)
+      const soldiers = state && this.completedDetail.has(squad.id)
         ? (this.bodies.get(squad.id)?.map(p=>({id:`${squad.id}:${p.id}`,x:p.x,y:p.y})) ?? state.motion.soldiers(now).flatMap((slot) => {
             const position = state.walkers.position(slot.id);
             return position
@@ -462,7 +486,7 @@ export class TroopActors {
       opponentPoses.set(squad.id, {
         center: { x: squad.x / FIXED, y: squad.y / FIXED },
         soldiers,
-        ...(this.detailedInFrame.has(squad.id)?{boundary:formationFootprint(squad,snapshot.tick).map(p=>({x:p.x/FIXED,y:p.y/FIXED}))}:{}),
+        ...(this.completedDetail.has(squad.id)?{boundary:formationFootprint(squad,snapshot.tick).map(p=>({x:p.x/FIXED,y:p.y/FIXED}))}:{}),
       });
     }
     for (const squad of snapshot.squads) {
@@ -671,6 +695,22 @@ export class TroopActors {
     ctx.restore();
     return true;
   };
+  private captureOffscreenLoss(squad:Snapshot['squads'][number],lost:number,before:number,tick:number,now:number,troop:TroopActorDefinition):void {
+    // Only loss events reconstruct slots; offscreen animation remains asleep.
+    const root={x:squad.x/FIXED,y:squad.y/FIXED};
+    const priorStrength={...squad,troops:squad.manpower?before:Math.ceil(before*1000/(troop.members??(troop.mounted?6:12)))};
+    const pose=squad.formation?formationRenderPose(priorStrength,tick,root):undefined;
+    const slots:FormationSlot[]=pose?this.sharedActorSlots(pose,troop.memberScale,before):actorFormationSlots(
+      troop.mounted?mountedLayout:troop.ranged?rangedLayout:footLayout,troop.mounted,'line',troop.memberScale,{...troop,members:before});
+    const angle=pose?.geometry.angle??0,c=Math.cos(angle),s=Math.sin(angle),footprint=2/.75;
+    const victims=[...slots].sort((a,b)=>b.y-a.y||Math.abs(a.x)-Math.abs(b.x)).slice(0,lost);
+    for(const [i,p] of victims.entries())this.remains.add({
+      key:`offscreen:${squad.id}:${tick}:${i}`,artwork:troop.name,
+      x:root.x+(p.x*c-p.y*s)*footprint,y:root.y+(p.x*s+p.y*c)*footprint,
+      angle:angle+(p.angle??0)+(troop.facingOffset??0),size:p.scale*footprint,
+      started:now,fallDuration:0,seed:squad.id*31+tick*17+i,color:COLORS[squad.playerId],
+    });
+  }
   private captureDeath(
     id: number,
     state: NonNullable<ReturnType<typeof this.motions.get>>,
@@ -726,7 +766,7 @@ export class TroopActors {
     width: number,
     height: number,
   ): void => {
-    if (!this.detailed) return;
+    if (!this.detailed || !this.ready) return;
     this.impacts.ground(ctx,this.clock(),tileSize,project);
     this.frameProject = project;
     const records = this.remains
@@ -772,7 +812,12 @@ export class TroopActors {
     ctx.globalAlpha = 1;
     for (const { record, p } of records) {
       if (!record.bodyVisible) continue;
-      const asset = this.assets.get(`${record.artwork}:death`)!;
+      const asset = this.assets.get(`${record.artwork}:death`);
+      if(!asset){
+        const troop=this.troops.find(t=>t.name===record.artwork);
+        if(troop&&!this.failed.has(troop.name))void this.loadActor(troop).catch(()=>this.failed.add(troop.name));
+        continue;
+      }
       const { clip } = asset;
       const { image, frame } = this.factionFrames.get(`${record.artwork}:death`, asset.image, asset.mask, clip.frames[clipFrame(clip, record.age)], record.color ?? COLORS[this.playerId]);
       const size =
@@ -922,6 +967,7 @@ export class TroopActors {
       square: shape === "square",
       travelHeading: angle,
       canonicalHeading:!!sharedPose,
+      crowdPress:!mounted&&!ranged&&!!this.options?.infantryCrowdPress?.(),
       meleeReach:sharedPose?(UNIT.get(squad.definitionId??"")?.meleeAttack?.range??0)/FIXED:undefined,
       contactAdvance:sharedPose?formationDoctrine(squad.definitionId).spacing*1.5/FIXED:undefined,
       reformInPlace: this.options?.reformInPlace,
