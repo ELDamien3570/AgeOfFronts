@@ -3,7 +3,7 @@ import type {MeleeStrike} from '../../domain/MeleeStrike';
 import type {ActorClip} from './TroopFormationModel';
 /** Stage committed strikes on their actual edges, independently of cosmetic
  * movement, target survival, facing lag and the transient effect-event budget. */
-export function committedMeleeActors(strike:MeleeStrike|undefined,tick:number,clip:ActorClip,soldiers:readonly {id:number;x:number;y:number;scale:number}[],footprint:number) {
+export function committedMeleeActors(strike:MeleeStrike|undefined,tick:number,clip:ActorClip,soldiers:readonly {id:number;x:number;y:number;scale:number;front?:boolean;angle?:number}[],footprint:number,localContact=false) {
   const result=new Map<number,{time:number;angle:number}>();
   if(!strike || !soldiers.length)return result;
   const elapsed=(tick-strike.tick)*50,frames=clip.durations??Array(clip.frameCount).fill(1000/(clip.fps??6));
@@ -18,11 +18,19 @@ export function committedMeleeActors(strike:MeleeStrike|undefined,tick:number,cl
     const length=Math.hypot(dx,dy),nx=dx/length,ny=dy/length;
     const front=Math.max(...soldiers.map(s=>s.x*nx+s.y*ny));
     let nearest=soldiers[0],distance=Infinity;
+    let eligible=false;
+    const closest=soldiers.reduce((a,b)=>Math.hypot(a.x-from.x,a.y-from.y)<=Math.hypot(b.x-from.x,b.y-from.y)?a:b);
     for(const soldier of soldiers){
+      if(localContact && soldier.front===false)continue;
+      if(localContact && soldier.angle!==undefined && Math.cos(soldier.angle+Math.PI/2-Math.atan2(ny,nx))<.25)continue;
+      eligible=true;
       const d=Math.hypot(soldier.x-from.x,soldier.y-from.y);if(d<distance){distance=d;nearest=soldier;}
-      if(front-(soldier.x*nx+soldier.y*ny)<=soldier.scale*footprint*.55 && !result.has(soldier.id))result.set(soldier.id,{time,angle:Math.atan2(ny,nx)-Math.PI/2});
+      if((localContact || front-(soldier.x*nx+soldier.y*ny)<=soldier.scale*footprint*.55) && !result.has(soldier.id))result.set(soldier.id,{time,angle:localContact?(soldier.angle??Math.atan2(ny,nx)-Math.PI/2):Math.atan2(ny,nx)-Math.PI/2});
     }
-    if(!result.has(nearest.id))result.set(nearest.id,{time,angle:Math.atan2(ny,nx)-Math.PI/2});
+    if(eligible && !result.has(nearest.id))result.set(nearest.id,{time,angle:Math.atan2(ny,nx)-Math.PI/2});
+    // A committed damage fact must finish even if its opponent dies or moves
+    // during recovery. Preserve one local contact actor, not a whole flat edge.
+    if(localContact && !eligible && !result.has(closest.id))result.set(closest.id,{time,angle:Math.atan2(to.y-closest.y,to.x-closest.x)-Math.PI/2});
   }
   return result;
 }

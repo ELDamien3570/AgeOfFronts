@@ -41,13 +41,14 @@ describe("double-click charge over an order already sent", () => {
     expect(chargeTile).toBe(map.ref(26, 35));
   });
 
-  it("rejects a charge that is not ready and leaves the move in place", () => {
+  it("admits an exhausted cavalry rush and supersedes the first click's move", () => {
     const { map, match, squad } = fixture();
     match.updateSquad(squad.id, { chargeReadyTick: match.tick + 200 });
     expect(match.applyCommand({ type: "order", playerId: 1, squadIds: [squad.id], order: { type: "move", tile: map.ref(60, 35) } })).toBeNull();
-    expect(match.applyCommand({ type: "charge", playerId: 1, squadIds: [squad.id], x: 26.5 * FIXED, y: 35.5 * FIXED })).toMatch(/ready charge/);
-    for (let tick = 0; tick < 20; tick++) match.step();
-    expect(match.squad(squad.id)!.order).toMatchObject({ type: "move" });
+    expect(match.applyCommand({ type: "charge", playerId: 1, squadIds: [squad.id], x: 26.5 * FIXED, y: 35.5 * FIXED })).toBeNull();
+    expect(squad.charge?.strength).toBeLessThan(1);
+    expect(match.movementAdmission.hasPending(squad.id)).toBe(false);
+    expect(squad.order).toMatchObject({ type: "move",tile:map.ref(26,35) });
   });
 });
 
@@ -60,6 +61,7 @@ describe("client charge readiness", () => {
     expect(chargeReadiness({ ...base, definitionId: cavalry.id, chargeReadyTick: 100 + cooldown / 2 }, 100)).toBeCloseTo(0.5);
     expect(chargeReadiness({ ...base, definitionId: cavalry.id, charge: { phase: "approach", x: 0, y: 0, startTick: 0, committedTick: 0 } }, 10)).toBe(0);
     expect(canCharge({ ...base, definitionId: cavalry.id }, 10, 3 * FIXED, 0)).toBe(true);
+    expect(canCharge({ ...base, definitionId: cavalry.id,chargeReadyTick:10+cooldown },10,3*FIXED,0)).toBe(true);
     expect(canCharge({ ...base, definitionId: cavalry.id }, 10, cavalry.charge!.maximumDistance + FIXED, 0)).toBe(false);
   });
 });

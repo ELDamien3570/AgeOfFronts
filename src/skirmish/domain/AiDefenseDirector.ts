@@ -225,6 +225,7 @@ export class AiDefenseDirector {
       let x = world.map.x(tiles[i]), y = world.map.y(tiles[i]);
       const to = tiles[(i + 1) % tiles.length];
       while (true) {
+        if (!world.map.isValidCoord(x, y)) { rectangleValid = false; break; }
         const tile = world.map.ref(x, y);
         if (!usable(tile)) rectangleValid = false;
         perimeter.add(tile);

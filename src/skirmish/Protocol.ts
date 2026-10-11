@@ -244,6 +244,9 @@ export interface Squad {
   readonly nextAttackTick?: number;
   readonly lastAttackTick?: number;
   readonly meleeStrike?: import("./domain/MeleeStrike").MeleeStrike;
+  readonly chargeImpact?: import("./domain/ChargeImpact").ChargeImpact;
+  readonly cavalryEngagement?: import('./domain/CavalryEngagement').CavalryEngagement;
+  readonly cavalryMelee?: import('./domain/CavalryMelee').CavalryMelee;
   readonly weaponState?: import("./domain/WeaponTiming").WeaponState;
   readonly magazineShots?: number;
   readonly reloadStartedTick?: number;
@@ -506,6 +509,9 @@ export interface SnapshotPacket {
     deploymentTicks?: number;
     lastAttackTick?: number;
     meleeStrike?: import("./domain/MeleeStrike").MeleeStrike;
+    chargeImpact?: import("./domain/ChargeImpact").ChargeImpact;
+    cavalryEngagement?: import('./domain/CavalryEngagement').CavalryEngagement;
+    cavalryMelee?: import('./domain/CavalryMelee').CavalryMelee;
     nextAttackTick?: number;
     weaponState?: import("./domain/WeaponTiming").WeaponState;
     magazineShots?: number;

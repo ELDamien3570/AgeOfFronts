@@ -100,6 +100,9 @@ export function formationLocomotion(
       // through the same bounded velocity integrator as the rest of the route.
       requested = Math.min(brake, remaining);
     }
+    // At rest, let each soldier pivot before translating the formation. While
+    // moving, the velocity integrator still brakes naturally into a reversal.
+    if(speed<=brake && Math.abs(headingDifference(heading,targetHeading))>MOTION.launchAlignment)requested=0;
     const vx = -Math.sin(heading) * speed;
     const vy = Math.cos(heading) * speed;
     const dx = -Math.sin(targetHeading) * requested - vx;
@@ -181,7 +184,7 @@ export function formationLocomotion(
     requested < speed
       ? Math.max(requested, speed - brake)
       : Math.min(requested, speed + acceleration);
-  if (squad.refit || squad.afloat || squad.charge?.phase === "recovery")
+  if (squad.refit || squad.afloat || squad.charge?.phase === "recovery" && squad.cavalryEngagement?.phase!=='penetrating')
     speed = 0;
   // Only use goal-length capping when aligned: braking a reversal still travels
   // in the old direction and must pass the ordinary terrain/enemy sweep guard.

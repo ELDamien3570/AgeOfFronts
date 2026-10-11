@@ -27,6 +27,10 @@ import type {
 } from "../Protocol";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
+import { recoveredChargeStrength } from './ChargeStrength';
+import { isCavalryTroopClass } from './Definitions';
+import { formationContact } from './FormationContact';
+import { CONTACT } from '../content/TacticalRules';
 import { AIRCRAFT_RULES, BOMBER_ATTACK, ATOMIC_ATTACK, DRONE_ATTACK, NAVAL_AIR_ATTACK, STRATEGIC_PAYLOADS, STRATEGIC_RULES } from "../content/ModernWeapons";
 import { personalityOf } from "../content/AiPersonalities";
 import {
@@ -658,12 +662,16 @@ export class Expansion {
       return null;
     }
     if (command.type === "charge") {
-      const fallback = (reason: string) => command.fallbackOrder
-        ? world.applyCommand({type: "order", playerId: player.id, squadIds: command.squadIds,
-          order: command.fallbackOrder.type === "attack" && !world.squad(command.fallbackOrder.targetId)
-            ? {type: "move", tile: world.map.ref(Math.floor(command.x / FIXED), Math.floor(command.y / FIXED))}
-            : command.fallbackOrder})
-        : reason;
+      const fallback = (reason: string) => {
+        if (!command.fallbackOrder) return reason;
+        let order = command.fallbackOrder;
+        if (order.type === "attack" && !world.squad(order.targetId)) {
+          const tx = Math.floor(command.x / FIXED), ty = Math.floor(command.y / FIXED);
+          if (!world.map.isValidCoord(tx, ty)) return reason;
+          order = { type: "move", tile: world.map.ref(tx, ty) };
+        }
+        return world.applyCommand({ type: "order", playerId: player.id, squadIds: command.squadIds, order });
+      };
       const selected = [...new Set(command.squadIds)].map((id) =>
         world.squad(id),
       );
@@ -677,8 +685,8 @@ export class Expansion {
             s.embarkedOn !== null ||
             Boolean(s.refit) || Boolean(s.manpower?.enlargement) ||
             !this.unit(s).charge ||
-            (s.chargeReadyTick ?? 0) > world.tick ||
-            Boolean(s.charge) ||
+            (!isCavalryTroopClass(this.unit(s).troopClass) &&
+              ((s.chargeReadyTick ?? 0) > world.tick || Boolean(s.charge))) ||
             Math.hypot(s.x - command.x, s.y - command.y) >
               this.unit(s).charge!.maximumDistance,
         )
@@ -706,9 +714,20 @@ export class Expansion {
       // the double click that issued it), so that move can never commit later.
       world.cancelMovement?.(selected.map((s) => s!.id));
       selected.forEach((s, i) => {
+        const mounted=isCavalryTroopClass(this.unit(s!).troopClass);
+        // A rush already lodged in this target is sustained melee. Reissuing it
+        // must not duplicate the impact or revoke its authorized overlap.
+        if(mounted && command.targetId!==undefined && s!.cavalryEngagement?.phase!=='withdrawing' && s!.cavalryEngagement?.targetIds.includes(command.targetId)){
+          world.updateSquad(s!.id,{order:{type:'attack',targetId:command.targetId},cavalryMelee:undefined,queuedOrders:[]});
+          return;
+        }
+        const continuing=mounted && s!.charge && s!.charge.phase!=='recovery';
+        const strength=continuing?s!.charge!.strength??1:recoveredChargeStrength(s!.chargeReadyTick,world.tick,this.unit(s!).charge!.cooldownTicks);
         world.updateSquad(s!.id, {
-          charge: { phase: world.options?.formationLocomotion ? "preparing" : "approach", x: command.x, y: command.y, startTick: world.tick, committedTick: 0, targetId: command.targetId },
-          order: { type: "move", tile }, nextPathIndex: 0, queuedOrders: [], structureTarget: null,
+          charge: { phase: continuing?s!.charge!.phase:mounted || !world.options?.formationLocomotion ? "approach" : "preparing", strength, x: command.x, y: command.y, startTick: continuing?s!.charge!.startTick:world.tick, committedTick: continuing?s!.charge!.committedTick:0, targetId: command.targetId },
+          ...(mounted?{cavalryMelee:undefined,meleeStrike:undefined,
+            cavalryEngagement:s!.cavalryEngagement?{...s!.cavalryEngagement,phase:'withdrawing' as const}:undefined}:{}),
+          order: { type: "move", tile,x:command.x,y:command.y }, nextPathIndex: 0, queuedOrders: [], structureTarget: null,
         });
         world.installSquadPath(s!.id, paths[i]!);
       });
@@ -1047,17 +1066,23 @@ export class Expansion {
           world.updateSquad(s.id, { definitionId: target.id, kind: target.line, troops:retained,manpower,xp: 0, nextAttackTick:Math.max(world.tick,s.nextAttackTick??0),refit: null });
         } else world.updateSquad(s.id, { refit: { ...s.refit, remainingTicks } });
       }
+      if (s.charge?.phase === "preparing" && isCavalryTroopClass(this.unit(s).troopClass)) {
+        world.updateSquad(s.id,{charge:{...s.charge,phase:'approach'}});
+      }
       if (s.charge?.phase === "preparing" && chargeAligned(s) && (s.locomotion?.speed ?? 0) === 0 &&
         world.tick - s.charge.startTick >= FORMATION_MOTION.prepareTicks) {
         world.updateSquad(s.id, { charge: { ...s.charge, phase: "approach", startTick: world.tick } });
       }
+      const rushTarget=s.charge?.phase==='approach' && isCavalryTroopClass(this.unit(s).troopClass) && s.charge.targetId!==undefined?world.squad(s.charge.targetId):undefined;
+      const rushContact=!!rushTarget && this.diplomacy.hostile(s.playerId,rushTarget.playerId) && formationContact(s,rushTarget,world.tick).gap<=CONTACT.release;
       if (
         s.charge?.phase === "approach" &&
-        world.tick - s.charge.startTick >= this.unit(s).charge!.runupTicks &&
-        (!world.options?.formationLocomotion || (chargeAligned(s) && s.moved && (s.locomotion?.speed ?? 0) > 0))
+        (rushContact || world.tick - s.charge.startTick >= this.unit(s).charge!.runupTicks &&
+          (!world.options?.formationLocomotion || (chargeAligned(s) && s.moved && (s.locomotion?.speed ?? 0)>0)))
       ) {
         world.updateSquad(s.id, {
-          charge: { ...s.charge, phase: "committed", committedTick: world.tick },
+          charge: { ...s.charge, phase: "committed", committedTick: world.tick,
+            ...(rushContact?{strength:(s.charge.strength??1)*Math.min(1,(world.tick-s.charge.startTick)/Math.max(1,this.unit(s).charge!.runupTicks))}:{}) },
           chargeReadyTick: world.tick + this.unit(s).charge!.cooldownTicks,
         });
       }

@@ -35,7 +35,7 @@ function isolated() {
 }
 
 describe("authoritative formation locomotion", () => {
-  it("steers crowd travel through corners without a pivot stop, and launches toward a rear goal immediately", () => {
+  it("steers moving crowds through corners and pivots before launching toward a rear goal", () => {
     for (const kind of ["infantry", "cavalry"] as const) {
       let squad: Squad = {
         ...isolated().cavalry,
@@ -72,8 +72,9 @@ describe("authoritative formation locomotion", () => {
         };
         return velocity;
       };
-      expect(advance({ x: 0, y: -40 * FIXED }).y).toBeLessThan(0);
-      for (let i = 0; i < 25; i++) advance({ x: 0, y: -40 * FIXED });
+      expect(advance({ x: 0, y: -40 * FIXED }).y).toBe(0);
+      for (let i = 0; i < 45; i++) advance({ x: 0, y: -40 * FIXED });
+      expect(squad.y).toBeLessThan(isolated().cavalry.y);
       const speeds: number[] = [];
       for (let i = 0; i < 40; i++) {
         advance({ x: 40 * FIXED, y: squad.y });
@@ -321,11 +322,8 @@ describe("authoritative formation locomotion", () => {
         targetId: enemy.id,
       }),
     ).toBeNull();
-    expect(cavalry.charge?.phase).toBe("preparing");
+    expect(cavalry.charge?.phase).toBe("approach");
     const startY = cavalry.y;
-    for (let at = 0; at < 30; at++) game.step();
-    expect(cavalry.y).toBe(startY);
-    expect(cavalry.charge?.phase).toBe("preparing");
     let committed = false;
     for (let at = 0; at < 150; at++) {
       game.step();
@@ -358,7 +356,7 @@ describe("authoritative formation locomotion", () => {
     expect(cavalry.locomotion!.speed).toBe(0);
   });
 
-  it("retains motion and preparing charges through packed transfer, wire encoding and mid-turn checkpoint replay", async () => {
+  it("retains motion and moving charges through packed transfer, wire encoding and mid-turn checkpoint replay", async () => {
     const { game, cavalry, enemy } = isolated();
     game.applyCommand({
       type: "charge",
@@ -382,7 +380,8 @@ describe("authoritative formation locomotion", () => {
     ).toEqual(cavalry.locomotion);
     expect(
       snapshot.squads.find((s) => s.id === cavalry.id)!.charge?.phase,
-    ).toBe("preparing");
+    ).toBe("approach");
+    expect(snapshot.squads.find(s=>s.id===cavalry.id)!.charge?.strength).toBe(cavalry.charge?.strength);
     const restored = stoneAgeDemo();
     restored.restore(
       await decodeState<ReturnType<typeof game.checkpoint>>(

@@ -7,6 +7,11 @@ const clip:ActorClip={id:'attack',file:'attack.png',frameCount:6,fps:6,frames:[]
 const soldiers=Array.from({length:9},(_,id)=>({id,x:id%3-1,y:Math.floor(id/3)-1,scale:.3,speed:1,turning:true,facingError:Math.PI,front:false}));
 const strike={tick:10,contacts:[{targetId:2,fromX:0,fromY:FIXED,toX:0,toY:2*FIXED},{targetId:3,fromX:FIXED,fromY:0,toX:2*FIXED,toY:0}]};
 describe('committed melee presentation',()=>{
+ it('keeps committed hits local when the live contact eligibility disappears',()=>{
+  expect([...committedMeleeActors(strike,12,clip,soldiers,1,true).keys()].sort()).toEqual([5,7]);
+  const live=soldiers.map(p=>({...p,front:p.id===6||p.id===7,angle:0}));
+  expect([...committedMeleeActors({tick:10,contacts:[strike.contacts[0]]},12,clip,live,1,true).keys()].sort()).toEqual([6,7]);
+ });
  it('plays front and flank strikes even while moving, misaligned and not cosmetically front eligible',()=>{
   const actors=committedMeleeActors(strike,12,clip,soldiers,1);
   expect([...actors.keys()].sort()).toEqual([2,5,6,7,8]);

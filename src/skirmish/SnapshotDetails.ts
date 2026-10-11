@@ -1,7 +1,11 @@
+import { validateCavalryMelee } from './domain/CavalryMelee';
 import { validateFormation } from "./domain/FormationGeometry";
 import { validateWeaponState } from "./domain/WeaponTiming";
 import { validateMeleeStrike } from "./domain/MeleeStrike";
+import { validateChargeImpact } from './domain/ChargeImpact';
+import { validateCavalryEngagement } from './domain/CavalryEngagement';
 import { validateManpower } from './domain/Manpower';
+import { validateChargeStrength } from './domain/ChargeStrength';
 import type { Age, ChargeState, RefitJob } from "./domain/Definitions";
 import { AGES } from "./domain/Definitions";
 import type {
@@ -123,7 +127,7 @@ export function packSnapshotDetails(
       b[at + 5] = number(s.lastAttackTick)
       b[at + 27] = number(s.magazineShots);
       b[at + 28] = number(s.reloadStartedTick);
-      b[at + 29] = string(s.manpower || s.meleeStrike ? JSON.stringify({manpower:s.manpower,refitVariant:s.refit?.recipeVariant,weaponState:s.weaponState,formation:s.formation,meleeStrike:s.meleeStrike}) : undefined);
+      b[at + 29] = string(s.manpower || s.meleeStrike || s.chargeImpact || s.cavalryEngagement || s.cavalryMelee || s.charge?.strength!==undefined ? JSON.stringify({chargeStrength:s.charge?.strength,manpower:s.manpower,refitVariant:s.refit?.recipeVariant,weaponState:s.weaponState,formation:s.formation,meleeStrike:s.meleeStrike,chargeImpact:s.chargeImpact,cavalryEngagement:s.cavalryEngagement,cavalryMelee:s.cavalryMelee}) : undefined);
       b[at + 6] = boolean(s.planningPaused)
       b[at + 7] = s.movementStatus
         ? reasons.indexOf(s.movementStatus.reason)
@@ -365,7 +369,7 @@ export function validateSnapshotDetails(
   if(data.version===4 && data.squads)for(let at=0;at<data.squads.length;at+=DETAIL_STRIDES.squad){
     const index=data.squads[at+29];if(Number.isNaN(index))continue;
     if(!Number.isSafeInteger(index)||index<0||index>=data.strings.length||data.strings[index].length>20000)throw new Error('Invalid manpower detail');
-    const payload=JSON.parse(data.strings[index]);validateManpower(payload.manpower);validateWeaponState(payload.weaponState);validateFormation(payload.formation,data.strings[data.squads[at+1]]);validateMeleeStrike(payload.meleeStrike);
+    const payload=JSON.parse(data.strings[index]);validateChargeStrength(payload.chargeStrength);validateManpower(payload.manpower);validateWeaponState(payload.weaponState);validateFormation(payload.formation,data.strings[data.squads[at+1]]);validateMeleeStrike(payload.meleeStrike);validateChargeImpact(payload.chargeImpact);validateCavalryEngagement(payload.cavalryEngagement);validateCavalryMelee(payload.cavalryMelee);
     if(payload.refitVariant!==undefined&&!['base','enlarged'].includes(payload.refitVariant))throw new Error('Invalid refit recipe variant');
   }
   if (data.squads)
@@ -461,9 +465,11 @@ export function unpackSnapshotDetails(
               targetId: optional(b[at + 19]),
             }
       const payload=data.version===4&&!Number.isNaN(b[at+29])?JSON.parse(data.strings[b[at+29]]):undefined;
+      validateChargeStrength(payload?.chargeStrength);
+      if(charge && payload?.chargeStrength!==undefined)charge.strength=payload.chargeStrength;
       const landRefit=refit(b,at+11);
       squadDetails!.push({
-        ...(payload?{manpower:payload.manpower,weaponState:payload.weaponState,formation:payload.formation,meleeStrike:payload.meleeStrike}:{}),
+        ...(payload?{manpower:payload.manpower,weaponState:payload.weaponState,formation:payload.formation,meleeStrike:payload.meleeStrike,chargeImpact:payload.chargeImpact,cavalryEngagement:payload.cavalryEngagement,cavalryMelee:payload.cavalryMelee}:{}),
       id: b[at],
         definitionId: string(b[at + 1]),
         xp: optional(b[at + 2]),

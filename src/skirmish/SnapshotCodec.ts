@@ -1,6 +1,9 @@
+import { validateCavalryMelee } from './domain/CavalryMelee';
 import { FORMATION_SHAPES, validateFormation } from "./domain/FormationGeometry";
 import { validateWeaponState } from "./domain/WeaponTiming";
 import { validateMeleeStrike } from "./domain/MeleeStrike";
+import { validateChargeImpact } from './domain/ChargeImpact';
+import { validateCavalryEngagement } from './domain/CavalryEngagement';
 import { FORMATION_RULES_VERSION, validateManpower } from './domain/Manpower';
 import type { TileChangeJournal } from "./TileChangeJournal";
 import type { EntityChangeJournal } from "./EntityChangeJournal";
@@ -353,7 +356,7 @@ export class SnapshotEncoder {
       expansion,
       expansionMode:metadata?(metadata.full?"full":"delta"):undefined,
       details: packSnapshotDetails(
-        source.expansion ?? selected.squads.rows.some(s => s.planningPaused === true || s.movementStatus !== undefined || s.meleeStrike !== undefined) ? selected.squads.rows : undefined,
+        source.expansion ?? selected.squads.rows.some(s => s.planningPaused === true || s.movementStatus !== undefined || s.meleeStrike !== undefined || s.chargeImpact !== undefined || s.cavalryEngagement !== undefined || s.cavalryMelee !== undefined) ? selected.squads.rows : undefined,
         source.expansion ? selected.buildings.rows : undefined,
         selected.ships.rows, source.volleys,
       ),
@@ -417,7 +420,7 @@ export class SnapshotDecoder {
     if(packet.expansion && packet.formationRulesVersion!==FORMATION_RULES_VERSION)throw new Error('Unsupported formation rules version');
     this.validate(packet);
     const records = packet.details ? unpackSnapshotDetails(packet.details) : packet;
-    for(const detail of records.squadDetails??[])validateMeleeStrike(detail.meleeStrike,packet.tick);
+    for(const detail of records.squadDetails??[]){validateMeleeStrike(detail.meleeStrike,packet.tick);validateChargeImpact(detail.chargeImpact,packet.tick);validateCavalryEngagement(detail.cavalryEngagement,packet.tick);validateCavalryMelee(detail.cavalryMelee,packet.tick);}
     if(packet.expansion){const details=new Map((records.squadDetails??[]).map(s=>[s.id,s]));for(let at=0;at<packet.squads.length;at+=SQUAD_STRIDE){validateManpower(details.get(packet.squads[at])?.manpower,packet.squads[at+4]);validateWeaponState(details.get(packet.squads[at])?.weaponState);validateFormation(details.get(packet.squads[at])?.formation,details.get(packet.squads[at])?.definitionId,packet.squads[at+4]);validateMeleeStrike(details.get(packet.squads[at])?.meleeStrike,packet.tick);}}
     const full = packet.reset || packet.entityMode !== "delta";
     const checkCapacity = (current: ReadonlyMap<number, unknown>, ids: Iterable<number>,

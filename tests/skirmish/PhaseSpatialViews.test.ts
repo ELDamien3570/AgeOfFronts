@@ -37,6 +37,8 @@ describe("phase spatial ownership", () => {
     expect(all).toContain(squad);
     expect(alive).not.toContain(squad);
     const before = game.spatialDiagnostics!.rebuilds;
+    // Restore only admitted live formations after testing the dead-row filter.
+    game.removeSquad(squad.id);
     game.restore(game.checkpoint());
     expect(game.spatialFacts("combat").ground).toBeDefined();
     expect(game.spatialDiagnostics!.rebuilds).toBe(before + 1);

@@ -8,6 +8,8 @@ interface Track {
   start: number;
   duration: number;
   faceDestination?: boolean;
+  /** Recovery displacement is relative to the live domain slot. */
+  authoritativeRecovery?: boolean;
 }
 interface Member {
   id: number;
@@ -24,6 +26,9 @@ export interface PresentedCorpse extends FormationSlot {
   age: number;
 }
 const ease = (t: number) => t * t * (3 - 2 * t);
+// Layout units per second (about 1.2 world tiles/s). Smoothstep peaks at
+// 1.5 times average speed, so duration must include that factor.
+const casualtySlotSpeed = .45;
 
 /** Cosmetic tracks are compiled on layout/casualty events, then sampled each frame. */
 export class TroopChoreography {
@@ -62,21 +67,25 @@ export class TroopChoreography {
     else this.slots=slots;
   }
   formationSoldiers(now:number):PresentedSoldier[] {
-    const members=new Map(this.members.map(m=>[m.id,m.slot]));
+    const members=new Map(this.members.map(m=>[m.id,m]));
     return this.soldiers(now).map(p=>{
-      const slot=this.slots[members.get(p.id)!];
+      const member=members.get(p.id)!;
+      // Recovery must start at the survivor's occupied position. Clamping to
+      // the new vacancy teleports it whenever a casualty changes rank packing.
+      if(member.track?.authoritativeRecovery)return p;
+      const slot=this.slots[member.slot];
       return {...p,x:slot.x+Math.max(-0.12,Math.min(0.12,p.x-slot.x)),y:slot.y+Math.max(-0.12,Math.min(0.12,p.y-slot.y))};
     });
   }
   /** Authoritative headcount and template in one step. Casualties fall from the
    * front; survivors keep their place and are re-seated by minimum travel, so a
    * re-templated formation never shuffles or crosses its members. */
-  applyAuthoritative(slots:FormationSlot[],desired:number,now:number):void {
+  applyAuthoritative(slots:FormationSlot[],desired:number,now:number,casualtyPriority?:ReadonlySet<number>,preserveAssignment=false):void {
     this.corpses=this.corpses.filter(c=>now-c.started<2600);
     const old=this.slots,target=Math.min(desired,slots.length),before=this.members.length;
     if(this.members.length>target){
       const place=(m:Member)=>old[m.slot]??slots[m.slot];
-      const order=[...this.members].sort((a,b)=>place(b).y-place(a).y||Math.abs(place(a).x)-Math.abs(place(b).x)||a.id-b.id);
+      const order=[...this.members].sort((a,b)=>Number(casualtyPriority?.has(b.id)??false)-Number(casualtyPriority?.has(a.id)??false)||place(b).y-place(a).y||Math.abs(place(a).x)-Math.abs(place(b).x)||a.id-b.id);
       const victims=new Set(order.slice(0,this.members.length-target));
       for(const m of victims)this.corpses.push({...this.pose(m,now),id:m.id,started:now});
       this.members=this.members.filter(m=>!victims.has(m));
@@ -87,19 +96,30 @@ export class TroopChoreography {
       this.members.push({id:this.nextMemberId++,slot:rear});
     }
     const n=this.members.length;
+    if(preserveAssignment && old.length===slots.length && n===before){this.slots=slots;return;}
     const unchanged=old.length===slots.length&&n===before&&slots.every((s,i)=>s.x===old[i].x&&s.y===old[i].y&&(s.angle??0)===(old[i].angle??0));
     if(unchanged&&this.members.every(m=>m.slot<n)){this.slots=slots;return;}
     const sources=this.members.map(m=>this.pose(m,now));
     this.slots=slots;
     const assignment=minimumTravelAssignment(sources,slots.slice(0,n));
     for(let j=0;j<n;j++){
-      const source=sources[assignment[j]],m=this.members[assignment[j]];m.slot=j;
+      const source=sources[assignment[j]],m=this.members[assignment[j]],recovering=!!m.track?.authoritativeRecovery;m.slot=j;
       // Casualty gap closure is cosmetic and cannot restart a domain reform.
-      m.track=n<before?{from:source,via:{...slots[j],x:(source.x+slots[j].x)/2,y:(source.y+slots[j].y)/2},to:slots[j],start:now,duration:450}:undefined;
+      const distance=Math.hypot(source.x-slots[j].x,source.y-slots[j].y);
+      m.track=n<before||recovering?{from:source,via:{...slots[j],x:(source.x+slots[j].x)/2,y:(source.y+slots[j].y)/2},to:slots[j],start:now,duration:Math.max(450,1500*distance/casualtySlotSpeed),authoritativeRecovery:true}:undefined;
     }
   }
   advanceAuthoritative(now:number,desired:number):void {
     this.applyAuthoritative(this.slots,desired,now);
+  }
+  /** Coordinate change only. Preserve identities and every world position;
+   * the next authoritative layout compiles any actual reseating once. */
+  rebaseFrame(delta:number):void {
+    const c=Math.cos(delta),s=Math.sin(delta);
+    const rotate=(p:FormationSlot):FormationSlot=>({...p,x:p.x*c-p.y*s,y:p.x*s+p.y*c,angle:(p.angle??0)+delta});
+    this.slots=this.slots.map(rotate);
+    for(const member of this.members)if(member.track){const t=member.track;member.track={...t,from:rotate(t.from),via:rotate(t.via),to:rotate(t.to)};}
+    this.corpses=this.corpses.map(p=>({...p,...rotate(p)}));
   }
   get count(): number {
     return this.members.length;
@@ -109,6 +129,13 @@ export class TroopChoreography {
     const track = member.track;
     if (!track) return this.slots[member.slot];
     const t = Math.max(0, Math.min(1, (now - track.start) / track.duration));
+    if(track.authoritativeRecovery){
+      const slot=this.slots[member.slot];
+      if(t>=1){member.track=undefined;return slot;}
+      const remaining=1-ease(t);
+      return {...slot,x:slot.x+(track.from.x-track.to.x)*remaining,y:slot.y+(track.from.y-track.to.y)*remaining,
+        angle:(track.from.angle??0)+Math.atan2(Math.sin((slot.angle??0)-(track.from.angle??0)),Math.cos((slot.angle??0)-(track.from.angle??0)))*ease(t)};
+    }
     if (t >= 1) {
       member.track = undefined;
       return track.to;

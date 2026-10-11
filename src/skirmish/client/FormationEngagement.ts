@@ -1,10 +1,14 @@
 import { formationMovementProfile } from "../FormationMovementProfile";
+import { OpponentAttention } from './OpponentAttention';
+import { nearestContactPoint } from '../domain/ContactFront';
+import { ReservePress } from './ReservePress';
 import type { SoldierSlot } from "./FormationSoldierMotion";
 
 type Point = { x: number; y: number };
 export interface EngagementOpponents {
   center: Point;
   soldiers: readonly (Point & { id: string })[];
+  boundary?:readonly Point[];
 }
 export interface EngagementIntent {
   active: boolean;
@@ -27,17 +31,10 @@ export interface EngagementIntent {
   /** Visible opponent poses only; no individual combat or damage entities. */
   opponents?: readonly EngagementOpponents[];
 }
-interface Shift {
-  from: Point;
-  to: Point;
-  start: number;
-  duration: number;
-  bend: number;
-}
 const delta = (a: number, b: number) =>
   Math.atan2(Math.sin(b - a), Math.cos(b - a));
-const ease = (t: number) => t * t * (3 - 2 * t);
 const zero = { x: 0, y: 0 };
+const opponentIndexes=new WeakMap<EngagementOpponents,OpponentAttention>();
 
 /** Presentation only: stable footprint, independent attention and reusable reserve-step tracks. */
 export class FormationEngagement {
@@ -45,25 +42,16 @@ export class FormationEngagement {
   private previous?: number;
   private sector?: number;
   private candidate?: { sector: number; since: number };
-  private planKey = "";
-  private readonly shifts = new Map<number, Shift>();
+  private readonly reservePress:ReservePress;
   private readonly attention = new Map<number, string>();
-  constructor(private readonly variant = 0) {}
+  private readonly contactOffsets = new Map<number,Point>();
+  constructor(variant = 0) {this.reservePress=new ReservePress(variant);}
 
-  private offset(id: number, now: number): Point {
-    const track = this.shifts.get(id);
-    if (!track) return zero;
-    const t = Math.max(0, Math.min(1, (now - track.start) / track.duration));
-    const u = ease(t);
-    // The same left/right/straight lane templates work at every attack bearing.
-    const arc = Math.sin(Math.PI * u) * track.bend;
-    const dx = track.to.x - track.from.x,
-      dy = track.to.y - track.from.y;
-    const length = Math.hypot(dx, dy) || 1;
-    return {
-      x: track.from.x + dx * u - (dy / length) * arc,
-      y: track.from.y + dy * u + (dx / length) * arc,
-    };
+  /** Coordinate change only; a new facing must not rotate existing footwork. */
+  rebaseFrame(angle:number):void {
+    const c=Math.cos(angle),s=Math.sin(angle);
+    for(const [id,p] of this.contactOffsets)this.contactOffsets.set(id,{x:p.x*c-p.y*s,y:p.x*s+p.y*c});
+    this.reservePress.rebaseFrame(angle);
   }
 
   sample(
@@ -153,58 +141,33 @@ export class FormationEngagement {
     const front = new Set(
       slots.filter((s) => edges.some((e) => onEdge(s, e))).map((s) => s.id),
     );
-    const key = `${engaged}:${intent.ranged}:${intent.square}:${intent.layout ?? ""}:${this.sector}:${slots.map((s) => s.id).join(",")}`;
-    if (key !== this.planKey) {
-      this.planKey = key;
-      const reserves =
-        engaged && !intent.ranged && !intent.square
-          ? slots
-              .filter((s) => !front.has(s.id))
-              .sort(
-                (a, b) =>
-                  Math.hypot(a.x - primary!.x, a.y - primary!.y) -
-                    Math.hypot(b.x - primary!.x, b.y - primary!.y) ||
-                  a.id - b.id,
-              )
-              .slice(0, 2)
-          : [];
-      const volunteers = new Set(reserves.map((s) => s.id));
-      for (const slot of slots) {
-        const step = volunteers.has(slot.id) ? slot.scale * 0.32 : 0;
-        const direction = ((this.sector ?? 0) * Math.PI) / 4;
-        this.shifts.set(slot.id, {
-          from: this.offset(slot.id, now),
-          to: { x: Math.cos(direction) * step, y: Math.sin(direction) * step },
-          start: now + 180 + ((slot.id + this.variant) % 4) * 90,
-          duration: 850 + ((slot.id * 7 + this.variant) % 3) * 120,
-          bend: (((slot.id + this.variant) % 3) - 1) * slot.scale * 0.05,
-        });
-      }
-    }
+    const reserveSteps=this.reservePress.sample(dt,slots,edges,front,this.contactOffsets,{
+      enabled:engaged&&!intent.ranged&&!intent.mounted,square:intent.square,layout:intent.layout,
+      limit:intent.contactAdvance===undefined?undefined:intent.contactAdvance/intent.footprint,
+    });
     const ids = new Set(slots.map((s) => s.id));
-    for (const id of this.shifts.keys())
-      if (!ids.has(id)) this.shifts.delete(id);
     for (const id of this.attention.keys())
       if (!ids.has(id)) this.attention.delete(id);
+    for(const id of this.contactOffsets.keys())if(!ids.has(id))this.contactOffsets.delete(id);
     const opponents = (intent.opponents ?? []).map((group) => ({
       center: local(group.center),
-      soldiers: group.soldiers.map((soldier) => ({
-        ...local(soldier),
-        id: soldier.id,
-      })),
+      group,
     }));
     const presented = slots.map((slot) => {
-      const shift = this.offset(slot.id, now);
+      const shift = reserveSteps.get(slot.id)??zero;
       let x = slot.x + shift.x,
         y = slot.y + shift.y;
+      let contactGoal=zero;
+      const priorContact=this.contactOffsets.get(slot.id)??zero;
       let angle =
         intent.reformInPlace && intent.travelling && !engaged
           ? 0
-          : (slot.angle ?? 0);
+          : (reserveSteps.get(slot.id)?.angle??slot.angle??0);
       let inMeleeContact=!intent.canonicalHeading || intent.meleeReach===undefined;
+      let target:Point|undefined;
       if (engaged && (!intent.square || intent.ranged || front.has(slot.id))) {
         // Square defenders retain their own edge's attention, including rear attacks.
-        let target =
+        target =
           !intent.ranged
             ? targets
                 .filter((_, i) => onEdge(slot, edges[i]))
@@ -221,53 +184,69 @@ export class FormationEngagement {
                 group.center.y - target!.y,
               ) < 0.001,
           );
-          if (contact?.soldiers.length) {
+          if (contact?.group.soldiers.length) {
             // Prefer opponents ahead of this slot on its fighting edge. This
             // spreads attention across the actual frontage instead of converging
             // every weapon on the squad center. Overlapping lines may have no
             // opponent ahead, in which case use the nearest visible opponent.
-            const ahead = contact.soldiers.filter(
-              (opponent) =>
-                (opponent.x - x) * target!.x + (opponent.y - y) * target!.y > 0,
-            );
-            const candidates = ahead.length ? ahead : contact.soldiers;
-            const distance = (point: Point) =>
-              Math.hypot(point.x - x, point.y - y);
-            const nearest = candidates.reduce((best, candidate) =>
-              distance(candidate) < distance(best) ? candidate : best,
-            );
-            const previous = candidates.find(
-              (candidate) => candidate.id === this.attention.get(slot.id),
-            );
+            let index=opponentIndexes.get(contact.group);
+            if(!index)opponentIndexes.set(contact.group,index=new OpponentAttention(contact.group.soldiers));
+            const origin={x:anchor.x+(x*cos-y*sin)*intent.footprint,y:anchor.y+(x*sin+y*cos)*intent.footprint};
+            const direction={x:target.x*cos-target.y*sin,y:target.x*sin+target.y*cos};
+            const ahead=index.nearest(origin,direction),nearest=ahead??index.nearest(origin)!;
+            let previous=index.point(this.attention.get(slot.id)??'');
+            if(previous && ahead && (previous.x-origin.x)*direction.x+(previous.y-origin.y)*direction.y<=0)previous=undefined;
+            const distance=(point:Point)=>(point.x-origin.x)**2+(point.y-origin.y)**2;
             // Keep a living opponent through small position noise. Replace it
             // when it leaves this edge, dies, or another is materially nearer.
             const chosen =
-              previous && distance(nearest) >= distance(previous) * 0.85
+              previous && distance(nearest) >= distance(previous) * (0.85**2)
                 ? previous
                 : nearest;
             this.attention.set(slot.id, chosen.id);
-            target = chosen;
-          } else this.attention.delete(slot.id);
+            target = local(chosen);
+          } else {
+            this.attention.delete(slot.id);
+            if(contact?.group.boundary){
+              const origin={x:anchor.x+(x*cos-y*sin)*intent.footprint,y:anchor.y+(x*sin+y*cos)*intent.footprint};
+              const point=nearestContactPoint(origin,contact.group.boundary);
+              if(point)target=local(point);
+            }
+          }
         } else this.attention.delete(slot.id);
         if(target && !intent.ranged && front.has(slot.id) && intent.contactAdvance!==undefined){
           const dx=target.x-x,dy=target.y-y,distance=Math.hypot(dx,dy);
           // Close only a bounded fraction of a legal contact gap. This is a
           // cosmetic front-rank step, never navigation or damage authority.
           const reach=(intent.meleeReach??0)/intent.footprint+slot.scale;
-          const advance=Math.min(intent.contactAdvance/intent.footprint,Math.max(0,(distance-reach)/2));
-          if(distance>0){x+=dx/distance*advance;y+=dy/distance*advance;}
+          const advance=Math.min(intent.contactAdvance/intent.footprint,Math.max(0,distance-reach*.85));
+          if(distance>0)contactGoal={x:dx/distance*advance,y:dy/distance*advance};
         }
-        if(target && !intent.ranged && intent.canonicalHeading && intent.meleeReach!==undefined)
-          inMeleeContact=Math.hypot(target.x-x,target.y-y)<=intent.meleeReach/intent.footprint+slot.scale;
-        if (target)
-          angle = Math.atan2(target.y - y, target.x - x) - Math.PI / 2;
       }
+      // Lost eligibility and new attention both change the goal, never the
+      // current displacement. Bound the entire correction, including release.
+      const blend=1-Math.exp(-dt*8),dx=(contactGoal.x-priorContact.x)*blend,dy=(contactGoal.y-priorContact.y)*blend;
+      const distance=Math.hypot(dx,dy),limit=formationMovementProfile(!!intent.mounted).stepSpeed*dt/intent.footprint;
+      const factor=distance>0?Math.min(1,limit/distance):0;
+      const offset={x:priorContact.x+dx*factor,y:priorContact.y+dy*factor};
+      this.contactOffsets.set(slot.id,offset);x+=offset.x;y+=offset.y;
+      // A supporting reserve can become the front after a casualty. Its
+      // fading support step and growing contact step share one displacement
+      // limit; promotion cannot temporarily double the allowed excursion.
+      if(intent.contactAdvance!==undefined){
+        const dx=x-slot.x,dy=y-slot.y,length=Math.hypot(dx,dy),limit=intent.contactAdvance/intent.footprint;
+        if(length>limit){x=slot.x+dx/length*limit;y=slot.y+dy/length*limit;}
+      }
+      if(target && !intent.ranged && intent.canonicalHeading && intent.meleeReach!==undefined)
+        inMeleeContact=Math.hypot(target.x-x,target.y-y)<=intent.meleeReach/intent.footprint+slot.scale;
+      if (target)
+        angle = Math.atan2(target.y - y, target.x - x) - Math.PI / 2;
       return {
         ...slot,
         x,
         y,
         angle,
-        step: Math.hypot(shift.x, shift.y) > 0.001,
+        step: !!reserveSteps.get(slot.id)?.moving || Math.hypot(contactGoal.x-priorContact.x,contactGoal.y-priorContact.y)>.001,
         front: engaged ? intent.ranged || front.has(slot.id) && inMeleeContact : slot.front,
       };
     });

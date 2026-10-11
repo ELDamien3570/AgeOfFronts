@@ -41,4 +41,16 @@ describe("bounded terrain-aware city outlines", () => {
     const coast = new AiDefenseOutline(map, bounds, t => map.y(t) >= 28);
     coast.step(100); expect(coast.state.phase).toBe("failed"); expect(coast.result()).toBeUndefined();
   });
+  it("safely handles cities near map borders without throwing invalid coordinate exceptions", () => {
+    const width = 250, height = 125;
+    const cells = new Uint8Array(width * height).fill(133), map = new GameMapImpl(width, height, cells, cells.length);
+    // Boundary near southern edge where y = 124 is valid and 125 is out of bounds
+    const bounds = { left: 50, top: 110, right: 60, bottom: 120 };
+    const planner = new AiDefenseOutline(map, bounds, () => true);
+    expect(() => {
+      for (let i = 0; i < 2000 && !["complete", "failed"].includes(planner.state.phase); i++) {
+        planner.step(16);
+      }
+    }).not.toThrow();
+  });
 });

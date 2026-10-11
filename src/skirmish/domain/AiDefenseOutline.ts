@@ -57,9 +57,13 @@ export class AiDefenseOutline {
       }
       if (s.phase === "outline") {
         const turns = s.turns!, from = turns[s.segment!], to = turns[(s.segment! + 1) % turns.length],
-          length = this.map.manhattanDist(from, to), pieces = Math.ceil(length / 12), at = s.offset!++,
-          tile = this.map.ref(this.map.x(from) + Math.sign(this.map.x(to) - this.map.x(from)) * at,
-            this.map.y(from) + Math.sign(this.map.y(to) - this.map.y(from)) * at);
+          dx = this.map.x(to) - this.map.x(from), dy = this.map.y(to) - this.map.y(from),
+          length = Math.abs(dx) + Math.abs(dy), pieces = Math.ceil(length / 12), at = s.offset!++;
+        if (length === 0 || (dx !== 0 && dy !== 0)) { this.fail("Outline contains non-cardinal segment"); continue; }
+        const tx = this.map.x(from) + Math.sign(dx) * at,
+          ty = this.map.y(from) + Math.sign(dy) * at;
+        if (!this.map.isValidCoord(tx, ty)) { this.fail("Outline stepped outside map bounds"); continue; }
+        const tile = this.map.ref(tx, ty);
         s.result!.perimeter.add(tile);
         const part = Math.round(at * pieces / length);
         if (part < pieces && Math.round(part * length / pieces) === at) s.result!.towers.push(tile);
@@ -109,7 +113,9 @@ export class AiDefenseOutline {
       const to = this.map.ref(x, y); if (s.parent.has(to)) continue;
       let valid = true;
       for (let n = 1; n <= 4; n++) {
-        const tile = this.map.ref(this.map.x(from) + Math.sign(dx) * n, this.map.y(from) + Math.sign(dy) * n);
+        const nx = this.map.x(from) + Math.sign(dx) * n, ny = this.map.y(from) + Math.sign(dy) * n;
+        if (!this.map.isValidCoord(nx, ny)) { valid = false; break; }
+        const tile = this.map.ref(nx, ny);
         if (!this.allowed(tile)) { valid = false; break; }
       }
       if (!valid) continue;

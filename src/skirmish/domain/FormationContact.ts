@@ -215,13 +215,14 @@ function computeFormationContact(
   a: FormationBody,
   b: FormationBody,
   tick: number,
+  apart=formationFootprints(a,tick),
+  bpart=formationFootprints(b,tick),
+  angle=formationEnvelope(a,tick).angle,
 ): FormationContact {
   const dx = b.x - a.x,
     dy = b.y - a.y,
     n = Math.hypot(dx, dy);
   let normal = n ? { x: dx / n, y: dy / n } : { x: 0, y: 1 };
-  const apart = formationFootprints(a, tick),
-    bpart = formationFootprints(b, tick);
   let pair = {
     ap: apart[0],
     bp: bpart[0],
@@ -269,8 +270,7 @@ function computeFormationContact(
     };
   const tangent = { x: -normal.y, y: normal.x },
     ap = projection(pair.ap, tangent),
-    bp = projection(pair.bp, tangent),
-    angle = formationEnvelope(a, tick).angle;
+    bp = projection(pair.bp, tangent);
   return {
     gap: pair.gap,
     source,
@@ -309,6 +309,32 @@ export function formationFootprints(s:FormationBody,tick:number):Point[][] {
   const cached=facts(s,tick);return cached.parts??(cached.parts=computeFormationFootprints(s,tick));
 }
 const contacts=new WeakMap<BodyFacts,WeakMap<BodyFacts,FormationContact>>();
+/** Owned phase consumers resolve a body once, then use its exact contact facts.
+ * Captured scalar coordinates prevent borrowed-record mutation from changing a
+ * prepared pose. Formation/manpower containers follow the immutable domain contract.
+ */
+export class PreparedFormationBody {
+  readonly body:FormationBody;
+  readonly envelope:ReturnType<typeof formationEnvelope>;
+  private readonly cached:BodyFacts;
+  constructor(s:FormationBody,private readonly tick:number,envelope=formationEnvelope(s,tick)) {
+    this.body={id:s.id,x:s.x,y:s.y,kind:s.kind,troops:s.troops,manpower:s.manpower,
+      definitionId:s.definitionId,formation:s.formation,charge:s.charge};
+    this.envelope=envelope;this.cached=facts(s,tick);
+  }
+  private parts():Point[][] {
+    return this.cached.parts??(this.cached.parts=computeFormationFootprints(this.body,this.tick));
+  }
+  contact(other:PreparedFormationBody):FormationContact {
+    // Settled bodies are clock-independent and may survive a phase boundary.
+    if(this.tick!==other.tick && this.body.formation?.transition && other.body.formation?.transition)
+      throw Error('Animated prepared combat geometry belongs to different ticks');
+    let rows=contacts.get(this.cached);if(!rows){rows=new WeakMap();contacts.set(this.cached,rows);}
+    let result=rows.get(other.cached);
+    if(!result){result=computeFormationContact(this.body,other.body,this.tick,this.parts(),other.parts(),this.envelope.angle);rows.set(other.cached,result);}
+    return result;
+  }
+}
 export function formationContact(a:FormationBody,b:FormationBody,tick:number):FormationContact {
   const af=facts(a,tick),bf=facts(b,tick);let rows=contacts.get(af);if(!rows){rows=new WeakMap();contacts.set(af,rows);}
   let result=rows.get(bf);if(!result){result=computeFormationContact(a,b,tick);rows.set(bf,result);}return result;

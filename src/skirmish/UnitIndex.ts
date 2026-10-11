@@ -1,4 +1,5 @@
 import type { Ship, Squad } from "./Protocol";
+import { physicalGeometryKey } from "./domain/FormationGeometry";
 
 type Unit = Squad | Ship;
 interface Facts {
@@ -9,11 +10,14 @@ interface Facts {
   definition: string | undefined;
   alive: boolean;
   carrier: number | null;
+  afloat:boolean;
   ordinal: number;
+  poseRevision:number;
   troops?:number;
   capacity?:number;
   variant?:string;
-  formation?:Squad["formation"];
+  geometry?:string;
+  formation?:Squad['formation'];
   chargePhase?:string;
 }
 class Bucket<T extends Unit> {
@@ -55,6 +59,7 @@ export type UnitQueries<T extends Unit> = Readonly<
     | "cargoRevision"
     | "dynamicRevision"
     | "spatialRevision"
+    | "poseRevision"
     | "diagnostics"
   >
 >;
@@ -95,6 +100,7 @@ export class UnitIndex<T extends Unit> {
         this.carriers.size,
     };
   }
+  poseRevision(id:number):number|undefined {return this.facts.get(id)?.poseRevision;}
   private describe(record: T, ordinal: number): Facts {
     return {
       x: record.x,
@@ -104,8 +110,10 @@ export class UnitIndex<T extends Unit> {
       definition: record.definitionId,
       alive: "troops" in record ? record.troops > 0 : record.health > 0,
       carrier: "embarkedOn" in record ? record.embarkedOn : null,
+      afloat:"afloat" in record && !!record.afloat,
       ordinal,
-      ...("troops" in record ? {troops:record.troops,capacity:record.manpower?.capacity,variant:record.manpower?.variant,formation:record.formation,chargePhase:record.charge?.phase}:{}),
+      poseRevision:this.spatialRevision,
+      ...("troops" in record ? {troops:record.troops,capacity:record.manpower?.capacity,variant:record.manpower?.variant,formation:record.formation,geometry:physicalGeometryKey(record),chargePhase:record.charge?.phase}:{}),
     };
   }
   private key(owner: number, value: string | undefined): string {
@@ -157,10 +165,14 @@ export class UnitIndex<T extends Unit> {
       throw new Error("Unowned unit change");
     const alive = "troops" in record ? record.troops > 0 : record.health > 0;
     const carrier = "embarkedOn" in record ? record.embarkedOn : null;
-    const geometryChanged = "troops" in record && (before.troops!==record.troops || before.capacity!==record.manpower?.capacity || before.variant!==record.manpower?.variant || before.formation!==record.formation || before.chargePhase!==record.charge?.phase);
-    if (before.x !== record.x || before.y !== record.y || before.owner !== record.playerId ||
-      before.kind !== record.kind || before.alive !== alive || before.carrier !== carrier || geometryChanged || before.definition!==record.definitionId)
-      this.spatialRevision++;
+    const afloat="afloat" in record && !!record.afloat;
+    const geometryInputsChanged = "troops" in record && (before.troops!==record.troops || before.capacity!==record.manpower?.capacity ||
+      before.variant!==record.manpower?.variant || before.formation!==record.formation || before.chargePhase!==record.charge?.phase || before.definition!==record.definitionId);
+    const geometry = geometryInputsChanged ? physicalGeometryKey(record as Squad) : before.geometry;
+    const geometryChanged = before.geometry !== geometry;
+    const spatialChanged=before.x !== record.x || before.y !== record.y || before.owner !== record.playerId ||
+      before.kind !== record.kind || before.alive !== alive || before.carrier !== carrier || before.afloat!==afloat || geometryChanged || before.definition!==record.definitionId;
+    if(spatialChanged)this.spatialRevision++;
     const after = before.owner !== record.playerId || before.kind !== record.kind ||
       before.definition !== record.definitionId || before.alive !== alive || before.carrier !== carrier
       ? this.describe(record, before.ordinal) : before;
@@ -183,7 +195,9 @@ export class UnitIndex<T extends Unit> {
       this.cargoRevision++;
     }
     this.facts.set(record.id, after);
-    if("troops" in record){after.troops=record.troops;after.capacity=record.manpower?.capacity;after.variant=record.manpower?.variant;after.formation=record.formation;after.chargePhase=record.charge?.phase;}
+    after.afloat=afloat;
+    if(spatialChanged)after.poseRevision=this.spatialRevision;
+    if("troops" in record){after.troops=record.troops;after.capacity=record.manpower?.capacity;after.variant=record.manpower?.variant;after.formation=record.formation;after.geometry=geometry;after.chargePhase=record.charge?.phase;}
     after.x = record.x;
     after.y = record.y;
     this.dynamicRevision++;
@@ -260,6 +274,7 @@ export class UnitIndex<T extends Unit> {
       const actual = this.facts.get(record.id);
       if (
         !actual ||
+        !Number.isSafeInteger(actual.poseRevision) || actual.poseRevision<0 || actual.poseRevision>this.spatialRevision ||
         seen.has(record.id) ||
         this.records.get(record.id) !== record
       )
@@ -268,7 +283,7 @@ export class UnitIndex<T extends Unit> {
       const expected = this.describe(record, actual!.ordinal);
       if (
         Object.keys(expected).some(
-          (key) => actual![key as keyof Facts] !== expected[key as keyof Facts],
+          (key) => key !== 'poseRevision' && actual![key as keyof Facts] !== expected[key as keyof Facts],
         )
       )
         fail();

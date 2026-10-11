@@ -9,6 +9,7 @@ export type SpatialQueries<T extends { x: number; y: number }> = Readonly<
 export type SpatialPhase = "combat" | "trade" | "projectiles";
 export interface PhaseSpatialFacts {
   readonly tick: number;
+  readonly groundRevision: number;
   readonly phase: SpatialPhase;
   readonly ground: SpatialQueries<Squad>;
   readonly groundAlive: SpatialQueries<Squad>;
@@ -116,6 +117,7 @@ export class PhaseSpatialViews {
     };
     return {
       tick,
+      groundRevision,
       phase,
       get ground() {
         return ground();

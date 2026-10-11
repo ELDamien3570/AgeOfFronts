@@ -26,6 +26,50 @@ const intent: EngagementIntent = {
   target: { x: 3, y: 0 },
 };
 describe("independent formation engagement", () => {
+  it('retains contact displacement when a square switches its fighting edge, then walks it home',()=>{
+    const model=new FormationEngagement();
+    const config={...intent,square:true,canonicalHeading:true,meleeReach:.1,contactAdvance:.8};
+    model.sample(0,anchor,slots,config);
+    let before=model.sample(100,anchor,slots,config);
+    for(let now=200;now<=2000;now+=100)before=model.sample(now,anchor,slots,config);
+    const switched={...config,target:{x:-3,y:0}};
+    const sameTime=model.sample(2000,anchor,slots,switched);
+    expect(sameTime.slots.map(p=>[p.x,p.y])).toEqual(before.slots.map(p=>[p.x,p.y]));
+    const next=model.sample(2016,anchor,slots,switched);
+    for(const p of next.slots){const old=before.slots.find(q=>q.id===p.id)!;
+      expect(Math.hypot(p.x-old.x,p.y-old.y)*intent.footprint).toBeLessThan(.03);
+    }
+    let settled=next;
+    for(let now=2100;now<=10000;now+=100)settled=model.sample(now,anchor,slots,{...switched,active:false});
+    expect(settled.slots.find(p=>p.id===7)!.x).toBeCloseTo(slots[7].x,3);
+  });
+  it('rebases ongoing front and reserve steps without moving their occupied ground',()=>{
+    const model=new FormationEngagement();
+    const config={...intent,canonicalHeading:true,meleeReach:.1,contactAdvance:.8};
+    model.sample(0,anchor,slots,config);
+    let before=model.sample(100,anchor,slots,config);
+    for(let now=200;now<=2000;now+=100)before=model.sample(now,anchor,slots,config);
+    model.rebaseFrame(-Math.PI/2);
+    const rotated=slots.map(p=>({...p,x:p.y,y:-p.x}));
+    const after=model.sample(2000,anchor,rotated,{...config,travelHeading:Math.PI/2});
+    for(const p of after.slots){const old=before.slots.find(q=>q.id===p.id)!;
+      expect(-p.y).toBeCloseTo(old.x);expect(p.x).toBeCloseTo(old.y);
+    }
+  });
+  it('bends adjacent fighting edges toward a corner within a bounded local step',()=>{
+    const model=new FormationEngagement(),target={x:1.1,y:1.1};
+    const opponents=[{center:target,soldiers:[{id:'corner',x:.9,y:.9}]}];
+    const config={...intent,target,opponents,canonicalHeading:true,meleeReach:.1,contactAdvance:.4};
+    model.sample(0,anchor,slots,config);
+    let result=model.sample(100,anchor,slots,config);
+    for(let tick=2;tick<30;tick++)result=model.sample(tick*100,anchor,slots,config);
+    const moved=result.slots.filter(p=>Math.hypot(p.x-slots[p.id].x,p.y-slots[p.id].y)>.02);
+    expect(moved.some(p=>slots[p.id].x>.29)).toBe(true);
+    expect(moved.some(p=>slots[p.id].y===.16)).toBe(true);
+    for(const p of result.slots)expect(Math.hypot(p.x-slots[p.id].x,p.y-slots[p.id].y)*intent.footprint).toBeLessThanOrEqual(.401);
+    const released=model.sample(3000,anchor,slots,{...config,active:false});
+    expect(released.slots.some(p=>Math.hypot(p.x-slots[p.id].x,p.y-slots[p.id].y)>.001)).toBe(true);
+  });
   it("keeps attack animation eligibility on the actual edge through turns and front-rank casualties",()=>{
     const model=new FormationEngagement();
     for(const [frame,heading] of [0,Math.PI/2,Math.PI].entries()){
@@ -151,7 +195,7 @@ describe("independent formation engagement", () => {
       3, 7, 11,
     ]);
   });
-  it("uses small staggered reserve tracks, preserving continuity when interrupted", () => {
+  it("presses reserve bands, preserving continuity when interrupted", () => {
     const model = new FormationEngagement(3);
     model.sample(0, anchor, slots, intent);
     const before = model.sample(800, anchor, slots, intent);
@@ -159,7 +203,7 @@ describe("independent formation engagement", () => {
       before.slots.filter(
         (s, i) => Math.hypot(s.x - slots[i].x, s.y - slots[i].y) > 0.001,
       ),
-    ).toHaveLength(2);
+    ).toHaveLength(9);
     const removed = slots.filter((s) => s.id !== 11);
     const after = model.sample(800, anchor, removed, intent);
     expect(after.slots.map((s) => [s.id, s.x, s.y])).toEqual(

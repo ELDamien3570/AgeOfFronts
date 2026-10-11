@@ -1814,10 +1814,10 @@ canvas.addEventListener("pointerup", (event) => {
         command(ordinary);
     }}, !start.shift && !structureOrder ? ()=>{
       // The first click's order is already under way. The second click charges
-      // only squads ready to charge here; the rest keep that order.
+      // eligible squads here; cavalry stamina changes impact, not admission.
       const x=Math.round(position.x*FIXED),y=Math.round(position.y*FIXED),tick=snapshot?.tick ?? 0;
       const chargers=ids.filter(id=>{const s=snapshot?.squads.find(q=>q.id===id);return !!s && canCharge(s,tick,x,y);});
-      if(!chargers.length){notify("No selected squad has a ready charge in range");return;}
+      if(!chargers.length){notify("No selected squad can charge in range");return;}
       command({type:"charge",playerId:localPlayerId,squadIds:chargers,x,y,targetId:enemy ? target.id : undefined});
     } : undefined);
 

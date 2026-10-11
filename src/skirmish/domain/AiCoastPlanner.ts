@@ -130,6 +130,7 @@ export class AiCoastPlanner {
   }
   private legal(player: Player, tile: number): boolean {
     const {world,operations}=this.expansion, bounds=buildingGroundBounds(world.map,tile,"port");
+    if (bounds.left < 0 || bounds.top < 0 || bounds.right > world.map.width() || bounds.bottom > world.map.height()) return false;
     for(let y=bounds.top;y<bounds.bottom;y++)for(let x=bounds.left;x<bounds.right;x++){
       if(!world.map.isValidCoord(x,y))return false;
       const cell=world.map.ref(x,y),owner=world.owners[cell];
@@ -140,6 +141,7 @@ export class AiCoastPlanner {
   }
   private owned(player: Player,tile:number): boolean {
     const {world}=this.expansion,bounds=buildingGroundBounds(world.map,tile,"port");
+    if (bounds.left < 0 || bounds.top < 0 || bounds.right > world.map.width() || bounds.bottom > world.map.height()) return false;
     for(let y=bounds.top;y<bounds.bottom;y++)for(let x=bounds.left;x<bounds.right;x++)
       if(!world.map.isValidCoord(x,y) || world.owners[world.map.ref(x,y)]!==player.id)return false;
     return true;

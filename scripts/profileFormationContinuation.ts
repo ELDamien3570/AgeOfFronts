@@ -24,5 +24,6 @@ const digest=(value:unknown)=>createHash('sha256').update(JSON.stringify(value,(
  if(ArrayBuffer.isView(row))return Array.from(row as Uint8Array);
  if(row && typeof row==='object' && !Array.isArray(row))return Object.fromEntries(Object.entries(row).sort(([a],[b])=>a<b?-1:a>b?1:0));return row;
 })).digest('hex');
-const evidence={...result,snapshotHash:digest(game.snapshot()),checkpointHash:digest(game.checkpoint())};
+const evidence={...result,sourceHashes:Object.fromEntries(['Simulation.ts','UnitIndex.ts','LandingOccupancy.ts','domain/Battle.ts','domain/CombatGeometry.ts','domain/CombatActivity.ts','domain/FormationContact.ts']
+ .map(path=>[path,createHash('sha256').update(readFileSync(new URL(`../src/skirmish/${path}`,import.meta.url))).digest('hex')])),snapshotHash:digest(game.snapshot()),checkpointHash:digest(game.checkpoint())};
 writeFileSync(`${root}/${process.argv[2]??'continuation'}.json`,JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence));

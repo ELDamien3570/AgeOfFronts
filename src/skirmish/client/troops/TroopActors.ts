@@ -1,5 +1,6 @@
 import { formationRenderPose, type FormationRenderPose } from "../FormationRenderPose";
 import { formationDoctrine } from "../../domain/FormationGeometry";
+import { formationFootprint } from '../../domain/FormationContact';
 import footLayout from "../../../../Art/Cultures/Russians/FormationLayouts/Clubman.json";
 import rangedLayout from "../../../../Art/Cultures/Russians/FormationLayouts/Javelinist.json";
 import mountedLayout from "../../../../Art/Cultures/Russians/FormationLayouts/MountedSpearman.json";
@@ -12,6 +13,11 @@ import { TroopImpacts } from "./TroopImpacts";
 import { drawPreviewProjectile } from "./ProjectilePresentation";
 import { weaponCycle } from "../../content/WeaponCycles";
 import { UNIT } from "../../content/Units";
+import { SOLDIER_SCALE } from '../../content/SoldierScale';
+import { chargeReactions } from './ChargeImpactPresentation';
+import { CHARGE_IMPACT } from '../../domain/ChargeImpact';
+import { CavalryPoseContinuity } from './CavalryPoseContinuity';
+import { cavalryRankExposure } from '../../domain/CavalryMelee';
 import { weaponVisual } from "../CombatEffectsViewModel";
 import {
   FormationEngagement,
@@ -24,6 +30,7 @@ import { SoldierSelectionIndex } from "../SoldierSelectionIndex";
 import { troopAssetUrl } from "./TroopAssetUrls";
 import { TroopChoreography } from "./TroopChoreography";
 import { committedMeleeActors } from "./TroopMeleeStrike";
+import { cavalryCohort,cavalryWaves,type CavalryCohort } from './CavalryMeleePresentation';
 import {
   clipFrame,
   resolveFormation,
@@ -44,6 +51,13 @@ import {
 } from "./TroopVolley";
 
 type Name = string;
+type LayoutTransition=NonNullable<Snapshot['squads'][number]['formation']>['transition'];
+/** Snapshots can clone the same transition. Compare its authored inputs, not
+ * object identity, so frame sampling never recompiles a stable assignment. */
+function sameLayoutTransition(a:LayoutTransition,b:LayoutTransition):boolean {
+  return !!a && !!b && a.startTick===b.startTick && a.duration===b.duration && a.from===b.from && a.fromFacing===b.fromFacing && a.reorientation===b.reorientation && a.fromFrontage===b.fromFrontage &&
+    (a.fromSlots===b.fromSlots || !!a.fromSlots && !!b.fromSlots && a.fromSlots.length===b.fromSlots.length && a.fromSlots.every((p,i)=>p.x===b.fromSlots![i].x&&p.y===b.fromSlots![i].y&&p.row===b.fromSlots![i].row));
+}
 export interface TroopActorDefinition {
   name: string;
   age: string;
@@ -109,8 +123,13 @@ export class TroopActors {
       name: Name;
       anchor: { x: number; y: number };
       angle: number;
+      assignmentTransition?: Snapshot['squads'][number]['formation'];
     }
   >();
+  private readonly detailedInFrame = new Set<number>();
+  private readonly chargeCohorts = new Map<number,{tick:number;sourceId:number;role:string;ids:Set<number>}>();
+  private readonly cavalryCohorts=new Map<number,Map<number,CavalryCohort>>();
+  private readonly cavalryContinuity=new Map<number,CavalryPoseContinuity>();
   private readonly remains = new TroopRemains();
   private readonly factionFrames = new FactionFrames();
   private readonly impacts = new TroopImpacts();
@@ -228,11 +247,13 @@ export class TroopActors {
     }));
   };
   beginFrame(): void {
+    this.detailedInFrame.clear();
     this.drawQueue.clear();
     this.poses.clear();
     this.selectionIndex.beginFrame();
   }
   flush = (ctx: CanvasRenderingContext2D): void => {
+    for(const id of this.cavalryContinuity.keys())if(!this.detailedInFrame.has(id))this.cavalryContinuity.delete(id);
     const started = performance.now();
     const entries = this.detailed ? this.drawQueue.sort() : [];
     this.selectionIndex.commit();
@@ -297,13 +318,26 @@ export class TroopActors {
     );
     if (!options)
       throw new Error("TroopActors requires an explicit artwork catalogue");
-    this.troops = options.troops;
+    const scaled = new Map<TroopActorDefinition, TroopActorDefinition>();
+    const scaleTroop = (troop: TroopActorDefinition): TroopActorDefinition => {
+      let value = scaled.get(troop);
+      if (!value) {
+        value = troop.vehicle ? troop : {...troop, memberScale: troop.memberScale * SOLDIER_SCALE};
+        scaled.set(troop, value);
+      }
+      return value;
+    };
+    this.troops = options.troops.map(scaleTroop);
     this.vehicles = new Set(
       this.troops.filter((troop) => troop.vehicle).map((troop) => troop.name),
     );
-    this.byDefinitionId = options.byDefinitionId;
+    this.byDefinitionId = new Map([...options.byDefinitionId].map(([id, troop]) => [id, scaleTroop(troop)]));
   }
   clear(): void {
+    this.chargeCohorts.clear();
+    this.cavalryCohorts.clear();
+    this.cavalryContinuity.clear();
+    this.detailedInFrame.clear();
     this.factionFrames.clear();
     this.impacts.clear();
     this.ownerBySquad.clear();
@@ -394,12 +428,18 @@ export class TroopActors {
   prune(snapshot: Snapshot): void {
     const now = this.clock();
     this.playerId = snapshot.localPlayerId ?? 1;
-    if (!this.detailed) {this.ownerBySquad.clear();return;}
+    if (!this.detailed) {this.ownerBySquad.clear();this.chargeCohorts.clear();this.cavalryCohorts.clear();this.cavalryContinuity.clear();return;}
     for (const squad of snapshot.squads) this.ownerBySquad.set(squad.id, squad.playerId);
     this.headings.update(snapshot, now);
     this.volleys.prune(snapshot.volleys);
     this.shells.prune(snapshot.expansion?.projectiles ?? []);
     const squads = new Map(snapshot.squads.map((s) => [s.id, s]));
+    for(const id of this.cavalryContinuity.keys())if(!squads.has(id))this.cavalryContinuity.delete(id);
+    for(const id of this.cavalryCohorts.keys())if(!squads.get(id)?.cavalryMelee)this.cavalryCohorts.delete(id);
+    for(const id of this.chargeCohorts.keys()){
+      const impact=squads.get(id)?.chargeImpact;
+      if(!impact || snapshot.tick>=impact.tick+CHARGE_IMPACT.duration)this.chargeCohorts.delete(id);
+    }
     this.impacts.update(snapshot.volleys,now,id=>{
       const state=this.motions.get(id);
       return state ? state.motion.soldiers(now).flatMap(s=>{const p=state.walkers.position(s.id);return p?[{...p,id:s.id}]:[];}) : [];
@@ -411,17 +451,18 @@ export class TroopActors {
     const opponentPoses = new Map<number, EngagementOpponents>();
     for (const squad of snapshot.squads) {
       const state = this.motions.get(squad.id);
-      const soldiers = state
-        ? state.motion.soldiers(now).flatMap((slot) => {
+      const soldiers = state && this.detailedInFrame.has(squad.id)
+        ? (this.bodies.get(squad.id)?.map(p=>({id:`${squad.id}:${p.id}`,x:p.x,y:p.y})) ?? state.motion.soldiers(now).flatMap((slot) => {
             const position = state.walkers.position(slot.id);
             return position
               ? [{ id: `${squad.id}:${slot.id}`, x: position.x, y: position.y }]
               : [];
-          })
+          }))
         : [];
       opponentPoses.set(squad.id, {
         center: { x: squad.x / FIXED, y: squad.y / FIXED },
         soldiers,
+        ...(this.detailedInFrame.has(squad.id)?{boundary:formationFootprint(squad,snapshot.tick).map(p=>({x:p.x/FIXED,y:p.y/FIXED}))}:{}),
       });
     }
     for (const squad of snapshot.squads) {
@@ -645,7 +686,7 @@ export class TroopActors {
     if (state.captured.has(soldier.id)) return;
     state.captured.add(soldier.id);
     const footprint = 2 / 0.75;
-    const position = state.walkers.position(soldier.id) ?? {
+    const position = this.cavalryContinuity.get(id)?.lastPose(soldier.id) ?? state.walkers.position(soldier.id) ?? {
       x:
         state.anchor.x +
         (soldier.x * Math.cos(state.angle) -
@@ -782,6 +823,7 @@ export class TroopActors {
       return false;
     }
     const name: Name = troop.name;
+    this.detailedInFrame.add(squad.id);
     this.frameScale = tileSize;
     const mounted = troop.mounted;
     const ranged = troop.ranged;
@@ -798,6 +840,7 @@ export class TroopActors {
     if (mobile) angle = 0;
     const now = this.clock();
     let state = this.motions.get(squad.id);
+    const created=!state;
     // Refit keeps the authoritative squad ID but changes its artwork and packing.
     if (state && state.name !== name) {
       for (const corpse of state.motion.dead(now))
@@ -844,9 +887,31 @@ export class TroopActors {
       );
       state.shape = shape;
     }
-    if(sharedSlots)state.motion.applyAuthoritative(sharedSlots,squad.troops,now);
+    let casualtyPriority:Set<number>|undefined;
+    if(mounted && squad.cavalryMelee && state.motion.count>squad.troops){
+      casualtyPriority=new Set();
+      for(const cycle of [squad.cavalryMelee.current,squad.cavalryMelee.previous]){
+        if(!cycle)continue;
+        const exposed=cavalryRankExposure(cycle,tick)|cavalryRankExposure(cycle,Math.max(0,tick-1));
+        const cohort=this.cavalryCohorts.get(squad.id)?.get(cycle.tick);
+        if(cohort)for(const [id,p] of cohort)if((exposed&(1<<p.rank))&&cycle.contacts[p.contact].lunge>0)casualtyPriority.add(id);
+      }
+    }
+    if(sharedSlots){
+      const basis=sharedPose!.geometry.angle,delta=Math.atan2(Math.sin(state.angle-basis),Math.cos(state.angle-basis));
+      if(!created && Math.abs(delta)>.000001){
+        for(const corpse of state.motion.dead(now))this.captureDeath(squad.id,state,corpse,now-corpse.age);
+        state.motion.rebaseFrame(delta);
+        state.engagement.rebaseFrame(delta);
+      }
+      const sameTransition=sameLayoutTransition(state.assignmentTransition?.transition,squad.formation?.transition) && Math.abs(delta)<.000001;
+      state.motion.applyAuthoritative(sharedSlots,squad.troops,now,casualtyPriority,sameTransition);
+      state.assignmentTransition=squad.formation;
+    }
     const presentedMembers=()=>sharedPose?state!.motion.formationSoldiers(now):state!.motion.soldiers(now);
-    const travelFacing = sharedPose?.geometry.angle ?? this.headings.angle(squad.id, now);
+    const travelFacing = sharedPose && !troop.vehicle && squad.locomotion && (squad.order.type==='move' || !!squad.charge)
+      ? squad.locomotion.speed>0?squad.locomotion.heading:squad.locomotion.targetHeading
+      : sharedPose?.geometry.angle ?? this.headings.angle(squad.id, now);
     angle = sharedPose?.geometry.angle ?? (mobile ? 0 : laneTravel ? state.angle : travelFacing);
     const contact = this.contacts.get(squad.id);
     const intent = {
@@ -858,7 +923,7 @@ export class TroopActors {
       travelHeading: angle,
       canonicalHeading:!!sharedPose,
       meleeReach:sharedPose?(UNIT.get(squad.definitionId??"")?.meleeAttack?.range??0)/FIXED:undefined,
-      contactAdvance:sharedPose?Math.min(formationDoctrine(squad.definitionId).bodyDepth/(2*FIXED),(UNIT.get(squad.definitionId??"")?.meleeAttack?.range??0)/(2*FIXED)):undefined,
+      contactAdvance:sharedPose?formationDoctrine(squad.definitionId).spacing*1.5/FIXED:undefined,
       reformInPlace: this.options?.reformInPlace,
       travelling:
         squad.order.type === "move" ||
@@ -902,6 +967,15 @@ export class TroopActors {
       presentedMembers(),
       intent,
     );
+    const rankAttack=!!mounted && !!squad.cavalryMelee;
+    if(rankAttack){
+      // The rank controller owns movement here. Retain opponent attention,
+      // but do not add generic reserve steps underneath its cached paths.
+      const anchors=new Map(presentedMembers().map(p=>[p.id,p]));
+      engagement={...engagement,slots:engagement.slots.map(slot=>{
+        const anchor=anchors.get(slot.id);return anchor?{...slot,x:anchor.x,y:anchor.y}:slot;
+      })};
+    }
     angle = sharedPose?.geometry.angle ?? engagement.heading;
     state.anchor = { ...worldPosition };
     state.angle = angle;
@@ -961,7 +1035,7 @@ export class TroopActors {
     for (const corpse of state.motion.dead(now))
       this.captureDeath(squad.id, state, corpse, now - corpse.age);
     const slots =
-      mobile && !engagement.engaged
+      (mobile || !!sharedPose) && !engagement.engaged && !troop.vehicle
         ? engagement.slots.map((slot) => ({
             ...slot,
             angle: travelFacing - angle,
@@ -983,9 +1057,9 @@ export class TroopActors {
       looseTravel:
         !sharedPose && !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
       travelLanes:
-        !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
+        !sharedPose && !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
       planted,
-      combatFootwork: !troop.vehicle,
+      combatFootwork: !troop.vehicle && !rankAttack,
       carrierRelative: true,
       reformInPlace: this.options?.reformInPlace,
     });
@@ -996,7 +1070,7 @@ export class TroopActors {
       soldiers=soldiers.map(member=>{
         const slot=targets.get(member.id)!;
         const x=worldPosition.x+(slot.x*c-slot.y*s)*footprint,y=worldPosition.y+(slot.x*s+slot.y*c)*footprint;
-        const residual=sharedPose.geometry.shape==='column'?0:Math.min(.375,formationDoctrine(squad.definitionId).bodyWidth/(2*FIXED));
+        const residual=rankAttack || sharedPose.geometry.shape==='column'?0:Math.min(.375,formationDoctrine(squad.definitionId).bodyWidth/(2*FIXED));
         return {...member,x:x+Math.max(-residual,Math.min(residual,member.x-x)),y:y+Math.max(-residual,Math.min(residual,member.y-y))};
       });
       sharedPose.liveSlots=soldiers;
@@ -1014,10 +1088,34 @@ export class TroopActors {
     const throwers: VolleyThrower[] = [];
     const meleeClipKey=(ranged || squad.charge?.phase==='recovery') && this.assets.has(`${name}:charge-attack`)?'charge-attack':'attack';
     const meleeClip=this.assets.get(`${name}:${meleeClipKey}`)!.clip;
-    const committed=committedMeleeActors(squad.meleeStrike,tick,meleeClip,soldiers,footprint);
-    for (const soldier of soldiers) {
+    const committed=committedMeleeActors(squad.cavalryMelee?undefined:squad.meleeStrike,tick,meleeClip,soldiers,footprint,!!sharedPose);
+    let cohorts=this.cavalryCohorts.get(squad.id);
+    if(squad.cavalryMelee){
+      if(!cohorts)this.cavalryCohorts.set(squad.id,cohorts=new Map());
+      const cycles=[squad.cavalryMelee.current,squad.cavalryMelee.previous].filter(c=>!!c);
+      for(const c of cycles)if(!cohorts.has(c!.tick))cohorts.set(c!.tick,cavalryCohort(c!,soldiers));
+      for(const key of cohorts.keys())if(!cycles.some(c=>c!.tick===key))cohorts.delete(key);
+    }else this.cavalryCohorts.delete(squad.id);
+    const waves=cavalryWaves(squad.cavalryMelee,tick,meleeClip,soldiers,cohorts??new Map());
+    const impact=squad.chargeImpact?.role==='rider' && squad.cavalryEngagement?undefined:squad.chargeImpact,cohort=this.chargeCohorts.get(squad.id);
+    const sameImpact=impact && cohort?.tick===impact.tick && cohort.sourceId===impact.sourceId && cohort.role===impact.role;
+    const chargeActors=chargeReactions(impact,tick,soldiers,sameImpact?cohort.ids:undefined);
+    if(impact && !sameImpact && chargeActors.size)this.chargeCohorts.set(squad.id,{tick:impact.tick,sourceId:impact.sourceId,role:impact.role,ids:new Set(chargeActors.keys())});
+    const desired=soldiers.map(s=>({...s,...(chargeActors.get(s.id)??waves.get(s.id)??(committed.get(s.id)?{angle:committed.get(s.id)!.angle}:{}))}));
+    let continuous:ReturnType<CavalryPoseContinuity['sample']>|undefined;
+    if(mounted){
+      let handoff=this.cavalryContinuity.get(squad.id);
+      if(!handoff)this.cavalryContinuity.set(squad.id,handoff=new CavalryPoseContinuity());
+      const orderKey=squad.order.type==='attack'?`attack:${squad.order.targetId}`:squad.order.type;
+      continuous=handoff.sample(`${orderKey}:${squad.cavalryMelee?.current.tick??'-'}:${squad.cavalryEngagement?.phase??'-'}`,now,desired,
+        worldPosition);
+    }
+    const drawnBodies:{id:number;x:number;y:number}[]=[];
+    for (const [soldierIndex,soldier] of soldiers.entries()) {
+      const continuousPose=continuous?.get(soldier.id);
       const strike=committed.get(soldier.id);
-      const moving = soldier.speed > 0.001 || soldier.turning;
+      const moving = mounted && continuousPose?continuousPose.moving:soldier.speed > 0.001 || soldier.turning;
+      const stride=mounted?1.1*SOLDIER_SCALE:.7;
       const definition = UNIT.get(squad.definitionId ?? "");
       const cycle = definition && weaponCycle(definition);
       const timing = throwTiming(this.assets.get(`${name}:attack`)!.clip);
@@ -1033,7 +1131,7 @@ export class TroopActors {
             : (
                   ranged
                     ? throwTime !== undefined
-                    : !squad.meleeStrike && soldier.front &&
+                    : !squad.cavalryMelee && !squad.meleeStrike && soldier.front &&
                       (soldier.facingError ?? 0) < Math.PI / 6 &&
                       pose.clip === "attack"
                 )
@@ -1044,16 +1142,27 @@ export class TroopActors {
           ? (throwTime ?? pose.elapsed * 50)
           : clip === "running"
             ? (((soldier.backstepping ? -1 : 1) *
-                (soldier.gaitDistance / (mounted ? 1.1 : 0.7)) *
+                ((continuousPose?.gaitDistance??soldier.gaitDistance) / stride) *
                 duration +
                 soldier.id * 73) %
                 duration) +
               duration
             : now + squad.id * 73 + soldier.id * 19;
-      draw(strike?{...soldier,angle:strike.angle}:soldier, soldier.scale, clip, time);
+      const reaction=chargeActors.get(soldier.id);
+      if(reaction){
+        const reactionClip=reaction.role==='defender' && this.assets.has(`${name}:hit`)?'hit':reaction.role==='rider' && this.assets.has(`${name}:charge-attack`)?'charge-attack':clip;
+        draw({...soldier,...reaction,...continuousPose},reaction.scale,reactionClip,reaction.time);
+      }else {
+        const wave=waves.get(soldier.id);
+        const recovering=continuousPose?.recovering,walkingHome=recovering&&continuousPose.moving;
+        if(wave)draw({...soldier,...wave,...continuousPose},soldier.scale,wave.attacking?meleeClipKey:(recovering?walkingHome:wave.moving)?'running':'idle',wave.attacking?wave.time:(continuousPose?.gaitDistance??wave.gaitDistance)/stride*duration+soldier.id*73);
+        else draw({...soldier,...(strike?{angle:strike.angle}:{}),...continuousPose}, soldier.scale, recovering&&!strike?(walkingHome?'running':'idle'):clip,walkingHome?continuousPose.gaitDistance/stride*duration+soldier.id*73:time);
+      }
+      const drawn=continuousPose??desired[soldierIndex];
+      drawnBodies.push({id:soldier.id,x:drawn.x,y:drawn.y});
       if (ranged) throwers.push({ ...soldier, throwing: !strike && clip === "attack" });
     }
-    this.bodies.set(squad.id, soldiers.map((soldier) => ({ id: soldier.id, x: soldier.x, y: soldier.y })));
+    this.bodies.set(squad.id,drawnBodies);
     if (ranged) this.throwers.set(squad.id, throwers);
     return true;
   };

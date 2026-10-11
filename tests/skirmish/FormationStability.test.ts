@@ -20,6 +20,8 @@ import {
 } from "../../src/skirmish/domain/FormationContact";
 import {
   createFormation,
+  formationSlots,
+  formationEnvelope,
   TURN,
   validateFormation,
 } from "../../src/skirmish/domain/FormationGeometry";
@@ -40,7 +42,7 @@ describe("formation movement stability and shoreline policy", () => {
       for(let tick=0;tick<300;tick++)expect(columnDecision(s,tick,true,{complete:true,winding:true})).toBe(shape==='column'?"deploy":"keep");
     }
   });
-  it("limits every deployed turn and restores mid-turn", () => {
+  it("preserves occupied ground while reversing a deployed formation", () => {
     const f = transportScene(72, false);
     f.game.updateSquad(f.s.id, {
       formation: {
@@ -50,19 +52,15 @@ describe("formation movement stability and shoreline policy", () => {
       },
       order: { type: "hold", facing: Math.PI },
     });
+    const points=()=>{const angle=formationEnvelope(f.s,f.game.tick).angle;return formationSlots(f.s,f.game.tick).map(p=>({x:p.x*Math.cos(angle)-p.y*Math.sin(angle),y:p.x*Math.sin(angle)+p.y*Math.cos(angle)}));};
+    let previous=points();
     for (let i = 0; i < 30; i++) {
-      const old = f.s.formation!.facing;
       f.game.step();
-      expect(
-        (Math.abs(
-          headingDifference(
-            (old * 2 * Math.PI) / TURN,
-            (f.s.formation!.facing * 2 * Math.PI) / TURN,
-          ),
-        ) *
-          TURN) /
-          (2 * Math.PI),
-      ).toBeLessThanOrEqual(MOTION.turnPerTick.line + 0.01);
+      const next=points();
+      // The basis may reverse immediately; occupied positions may only reseat
+      // locally at the authored reform speed, rather than orbit the centre.
+      for(const p of previous)expect(Math.min(...next.map(q=>Math.hypot(p.x-q.x,p.y-q.y)))).toBeLessThanOrEqual(FIXED*2.5/20+2);
+      previous=next;
     }
     expect(
       Math.abs(
@@ -73,7 +71,7 @@ describe("formation movement stability and shoreline policy", () => {
       Math.abs(
         headingDifference(0, (f.s.formation!.facing * 2 * Math.PI) / TURN),
       ),
-    ).toBeLessThan(Math.PI);
+    ).toBeCloseTo(Math.PI);
   });
   it("keeps arrival facing stable while correcting a tiny overshoot", () => {
     const f = transportScene(12, false),

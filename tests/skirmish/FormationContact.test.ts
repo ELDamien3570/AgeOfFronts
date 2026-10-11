@@ -3,6 +3,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import { TroopChoreography } from "../../src/skirmish/client/troops/TroopChoreography";
 import { DamageLedger } from "../../src/skirmish/Conquest";
 import { UNIT } from "../../src/skirmish/content/Units";
+import { CONTACT } from '../../src/skirmish/content/TacticalRules';
 import {
   certifyFootprint,
   contactParticipants,
@@ -220,6 +221,11 @@ describe("formation boundary engagement", () => {
       formationApproach(f.b, f.a, 0, f.u.meleeAttack!.range),
     );
     const before = remainingHealth(f.b);
+    // Cavalry now need close contact, rather than the old weapon-reach gap.
+    f.game.expansion!.battle.fight([]);
+    expect(remainingHealth(f.b)).toBe(before);
+    expect(f.a.charge!.phase).toBe('committed');
+    f.game.updateSquad(f.b.id,formationApproach(f.b,f.a,0,CONTACT.enter));
     f.game.expansion!.battle.fight([]);
     expect(remainingHealth(f.b)).toBeLessThan(before);
     expect(f.a.charge!.phase).toBe("recovery");

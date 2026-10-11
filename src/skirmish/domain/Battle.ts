@@ -1,6 +1,8 @@
-import { radians } from "./FormationGeometry";
+import { radians,formationDoctrine,formationSlots } from "./FormationGeometry";
 import { CONTACT } from "../content/TacticalRules";
-import { formationContact, formationPointContact, formationSweepEntry, contactParticipants, CONTACT_TOLERANCE, formationWithinReach, formationSeparationLowerBound } from "./FormationContact";
+import { formationContact, formationPointContact, formationSweepEntry, formationFootprint, convexHull, contactParticipants, CONTACT_TOLERANCE } from "./FormationContact";
+import { contactPath } from './ContactFront';
+import { polygonSweepEntry } from './ProjectileCollision';
 import { formationEnvelope, type FormationState } from "./FormationGeometry";
 import { legacyWeaponStrength, remainingHealth, HEALTH_SCALE } from './Manpower';
 import { commitWeaponShot } from "./WeaponTiming";
@@ -8,10 +10,17 @@ import { afterWeaponShot } from "../content/WeaponCycles";
 import { predictiveAim } from "../RangedAim";
 import { restoreArray } from "../StateTransfer";
 import { DamageLedger } from "../Conquest";
+import { CombatGeometry } from './CombatGeometry';
+import { CombatActivity } from './CombatActivity';
+import { CHARGE_IMPACT, chargeDisrupted } from './ChargeImpact';
+import { CAVALRY_ENTRY } from './CavalryEngagement';
+import { waveTick,waveDamage,cavalryRanks,cavalryStrikeReach,cavalryAttackGap,cavalryUsesRankWaves,exposedCavalryContact,CAVALRY_RANK_MOTION,type CavalryCycle } from './CavalryMelee';
+import { isCavalryTroopClass } from './Definitions';
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
 import { UNIT, defaultUnit } from "../content/Units";
 import type { ArcherVolley, Building, Player, Ship, Squad } from "../Protocol";
 import { FIXED } from "../Protocol";
+import { chargeStrength } from './ChargeStrength';
 import { SpatialGrid } from "../SpatialGrid";
 import type { BuildingQueries } from "../BuildingIndex";
 import {
@@ -41,7 +50,11 @@ import { structureAim } from "./StructureTargeting";
 import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS } from "../content/MissileDefense";
 import { interceptionPoint } from "./MissileInterception";
 import type { PhaseSpatialFacts, SpatialPhase, SpatialQueries } from "../PhaseSpatialViews";
+import type { UnitQueries } from '../UnitIndex';
 export interface BattleWorld {
+  combatOrderRevision?(id:number):number;
+  chargePresentationClear?(s:Squad,dx:number,dy:number,lateral?:number):boolean;
+  squadFacts?():UnitQueries<Squad>;
   spatialFacts?(phase: SpatialPhase): PhaseSpatialFacts;
   tick: number;
   squads: readonly Squad[];
@@ -132,6 +145,13 @@ export class Battle {
   private structureGeometryRevision = -1;
   private readonly structureById = new Map<number, Building>();
   private readonly covered = new Set<number>();
+  private readonly geometry = new CombatGeometry();
+  private activity?:CombatActivity;
+  private groundRevision?:number;
+  private acquisition = new Map<number,{revision:number;barriers:number;forts:number;diplomacy:number;
+    order:Squad['order'];profile:AttackProfile;previous?:number;target?:number;
+    engagement?:{profile:AttackProfile;participants:number;canFight:boolean}}>();
+  readonly acquisitionWork={searches:0,reused:0};
   private readonly definitions = new Map<number, Map<string, { revision: number; unit: UnitDefinition }>>();
   private mapWidth: number;
   constructor(
@@ -154,7 +174,7 @@ export class Battle {
     );
   }
   setWidth(width: number): void {
-    if (this.mapWidth !== width) { this.mapWidth = width; this.structureRevision = -1; }
+    if (this.mapWidth !== width) { this.mapWidth = width; this.structureRevision = -1; this.activity=undefined;this.acquisition.clear(); }
   }
   definition(s: Squad): UnitDefinition {
     const base = UNIT.get(s.definitionId ?? "") ?? defaultUnit(s.kind),
@@ -175,14 +195,16 @@ export class Battle {
     };
   }
   private contact(a:Squad,b:Squad):ReturnType<typeof formationContact> {
-    return formationContact(a,b,this.world.tick);
+    return this.geometry.contact(a,b,this.world.tick);
   }
   private readonly engagedTargets=new Map<number,number>();
   private legalContact(a:Squad,b:Squad,range:number,melee=false):boolean {
     if(melee && this.forts.hasObstacles && this.forts.segmentTiles(a,b).some(tile=>this.forts.intactWallAt(tile)))return false;
     if(a.formation && b.formation && !a.afloat && !b.afloat){
-      if(!formationWithinReach(a,b,this.world.tick,range+CONTACT.release))return false;
+      if(!this.geometry.withinReach(a,b,this.world.tick,range+CONTACT.release))return false;
       const contact=this.contact(a,b);
+      if(melee && a.kind!=='cavalry' && b.kind==='cavalry' && !b.cavalryEngagement && contact.gap>CONTACT.release &&
+        !exposedCavalryContact(b,a.id,this.world.tick))return false;
       return contact.gap<=range+(this.engagedTargets.get(a.id)===b.id?CONTACT.release:CONTACT_TOLERANCE) && this.forts.clear(a,b,a.playerId) && this.forts.clear(contact.source,contact.target,a.playerId);
     }
     return this.distance(a,b)<=range**2 && this.forts.clear(a,b,a.playerId);
@@ -197,6 +219,7 @@ export class Battle {
   private rebuild(phase: SpatialPhase): void {
     this.telemetry.indexRebuilds++;
     const spatialFacts = this.world.spatialFacts?.(phase);
+    this.groundRevision=spatialFacts?.groundRevision;
     if (spatialFacts) { this.spatial = spatialFacts.ground; this.naval = spatialFacts.ships; }
     else {
       this.localSpatial ??= new SpatialGrid(this.mapWidth * FIXED, this.mapHeight * FIXED, 4 * FIXED, (s: Squad) => s.playerId,(s)=>s.formation ? formationEnvelope(s,this.world.tick).broadRadius : 0);
@@ -350,7 +373,10 @@ export class Battle {
   ): void {
     const a=this.world.squad(source.id),b=target.id===undefined?undefined:this.world.squad(target.id);
     const contact=a?.formation && b?.formation && !a.afloat && !b.afloat ? formationContact(a,b,this.world.tick) : undefined;
-    const anchors={fromX:contact?Math.round(contact.source.x):source.x,fromY:contact?Math.round(contact.source.y):source.y,toX:contact?Math.round(contact.target.x):target.x,toY:contact?Math.round(contact.target.y):target.y};
+    const exposed=melee&&a&&b&&contact&&contact.gap>CONTACT.release?exposedCavalryContact(b,a.id,this.world.tick):undefined;
+    const anchors={fromX:contact?Math.round(contact.source.x):source.x,fromY:contact?Math.round(contact.source.y):source.y,
+      toX:exposed&&contact?Math.round(contact.source.x-contact.normal.x*(exposed.strikeDepth??0)):contact?Math.round(contact.target.x):target.x,
+      toY:exposed&&contact?Math.round(contact.source.y-contact.normal.y*(exposed.strikeDepth??0)):contact?Math.round(contact.target.y):target.y};
     // Latest committed edges survive effect saturation and coalesced snapshots.
     // Record before the cosmetic event cap; damage never reads these facts.
     if(melee && a && damage>0){
@@ -362,7 +388,9 @@ export class Battle {
         if(Math.hypot(dx,dy)<1){dx=p.toX-p.fromX;dy=p.toY-p.fromY;}
         return (Math.round((p.bearing??Math.atan2(dy,dx))/(Math.PI/4))+8)%8;
       };
-      const fact={...anchors,targetId:target.id,bearing:Math.atan2(contact?.normal.y??target.y-a.y,contact?.normal.x??target.x-a.x)};
+      const fact={...anchors,targetId:target.id,bearing:exposed&&(exposed.strikeDepth??0)>0
+        ?Math.atan2(anchors.toY-anchors.fromY,anchors.toX-anchors.fromX)
+        :Math.atan2(contact?.normal.y??target.y-a.y,contact?.normal.x??target.x-a.x)};
       if(!contacts.some(c=>edge(c)===edge(fact)))contacts.push(fact);
       this.world.updateSquad(a.id,{meleeStrike:{tick:this.world.tick,contacts}});
     }
@@ -393,6 +421,18 @@ export class Battle {
     else this.world.updateShip(source.id, changes);
   }
   awardDamage(damage: DamageLedger, contributions: Contributions): void {
+    // One scan per ledger pass. Rebuild on every invocation: projectile and
+    // melee passes can append events and rescale their applied damage separately.
+    const events = new Map<number, Map<number, ArcherVolley[]>>();
+    if (contributions.size) for (const event of this.world.volleys) {
+      if (event.tick !== this.world.tick || event.targetId === undefined ||
+        !(event.melee || event.impact) || !contributions.has(event.targetId)) continue;
+      let sources = events.get(event.targetId);
+      if (!sources) events.set(event.targetId, sources = new Map());
+      let facts = sources.get(event.squadId);
+      if (!facts) sources.set(event.squadId, facts = []);
+      facts.push(event);
+    }
     for (const [id, list] of contributions) {
       const target = this.world.squad(id) ?? this.world.ship(id);
       if (!target) continue;
@@ -404,7 +444,7 @@ export class Battle {
       for(const [sourceKey,amount] of subunitShares){
         const [kind,sourceId]=sourceKey.split(":");
         if(kind!=="squad")continue;
-        const facts=this.world.volleys.filter(v=>v.tick===this.world.tick && v.squadId===Number(sourceId) && v.targetId===id && (v.melee||v.impact));
+        const facts=events.get(id)?.get(Number(sourceId)) ?? [];
         const total=facts.reduce((n,v)=>n+(v.damage??0),0);
         if(total>0)for(const fact of facts)fact.damage=(fact.damage??0)*amount/(total*HEALTH_SCALE);
       }
@@ -482,15 +522,69 @@ export class Battle {
     const { tick, squads } = this.world,
       damage = new DamageLedger(),
       contributions: Contributions = new Map();
+    this.acquisitionWork.searches=this.acquisitionWork.reused=0;
+    const unitFacts=this.world.squadFacts?.();
+    // Local epochs mark animated bodies every tick. Worlds without the
+    // lifecycle owner always use fresh acquisition rather than stale reuse.
+    const revision=unitFacts?this.groundRevision:undefined;
+    if(unitFacts && revision!==undefined)(this.activity??=new CombatActivity(this.mapWidth,this.mapHeight)).update(squads,unitFacts,this.geometry,tick);
+    for(const id of this.acquisition.keys())if(!this.world.squad(id))this.acquisition.delete(id);
     for (const squad of squads
       .filter((s) => s.embarkedOn === null)
       .sort((a, b) => a.id - b.id)) {
+      let fighting=false,combatTargetId:number|null=null;
+      try {
       const definition = this.definition(squad);
       let profile = definition.attack;
-      this.world.updateSquad(squad.id, { fighting: false });
-      this.world.updateSquad(squad.id, { combatTargetId: null });
+      if(squad.cavalryMelee && !cavalryUsesRankWaves(squad))this.world.updateSquad(squad.id,{cavalryMelee:undefined});
+      const cycle=squad.cavalryMelee?.current;
+      if(cycle && cycle.completed<3){
+        const cancelled=squad.refit || squad.manpower?.enlargement || squad.afloat || squad.charge || chargeDisrupted(squad,tick) ||
+          squad.order.type==='move' || squad.definitionId!==cycle.definitionId ||
+          (this.world.combatOrderRevision?.(squad.id)??0)!==cycle.orderRevision;
+        let completed=cancelled?3:cycle.completed;
+        while(!cancelled && completed<3 && tick>=waveTick(cycle,completed)){
+          for(const contact of cycle.contacts){
+            const other=this.world.squad(contact.targetId);
+            if(!other || other.troops<=0 || !this.diplomacy.hostile(squad.playerId,other.playerId) || other.afloat ||
+              !this.legalContact(squad,other,Math.max(CONTACT.release,cavalryAttackGap(squad,other)),true) || !this.participants(squad,definition.meleeAttack??profile,other))continue;
+            let hit=waveDamage(cycle,contact.budget,completed,squad.troops,contact.rankCounts);
+            let reactionPoint:{x:number;y:number}|undefined;
+            if(contact.targetBody && contact.rankCounts){
+              const angle=this.geometry.envelope(squad,tick).angle;
+              const members=formationSlots(squad,tick).map((p,id)=>({id,x:squad.x+p.x*Math.cos(angle)-p.y*Math.sin(angle),y:squad.y+p.x*Math.sin(angle)+p.y*Math.cos(angle)}));
+              const ranks=cavalryRanks(members,cycle.rankAxis??angle+Math.PI/2,cycle.rankBand??formationDoctrine(squad.definitionId).spacing*.55);
+              const body=formationFootprint(other,tick);
+              const arrivals=members.filter(p=>ranks.get(p.id)===completed).flatMap(p=>{
+                const path=contactPath(p,contact.targetBody!,contact.bearing??Math.PI/2,cavalryStrikeReach(contact.lunge,completed),contact.reshape??0,contact.strikeDepth??0);
+                if(!path)return [];
+                const entry=polygonSweepEntry(p,path.point,body);
+                return entry===null?[]:[{x:p.x+(path.point.x-p.x)*entry,y:p.y+(path.point.y-p.y)*entry}];
+              });
+              hit*=Math.min(1,arrivals.length/Math.max(1,contact.rankCounts[completed]));
+              if(arrivals.length)reactionPoint={x:arrivals.reduce((n,p)=>n+p.x,0)/arrivals.length,y:arrivals.reduce((n,p)=>n+p.y,0)/arrivals.length};
+            }
+            if(hit<=0)continue;
+            damage.add(other.id,squad.playerId,hit);this.volley(squad,other,hit,true);this.contribution(contributions,other.id,squad.id,hit);
+            if((other.kind==='infantry'||other.kind==='archer') && !this.definition(other).tags.includes('vehicle') &&
+              (other.chargeImpact?.disruptedUntilTick??0)<=tick){
+              const depth=contact.strikeDepth??0,bearing=contact.bearing??0;
+              const offset=Math.min(48,formationDoctrine(other.definitionId).bodyDepth*.4);
+              let dx=Math.round(Math.cos(bearing)*offset),dy=Math.round(Math.sin(bearing)*offset);
+              if(!this.world.chargePresentationClear?.(other,dx,dy)){dx=dy=0;}
+              this.world.updateSquad(other.id,{chargeImpact:{tick,role:'defender',sourceId:squad.id,disruptedUntilTick:tick,
+                x:Math.round(reactionPoint?.x??contact.toX+Math.cos(bearing)*depth),y:Math.round(reactionPoint?.y??contact.toY+Math.sin(bearing)*depth),dx,dy,
+                ...(contact.reachable?{participants:Math.min(CHARGE_IMPACT.maxMembers,Math.max(1,contact.rankCounts?.[completed]??Math.ceil(contact.reachable/3))),radius:Math.min(128,formationDoctrine(other.definitionId).bodyDepth*1.5)}:{})}});
+            }
+            this.world.updateSquad(squad.id,{lastAttackTick:tick,lastCombatTick:tick});this.world.updateSquad(other.id,{lastCombatTick:tick});
+          }
+          completed++;
+        }
+        if(cancelled)this.world.updateSquad(squad.id,{cavalryMelee:undefined});
+        else if(completed!==cycle.completed)this.world.updateSquad(squad.id,{cavalryMelee:{...squad.cavalryMelee!,current:{...cycle,completed}}});
+      }
       // Transports carry soldiers; they do not fight from the water.
-      if (squad.refit || squad.manpower?.enlargement || squad.afloat || squad.charge?.phase === "preparing") continue;
+      if (squad.refit || squad.manpower?.enlargement || squad.afloat || squad.charge?.phase === "preparing" || chargeDisrupted(squad,tick) || squad.cavalryEngagement?.phase==='withdrawing') continue;
       if (squad.charge?.phase === "committed") {
         const charge = definition.charge!;
         this.spatial.queryOverlaps(
@@ -503,7 +597,7 @@ export class Battle {
           (s) =>
             this.diplomacy.hostile(squad.playerId, s.playerId) &&
             !s.afloat &&
-            this.legalContact(squad,s,definition.meleeAttack?.range ?? charge.radius,true) &&
+            this.legalContact(squad,s,isCavalryTroopClass(definition.troopClass)?CONTACT.release:definition.meleeAttack?.range ?? charge.radius,true) &&
             this.participants(squad,definition.meleeAttack ?? profile,s)>0,
         );
         if (
@@ -511,7 +605,8 @@ export class Battle {
           this.distance(squad, squad.charge) <= FIXED ** 2 ||
           tick - squad.charge.committedTick > 80
         ) {
-          const impact = definition.meleeAttack ? { ...definition.meleeAttack, damage: definition.meleeAttack.damage * (definition.chargeMultiplier ?? 1), penetration: charge.penetration } : { ...profile, channel: "melee" as const, damage: charge.damage, penetration: charge.penetration };
+          const strength=chargeStrength(squad.charge),shock=.25+.75*strength;
+          const impact = definition.meleeAttack ? { ...definition.meleeAttack, damage: definition.meleeAttack.damage * (1+((definition.chargeMultiplier ?? 1)-1)*strength), penetration: charge.penetration*strength } : { ...profile, channel: "melee" as const, damage: profile.damage+(charge.damage-profile.damage)*strength, penetration: charge.penetration*strength };
           const contributors = attackContributors(squad, impact);
           let remaining = impact.perSoldier ? (impact.damage + Math.max(0,...Object.values(impact.bonuses))) * contributors * 4 : charge.damage * 4;
           for (const target of targets
@@ -531,12 +626,45 @@ export class Battle {
             damage.add(target.id, squad.playerId, hit);
             this.volley(squad, target, hit, true);
             this.contribution(contributions, target.id, squad.id, hit);
+            if(hit>0 && isCavalryTroopClass(definition.troopClass) && (target.kind==='infantry'||target.kind==='archer') && !this.definition(target).tags.includes('vehicle')){
+              const contact=this.contact(squad,target),receiving=this.contact(target,squad),defender=this.definition(target);
+              const flank=receiving.facing<.25,braced=!flank && defender.troopClass==='antiCavalry';
+              const offset=Math.min(CHARGE_IMPACT.maxOffset,this.geometry.envelope(target,tick).depth*.35)*(braced?.25:flank?1:.65)*shock;
+              let dx=Math.round(contact.normal.x*offset),dy=Math.round(contact.normal.y*offset);
+              if(!this.world.chargePresentationClear?.(target,dx,dy)){dx=dy=0;}
+              const disruption=Math.floor((braced?2:flank?CHARGE_IMPACT.disruption:CHARGE_IMPACT.disruption*.75)*strength);
+              this.world.updateSquad(target.id,{chargeImpact:{tick,role:'defender',sourceId:squad.id,
+                disruptedUntilTick:Math.max(tick+disruption,target.chargeImpact?.disruptedUntilTick??tick),
+                x:contact.target.x,y:contact.target.y,dx,dy}});
+              if(squad.chargeImpact?.tick!==tick){
+                const followThrough=Math.min(CHARGE_IMPACT.maxRiderOffset,contact.gap+offset);
+                let rx=Math.round(contact.normal.x*followThrough),ry=Math.round(contact.normal.y*followThrough);
+                if(!this.world.chargePresentationClear?.(squad,rx,ry)){rx=ry=0;}
+                this.world.updateSquad(squad.id,{chargeImpact:{tick,role:'rider',sourceId:squad.id,disruptedUntilTick:tick,
+                  x:contact.source.x,y:contact.source.y,dx:rx,dy:ry}});
+              }
+            }
             remaining -= hit;
           }
-          this.world.updateSquad(squad.id, { charge: { ...squad.charge, phase: "recovery" } });
+          const footTargets=targets.filter(target=>(target.kind==='infantry'||target.kind==='archer')&&!this.definition(target).tags.includes('vehicle'));
+          const receiving=footTargets[0];
+          let entering=false;
+          if(receiving && isCavalryTroopClass(definition.troopClass)){
+            const c=this.contact(squad,receiving),braced=this.definition(receiving).troopClass==='antiCavalry' && this.contact(receiving,squad).facing>=.25;
+            const distance=Math.hypot(receiving.x-squad.x,receiving.y-squad.y);
+            const depth=braced?0:Math.min(CAVALRY_ENTRY.maximum,distance*.6,c.gap+Math.min(this.geometry.envelope(receiving,tick).depth*.55,this.geometry.envelope(squad,tick).depth*.6)*shock);
+            const dx=Math.round(c.normal.x*depth),dy=Math.round(c.normal.y*depth);
+            entering=depth>0;
+            this.world.updateSquad(squad.id,{cavalryEngagement:{phase:entering?'penetrating':'engaged',tick,untilTick:tick+CAVALRY_ENTRY.duration,
+              targetIds:footTargets.slice(0,8).map(target=>target.id),
+              originX:squad.x,originY:squad.y,goalX:squad.x+dx,goalY:squad.y+dy},
+              formation:squad.formation?{...squad.formation,shape:this.geometry.envelope(squad,tick).shape,transition:undefined}:undefined});
+          }
+          this.world.updateSquad(squad.id, { charge: { ...squad.charge, phase: "recovery" },
+            ...(receiving&&isCavalryTroopClass(definition.troopClass)?{formation:squad.formation}:{}) });
           this.world.updateSquad(squad.id, { chargeReadyTick: tick + charge.cooldownTicks });
           if (impact.perSoldier) this.world.updateSquad(squad.id, { weaponState: { ...squad.weaponState, sharedReadyTick: Math.max(tick + 10, squad.weaponState?.sharedReadyTick ?? 0) } });
-          this.world.updateSquad(squad.id, { order: { type: "hold" } });
+          this.world.updateSquad(squad.id, { order: receiving&&isCavalryTroopClass(definition.troopClass)?{type:'attack',targetId:receiving.id}:{ type: "hold" } });
           this.world.updateSquad(squad.id, { path: [] });
           this.world.updateSquad(squad.id, { queuedOrders: [] });
           if (definition.age === "Napoleonic" && definition.troopClass === "frontline") this.world.updateSquad(squad.id, {lastAttackTick:tick-1,nextAttackTick:Math.max(tick+10,squad.nextAttackTick ?? 0)});
@@ -551,6 +679,7 @@ export class Battle {
           this.world.updateSquad(squad.id, { charge: null });
         else continue;
       }
+      if(squad.cavalryEngagement?.phase==='penetrating')continue;
       if (profile.targets.includes("aircraft")) {
         const target = aircraft
           .filter(
@@ -583,7 +712,7 @@ export class Battle {
           this.volley(squad, target);
           this.world.updateSquad(squad.id, { lastAttackTick: tick });
           this.world.updateSquad(squad.id, afterWeaponShot(definition, squad.magazineShots ?? 0, tick, attackInterval(profile, squad.moved)));
-          this.world.updateSquad(squad.id, { fighting: true });
+          fighting=true;
           this.world.updateSquad(squad.id, { lastCombatTick: tick });
           if (target.health <= 0) {
             const ledger = new DamageLedger();
@@ -594,7 +723,7 @@ export class Battle {
         continue;
       }
       if (squad.structureTarget) {
-        this.attackStructure(squad, profile);
+        fighting=this.attackStructure(squad, profile);
         continue;
       }
       if (!profile.damage) continue;
@@ -603,45 +732,81 @@ export class Battle {
       const gatherNearby=()=>{if(queried)return;queried=true;this.spatial.queryOverlaps(
         squad.x,
         squad.y,
-        acquisitionRange + CONTACT.release + (squad.formation?formationEnvelope(squad,tick).broadRadius:0),
+        acquisitionRange + CONTACT.release + (squad.formation?this.geometry.envelope(squad,tick).broadRadius:0),
         this.nearby,
         squad.playerId,
       );};
       const eligible = (s: Squad) =>
         this.diplomacy.hostile(squad.playerId, s.playerId) &&
         profile.targets.some((tag) => this.targetTags(s).includes(tag)) &&
-        this.legalContact(squad,s,profile.range,profile.channel==="melee");
+        this.legalContact(squad,s,profile.channel==='melee'&&isCavalryTroopClass(definition.troopClass)?Math.max(CONTACT.release,cavalryAttackGap(squad,s)):profile.range,profile.channel==="melee");
       let target: Squad | undefined;
       let nearest = Infinity;
+      const cached=this.acquisition.get(squad.id),previousId=this.engagedTargets.get(squad.id);
+      // Mid-pass charge geometry changes invalidate subsequent reuse immediately.
+      // Between passes, local epochs avoid waking every army for a distant turn.
+      const currentRevision=revision===undefined || unitFacts && unitFacts.spatialRevision!==revision?undefined:
+        this.activity?.region(squad,Math.max(acquisitionRange,definition.meleeAttack?.range??0)+CONTACT.release+(squad.formation?this.geometry.envelope(squad,tick).broadRadius:0))??revision;
+      const reuse=currentRevision!==undefined && cached?.revision===currentRevision && cached.barriers===this.forts.barrierChanges.revision &&
+        cached.forts===this.forts.version && cached.diplomacy===this.diplomacy.revision &&
+        cached.order===squad.order && cached.profile===profile && cached.previous===previousId;
+      if(reuse){target=cached.target===undefined?undefined:this.world.squad(cached.target);this.acquisitionWork.reused++;}
+      else {
+      this.acquisitionWork.searches++;
       // Explicit orders and a retained frontal melee target override nearest
       // acquisition. Resolve them first, without a background-work queue.
       const wanted=squad.order.type==='attack'?this.world.squad(squad.order.targetId):undefined;
+      // An explicit mounted retarget must not rebuild a rank commitment against
+      // the old nearby opponent while approaching the requested opponent.
+      if(wanted && profile.channel==='melee' && isCavalryTroopClass(definition.troopClass) && !squad.cavalryEngagement && !eligible(wanted))continue;
       if(wanted && eligible(wanted))target=wanted;
-      const previous=this.world.squad(this.engagedTargets.get(squad.id)??-1);
-      if(!target && previous && profile.channel==='melee' && eligible(previous)){
-        const contact=this.contact(squad,previous),angle=squad.formation?radians(squad.formation.facing):0;
-        if(-Math.sin(angle)*contact.normal.x+Math.cos(angle)*contact.normal.y>=.25)target=previous;
+      const previous=this.world.squad(previousId??-1);
+      if(!target && previous && eligible(previous)){
+        if(profile.channel==='ranged')target=previous;
+        else {
+          const contact=this.contact(squad,previous),angle=squad.formation?radians(squad.formation.facing):0;
+          if(-Math.sin(angle)*contact.normal.x+Math.cos(angle)*contact.normal.y>=.25)target=previous;
+        }
       }
       if(!target){gatherNearby();for (const candidate of this.nearby) {
         if(!this.diplomacy.hostile(squad.playerId,candidate.playerId) || !profile.targets.some(tag=>this.targetTags(candidate).includes(tag)))continue;
         if(squad.formation && candidate.formation &&
-          (!formationWithinReach(squad,candidate,tick,profile.range+CONTACT.release) || formationSeparationLowerBound(squad,candidate,tick)>nearest))continue;
+          (!this.geometry.withinReach(squad,candidate,tick,profile.range+CONTACT.release) || this.geometry.lowerBound(squad,candidate,tick)>nearest))continue;
         const distance = squad.formation && candidate.formation ? this.contact(squad,candidate).gap**2 : this.distance(squad, candidate);
         if (distance > nearest || (distance === nearest && target && candidate.id >= target.id)) continue;
         if (!eligible(candidate)) continue;
         target = candidate;
         nearest = distance;
       }}
+      if(currentRevision!==undefined)this.acquisition.set(squad.id,{revision:currentRevision,barriers:this.forts.barrierChanges.revision,
+        forts:this.forts.version,diplomacy:this.diplomacy.revision,order:squad.order,profile,previous:previousId,target:target?.id});
+      }
       if (!target) continue;
       // Acquisition grants neither a shot nor an attack animation; close
       // contacted edges defend without rotating the physical formation.
-      this.world.updateSquad(squad.id, { combatTargetId: target.id });
-      if(profile.channel==='melee' && this.participants(squad,profile,target)<=0)continue;
-      this.world.updateSquad(squad.id, { fighting: true });
-      if (definition.meleeAttack && this.legalContact(squad,target,definition.meleeAttack.range,true) && this.participants(squad,definition.meleeAttack,target)>0) profile = definition.meleeAttack;
-      this.world.updateSquad(squad.id, { combatTargetId: target.id });
+      combatTargetId=target.id;
+      let engagement=reuse?cached!.engagement:undefined;
+      if(!engagement){
+        const participants=profile.channel==='melee'?this.participants(squad,profile,target):attackContributors(squad,profile,target);
+        const canFight=profile.channel!=='melee'||participants>0;
+        let effective=profile,contributors=participants;
+        if(canFight && definition.meleeAttack && this.legalContact(squad,target,definition.meleeAttack.range,true)){
+          const n=definition.meleeAttack===profile?participants:this.participants(squad,definition.meleeAttack,target);
+          if(n>0){effective=definition.meleeAttack;contributors=n;}
+        }
+        engagement={profile:effective,participants:contributors,canFight};
+        const retained=this.acquisition.get(squad.id);if(retained && currentRevision!==undefined)retained.engagement=engagement;
+      }
+      if(!engagement.canFight)continue;
+      fighting=true;
+      profile=engagement.profile;
+      if(profile.channel==='melee' && isCavalryTroopClass(definition.troopClass) && squad.order.type==='move')continue;
       this.world.updateSquad(squad.id, { lastCombatTick: tick });
       this.world.updateSquad(target.id, { lastCombatTick: tick });
+      // Per-channel weapon readiness can precede the mounted motion deadline.
+      // Keep the existing commitment until its complete visual cycle ends.
+      if(profile.channel==='melee' && !squad.cavalryEngagement && squad.cavalryMelee &&
+        tick<squad.cavalryMelee.current.tick+squad.cavalryMelee.current.interval)continue;
       if (!this.commitShot(squad, profile)) continue;
       if (profile.projectile) {
         const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
@@ -661,22 +826,47 @@ export class Battle {
         continue;
       }
 
+      const waves=profile.channel==='melee' && profile.perSoldier && cavalryUsesRankWaves(squad) && isCavalryTroopClass(definition.troopClass);
+      const contacts:CavalryCycle['contacts'][number][]=[];
+      const applyHit=(other:Squad,hit:number)=>{
+        if(waves){
+          if(contacts.length>=8)return;
+          const c=this.contact(squad,other);
+          const targetDoctrine=formationDoctrine(other.definitionId);
+          const strikeDepth=targetDoctrine.hull?0:Math.round(Math.min(128,targetDoctrine.bodyDepth*1.5,this.geometry.envelope(other,tick).depth/3));
+          const length=Math.min(512,this.geometry.envelope(squad,tick).depth+c.gap+strikeDepth+32);
+          const lunge=this.world.chargePresentationClear?.(squad,Math.round(c.normal.x*length),Math.round(c.normal.y*length))?length:0;
+          const laneWidth=lunge&&this.world.chargePresentationClear?.(squad,Math.round(c.normal.x*lunge),Math.round(c.normal.y*lunge),16)?16:0;
+          const reshape=lunge&&this.world.chargePresentationClear?.(squad,Math.round(c.normal.x*lunge),Math.round(c.normal.y*lunge),64)?64:laneWidth;
+          const targetBody=convexHull(formationFootprint(other,tick).map(p=>({x:Math.round(p.x),y:Math.round(p.y)})));
+          const angle=this.geometry.envelope(squad,tick).angle,bearing=Math.atan2(c.normal.y,c.normal.x);
+          const slots=formationSlots(squad,tick);
+          const members=slots.map((p,id)=>({id,x:squad.x+p.x*Math.cos(angle)-p.y*Math.sin(angle),y:squad.y+p.x*Math.sin(angle)+p.y*Math.cos(angle)}));
+          const ranks=cavalryRanks(members,angle+Math.PI/2,formationDoctrine(squad.definitionId).spacing*.55);
+          const reachable=members.filter(p=>contactPath(p,targetBody,bearing,cavalryStrikeReach(lunge,ranks.get(p.id)!),reshape,strikeDepth));
+          const rankCounts=[0,1,2].map(rank=>reachable.filter(p=>ranks.get(p.id)===rank).length);
+          // Contact geometry bounds the damage budget as well as the visible
+          // wave. Files that cannot reach the body never cast damage beside it.
+          const budget=reachable.length?Math.round(hit*1000*reachable.length/slots.length):0;
+          if(!budget)return;
+          contacts.push({targetId:other.id,budget,lunge,laneWidth,strikeDepth,targetBody,reshape,reachable:reachable.length,rankCounts,bearing,
+            fromX:c.source.x,fromY:c.source.y,toX:c.target.x,toY:c.target.y});
+        }else {damage.add(other.id,squad.playerId,hit);this.volley(squad,other,hit,profile.channel==='melee');this.contribution(contributions,other.id,squad.id,hit);}
+      };
       const hit = damageAmount(
         profile,
         this.targetDefence(target),
-        profile.perSoldier ? this.participants(squad, profile, target) : legacyWeaponStrength(squad),
+        profile.perSoldier ? engagement.participants : legacyWeaponStrength(squad),
         squad.xp,
       );
-      damage.add(target.id, squad.playerId, hit);
-      this.volley(squad, target, hit, profile.channel === "melee");
-      this.contribution(contributions, target.id, squad.id, hit);
+      applyHit(target,hit);
       if(profile.channel==='melee' && profile.perSoldier && squad.formation && !squad.charge){
         // One shared attack cycle defends contacted edges. The primary target
         // receives first priority; edge pools and total manpower bound damage.
-        let remaining=squad.troops-this.participants(squad,profile,target);
+        let remaining=squad.troops-engagement.participants;
         const edges=new Map<number,number>(),angle=formationEnvelope(squad,tick).angle;
         const edge=(other:Squad)=>{const c=this.contact(squad,other),x=Math.cos(angle)*c.normal.x+Math.sin(angle)*c.normal.y,y=c.facing;return Math.abs(x)>Math.abs(y)?(x>0?1:3):(y>0?0:2);};
-        edges.set(edge(target),this.participants(squad,profile,target));
+        edges.set(edge(target),engagement.participants);
         if(remaining>0)gatherNearby();
         const others=(remaining>0?this.nearby:[]).filter(other=>other.id!==target.id && eligible(other) && this.contact(squad,other).gap<=CONTACT.release)
           .sort((a,b)=>this.contact(squad,a).gap-this.contact(squad,b).gap || a.id-b.id);
@@ -685,11 +875,23 @@ export class Battle {
           const key=edge(other),used=edges.get(key)??0,n=Math.min(remaining,Math.max(0,this.participants(squad,profile,other)-used));if(!n)continue;
           edges.set(key,used+n);remaining-=n;
           const sideHit=damageAmount(profile,this.targetDefence(other),n,squad.xp);
-          damage.add(other.id,squad.playerId,sideHit);this.volley(squad,other,sideHit,true);this.contribution(contributions,other.id,squad.id,sideHit);
+          applyHit(other,sideHit);
           this.world.updateSquad(other.id,{lastCombatTick:tick});
         }
       }
+      if(waves && contacts.length){
+        const previous=squad.cavalryMelee?.current;
+        const interval=Math.max(CAVALRY_RANK_MOTION.cycle,(squad.nextAttackTick??tick+1)-tick);
+        this.world.updateSquad(squad.id,{nextAttackTick:tick+interval,cavalryMelee:{current:{tick,interval,completed:0,
+          troops:squad.troops,definitionId:squad.definitionId!,rankAxis:Math.atan2(Math.cos(this.geometry.envelope(squad,tick).angle),-Math.sin(this.geometry.envelope(squad,tick).angle)),rankBand:formationDoctrine(squad.definitionId).spacing*.55,approachSpeed:Math.min(32,squad.moved?(squad.locomotion?.speed??0):0),orderRevision:this.world.combatOrderRevision?.(squad.id)??0,contacts},
+          ...(previous?.completed===3?{previous}:{} )}});
+      }
       this.world.updateSquad(squad.id, { firingCharge: 0 });
+      } finally {
+        // Publish the final state once; clearing and restoring the same target
+        // every tick caused journal/index churn for every engaged squad.
+        this.world.updateSquad(squad.id,{fighting,combatTargetId});
+      }
     }
     // Fixed gun nests have their own weapon, never a mobile squad's reserves.
     for (const b of this.world.buildings)
@@ -738,7 +940,7 @@ export class Battle {
     this.awardDamage(damage, contributions);
     this.world.resolveLandDamage(damage);
   }
-  private attackStructure(squad: Squad, profile: AttackProfile): void {
+  private attackStructure(squad: Squad, profile: AttackProfile): boolean {
     const target =
       squad.structureTarget!.buildingId !== undefined
         ? this.world.building(squad.structureTarget!.buildingId)
@@ -749,14 +951,13 @@ export class Battle {
       (target.health ?? 1) <= 0
     ) {
       this.world.updateSquad(squad.id, { structureTarget: null });
-      return;
+      return false;
     }
     const p = structureAim(squad, "tile" in target ? [target.tile] : target.tiles,
       profile.range, squad.playerId, this.mapWidth, this.forts,this.world.tick);
-    if (!p) return;
-    this.world.updateSquad(squad.id, { fighting: true });
+    if (!p) return false;
     this.world.updateSquad(squad.id, { lastCombatTick: this.world.tick });
-    if (!this.commitShot(squad, profile)) return;
+    if (!this.commitShot(squad, profile)) return true;
     if (profile.projectile) {
       const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
       this.fire(
@@ -769,7 +970,7 @@ export class Battle {
         0,
         squad.definitionId,
       );
-      return;
+      return true;
     }
     if (profile.channel === "ranged") this.volley(p.source?{...squad,...p.source}:squad, p);
     let hit = damageAmount(
@@ -785,6 +986,7 @@ export class Battle {
       hit *= 2;
     if(profile.channel==="melee")this.volley(p.source?{...squad,...p.source}:squad,p,hit,true);
     this.structuralHit(target, squad.playerId, squad.id, hit);
+    return true;
   }
   advanceProjectiles(aircraft:readonly Aircraft[]=[]): void {
     // Retained impact visuals still expire below, but no collision/cover query

@@ -231,6 +231,8 @@ export interface RefitJob {
   totalTicks: number;
 }
 export interface ChargeState {
+  /** Available impact stamina at command acceptance; absent in older saves means full. */
+  strength?: number;
   phase: "approach" | "committed" | "recovery" | "preparing";
   x: number;
   y: number;

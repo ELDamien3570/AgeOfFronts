@@ -2,6 +2,7 @@ import { formationProfile, frontageLayout, type ShapeProfile } from "./Formation
 import { minimumTravelAssignment } from './FormationSlotAssignment';
 import { FIXED, type Squad } from "../Protocol";
 import doctrines from "../content/formation-doctrines.json";
+import { SOLDIER_SCALE, CAVALRY_SPACING } from '../content/SoldierScale';
 export const FORMATION_SHAPES = [
   "mass",
   "shield-wall",
@@ -35,6 +36,8 @@ export interface FormationState {
   /** World-axis offsets from the carrier, oldest to newest. Bounded route history. */
   trail?: readonly { x: number; y: number }[];
   transition?: {
+    /** Position-preserving orientation reform; translation remains admitted. */
+    reorientation?: boolean;
     from: FormationShape;
     fromFrontage?:number;
     fromAutomatic?:boolean;
@@ -68,12 +71,22 @@ const fallback: FormationDoctrine = {
   bodyDepth: 128,
   transitionTicks: 20,
 };
+const scaledDoctrines = new WeakMap<FormationDoctrine, FormationDoctrine>();
 export function formationDoctrine(id?: string): FormationDoctrine {
-  return (
+  const authored = (
     (doctrines.doctrines[id as keyof typeof doctrines.doctrines] as
       | FormationDoctrine
       | undefined) ?? fallback
   );
+  if (authored.hull || SOLDIER_SCALE === 1 && (!authored.mounted || CAVALRY_SPACING === 1)) return authored;
+  let scaled = scaledDoctrines.get(authored);
+  if (!scaled) {
+    scaled = {...authored, spacing: Math.round(authored.spacing * SOLDIER_SCALE * (authored.mounted?CAVALRY_SPACING:1)),
+      bodyWidth: Math.round(authored.bodyWidth * SOLDIER_SCALE),
+      bodyDepth: Math.round(authored.bodyDepth * SOLDIER_SCALE)};
+    scaledDoctrines.set(authored, scaled);
+  }
+  return scaled;
 }
 export function createFormation(id?: string): FormationState {
   const shape = formationDoctrine(id).defaultShape;
@@ -89,6 +102,16 @@ export function radians(facing: number): number {
 }
 export function facingOf(angle: number): number {
   return ((Math.round((angle * TURN) / (2 * Math.PI)) % TURN) + TURN) % TURN;
+}
+/** Change coordinate basis without rotating occupied member positions. The
+ * destination receives nearest sources once, then interpolates local travel. */
+export function reorientedFormation(s:Squad,tick:number,facing:number):FormationState {
+  const old=s.formation??createFormation(s.definitionId),angle=formationEnvelope(s,tick).angle-radians(facing),c=Math.cos(angle),sin=Math.sin(angle);
+  const source=formationSlots(s,tick).map(p=>({...p,x:Math.round(p.x*c-p.y*sin),y:Math.round(p.x*sin+p.y*c)}));
+  const formation={...old,facing,transition:undefined,revision:old.revision+1};
+  const to=formationSlots({...s,formation},tick),assignment=minimumTravelAssignment(source,to);
+  const distance=Math.max(0,...to.map((p,i)=>Math.hypot(p.x-source[assignment[i]].x,p.y-source[assignment[i]].y)));
+  return {...formation,transition:{reorientation:true,from:formationEnvelope(s,tick).shape,fromFacing:facing,fromSlots:source,startTick:tick,duration:Math.min(200,Math.max(1,Math.ceil(distance*20/(FIXED*2.5))))}};
 }
 export function geometryKey(
   s: Pick<
@@ -148,7 +171,7 @@ function shapeOf(
   s: Pick<Squad, "formation" | "definitionId" | "charge">,
 ): FormationShape {
   const d = formationDoctrine(s.definitionId);
-  return s.charge &&
+  return d.mounted && s.charge &&
     s.formation?.shape !== "column" &&
     s.charge.phase !== "recovery" &&
     d.shapes.includes("wedge")
@@ -157,10 +180,11 @@ function shapeOf(
 }
 /** Compact travel dimensions shared by templates, trail retention and certificates. */
 export function columnLayout(d: FormationDoctrine) {
+  const scale = d.hull ? 1 : SOLDIER_SCALE;
   return {
     columns: d.mounted ? 1 : 2,
-    spacing: d.mounted ? FIXED : Math.floor(FIXED * 0.375),
-    radius: d.mounted ? Math.round(0.45 * FIXED) : d.bodyWidth / 2 - 3,
+    spacing: d.mounted ? Math.round(FIXED * scale) : Math.floor(FIXED * 0.375 * scale),
+    radius: d.mounted ? Math.round(0.45 * FIXED * scale) : d.bodyWidth / 2 - 3 * scale,
   };
 }
 export function layoutGrid(count: number, shape: FormationShape, d: FormationDoctrine, frontage?:number) {
@@ -279,7 +303,7 @@ function computeFormationEnvelope(
     ),
     halfX: Math.ceil((width * c + depth * sin) / 2),
     halfY: Math.ceil((width * sin + depth * c) / 2),
-    navigationRadius: Math.round(FIXED * (s.kind === "cavalry" ? 0.48 : 0.45)),
+    navigationRadius: Math.round(FIXED * (s.kind === "cavalry" ? 0.48 : 0.45) * (d.hull ? 1 : SOLDIER_SCALE)),
   };
 }
 const envelopes=new WeakMap<FormationState,{key:string;seed:number;kind:Squad['kind'];tick:number;value:ReturnType<typeof computeFormationEnvelope>}>();
@@ -525,7 +549,7 @@ export function validateFormation(
     t &&
     (!d.shapes.includes(t.from) ||
       (t.fromFrontage!==undefined && (!Number.isSafeInteger(t.fromFrontage)||t.fromFrontage<=0||t.fromFrontage>128*FIXED||!formationProfile(d,t.from))) ||
-      [t.fromAutomatic,t.fromAutoFrontage].some(v=>v!==undefined && typeof v!=="boolean") ||
+      [t.fromAutomatic,t.fromAutoFrontage,t.reorientation].some(v=>v!==undefined && typeof v!=="boolean") ||
       !integer(t.fromFacing, TURN - 1) ||
       !integer(t.startTick) ||
       !integer(t.duration, 200) ||

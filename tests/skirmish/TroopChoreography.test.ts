@@ -7,6 +7,45 @@ import {
 } from "./browser/TroopPrototypeModel";
 
 describe("cosmetic troop choreography", () => {
+  it('preserves every surviving pose through rapid casualty repacking without clamping to new slots',()=>{
+    const source=Array.from({length:12},(_,id)=>({x:(id%4)*.3,y:Math.floor(id/4)*.3,row:Math.floor(id/4),scale:.2}));
+    const motion=new TroopChoreography(source,0,0);
+    for(const [now,count] of [[100,9],[180,6],[260,3]]){
+      const before=new Map(motion.formationSoldiers(now).map(p=>[p.id,p]));
+      const destination=source.slice(0,count).map(p=>({...p,x:p.x+.2,y:p.y-.3}));
+      motion.applyAuthoritative(destination,count,now);
+      for(const p of motion.formationSoldiers(now)){
+        expect(p.x).toBeCloseTo(before.get(p.id)!.x,10);expect(p.y).toBeCloseTo(before.get(p.id)!.y,10);
+      }
+      const after=new Map(motion.formationSoldiers(now).map(p=>[p.id,p]));
+      for(const p of motion.formationSoldiers(now+16)){
+        const previous=after.get(p.id)!;
+        expect(Math.hypot(p.x-previous.x,p.y-previous.y)).toBeLessThan(.45*.016+.000001);
+      }
+    }
+  });
+  it('keeps recovery displacement continuous through a live domain slot update',()=>{
+    const source=Array.from({length:4},(_,id)=>({x:id*.3,y:0,row:0,scale:.2}));
+    const motion=new TroopChoreography(source,0,0);
+    motion.applyAuthoritative(source.slice(0,3).map(p=>({...p,x:p.x-.2})),3,100);
+    const before=motion.formationSoldiers(200);
+    const updated=source.slice(0,3).map(p=>({...p,x:p.x-.19}));
+    motion.applyAuthoritative(updated,3,200,undefined,true);
+    for(const p of motion.formationSoldiers(200))expect(p.x-before.find(q=>q.id===p.id)!.x).toBeCloseTo(.01);
+    const checkpoint=motion.formationSoldiers(250);
+    motion.applyAuthoritative(updated.map(p=>({...p,x:p.x+.1})),3,250);
+    for(const p of motion.formationSoldiers(250))expect(p.x).toBeCloseTo(checkpoint.find(q=>q.id===p.id)!.x);
+    expect(motion.formationSoldiers(5000).map(p=>p.x).sort()).toEqual(updated.map(p=>p.x+.1).sort());
+  });
+  it('takes a cavalry casualty from an exposed rider instead of a waiting front slot',()=>{
+    const source=Array.from({length:4},(_,id)=>({x:id*.2,y:id*.2,row:id,scale:.2}));
+    const motion=new TroopChoreography(source,0,0);
+    const waiting=motion.formationSoldiers(0).find(p=>p.y===.6||Math.abs(p.y-.6)<.000001)!;
+    const exposed=motion.formationSoldiers(0).find(p=>p.y===0)!;
+    motion.applyAuthoritative(source.slice(0,3),3,100,new Set([exposed.id]));
+    expect(motion.dead(100).map(p=>p.id)).toContain(exposed.id);
+    expect(motion.formationSoldiers(100).map(p=>p.id)).toContain(waiting.id);
+  });
   it("closes authoritative casualty gaps cosmetically without restarting every frame",()=>{
     const source=Array.from({length:4},(_,id)=>({x:id*.2,y:0,row:0,scale:.2})),motion=new TroopChoreography(source,0,0);
     const destination=source.slice(0,3).map(p=>({...p,x:p.x-.1}));
@@ -14,7 +53,7 @@ describe("cosmetic troop choreography", () => {
     const start=motion.formationSoldiers(100);
     motion.applyAuthoritative(destination,3,400);
     const middle=motion.formationSoldiers(400);
-    const end=motion.formationSoldiers(600);
+    const end=motion.formationSoldiers(1200);
     expect(start.map(p=>p.x)).not.toEqual(end.map(p=>p.x));
     expect(middle.map(p=>p.x)).not.toEqual(start.map(p=>p.x));
     expect(end.map(p=>p.x)).toEqual(destination.map(p=>p.x));
