@@ -1842,6 +1842,9 @@ export class Skirmish {
     return this.certifyFormationPolygon(proposed,formationFootprint(proposed,this.tick));
   }
   formationFits(s:Squad,point:WorldPoint,heading?:number):boolean {
+    // Search candidates may lie beyond an edge. Reject the root before any
+    // tile lookup; overlapping shoreline artwork remains permitted in bounds.
+    if(!this.map.isValidCoord(Math.floor(point.x/FIXED),Math.floor(point.y/FIXED)))return false;
     if(!s.formation)return true;
     if(s.afloat || !this.map.isLand(this.tileOf(point)))return this.transportStepClear(s,point);
     const f=heading===undefined?s.formation:{...s.formation,facing:facingOf(heading),transition:undefined};
@@ -1855,6 +1858,7 @@ export class Skirmish {
         ({x:p.x+dx*t+lx*side,y:p.y+dy*t+ly*side}))))),'hold'));
   }
   private transportProposal(s:Squad,end:WorldPoint){
+    if(!this.map.isValidCoord(Math.floor(end.x/FIXED),Math.floor(end.y/FIXED)))return undefined;
     const tile=this.tileOf(end);if(!this.map.isValidRef(tile))return undefined;
     if(s.cavalryEngagement && !this.map.isLand(tile))return undefined;
     return transportHandoff(s,end,!this.map.isLand(tile),this.transportVessel(s.playerId),candidate=>
