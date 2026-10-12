@@ -238,7 +238,7 @@ describe("instanced troop presentation contracts", () => {
       x: 0,
       y: 70 / 512,
       row: 1,
-      scale: 0.36,
+      scale: clubmanLayout.memberScale,
     });
   });
   it("packs extra soldiers inside the same authored frame envelope", () => {

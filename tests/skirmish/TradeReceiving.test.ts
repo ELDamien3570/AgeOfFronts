@@ -64,32 +64,32 @@ describe("per-trip market limits and multi-stop trade", () => {
     for(let i=1;i<10;i++) {add("city",11); add("city",18);}
     const trade=game.expansion!.trade;
     game.tick=20;trade.step();
-    const a=trade.actors[0]; expect(a.loaded).toBe(600);
+    const a=trade.actors[0]; expect(a.loaded).toBe(810);
     const arrive=(b:typeof first)=>{
       a.state="outbound";a.destination=b.id;a.path=[];a.nextPathIndex=0;a.waitTicks=0;
       a.x=(game.map.x(b.tile)+.5)*FIXED;a.y=(game.map.y(b.tile)+.5)*FIXED;
       game.tick++;trade.step();
     };
-    arrive(first); expect(a.delivered).toBe(50);expect(a.cargo).toBe(550);
-    arrive(first); expect(a.delivered).toBe(50);
-    arrive(second); expect(a.delivered).toBe(100);expect(a.cargo).toBe(500);
+    arrive(first); expect(a.delivered).toBe(68);expect(a.cargo).toBe(742);
+    arrive(first); expect(a.delivered).toBe(68);
+    arrive(second); expect(a.delivered).toBe(136);expect(a.cargo).toBe(674);
     const saved=game.checkpoint(),cold=new Skirmish(game.map,game.options);cold.restore(saved);
-    expect(trade.receipts.get(`1:${second.tile}`)?.gold).toBe(1000);
+    expect(trade.receipts.get(`1:${second.tile}`)?.gold).toBe(1360);
     expect(game.snapshot().expansion?.tradeReceipts).toEqual([...trade.receipts.values()]);
     game.tick++;cold.tick++;trade.step();cold.expansion!.trade.step();
     expect(cold.expansion!.trade.checkpoint()).toEqual(trade.checkpoint());
     a.state="returning";a.destination=a.factoryId;a.path=[];a.waitTicks=0;
     game.tick++;trade.step();
-    expect(a.returned).toBe(500);
+    expect(a.returned).toBe(674);
     expect(a.loaded).toBe(a.delivered+a.returned+a.lost+a.cargo);
-    expect(trade.cycleQuotes.get(a.id)?.guaranteedGold).toBe(2000);
+    expect(trade.cycleQuotes.get(a.id)?.guaranteedGold).toBe(2720);
     const trip = a.shipmentId;
     for(let i=0;i<100 && a.shipmentId===trip;i++){game.tick++;trade.step();}
     expect(a.shipmentId).toBeGreaterThan(trip);
     expect(a.visitedTiles).toEqual([]);
     const income=trade.deliveredGold[1];
     arrive(first);
-    expect(a.delivered).toBe(50);
-    expect(trade.deliveredGold[1]-income).toBe(1000);
+    expect(a.delivered).toBe(68);
+    expect(trade.deliveredGold[1]-income).toBe(1360);
   });
 });

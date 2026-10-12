@@ -13,6 +13,7 @@ export const DEMO_TROOPS = [
   },
   {
     name: "Javelinist",
+    assetRoot: "/Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/",
     age: "StoneAge",
     kind: "archer",
     mounted: false,

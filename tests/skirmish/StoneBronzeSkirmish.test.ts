@@ -46,7 +46,7 @@ describe("isolated Stone/Bronze playable skirmish", () => {
     for (const [id, actor] of STONE_BRONZE_ARTWORK) {
       expect(UNIT.get(id)?.age).toBe(actor.age);
       expect(actor.memberScale).toBeGreaterThan(0);
-      const root = `Art/Cultures/Russians/Units/${actor.age}/${actor.name}/`;
+      const root = actor.assetRoot?.slice(1) ?? `Art/Cultures/Russians/Units/${actor.age}/${actor.name}/`;
       const manifest = JSON.parse(
         readFileSync(root + "animations.json", "utf8"),
       );

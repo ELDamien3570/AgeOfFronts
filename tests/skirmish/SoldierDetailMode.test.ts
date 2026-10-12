@@ -83,7 +83,7 @@ describe("soldier detail mode", () => {
     expect(actors.hitTest(squad, { x: 5, y: 5 }, 12)).toBe(0);
     expect(actors.setDetailed(false)).toBe(true);
     expect(actors.setDetailed(false)).toBe(false);
-    actors.prune({ localPlayerId: 1 } as Snapshot);
+    actors.prune({ localPlayerId: 1, squads: [] } as unknown as Snapshot);
     expect(update).not.toHaveBeenCalled();
     expect(actors.hitTest(squad, { x: 5, y: 5 }, 12)).toBeUndefined();
     const ctx = {} as CanvasRenderingContext2D;

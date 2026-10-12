@@ -198,7 +198,8 @@ describe("per-soldier weapons and exact cycles", () => {
     const unit = UNIT.get("napoleonic-infantry")!;
     const base = { troops: 48, manpower: createManpower(unit) };
     const larger = { troops: 72, manpower: createManpower(unit, "enlarged") };
-    expect(attackContributors(larger, unit.rangedAttack!)).toBe(72);
+    expect(attackContributors(larger, unit.rangedAttack!)).toBe(54);
+    expect(attackContributors({ ...larger, formation: { ...createFormation(unit.id), shape: "line" } }, unit.rangedAttack!)).toBe(72);
     expect(attackContributors(larger, unit.meleeAttack!)).toBe(18);
     expect(attackContributors(base, unit.meleeAttack!)).toBe(14);
     expect(attackContributors({ ...base, troops: 1 }, unit.meleeAttack!)).toBe(
@@ -210,7 +211,7 @@ describe("per-soldier weapons and exact cycles", () => {
     f.battle.fight([]);
     const shot = f.battle.projectiles.find((p) => p.sourceId === f.source.id)!;
     expect(shot.perSoldier).toBe(true);
-    expect(shot.attackScale).toBe(12);
+    expect(shot.attackScale).toBe(9);
     f.game.updateSquad(f.source.id, { troops: 1 });
     const restored = new Skirmish(
       new GameMapImpl(64, 32, f.terrain, f.terrain.length),
@@ -223,7 +224,7 @@ describe("per-soldier weapons and exact cycles", () => {
     expect(restored.squad(f.source.id)!.weaponState).toEqual(
       f.game.squad(f.source.id)!.weaponState,
     );
-    expect(restored.expansion!.battle.projectiles[0].attackScale).toBe(12);
+    expect(restored.expansion!.battle.projectiles[0].attackScale).toBe(9);
   });
   it("persists exact reload and rational phase through packed snapshots and rejects old checkpoints", () => {
     const f = match();
@@ -247,6 +248,7 @@ describe("per-soldier weapons and exact cycles", () => {
   });
   it("changes to close melee without refilling ranged ammunition", () => {
     const f = match();
+    f.game.updateSquad(f.target.id, { x: 9 * FIXED });
     f.battle.fight([]);
     const ranged = f.game.squad(f.source.id)!.weaponState!.ranged!;
     f.game.updateSquad(f.source.id, {

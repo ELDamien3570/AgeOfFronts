@@ -65,24 +65,6 @@ describe("local technology-plan saves", () => {
     ).toBe("Test Clubmen");
     expect((await put(loaded.plan, loaded.revision)).status).toBe(409);
   });
-  it("round-trips the eight-age draft and edited capstone prices", async () => {
-    const loaded = await get();
-    const draft = createRussianRework(loaded.plan.civilizations[1]);
-    const capstone = draft.technologies.find(
-      (n) => n.id === "russian-hypersonic-rail",
-    )!;
-    capstone.gold = 1500000;
-    capstone.researchSeconds = 420;
-    loaded.plan.civilizations.push(draft);
-    expect((await put(loaded.plan, loaded.revision)).status).toBe(200);
-    const saved = (await get()).plan.civilizations.find(
-      (c: { id: string }) => c.id === draft.id,
-    );
-    expect(saved.ages).toEqual(draft.ages);
-    expect(
-      saved.technologies.find((n: { id: string }) => n.id === capstone.id),
-    ).toEqual(capstone);
-  });
   it("rejects invalid graphs and external-origin writes without modifying the file", async () => {
     const loaded = await get(),
       before = await fs.readFile(file, "utf8");

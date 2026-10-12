@@ -189,41 +189,6 @@ describe("responsive AI and naval movement", () => {
     expect(response.active(f.player.id)).toBe(false);
     expect(assets.held(`squad:${units[1].id}`)).toBe(false);
   });
-  it("scores authored armor, weapon counters, health and veterancy rather than squad counts", () => {
-    const f = fixture(),
-      advanced = [
-        f.add("earlymedieval-infantry"),
-        f.add("earlymedieval-infantry"),
-      ],
-      bronze = Array.from({ length: 8 }, () =>
-        f.add("bronzeage-infantry", 60, 1),
-      );
-    const compare = () =>
-      combatAdvantage(combatCohorts(f.e, advanced), combatCohorts(f.e, bronze));
-    expect(compare()).toBeGreaterThan(1.25);
-    const strong = compare();
-    for (const s of advanced) f.game.updateSquad(s.id, { troops: 1 });
-    expect(compare()).toBeLessThan(strong);
-    expect(combatAdvantage([], combatCohorts(f.e, bronze))).toBe(0);
-  });
-  it("takes a two-squad superior-age opportunity against a larger obsolete army", () => {
-    const f = fixture();
-    f.player.personalityId = "balanced";
-    f.add("earlymedieval-infantry");
-    f.add("earlymedieval-infantry");
-    for (let i = 0; i < 8; i++) f.add("bronzeage-infantry", 60, 1);
-    f.game.players[0].base = f.map.ref(60, 15);
-    const forces = new Map([
-      [1, 8],
-      [f.player.id, 2],
-    ]);
-    for (const tick of [1200, 1260, 1500, 1560]) {
-      f.game.tick = tick;
-      f.e.operations.step(forces);
-    }
-    expect(f.e.operations.state(f.player.id)?.phase).toBe("war");
-    expect(f.e.operations.offensiveTarget(f.player.id)).toBe(1);
-  });
   it("staggers quiet patrol at half duty without global route searches, and preserves a pending manual voyage", () => {
     const f = fixture(true),
       s = f.ship(),

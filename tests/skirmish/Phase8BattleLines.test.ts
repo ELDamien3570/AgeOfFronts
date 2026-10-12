@@ -7,6 +7,7 @@ import { layoutArmyBattleLine } from "../../src/skirmish/domain/BattleLineLayout
 import { commandRejection } from "../../src/skirmish/domain/CommandPolicy";
 import {
   controllerOf,
+  mayNavigateArmy,
   mayWrite,
 } from "../../src/skirmish/domain/CommandPrecedence";
 import type { ArmySlotRecord } from "../../src/skirmish/domain/Definitions";
@@ -128,6 +129,13 @@ describe("phase 8 persistent battle lines", () => {
     expect(controllerOf(world, s)).toBe("army");
     expect(mayWrite(world, s, "stance")).toBe(false);
     expect(mayWrite(world, s, "player")).toBe(true);
+    const afloat = { ...s, afloat: { hull: 100, maxHull: 100, vesselId: "stoneage-transport" } };
+    expect(mayNavigateArmy(world, afloat)).toBe(true);
+    expect(mayWrite(world, afloat, "army")).toBe(false);
+    expect(mayWrite(world, afloat, "stance")).toBe(false);
+    expect(mayNavigateArmy(world, { ...afloat, embarkedOn: 1 })).toBe(false);
+    expect(mayNavigateArmy(world, { ...afloat, troops: 0 })).toBe(false);
+    expect(mayNavigateArmy({ ...world, directArmyAction: () => true }, afloat)).toBe(false);
     expect(
       controllerOf(world, {
         ...s,

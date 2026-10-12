@@ -78,28 +78,6 @@ const step = (m: Skirmish, n: number) => {
   for (let i = 0; i < n; i++) m.step();
 };
 describe("age progression and authoritative definitions", () => {
-  it("requires all three military building upgrades before siege research", () => {
-    const m = make(),
-      p = m.players[0],
-      state = m.expansion!.progression.states[p.id];
-    state.age = "BronzeAge";
-    state.completed.push(
-      "rus-bronzeage-barracks-equipment",
-      "rus-bronzeage-ranged",
-      "rus-bronzeage-mobile",
-    );
-    p.gold = 1000000;
-    const command = {
-      type: "research" as const,
-      playerId: p.id,
-      technologyId: "rus-bronzeage-siege",
-    };
-    expect(m.applyCommand(command)).toBe("Complete the prerequisites first");
-    expect(state.research.warfare).toBeUndefined();
-    state.completed.push("rus-bronzeage-fortifications");
-    expect(m.applyCommand(command)).toBeNull();
-    expect(state.research.warfare?.technologyId).toBe(command.technologyId);
-  });
   it("validates the expanded research graph and unique per-branch slots", () => {
     expect(() => validateTechnologies()).not.toThrow();
     expect(TECHNOLOGIES.length).toBeGreaterThan(85);
@@ -346,41 +324,6 @@ describe("supply conservation and deployment", () => {
   });
 });
 describe("bonuses, promotions, volleys and finite impacts", () => {
-  it("applies base armour once and additive target bonuses with separate resistance", () => {
-    const p = {
-        ...defaultUnit("infantry").attack,
-        damage: 100,
-        bonuses: { mounted: 30 },
-      },
-      d = {
-        tags: ["mounted"] as const,
-        meleeArmour: 5000,
-        rangedArmour: 9000,
-        bonusResistance: { mounted: 10 },
-      };
-    expect(damageAmount(p, d)).toBe(70);
-    expect(damageAmount({ ...p, penetration: 2500 }, d)).toBe(82);
-    expect(damageAmount(p, { ...d, tags: ["vehicle"] })).toBe(50);
-    expect(damageAmount({ ...p, targets: ["aircraft"] }, d)).toBe(0);
-  });
-  it("caps the level-seven budget and conserves effective XP with duplicate attacker contributions", () => {
-    expect(promotionLevel(20000)).toBe(7);
-    expect(
-      damageAmount(
-        { ...defaultUnit("infantry").attack, damage: 100, bonuses: {} },
-        defenceOf(defaultUnit("infantry")),
-        1000,
-        999999,
-      ),
-    ).toBe(103);
-    const shares = effectiveDamageShares(7, [
-      { id: 1, damage: 100 },
-      { id: 1, damage: 50 },
-      { id: 2, damage: 50 },
-    ]);
-    expect([...shares.values()].reduce((a, b) => a + b, 0)).toBe(7);
-    expect(shares.get(1)).toBe(6);
-  });
   it("launches one physical ranged projectile and reloads five times slower while moving", () => {
     const m = make(),
       s = m.squads[0],

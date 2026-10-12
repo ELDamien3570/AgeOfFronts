@@ -834,8 +834,8 @@ export class Skirmish {
           const building = structureTarget.buildingId === undefined ? undefined : this.building(structureTarget.buildingId),
             wall = structureTarget.barrierId === undefined ? undefined : this.expansion.fortifications.barrier(structureTarget.barrierId), target = building ?? wall;
           if (!target || (target.health ?? 1) <= 0 || !this.hostile(squad.playerId, target.playerId) ||
-            !structureAim(point, building ? [building.tile] : wall!.tiles, elevationRangeAt(this,point,this.expansion.unit(squad).attack),
-              squad.playerId, map.width(), this.expansion.fortifications)) return false;
+            !structureAim({...squad,...point}, building ? [building.tile] : wall!.tiles, elevationRangeAt(this,point,this.expansion.unit(squad).attack),
+              squad.playerId, map.width(), this.expansion.fortifications,this.tick)) return false;
         }
         const nearby:Squad[]=[];this.spatial.query(point.x,point.y,2*FIXED,nearby);
         return nearby.every(other=>selected.has(other.id) || distanceSquared(point,other)>=squadSeparation(squad, other, this.collisionHostile)**2);

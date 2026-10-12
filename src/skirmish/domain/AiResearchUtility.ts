@@ -209,7 +209,8 @@ export function usableNextAge(
   // chain before spending the age cost. No speculative goods or free workshops.
   const research = [
     ...snapshot.research,
-    ...TECHNOLOGIES.filter((t) => t.age === age && t.slot === 1).map(
+    ...TECHNOLOGIES.filter((t) => t.age === age && !t.optional &&
+      (t.slot === 1 || PRODUCTION_RECIPES.some(r => r.technologyId === t.id))).map(
       (t) => t.id,
     ),
   ];

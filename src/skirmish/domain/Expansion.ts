@@ -35,8 +35,8 @@ import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
 import { recoveredChargeStrength } from './ChargeStrength';
 import { isCavalryTroopClass } from './Definitions';
-import { formationDoctrine } from './FormationGeometry';
-import { formationContact } from './FormationContact';
+import { formationDoctrine, formationEnvelope } from './FormationGeometry';
+import { formationContact, CONTACT_TOLERANCE } from './FormationContact';
 import { CONTACT } from '../content/TacticalRules';
 import { AIRCRAFT_RULES, BOMBER_ATTACK, ATOMIC_ATTACK, DRONE_ATTACK, NAVAL_AIR_ATTACK, STRATEGIC_PAYLOADS, STRATEGIC_RULES } from "../content/ModernWeapons";
 import { personalityOf } from "../content/AiPersonalities";
@@ -89,7 +89,7 @@ import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
 import type { RecruitmentJob, VesselDefinition } from "./Definitions";
 import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
-import { structureAim } from "./StructureTargeting";
+import { structureAim, structureContact } from "./StructureTargeting";
 import { StructureAttackPreparation, type StructureAttackPreparationState } from "./StructureAttackPreparation";
 import { squadRadius, standable, tilePoint } from "../SquadGeometry";
 import type { CoastIndex } from "../CoastIndex";
@@ -278,7 +278,14 @@ export class Expansion {
         state.stage = "failed"; state.reason = "Selected weapon changed during structure preparation"; return 1;
       }
     }
-    return new StructureAttackPreparation(this.world.map, this.world.paths, this.fortifications, building ? [building.tile] : wall!.tiles, state,(id,from,to)=>effectiveRange(this.world,from,this.unit(this.world.squad(id)!).attack,to)).step(budget);
+    return new StructureAttackPreparation(this.world.map, this.world.paths, this.fortifications, building ? [building.tile] : wall!.tiles, state,
+      (id,from,to)=>effectiveRange(this.world,from,this.unit(this.world.squad(id)!).attack,to), {
+        extent: id => formationEnvelope(this.world.squad(id)!, this.world.tick).broadRadius + Math.SQRT2 * FIXED / 2,
+        contact: (id, from, tile) => {
+          const contact = structureContact({...this.world.squad(id)!, ...from}, tile, this.world.map.width(), this.world.tick);
+          return contact ? {gap: Math.max(0, contact.gap - CONTACT_TOLERANCE), point: contact.target} : undefined;
+        },
+      }).step(budget);
   }
   available(player: Player, line: Squad["kind"]): UnitDefinition | undefined {
     return UNITS.filter(

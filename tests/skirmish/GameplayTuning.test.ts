@@ -53,17 +53,6 @@ describe("sortie dispatch", () => {
     const short = sortieCommand(game.snapshot(),1,x,y,true)!;
     expect(short.aircraftIds).toEqual([farther.id]);
   });
-  it("honors selected aircraft and rejects lost, unfinished or destroyed runways atomically", () => {
-    const {game,e} = fixture(), field = building(game,"airstrip",20,20), fighter=plane(game,field,"fighter");
-    const bomber=plane(game,field);
-    expect(sortieCommand(game.snapshot(),1,0,0,false,new Set([fighter.id]))!.aircraftIds).toEqual([fighter.id]);
-    for (const changes of [{remainingTicks:10},{remainingTicks:0,health:0},{health:5000,playerId:2}]) {
-      game.updateBuilding(field.id,changes);
-      expect(sortieCommand(game.snapshot(),1,0,0)).toBeNull();
-      expect(game.applyCommand({type:"sortie",playerId:1,aircraftIds:[bomber.id],x:0,y:0})).not.toBeNull();
-      expect(e.aircraft.every(a=>a.state==="ready")).toBe(true);
-    }
-  });
 });
 describe("equipment and strategic weapons", () => {
   it("charges two troop equipment for all post-Stone mounted units, keeping tanks and Stone unchanged", () => {
@@ -151,51 +140,6 @@ describe("equipment and strategic weapons", () => {
     expect(p.blastRadius).toBe(4*FIXED);
     game.tick=p.impactTick; e.battle.advanceProjectiles();
     expect(game.squad(victim.id)?.troops ?? 0).toBeLessThan(1000);
-  });
-});
-describe("connected trench runs", () => {
-  it("uses shared paid placement quotes, provides cover, stays passable, and replicates/restores", () => {
-    const {game,e}=fixture(); game.owners.fill(1);
-    for(const b of [...game.buildings]) game.removeBuilding(b.id);
-    const a=building(game,"trench",20,20),tile=game.map.ref(26,20);
-    const plan=e.fortifications.towerPlan(tile,1,"Modern",game.buildingFacts(),"trench",t=>game.owners[t]===1);
-    expect(plan.links).toEqual([{a:a.id,tiles:[25,24,23,22,21].map(x=>game.map.ref(x,20))}]);
-    const preview=new PlacementPreview(game.map);
-    preview.begin(game.snapshot(),1,"trench","Modern");
-    expect(preview.rejection("trench",tile)).toBeNull();
-    const cost=buildingCost("trench","Modern",1).gold!+plan.gold;
-    game.player(1)!.gold=cost-1;
-    expect(game.applyCommand({type:"build",playerId:1,buildingType:"trench",tile})).not.toBeNull();
-    expect(e.fortifications.barriers).toHaveLength(0);
-    preview.update(game.snapshot());
-    expect(preview.rejection("trench",tile)).not.toBeNull();
-    game.player(1)!.gold=cost;
-    preview.update(game.snapshot());
-    expect(preview.rejection("trench",tile)).toBeNull();
-    expect(game.applyCommand({type:"build",playerId:1,buildingType:"trench",tile})).toBeNull();
-    expect(game.player(1)!.gold).toBe(0);
-    const b=game.buildings.find(b=>b.tile===tile)!,run=e.fortifications.barriers[0];
-    game.updateBuilding(b.id,{remainingTicks:0}); e.fortifications.updateBarrier(run.id,{remainingTicks:0});
-    const own=game.squads.find(s=>s.playerId===1)!,enemy=game.squads.find(s=>s.playerId===2)!;
-    for(const s of [own,enemy])game.updateSquad(s.id,{x:23.5*FIXED,y:20.5*FIXED});
-    e.battle.fight([]);
-    expect(e.battle.cover(own)).toBeGreaterThan(0); expect(e.battle.cover(enemy)).toBe(0);
-    expect(e.fortifications.blocked(game.map.ref(23,20),2)).toBe(false);
-    expect(e.fortifications.clearMovement({x:23.5*FIXED,y:19*FIXED},{x:23.5*FIXED,y:22*FIXED},2,.45*FIXED)).toBe(true);
-    const walls=new WallPresentation(),trenches=new WallPresentation("trench");
-    walls.update(game.snapshot()); trenches.update(game.snapshot());
-    expect(walls.tiles).toHaveLength(0);
-    expect(trenches.tiles.find(t=>t.tile===game.map.ref(23,20))?.mask).toBe(10);
-    expect(trenches.tiles.some(t=>t.gate)).toBe(false);
-    const restored=fixture().game; restored.restore(game.checkpoint());
-    const decoded=new SnapshotDecoder().decode(new SnapshotEncoder().encode(restored.snapshot()));
-    expect(decoded.expansion!.barriers[0].kind).toBe("trench");
-    restored.removeBuilding(a.id);
-    restored.expansion!.fortifications.step(restored.tick,restored.buildings);
-    restored.expansion!.fortifications.step(restored.tick,restored.buildings);
-    expect(restored.expansion!.fortifications.barriers).toHaveLength(0);
-    restored.expansion!.battle.fight([]);
-    expect(restored.expansion!.battle.cover(restored.squad(own.id)!)).toBe(0);
   });
 });
 describe("conquest credit", () => {

@@ -18,7 +18,7 @@ import { engageDemoArmies, stoneAgeDemo } from "./browser/StoneAgeDemoScenario";
 describe("four-faction troop load demo", () => {
   it("uses materialized individual clips for every ready Stone and Classical troop", () => {
     for (const troop of DEMO_TROOPS) {
-      const root = `Art/Cultures/Russians/Units/${troop.age}/${troop.name}/`;
+      const root = "assetRoot" in troop ? troop.assetRoot.slice(1) : `Art/Cultures/Russians/Units/${troop.age}/${troop.name}/`;
       const manifest = JSON.parse(
         readFileSync(root + "animations.json", "utf8"),
       );

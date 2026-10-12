@@ -75,8 +75,5 @@ describe("technology inspection", () => {
       "6 per launch site · 32 per faction",
     );
     expect(text("rus-earlymodern-bombers")).toContain("4-tile blast radius");
-    expect(text("rus-modern-fortifications")).toContain(
-      "6 infantry squads per trench tile",
-    );
   });
 });

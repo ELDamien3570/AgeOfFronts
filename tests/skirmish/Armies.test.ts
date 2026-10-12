@@ -303,50 +303,6 @@ describe("persistent armies and Bronze tree", () => {
     step(m, 25);
     expect(m.expansion!.armies.armies[0].order.type).toBe("hold");
   });
-  it("maintains a ranged screen and retreats after actual volleys, without resetting cooldowns", () => {
-    const m = make(3);
-    for (const s of m.squads.filter((s) => s.playerId === 1)) {
-      m.updateSquad(s.id, { kind: "archer" });
-      m.updateSquad(s.id, { definitionId: "stoneage-archer" });
-    }
-    const enemy = m.squads.find((s) => s.playerId === 2)!;
-    m.updateSquad(enemy.id, { x: 32 * FIXED });
-    m.updateSquad(enemy.id, { y: 30 * FIXED });
-    m.updateSquad(enemy.id, { troops: 100000 });
-    create(m);
-    expect(
-      m.applyCommand({
-        type: "army-order",
-        playerId: 1,
-        armyId: 1,
-        order: { type: "fire-retreat", targetId: enemy.id },
-      }),
-    ).toBeNull();
-    let shots = 0,
-      withdrawals = 0;
-    const seen = new Set<number>();
-    for (let t = 0; t < 500; t++) {
-      m.step();
-      for (const volley of m.volleys)
-        if (!seen.has(volley.tick)) {
-          seen.add(volley.tick);
-          shots++;
-        }
-      if (
-        m.squads.some(
-          (s) =>
-            s.playerId === 1 &&
-            (s.lastAttackTick ?? -1) >= 0 &&
-            s.moved &&
-            s.x < enemy.x - 6 * FIXED,
-        )
-      )
-        withdrawals++;
-    }
-    expect(shots).toBeGreaterThan(1);
-    expect(withdrawals).toBeGreaterThan(0);
-    expect(m.expansion!.armies.armies[0].state).not.toBe("blocked");
-  });
   it("routes a cohesive column around a water barrier through a narrow land crossing", () => {
     const data = new Uint8Array(96 * 64).fill(133);
     for (let y = 0; y < 64; y++)

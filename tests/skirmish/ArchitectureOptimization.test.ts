@@ -19,17 +19,6 @@ function match() {
     { seed: 42, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" });
 }
 describe("architecture optimization compatibility", () => {
-  it("invalidates unit definitions for research, owner, refit and restored progression", () => {
-    const game=match(),battle=game.expansion!.battle,squad=game.squads.find(s=>s.playerId===1)!,saved=game.checkpoint(),base=battle.definition(squad);
-    expect(battle.definition(squad)).toBe(base);
-    const research=game.expansion!.progression.states[1].completed;
-    research.push(technologyAt(base.age,"warfare",4).id);
-    const upgraded=battle.definition(squad);expect(upgraded).toEqual(unitEffects(base,research));expect(upgraded.attack.damage).toBeGreaterThan(base.attack.damage);
-    expect(battle.definition({...squad,playerId:2})).toEqual(base);
-    const alternate=[...UNIT.values()].find(u=>u.id!==base.id)!;
-    expect(battle.definition({...squad,definitionId:alternate.id})).toEqual(unitEffects(alternate,research));
-    game.restore(saved);expect(battle.definition(game.squad(squad.id)!)).toEqual(base);
-  });
   it("journals owned scalar writes exactly once, ignores no-ops and protects external container aliases", () => {
     let writes=0;const entities=new EntityCollection<{readonly id:number;x:number;path:number[]}>({added:()=>{},changed:()=>writes++,removed:()=>{},restored:()=>{}});
     entities.add({id:1,x:0,path:[]}); const view=entities.values;

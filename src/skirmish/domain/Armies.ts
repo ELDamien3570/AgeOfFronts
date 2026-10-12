@@ -2,7 +2,7 @@ import { effectiveRange } from "./ElevationAdvantage";
 import { formationContact } from './FormationContact';
 import { formationEnvelope,formationDoctrine } from './FormationGeometry';
 import { layoutArmyBattleLine } from './BattleLineLayout';
-import { mayWrite,type ControlWorld } from './CommandPrecedence';
+import { mayWrite, mayNavigateArmy,type ControlWorld } from './CommandPrecedence';
 import { ENGAGEMENT,LINES } from '../content/TacticalRules';
 import { strengthFraction } from './Manpower';
 import { AI_DOCTRINES } from '../content/AiDoctrines';
@@ -159,7 +159,7 @@ export class Armies {
     if(world.domainRoutes)this.cohorts=new CohortAdmission("army",{
       map:world.map,paths:world.paths,squadPaths:id=>world.squadPaths(id),squads:()=>world.squads,squad:id=>world.squad(id),routes:world.domainRoutes,
       blocked:id=>t=>world.armyBlocked(t,id),
-      valid:(plan,squad)=>{const link=this.cohortArmies.get(plan.id),army=link&&this.byArmyId.get(link.armyId);return !!army && army.revision===link!.revision && this.membership.get(squad.id)===army.id && mayWrite(this.controls,squad,"army");},
+      valid:(plan,squad)=>{const link=this.cohortArmies.get(plan.id),army=link&&this.byArmyId.get(link.armyId);return !!army && army.revision===link!.revision && this.membership.get(squad.id)===army.id && mayNavigateArmy(this.controls,squad);},
       commit:(plan,members)=>{
         const link=this.cohortArmies.get(plan.id)!,army=this.byArmyId.get(link.armyId)!;
         if(link.leaderId!==undefined){
@@ -172,7 +172,7 @@ export class Armies {
         }
         const march=this.marches.get(army.id);
         for(const member of members){
-          const current=world.squad(member.squad.id);if(!current||!mayWrite(this.controls,current,'army')||army.withdrawalTick!==undefined&&world.tick-army.withdrawalTick<LINES.rearWithdrawalTicks&&army.slots?.find(r=>r.squadId===current.id)?.role==="frontline")continue;world.setArmyMove(current,member.point,member.path);
+          const current=world.squad(member.squad.id);if(!current||!mayNavigateArmy(this.controls,current)||army.withdrawalTick!==undefined&&world.tick-army.withdrawalTick<LINES.rearWithdrawalTicks&&army.slots?.find(r=>r.squadId===current.id)?.role==="frontline")continue;world.setArmyMove(current,member.point,member.path);
           world.updateSquad(member.squad.id,{nextPathIndex:member.index});
           march?.planned.set(member.squad.id,member.point);march?.pending.delete(member.squad.id);
         }
@@ -599,7 +599,7 @@ export class Armies {
   }
   private order(army: Army, order: ArmyOrder, append = false, prepared?:{path:number[];route:WorldPoint[];lengths:number[]}): string | null {
     if(order.type==="deploy"&&order.facing!==undefined&&(!Number.isFinite(order.facing)||Math.abs(order.facing)>Math.PI))return "Invalid army facing";
-    const members = this.members(army).filter(s=>active(s)&&mayWrite({...this.controls,directArmyAction:()=>false,stance:()=>false},{...s,occupancy:undefined},"army"));
+    const members = this.members(army).filter(s=>active(s)&&mayNavigateArmy({...this.controls,directArmyAction:()=>false,stance:()=>false},{...s,occupancy:undefined}));
     if (!members.length) return "Army has no available land squads";
     let tile: number;
     if(order.type==='fire-retreat')army.posture='skirmish';
@@ -812,7 +812,7 @@ export class Armies {
   }
   /** A short, straight, unobstructed step needs no admitted corridor. */
   private directMove(army: Army, march: March, s: Squad, slot: WorldPoint): boolean {
-    if(!mayWrite(this.controls,s,'army'))return true;
+    if(!mayNavigateArmy(this.controls,s))return true;
     const paths = this.world.squadPaths(army.playerId), tile = pointTile(this.world.map, slot);
     if (
       distanceSquared(s, slot) > (DIRECT_STEP * FIXED) ** 2 ||
@@ -870,7 +870,7 @@ export class Armies {
     slots: Map<number, WorldPoint> | null | undefined,
   ): boolean {
     if(slots===undefined)return false;
-    members=members.filter(s=>mayWrite(this.controls,this.world.squad(s.id)??s,"army"));
+    members=members.filter(s=>mayNavigateArmy(this.controls,this.world.squad(s.id)??s));
     if(!members.length)return true;
     if(this.cohorts && slots){
       if([...this.cohortArmies.values()].some(link=>link.armyId===army.id))return false;
@@ -944,7 +944,7 @@ export class Armies {
         if (
           army.revision !== request.revision ||
           this.membership.get(s.id) !== army.id ||
-          !active(s) || !mayWrite(this.controls,s,'army')
+          !active(s) || !mayNavigateArmy(this.controls,s)
         )
           return;
           march.pending.delete(s.id);
@@ -1059,11 +1059,17 @@ export class Armies {
         lost = new Set(army.memberIds.filter((id) => !live.has(id)));
       if (lost.size) this.detach(army, lost,true);
       if (!this.armies.includes(army)) continue;
+      // Diplomacy and target loss invalidate the objective even while route
+      // admission or a blocked deployment prevents movement this tick.
+      if (attackOrder(army.order) && !this.target(army)) {
+        this.order(army, { type: "hold" });
+        continue;
+      }
       this.syncSlots(army,members);this.closeGap(army);
       if(this.externalActions.has(army.id)){
         if(members.every(s=>s.order.type==='hold'&&!s.charge&&!s.structureTarget)){army.manual=false;this.externalActions.delete(army.id);}else continue;
       }
-      const available=members.filter(s=>active(s)&&mayWrite(this.controls,s,'army'));
+      const available=members.filter(s=>active(s)&&mayNavigateArmy(this.controls,s));
       const leader=available.find(s=>s.id===army.leaderId)??available[0];
       if(!leader){army.reason='Members are under domain control';continue;}
       army.leaderId=leader.id;

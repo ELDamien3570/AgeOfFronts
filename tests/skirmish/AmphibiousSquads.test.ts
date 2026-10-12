@@ -7,7 +7,7 @@ import { EMBARK_COST } from "../../src/skirmish/PathTopology";
 import { VESSEL } from "../../src/skirmish/content/Units";
 import { ARMY_TECHNOLOGY } from "../../src/skirmish/content/Armies";
 import { retainSquads } from "./UnitFixtures";
-import type { Ship } from "../../src/skirmish/Protocol";
+import type { Ship, Squad } from "../../src/skirmish/Protocol";
 import { DamageLedger } from "../../src/skirmish/Conquest";
 
 /** 100x70 land with a water channel across columns 40..49 (rows 0..69). */
@@ -72,7 +72,7 @@ describe("amphibious squads", () => {
 
   it("moves on water at the transport's speed", () => {
     const { match, squad } = fixture();
-    match.updateSquad(squad.id, { x: 44.5 * FIXED, y: 35.5 * FIXED });
+    putAfloat(match, squad, 44.5, 35.5);
     match.step();
     const live = match.squad(squad.id)!;
     expect(live.afloat).toBeTruthy();
@@ -119,10 +119,18 @@ function warship(match: Skirmish, x: number, y: number, playerId = 2): Ship {
     path: [], nextPathIndex: 0, fighting: false
   });
 }
+
+// Combat fixtures install an admitted hull explicitly. Raw coordinate updates
+// do not perform the movement domain's shoreline handoff.
+function putAfloat(match: Skirmish, squad: Squad, x: number, y: number) {
+  const vessel = match.transportVessel(squad.playerId)!;
+  match.updateSquad(squad.id, { x: x * FIXED, y: y * FIXED,
+    afloat: { hull: vessel.health, maxHull: vessel.health, vesselId: vessel.id } });
+}
 describe("afloat combat", () => {
   it("absorbs hits on the hull, leaving the soldiers aboard untouched until it fails", () => {
     const { match, squad } = fixture();
-    match.updateSquad(squad.id, { x: 44.5 * FIXED, y: 35.5 * FIXED });
+    putAfloat(match, squad, 44.5, 35.5);
     match.step();
     const afloat = match.squad(squad.id)!.afloat!, troops = squad.troops;
     const hit = new DamageLedger();
@@ -141,7 +149,7 @@ describe("afloat combat", () => {
 
   it("is sunk by warship fire with every soldier aboard", () => {
     const { match, squad } = fixture();
-    match.updateSquad(squad.id, { x: 44.5 * FIXED, y: 35.5 * FIXED });
+    putAfloat(match, squad, 44.5, 35.5);
     match.step();
     expect(match.squad(squad.id)!.afloat).toBeTruthy();
     const troops = squad.troops, losses = match.player(1)!.losses;
@@ -157,7 +165,7 @@ describe("afloat combat", () => {
 
   it("neither attacks from the water nor can be struck by soldiers ashore", () => {
     const { match, squad } = fixture();
-    match.updateSquad(squad.id, { x: 40.5 * FIXED, y: 35.5 * FIXED });
+    putAfloat(match, squad, 40.5, 35.5);
     const enemy = match.squads.find(s => s.playerId === 2)!;
     match.updateSquad(enemy.id, { x: 39.5 * FIXED, y: 35.5 * FIXED, order: { type: "hold" }, path: [] });
     const troops = { own: squad.troops, enemy: enemy.troops };
@@ -201,7 +209,7 @@ describe("amphibious orders", () => {
     const vessel = match.transportVessel(1)!;
     expect(vessel.id).toBe("bronzeage-transport");
     expect(vessel.health).toBeGreaterThanOrEqual(bronze.health);
-    match.updateSquad(squad.id, { x: 44.5 * FIXED, y: 35.5 * FIXED });
+    putAfloat(match, squad, 44.5, 35.5);
     match.step();
     expect(match.squad(squad.id)!.afloat).toEqual({ hull: vessel.health, maxHull: vessel.health, vesselId: "bronzeage-transport" });
   });

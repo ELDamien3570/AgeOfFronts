@@ -108,6 +108,10 @@ export class StructureAttackPreparation {
     private readonly targetTiles: readonly number[],
     readonly state: StructureAttackPreparationState,
     private readonly rangeAt?: (id:number,from:WorldPoint,to:WorldPoint)=>number,
+    private readonly bodyAim?: {
+      extent(id: number): number;
+      contact(id: number, from: WorldPoint, tile: number): { gap: number; point: WorldPoint } | undefined;
+    },
   ) {}
   private fail(reason: string): void {
     this.state.stage = "failed";
@@ -116,7 +120,7 @@ export class StructureAttackPreparation {
   private profile(): Profile {
     const s = this.state,
       member = s.members[s.member],
-      key = `${member.kind}:${member.range}:${!!member.elevationEligible}`;
+      key = `${member.kind}:${member.range}:${!!member.elevationEligible}${this.bodyAim ? `:${member.id}` : ""}`;
     let profile = s.profiles.get(key);
     if (!profile)
       s.profiles.set(
@@ -163,8 +167,10 @@ export class StructureAttackPreparation {
     return {
       x,
       y,
-      ex: Math.floor(to.x / FIXED),
-      ey: Math.floor(to.y / FIXED),
+      // A boundary hit belongs to the last traversed cell. Using the cell on
+      // the other side can make a diagonal ray step past one endpoint forever.
+      ex: Math.floor((to.x - sx * 1e-7) / FIXED),
+      ey: Math.floor((to.y - sy * 1e-7) / FIXED),
       sx,
       sy,
       tx: dx ? Math.abs(FIXED / dx) : undefined,
@@ -238,8 +244,9 @@ export class StructureAttackPreparation {
     }
     const point = tilePoint(this.map, tile);
     range=this.rangeAt?.(s.members[s.member].id,aim.from,point)??range;
-    if ((point.x - aim.from.x) ** 2 + (point.y - aim.from.y) ** 2 <= range ** 2)
-      aim.ray = this.ray(aim.from, point);
+    const contact = this.bodyAim?.contact(s.members[s.member].id, aim.from, tile);
+    const distance = contact ? contact.gap ** 2 : (point.x - aim.from.x) ** 2 + (point.y - aim.from.y) ** 2;
+    if (distance <= range ** 2) aim.ray = this.ray(aim.from, contact?.point ?? point);
   }
   step(budget: number): number {
     if (!Number.isInteger(budget) || budget < 0)
@@ -320,7 +327,7 @@ export class StructureAttackPreparation {
           s.candidateCursor = 0;
           continue;
         }
-        const extent = Math.ceil(profile.range * (member.elevationEligible?1.1:1) / FIXED),
+        const extent = Math.ceil((profile.range * (member.elevationEligible?1.1:1) + (this.bodyAim?.extent(member.id) ?? 0)) / FIXED),
           cx = this.map.x(target),
           cy = this.map.y(target);
         profile.x ??= Math.max(0, cx - extent);

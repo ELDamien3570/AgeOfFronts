@@ -81,7 +81,7 @@ describe("remaining gameplay passes", () => {
           game.updateSquad(s.id, {
             x: (threatened ? 34.5 : 90.5) * FIXED,
             y: (18.5 + 7 * i) * FIXED,
-            definitionId:"earlymedieval-infantry",troops:96,manpower:createManpower(UNIT.get("earlymedieval-infantry")!,"enlarged"),
+            definitionId:"earlymedieval-infantry",troops:UNIT.get("earlymedieval-infantry")!.formationRecipe!.enlargedCapacity!,manpower:createManpower(UNIT.get("earlymedieval-infantry")!,"enlarged"),
           }),
         );
       e.progression.states[ai.id].completed.push("rus-stoneage-cargo-canoes");

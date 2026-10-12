@@ -12,6 +12,14 @@ import type { Fortifications } from "./Fortifications";
 // Both order planning and combat use the actual weapon range and target
 // footprint. The target itself may block movement; other hostile cells block
 // the shot. A wall span can be attacked at any exposed cell.
+export function structureContact(from: WorldPoint | FormationBody, tile: number, width: number, tick = 0) {
+  if (!("formation" in from) || !from.formation || ("afloat" in from && from.afloat)) return undefined;
+  const x = (tile % width) * FIXED, y = Math.floor(tile / width) * FIXED;
+  return formationFootprints(from as FormationBody, tick).map(part => polygonContact(part, [
+    { x, y }, { x: x + FIXED, y }, { x: x + FIXED, y: y + FIXED }, { x, y: y + FIXED },
+  ])).reduce((a, b) => b.gap < a.gap ? b : a);
+}
+
 export function structureAim(
   from: WorldPoint | FormationBody,
   tiles: readonly number[],
@@ -29,22 +37,7 @@ export function structureAim(
         x: ((tile % width) + 0.5) * FIXED,
         y: (Math.floor(tile / width) + 0.5) * FIXED,
       },
-      body =
-        "formation" in from &&
-        from.formation &&
-        !("afloat" in from && from.afloat)
-          ? formationFootprints(from as FormationBody, tick)
-          : undefined;
-    const x = (tile % width) * FIXED,
-      y = Math.floor(tile / width) * FIXED;
-    const contact = body
-      ? body.map(part=>polygonContact(part, [
-          { x, y },
-          { x: x + FIXED, y },
-          { x: x + FIXED, y: y + FIXED },
-          { x, y: y + FIXED },
-        ])).reduce((a,b)=>b.gap<a.gap?b:a)
-      : undefined;
+      contact = structureContact(from, tile, width, tick);
     const distance = contact ? contact.gap ** 2 : distanceSquared(from, point),
       aim = contact ? contact.target : point;
     if (

@@ -12,6 +12,7 @@ export const STONE_BRONZE_ACTORS: readonly TroopActorDefinition[] = [
   },
   {
     name: "Javelinist",
+    assetRoot: "/Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/",
     age: "StoneAge",
     mounted: false,
     ranged: true,

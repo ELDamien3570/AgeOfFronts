@@ -263,7 +263,7 @@ describe("bounded civilian trade", () => {
     expect(game.map.neighbors(sources[0].tile).some(t => game.map.isWater(t))).toBe(false);
     step(22);
     expect(trade.actors.some(a => a.naval && a.cargo > 0)).toBe(true);
-    game.expansion!.progression.states[1].completed.push("rus-stoneage-port-sea-trade");
+    game.expansion!.progression.states[1].completed.push("rus-stoneage-port-sea-trade", "rus-stoneage-warships");
     game.players[0].gold=100000;
     expect(game.applyCommand({type:"recruit-ship",playerId:1,buildingId:sources[0].id,shipType:"warship",definitionId:"stoneage-warship"})).toBeNull();
   });

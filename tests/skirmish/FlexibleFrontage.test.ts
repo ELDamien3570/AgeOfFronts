@@ -24,7 +24,9 @@ function fixture(count=72) {
 }
 describe("bounded flexible frontage",()=>{
   it("projects casualty width downward across a gap between legal profile bands",()=>{
-    const d=formationDoctrine("bronzeage-infantry"),width=frontageLayout(24,d,"shield-wall",880)!.width;
+    // A fixed geometry fixture keeps this interval-gap regression independent
+    // of authored soldier-size changes.
+    const d={...formationDoctrine("bronzeage-infantry"),spacing:128,bodyWidth:128,bodyDepth:128},width=frontageLayout(24,d,"shield-wall",880)!.width;
     const next=frontageLayout(20,d,"shield-wall",width,width)!;
     expect(next.width).toBeLessThanOrEqual(width);
     expect(next.width).toBe(768);

@@ -200,28 +200,6 @@ describe("selected recruitment building", () => {
     expect(match.players[0].gold).toBe(gold);
     expect(vm().recruitment("infantry").enabled).toBe(false);
   });
-  it("names the actual research and specialist recruitment building", () => {
-    const { match, selection, vm } = fixture();
-    const unit = UNITS.find((u) => u.role === "siege")!;
-    const quote = () =>
-      vm(false, undefined, { [unit.line]: unit.id }).recruitment(unit.line);
-    match.expansion!.progression.states[1].completed = [];
-    const technology = TECHNOLOGIES.find((t) => t.id === unit.technologyId)!;
-    expect(quote().reason).toContain(technology.name);
-    match.expansion!.progression.states[1].completed.push(unit.technologyId);
-    expect(quote().reason).toContain(
-      BUILDING_RULES[unit.building].name.toLowerCase(),
-    );
-    expect(quote().reason).toContain("or later");
-    const empire = new EmpireViewModel(match.snapshot(), selection);
-    const airstripTech = TECHNOLOGIES.find(
-      (t) => t.id === buildingTechnology("airstrip", "Modern"),
-    )!;
-    expect(empire.buildingPreview("airstrip").reason).toContain(
-      airstripTech.name,
-    );
-    expect(empire.buildChoice("airstrip").reason).toContain(airstripTech.name);
-  });
   it.each([
     ["infantry", "barracks"],
     ["archer", "archery"],

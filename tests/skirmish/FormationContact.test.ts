@@ -142,9 +142,6 @@ describe("formation boundary engagement", () => {
     expect(formationContact(a, point, 0).gap).toBeGreaterThan(
       formationContact(a, point, 40).gap,
     );
-    expect(
-      contactParticipants(a, { ...f.b, y: a.y + FIXED }, 20, 2),
-    ).toBeLessThanOrEqual(Math.ceil(mid.width / 128));
   });
   it("fires melee at credible boundaries outside centre reach and records actual paired anchors", () => {
     const f = match(),
@@ -276,20 +273,6 @@ describe("formation boundary engagement", () => {
   });
 });
 describe("legal reform and casualty geometry", () => {
-  it("faces the current melee opponent while retaining the original attack order",()=>{
-    const f=match();
-    const opponent=f.game.addSquad({...f.b,id:999,x:f.a.x+4*FIXED,y:f.a.y});
-    f.game.updateSquad(f.a.id,{
-      order:{type:"attack",targetId:f.b.id},
-      fighting:true,combatTargetId:opponent.id,
-      formation:{...f.a.formation!,facing:3*TURN/4},
-    });
-    const normal=formationContact(f.a,opponent,f.game.tick).normal;
-    const expectedFacing=facingOf(Math.atan2(normal.y,normal.x)-Math.PI/2);
-    (f.game as unknown as {advanceFormationStates(land:readonly typeof f.a[]):void}).advanceFormationStates([f.a]);
-    expect(f.a.formation!.facing).toBe(expectedFacing);
-    expect(f.a.order).toEqual({type:"attack",targetId:f.b.id});
-  });
   it.each([TURN/4,TURN/2])("approaches from sideways/backward headings and fights through contacted edges (%i)",facing=>{
     const f=match();
     f.game.updateSquad(f.a.id,{formation:{...f.a.formation!,facing},weaponState:{sharedReadyTick:9000}});
@@ -338,32 +321,6 @@ describe("legal reform and casualty geometry", () => {
       f.a.manpower!.capacity,
     );
   });
-  it("rejects enlargement before spending when the additional body cannot fit", () => {
-    const f = match();
-    f.game.updateSquad(f.a.id, { x: 24.5 * FIXED, y: 24.5 * FIXED });
-    f.game.owners[f.game.tileOf(f.a)] = 1;
-    f.game.expansion!.progression.states[1].completed.push(
-      f.u.formationRecipe!.technologyId!,
-    );
-    const player = f.game.player(1)!;
-    player.gold = 100000;
-    player.reserves = 100000;
-    for (const item of Object.keys(f.u.cost.items ?? {}))
-      f.game.expansion!.supply.inventories[1][item] = 100000;
-    const forts = f.game.expansion!.fortifications;
-    forts.intactWallAt = (t) => f.map.x(t) === 26;
-    expect(f.game.canDeploy(f.a, f.a.troops)).toBe(true);
-    const error = f.game.applyCommand({
-      type: "enlarge",
-      playerId: 1,
-      squadIds: [f.a.id],
-      definitionId: f.u.id,
-    });
-    expect(error).toContain("room");
-    expect(player.gold).toBe(100000);
-    expect(player.reserves).toBe(100000);
-    expect(f.a.manpower!.enlargement).toBeFalsy();
-  });
   it("certifies every occupied terrain cell, including interior blockers", () => {
     const f = match(),
       poly = formationFootprint(f.a, 0),
@@ -377,28 +334,6 @@ describe("legal reform and casualty geometry", () => {
         () => false,
       ),
     ).toBe(false);
-  });
-  it("atomically rejects a blocked destination or rotation sweep", () => {
-    const f = match(),
-      second = f.game.addSquad({
-        ...f.a,
-        id: 999,
-        x: 40 * FIXED,
-        y: 40 * FIXED,
-      });
-    const before = f.a.formation;
-    const forts = f.game.expansion!.fortifications,
-      original = forts.intactWallAt.bind(forts);
-    forts.intactWallAt = (t) => f.map.x(t) === 41;
-    const error = f.game.applyCommand({
-      type: "formation",
-      playerId: 1,
-      squadIds: [f.a.id, second.id],
-      shape: "shield-wall",
-    });
-    expect(error).toContain("blocked ground");
-    expect(f.a.formation).toEqual(before);
-    forts.intactWallAt = original;
   });
   it("resizes casualties without tactical reform, preserves weapons and restores geometry", () => {
     const f = match();

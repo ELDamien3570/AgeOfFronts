@@ -42,6 +42,7 @@ describe("age-correct deposit placement", () => {
     preview.update(snapshot);
     expect(new Set(preview.sites(bounds, 1024))).toEqual(new Set(deposits.slice(0, 3).map(d => d.tile)));
     expect(preview.rejection("mine", deposits[3].tile)).not.toBeNull();
-    expect(match.buildingPlacement(1, "mine", deposits[1].tile, "StoneAge")).toBeNull();
+    expect(match.buildingPlacement(1, "mine", deposits[1].tile, "StoneAge")).toContain("latest researched");
+    expect(match.buildingPlacement(1, "mine", deposits[1].tile, "BronzeAge")).toBeNull();
   });
 });

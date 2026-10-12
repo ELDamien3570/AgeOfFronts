@@ -43,3 +43,10 @@ export function mayWrite(
     (writer === "player" && owner !== "domain")
   );
 }
+
+/** Army navigation supplies destinations while the transport domain retains
+ * hull state, shoreline handoff and physical movement. Other domain locks still
+ * suspend coordination, and combat writers continue to use mayWrite. */
+export function mayNavigateArmy(world: ControlWorld, squad: Squad): boolean {
+  return mayWrite(world, squad.afloat ? { ...squad, afloat: null } : squad, "army");
+}
