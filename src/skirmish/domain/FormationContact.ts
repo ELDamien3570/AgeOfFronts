@@ -1,6 +1,6 @@
 import { layoutGrid } from "./FormationGeometry";
 import type { GameMap } from "../../core/game/GameMap";
-import { CONTACT } from "../content/TacticalRules";
+import { CONTACT, FACING } from "../content/TacticalRules";
 import { FIXED, type Squad } from "../Protocol";
 import { passableCell } from "../SquadGeometry";
 import {
@@ -410,12 +410,12 @@ function computeContactParticipants(
   contact = formationContact(s, target, tick),
   edgeCombat = false,
 ): number {
-  if (contact.facing < 0.25 && !edgeCombat) return 0;
+  if (contact.facing < FACING.participantCos && !edgeCombat) return 0;
   const d=formationDoctrine(s.definitionId),layout=layoutGrid(s.troops,formationEnvelope(s,tick).shape,d,s.formation?.frontage);
   const angle=formationEnvelope(s,tick).angle,side=Math.abs(Math.cos(angle)*contact.normal.x+Math.sin(angle)*contact.normal.y)>Math.abs(contact.facing);
   const spacing=Math.max(side?d.bodyDepth:d.bodyWidth,side?layout.rankPitch:layout.pitch);
   const activeRanks =
-    s.formation?.transition || (!edgeCombat && contact.facing < 0.5) ? 1 : ranks;
+    s.formation?.transition || formationEnvelope(s,tick).shape==='modern-loose' || (!edgeCombat && contact.facing < FACING.fullRanksCos) ? 1 : ranks;
   return Math.min(
     s.troops,
     Math.min(side?layout.rows:layout.columns, Math.max(1, Math.ceil(contact.frontage / spacing))) * Math.min(side?layout.columns:layout.rows,activeRanks),

@@ -1,4 +1,5 @@
 import type { FormationType as Kind } from "./FormationArtwork";
+import type { FormationMarkerLayout } from "./FormationMarker";
 interface Frame {
   source: HTMLCanvasElement;
   x: number;
@@ -16,17 +17,26 @@ const KINDS: Kind[] = [
   "warship",
   "siege",
 ];
-const STRIDE = 16;
+const STRIDE = 28;
 const VERTEX = `#version 300 es
 precision highp float;
 layout(location=0) in vec4 positionSize;
 layout(location=1) in vec4 angleLayerOrigin;
 layout(location=2) in vec4 cropPivot;
 layout(location=3) in vec4 color;
+layout(location=4) in vec4 badge;
+layout(location=5) in vec4 decoration;
+layout(location=6) in vec4 outline;
 uniform vec2 viewport;
 out vec2 uv;
 out vec4 tint;
 flat out int layer;
+out vec2 cornerUv;
+flat out vec4 badgeSize;
+flat out vec4 textureCrop;
+flat out vec2 quadSize;
+flat out vec4 facing;
+flat out vec4 borderColor;
 void main() {
   const vec2 corners[6] = vec2[6](vec2(0,0),vec2(1,0),vec2(0,1),vec2(0,1),vec2(1,0),vec2(1,1));
   vec2 corner = corners[gl_VertexID];
@@ -37,6 +47,12 @@ void main() {
   uv = angleLayerOrigin.zw + corner*cropPivot.xy;
   layer = int(angleLayerOrigin.y);
   tint = color;
+  cornerUv = corner;
+  badgeSize = badge;
+  textureCrop = vec4(angleLayerOrigin.zw,cropPivot.xy);
+  quadSize = positionSize.zw;
+  facing = decoration;
+  borderColor = outline;
 }`;
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -44,9 +60,34 @@ precision highp sampler2DArray;
 in vec2 uv;
 in vec4 tint;
 flat in int layer;
+in vec2 cornerUv;
+flat in vec4 badgeSize;
+flat in vec4 textureCrop;
+flat in vec2 quadSize;
+flat in vec4 facing;
+flat in vec4 borderColor;
 uniform sampler2DArray atlas;
 out vec4 result;
-void main() { result = texture(atlas,vec3(uv,float(layer)))*tint; }`;
+void main() {
+  if(badgeSize.x <= 0.0) { result = texture(atlas,vec3(uv,float(layer)))*tint; return; }
+  vec3 ink = vec3(badgeSize.w);
+  vec2 pixel = cornerUv * quadSize;
+  vec2 iconUv = (cornerUv - 0.5 - vec2(0.0, facing.w)) / badgeSize.xy + 0.5;
+  bool inIcon = all(greaterThanEqual(iconUv, vec2(0.0))) && all(lessThanEqual(iconUv, vec2(1.0)));
+
+  vec4 icon = inIcon ? texture(atlas, vec3(textureCrop.xy + iconUv * textureCrop.zw, float(layer))) : vec4(0.0);
+  result = tint;
+  result.rgb = mix(tint.rgb, ink, icon.a);
+  float y = pixel.y - badgeSize.z;
+  if(y >= 0.0 && y <= facing.y && abs(pixel.x - quadSize.x * 0.5) <= facing.x * 0.5 * y / facing.y)
+    result.rgb = ink;
+  vec2 edge = min(pixel, quadSize - pixel);
+  if(min(edge.x, edge.y) <= facing.z)
+    result.rgb = borderColor.a > 0.0 ? borderColor.rgb : ink;
+  // Antialias inside the footprint instead of expanding its geometry.
+  vec2 coverage = smoothstep(vec2(0.0), fwidth(pixel), edge);
+  result.a *= min(coverage.x, coverage.y);
+}`;
 
 // One instanced draw for strategic markers. A disposable view resource with no
 // authority over selection, routing or combat. Detailed art stays in canvas;
@@ -59,7 +100,7 @@ export class StrategicSprites {
   private texture?: WebGLTexture;
   private vao?: WebGLVertexArrayObject;
   private viewport?: WebGLUniformLocation | null;
-  private readonly uploaded = new Set<Kind>();
+  private readonly uploaded = new Set<number>();
   private instances = new Float32Array(8192 * STRIDE);
   private count = 0;
   private lost = false;
@@ -80,6 +121,7 @@ export class StrategicSprites {
     this.canvas.addEventListener("webglcontextlost", (event) => {
       event.preventDefault();
       this.lost = true;
+      this.canvas.style.display = "none";
     });
     this.canvas.addEventListener("webglcontextrestored", () => {
       this.lost = false;
@@ -121,7 +163,7 @@ export class StrategicSprites {
       gl.bindVertexArray(this.vao);
       this.buffer = gl.createBuffer()!;
       gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-      for (let index = 0; index < 4; index++) {
+      for (let index = 0; index < 7; index++) {
         gl.enableVertexAttribArray(index);
         gl.vertexAttribPointer(
           index,
@@ -135,7 +177,7 @@ export class StrategicSprites {
       }
       this.texture = gl.createTexture()!;
       gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.texture);
-      gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 128, 128, KINDS.length);
+      gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 128, 128, KINDS.length * 2);
       gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(
@@ -158,6 +200,7 @@ export class StrategicSprites {
         gl.ONE_MINUS_SRC_ALPHA,
       );
       this.uploaded.clear();
+      this.canvas.style.display = "";
     } catch (error) {
       this.program = undefined;
       this.canvas.style.display = "none";
@@ -185,11 +228,12 @@ export class StrategicSprites {
     angle: number,
     rgb: readonly number[],
     opacity: number,
+    marker?: { layout: FormationMarkerLayout; light: boolean; selection?: readonly number[] },
   ): boolean {
-    if (!this.available) return false;
+    if (!this.available || width <= 0 || height <= 0) return false;
     const gl = this.gl!,
-      layer = KINDS.indexOf(kind);
-    if (!this.uploaded.has(kind)) {
+      layer = KINDS.indexOf(kind) + (marker ? KINDS.length : 0);
+    if (!this.uploaded.has(layer)) {
       gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.texture!);
       gl.texSubImage3D(
         gl.TEXTURE_2D_ARRAY,
@@ -204,7 +248,7 @@ export class StrategicSprites {
         gl.UNSIGNED_BYTE,
         frame.source,
       );
-      this.uploaded.add(kind);
+      this.uploaded.add(layer);
     }
     if ((this.count + 1) * STRIDE > this.instances.length) {
       const grown = new Float32Array(this.instances.length * 2);
@@ -229,6 +273,18 @@ export class StrategicSprites {
         rgb[1] / 255,
         rgb[2] / 255,
         opacity,
+        marker ? marker.layout.symbolWidth / width : 0,
+        marker ? marker.layout.symbolHeight / height : 0,
+        marker?.layout.border ?? 0,
+        marker?.light ? 1 : 0,
+        marker?.layout.facingWidth ?? 0,
+        marker?.layout.facingHeight ?? 0,
+        marker?.selection ? Math.min(1.5, Math.min(width, height) * 0.15) : marker?.layout.border ?? 0,
+        marker ? marker.layout.symbolOffsetY / height : 0,
+        marker?.selection ? marker.selection[0] / 255 : 0,
+        marker?.selection ? marker.selection[1] / 255 : 0,
+        marker?.selection ? marker.selection[2] / 255 : 0,
+        marker?.selection ? 1 : 0,
       ],
       this.count++ * STRIDE,
     );

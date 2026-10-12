@@ -1,3 +1,4 @@
+import { TRENCH, SKIRMISH } from "./TacticalRules";
 import formationDoctrines from "./formation-doctrines.json";
 import { ATOMIC_ATTACK,DRONE_ATTACK,NAVAL_AIR_ATTACK } from "./ModernWeapons";
 import { FLIGHT_RULES } from "./FlightOperations";
@@ -15,7 +16,7 @@ import { TERRITORY_ABSORPTION } from "../domain/TerritoryAbsorption";
 import { AI_PERSONALITIES } from "./AiPersonalities";
 import { COASTAL_TERRITORY_RULES } from "./CoastalTerritory";
 import { ARMY_CAPS } from "./Armies";
-import { GUN_NEST_ATTACK, TRENCH_COVER } from "./Defences";
+import { GUN_NEST_ATTACK } from "./Defences";
 import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS, MISSILE_DEFENSE_SPEED } from "./MissileDefense";
 import {NUCLEAR_RESERVE_LOSS_PER_CELL,FALLOUT_TROOP_LOSS_PER_CELL} from "../domain/NuclearWasteland";
 import {
@@ -113,7 +114,7 @@ export const CONTENT_HASH = hash({
   navalAutonomyRevision: 3,
   aiCombatPolicyRevision: 2,
   armyCaps: ARMY_CAPS,
-  defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH_COVER, missile: {ranges:Array.from({length:10},(_,i)=>missileDefenseRange(i+1)),reloadTicks:MISSILE_DEFENSE_RELOAD_TICKS,speed:MISSILE_DEFENSE_SPEED} },
+  defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH, skirmish:SKIRMISH, missile: {ranges:Array.from({length:10},(_,i)=>missileDefenseRange(i+1)),reloadTicks:MISSILE_DEFENSE_RELOAD_TICKS,speed:MISSILE_DEFENSE_SPEED} },
   factions: FACTIONS,
   aiPersonalities: AI_PERSONALITIES,
   squadCaps: AGE_SQUAD_CAPS,

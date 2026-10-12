@@ -45,4 +45,5 @@ export function applySoldierWeapons(unit: UnitDefinition): void {
   unit.bonusResistance = {};
   delete unit.healthPercent;
   unit.chargeMultiplier = data.chargeMultiplier;
+  unit.chargeRecoveryTicks = 'chargeRecoveryTicks' in data ? Number(data.chargeRecoveryTicks) : undefined;
 }

@@ -5,7 +5,7 @@ import type { RecruitmentJob } from "./Definitions";
 export const RECRUITMENT_SECONDS = Object.freeze({
   infantry: 5,
   archer: 7,
-  cavalry: 10,
+  cavalry: 5,
   siege: 20,
   vehicle: 30,
   aircraft: 30,

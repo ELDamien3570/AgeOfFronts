@@ -37,6 +37,7 @@ export class PassageTraffic {
 
   }
 
+  staticFeatures():{id:number;axis:number;low:WorldPoint;high:WorldPoint}[]{return [...new Map(this.tiles.filter((p):p is Passage=>!!p).map(p=>[p.id,p])).values()].map(p=>({...p,low:{...p.low},high:{...p.high}}));}
   private readonly tiles: (Passage | undefined)[];
   private readonly leaders = new Map<string, number>();
   private readonly routes = new WeakMap<readonly number[], Crossing[]>();

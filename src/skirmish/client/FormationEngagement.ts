@@ -12,6 +12,7 @@ export interface EngagementOpponents {
 }
 export interface EngagementIntent {
   active: boolean;
+  anchored?:boolean;
   charging: boolean;
   mounted?: boolean;
   crowdPress?: boolean;
@@ -143,7 +144,7 @@ export class FormationEngagement {
       slots.filter((s) => edges.some((e) => onEdge(s, e))).map((s) => s.id),
     );
     const reserveSteps=this.reservePress.sample(dt,slots,edges,front,this.contactOffsets,{
-      enabled:engaged&&!intent.ranged&&!intent.mounted,square:intent.square,layout:intent.layout,
+      enabled:engaged&&!intent.ranged&&!intent.mounted&&!intent.anchored,square:intent.square,layout:intent.layout,
       limit:intent.contactAdvance===undefined?undefined:intent.contactAdvance/intent.footprint,
       crowd:intent.crowdPress,
     });
@@ -216,7 +217,7 @@ export class FormationEngagement {
             }
           }
         } else this.attention.delete(slot.id);
-        if(target && !intent.ranged && front.has(slot.id) && intent.contactAdvance!==undefined){
+        if(target && !intent.anchored && !intent.ranged && front.has(slot.id) && intent.contactAdvance!==undefined){
           const dx=target.x-x,dy=target.y-y,distance=Math.hypot(dx,dy);
           // Close only a bounded fraction of a legal contact gap. This is a
           // cosmetic front-rank step, never navigation or damage authority.

@@ -28,7 +28,7 @@ export class ArmyView {
     this.strip.hidden = true;
     this.strip.setAttribute("aria-label", "Your armies");
     this.strip.innerHTML =
-      '<button class="text-button" data-create>Create army</button><span data-list></span><select aria-label="Army to join" data-join></select><button class="text-button" data-add>Add selected</button><button class="text-button" data-detach>Detach selected</button>';
+      '<button class="text-button" data-create>Create army</button><span data-list></span><select aria-label="Army to join" data-join></select><button class="text-button" data-add>Add selected</button><button class="text-button" data-detach>Detach selected</button><button class="text-button" data-stance>Skirmish stance</button>';
     this.card = document.createElement("aside");
     this.card.className = "army-card selection-card hud-surface";
     this.card.setAttribute("aria-label", "Army details");
@@ -43,6 +43,7 @@ export class ArmyView {
     this.strip.addEventListener("click", (e) => {
       const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button");
       if (!b || !this.vm) return;
+      if(b.hasAttribute("data-stance")){const squads=this.vm.selectedSquads;this.actions.command({type:"stance",playerId:this.vm.playerId,squadIds:squads.map(s=>s.id),stance:squads.every(s=>s.stance==='skirmish')?'default':'skirmish'});return;}
       if (b.hasAttribute("data-create"))
         this.actions.command({
           type: "create-army",
@@ -106,6 +107,7 @@ export class ArmyView {
     });
     this.card.addEventListener("change", (e) => {
       const army = this.vm?.selectedArmy;
+      if (army&&(e.target as HTMLElement).hasAttribute("data-posture")){this.actions.command({type:"army-posture",playerId:army.playerId,armyId:army.id,posture:(e.target as HTMLSelectElement).value as "line"|"defend"|"skirmish"});return;}
       if (army)
         this.actions.command({
           type: "army-auto",
@@ -120,7 +122,8 @@ export class ArmyView {
   }
   update(vm: ArmyViewModel): void {
     this.vm = vm;
-    this.strip.hidden = !vm.capacity;
+    this.strip.hidden = !vm.capacity && !vm.selectedSquads.length;
+    const stance=this.strip.querySelector<HTMLButtonElement>("[data-stance]")!;stance.textContent=vm.selectedSquads.length&&vm.selectedSquads.every(s=>s.stance==='skirmish')?'Default stance':'Skirmish stance';stance.disabled=!vm.selectedSquads.length;stance.title='Withdraw during dangerous reloads. Direct orders and Hold take priority. Occupied trenches are never abandoned.';
     if (this.strip.hidden) {
       this.card.hidden = true;
       return;
@@ -180,7 +183,7 @@ export class ArmyView {
         )
         .join(
           "",
-        )}</div><label><input type="checkbox" aria-label="Automatic army tactics"> Automatic tactics</label><p class="card-description">Right-click to march or attack; Shift queues. Orders to a subset detach those squads.</p><button class="text-button" data-disband>Disband army</button>`;
+        )}</div><label>Posture <select data-posture aria-label="Army posture"><option value="line">Line</option><option value="defend">Defend</option><option value="skirmish">Skirmish</option></select></label><label><input type="checkbox" aria-label="Automatic army tactics"> Automatic tactics</label><p class="card-description">Right-click to march or attack; Shift queues. Orders to a subset detach those squads.</p><button class="text-button" data-disband>Disband army</button>`;
     }
     const text = (selector: string, value: string) => {
       this.card.querySelector(selector)!.textContent = value;
@@ -201,6 +204,7 @@ export class ArmyView {
         ? `${detail.suspended} embarked/refitting members retain their places`
         : "",
     );
+    this.card.querySelector<HTMLSelectElement>("[data-posture]")!.value=army.posture??"line";
     const health = this.card.querySelector<HTMLElement>(".health-track")!;
     health.setAttribute("aria-valuenow", String(detail.strength));
     health.setAttribute("aria-valuemax", String(detail.maximum));

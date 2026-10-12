@@ -1,3 +1,4 @@
+import { TRENCH } from "../content/TacticalRules";
 import { soldierWeaponStats } from "./WeaponStats";
 import { remainingHealth, maximumHealth, HEALTH_SCALE } from '../domain/Manpower';
 import { buildingPreviewArtworkId } from "./ArtworkCatalog";
@@ -15,7 +16,7 @@ import {
   SQUAD_RULES,
 } from "../Rules";
 import { buildingTechnology } from "../content/Buildings";
-import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
+import { GUN_NEST_ATTACK } from "../content/Defences";
 import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS } from "../content/MissileDefense";
 import { cityReserveIncome, TRADE_RULES } from "../content/Economy";
 import { supplyItemName } from "../content/Equipment";
@@ -591,6 +592,7 @@ export class HudViewModel {
         ? { label: "Hull health", value: s.afloat.hull, max: s.afloat.maxHull }
         : { label: s.manpower ? s.manpower.model==='hull'?'Hull health':'Formation health' : 'Troop strength', value:remainingHealth(s)/(s.manpower?HEALTH_SCALE:1),max:maximumHealth(s)/(s.manpower?HEALTH_SCALE:1) },
       status:
+        s.occupancy ? `Trench ${s.occupancy.phase} · ${s.occupancy.reservedCapacity} soldier slots reserved` :
         "planningPaused" in s && s.planningPaused === true
           ? "Route paused - choose a shorter waypoint"
           : s.manpower?.enlargement
@@ -637,7 +639,9 @@ export class HudViewModel {
             ]
           : []),
         ...(s.manpower ? [stat(s.manpower.model==='hull'?'Vehicles':'Soldiers',`${s.troops}/${s.manpower.capacity}`),stat('Health per soldier',s.manpower.model==='soldiers'?fmt(s.manpower.hp/HEALTH_SCALE):'Hull'),stat('Remaining health',fmt(remainingHealth(s)/HEALTH_SCALE))] : []),
+        ...(()=>{const h=this.game.selection.highGround?.(s,state);return h&&h.rangeBp>10000?[stat("High ground",`+${fmt((h.rangeBp-10000)/100)}% range / +${fmt((h.damageBp-10000)/100)}% base damage vs target #${h.targetId}; 6 m minimum, capped at 40 m`),stat("Effective range",`${fmt(h.range/FIXED)} cells`)]:[];})(),
         stat("Queued orders", String(s.queuedOrders.length)),
+        ...(s.combatFact?[stat('Last committed attack',`${s.combatFact.channel} · ${s.combatFact.arc}${s.combatFact.charge?' charge':''} · ${fmt(s.combatFact.damage)} HP${s.combatFact.modifiers.length?' · '+s.combatFact.modifiers.join(', '):''}`)]:[]),
         ...(s.movementStatus ? [stat("Movement", s.movementStatus.reason),
           stat("Waiting", `${Math.max(0,Math.floor((state.tick-s.movementStatus.since)/20))}s`),
           ...(s.movementStatus.blockerIds.length ? [stat("Blocking squads",s.movementStatus.blockerIds.map(id=>`#${id}`).join(", "))] : [])] : []),
@@ -1046,11 +1050,11 @@ export class HudViewModel {
       result.push(
         stat(
           "Cover",
-          `${TRENCH_COVER.reduction / 100}% ranged/melee protection`,
+          `${TRENCH.reductionBp / 100}% ranged/melee protection`,
         ),
         stat(
           "Occupancy",
-          `${TRENCH_COVER.slots} owned infantry · ${TRENCH_COVER.radius / FIXED} cell`,
+          `${TRENCH.slotsPerTile} soldier slots per tile · right-click to occupy`,
         ),
         stat("Crossing", "Passable · no wall blocking"),
       );

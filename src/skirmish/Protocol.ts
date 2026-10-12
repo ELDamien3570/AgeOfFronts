@@ -33,6 +33,9 @@ export type Order =
   | { type: "attack"; targetId: number };
 
 export type Command =
+  | {type:"occupy";playerId:number;squadIds:number[];tile:number;frontageTiles?:number[];append?:boolean}
+  | {type:"stance";playerId:number;squadIds:number[];stance:"default"|"skirmish"}
+  | { type: "army-posture"; playerId: number; armyId: number; posture: "line" | "defend" | "skirmish" }
   | { type:"formation";playerId:number;squadIds:number[];shape:import("./domain/FormationGeometry").FormationShape;facing?:number;frontage?:number;shapeLock?:boolean }
   | { type: "create-army"; playerId: number; squadIds: number[] }
   | {
@@ -217,6 +220,9 @@ export interface MovementStatus {
 }
 
 export interface Squad {
+  readonly stance?: "default"|"skirmish";
+  readonly lastWithdrawTick?: number;
+  readonly occupancy?: import("./domain/TrenchOccupancy").OccupancyView;
   readonly manpower?: Readonly<import('./domain/Manpower').ManpowerState>;
   readonly id: number;
   readonly playerId: number;
@@ -244,6 +250,7 @@ export interface Squad {
   readonly nextAttackTick?: number;
   readonly lastAttackTick?: number;
   readonly meleeStrike?: import("./domain/MeleeStrike").MeleeStrike;
+  readonly combatFact?: import('./domain/CombatFact').CombatFact;
   readonly chargeImpact?: import("./domain/ChargeImpact").ChargeImpact;
   readonly cavalryEngagement?: import('./domain/CavalryEngagement').CavalryEngagement;
   readonly cavalryMelee?: import('./domain/CavalryMelee').CavalryMelee;
@@ -509,10 +516,14 @@ export interface SnapshotPacket {
     deploymentTicks?: number;
     lastAttackTick?: number;
     meleeStrike?: import("./domain/MeleeStrike").MeleeStrike;
+    combatFact?: import('./domain/CombatFact').CombatFact;
     chargeImpact?: import("./domain/ChargeImpact").ChargeImpact;
     cavalryEngagement?: import('./domain/CavalryEngagement').CavalryEngagement;
     cavalryMelee?: import('./domain/CavalryMelee').CavalryMelee;
     nextAttackTick?: number;
+    stance?: "default"|"skirmish";
+    lastWithdrawTick?: number;
+    occupancy?: import("./domain/TrenchOccupancy").OccupancyView;
     weaponState?: import("./domain/WeaponTiming").WeaponState;
     magazineShots?: number;
     reloadStartedTick?: number;

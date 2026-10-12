@@ -1,8 +1,9 @@
+import { TRENCH } from "../content/TacticalRules";
 import { FIXED, TICKS_PER_SECOND, type BuildingType } from "../Protocol";
 import { BUILDING_RULES } from "../Rules";
 import { ARMY_CAPS, ARMY_TECHNOLOGY } from "../content/Armies";
 import { buildingTechnology } from "../content/Buildings";
-import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
+import { GUN_NEST_ATTACK } from "../content/Defences";
 import {
   cityReserveIncome,
   extractionYieldMultiplier,
@@ -213,7 +214,7 @@ export function technologyDetails(technology: Technology): string[] {
   if (role === "fortifications" && ageIndex >= 6) {
     lines.push(`Gun nest: ${weapon(GUN_NEST_ATTACK)}`);
     lines.push(
-      `Trench cover: ${TRENCH_COVER.slots} infantry squads per trench tile · ${TRENCH_COVER.reduction / 100}% damage reduction within ${TRENCH_COVER.radius / FIXED} tile`,
+      `Trenches: ${TRENCH.slotsPerTile} soldier slots per tile · right-click to occupy · ${TRENCH.reductionBp / 100}% front-side damage reduction after arrival`,
     );
     if (age === "Modern")
       lines.push(

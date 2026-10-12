@@ -16,6 +16,8 @@ export function firingPosition(
   range: number,
   blocked?: (tile: number) => boolean,
   clear?: (from: { x: number; y: number }, to: { x: number; y: number }) => boolean,
+  rangeAt?: (point:{x:number;y:number})=>number,
+  heightScore?: (point:{x:number;y:number})=>number,
 ): number | null {
   const origin = tileOf(map, squad);
   const radius = Math.ceil(range / FIXED);
@@ -41,11 +43,12 @@ export function firingPosition(
       const dx = x * FIXED + FIXED / 2 - target.x,
         dy = y * FIXED + FIXED / 2 - target.y;
       const distance = dx * dx + dy * dy;
-      if (distance > range * range) continue;
-      const outerBand = distance >= (range - FIXED / 2) ** 2;
-      const gap = range * range - distance;
+      const exactRange=rangeAt?.(point)??range;
+      if (distance > exactRange * exactRange) continue;
+      const outerBand = distance >= (exactRange - FIXED / 2) ** 2;
+      const gap = exactRange * exactRange - distance;
       const approach = map.manhattanDist(origin, tile);
-      const candidate = outerBand ? approach : 100000 + gap * 100 + approach;
+      const candidate = (outerBand ? approach : 100000 + gap * 100 + approach)-(heightScore?.(point)??0);
       if (candidate < score) {
         best = tile;
         score = candidate;

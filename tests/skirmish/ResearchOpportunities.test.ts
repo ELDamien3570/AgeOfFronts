@@ -29,6 +29,17 @@ function fixture(speed: 1 | 2 | 3 = 1) {
 }
 
 describe("quick research opportunities", () => {
+  it("keeps optional enlargement in the tree after both branches unlock, but excludes it from alerts", () => {
+    const {m,vm,cards}=fixture();
+    const node=()=>vm().nodes('StoneAge').find(n=>n.id==='formation-capacity-stoneage')!;
+    expect(node().reason).not.toBeNull();
+    m.expansion!.progression.states[1].completed.push('rus-stoneage-ranged');
+    expect(node().reason).not.toBeNull();
+    m.expansion!.progression.states[1].completed.push('rus-stoneage-mobile');
+    expect(node().reason).toBeNull();
+    expect(cards().some(n=>n.id==='formation-capacity-stoneage')).toBe(false);
+    expect(m.applyCommand({type:'research',playerId:1,technologyId:'formation-capacity-stoneage'})).toBeNull();
+  });
   it("shows unlocked branches but excludes completed, future, and missing-prerequisite nodes", () => {
     const { cards } = fixture();
     expect(cards().map((c) => c.id)).toEqual([
@@ -37,7 +48,6 @@ describe("quick research opportunities", () => {
       "rus-stoneage-factories-mines",
       "rus-stoneage-ranged",
       "rus-stoneage-mobile",
-      "formation-capacity-stoneage",
     ]);
   });
   it("shows nodes only with sufficient funds and uses the shared tech-speed quote", () => {

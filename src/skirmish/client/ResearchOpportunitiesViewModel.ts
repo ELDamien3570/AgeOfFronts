@@ -30,7 +30,7 @@ export class ResearchOpportunitiesViewModel {
     const research: ResearchOpportunity[] = AGES.slice(0, current + 1)
       .reverse()
       .flatMap((age) => this.empire.nodes(age))
-      .filter((node) => node.reason === null)
+      .filter((node) => node.reason === null && !node.optional)
       .map((node) => ({
         ...node,
         kind: "research" as const,

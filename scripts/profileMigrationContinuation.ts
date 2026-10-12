@@ -1,0 +1,11 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {deserialize} from 'node:v8';
+import {generateMigration} from '../src/skirmish/MigrationMap';
+import {Skirmish} from '../src/skirmish/Simulation';
+const root='out/migration-opening-profile';const saved=deserialize(readFileSync(`${root}/seed-504565698-checkpoint.v8`)),loaded=generateMigration(1000,504565698),game=new Skirmish(loaded.map,saved.options);writeFileSync(`${root}/continuation-input.v8`,readFileSync(`${root}/seed-504565698-checkpoint.v8`));game.restore(saved);
+const times:number[]=[],phases:Record<string,number[]>={},methods:Record<string,{calls:number;ms:number}>={};let measuring=false;
+game.onPhase=(n,ms)=>{if(measuring)(phases[n]??=[]).push(ms);};
+for(const name of ['formationFits','certifyFormationPolygon','formationMoveClear','transportProposal','transportStepClear','advanceFormationStates','navigation']){const original=(game as any)[name];if(typeof original!=='function')continue;methods[name]={calls:0,ms:0};(game as any)[name]=function(...args:any[]){const at=performance.now();try{return original.apply(this,args);}finally{if(measuring){methods[name].calls++;methods[name].ms+=performance.now()-at;}}};}
+for(let i=0;i<120;i++){measuring=i>=20;const at=performance.now();game.step();if(measuring)times.push(performance.now()-at);if(i%20===19)await new Promise(r=>setImmediate(r));}
+const stats=(xs:number[])=>{const s=xs.slice().sort((a,b)=>a-b);return{n:s.length,mean:xs.reduce((a,b)=>a+b,0)/xs.length,p95:s[Math.ceil(s.length*.95)-1],max:s.at(-1)};};
+const result={startTick:saved.tick,endTick:game.tick,step:stats(times),phases:Object.fromEntries(Object.entries(phases).map(([k,v])=>[k,stats(v)])),methods:Object.fromEntries(Object.entries(methods).map(([k,v])=>[k,{callsPerTick:v.calls/times.length,inclusiveMsPerTick:v.ms/times.length}])),memory:process.memoryUsage(),residency:{land:game.paths.residency,water:game.waterPaths.residency},limitations:'Checkpoint continuation, 20 warm-up ticks + 100 measured ticks. No CPU sampler, file-progress markers, renderer, snapshots or sockets.  inclusive method timings overlap.'};writeFileSync(`${root}/exact-continuation.json`,JSON.stringify(result,null,2));console.log(JSON.stringify(result));

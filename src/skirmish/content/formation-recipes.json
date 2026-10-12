@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "rulesVersion": 7,
+  "rulesVersion": 11,
   "recipes": {
     "stoneage-siege": {
       "model": "hull",
@@ -458,7 +458,8 @@
       "tree": "warfare",
       "slot": 100,
       "prerequisites": [
-        "rus-stoneage-barracks-equipment"
+        "rus-stoneage-ranged",
+        "rus-stoneage-mobile"
       ],
       "gold": 500,
       "ticks": 1200,
@@ -475,7 +476,8 @@
       "tree": "warfare",
       "slot": 100,
       "prerequisites": [
-        "rus-bronzeage-barracks-equipment"
+        "rus-bronzeage-ranged",
+        "rus-bronzeage-mobile"
       ],
       "gold": 5000,
       "ticks": 1200,
@@ -492,7 +494,8 @@
       "tree": "warfare",
       "slot": 100,
       "prerequisites": [
-        "rus-classicalage-barracks-equipment"
+        "rus-classicalage-ranged",
+        "rus-classicalage-mobile"
       ],
       "gold": 8334,
       "ticks": 1200,
@@ -509,7 +512,8 @@
       "tree": "warfare",
       "slot": 100,
       "prerequisites": [
-        "rus-earlymedieval-barracks-equipment"
+        "rus-earlymedieval-ranged",
+        "rus-earlymedieval-mobile"
       ],
       "gold": 13334,
       "ticks": 1200,
@@ -526,7 +530,8 @@
       "tree": "warfare",
       "slot": 100,
       "prerequisites": [
-        "rus-latemedieval-barracks-equipment"
+        "rus-latemedieval-ranged",
+        "rus-latemedieval-mobile"
       ],
       "gold": 20000,
       "ticks": 1200,
@@ -543,7 +548,8 @@
       "tree": "warfare",
       "slot": 100,
       "prerequisites": [
-        "rus-napoleonic-barracks-equipment"
+        "rus-napoleonic-ranged",
+        "rus-napoleonic-mobile"
       ],
       "gold": 29168,
       "ticks": 1200,
@@ -560,7 +566,8 @@
       "tree": "warfare",
       "slot": 100,
       "prerequisites": [
-        "rus-earlymodern-barracks-equipment"
+        "rus-earlymodern-ranged",
+        "rus-earlymodern-mobile"
       ],
       "gold": 41668,
       "ticks": 1200,
@@ -577,7 +584,8 @@
       "tree": "warfare",
       "slot": 100,
       "prerequisites": [
-        "rus-modern-barracks-equipment"
+        "rus-modern-ranged",
+        "rus-modern-mobile"
       ],
       "gold": 52085,
       "ticks": 1425,

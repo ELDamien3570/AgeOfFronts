@@ -1,3 +1,4 @@
+import { effectiveRange } from "./ElevationAdvantage";
 import { readyFraction } from './Manpower';
 import { FIXED, type Player, type Squad } from "../Protocol";
 import { buildingTechnology } from "../content/Buildings";
@@ -280,7 +281,7 @@ export class AiModernFronts {
             Math.max(
               0,
               Math.sqrt(distance) * FIXED -
-                this.expansion.unit(squad).attack.range,
+                effectiveRange(world,squad,this.expansion.unit(squad).attack,{x:(world.map.x(section.anchor)+.5)*FIXED,y:(world.map.y(section.anchor)+.5)*FIXED}),
             ) / Math.max(1, world.ordinarySpeed(squad)),
           );
         }
@@ -288,24 +289,11 @@ export class AiModernFronts {
     }
     return used;
   }
-  private command(section: ModernSection, ids: number[], tile: number): void {
-    const { world } = this.expansion,
-      live = ids.map((id) => world.squad(id)).filter((s): s is Squad => !!s);
-    if (
-      live.some(
-        (s) =>
-          world.map.euclideanDistSquared(world.tileOf(s), tile) > 1 &&
-          !(s.order.type === "move" && s.order.tile === tile),
-      )
-    ) {
-      world.applyCommand({
-        type: "order",
-        playerId: section.playerId,
-        squadIds: live.map((s) => s.id),
-        order: { type: "move", tile },
-      });
-      this.diagnostics.commands++;
-    }
+  private command(section:ModernSection,ids:number[],tile:number):void {
+    const w=this.expansion.world,segment=this.expansion.trenches.at(tile,section.playerId);
+    if(segment){const selected=ids.filter(id=>!this.expansion.trenches.occupants.has(id));if(selected.length){w.applyCommand({type:'occupy',playerId:section.playerId,squadIds:selected,tile});this.diagnostics.commands++;}return;}
+    const live=ids.map(id=>w.squad(id)).filter((s):s is Squad=>!!s);
+    if(live.some(s=>w.map.euclideanDistSquared(w.tileOf(s),tile)>1&&!(s.order.type==='move'&&s.order.tile===tile))){w.applyCommand({type:'order',playerId:section.playerId,squadIds:live.map(s=>s.id),order:{type:'move',tile}});this.diagnostics.commands++;}
   }
   private advance(section: ModernSection, player: Player): void {
     const { world } = this.expansion,
@@ -330,10 +318,13 @@ export class AiModernFronts {
     const available = scan.members
       .map((id) => world.squad(id))
       .filter((s): s is Squad => !!s && this.suitable(s, section));
-    const infantry = available.filter(
-      (s) => this.expansion.unit(s).role === "frontline",
-    );
-    const support = available.filter((s) =>
+    const planned=this.quote(section);
+    const futureTiles=new Set<number>(section.sites.filter(site=>site.type==='trench').map(site=>site.tile));
+    if(typeof planned!=='string')for(const step of planned.steps)if(step.type==='trench')for(const link of step.links)for(const tile of link.tiles)futureTiles.add(tile);
+    for(const run of this.expansion.fortifications.barriers)if(run.kind==='trench'&&run.playerId===player.id&&section.paid.some(id=>id===run.a||id===run.b))for(const tile of run.tiles)futureTiles.add(tile);
+    const futureCapacity=futureTiles.size*6;
+    const infantry = available.filter(s=>this.expansion.trenches.eligible(s)&&section.sites.slice(0,2).some(site=>this.expansion.trenches.canFit(s,site.tile)||s.manpower!.capacity*2<=futureCapacity)).sort((a,b)=>Number(!/mosin|ak47|ak-47/.test(a.definitionId??''))-Number(!/mosin|ak47|ak-47/.test(b.definitionId??''))||a.id-b.id);
+    const support = available.filter((s) => !infantry.slice(0,2).some(i=>i.id===s.id)&&
       ["ranged", "artillery", "anti-air"].includes(this.expansion.unit(s).role),
     );
     if (scan.available < 6 || infantry.length < 2 || !support.length) {
@@ -460,7 +451,7 @@ export class AiModernFronts {
     }
     this.economy.ledger.release(section.id);
     const ready = chosen.every(
-      (id, i) =>
+      (id, i) => i<2?this.expansion.trenches.occupants.get(id)?.phase==='occupying':
         world.map.euclideanDistSquared(
           world.tileOf(world.squad(id)!),
           i < 3 ? section.sites[i].tile : section.reserve,

@@ -84,7 +84,8 @@ export class ArmyViewModel {
     const roles = new Map<string, number>();
     for (const s of members) {
       const u = UNIT.get(s.definitionId ?? "") ?? defaultUnit(s.kind);
-      roles.set(u.role, (roles.get(u.role) ?? 0) + 1);
+      const role=army.slots?.find(r=>r.squadId===s.id)?.role??u.role;
+      roles.set(role, (roles.get(role) ?? 0) + 1);
     }
     return {
       count: members.length,

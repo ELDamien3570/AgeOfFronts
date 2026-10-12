@@ -11,6 +11,7 @@ import { AGE_NAMES, AGES, type Age } from "../domain/Definitions";
 import { costRejection } from "../domain/Supply";
 
 export interface SelectionState {
+  highGround?(squad:Snapshot["squads"][number],snapshot:Snapshot):{range:number;rangeBp:number;damageBp:number;targetId?:number};
   selected: Set<number>;
   selectedShips: Set<number>;
   selectedBuilding: number | null;

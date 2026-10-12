@@ -58,6 +58,8 @@ export class FiringPositions {
     blocked?: (tile: number) => boolean,
     clear?: (from: WorldPoint, to: WorldPoint) => boolean,
     standing?: (point: WorldPoint) => boolean,
+    rangeAt?: (point:WorldPoint)=>number,
+    heightScore?: (point:WorldPoint)=>number,
   ): { work: number; rays: number } {
     const s = this.state;
     let work = 0,
@@ -70,8 +72,9 @@ export class FiringPositions {
         dx = point.x - s.target.x,
         dy = point.y - s.target.y,
         distance = dx * dx + dy * dy;
+      const range=rangeAt?.(point)??s.range;
       const valid =
-        distance <= s.range * s.range &&
+        distance <= range * range &&
         this.paths.connected(s.origin, tile) &&
         !blocked?.(tile) &&
         standable(this.map, point, squadRadius(s.kind)) &&
@@ -85,13 +88,13 @@ export class FiringPositions {
         if (!clear(point, s.target)) continue;
       }
       const approach = this.map.manhattanDist(s.origin, tile),
-        outer = distance >= (s.range - FIXED / 2) ** 2,
+        outer = distance >= (range - FIXED / 2) ** 2,
         score = outer
           ? approach
-          : 100000 + (s.range * s.range - distance) * 100 + approach;
-      const candidate = { tile, score };
+          : 100000 + (range * range - distance) * 100 + approach;
+      const candidate = { tile, score:score-(heightScore?.(point)??0) };
       const at = s.candidates.findIndex(
-        (c) => c.score > score || (c.score === score && c.tile > tile),
+        (c) => c.score > candidate.score || (c.score === candidate.score && c.tile > tile),
       );
       if (at >= 0) s.candidates.splice(at, 0, candidate);
       else if (s.candidates.length < 32) s.candidates.push(candidate);

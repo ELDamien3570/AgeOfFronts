@@ -137,6 +137,7 @@ export interface UnitDefinition {
   meleeAttack?: AttackProfile;
   rangedAttack?: AttackProfile;
   chargeMultiplier?: number;
+  chargeRecoveryTicks?: number;
   formationRecipe?: import('./Manpower').FormationRecipe;
   id: string;
   name: string;
@@ -316,6 +317,7 @@ export interface Projectile {
   sourceId: number;
   sourceKind: CombatSourceKind;
   perSoldier?: boolean;
+  elevationDamageBp?: number;
   attackScale?: number;
   definitionId?: string;
   originTile?: number;
@@ -400,13 +402,35 @@ export interface ExpansionSnapshot {
   tradeEnemies?: Record<number, number[]>;
 }
 export type ArmyOrder =
-  | { type: "move" | "deploy" | "regroup"; tile: number }
+  | { type: "move" | "regroup"; tile: number }
+  | {type:"deploy";tile:number;facing?:number}
   | {
       type: "attack" | "flank-left" | "flank-right" | "fire-retreat";
       targetId: number;
     }
   | { type: "hold" };
+export type ArmyRole='frontline'|'ranged'|'mounted-left'|'mounted-right'|'support'|'reserve';
+export interface ArmySlotRecord {
+  squadId:number;role:ArmyRole;index:number;lateral:number;depth:number;widthRev:string;
+  width:number;bodyDepth:number;
+}
 export interface Army {
+  terrainPosition?:boolean;
+  terrainReserveIds?:number[];
+  slots?:ArmySlotRecord[];
+  slotRevision?:number;
+  posture?:'line'|'defend'|'skirmish';
+  layoutPosture?:'line'|'defend'|'skirmish';
+  lastLayoutTick?:number;
+  lastFacingTick?:number;
+  nextSlotIndex?:number;
+  initialTroops?:number;
+  frontGaps?:{index:number;lateral:number;depth:number;width:number}[];
+  lastGapTick?:number;
+  withdrawalTick?:number;
+  reservePlan?:string;
+  wingPreference?:"left"|"right";
+  lastAdvanceTick?:number;
   id: number;
   playerId: number;
   name: string;

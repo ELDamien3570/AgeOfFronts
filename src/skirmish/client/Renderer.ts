@@ -1,8 +1,8 @@
+import { effectiveRange, rangedElevation } from "../domain/ElevationAdvantage";
 import type { BattleLineDeployment } from "../domain/BattleLineLayout";
-import { formationFootprint } from "../domain/FormationContact";
-import { facingOf } from "../domain/FormationGeometry";
+import { facingOf, formationSlots, formationDoctrine } from "../domain/FormationGeometry";
 import { FormationAngleSamples } from "./FormationAngleSamples";
-import { formationRenderPose, formationPoseContains, type FormationRenderPose } from "./FormationRenderPose";
+import { formationRenderPose, formationPoseContains, strategicFormationBox, strategicFormationContains, type FormationRenderPose } from "./FormationRenderPose";
 import { formationEnvelope, geometryKey } from "../domain/FormationGeometry";
 import { strengthFraction, legacyWeaponStrength } from '../domain/Manpower';
 
@@ -47,6 +47,7 @@ import { BUILDING_PAD_COLORS,
   RGB, assignFactionColors, factionColorRevision,
 } from "./FactionColors";
 import { FormationArtwork, squadFormationType } from "./FormationArtwork";
+import { drawFormationMarker, formationMarkerLayout, formationSymbolLight } from "./FormationMarker";
 import {
   bakeGroundColors,
   rebakeGroundColors,
@@ -188,6 +189,8 @@ export class Renderer {
     maxHealth: number;
   }[] = [];
   private snapshot?: Snapshot;
+  private rangeSnapshot?:Snapshot;
+  private rangeTargets=new Map<number,Snapshot["squads"][number]>();
   private resources?: ResourceViewModel;
   private occupiedBuildingTiles = new Set<number>();
   private readonly buildingFacts = new BuildingFacts();
@@ -276,6 +279,7 @@ export class Renderer {
   private readonly placementCoverage = new PlacementCoverage();
   buildPreview?:PlacementPreview;
   squadDeploymentPreview?: (squad: Snapshot["squads"][number], root: {x:number;y:number}, facing:number) => readonly {x:number;y:number;radius:number}[] | undefined;
+  trenchPreview?:{tiles:number[];required:number;capacity:number;color:string};
   deploymentPreview?: {line:LineDeployment; color:string; valid:boolean};
   selectionBox?: { x1: number; y1: number; x2: number; y2: number };
   marker?: { x: number; y: number; until: number; attack: boolean };
@@ -297,6 +301,21 @@ export class Renderer {
     this.resize();
   }
 
+  highGround(squad:Snapshot["squads"][number],snapshot:Snapshot) {
+    const base=squad.definitionId?UNIT.get(squad.definitionId):undefined;
+    const profile=base&&snapshot.expansion?unitEffects(base,snapshot.expansion.progression[squad.playerId].completed).attack:undefined;
+    const id=squad.order.type==="attack"?squad.order.targetId:squad.combatTargetId;
+    if(this.rangeSnapshot!==snapshot){this.rangeSnapshot=snapshot;this.rangeTargets=new Map(snapshot.squads.map(s=>[s.id,s]));}
+    const target=id===null?undefined:this.rangeTargets.get(id);
+    const structure=squad.structureTarget;
+    const building=structure?.buildingId===undefined?undefined:snapshot.buildings.find(b=>b.id===structure.buildingId);
+    const barrier=structure?.barrierId===undefined?undefined:snapshot.expansion?.barriers.find(b=>b.id===structure.barrierId);
+    const tile=building?.tile??barrier?.tiles[0];
+    const aim=target??(tile!==undefined&&this.map?{x:(this.map.x(tile)+.5)*FIXED,y:(this.map.y(tile)+.5)*FIXED}:undefined);
+    const world={map:this.map};
+    const bonus=profile?rangedElevation(world,squad,profile,aim):{rangeBp:10000,damageBp:10000};
+    return {...bonus,range:profile?effectiveRange(world,squad,profile,aim):SQUAD_RULES.archer.range,targetId:target?.id??building?.id??barrier?.id};
+  }
   setMap(
     map: GameMap,
     geography?: MapGeography,
@@ -606,8 +625,8 @@ export class Renderer {
       }
       const p = this.screen(squad.x / FIXED, squad.y / FIXED);
       const d = (p.x - x) ** 2 + (p.y - y) ** 2;
-      if(squad.formation && !squad.afloat){const pose=this.currentFormationPose(squad);if(formationPoseContains(pose,world)&&d<distance){best=squad;distance=d;}}
-      const { hitRadius } = squadSymbol(
+      if(squad.formation && !squad.afloat){const pose=this.currentFormationPose(squad);if((formationPoseContains(pose,world)||this.squadArtworkDetailed?.(squad,this.scale)===false&&strategicFormationContains(strategicFormationBox(pose,this.scale),world,this.scale))&&d<distance){best=squad;distance=d;}}
+      const { hitRadius, artwork } = squadSymbol(
         this.scale,
         legacyWeaponStrength(squad),
         this.squadArtworkDetailed?.(squad, this.scale) === false ? false : !!(squad.definitionId
@@ -615,6 +634,7 @@ export class Renderer {
           : this.artwork.get(squad.kind)),
         squadFormationType(squad),
       );
+      if(!artwork && squad.formation && !squad.afloat && d<distance && strategicFormationContains(strategicFormationBox(this.currentFormationPose(squad),this.scale),world,this.scale)){best=squad;distance=d;}
       if (d <= hitRadius ** 2 && d < distance) {
         distance = d;
         best = squad;
@@ -1463,7 +1483,7 @@ export class Renderer {
             )
           : undefined;
         const range =
-          ((unit?.attack.range ?? SQUAD_RULES.archer.range) / FIXED) *
+          (this.highGround(squad,snapshot).range / FIXED) *
           this.scale;
         ctx.beginPath();
         ctx.arc(p.x, p.y, range, 0, Math.PI * 2);
@@ -1474,12 +1494,6 @@ export class Renderer {
         ctx.setLineDash([7, 4]);
         ctx.stroke();
         ctx.setLineDash([]);
-      }
-      if(formationPose && (selected||squad.fighting||squad.combatTargetId!==null)){
-        ctx.save();ctx.strokeStyle=selected?SELECTED_UNIT_COLOR:COLORS[squad.playerId]+"88";ctx.lineWidth=1;
-        for(const poly of formationPose.footprints){ctx.beginPath();poly.forEach((point,i)=>{const q=this.screen(point.x,point.y);if(i)ctx.lineTo(q.x,q.y);else ctx.moveTo(q.x,q.y);});ctx.closePath();ctx.stroke();}
-        const front=this.screen(formationPose.anchors.front.x,formationPose.anchors.front.y);
-        ctx.beginPath();ctx.arc(front.x,front.y,2,0,Math.PI*2);ctx.fillStyle=ctx.strokeStyle;ctx.fill();ctx.restore();
       }
       if (selected) {
         if (!customArtwork) {
@@ -1612,7 +1626,8 @@ export class Renderer {
         ctx, squad, p, this.presentation.angle(squad.id), this.scale, visualTick, this.world(p.x, p.y),
       );
       const showStatus = selected || this.hoveredSquadId === squad.id;
-      const labelPose = formationPose ? {x:formationPose.root.x,y:formationPose.root.y,bottom:formationPose.bounds.bottom,width:formationPose.bounds.right-formationPose.bounds.left} : individualArtwork ? this.squadLabelPose?.(squad.id) : undefined;
+      const actorPose = individualArtwork ? this.squadLabelPose?.(squad.id) : undefined;
+      const labelPose = actorPose ?? (formationPose ? {x:formationPose.root.x,y:formationPose.root.y,bottom:formationPose.bounds.bottom,width:formationPose.bounds.right-formationPose.bounds.left} : undefined);
       const labelPoint = labelPose
         ? this.screen(labelPose.x, labelPose.bottom)
         : p;
@@ -1623,8 +1638,8 @@ export class Renderer {
           labelPose ? labelPose.width * this.scale * 0.6 : spriteSize * 0.72,
         ),
       );
-      const statusY = labelPose
-        ? labelPoint.y + 4
+      let statusY = labelPose
+        ? labelPoint.y + 3
         : p.y + (image ? spriteSize / 2 : symbol.height / 2) + 3;
       if (image || individualArtwork) {
         if (!individualArtwork && image) {
@@ -1685,6 +1700,22 @@ export class Renderer {
           this.chargeBar(ctx, labelPoint.x, barY + 4, barWidth, 2, charge);
         }
       } else {
+        if (formationPose) {
+          const box=strategicFormationBox(formationPose,this.scale),center=this.screen(box.x,box.y);
+          const light=formationSymbolLight(RGB[squad.playerId]);
+          const emblem=this.formationArtwork.getSymbol(formationType);
+          const layout=formationMarkerLayout(box.width,box.height,emblem);
+          const batched=emblem && this.strategic.add(formationType,emblem,center.x,center.y,
+            box.width,box.height,box.angle+Math.PI,RGB[squad.playerId],paused ? .67 : 1,
+            {layout,light,selection:selected?[196,255,54]:undefined});
+          if(!batched) drawFormationMarker(ctx,box,center,COLORS[squad.playerId],light?'#ffffff':'#000000',layout,
+            this.formationArtwork.getSymbol(formationType,light),paused ? .67 : 1,selected?SELECTED_UNIT_COLOR:undefined);
+          const bottom=center.y+Math.abs(Math.sin(box.angle))*box.width/2+Math.abs(Math.cos(box.angle))*box.height/2;
+          labelPoint.x=center.x;labelPoint.y=bottom;statusY=bottom+3;
+          if(showStatus){ctx.fillStyle='#10212bdd';ctx.fillRect(center.x-statusWidth/2,bottom+3,statusWidth,3);
+            ctx.fillStyle=COLORS[squad.playerId];ctx.fillRect(center.x-statusWidth/2,bottom+3,statusWidth*strength,3);
+            if(charge!==undefined)this.chargeBar(ctx,center.x,bottom+7,statusWidth,2,charge);}
+        } else {
         const formation = this.formationArtwork.get(
           formationType,
           this.strategic.available ? "#ffffff" : COLORS[squad.playerId],
@@ -1795,6 +1826,7 @@ export class Renderer {
         }
         if (showStatus &&charge !== undefined)
           this.chargeBar(ctx, p.x, strength < 1 ? barY + 3 : barY, barWidth, 2, charge);
+        }
       }
       if (
         squad.fighting &&
@@ -1824,7 +1856,7 @@ export class Renderer {
         ctx.lineWidth = 3;
         ctx.strokeStyle = "#10212bd9";
         // Leave room for the charge bar under the health bar.
-        const labelY = statusY + 14 + (charge !== undefined ? 4 : 0);
+        const labelY = statusY + (charge !== undefined ? 16 : 12);
       ctx.strokeText(String(squad.troops), labelPoint.x, labelY);
         ctx.fillStyle = "#f2f5ed";
       ctx.fillText(String(squad.troops), labelPoint.x, labelY);
@@ -2321,34 +2353,31 @@ export class Renderer {
       ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
       ctx.stroke();
     }
+    if(this.trenchPreview){const p=this.trenchPreview;ctx.save();ctx.strokeStyle=p.required<=p.capacity?p.color:'#ff716b';ctx.fillStyle=ctx.strokeStyle+'55';ctx.lineWidth=2;
+      for(const tile of p.tiles){const q=this.screen(tile%snapshot.width,Math.floor(tile/snapshot.width));ctx.fillRect(q.x,q.y,this.scale,this.scale);ctx.strokeRect(q.x,q.y,this.scale,this.scale);}
+      const tile=p.tiles[Math.floor(p.tiles.length/2)],q=this.screen(tile%snapshot.width+.5,Math.floor(tile/snapshot.width));ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.fillText('Trench frontage: '+p.required+' soldiers / '+p.capacity+' slots',q.x,q.y-8);ctx.restore();}
     if (this.deploymentPreview) {
       const {line,color,valid}=this.deploymentPreview;
-      ctx.save();
-      const tint=valid?color:"#ff716b";
-      ctx.strokeStyle=tint+"b3";
-      ctx.fillStyle=tint+"40";
-      ctx.lineWidth=1.25;
       const tactical="layouts" in line?line as BattleLineDeployment:undefined;
-      if(tactical?.warnings.length){ctx.strokeStyle="#f4bb65";ctx.fillStyle="#f4bb6530";}
-      if(tactical){const a=this.screen(tactical.gesture.start.x/FIXED,tactical.gesture.start.y/FIXED),b=this.screen(tactical.gesture.end.x/FIXED,tactical.gesture.end.y/FIXED);ctx.globalAlpha=.25;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.globalAlpha=1;}
+      ctx.save();ctx.strokeStyle=tactical?.warnings.length?"#f4bb65":(valid?color:"#ff716b")+"b3";ctx.lineWidth=1.25;
       for (const [id, slot] of line.slots) {
-        const squad =snapshot.squads.find((s) => s.id === id);
-        if(!squad) continue;
-        if(tactical){const plan=tactical.layouts.get(id)!;
-          const polygon=formationFootprint({...squad,...slot,formation:{...squad.formation!,shape:plan.shape,frontage:plan.frontage,facing:facingOf(line.facing),transition:undefined,trail:undefined}},snapshot.tick);
-          ctx.beginPath();polygon.forEach((p,i)=>{const q=this.screen(p.x/FIXED,p.y/FIXED);if(i)ctx.lineTo(q.x,q.y);else ctx.moveTo(q.x,q.y);});ctx.closePath();ctx.fill();ctx.stroke();
-          const label=this.screen(slot.x/FIXED,slot.y/FIXED);ctx.font="10px system-ui";ctx.fillStyle=tactical.warnings.length?"#f4bb65":tint;ctx.textAlign="center";ctx.fillText(({mass:"▦",line:"═","shield-wall":"▰",square:"□",wedge:"▽","modern-loose":"⁙",column:"║"})[plan.shape],label.x,label.y+3);ctx.fillStyle=tactical.warnings.length?"#f4bb6530":tint+"40";continue;
-        }
-        const circles =this.squadDeploymentPreview?.(squad,slot,line.facing) ?? [{ x: slot.x / FIXED, y: slot.y / FIXED, radius: 0.35 }];
-        for(const circle of circles) {
-          const p=this.screen(circle.x,circle.y);
-          ctx.beginPath();
-          ctx.arc(p.x,p.y,Math.max(3,circle.radius*this.scale),0,Math.PI*2);
-          ctx.fill();
-          ctx.stroke();
+        const squad=snapshot.squads.find(s=>s.id===id);
+        if(!squad)continue;
+        const plan=tactical?.layouts.get(id);
+        const planned={...squad,charge:null,formation:squad.formation?{...squad.formation,
+          ...(plan?{shape:plan.shape,frontage:plan.frontage}:{}),facing:facingOf(line.facing),
+          transition:undefined,trail:undefined,occupationSlots:undefined}:undefined};
+        const c=Math.cos(line.facing),s=Math.sin(line.facing);
+        const circles=this.squadDeploymentPreview?.(planned,slot,line.facing) ?? (planned.formation
+          ? formationSlots(planned,snapshot.tick).map(p=>({
+            x:(slot.x+p.x*c-p.y*s)/FIXED,y:(slot.y+p.x*s+p.y*c)/FIXED,
+            radius:formationDoctrine(planned.definitionId).bodyWidth/(2*FIXED)}))
+          : [{x:slot.x/FIXED,y:slot.y/FIXED,radius:.35}]);
+        for(const circle of circles){
+          const p=this.screen(circle.x,circle.y);ctx.beginPath();
+          ctx.arc(p.x,p.y,Math.max(3,circle.radius*this.scale),0,Math.PI*2);ctx.stroke();
         }
       }
-      if(tactical?.warnings.length){const p=this.screen(line.start.x/FIXED,line.start.y/FIXED);ctx.fillStyle="#f4bb65";ctx.font="11px system-ui";ctx.textAlign="left";ctx.fillText(tactical.warnings.join(" · "),p.x,p.y-12);}
       ctx.restore();
     }
     if (this.selectionBox) {

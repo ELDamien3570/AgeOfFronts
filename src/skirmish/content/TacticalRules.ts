@@ -42,4 +42,23 @@ export const COLUMN = Object.freeze({
 });
 
 export const FRONTAGE = Object.freeze({quantum:16, candidatesPerDecision:6, mountedWidthRatioMax:1.35});
-export const LINES = Object.freeze({gap:192,maxGap:768,rowGap:256,maxRows:16});
+export const LINES = Object.freeze({gap:128,maxGap:768,rowGap:256,maxRows:16,
+  bandGap:256,wingGap:384,reserveDepth:512,maxFrontTiles:40,gapCheckTicks:40,
+  gapStrength:.25,relayoutTiles:1.5,retargetTicks:30,facingDeadband:Math.PI/9,facingRefreshTicks:60,rearWithdrawalTicks:20});
+export const ENGAGEMENT = Object.freeze({reservePercent:20,joinTiles:14,idleTicks:200,replanLossPct:.1,
+  refreshTicks:60,quantum:12,maxPerTarget:2,maxArmies:12,maxLooseSquads:32,withdrawBelow:.55,
+  advanceAbove:1.15,minPostureTicks:100,frontLeash:3,rangedLeash:1,pursuitSlack:2,wingCandidates:12,shapeCooldownTicks:200});
+export const BUDGETS = Object.freeze({engagementDetect:32,engagementPlan:48,armyMissions:24,missionQuantum:8,featureRows:16,positionScore:12,trenchAdmission:8,skirmish:8});
+export const TRENCH=Object.freeze({occupationRevision:2,segmentTiles:4,slotsPerTile:6,maxSegmentsPerSquad:4,alliedAccess:false,reductionBp:2000});
+export const SKIRMISH=Object.freeze({minRemainingTicks:20,dangerTiles:5,cavalryDangerTiles:9,cooldownTicks:80,leashTiles:4,stepTiles:2,maxPerMinute:4});
+export const ELEVATION=Object.freeze({minDeltaDm:60,saturateDm:400,maxRangeBp:1000,maxDamageBp:1000});
+export const POSITIONS=Object.freeze({cell:8,ringTiles:10,minProminenceDm:80,maxObjectiveTiles:24,
+  maxCandidates:6,minCommitTicks:600,reevaluateTicks:100,
+  weights:{prominence:2,coverage:100,facing:50,objectiveDistance:12,routeLength:4,territory:100}});
+/** Phase 7 calibration values, in basis points unless otherwise stated. */
+export const FACING={frontCos:.5,columnCos:.9,participantCos:.25,fullRanksCos:.5,
+  exposure:{front:10000,flank:12500,rear:15000}} as const;
+export const SHAPES={shieldRanged:6500,shieldMelee:8500,shieldSpeed:6000,
+  squareCharge:4000,squareMounted:7500,squareRanged:12500,squareSpeed:3500,
+  looseRanged:8000,nonLineFire:7500,minimum:2500,maximum:20000} as const;
+export const TACTICAL_CHARGE={maxTargets:3,budgetFactor:1.5,wedgeFrontage:1.5,recoveryTicks:10} as const;

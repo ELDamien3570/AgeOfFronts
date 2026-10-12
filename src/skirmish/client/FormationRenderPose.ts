@@ -61,31 +61,47 @@ export function formationRenderPose(
           slots[0],
         )
       : undefined;
+  const footprints = formationFootprints(squad, tick).map((poly) =>
+    poly.map((p) => ({
+      x:
+        root.x +
+        ((p.x - squad.x) * Math.cos(angle - canonical.angle) -
+          (p.y - squad.y) * Math.sin(angle - canonical.angle)) /
+          FIXED,
+      y:
+        root.y +
+        ((p.x - squad.x) * Math.sin(angle - canonical.angle) +
+          (p.y - squad.y) * Math.cos(angle - canonical.angle)) /
+          FIXED,
+    })),
+  );
+  const bounds = {
+    left: Infinity,
+    right: -Infinity,
+    top: Infinity,
+    bottom: -Infinity,
+  };
+  for (const poly of footprints)
+    for (const p of poly) {
+      bounds.left = Math.min(bounds.left, p.x);
+      bounds.right = Math.max(bounds.right, p.x);
+      bounds.top = Math.min(bounds.top, p.y);
+      bounds.bottom = Math.max(bounds.bottom, p.y);
+    }
+  if (!Number.isFinite(bounds.left))
+    Object.assign(bounds, {
+      left: root.x - geometry.halfX / FIXED,
+      right: root.x + geometry.halfX / FIXED,
+      top: root.y - geometry.halfY / FIXED,
+      bottom: root.y + geometry.halfY / FIXED,
+    });
   return {
     root,
     tick,
     geometry,
     slots,
-    footprints: formationFootprints(squad, tick).map((poly) =>
-      poly.map((p) => ({
-        x:
-          root.x +
-          ((p.x - squad.x) * Math.cos(angle - canonical.angle) -
-            (p.y - squad.y) * Math.sin(angle - canonical.angle)) /
-            FIXED,
-        y:
-          root.y +
-          ((p.x - squad.x) * Math.sin(angle - canonical.angle) +
-            (p.y - squad.y) * Math.cos(angle - canonical.angle)) /
-            FIXED,
-      })),
-    ),
-    bounds: {
-      left: root.x - geometry.halfX / FIXED - 1,
-      right: root.x + geometry.halfX / FIXED + 1,
-      top: root.y - geometry.halfY / FIXED - 1,
-      bottom: root.y + geometry.halfY / FIXED + 1,
-    },
+    footprints,
+    bounds,
     anchors: {
       front: {
         x:
@@ -138,5 +154,58 @@ export function formationPoseContains(
   return (
     Math.abs(dx * c + dy * s) <= pose.geometry.width / (2 * FIXED) + 0.35 &&
     Math.abs(-dx * s + dy * c) <= pose.geometry.depth / (2 * FIXED) + 0.35
+  );
+}
+/** Oriented strategic pad follows actual current polygons, including a column's
+ * trailing body and moving reforms. No screen-size floor changes the footprint. */
+export function strategicFormationBox(
+  pose: FormationRenderPose,
+  scale: number,
+) {
+  const c = Math.cos(pose.geometry.angle),
+    s = Math.sin(pose.geometry.angle);
+  let left = Infinity,
+    right = -Infinity,
+    top = Infinity,
+    bottom = -Infinity;
+  for (const poly of pose.footprints)
+    for (const p of poly) {
+      const dx = p.x - pose.root.x,
+        dy = p.y - pose.root.y,
+        x = dx * c + dy * s,
+        y = -dx * s + dy * c;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+    }
+  if (!Number.isFinite(left)) {
+    left = -pose.geometry.width / (2 * FIXED);
+    right = -left;
+    top = -pose.geometry.depth / (2 * FIXED);
+    bottom = -top;
+  }
+  const x = (left + right) / 2,
+    y = (top + bottom) / 2;
+  return {
+    x: pose.root.x + x * c - y * s,
+    y: pose.root.y + x * s + y * c,
+    width: (right - left) * scale,
+    height: (bottom - top) * scale,
+    angle: pose.geometry.angle,
+  };
+}
+export function strategicFormationContains(
+  box: ReturnType<typeof strategicFormationBox>,
+  point: { x: number; y: number },
+  scale: number,
+) {
+  const dx = (point.x - box.x) * scale,
+    dy = (point.y - box.y) * scale,
+    c = Math.cos(box.angle),
+    s = Math.sin(box.angle);
+  return (
+    Math.abs(dx * c + dy * s) <= box.width / 2 &&
+    Math.abs(-dx * s + dy * c) <= box.height / 2
   );
 }

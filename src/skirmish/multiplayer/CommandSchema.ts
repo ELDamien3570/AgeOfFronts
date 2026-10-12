@@ -29,7 +29,8 @@ const command = <T extends string>(
   fields: Record<string, z.ZodType> = {},
 ) => z.object({ type: z.literal(type), playerId: id, ...fields }).strict();
 const armyOrder = z.union([
-  z.object({ type: z.enum(["move", "deploy", "regroup"]), tile: id }).strict(),
+  z.object({ type: z.enum(["move", "regroup"]), tile: id }).strict(),
+  z.object({type:z.literal("deploy"),tile:id,facing:z.number().finite().min(-Math.PI).max(Math.PI).optional()}).strict(),
   z
     .object({
       type: z.enum(["attack", "flank-left", "flank-right", "fire-retreat"]),
@@ -40,6 +41,8 @@ const armyOrder = z.union([
 ]);
 /** Transport shape validation; domain code still decides ownership, legality and price. */
 export const commandSchema = z.discriminatedUnion("type", [
+  command("occupy",{squadIds:squadOrderIds,tile:id,frontageTiles:z.array(id).min(1).max(64).optional(),append:z.boolean().optional()}),
+  command("stance",{squadIds:squadOrderIds,stance:z.enum(["default","skirmish"])}),
   command("formation", {squadIds:ids,shape:z.enum(FORMATION_SHAPES),facing:z.number().int().min(0).max(TURN-1).optional(),frontage:z.number().int().positive().max(128*256).optional(),shapeLock:z.boolean().optional()}),
   command("create-army", { squadIds: ids }),
   command("army-members", {
@@ -49,6 +52,7 @@ export const commandSchema = z.discriminatedUnion("type", [
   }),
   command("disband-army", { armyId: id }),
   command("army-auto", { armyId: id, enabled: z.boolean() }),
+  command("army-posture", {armyId: id, posture: z.enum(["line", "defend", "skirmish"])}),
   command("army-order", {
     armyId: id,
     order: armyOrder,

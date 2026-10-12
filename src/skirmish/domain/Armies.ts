@@ -1,3 +1,13 @@
+import { effectiveRange } from "./ElevationAdvantage";
+import { formationContact } from './FormationContact';
+import { formationEnvelope,formationDoctrine } from './FormationGeometry';
+import { layoutArmyBattleLine } from './BattleLineLayout';
+import { mayWrite,type ControlWorld } from './CommandPrecedence';
+import { ENGAGEMENT,LINES } from '../content/TacticalRules';
+import { strengthFraction } from './Manpower';
+import { AI_DOCTRINES } from '../content/AiDoctrines';
+import { personalityOf } from '../content/AiPersonalities';
+import type { EngagementManager } from './EngagementManager';
 import { formationLayoutKey } from "./FormationGeometry";
 import { FormationOccupancy } from "../FormationOccupancy";
 import { CohortAdmission } from "./CohortAdmission";
@@ -27,7 +37,8 @@ import {
   traversable,
 } from "../SquadGeometry";
 import { armyCapacity } from "../content/Armies";
-import type { Army, ArmyOrder, UnitDefinition } from "./Definitions";
+import type { Army, ArmyOrder, ArmySlotRecord, UnitDefinition } from "./Definitions";
+import { validateArmyRecords } from './ArmyState';
 import type { Progression } from "./Progression";
 import type { ArmyRouteRequest } from "./RouteTask";
 
@@ -45,6 +56,7 @@ export interface ArmyWorld {
   unit(squad: Squad): UnitDefinition;
   ordinarySpeed(squad: Squad): number;
   hostile(a: number, b: number): boolean;
+  armyTargetAllowed?(a:number,b:number):boolean;
   armyBlocked(tile: number, playerId: number): boolean;
   formationFits?(squad:Squad,point:WorldPoint,heading?:number):boolean;
   nearbyArmyEnemies(
@@ -68,6 +80,7 @@ export interface ArmyWorld {
   ): void;
   setArmyAttack(squad: Squad, targetId: number): void;
   setArmyHold(squad: Squad): void;
+  applyArmyCommand?(command:Extract<Command,{type:"formation"|"charge"}>):string|null;
   /** A faction's squad graph: armies of factions with transports cross water. */
   squadPaths(playerId: number): LandPaths;
 }
@@ -99,14 +112,17 @@ interface March {
 }
 /** Longest retarget, in cells, a member may take without corridor admission. */
 const DIRECT_STEP = 3;
-const active = (s: Squad) => s.troops > 0 && s.embarkedOn === null && !s.refit && !s.manpower?.enlargement;
+const active = (s: Squad|undefined):s is Squad => !!s && s.troops > 0 && s.embarkedOn === null && !s.refit && !s.manpower?.enlargement;
 const attackOrder = (
   o: ArmyOrder,
 ): o is Extract<ArmyOrder, { targetId: number }> => "targetId" in o;
 export class Armies {
-  checkpoint() { return structuredClone({armies:this.armies, membership:this.membership, marches:this.marches, externalActions:this.externalActions, nextId:this.nextId, leaderAdmissions:[...this.leaderAdmissions], nextAdmission:this.nextAdmission, cohorts:this.cohorts?.checkpoint(), cohortArmies:[...this.cohortArmies], slotPlanning:[...this.slotPlanning]}); }
+  checkpoint() { return structuredClone({armies:this.armies, membership:this.membership, marches:this.marches, externalActions:this.externalActions,commandHistory:[...this.commandHistory], nextId:this.nextId, leaderAdmissions:[...this.leaderAdmissions], nextAdmission:this.nextAdmission, cohorts:this.cohorts?.checkpoint(), cohortArmies:[...this.cohortArmies], slotPlanning:[...this.slotPlanning]}); }
   restore(saved: ReturnType<Armies["checkpoint"]>): void {
     const state=structuredClone(saved);
+    validateArmyRecords(state.armies);
+    if(state.commandHistory.some(([id,row])=>!Number.isSafeInteger(id)||id<1||!Number.isSafeInteger(row.tick)||row.tick<0||row.targetId!==null&&(!Number.isSafeInteger(row.targetId)||row.targetId<1)))throw Error("Invalid army command history");
+    this.commandHistory.clear();for(const [id,row] of state.commandHistory)this.commandHistory.set(id,row);
     restoreArray(this.armies,state.armies);
     restoreMap(this.membership,state.membership);
     restoreMap(this.marches,state.marches);
@@ -123,6 +139,13 @@ export class Armies {
   private readonly marches = new Map<number, March>();
   private readonly externalActions = new Set<number>();
   private nextId = 1;
+  private engagements?:EngagementManager;
+  private readonly commandHistory=new Map<number,{tick:number;targetId:number|null}>();
+  setEngagementManager(manager:EngagementManager){this.engagements=manager;}
+  advisoryMovement:(id:number)=>boolean=()=>false;
+  slotAnchor(id:number):WorldPoint|undefined {const army=this.armyOf(id);return army?this.marches.get(army.id)?.slots.get(id):undefined;}
+  directArmyAction(id:number){return this.externalActions.has(id);}
+  private readonly controls:ControlWorld={armyOf:id=>this.armyOf(id),directArmyAction:id=>this.externalActions.has(id),human:id=>!this.world.players.find(p=>p.id===id)?.ai,stance:id=>this.advisoryMovement(id)};
   private nextAdmission = 1;
   private readonly leaderAdmissions=new Map<number,ArmyLeaderAdmission>();
   private readonly cohortArmies=new Map<number,{armyId:number;revision:number;leaderId?:number}>();
@@ -136,7 +159,7 @@ export class Armies {
     if(world.domainRoutes)this.cohorts=new CohortAdmission("army",{
       map:world.map,paths:world.paths,squadPaths:id=>world.squadPaths(id),squads:()=>world.squads,squad:id=>world.squad(id),routes:world.domainRoutes,
       blocked:id=>t=>world.armyBlocked(t,id),
-      valid:(plan,squad)=>{const link=this.cohortArmies.get(plan.id),army=link&&this.byArmyId.get(link.armyId);return !!army && army.revision===link!.revision && this.membership.get(squad.id)===army.id;},
+      valid:(plan,squad)=>{const link=this.cohortArmies.get(plan.id),army=link&&this.byArmyId.get(link.armyId);return !!army && army.revision===link!.revision && this.membership.get(squad.id)===army.id && mayWrite(this.controls,squad,"army");},
       commit:(plan,members)=>{
         const link=this.cohortArmies.get(plan.id)!,army=this.byArmyId.get(link.armyId)!;
         if(link.leaderId!==undefined){
@@ -149,7 +172,7 @@ export class Armies {
         }
         const march=this.marches.get(army.id);
         for(const member of members){
-          world.setArmyMove(member.squad,member.point,member.path);
+          const current=world.squad(member.squad.id);if(!current||!mayWrite(this.controls,current,'army')||army.withdrawalTick!==undefined&&world.tick-army.withdrawalTick<LINES.rearWithdrawalTicks&&army.slots?.find(r=>r.squadId===current.id)?.role==="frontline")continue;world.setArmyMove(current,member.point,member.path);
           world.updateSquad(member.squad.id,{nextPathIndex:member.index});
           march?.planned.set(member.squad.id,member.point);march?.pending.delete(member.squad.id);
         }
@@ -169,11 +192,13 @@ export class Armies {
       (!attackOrder(plan.order) || (()=>{const s=this.world.squad(plan.order.targetId);return !!s && active(s) && this.world.hostile(plan.playerId,s.playerId) && pointTile(this.world.map,s)===plan.tile;})());
   }
   validRoute(task:DomainRouteTask):boolean {
+    if(task.stage.startsWith("engagement-wing-"))return this.engagements?.validRoute(task)??false;
     if(task.stage==="cohort")return this.cohorts?.validRoute(task)??false;
     const plan=this.leaderAdmissions.get(task.admissionId);
     return !!plan && task.stage==="leader" && task.generation===plan.generation && this.leaderValid(plan);
   }
   completedRoute(task:DomainRouteTask,outcome:ExactRouteOutcome,path:number[]):void {
+    if(task.stage.startsWith("engagement-wing-")){this.engagements?.completedRoute(task,outcome,path);return;}
     if(task.stage==="cohort"){this.cohorts?.completedRoute(task,outcome,path);return;}
     const plan=this.leaderAdmissions.get(task.admissionId);if(!plan)return;
     plan.requested=false;
@@ -251,6 +276,100 @@ export class Armies {
   }
   capacity(playerId: number): number {
     return armyCapacity(this.progression.states[playerId]?.completed ?? []);
+  }
+  private syncSlots(army:Army,members:Squad[]):void {
+    const slots=army.slots??=[],ids=new Set(members.map(s=>s.id));
+    army.slots=slots.filter(r=>ids.has(r.squadId));
+    let joined=false,mounted=slots.filter(r=>r.role.startsWith('mounted')).length;
+    for(const squad of members)if(!army.slots.some(r=>r.squadId===squad.id)){
+      const unit=this.world.unit(squad),role=unit.tags.includes('mounted')?(mounted++%2?'mounted-right':'mounted-left'):unit.role==='frontline'?'frontline':unit.role==='ranged'?'ranged':'support';
+      army.slots.push({squadId:squad.id,role,index:army.nextSlotIndex??0,lateral:0,depth:0,widthRev:'',width:0,bodyDepth:0});army.nextSlotIndex=(army.nextSlotIndex??0)+1;joined=true;
+    }
+    if(joined){
+      const fronts=army.slots.filter(r=>r.role==='frontline'||r.role==='reserve').sort((a,b)=>b.index-a.index),player=this.world.players.find(p=>p.id===army.playerId)!;
+      const percent=player.ai?AI_DOCTRINES[personalityOf(player).id].reservePercent*.5:ENGAGEMENT.reservePercent;
+      let missing=Math.max(0,Math.min(fronts.length-1,Math.ceil(fronts.length*percent/100))-fronts.filter(r=>r.role==='reserve').length);
+      for(const r of fronts)if(missing>0&&r.role==='frontline'){r.role='reserve';missing--;}
+    }
+    if(!joined&&army.lastLayoutTick!==undefined&&this.world.tick-army.lastLayoutTick<LINES.gapCheckTicks)return;
+    const next=army.slots.map(r=>{
+      const s=this.world.squad(r.squadId)!,d=formationDoctrine(s.definitionId),shape=s.formation?.deployedShape??(s.formation?.shape==='column'?d.defaultShape:s.formation?.shape)??d.defaultShape;
+      const deployed={...s,charge:null,formation:s.formation?{...s.formation,shape,frontage:s.formation.preferredFrontage??s.formation.frontage,facing:0,transition:undefined,trail:undefined}:undefined};
+      const e=formationEnvelope(deployed,this.world.tick);
+      return {...r,width:Math.round(e.width),bodyDepth:Math.round(e.depth),widthRev:formationLayoutKey(deployed)};
+    });
+    const bandWidth=(rows:ArmySlotRecord[])=>rows.filter(r=>r.role==='frontline').reduce((n,r)=>n+r.width,0);
+    const shapeKey=(key:string)=>key?JSON.stringify((JSON.parse(key) as unknown[]).filter((_,i)=>i!==2&&i!==3)):key;
+    const definitionChanged=next.some((r,i)=>shapeKey(r.widthRev)!==shapeKey(army.slots![i].widthRev)||Math.abs(r.bodyDepth-army.slots![i].bodyDepth)>LINES.relayoutTiles*FIXED);
+    if(joined||army.lastLayoutTick===undefined||army.layoutPosture!==army.posture||!(army.frontGaps?.length)&&
+      (Math.abs(bandWidth(next)-bandWidth(army.slots))>LINES.relayoutTiles*FIXED||definitionChanged)){
+      army.slots=layoutArmyBattleLine(next,army.terrainPosition);army.slotRevision=(army.slotRevision??0)+1;army.layoutPosture=army.posture;army.lastLayoutTick=this.world.tick;this.engagements?.invalidate(army.id);
+    }
+    army.lastLayoutTick=this.world.tick;
+  }
+  private closeGap(army:Army):void {
+    if(this.world.tick-(army.lastGapTick??-LINES.gapCheckTicks)<LINES.gapCheckTicks)return;
+    const slots=army.slots??[],plan=this.engagements?.planFor(army.id),planKey=plan?`${plan.engagementId}:${plan.revision}`:undefined;
+    let weak=slots.find(r=>r.role==='frontline'&&(()=>{const s=this.world.squad(r.squadId);return !!s&&(strengthFraction(s)<LINES.gapStrength||s.order.type==='replenish');})());
+    if(!weak&&!army.frontGaps?.length&&plan?.reserveCommit&&army.reservePlan!==planKey)weak=slots.find(r=>r.role==='frontline'&&r.index===plan.reserveCommit!.slotIndex);
+    const gap=army.frontGaps?.[0]??(weak?{index:weak.index,lateral:weak.lateral,depth:weak.depth,width:weak.width}:undefined);
+    if(!gap)return;
+    const reserve=slots.filter(r=>r.role==='reserve'&&(()=>{const s=this.world.squad(r.squadId);return !!s&&active(s)&&mayWrite(this.controls,s,'army')&&strengthFraction(s)>=LINES.gapStrength;})()).sort((a,b)=>Math.abs(a.lateral-gap.lateral)-Math.abs(b.lateral-gap.lateral)||a.index-b.index)[0];
+    if(reserve){
+      const previous={index:reserve.index,lateral:reserve.lateral,depth:reserve.depth};reserve.role='frontline';reserve.index=gap.index;reserve.lateral=gap.lateral;reserve.depth=gap.depth;
+      if(weak){weak.role='reserve';Object.assign(weak,previous);}else army.frontGaps!.shift();
+    }else if(!weak){
+      const neighbours=slots.filter(r=>r.role==='frontline').sort((a,b)=>Math.abs(a.lateral-gap.lateral)-Math.abs(b.lateral-gap.lateral)||a.index-b.index).slice(0,2);
+      for(const r of neighbours)r.lateral=Math.round(r.lateral+(gap.lateral-r.lateral)*.5);army.frontGaps!.shift();
+    }else return;
+    army.reservePlan=planKey;army.lastGapTick=this.world.tick;army.slotRevision=(army.slotRevision??0)+1;this.engagements?.invalidate(army.id);
+  }
+  setTerrainPosition(id:number,enabled:boolean):void {
+    const army=this.armies.find(a=>a.id===id);if(!army||!!army.terrainPosition===enabled)return;
+    if(enabled){army.terrainReserveIds=[];let screens=(army.slots??[]).filter(s=>s.role==="frontline").length;
+      for(const slot of army.slots??[])if(screens<2&&slot.role==="reserve"&&this.world.unit(this.world.squad(slot.squadId)!).role==="frontline"){slot.role="frontline";army.terrainReserveIds.push(slot.squadId);screens++;}
+    }else{for(const slot of army.slots??[])if(army.terrainReserveIds?.includes(slot.squadId)&&slot.role==="frontline")slot.role="reserve";army.terrainReserveIds=undefined;}
+    army.terrainPosition=enabled;army.lastLayoutTick=undefined;this.engagements?.invalidate(id);
+  }
+  private tacticalStep(army:Army,march:March,members:Squad[],slots:Map<number,WorldPoint>,near:Squad[]):void {
+    const plan=this.engagements?.planFor(army.id),moves:Squad[]=[];
+    const ai=!!this.world.players.find(p=>p.id===army.playerId)?.ai;
+    if(ai&&plan?.posture==='withdraw'&&army.order.type!=='regroup'){
+      const oldOrders=new Map(members.map(s=>[s.id,s.order]));
+      if(!this.order(army,{type:'regroup',tile:this.world.players.find(p=>p.id===army.playerId)!.base})){
+        army.withdrawalTick=this.world.tick;
+        for(const r of army.slots??[])if(r.role==='frontline'){const s=this.world.squad(r.squadId),order=oldOrders.get(r.squadId);if(s&&order?.type==='attack')this.world.setArmyAttack(s,order.targetId);}
+      }return;
+    }
+    for(const old of members){
+      const s=this.world.squad(old.id)??old,record=army.slots?.find(r=>r.squadId===s.id),slot=slots.get(s.id);if(!record||!slot||!mayWrite(this.controls,s,'army'))continue;
+      let targetId=plan?.assignments.find(a=>a.squadId===s.id)?.targetId??null;
+      let leash=record.role==='frontline'?ENGAGEMENT.frontLeash:record.role==='ranged'?ENGAGEMENT.rangedLeash:0;
+      const wing=record.role.startsWith('mounted')?this.engagements?.wingFor(army.id,record.role==='mounted-left'?'left':'right'):undefined;
+      if(wing?.phase==='route'&&wing.path&&wing.via!==undefined){const goal=tilePoint(this.world.map,wing.via);slots.set(s.id,{x:Math.round(goal.x-Math.sin(army.facing)*(record.lateral*.1)),y:Math.round(goal.y+Math.cos(army.facing)*(record.lateral*.1))});moves.push(s);continue;}
+      if(wing?.phase==='strike'){targetId=wing.targetId??null;leash=14;}
+      if(s.cavalryEngagement?.phase==='engaged'&&s.order.type==='attack'&&active(this.world.squad(s.order.targetId)!)&&this.world.hostile(army.playerId,this.world.squad(s.order.targetId)!.playerId))continue;
+      const allowed=(t:Squad|undefined,extra=0)=>!!t&&active(t)&&!t.afloat&&this.world.hostile(army.playerId,t.playerId)&&(this.world.armyTargetAllowed?.(army.playerId,t.playerId)??true)&&
+        this.world.unit(s).attack.targets.some(tag=>this.world.unit(t).tags.includes(tag))&&
+        formationContact({...s,...slot},t,this.world.tick).gap<=effectiveRange(this.world,{...s,...slot},this.world.unit(s).attack,t)+(leash+extra)*FIXED;
+      // A legal current target is sticky; a new plan cannot cause command oscillation.
+      const current=s.order.type==='attack'?this.world.squad(s.order.targetId):undefined;
+      if(allowed(current)&&distanceSquared(s,slot)<=((leash+ENGAGEMENT.pursuitSlack)*FIXED)**2)targetId=current!.id;
+      let target=targetId===null?undefined:this.world.squad(targetId);
+      if(!allowed(target)){target=undefined;targetId=null;}
+      if(!plan&&leash>0)target=near.find(t=>allowed(t)&&formationContact({...s,...slot},t,this.world.tick).gap<=effectiveRange(this.world,{...s,...slot},this.world.unit(s).attack,t));
+      if(distanceSquared(s,slot)>((leash+ENGAGEMENT.pursuitSlack)*FIXED)**2&&wing?.phase!=='strike'){target=undefined;}
+      if(target&&leash>0){
+        const history=this.commandHistory.get(s.id),same=s.order.type==='attack'&&s.order.targetId===target.id;
+        if(!same&&history&&this.world.tick-history.tick<LINES.retargetTicks&&allowed(current))continue;
+        if(!same){this.world.cancelArmyRoute(`army:${army.id}:${s.id}`);march.pending.delete(s.id);this.world.setArmyAttack(s,target.id);this.commandHistory.set(s.id,{tick:this.world.tick,targetId:target.id});}
+        if(wing?.phase==='strike'&&s.charge===null&&this.world.unit(s).charge&&this.world.applyArmyCommand){
+          this.world.applyArmyCommand({type:'charge',playerId:army.playerId,squadIds:[s.id],x:target.x,y:target.y,targetId:target.id});
+        }
+      }else {if(s.order.type==='attack'){this.world.setArmyHold(s);march.planned.delete(s.id);}moves.push(s);}
+    }
+    // Certification includes all members, but only idle/returning members receive movement commands.
+    march.slots=slots;this.assign(army,march,moves,slots);
   }
   armyOf(squadId: number): Army | undefined {
     return this.byArmyId.get(this.membership.get(squadId) ?? -1);
@@ -341,17 +460,18 @@ export class Armies {
         order: { type: "hold" },
         queuedOrders: [],
         autoTactics: false,
-        manual: false,
+        manual: false,posture:"line",slots:[],slotRevision:0,nextSlotIndex:0,initialTroops:ids.reduce((n,id)=>n+this.world.squad(id)!.troops,0),
         revision: 0,
         reason: null,
       };
       this.armies.push(army);
       this.byArmyId.set(army.id, army);
       ids.forEach((id) => this.membership.set(id, army.id));
+      this.syncSlots(army,this.members(army));
       return null;
     }
     if (
-      !["army-members", "disband-army", "army-auto", "army-order"].includes(
+      !["army-members", "disband-army", "army-auto", "army-order", "army-posture"].includes(
         command.type,
       )
     )
@@ -363,6 +483,7 @@ export class Armies {
       this.disband(army);
       return null;
     }
+    if(command.type==="army-posture"){army.posture=command.posture;army.slotRevision=(army.slotRevision??0)+1;this.engagements?.invalidate(army.id);return null;}
     if (command.type === "army-auto") {
       army.autoTactics = command.enabled;
       return null;
@@ -375,10 +496,12 @@ export class Armies {
           return "Those squads already belong to this army";
         for (const id of command.squadIds)
           if (!army.memberIds.includes(id)) {
+            army.initialTroops=(army.initialTroops??0)+(this.world.squad(id)?.troops??0);
             army.memberIds.push(id);
             this.membership.set(id, army.id);
           }
         army.memberIds.sort((a, b) => a - b);
+        this.syncSlots(army,this.members(army));
         this.restart(army);
       } else {
         if (command.squadIds.some((id) => this.membership.get(id) !== army.id))
@@ -419,13 +542,17 @@ export class Armies {
       }
     }
   }
-  private detach(army: Army, ids: Set<number>): void {
+  private detach(army: Army, ids: Set<number>,casualty=false): void {
+    if(!casualty)army.initialTroops=Math.max(0,(army.initialTroops??0)-[...ids].reduce((n,id)=>n+(this.world.squad(id)?.troops??0),0));
+    for(const slot of army.slots??[])if(ids.has(slot.squadId)&&slot.role==='frontline')(army.frontGaps??=[]).push({index:slot.index,lateral:slot.lateral,depth:slot.depth,width:slot.width});
+    army.slots=army.slots?.filter(slot=>!ids.has(slot.squadId));army.slotRevision=(army.slotRevision??0)+1;this.engagements?.invalidate(army.id);
     for (const id of ids) {
-      this.membership.delete(id);
+      this.commandHistory.delete(id);this.membership.delete(id);
       this.world.cancelArmyRoute(`army:${army.id}:${id}`);
     }
     army.memberIds = army.memberIds.filter((id) => !ids.has(id));
     if (!army.memberIds.length) this.disband(army);
+    else if(casualty){army.revision++;const march=this.marches.get(army.id);for(const id of ids){march?.slots.delete(id);march?.planned.delete(id);march?.pending.delete(id);}}
     else this.restart(army);
   }
   private disband(army: Army): void {
@@ -471,9 +598,11 @@ export class Armies {
       : undefined;
   }
   private order(army: Army, order: ArmyOrder, append = false, prepared?:{path:number[];route:WorldPoint[];lengths:number[]}): string | null {
-    const members = this.members(army).filter(active);
+    if(order.type==="deploy"&&order.facing!==undefined&&(!Number.isFinite(order.facing)||Math.abs(order.facing)>Math.PI))return "Invalid army facing";
+    const members = this.members(army).filter(s=>active(s)&&mayWrite({...this.controls,directArmyAction:()=>false,stance:()=>false},{...s,occupancy:undefined},"army"));
     if (!members.length) return "Army has no available land squads";
     let tile: number;
+    if(order.type==='fire-retreat')army.posture='skirmish';
     if (order.type === "hold") tile = pointTile(this.world.map, members[0]);
     else if (attackOrder(order)) {
       const target = this.world.squads.find(
@@ -500,6 +629,7 @@ export class Armies {
         distanceSquared(a, objective) - distanceSquared(b, objective) ||
         a.id - b.id,
     )[0];
+    this.externalActions.delete(army.id);
     if(this.world.domainRoutes && !prepared && order.type!=="hold"){
       this.cancelPlanning(army.id);
       if(this.leaderAdmissions.size>=128)return "Army planning is full";
@@ -521,8 +651,12 @@ export class Armies {
       army.queuedOrders.push({ ...order });
       return null;
     }
+    const retreatOrders=order.type==="regroup"&&(army.state==="fighting"||army.withdrawalTick!==undefined)?new Map(members.filter(s=>army.slots?.find(r=>r.squadId===s.id)?.role==="frontline").map(s=>[s.id,s.order])):undefined;
     this.stop(army);
+    army.withdrawalTick=retreatOrders?.size?this.world.tick:undefined;
     army.order = { ...order };
+    if(order.type==='fire-retreat')army.posture='skirmish';
+    if(order.type==="deploy"&&order.facing!==undefined){army.facing=order.facing;army.lastFacingTick=this.world.tick;}
     army.manual = true;
     army.leaderId = leader.id;
     army.x = leader.x;
@@ -532,6 +666,7 @@ export class Armies {
       this.world.updateSquad(s.id, { structureTarget: null });
       this.world.updateSquad(s.id, { queuedOrders: [] });
       this.world.setArmyHold(s);
+      const previous=retreatOrders?.get(s.id);if(previous?.type==="attack")this.world.setArmyAttack(s,previous.targetId);
     }
     if (order.type === "hold") {
       return null;
@@ -550,7 +685,7 @@ export class Armies {
     const direction =
       route.find((p) => distanceSquared(p, leader) > FIXED * FIXED) ??
       route[route.length - 1];
-    if (distanceSquared(direction, leader))
+    if (distanceSquared(direction, leader)&&!(order.type==="deploy"&&order.facing!==undefined))
       army.facing = Math.atan2(direction.y - leader.y, direction.x - leader.x);
     this.marches.set(army.id, {
       route,
@@ -677,6 +812,7 @@ export class Armies {
   }
   /** A short, straight, unobstructed step needs no admitted corridor. */
   private directMove(army: Army, march: March, s: Squad, slot: WorldPoint): boolean {
+    if(!mayWrite(this.controls,s,'army'))return true;
     const paths = this.world.squadPaths(army.playerId), tile = pointTile(this.world.map, slot);
     if (
       distanceSquared(s, slot) > (DIRECT_STEP * FIXED) ** 2 ||
@@ -701,89 +837,17 @@ export class Armies {
     if (
       cached &&
       cached.flank === flank &&
-      cached.geometry === JSON.stringify(members.map(s=>[s.id,formationLayoutKey(s)])) &&
+      cached.geometry === String(army.slotRevision) &&
       Math.abs(cached.facing - army.facing) < 0.3 &&
       distanceSquared(cached.point, point) < FIXED * FIXED &&
       members.every((s) => cached.slots.has(s.id))
     )
       return new Map(cached.slots);
-    const ideals = new Map<number, WorldPoint>(),
-      roles = ["frontline", "ranged", "mounted", "support"];
-    const role = (s: Squad) => {
-      const u = this.world.unit(s);
-      return u.role === "mounted" && u.tags.includes("mounted")
-        ? "mounted"
-        : u.role === "frontline"
-          ? "frontline"
-          : u.role === "ranged"
-            ? "ranged"
-            : "support";
-    };
-    for (const r of roles) {
-      const group = members
-        .filter((s) => role(s) === r)
-        .sort((a, b) => a.id - b.id);
-      const columns = Math.max(1, Math.ceil(Math.sqrt(group.length))),
-        rows = Math.ceil(group.length / columns);
-      const pending = [...group];
-      for (let i = 0; i < group.length; i++) {
-        let lateral =
-          ((i % columns) -
-            (Math.min(
-              columns,
-              group.length - Math.floor(i / columns) * columns,
-            ) -
-              1) /
-              2) *
-          FIXED *
-          2;
-        let depth = -Math.floor(i / columns) * FIXED * 2;
-        if (r === "ranged")
-          depth -=
-            FIXED *
-            (2 +
-              2 *
-                Math.ceil(
-                  Math.sqrt(
-                    members.filter((s) => role(s) === "frontline").length,
-                  ),
-                ));
-        if (r === "support") depth -= FIXED * (4 + rows);
-        if (r === "mounted") {
-          const wingSize = flank ? group.length : Math.ceil(group.length / 2);
-          const wingColumns = Math.max(1, Math.ceil(Math.sqrt(wingSize)));
-          const wingIndex = flank ? i : Math.floor(i / 2);
-          const frontWidth = Math.ceil(
-            Math.sqrt(members.filter((s) => role(s) === "frontline").length),
-          );
-          lateral =
-            (flank || (i % 2 ? -1 : 1)) *
-            FIXED *
-            (frontWidth + 2 + (wingIndex % wingColumns) * 2);
-          depth =
-            FIXED *
-            ((flank ? 2 : -1) - Math.floor(wingIndex / wingColumns) * 2);
-        }
-        const ideal = {
-          x: Math.round(
-            point.x +
-              Math.cos(army.facing) * depth -
-              Math.sin(army.facing) * lateral,
-          ),
-          y: Math.round(
-            point.y +
-              Math.sin(army.facing) * depth +
-              Math.cos(army.facing) * lateral,
-          ),
-        };
-        pending.sort(
-          (a, b) =>
-            distanceSquared(a, ideal) - distanceSquared(b, ideal) ||
-            a.id - b.id,
-        );
-        ideals.set(pending.shift()!.id, ideal);
-      }
-    }
+    this.syncSlots(army,this.members(army));
+    const ideals=new Map<number,WorldPoint>();
+    for(const slot of army.slots??[])if(members.some(s=>s.id===slot.squadId))ideals.set(slot.squadId,{
+      x:Math.round(point.x+Math.cos(army.facing)*slot.depth-Math.sin(army.facing)*slot.lateral),
+      y:Math.round(point.y+Math.sin(army.facing)*slot.depth+Math.cos(army.facing)*slot.lateral)});
     const slots = this.planSlots(army,
       pointTile(this.world.map, point),
       members,
@@ -795,7 +859,7 @@ export class Armies {
         facing: army.facing,
         flank,
         slots: new Map(slots),
-        geometry: JSON.stringify(members.map(s=>[s.id,formationLayoutKey(s)])),
+        geometry: String(army.slotRevision),
       };
     return slots;
   }
@@ -806,6 +870,8 @@ export class Armies {
     slots: Map<number, WorldPoint> | null | undefined,
   ): boolean {
     if(slots===undefined)return false;
+    members=members.filter(s=>mayWrite(this.controls,this.world.squad(s.id)??s,"army"));
+    if(!members.length)return true;
     if(this.cohorts && slots){
       if([...this.cohortArmies.values()].some(link=>link.armyId===army.id))return false;
       // Marching slots creep forward every tick. Retarget short steps directly,
@@ -878,7 +944,7 @@ export class Armies {
         if (
           army.revision !== request.revision ||
           this.membership.get(s.id) !== army.id ||
-          !active(s)
+          !active(s) || !mayWrite(this.controls,s,'army')
         )
           return;
           march.pending.delete(s.id);
@@ -991,172 +1057,64 @@ export class Armies {
       const members = this.members(army),
         live = new Set(members.map((s) => s.id)),
         lost = new Set(army.memberIds.filter((id) => !live.has(id)));
-      if (lost.size) this.detach(army, lost);
+      if (lost.size) this.detach(army, lost,true);
       if (!this.armies.includes(army)) continue;
-      const available = members.filter(active),
-        leader = available.find((s) => s.id === army.leaderId) ?? available[0];
-      if (!leader) {
-        army.reason = "All members are embarked or refitting";
-        continue;
+      this.syncSlots(army,members);this.closeGap(army);
+      if(this.externalActions.has(army.id)){
+        if(members.every(s=>s.order.type==='hold'&&!s.charge&&!s.structureTarget)){army.manual=false;this.externalActions.delete(army.id);}else continue;
       }
-      army.leaderId = leader.id;
-      army.x = leader.x;
-      army.y = leader.y;
-      const march = this.marches.get(army.id);
-      if (!march) {
-        if (
-          army.manual &&
-          this.externalActions.has(army.id) &&
-          available.every(
-            (s) => s.order.type === "hold" && !s.charge && !s.structureTarget,
-          )
-        ) {
-          army.manual = false;
-          this.externalActions.delete(army.id);
-        }
-        if (
-          army.autoTactics &&
-          !army.manual &&
-          (this.world.tick + army.id) % 20 === 0
-        ) {
-          const target = this.world
-            .nearbyArmyEnemies(leader, 12 * FIXED, army.playerId)
-            .sort(
-              (a, b) =>
-                distanceSquared(leader, a) - distanceSquared(leader, b) ||
-                a.id - b.id,
-            )[0];
-          if (target) {
-            this.order(army, {
-              type: available.some((s) => this.world.unit(s).role === "ranged")
-                ? "fire-retreat"
-                : "attack",
-              targetId: target.id,
-            });
-            army.manual = false;
+      const available=members.filter(s=>active(s)&&mayWrite(this.controls,s,'army'));
+      const leader=available.find(s=>s.id===army.leaderId)??available[0];
+      if(!leader){army.reason='Members are under domain control';continue;}
+      army.leaderId=leader.id;
+      let march=this.marches.get(army.id);
+      if(!march){
+        army.x=leader.x;army.y=leader.y;
+        if(!army.autoTactics||army.manual||!this.engagements?.planFor(army.id))continue;
+        march={columnIds:[],route:[{x:army.x,y:army.y}],lengths:[0],cursor:0,slots:new Map(),planned:new Map(),pending:new Set(),speed:0,started:this.world.tick,phaseTick:this.world.tick,retreating:false};
+        this.marches.set(army.id,march);
+      }
+      if(army.state==='blocked'||[...this.leaderAdmissions.values()].some(p=>p.armyId===army.id)||[...this.cohortArmies.values()].some(p=>p.armyId===army.id))continue;
+      const target=this.target(army),atEnd=march.cursor>=march.lengths[march.lengths.length-1];
+      const contact=!!target&&formationContact(leader,target,this.world.tick).gap<8*FIXED;
+      const withdrawing=army.order.type==='regroup'&&army.withdrawalTick!==undefined;
+      const deliberateMove=army.manual&&(army.order.type==="move"||army.order.type==="regroup")&&!this.world.players.find(p=>p.id===army.playerId)?.ai;
+      const ambush=!withdrawing&&!deliberateMove&&available.some(s=>s.fighting);
+      if(!withdrawing&&(atEnd||contact||ambush||army.order.type==='deploy')){
+        march.speed=0;
+        const near=this.world.nearbyArmyEnemies(march.deployment?.point??leader,ENGAGEMENT.joinTiles*FIXED,army.playerId);
+        if(!march.deployment){
+          const enemy=target??near[0];
+          if(enemy&&this.world.tick-(army.lastFacingTick??-LINES.facingRefreshTicks)>=LINES.facingRefreshTicks){
+            const desired=Math.atan2(enemy.y-leader.y,enemy.x-leader.x),delta=Math.atan2(Math.sin(desired-army.facing),Math.cos(desired-army.facing));
+            if(Math.abs(delta)>LINES.facingDeadband){army.facing=desired;army.lastFacingTick=this.world.tick;}
           }
         }
-        continue;
-      }
-      if (army.state === "blocked" || [...this.leaderAdmissions.values()].some(plan=>plan.armyId===army.id) || [...this.cohortArmies.values()].some(link=>link.armyId===army.id)) continue;
-      const target = this.target(army);
-      if (attackOrder(army.order) && !target) {
-        available.forEach((s) => this.world.setArmyHold(s));
-        this.finish(army);
-        continue;
-      }
-      const objective = target ?? march.route[march.route.length - 1],
-        atEnd = march.cursor >= march.lengths[march.lengths.length - 1];
-      if (
-        target &&
-        atEnd &&
-        distanceSquared(target, march.route[march.route.length - 1]) >
-          (12 * FIXED) ** 2
-      ) {
-        available.forEach((s) => this.world.setArmyHold(s));
-        this.finish(army);
-        continue;
-      }
-      const contact =
-        target && distanceSquared(leader, target) <= (8 * FIXED) ** 2;
-      const ambush =
-        (army.state === "marching" || army.state === "fighting") &&
-        available.some((s) => s.fighting);
-      if (atEnd || contact || ambush || army.order.type === "deploy") {
-        march.speed = 0;
-        const near = this.world
-          .nearbyArmyEnemies(leader, 12 * FIXED, army.playerId)
-          .sort(
-            (a, b) =>
-              distanceSquared(leader, a) - distanceSquared(leader, b) ||
-              a.id - b.id,
-          );
-        const enemy = target ?? near[0];
-        const fighting =
-          !!enemy && distanceSquared(leader, enemy) < (12 * FIXED) ** 2;
-        if (enemy)
-          army.facing = Math.atan2(enemy.y - leader.y, enemy.x - leader.x);
-        const anchor = target
-          ? {
-              x: Math.round(target.x - Math.cos(army.facing) * FIXED * 3),
-              y: Math.round(target.y - Math.sin(army.facing) * FIXED * 3),
-            }
-          : objective;
-        army.state = fighting ? "fighting" : "deploying";
-        const flank =
-          army.order.type === "flank-left"
-            ? -1
-            : army.order.type === "flank-right"
-              ? 1
-              : 0;
-        if (army.order.type === "fire-retreat" && fighting) {
-          const ranged = available.filter(
-            (s) => this.world.unit(s).attack.channel === "ranged",
-          );
-          // Withdraw after a real domain shot, then stop for the next cooldown.
-          if (
-            !march.retreating &&
-            ranged.some((s) => (s.lastAttackTick ?? -1) >= march.phaseTick)
-          ) {
-            march.retreating = true;
-            march.phaseTick = this.world.tick;
-          }
-          if (march.retreating && this.world.tick - march.phaseTick >= 40) {
-            march.retreating = false;
-            march.phaseTick = this.world.tick;
-          }
+        // Once contact begins the deployment anchor/facing remain stable. Flank pressure is local.
+        let anchor=march.deployment?.point??(target?{x:leader.x,y:leader.y}:march.route[march.route.length-1]);
+        const plan=this.engagements?.planFor(army.id);
+        if(plan?.posture==='advance'&&army.posture!=='defend'&&this.world.players.find(p=>p.id===army.playerId)?.ai&&this.world.tick-(army.lastAdvanceTick??march.started)>=ENGAGEMENT.refreshTicks&&!available.some(s=>s.fighting)){
+          const goal=near.length?{x:near.reduce((n,s)=>n+s.x,0)/near.length,y:near.reduce((n,s)=>n+s.y,0)/near.length}:undefined;
+          if(goal){const length=Math.hypot(goal.x-anchor.x,goal.y-anchor.y);if(length>3*FIXED){anchor={x:Math.round(anchor.x+(goal.x-anchor.x)/length*FIXED),y:Math.round(anchor.y+(goal.y-anchor.y)/length*FIXED)};march.deployment=undefined;army.lastAdvanceTick=this.world.tick;}}
         }
-        const retreat = army.order.type === "fire-retreat" && march.retreating;
-        const slots = this.deploy(army, march, available, anchor, flank);
-        if (retreat && slots)
-          for (const s of available.filter(
-            (s) => this.world.unit(s).attack.channel === "ranged",
-          )) {
-            const slot = slots.get(s.id)!;
-            slots.set(s.id, {
-              x: Math.round(slot.x - Math.cos(army.facing) * FIXED * 2),
-              y: Math.round(slot.y - Math.sin(army.facing) * FIXED * 2),
-            });
-          }
-        if (!this.assign(army, march, available, slots)) continue;
-        for (const s of available) {
-          const slot = slots!.get(s.id)!;
-          const range = this.world.unit(s).attack.range;
-          const legalEnemy =
-            enemy &&
-            this.world.hostile(army.playerId, enemy.playerId) &&
-            distanceSquared(enemy, anchor) < (10 * FIXED) ** 2;
-          const flanker =
-            flank &&
-            this.world.unit(s).role === "mounted" &&
-            this.world.unit(s).tags.includes("mounted");
-          if (
-            legalEnemy &&
-            (!retreat || this.world.unit(s).attack.channel !== "ranged") &&
-            (!flanker || distanceSquared(s, slot) < FIXED * FIXED) &&
-            (distanceSquared(s, enemy) < range * range ||
-              distanceSquared(s, slot) < FIXED * FIXED)
-          ) {
-            this.world.cancelArmyRoute(`army:${army.id}:${s.id}`);
-            march.pending.delete(s.id);
-            this.world.setArmyAttack(s, enemy.id);
-          } else if (
-            s.order.type === "attack" &&
-            (!legalEnemy || distanceSquared(s, anchor) > (10 * FIXED) ** 2)
-          )
-            this.world.setArmyHold(s);
-        }
-        if (
-          !fighting &&
-          available.every(
-            (s) => distanceSquared(s, slots!.get(s.id)!) < FIXED * FIXED,
-          )
-        ) {
-          available.forEach((s) => this.world.setArmyHold(s));
-          this.finish(army);
+        army.x=anchor.x;army.y=anchor.y;
+        army.state=near.length?'fighting':'deploying';
+        if(army.order.type==='fire-retreat')army.posture='skirmish';
+        const flank=army.order.type==='flank-left'?-1:army.order.type==='flank-right'?1:0;
+        const slots=this.deploy(army,march,available,anchor,flank);if(!slots)continue;
+        this.tacticalStep(army,march,available,slots,near);
+        if(!near.length&&available.every(s=>distanceSquared(s,slots.get(s.id)!)<FIXED*FIXED)){
+          if(army.autoTactics){army.state='holding';}else{available.forEach(s=>this.world.setArmyHold(s));this.finish(army);}
         }
         continue;
       }
+      army.x=leader.x;army.y=leader.y;
+      if(withdrawing&&this.world.tick-army.withdrawalTick!<LINES.rearWithdrawalTicks){
+        const rear=available.filter(s=>army.slots?.find(r=>r.squadId===s.id)?.role!=='frontline');
+        const slots=this.column(army,march,available);this.assign(army,march,rear,slots);continue;
+      }
+      if(withdrawing){for(const s of available)if(army.slots?.find(r=>r.squadId===s.id)?.role==="frontline"&&s.order.type==="attack"){this.world.setArmyHold(s);march.planned.delete(s.id);}}
+      if(withdrawing&&atEnd)army.withdrawalTick=undefined;
       const slots = this.column(army, march, available);
       if (!this.assign(army, march, available, slots) || !slots) continue;
       const lag = Math.max(
@@ -1172,7 +1130,7 @@ export class Armies {
         army.state = "marching";
         army.reason = null;
         // No charge, recovery, refit or fighting bonus can enter this calculation.
-        march.speed = available.some((s) => s.fighting || s.charge)
+        march.speed = available.some((s) => s.charge || s.fighting&&!withdrawing&&!deliberateMove)
           ? 0
           : Math.floor(
               1.1 *
@@ -1197,13 +1155,13 @@ export class Armies {
           return !s || s.playerId !== army.playerId || s.troops <= 0;
         }),
       );
-      if (lost.size) this.detach(army, lost);
+      if (lost.size) this.detach(army, lost,true);
     }
   }
   snapshot(): Army[] {
     return this.armies.map((a) => ({
       ...a,
-      memberIds: [...a.memberIds],
+      memberIds: [...a.memberIds],slots:a.slots?.map(slot=>({...slot})),frontGaps:a.frontGaps?.map(gap=>({...gap})),
       order: { ...a.order },
       queuedOrders: a.queuedOrders.map((o) => ({ ...o })),
     }));

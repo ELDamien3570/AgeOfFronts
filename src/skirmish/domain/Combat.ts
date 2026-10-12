@@ -1,4 +1,6 @@
-import { formationDoctrine, columnLayout } from "./FormationGeometry";
+import { withElevation } from "./ElevationAdvantage";
+import { formationDoctrine, columnLayout, layoutGrid } from "./FormationGeometry";
+import { SHAPES } from "../content/TacticalRules";
 import type { Squad } from "../Protocol";
 import type { AttackProfile, TargetTag, UnitDefinition } from "./Definitions";
 export const XP_THRESHOLDS = [0, 500, 1500, 3500, 7000, 12000, 20000] as const;
@@ -20,6 +22,8 @@ export interface Defence {
   rangedArmour: number;
   bonusResistance: Partial<Record<TargetTag, number>>;
   cover?: number;
+  /** Final exposure and formation protection, after armour and bonus damage. */
+  tacticalBp?: number;
   healthPercent?: number;
 }
 export function attackStrength(
@@ -68,6 +72,7 @@ export function damageAmount(
   xp = 0,
   capacity = 1000,
   committedStrength?: number,
+  elevationDamageBp = 10000,
 ): number {
   if (
     troops <= 0 ||
@@ -77,7 +82,7 @@ export function damageAmount(
   if (!profile.targets.some((tag) => defence.tags.includes(tag))) return 0;
   // Promotion changes the displayed per-unit weapon before armour. Surviving
   // troop count scales the resolved per-unit damage, not armour penetration.
-  const attack = xp ? scaledAttack(profile, 1000, 1000, xp) : profile;
+  const attack = withElevation(xp ? scaledAttack(profile, 1000, 1000, xp) : profile, elevationDamageBp);
   if (profile.perSoldier) {
     const contributors = committedStrength ?? troops;
     if (!attack.damage || contributors <= 0) return 0;
@@ -117,9 +122,11 @@ export function damageAmount(
               10000,
           );
     const cover = Math.min(MAX_ARMOUR, Math.max(0, defence.cover ?? 0));
+    const multiplier = defence.tacticalBp === undefined ? 10000-cover :
+      Math.max(SHAPES.minimum,Math.min(SHAPES.maximum,Math.round((10000-cover)*defence.tacticalBp/10000)));
     return (
       Math.floor(
-        ((base + Math.round(bonus * 1000)) * contributors * (10000 - cover)) /
+        ((base + Math.round(bonus * 1000)) * contributors * multiplier) /
           10000,
       ) / 1000
     );
@@ -131,7 +138,7 @@ export function damageAmount(
   const reduction = Math.min(
     MAX_ARMOUR,
     Math.max(0, defence.armourKind === "points" ? 0 : armour) +
-      (defence.cover ?? 0),
+      (defence.tacticalBp!==undefined&&defence.soldiers ? 0 : defence.cover ?? 0),
   );
   const effective = Math.floor(
     (reduction * (10000 - attack.penetration)) / 10000,
@@ -150,13 +157,11 @@ export function damageAmount(
       0,
       (attack.bonuses[tag] ?? 0) - (defence.bonusResistance[tag] ?? 0),
     );
-  return Math.max(
-    1,
-    Math.floor(
-      (damage * (committedStrength ?? attackStrength(troops, capacity)) * 100) /
-        (defence.healthPercent ?? 100),
-    ),
-  );
+  const resolved=Math.max(1,Math.floor((damage*(committedStrength??attackStrength(troops,capacity))*100)/(defence.healthPercent??100)));
+  if(defence.tacticalBp===undefined||!defence.soldiers)return resolved;
+  const multiplier=Math.max(SHAPES.minimum,Math.min(SHAPES.maximum,
+    Math.round((10000-Math.min(MAX_ARMOUR,Math.max(0,defence.cover??0)))*defence.tacticalBp/10000)));
+  return Math.floor(resolved*multiplier/10)/1000;
 }
 export function primaryCounterClass(
   tags: readonly TargetTag[],
@@ -185,14 +190,16 @@ export function attackContributors(
     return (1000 * squad.troops) / (squad.manpower?.capacity ?? 1000);
   const column=squad.formation?.shape==="column" || squad.formation?.transition?.from==="column";
   const columnWidth=columnLayout(formationDoctrine(squad.definitionId)).columns;
-  if (profile.channel === "ranged") return column ? Math.min(squad.troops,columnWidth*2):squad.troops;
-  const width = column ? columnWidth : Math.ceil(Math.sqrt(squad.manpower?.capacity ?? squad.troops));
+  if (profile.channel === "ranged" && squad.formation?.occupationSlots) return squad.troops;
+  if (profile.channel === "ranged") return column ? Math.min(squad.troops,columnWidth*2):
+    squad.formation?.shape==='line'&&!squad.formation.transition?squad.troops:Math.ceil(squad.troops*SHAPES.nonLineFire/10000);
+  const width = column ? columnWidth : squad.formation ? layoutGrid(squad.troops,squad.formation.shape,formationDoctrine(squad.definitionId),squad.formation.frontage).columns : Math.ceil(Math.sqrt(squad.manpower?.capacity ?? squad.troops));
   const targetWidth = target
     ? Math.ceil(Math.sqrt(target.manpower?.capacity ?? target.troops))
     : width;
   return Math.min(
     squad.troops,
-    Math.min(width, targetWidth) * (profile.ranks ?? 2),
+    Math.min(width, targetWidth) * (squad.formation?.shape==='modern-loose'?1:profile.ranks ?? 2),
   );
 }
 /** Every hull, including a squad afloat in its faction's transport. */

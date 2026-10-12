@@ -15,7 +15,7 @@ import type { Fortifications } from "./Fortifications";
 export function structureAim(
   from: WorldPoint | FormationBody,
   tiles: readonly number[],
-  range: number,
+  range: number | ((target:WorldPoint)=>number),
   owner: number,
   width: number,
   forts: Fortifications,
@@ -48,7 +48,7 @@ export function structureAim(
     const distance = contact ? contact.gap ** 2 : distanceSquared(from, point),
       aim = contact ? contact.target : point;
     if (
-      distance > (range + (contact ? CONTACT_TOLERANCE : 0)) ** 2 ||
+      distance > ((typeof range==='number'?range:range(point)) + (contact ? CONTACT_TOLERANCE : 0)) ** 2 ||
       distance >= bestDistance
     )
       continue;

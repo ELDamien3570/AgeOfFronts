@@ -182,13 +182,12 @@ describe("stable staffed Modern fronts", () => {
         (s) => s.playerId === 2 && !section.members.includes(s.id),
       ),
     ).toHaveLength(4);
-    for (let i = 0; i < 2; i++)
-      expect(
-        f.game.map.euclideanDistSquared(
-          f.game.tileOf(f.game.squad(section.members[i])!),
-          section.sites[i].tile,
-        ),
-      ).toBeLessThanOrEqual(1);
+    for (let i = 0; i < 2; i++) {
+      const occupant=f.game.expansion!.trenches.occupants.get(section.members[i]);
+      expect(occupant?.phase).toBe('occupying');
+      expect(occupant?.reservedCapacity).toBe(f.game.squad(section.members[i])!.manpower!.capacity);
+      expect(f.game.expansion!.battle.cover(f.game.squad(section.members[i])!)).toBe(2000);
+    }
     const buildings = structuredClone(f.game.buildings),
       money = f.game.players[1].gold;
     f.game.setAiController(2, false);

@@ -15,6 +15,7 @@ export function soldierWeaponStats(
     ["Shots per reload", ranged ? String(ranged.shotsPerReload) : "—"],
     ["RPM", ranged ? String(ranged.rpm) : "—"],
     ["Melee attacks per minute", String(melee?.rpm ?? 0)],
+    ["Formation tactics", "Flank/rear raise melee damage; shield wall protects its front; square resists cavalry; loose reduces ranged hits"],
     ["Reload speed", ranged ? `${ranged.reloadMs! / 1000}s` : "—"],
     [
       "Charge multiplier",

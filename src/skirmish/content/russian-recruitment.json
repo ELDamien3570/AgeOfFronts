@@ -27,7 +27,7 @@
       "troopClass": "lightCavalry",
       "technologyId": "rus-stoneage-mobile",
       "gold": 170,
-      "trainingSeconds": 30
+      "trainingSeconds": 15
     },
     {
       "id": "bronzeage-frontline",
@@ -63,7 +63,7 @@
       "troopClass": "lightCavalry",
       "technologyId": "rus-bronzeage-mobile",
       "gold": 245,
-      "trainingSeconds": 30
+      "trainingSeconds": 15
     },
     {
       "id": "classicalage-frontline",
@@ -99,7 +99,7 @@
       "troopClass": "lightCavalry",
       "technologyId": "rus-classicalage-mobile",
       "gold": 355,
-      "trainingSeconds": 30
+      "trainingSeconds": 15
     },
     {
       "id": "classicalage-rangedcavalry",
@@ -108,7 +108,7 @@
       "troopClass": "rangedCavalry",
       "technologyId": "rus-classicalage-ranged-mobile",
       "gold": 485,
-      "trainingSeconds": 40
+      "trainingSeconds": 20
     },
     {
       "id": "earlymedieval-frontline",
@@ -144,7 +144,7 @@
       "troopClass": "lightCavalry",
       "technologyId": "rus-earlymedieval-mobile",
       "gold": 510,
-      "trainingSeconds": 30
+      "trainingSeconds": 15
     },
     {
       "id": "earlymedieval-heavycavalry",
@@ -153,7 +153,7 @@
       "troopClass": "heavyCavalry",
       "technologyId": "rus-earlymedieval-heavy-mobile",
       "gold": 1170,
-      "trainingSeconds": 60
+      "trainingSeconds": 30
     },
     {
       "id": "earlymedieval-rangedcavalry",
@@ -162,7 +162,7 @@
       "troopClass": "rangedCavalry",
       "technologyId": "rus-earlymedieval-ranged-mobile",
       "gold": 690,
-      "trainingSeconds": 40
+      "trainingSeconds": 20
     },
     {
       "id": "latemedieval-frontline",
@@ -198,7 +198,7 @@
       "troopClass": "lightCavalry",
       "technologyId": "rus-latemedieval-mobile",
       "gold": 730,
-      "trainingSeconds": 30
+      "trainingSeconds": 15
     },
     {
       "id": "latemedieval-heavycavalry",
@@ -207,7 +207,7 @@
       "troopClass": "heavyCavalry",
       "technologyId": "rus-latemedieval-heavy-mobile",
       "gold": 2065,
-      "trainingSeconds": 70
+      "trainingSeconds": 35
     },
     {
       "id": "latemedieval-rangedcavalry",
@@ -216,7 +216,7 @@
       "troopClass": "rangedCavalry",
       "technologyId": "rus-latemedieval-ranged-mobile",
       "gold": 990,
-      "trainingSeconds": 40
+      "trainingSeconds": 20
     },
     {
       "id": "earlymodern-frontline",
@@ -252,7 +252,7 @@
       "troopClass": "lightCavalry",
       "technologyId": "rus-napoleonic-mobile",
       "gold": 1055,
-      "trainingSeconds": 30
+      "trainingSeconds": 15
     },
     {
       "id": "earlymodern-heavycavalry",
@@ -261,7 +261,7 @@
       "troopClass": "heavyCavalry",
       "technologyId": "rus-napoleonic-heavy-mobile",
       "gold": 2420,
-      "trainingSeconds": 60
+      "trainingSeconds": 30
     },
     {
       "id": "earlymodern-rangedcavalry",
@@ -270,7 +270,7 @@
       "troopClass": "rangedCavalry",
       "technologyId": "rus-napoleonic-ranged-mobile",
       "gold": 1425,
-      "trainingSeconds": 40
+      "trainingSeconds": 20
     },
     {
       "id": "modern-frontline",
@@ -306,7 +306,7 @@
       "troopClass": "lightCavalry",
       "technologyId": "rus-earlymodern-mobile",
       "gold": 1530,
-      "trainingSeconds": 30
+      "trainingSeconds": 15
     },
     {
       "id": "modern-heavycavalry",
@@ -315,7 +315,7 @@
       "troopClass": "heavyCavalry",
       "technologyId": "rus-earlymodern-heavy-mobile",
       "gold": 3510,
-      "trainingSeconds": 60
+      "trainingSeconds": 30
     },
     {
       "id": "modern-rangedcavalry",
@@ -324,7 +324,7 @@
       "troopClass": "rangedCavalry",
       "technologyId": "rus-earlymodern-ranged-mobile",
       "gold": 2070,
-      "trainingSeconds": 40
+      "trainingSeconds": 20
     },
     {
       "id": "present-day-frontline",
@@ -360,7 +360,7 @@
       "troopClass": "lightCavalry",
       "technologyId": "rus-modern-mobile",
       "gold": 2295,
-      "trainingSeconds": 30
+      "trainingSeconds": 15
     },
     {
       "id": "present-day-heavycavalry",
@@ -369,7 +369,7 @@
       "troopClass": "heavyCavalry",
       "technologyId": "rus-modern-heavy-mobile",
       "gold": 5265,
-      "trainingSeconds": 60
+      "trainingSeconds": 30
     },
     {
       "id": "present-day-rangedcavalry",
@@ -378,7 +378,7 @@
       "troopClass": "rangedCavalry",
       "technologyId": "rus-modern-ranged-mobile",
       "gold": 3105,
-      "trainingSeconds": 40
+      "trainingSeconds": 20
     }
   ],
   "technologies": [

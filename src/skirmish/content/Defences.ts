@@ -23,8 +23,3 @@ export const GUN_NEST_ATTACK: AttackProfile = {
     "ship",
   ],
 };
-export const TRENCH_COVER = Object.freeze({
-  slots: 6,
-  radius: FIXED,
-  reduction: 2000,
-});

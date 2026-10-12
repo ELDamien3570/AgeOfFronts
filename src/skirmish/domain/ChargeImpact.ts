@@ -1,4 +1,36 @@
-/** Bounded prototype impact: roots remain authoritative, offsets are cosmetic. */
+import { TACTICAL_CHARGE } from '../content/TacticalRules';
+import { damageAmount, type Defence } from './Combat';
+import { contactParticipants, formationContact } from './FormationContact';
+import { formationEnvelope } from './FormationGeometry';
+import { tacticalDefence } from './FormationTactics';
+import type { AttackProfile } from './Definitions';
+import type { Squad } from '../Protocol';
+import { commitWeaponShot,type WeaponState } from './WeaponTiming';
+/** Impact is a commitment, even if the preceding ordinary swing is cooling down. */
+export function commitChargeShot(profile:AttackProfile,state:WeaponState|undefined,tick:number,recoveryTicks:number):WeaponState {
+  const available={...state,sharedReadyTick:tick,melee:state?.melee?{...state.melee,nextTick:tick}:undefined};
+  const committed=commitWeaponShot({...profile,channel:'melee'},available,tick,false)!;
+  return {...committed,sharedReadyTick:Math.max(committed.sharedReadyTick,state?.sharedReadyTick??0,tick+recoveryTicks)};
+}
+/** A single committed impact. Legal targets are supplied by Battle. */
+export function resolveChargeImpact(source:Squad,targets:readonly Squad[],profile:AttackProfile,tick:number,defence:(s:Squad)=>Defence){
+  const contacts=targets.map(target=>({target,contact:formationContact(source,target,tick)}))
+    .sort((a,b)=>a.contact.gap-b.contact.gap||a.target.id-b.target.id).slice(0,TACTICAL_CHARGE.maxTargets);
+  const wedge=formationEnvelope(source,tick).shape==='wedge'&&!source.formation?.transition?TACTICAL_CHARGE.wedgeFrontage:1;
+  const contributors=(target:Squad,contact:ReturnType<typeof formationContact>)=>Math.min(source.troops,
+    Math.ceil(contactParticipants(source,target,tick,1,contact)*wedge));
+  const frontage=contacts.reduce((n,c)=>Math.max(n,contributors(c.target,c.contact)),0);
+  const budget=(profile.damage+Math.max(0,...Object.values(profile.bonuses)))*frontage*TACTICAL_CHARGE.budgetFactor;
+  let remaining=budget;
+  const hits=contacts.map(({target,contact})=>{
+    const count=contributors(target,contact);
+    const damage=Math.min(remaining,damageAmount(profile,tacticalDefence(source,target,tick,'melee',defence(target),true),count,source.xp));
+    remaining-=damage;
+    return {target,damage,contributors:count};
+  });
+  return {budget,hits,total:budget-remaining};
+}
+/** Bounded reaction offsets; roots remain authoritative. */
 export interface ChargeImpact {
   tick:number;
   role:'rider'|'defender';

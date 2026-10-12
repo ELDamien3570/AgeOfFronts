@@ -15,6 +15,8 @@ export const FORMATION_SHAPES = [
 export type FormationShape = (typeof FORMATION_SHAPES)[number];
 export const TURN = 65536;
 export interface FormationState {
+  /** Purchased trench anchors in the formation coordinate basis. */
+  occupationSlots?: readonly {x:number;y:number;row:number}[];
   shape: FormationShape;
   frontage?: number;
   preferredFrontage?: number;
@@ -38,6 +40,7 @@ export interface FormationState {
   transition?: {
     /** Position-preserving orientation reform; translation remains admitted. */
     reorientation?: boolean;
+    occupationReform?: boolean;
     from: FormationShape;
     fromFrontage?:number;
     fromAutomatic?:boolean;
@@ -122,7 +125,7 @@ export function geometryKey(
   const f = s.formation;
   const cached=f?geometryKeys.get(f):undefined,t=f?.transition;
   if(cached && cached.definition===s.definitionId && cached.troops===s.troops && cached.capacity===s.manpower?.capacity && cached.variant===s.manpower?.variant && cached.charge===s.charge?.phase &&
-    cached.revision===f!.revision && cached.shape===f!.shape && cached.facing===f!.facing && cached.frontage===f!.frontage && cached.mode===f!.mode && cached.trail===f!.trail && cached.transition===t && cached.from===t?.from && cached.fromFacing===t?.fromFacing && cached.fromFrontage===t?.fromFrontage && cached.start===t?.startTick && cached.duration===t?.duration && cached.slots===t?.fromSlots)return cached.key;
+    cached.revision===f!.revision && cached.shape===f!.shape && cached.facing===f!.facing && cached.frontage===f!.frontage && cached.mode===f!.mode && cached.trail===f!.trail && cached.transition===t && cached.from===t?.from && cached.fromFacing===t?.fromFacing && cached.fromFrontage===t?.fromFrontage && cached.start===t?.startTick && cached.duration===t?.duration && cached.slots===t?.fromSlots && cached.occupationSlots===f!.occupationSlots)return cached.key;
   const values = [
     s.definitionId,
     s.troops,
@@ -131,14 +134,14 @@ export function geometryKey(
     f?.revision,f?.shape,f?.facing,f?.frontage,f?.mode,
     f?.transition?.from,f?.transition?.fromFacing,f?.transition?.fromFrontage,
     f?.transition?.startTick,f?.transition?.duration,
-    arrayGeometryKey(f?.trail),arrayGeometryKey(f?.transition?.fromSlots),
+    arrayGeometryKey(f?.trail),arrayGeometryKey(f?.transition?.fromSlots),arrayGeometryKey(f?.occupationSlots),
     s.charge?.phase,
   ];
   const key=values.join(':'),physicalKey=values.filter((_value,index)=>index!==4).join(':');
-  if(f)geometryKeys.set(f,{key,physicalKey,definition:s.definitionId,troops:s.troops,capacity:s.manpower?.capacity,variant:s.manpower?.variant,charge:s.charge?.phase,revision:f.revision,shape:f.shape,facing:f.facing,frontage:f.frontage,mode:f.mode,trail:f.trail,transition:t,from:t?.from,fromFacing:t?.fromFacing,fromFrontage:t?.fromFrontage,start:t?.startTick,duration:t?.duration,slots:t?.fromSlots});
+  if(f)geometryKeys.set(f,{key,physicalKey,definition:s.definitionId,troops:s.troops,capacity:s.manpower?.capacity,variant:s.manpower?.variant,charge:s.charge?.phase,revision:f.revision,shape:f.shape,facing:f.facing,frontage:f.frontage,mode:f.mode,trail:f.trail,transition:t,from:t?.from,fromFacing:t?.fromFacing,fromFrontage:t?.fromFrontage,start:t?.startTick,duration:t?.duration,slots:t?.fromSlots,occupationSlots:f.occupationSlots});
   return key;
 }
-interface GeometryKeyFacts {key:string;physicalKey:string;definition?:string;troops:number;capacity?:number;variant?:string;charge?:string;revision:number;shape:FormationShape;facing:number;frontage?:number;mode:string;trail?:FormationState['trail'];transition?:FormationState['transition'];from?:FormationShape;fromFacing?:number;fromFrontage?:number;start?:number;duration?:number;slots?:NonNullable<FormationState['transition']>['fromSlots']}
+interface GeometryKeyFacts {occupationSlots?:FormationState['occupationSlots'];key:string;physicalKey:string;definition?:string;troops:number;capacity?:number;variant?:string;charge?:string;revision:number;shape:FormationShape;facing:number;frontage?:number;mode:string;trail?:FormationState['trail'];transition?:FormationState['transition'];from?:FormationShape;fromFacing?:number;fromFrontage?:number;start?:number;duration?:number;slots?:NonNullable<FormationState['transition']>['fromSlots']}
 const geometryKeys=new WeakMap<FormationState,GeometryKeyFacts>();
 /** Physical cache identity excludes only the administrative revision counter.
  * The public geometry revision remains unchanged for replication and consumers. */
@@ -253,15 +256,15 @@ function computeFormationEnvelope(
     ? Math.max(0, Math.min(1, (tick - t.startTick) / t.duration))
     : 1;
   const from = t ? template(count, t.from, d, s.id,t.fromFrontage) : to;
-  const slots = t || f.trail ? formationSlots(s, tick) : undefined;
+  const slots = t || f.trail || f.occupationSlots ? formationSlots(s, tick) : undefined;
   const width =
-      t || f.trail
+      t || f.trail || f.occupationSlots
         ? Math.ceil(
             2 * Math.max(...slots!.map((p) => Math.abs(p.x))) + d.bodyWidth,
           )
         : to.width,
     depth =
-      t || f.trail
+      t || f.trail || f.occupationSlots
         ? Math.ceil(
             2 * Math.max(...slots!.map((p) => Math.abs(p.y))) + d.bodyDepth,
           )
@@ -431,7 +434,7 @@ export function formationSlots(
     cache!.set(cacheKey, result);
     return result;
   };
-  const base = template(count, shape, d, s.id, f.frontage).slots;
+  const base = f.occupationSlots ? f.occupationSlots.slice(0,count) : template(count, shape, d, s.id, f.frontage).slots;
   const to =
       shape === "column" && f.trail?.length
         ? trailSlots(base, f.trail, radians(f.facing))
@@ -542,6 +545,7 @@ export function validateFormation(
   }
   const live=troops??value.layoutTroops;
   if(live!==undefined && formationProfile(d,value.shape) && !frontageLayout(live,d,value.shape))throw new Error("Unavailable formation at live count");
+  if(value.occupationSlots!==undefined && (!Array.isArray(value.occupationSlots)||!value.occupationSlots.length||value.occupationSlots.length>144||value.occupationSlots.some(p=>!p||![p.x,p.y,p.row].every(Number.isSafeInteger)||Math.abs(p.x)>128*FIXED||Math.abs(p.y)>128*FIXED)))throw new Error("Invalid trench formation anchors");
   const t = value.transition;
   if (value.transition !== undefined && !t)
     throw new Error("Invalid formation transition");
@@ -549,7 +553,7 @@ export function validateFormation(
     t &&
     (!d.shapes.includes(t.from) ||
       (t.fromFrontage!==undefined && (!Number.isSafeInteger(t.fromFrontage)||t.fromFrontage<=0||t.fromFrontage>128*FIXED||!formationProfile(d,t.from))) ||
-      [t.fromAutomatic,t.fromAutoFrontage,t.reorientation].some(v=>v!==undefined && typeof v!=="boolean") ||
+      [t.fromAutomatic,t.fromAutoFrontage,t.reorientation,t.occupationReform].some(v=>v!==undefined && typeof v!=="boolean") ||
       !integer(t.fromFacing, TURN - 1) ||
       !integer(t.startTick) ||
       !integer(t.duration, 200) ||

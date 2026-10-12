@@ -151,7 +151,7 @@ describe("remaining gameplay passes", () => {
       .map((s) => s.id);
     const planner = e.economy.military.armyPlanner;
     expect(planner.acquireCoast(ai, map.ref(20, 20))).toBe(true);
-    const plan = planner.objectives.get(ai.id)!;
+    const plan = planner.missions.get(planner.byPlayer.get(ai.id)![0])!;
     expect(
       e.economy.assets.acquire(
         ids.map((id) => ({

@@ -32,7 +32,7 @@ const technology = z
 const schema = z
   .object({
     schemaVersion: z.literal(1),
-    rulesVersion: z.literal(7),
+    rulesVersion: z.literal(11),
     recipes: z.record(z.string(), recipe),
     technologies: z.array(technology).length(8),
   })

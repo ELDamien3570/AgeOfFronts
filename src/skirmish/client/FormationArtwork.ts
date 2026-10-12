@@ -1,5 +1,9 @@
 import type { ShipType, SquadType } from "../Protocol";
 import { UNIT } from "../content/Units";
+import meleeSymbol from "../../../Art/Formation Icons/svg/melee.svg?raw";
+import rangedSymbol from "../../../Art/Formation Icons/svg/ranged.svg?raw";
+import cavalrySymbol from "../../../Art/Formation Icons/svg/cavalry.svg?raw";
+import siegeSymbol from "../../../Art/Formation Icons/svg/siege-catapult.svg?raw";
 
 /** "transport" draws a squad afloat; fleet vessels are warships. */
 export type FormationType = SquadType | ShipType | "transport" | "siege";
@@ -13,6 +17,7 @@ export function squadFormationType(squad: {
     : squad.kind;
 }
 const FRAME_SIZE = 128;
+const SYMBOLS = { infantry: meleeSymbol, archer: rangedSymbol, cavalry: cavalrySymbol, siege: siegeSymbol };
 const FILES: Record<FormationType, string> = {
   infantry: new URL(
     "../../../Art/Formation Icons/png/melee.png",
@@ -64,8 +69,45 @@ export class FormationArtwork {
   private readonly pixels = new Map<FormationType, ImageData>();
   private readonly tinted = new Map<string, HTMLCanvasElement>();
   private readonly headings = new Map<string, HTMLCanvasElement>();
+  private readonly symbols = new Map<FormationType, { source: HTMLCanvasElement; x: number; y: number; width: number; height: number; pivotX: number; pivotY: number }>();
+  private readonly symbolTints = new Map<string, HTMLCanvasElement>();
+  readonly symbolsReady: Promise<void>;
 
   constructor() {
+    this.symbolsReady = Promise.all(Object.entries(SYMBOLS).map(([kind, source]) => new Promise<void>((resolve) => {
+      // Reuse the editable vector master, without its faction field or arrow.
+      const doc = new DOMParser().parseFromString(source, "image/svg+xml");
+      const group = doc.getElementById("unit-symbol");
+      if (!group) { resolve(); return; }
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">${new XMLSerializer().serializeToString(group)}</svg>`;
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = FRAME_SIZE;
+        const ctx = canvas.getContext("2d")!;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(image, 0, 0, FRAME_SIZE, FRAME_SIZE);
+        const pixels = ctx.getImageData(0, 0, FRAME_SIZE, FRAME_SIZE);
+        let left = FRAME_SIZE, top = FRAME_SIZE, right = -1, bottom = -1;
+        for (let i = 0; i < pixels.data.length; i += 4) {
+          // Authored white separators become holes, preserving the sword crossing.
+          pixels.data[i + 3] = Math.round(pixels.data[i + 3] * (1 - pixels.data[i] / 255));
+          pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = 255;
+          if (pixels.data[i + 3] > 0) {
+            const pixel = i / 4, x = pixel % FRAME_SIZE, y = Math.floor(pixel / FRAME_SIZE);
+            left = Math.min(left, x); right = Math.max(right, x);
+            top = Math.min(top, y); bottom = Math.max(bottom, y);
+          }
+        }
+        ctx.putImageData(pixels, 0, 0);
+        if (right >= left) this.symbols.set(kind as FormationType, {
+          source: canvas, x: left, y: top, width: right - left + 1, height: bottom - top + 1, pivotX: 0.5, pivotY: 0.5,
+        });
+        resolve();
+      };
+      image.onerror = () => { console.warn(`Unable to load ${kind} formation symbol`); resolve(); };
+      image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    }))).then(() => undefined);
     for (const [kind, url] of Object.entries(FILES)) {
       const image = new Image();
       image.decoding = "async";
@@ -86,6 +128,23 @@ export class FormationArtwork {
       };
       image.src = url;
     }
+  }
+
+  getSymbol(kind: FormationType, light = true) {
+    const frame = this.symbols.get(kind);
+    if (!frame || light) return frame;
+    let canvas = this.symbolTints.get(kind);
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+      canvas.width = canvas.height = FRAME_SIZE;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(frame.source, 0, 0);
+      ctx.globalCompositeOperation = "source-in";
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, FRAME_SIZE, FRAME_SIZE);
+      this.symbolTints.set(kind, canvas);
+    }
+    return { ...frame, source: canvas };
   }
 
   get(kind: FormationType, color: string) {

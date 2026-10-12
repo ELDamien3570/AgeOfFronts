@@ -32,12 +32,13 @@ const entry = z
       })
       .strict(),
     chargeMultiplier: z.number().min(1).max(10),
+    chargeRecoveryTicks: z.number().int().min(1).max(1200).optional(),
   })
   .strict();
 const data = z
   .object({
     schemaVersion: z.literal(1),
-    rulesVersion: z.literal(7),
+    rulesVersion: z.literal(11),
     weapons: z.record(z.string(), entry),
   })
   .strict()

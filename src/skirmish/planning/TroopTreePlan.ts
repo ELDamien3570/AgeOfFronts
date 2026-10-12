@@ -66,7 +66,7 @@ export const TROOP_ROLE_DESIGN: Record<
   },
   lightCavalry: {
     gold: 170,
-    seconds: 30,
+    seconds: 15,
     stats: { health: 60, attack: 55, armour: 35, speed: 95, range: 15 },
     counter: "Ranged infantry",
     bonus: 1.6,
@@ -76,7 +76,7 @@ export const TROOP_ROLE_DESIGN: Record<
   },
   heavyCavalry: {
     gold: 390,
-    seconds: 60,
+    seconds: 30,
     stats: { health: 85, attack: 72, armour: 85, speed: 60, range: 10 },
     counter: "Ranged infantry",
     bonus: 1.8,
@@ -86,7 +86,7 @@ export const TROOP_ROLE_DESIGN: Record<
   },
   rangedCavalry: {
     gold: 230,
-    seconds: 40,
+    seconds: 20,
     stats: { health: 60, attack: 65, armour: 40, speed: 75, range: 65 },
     counter: "Infantry",
     bonus: 1.8,
@@ -159,7 +159,7 @@ export function buildTroopProposals(civ: CivilizationPlan): TroopProposal[] {
         trainingSeconds:
           design.seconds +
           (unit.role === "heavyCavalry" && unit.age === "LateMedieval"
-            ? 10
+            ? 5
             : 0),
         stats,
         counter: design.counter,

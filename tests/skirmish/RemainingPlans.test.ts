@@ -213,7 +213,7 @@ describe("remaining strategic plans", () => {
         tile: undefined as number | undefined,
       },
     };
-    planner.objectives.set(f.player.id, plan);
+    planner.missions.set(plan.id, plan);planner.byPlayer.set(f.player.id,[plan.id]);
     f.e.economy.assets.acquire(
       own.map((s) => ({
         asset: `squad:${s.id}` as const,
@@ -239,7 +239,7 @@ describe("remaining strategic plans", () => {
     f.game.updateSquad(enemy.id, { x: 85.5 * FIXED });
     f.game.tick += 40;
     planner.step(8);
-    expect(planner.objectives.get(f.player.id)?.phase).toBe("advance");
+    expect(planner.missions.get(planner.byPlayer.get(f.player.id)![0])?.phase).toBe("advance");
   });
   it("chooses missing ranged capability and avoids landlocked naval research", () => {
     const f = fixture(),
@@ -680,7 +680,7 @@ describe("supported land breach and recovery ownership", () => {
         since: 0,
       },
     };
-    planner.objectives.set(f.player.id, plan);
+    planner.missions.set(plan.id, plan);planner.byPlayer.set(f.player.id,[plan.id]);
     f.e.economy.assets.acquire(
       own.map((s) => ({
         asset: `squad:${s.id}` as const,
@@ -702,7 +702,7 @@ describe("supported land breach and recovery ownership", () => {
     f.game.removeSquad(own[0].id);
     f.game.tick = 40;
     planner.step(8);
-    expect(planner.objectives.get(f.player.id)?.phase).toBe("recover");
+    expect(planner.missions.get(planner.byPlayer.get(f.player.id)![0])?.phase).toBe("recover");
     expect(f.game.building(tower.id)!.health).toBe(1000);
   });
   it("renews the recovered roster through its original deadline when it rejoins", () => {
@@ -727,7 +727,7 @@ describe("supported land breach and recovery ownership", () => {
       initialTroops: own.reduce((n,s)=>n+s.troops,0),
       reason: "fixture",
     };
-    planner.objectives.set(f.player.id, plan);
+    planner.missions.set(plan.id, plan);planner.byPlayer.set(f.player.id,[plan.id]);
     f.e.economy.assets.acquire(
       own.map((s) => ({
         asset: `squad:${s.id}` as const,
@@ -741,7 +741,7 @@ describe("supported land breach and recovery ownership", () => {
     );
     const gold = f.player.gold;
     planner.step(8);
-    expect(planner.objectives.get(f.player.id)).toMatchObject({
+    expect(planner.missions.get(planner.byPlayer.get(f.player.id)![0])).toMatchObject({
       phase: "assemble",
       rejoined: 1,
     });

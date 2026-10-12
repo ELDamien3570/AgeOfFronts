@@ -1,3 +1,7 @@
+import { validateOccupancy } from "./domain/TrenchOccupancy";
+import { validateStance } from "./domain/SkirmishStance";
+import { validateArmyRecords } from './domain/ArmyState';
+import { validateCombatFact } from './domain/CombatFact';
 import { validateCavalryMelee } from './domain/CavalryMelee';
 import { FORMATION_SHAPES, validateFormation } from "./domain/FormationGeometry";
 import { validateWeaponState } from "./domain/WeaponTiming";
@@ -399,6 +403,7 @@ export class SnapshotDecoder {
   private progress = new Uint8Array();
   private readonly buildings = new Map<number, Building>();
   validate(packet: SnapshotPacket): void {
+    if(packet.expansion?.armies)validateArmyRecords(packet.expansion.armies);
     if (packet.details) validateSnapshotDetails(packet.details);
     if(packet.orders.length%ORDER_STRIDE)throw new Error("Invalid order stride");
     for(let at=0;at<packet.orders.length;at+=ORDER_STRIDE){const shape=packet.orders[at+6],width=packet.orders[at+7];
@@ -420,7 +425,7 @@ export class SnapshotDecoder {
     if(packet.expansion && packet.formationRulesVersion!==FORMATION_RULES_VERSION)throw new Error('Unsupported formation rules version');
     this.validate(packet);
     const records = packet.details ? unpackSnapshotDetails(packet.details) : packet;
-    for(const detail of records.squadDetails??[]){validateMeleeStrike(detail.meleeStrike,packet.tick);validateChargeImpact(detail.chargeImpact,packet.tick);validateCavalryEngagement(detail.cavalryEngagement,packet.tick);validateCavalryMelee(detail.cavalryMelee,packet.tick);}
+    for(const detail of records.squadDetails??[]){validateOccupancy(detail.occupancy);validateStance(detail.stance,detail.lastWithdrawTick);validateMeleeStrike(detail.meleeStrike,packet.tick);validateCombatFact(detail.combatFact,packet.tick);validateChargeImpact(detail.chargeImpact,packet.tick);validateCavalryEngagement(detail.cavalryEngagement,packet.tick);validateCavalryMelee(detail.cavalryMelee,packet.tick);}
     if(packet.expansion){const details=new Map((records.squadDetails??[]).map(s=>[s.id,s]));for(let at=0;at<packet.squads.length;at+=SQUAD_STRIDE){validateManpower(details.get(packet.squads[at])?.manpower,packet.squads[at+4]);validateWeaponState(details.get(packet.squads[at])?.weaponState);validateFormation(details.get(packet.squads[at])?.formation,details.get(packet.squads[at])?.definitionId,packet.squads[at+4]);validateMeleeStrike(details.get(packet.squads[at])?.meleeStrike,packet.tick);}}
     const full = packet.reset || packet.entityMode !== "delta";
     const checkCapacity = (current: ReadonlyMap<number, unknown>, ids: Iterable<number>,

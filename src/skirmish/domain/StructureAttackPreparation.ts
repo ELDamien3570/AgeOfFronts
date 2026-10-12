@@ -52,6 +52,7 @@ export interface StructureAttackPreparationState {
     id: number;
     kind: Squad["kind"];
     range: number;
+    elevationEligible?:boolean;
     origin: WorldPoint;
   }[];
   points: Map<number, WorldPoint>;
@@ -106,6 +107,7 @@ export class StructureAttackPreparation {
     private readonly forts: Fortifications,
     private readonly targetTiles: readonly number[],
     readonly state: StructureAttackPreparationState,
+    private readonly rangeAt?: (id:number,from:WorldPoint,to:WorldPoint)=>number,
   ) {}
   private fail(reason: string): void {
     this.state.stage = "failed";
@@ -114,7 +116,7 @@ export class StructureAttackPreparation {
   private profile(): Profile {
     const s = this.state,
       member = s.members[s.member],
-      key = `${member.kind}:${member.range}`;
+      key = `${member.kind}:${member.range}:${!!member.elevationEligible}`;
     let profile = s.profiles.get(key);
     if (!profile)
       s.profiles.set(
@@ -235,6 +237,7 @@ export class StructureAttackPreparation {
       return;
     }
     const point = tilePoint(this.map, tile);
+    range=this.rangeAt?.(s.members[s.member].id,aim.from,point)??range;
     if ((point.x - aim.from.x) ** 2 + (point.y - aim.from.y) ** 2 <= range ** 2)
       aim.ray = this.ray(aim.from, point);
   }
@@ -317,7 +320,7 @@ export class StructureAttackPreparation {
           s.candidateCursor = 0;
           continue;
         }
-        const extent = Math.ceil(profile.range / FIXED),
+        const extent = Math.ceil(profile.range * (member.elevationEligible?1.1:1) / FIXED),
           cx = this.map.x(target),
           cy = this.map.y(target);
         profile.x ??= Math.max(0, cx - extent);

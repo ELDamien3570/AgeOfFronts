@@ -17,7 +17,7 @@ const profiles=z.object({mass:profile.optional(),line:profile.optional(),"shield
 export const formationDoctrineSchema = z
   .object({
     schemaVersion: z.literal(1),
-    rulesVersion: z.literal(7),
+    rulesVersion: z.literal(11),
     shapeProfiles: profiles,
     doctrines: z.record(
       z.string(),

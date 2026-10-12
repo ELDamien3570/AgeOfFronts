@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "rulesVersion": 7,
+  "rulesVersion": 11,
   "shapeProfiles": {
     "mass": {
       "minRanks": 1,

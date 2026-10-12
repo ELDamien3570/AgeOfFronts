@@ -55,7 +55,7 @@ type LayoutTransition=NonNullable<Snapshot['squads'][number]['formation']>['tran
 /** Snapshots can clone the same transition. Compare its authored inputs, not
  * object identity, so frame sampling never recompiles a stable assignment. */
 function sameLayoutTransition(a:LayoutTransition,b:LayoutTransition):boolean {
-  return !!a && !!b && a.startTick===b.startTick && a.duration===b.duration && a.from===b.from && a.fromFacing===b.fromFacing && a.reorientation===b.reorientation && a.fromFrontage===b.fromFrontage &&
+  return !!a && !!b && a.startTick===b.startTick && a.duration===b.duration && a.from===b.from && a.fromFacing===b.fromFacing && a.reorientation===b.reorientation && a.occupationReform===b.occupationReform && a.fromFrontage===b.fromFrontage &&
     (a.fromSlots===b.fromSlots || !!a.fromSlots && !!b.fromSlots && a.fromSlots.length===b.fromSlots.length && a.fromSlots.every((p,i)=>p.x===b.fromSlots![i].x&&p.y===b.fromSlots![i].y&&p.row===b.fromSlots![i].row));
 }
 export interface TroopActorDefinition {
@@ -276,7 +276,6 @@ export class TroopActors {
     for (const entry of entries)
       if (entry.selectionRadius && entry.selectionColor) {
         ctx.strokeStyle = entry.selectionColor + "b3";
-        ctx.fillStyle = entry.selectionColor + "40";
         ctx.beginPath();
         ctx.arc(
           entry.screenX,
@@ -285,7 +284,6 @@ export class TroopActors {
           0,
           Math.PI * 2,
         );
-        ctx.fill();
         ctx.stroke();
       }
     for (const entry of entries) {
@@ -960,6 +958,7 @@ export class TroopActors {
     angle = sharedPose?.geometry.angle ?? (mobile ? 0 : laneTravel ? state.angle : travelFacing);
     const contact = this.contacts.get(squad.id);
     const intent = {
+      anchored:squad.occupancy?.phase==='occupying',
       active: squad.fighting && squad.order.type !== "move",
       charging: !!squad.charge && squad.charge.phase !== "recovery",
       mounted,
@@ -967,7 +966,7 @@ export class TroopActors {
       square: shape === "square",
       travelHeading: angle,
       canonicalHeading:!!sharedPose,
-      crowdPress:!mounted&&!ranged&&!!this.options?.infantryCrowdPress?.(),
+      crowdPress:squad.occupancy?.phase!=='occupying'&&!mounted&&!ranged&&!!this.options?.infantryCrowdPress?.(),
       meleeReach:sharedPose?(UNIT.get(squad.definitionId??"")?.meleeAttack?.range??0)/FIXED:undefined,
       contactAdvance:sharedPose?formationDoctrine(squad.definitionId).spacing*1.5/FIXED:undefined,
       reformInPlace: this.options?.reformInPlace,
@@ -1087,9 +1086,12 @@ export class TroopActors {
             angle: travelFacing - angle,
           }))
         : engagement.slots;
-    const lastWasMelee=squad.meleeStrike && squad.meleeStrike.tick>=(squad.lastAttackTick??-Infinity);
+    const rangedCycle=squad.weaponState?.ranged;
+    const rangedShot=rangedCycle?.lastShotTick;
+    const firingSquad=rangedShot===undefined?squad:{...squad,lastAttackTick:rangedShot,nextAttackTick:rangedCycle!.nextTick};
+    const lastWasMelee=rangedShot===undefined && squad.meleeStrike && squad.meleeStrike.tick>=(squad.lastAttackTick??-Infinity);
     const throwTime = ranged && !lastWasMelee
-      ? javelinThrowTime(squad, tick, this.assets.get(`${name}:attack`)!.clip)
+      ? javelinThrowTime(firingSquad, tick, this.assets.get(`${name}:attack`)!.clip)
       : undefined;
     const planted =
       throwTime !== undefined
@@ -1169,14 +1171,15 @@ export class TroopActors {
       const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*50 - timing.release;
       const reloading = cycle && this.assets.has(`${name}:reload`) && tick*50 >= reloadStart && tick*50 < reloadEnd;
       const bayonet = !squad.meleeStrike && definition?.age === "Napoleonic" && definition.troopClass === "frontline" && squad.charge?.phase === "recovery" && this.assets.has(`${name}:charge-attack`);
+      const contactMelee=!!(ranged && definition?.meleeAttack && engagement.engaged && soldier.front);
       const clip = strike ? meleeClipKey : bayonet ? "charge-attack" : reloading ? "reload" :
-        ranged && throwTime !== undefined
+        ranged && !contactMelee && throwTime !== undefined
           ? "attack"
           : moving
             ? "running"
             : (
                   ranged
-                    ? throwTime !== undefined
+                    ? !contactMelee && throwTime !== undefined
                     : !squad.cavalryMelee && !squad.meleeStrike && soldier.front &&
                       (soldier.facingError ?? 0) < Math.PI / 6 &&
                       pose.clip === "attack"

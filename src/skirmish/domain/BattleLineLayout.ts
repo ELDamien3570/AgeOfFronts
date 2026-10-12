@@ -3,6 +3,7 @@ import { LINES } from "../content/TacticalRules";
 import type { DeploymentLine, LineDeployment } from "../FormationLine";
 import { formationDoctrine, formationEnvelope, type FormationShape } from "./FormationGeometry";
 import { eligibleShape, frontageLayout, frontageSummary } from "./FormationProfiles";
+import type { ArmySlotRecord } from './Definitions';
 
 export interface BattleLineSlot { point: {x:number;y:number}; shape:FormationShape; frontage?:number }
 export interface BattleLineDeployment extends LineDeployment {
@@ -14,6 +15,30 @@ export interface BattleLineDeployment extends LineDeployment {
 type LineSquad=Pick<Squad,"id"|"definitionId"|"troops"|"manpower"|"formation"|"charge"|"kind">;
 type Member={id:number;origin:{x:number;y:number};squad:LineSquad};
 type Option={shape:FormationShape;min:number;preferred:number;max:number;depth:number};
+/** Persistent army bands are independent of world heading and gesture deployment. */
+export function layoutArmyBattleLine(records:readonly ArmySlotRecord[],crest=false):ArmySlotRecord[] {
+  const result=records.map(s=>({...s})),ordered=(role:ArmySlotRecord['role'])=>result.filter(s=>s.role===role).sort((a,b)=>a.index-b.index||a.squadId-b.squadId);
+  const maxWidth=LINES.maxFrontTiles*FIXED;
+  function band(group:ArmySlotRecord[],front:number,limit:number){
+    const rows:ArmySlotRecord[][]=[];let width=0;
+    for(const s of group){let row=rows[rows.length-1];if(!row||width+(row.length?LINES.gap:0)+s.width>limit){row=[];rows.push(row);width=0;}width+=s.width+(row.length?LINES.gap:0);row.push(s);}
+    let rear=front,used=0;
+    for(const row of rows){const width=row.reduce((n,s)=>n+s.width,0)+LINES.gap*(row.length-1),depth=Math.max(...row.map(s=>s.bodyDepth));let x=-width/2;
+      for(const s of row){s.lateral=Math.round(x+s.width/2);s.depth=Math.round(rear-depth/2);x+=s.width+LINES.gap;}
+      used=Math.max(used,width);rear-=depth+LINES.gap;
+    }
+    return {rear:rows.length?rear+LINES.gap:front,width:used};
+  }
+  const frontGroup=ordered('frontline'),frontDepth=Math.max(0,...frontGroup.map(s=>s.bodyDepth));
+  const front=band(frontGroup,frontDepth/2,maxWidth),screenWidth=front.width||maxWidth;
+  const ranged=band(ordered('ranged'),front.rear-LINES.bandGap,screenWidth);
+  const support=band(ordered('support'),ranged.rear-LINES.bandGap,screenWidth);
+  band(ordered('reserve'),support.rear-LINES.reserveDepth,screenWidth);
+  for(const [role,side] of [['mounted-left',-1],['mounted-right',1]] as const){let edge=front.width/2+LINES.wingGap;
+    for(const s of ordered(role)){s.lateral=Math.round(side*(edge+s.width/2));s.depth=0;edge+=s.width+LINES.gap;}}
+  if(crest){const rs=ordered("ranged");if(rs.length){const depth=Math.round(rs.reduce((n,s)=>n+s.depth,0)/rs.length);for(const s of result)s.depth-=depth;}}
+  return result;
+}
 function options(s:LineSquad):Option[] {
   const d=formationDoctrine(s.definitionId), current=eligibleShape(s.troops,d,(s.formation?.automatic||s.formation?.autoFrontage?s.formation.deployedShape:s.formation?.shape)??d.defaultShape);
   const shapes=s.formation?.shapeLock?[current]:[...new Set([d.defaultShape,...d.shapes])].filter(shape=>frontageSummary(s.troops,d,shape));

@@ -4,7 +4,7 @@ export function movingCavalryRush(s:Pick<Squad,'kind'|'charge'>):boolean {
   return s.kind==='cavalry' && !!s.charge && s.charge.phase!=='recovery';
 }
 export function movingFormationReform(s:Pick<Squad,'kind'|'charge'|'formation'>):boolean {
-  return movingCavalryRush(s) || s.formation?.transition?.reorientation===true;
+  return movingCavalryRush(s) || s.formation?.transition?.reorientation===true || s.formation?.transition?.occupationReform===true;
 }
 
 /** Captured when a rush starts. Retargeting an active run preserves its budget. */

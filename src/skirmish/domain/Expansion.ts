@@ -1,3 +1,9 @@
+import { TrenchOccupancy } from "./TrenchOccupancy";
+import { SkirmishStance } from "./SkirmishStance";
+import { tacticalTerrain, type TacticalTerrain } from "./TacticalTerrain";
+import { TacticalFeatureIndex } from "./TacticalFeatureIndex";
+import { effectiveRange, maxEffectiveRange, elevationRangeAt } from "./ElevationAdvantage";
+import { EngagementManager } from './EngagementManager';
 import { createManpower, recipeCapacity } from './Manpower';
 import { recruitmentVariant } from '../content/FormationRecipes';
 import { quoteEnlargement } from './Enlargement';
@@ -29,6 +35,7 @@ import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
 import { recoveredChargeStrength } from './ChargeStrength';
 import { isCavalryTroopClass } from './Definitions';
+import { formationDoctrine } from './FormationGeometry';
 import { formationContact } from './FormationContact';
 import { CONTACT } from '../content/TacticalRules';
 import { AIRCRAFT_RULES, BOMBER_ATTACK, ATOMIC_ATTACK, DRONE_ATTACK, NAVAL_AIR_ATTACK, STRATEGIC_PAYLOADS, STRATEGIC_RULES } from "../content/ModernWeapons";
@@ -89,6 +96,8 @@ import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
 import type { NuclearWasteland } from "./NuclearWasteland";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
+  formationFits(s:Squad,point:{x:number;y:number},heading?:number):boolean;
+  trenchBuildingRevision():number;
   wasteland: NuclearWasteland;
   spatialFacts(phase: import("../PhaseSpatialViews").SpatialPhase): import("../PhaseSpatialViews").PhaseSpatialFacts;
   recruitment: Recruitment;
@@ -128,11 +137,12 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
 export class Expansion {
-  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint(),relations:this.relations.checkpoint()}); }
+  checkpoint() { return structuredClone({trenches:this.trenches.checkpoint(),skirmish:this.skirmish.checkpoint(),features:this.features.checkpoint(),progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),engagements:this.engagements.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint(),relations:this.relations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
     this.automaticTiers.reset();
     this.metadataIdentity={};
     const state=structuredClone(saved);
+    this.features.restore(state.features);
     this.tribePlans.clear();
     for (const [id, plan] of state.tribePlans ?? []) this.tribePlans.set(id, plan);
     if (state.operations) this.operations.restore(state.operations);
@@ -146,11 +156,18 @@ export class Expansion {
     this.roads.restore(state.roads);
     this.battle.restore(state.battle);
     this.armies.restore(state.armies);
+    this.trenches.restore(state.trenches);
+    this.skirmish.restore(state.skirmish);
+    this.engagements.restore(state.engagements);
     this.modernization.restore(state.modernization);
     if (state.economy) this.economy.restore(state.economy);
     restoreArray(this.aircraft,state.aircraft); restoreArray(this.winners,state.winners); restoreArray(this.events,state.events); this.nextEvent=state.nextEvent;
   }
 
+  readonly trenches:TrenchOccupancy;
+  readonly skirmish:SkirmishStance;
+  readonly terrain:TacticalTerrain;
+  readonly features:TacticalFeatureIndex;
   readonly progression: Progression;
   private readonly automaticTiers = new AutomaticBuildingTiers();
   readonly diplomacy = new Diplomacy();
@@ -160,6 +177,7 @@ export class Expansion {
   readonly roads: Roads;
   readonly battle: Battle;
   readonly armies: Armies;
+  readonly engagements: EngagementManager;
   readonly modernization = new AiModernization();
   readonly economy: AiEconomicDirector;
   readonly geography: DiplomaticGeography;
@@ -186,6 +204,8 @@ export class Expansion {
     technologySpeed: TechnologySpeed = 1,
     startingAge: StartingAge = world.options?.startingAge ?? "StoneAge",
   ) {
+    this.terrain=tacticalTerrain(world.map);
+    this.features=new TacticalFeatureIndex(this.terrain,world.paths);
     this.startingAge = startingGameplayAge(startingAge);
     this.towerSites={at:tile=>world.buildingsAt(tile),nearby:(tile,radius)=>world.towersNear(tile,radius)};
     this.progression = new Progression(technologySpeed, startingAge, world.options?.maximumAge);
@@ -216,6 +236,12 @@ export class Expansion {
     );
     this.battle.setWidth(world.map.width());
     this.armies = new Armies(world, this.progression);
+    this.trenches=new TrenchOccupancy(this);
+    this.skirmish=new SkirmishStance(this);
+    this.battle.occupationCover=(s,source)=>this.trenches.cover(s,source);
+    this.armies.advisoryMovement=id=>this.skirmish.active(id);
+    this.engagements=new EngagementManager(this);
+    this.armies.setEngagementManager(this.engagements);
     this.economy = new AiEconomicDirector(this);
     this.geography = new DiplomaticGeography(world, this.economy.navalFacts);
 
@@ -248,11 +274,11 @@ export class Expansion {
     state.targetKey = key;
     for (const member of state.members) {
       const squad = this.world.squad(member.id), profile = squad && this.unit(squad).attack;
-      if (!squad || squad.kind !== member.kind || profile!.range !== member.range || !profile!.targets.includes(building ? "structure" : "wall")) {
+      if (!squad || squad.kind !== member.kind || profile!.range !== member.range || !!member.elevationEligible!==(profile!.perSoldier===true&&profile!.channel==="ranged") || !profile!.targets.includes(building ? "structure" : "wall")) {
         state.stage = "failed"; state.reason = "Selected weapon changed during structure preparation"; return 1;
       }
     }
-    return new StructureAttackPreparation(this.world.map, this.world.paths, this.fortifications, building ? [building.tile] : wall!.tiles, state).step(budget);
+    return new StructureAttackPreparation(this.world.map, this.world.paths, this.fortifications, building ? [building.tile] : wall!.tiles, state,(id,from,to)=>effectiveRange(this.world,from,this.unit(this.world.squad(id)!).attack,to)).step(budget);
   }
   available(player: Player, line: Squad["kind"]): UnitDefinition | undefined {
     return UNITS.filter(
@@ -389,7 +415,10 @@ export class Expansion {
     const { world } = this;
     if (command.type === "alliance" && command.action !== "declare" && world.options?.alliances === false) return "Alliances are disabled for this match";
     if (command.type === "upgrade-building") return "Buildings upgrade automatically with research";
+    if(command.type==="occupy") {const result=this.trenches.command(command);if(!result)this.skirmish.observe(command);return result;}
+    if(command.type==="stance")return this.skirmish.command(command);
     const armyResult = this.armies.command(player, command);
+    if(armyResult===null){this.trenches.observe(command);this.skirmish.observe(command);}
     if (armyResult !== undefined) return armyResult;
     if (command.type === "research") {
       return this.progression.research(player, command.technologyId);
@@ -638,6 +667,7 @@ export class Expansion {
       const quote=quoteEnlargement(selected,undefined,player,this.progression.states[player.id].completed,this.supply.inventories[player.id],world.owners,world.map.width());
       if(!quote||quote.reason)return quote?.reason??'Research a larger compatible recipe first';
       if(quote.selected.some(s=>world.canDeploy && !world.canDeploy(world.squad(s.id)!,s.troops+quote.terms.added)))return 'There is no room to enlarge this formation';
+      if(!this.trenches.reserveChanges(quote.selected.map(s=>({id:s.id,capacity:quote.target.formationRecipe!.enlargedCapacity}))))return 'Exit the trench or free trench space first';
       spend(player,this.supply.inventories[player.id],quote.cost);
       for(const s of quote.selected){world.updateSquad(s.id,{manpower:{...s.manpower!,enlargement:{definitionId:quote.target.id,targetCapacity:quote.target.formationRecipe!.enlargedCapacity,added:quote.terms.added,cost:paidCost(player,quote.terms.cost),totalTicks:quote.terms.ticks,remainingTicks:quote.terms.ticks}},order:{type:'hold'},queuedOrders:[],charge:null});world.installSquadPath(s.id,[]);}
       return null;
@@ -654,6 +684,8 @@ export class Expansion {
       const count=affordableRefitCount(unitRefitCost(target,1,recruitmentVariant(target.id,this.progression.states[player.id].completed)),availableGold(player),this.supply.inventories[player.id],eligible.length);
       if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target,1,recruitmentVariant(target.id,this.progression.states[player.id].completed)))??"No affordable refit";
       if(eligible.slice(0,count).some(s=>world.canDeploy && !world.canDeploy(s,Math.min(s.troops,recipeCapacity(target,recruitmentVariant(target.id,this.progression.states[player.id].completed))),target.id)))return "There is no room for this refitted formation";
+      if(eligible.slice(0,count).some(s=>this.trenches.occupants.has(s.id)&&(target.formationRecipe?.model!=="soldiers"||formationDoctrine(target.id).mounted)))return "Exit the trench before refitting to mounted or hull units";
+      if(!this.trenches.reserveChanges(eligible.slice(0,count).map(s=>({id:s.id,capacity:recipeCapacity(target,recruitmentVariant(target.id,this.progression.states[player.id].completed))}))))return "Exit the trench or free trench space first";
       spend(player,this.supply.inventories[player.id],unitRefitCost(target,count,recruitmentVariant(target.id,this.progression.states[player.id].completed)));
       for(const s of eligible.slice(0,count)){
         world.updateSquad(s.id,{refit:{targetId:target.id,recipeVariant:recruitmentVariant(target.id,this.progression.states[player.id].completed),totalTicks:200,remainingTicks:200},order:{type:"hold"},queuedOrders:[],charge:null});
@@ -762,11 +794,11 @@ export class Expansion {
         const targetTiles = building ? [building.tile] : barrier!.tiles;
         const profile=this.unit(s).attack;
         if(!profile.targets.includes(building ? "structure" : "wall")) return "This weapon cannot attack that structure";
-        if(structureAim(s,targetTiles,profile.range,player.id,world.map.width(),this.fortifications)){
+        if(structureAim(s,targetTiles,elevationRangeAt(world,s,profile),player.id,world.map.width(),this.fortifications)){
           orders.push({s,tile:world.tileOf(s),path:[]});continue;
         }
         const approaches = new Set<number>();
-        const extent = Math.ceil(this.unit(s).attack.range / FIXED);
+        const extent = Math.ceil(maxEffectiveRange(this.unit(s).attack) / FIXED);
         for (const tile of targetTiles)
         for (
           let y = Math.max(0, world.map.y(tile) - extent);
@@ -783,7 +815,7 @@ export class Expansion {
               world.paths.walkable(t) &&
               !this.fortifications.blocked(t, player.id) &&
               standable(world.map, tilePoint(world.map, t), squadRadius(s.kind)) &&
-              structureAim(tilePoint(world.map, t), targetTiles, this.unit(s).attack.range,
+              structureAim(tilePoint(world.map, t), targetTiles, elevationRangeAt(world,tilePoint(world.map,t),this.unit(s).attack),
                 player.id, world.map.width(), this.fortifications)
             )
               approaches.add(t);
@@ -1005,6 +1037,7 @@ export class Expansion {
     return null;
   }
   beforeStep(): void {
+    this.features.step();
     const { world } = this;
     for (const id of this.tribePlans.keys()) if (!world.players.some(p => p.id === id && p.kind === "tribe" && !p.eliminated)) this.tribePlans.delete(id);
     this.progression.step(world.players, (player, age) =>
@@ -1032,6 +1065,8 @@ export class Expansion {
         });
     this.fortifications.step(world.tick, world.buildings,
       (id, health) => world.updateBuilding(id, { health }));
+    this.trenches.step();
+    this.skirmish.step();
     this.supply.step(world.tick, world.players, world.buildings, world.owners, world.squads,
       {buildings: world.buildingFacts(), squads: world.squadFacts()});
     for (const s of world.ships) {

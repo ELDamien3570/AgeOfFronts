@@ -1,3 +1,4 @@
+import { effectiveRange, maxEffectiveRange } from "./ElevationAdvantage";
 import { readyFraction } from './Manpower';
 import { UNITS } from "../content/Units";
 import { AiDefenseOutline, type DefenseOutlineState } from "./AiDefenseOutline";
@@ -644,7 +645,7 @@ export class AiDefenseDirector {
       this.abandon(project, quote);
       return;
     }
-    const extent=Math.max(40,Math.ceil((quote.ticks+100)*Math.ceil(56*Math.max(...UNITS.map(u=>Math.max(u.speedPercent,u.charge?.speedPercent??0)))/100)/FIXED)+Math.ceil(Math.max(...UNITS.map(u=>u.attack.range))/FIXED)+12);
+    const extent=Math.max(40,Math.ceil((quote.ticks+100)*Math.ceil(56*Math.max(...UNITS.map(u=>Math.max(u.speedPercent,u.charge?.speedPercent??0)))/100)/FIXED)+Math.ceil(Math.max(...UNITS.map(u=>maxEffectiveRange(u.attack)))/FIXED)+12);
     const candidates=world.nearbyArmyEnemies({x:(world.map.x(city.anchorTile)+.5)*FIXED,y:(world.map.y(city.anchorTile)+.5)*FIXED},extent*FIXED,player.id);
     for (const enemy of candidates)
       if (
@@ -674,7 +675,7 @@ export class AiDefenseDirector {
               ),
             ) *
               FIXED -
-            this.expansion.unit(enemy).attack.range,
+            Math.max(...sites.map(s=>effectiveRange(world,enemy,this.expansion.unit(enemy).attack,{x:(world.map.x(s.tile)+.5)*FIXED,y:(world.map.y(s.tile)+.5)*FIXED}))),
           arrival =
             Math.max(0, distance) / Math.max(1, world.ordinarySpeed(enemy));
         if (arrival < quote.ticks + 100) {

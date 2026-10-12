@@ -1,3 +1,4 @@
+import { remainingHealth,HEALTH_SCALE } from './Manpower';
 import { forceReadiness } from "./AiForceReadiness";
 import { combatCohorts, combatAdvantage } from "./AiCombatPower";
 import { canFinishConquest, conquestBuildings } from "./AiConquestObjective";
@@ -6,6 +7,7 @@ import { personalityOf } from "../content/AiPersonalities";
 import type { Player } from "../Protocol";
 import type { Expansion } from "./Expansion";
 
+export interface ArmyTheatre {id:string;purpose:'offense'|'defense'|'screen';tile:number;target?:number;priority:number;desiredSquads:number}
 export type OperationPhase = "peace" | "preparing" | "war" | "recovery";
 export interface AiOperation {
   phase: OperationPhase;
@@ -32,6 +34,29 @@ export class AiOperations {
   // route jobs every time combat extends an existing retaliation window.
   permissionRevision = 0;
   private work = 0;
+  private readonly theatreRecords=new Map<number,ArmyTheatre[]>();
+  theatres(playerId:number):readonly ArmyTheatre[]{return this.theatreRecords.get(playerId)??[];}
+  private refreshTheatres(player:Player,r:AiOperation):void {
+    const {world}=this.expansion,rows:ArmyTheatre[]=[],own=world.squadFacts().byOwner(player.id).filter(s=>s.troops>0),count=own.length;
+    const cap=Math.min(this.expansion.armies.capacity(player.id),1+Math.floor(count/40),4);
+    if(!cap){this.theatreRecords.set(player.id,[]);return;}
+    const reserve=Math.ceil(count*AI_DOCTRINES[personalityOf(player).id].reservePercent/100);
+    let remaining=Math.max(0,count-reserve);
+    const averageHealth=own.reduce((n,s)=>n+remainingHealth(s)/HEALTH_SCALE,0)/Math.max(1,count);
+    const regions=this.expansion.economy.fronts.regionsForPlayer(player.id);
+    const threats=r.threats.filter(t=>t.until>=world.tick).sort((a,b)=>a.rival-b.rival);
+    const danger=threats.map(t=>{
+      const region=regions.filter(f=>f.rival===t.rival).sort((a,b)=>world.map.euclideanDistSquared(a.anchor,t.tile)-world.map.euclideanDistSquared(b.anchor,t.tile)||a.id.localeCompare(b.id))[0];
+      const health=world.squadFacts().aliveByOwner(t.rival).filter(s=>s.embarkedOn===null&&world.map.euclideanDistSquared(world.tileOf(s),t.tile)<=16**2).reduce((n,s)=>n+remainingHealth(s)/HEALTH_SCALE,0);
+      return {id:'defense:'+(region?.id??t.rival),tile:region?.anchor??t.tile,target:t.rival,weight:Math.max(2,Math.ceil(health/Math.max(1,averageHealth)*1.2))};
+    });
+    const total=danger.reduce((n,t)=>n+t.weight,0),defensive=Math.min(remaining,total);
+    for(const t of danger){if(rows.length>=cap||remaining<2)break;const desired=Math.min(this.expansion.armies.capacity(player.id),remaining,Math.max(2,Math.round(defensive*t.weight/Math.max(1,total))));rows.push({...t,purpose:'defense',priority:3,desiredSquads:desired});remaining-=desired;}
+    const screen=count>=60?regions.filter(f=>!threats.some(t=>t.rival===f.rival)&&world.hostile(player.id,f.rival)).sort((a,b)=>b.edges-a.edges||a.id.localeCompare(b.id))[0]:undefined;
+    if(screen&&remaining>=2&&rows.length<cap){const desired=Math.min(6,remaining);rows.push({id:'screen:'+screen.id,purpose:'screen',tile:screen.anchor,target:screen.rival,priority:1,desiredSquads:desired});remaining-=desired;}
+    if(r.target!==undefined&&r.phase==='war'&&rows.length<cap&&remaining>=2){const target=world.players.find(p=>p.id===r.target);if(target)rows.push({id:'offense:'+r.target,purpose:'offense',tile:target.base,target:r.target,priority:2,desiredSquads:remaining});}
+    this.theatreRecords.set(player.id,rows.sort((a,b)=>b.priority-a.priority||a.id.localeCompare(b.id)));
+  }
   private territorialRevision=0;
   territoryChanged(oldOwner:number,newOwner:number):void{
     this.territorialRevision++;
@@ -51,8 +76,9 @@ export class AiOperations {
     return !!this.expansion.world.options?.aiWarPolicy && !!player?.ai && player.kind === "regular" && !player.eliminated;
   }
   state(playerId: number): Readonly<AiOperation> | undefined { return this.records.get(playerId); }
-  checkpoint() { return structuredClone({ records: [...this.records], revision: this.revision,territorialRevision:this.territorialRevision }); }
-  restore(saved: ReturnType<AiOperations["checkpoint"]>): void {
+  checkpoint() { return structuredClone({ records: [...this.records], revision: this.revision,territorialRevision:this.territorialRevision,theatres:[...this.theatreRecords] }); }
+  restore(saved: Omit<ReturnType<AiOperations["checkpoint"]>,"theatres"> & Partial<Pick<ReturnType<AiOperations["checkpoint"]>,"theatres">>): void {
+    this.theatreRecords.clear();for(const [id,rows] of saved.theatres??[])this.theatreRecords.set(id,structuredClone(rows));
     this.records.clear(); for (const [id, record] of structuredClone(saved.records)) this.records.set(id, record);
     this.permissionRevision++;
     this.revision = saved.revision;this.territorialRevision=saved.territorialRevision??0;
@@ -198,6 +224,7 @@ export class AiOperations {
         this.transition(player, r, "recovery"); continue;
       }
       if (tick < r.nextThink) continue;
+      this.refreshTheatres(player,r);
       const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=12}:${diplomacyKey}:${r.territorialRevision??0}:${ageKey}`;
       if(r.phase==="peace" && !r.threats.length && r.sleepKey===sleepKey){r.nextThink=tick+200;continue;}
       r.readiness=forceReadiness(this.expansion,player,2);

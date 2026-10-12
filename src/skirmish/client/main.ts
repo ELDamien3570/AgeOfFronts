@@ -1,3 +1,4 @@
+import { trenchFrontage } from "../domain/TrenchFrontage";
 import { certifyFootprint, formationFootprint } from "../domain/FormationContact";
 import { facingOf } from "../domain/FormationGeometry";
 import { TERRAIN } from "../content/TacticalRules";
@@ -394,7 +395,7 @@ function notify(message: string): void {
 
 async function start(): Promise<void> {
   if(onlineMatchId) { await startOnlineMatch(); return; }
-  drag=undefined; renderer.selectionBox=undefined; renderer.deploymentPreview=undefined;
+  drag=undefined; renderer.selectionBox=undefined; renderer.deploymentPreview=undefined; renderer.trenchPreview=undefined;
   localPresentation?.reset();
   recruitmentControls.clear();
   cameraPan.clear();
@@ -1340,6 +1341,13 @@ const localPosition = (event: MouseEvent | PointerEvent) => {
   return { x: event.clientX - rect.left, y: event.clientY - rect.top };
 };
 
+function drawnTrench(start:WorldPoint,end:{x:number;y:number}) {
+  if(!snapshot||!currentMap||!renderer.selected.size)return;
+  const tiles=trenchFrontage(snapshot.width,localPlayerId,snapshot.buildings,snapshot.expansion?.barriers??[],start,{x:Math.round(end.x*FIXED),y:Math.round(end.y*FIXED)});
+  if(!tiles)return;
+  const required=snapshot.squads.filter(s=>renderer.selected.has(s.id)).reduce((n,s)=>n+(s.manpower?.capacity??s.troops),0);
+  return {tiles,required,capacity:tiles.length*6};
+}
 function drawnDeployment(
   start: WorldPoint,
   end: { x: number; y: number },
@@ -1519,7 +1527,7 @@ canvas.addEventListener("pointerup", (event) => {
   drag = undefined;
 
   renderer.selectionBox = undefined;
-  renderer.deploymentPreview = undefined;
+  renderer.deploymentPreview = undefined; renderer.trenchPreview=undefined;
 
   if (
     start.button === 2 &&
@@ -1783,6 +1791,9 @@ canvas.addEventListener("pointerup", (event) => {
       (b) => tile !== null && b.health > 0 && b.tiles.includes(tile),
     );
 
+    if(!enemy && tile!==null && (building?.type==="trench"&&building.playerId===localPlayerId||barrier?.kind==="trench"&&barrier.playerId===localPlayerId)) {
+      command({type:"occupy",playerId:localPlayerId,squadIds:[...renderer.selected],tile,append:start.shift});return;
+    }
     const structureOrder =
       !enemy &&
       (Boolean(building && building.playerId !== localPlayerId) ||
@@ -2023,7 +2034,7 @@ function frame(now: number): void {
   }
   const pan = cameraPan.step(now);
   if (pan.x || pan.y) renderer.pan(pan.x, pan.y);
-  if(drag?.button===2&&drag.moved&&drag.lineStart&&(deploymentPreviewPending||previewTick!==snapshot?.tick)){const deployment=drawnDeployment(drag.lineStart,renderer.world(drag.lastX,drag.lastY),drag.shift);renderer.deploymentPreview=deployment?{line:deployment.line,valid:deployment.valid,color:COLORS[localPlayerId]}:undefined;deploymentPreviewPending=false;previewTick=snapshot?.tick??-1;}
+  if(drag?.button===2&&drag.moved&&drag.lineStart&&(deploymentPreviewPending||previewTick!==snapshot?.tick)){const trench=drawnTrench(drag.lineStart,renderer.world(drag.lastX,drag.lastY));renderer.trenchPreview=trench?{...trench,color:COLORS[localPlayerId]}:undefined;const deployment=trench?undefined:drawnDeployment(drag.lineStart,renderer.world(drag.lastX,drag.lastY),drag.shift);renderer.deploymentPreview=deployment?{line:deployment.line,valid:deployment.valid,color:COLORS[localPlayerId]}:undefined;deploymentPreviewPending=false;previewTick=snapshot?.tick??-1;}
   localPresentation?.beginFrame(now, speed, paused);
   if (renderer.draw(now, speed, paused)) {
     updateCampLossLabels(now);

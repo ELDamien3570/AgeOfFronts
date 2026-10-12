@@ -3,6 +3,7 @@ export interface ChannelCycle {
   nextTick: number;
   remainder: number;
   shots: number;
+  lastShotTick?: number;
   reloadStartedTick?: number;
 }
 export interface WeaponState {
@@ -16,9 +17,16 @@ export function commitWeaponShot(
   state: WeaponState | undefined,
   tick: number,
   moving: boolean,
+  independentChannels = false,
 ): WeaponState | undefined {
   const cycle = state?.[profile.channel];
-  if (tick < Math.max(state?.sharedReadyTick ?? 0, cycle?.nextTick ?? 0))
+  if (
+    tick <
+    Math.max(
+      independentChannels ? 0 : (state?.sharedReadyTick ?? 0),
+      cycle?.nextTick ?? 0,
+    )
+  )
     return undefined;
   const rpm = profile.rpm!;
   const numerator = 1200 * (moving ? profile.movingReloadPercent : 100);
@@ -35,6 +43,7 @@ export function commitWeaponShot(
       nextTick: tick + Math.max(interval, reload ? reloadTicks : 0),
       remainder: interval * denominator - accumulated,
       shots: reload ? 0 : shots,
+      lastShotTick: tick,
       ...(reload && reloadTicks ? { reloadStartedTick: tick } : {}),
     },
   };
@@ -62,6 +71,7 @@ export function validateWeaponState(value: WeaponState | undefined): void {
       (!integer(c.nextTick) ||
         !integer(c.remainder, 120000) ||
         !integer(c.shots, 1000) ||
+        (c.lastShotTick !== undefined && !integer(c.lastShotTick)) ||
         (c.reloadStartedTick !== undefined && !integer(c.reloadStartedTick)))
     )
       throw new Error("Invalid weapon cycle");
