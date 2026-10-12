@@ -5,6 +5,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY tsconfig.json vite.skirmish.config.ts index.html ./
 COPY scripts/technologyPlanDevPlugin.ts ./scripts/
+COPY scripts/verifyRuntimeAssets.mjs ./scripts/
 COPY resources ./resources
 COPY skirmish ./skirmish
 COPY src ./src
@@ -17,6 +18,7 @@ COPY ["Art/Building Icons/_prepared/StoneAge", "./Art/Building Icons/_prepared/S
 COPY ["Art/Formation Icons", "./Art/Formation Icons/"]
 COPY ["Art/Soldier Icons", "./Art/Soldier Icons/"]
 COPY ["Art/Terrain", "./Art/Terrain/"]
+RUN node scripts/verifyRuntimeAssets.mjs src resources Art
 ARG SOURCE_REVISION
 RUN test -n "$SOURCE_REVISION" && mkdir -p build/skirmish && \
     VITE_SKIRMISH_SOURCE_URL="https://github.com/ELDamien3570/AgeOfFronts/tree/$SOURCE_REVISION" \
