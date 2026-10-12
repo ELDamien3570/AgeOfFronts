@@ -10,6 +10,8 @@ COPY skirmish ./skirmish
 COPY src ./src
 COPY ["Art/UI Age Themes", "./Art/UI Age Themes/"]
 COPY ["Art/Runtime/Ages", "./Art/Runtime/Ages/"]
+COPY ["Art/Runtime/Russians", "./Art/Runtime/Russians/"]
+COPY ["Art/Cultures/Russians/FormationLayouts", "./Art/Cultures/Russians/FormationLayouts/"]
 COPY ["Art/Building Markers", "./Art/Building Markers/"]
 COPY ["Art/Building Icons/_prepared/StoneAge", "./Art/Building Icons/_prepared/StoneAge/"]
 COPY ["Art/Formation Icons", "./Art/Formation Icons/"]
