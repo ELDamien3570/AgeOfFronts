@@ -19,6 +19,11 @@ let lastPublishedAt = 0;
 function send(message: WorkerResponse): void {
   self.postMessage(message);
 }
+function reportFailure(error: unknown): void {
+  const detail = error instanceof Error ? error.message : String(error);
+  console.error(`Local game worker failed at tick ${match?.tick ?? 0}`, error);
+  send({ type: "error", message: match ? `The match stopped at tick ${match.tick}: ${detail}` : detail });
+}
 function publish(): void {
   if (!match) return;
   lastPublishedAt = performance.now();
@@ -73,13 +78,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
           }
         } catch (error) {
           clearInterval(timer);
-          send({
-            type: "error",
-            message:
-              error instanceof Error
-                ? error.message
-                : "The match stopped unexpectedly",
-          });
+          reportFailure(error);
         }
       }, 1000 / TICKS_PER_SECOND);
     } else if (message.type === "select-spawn") {
@@ -107,6 +106,10 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
       const rejection = oversized ? `Select at most ${MAX_ORDER_SQUADS} squads` : match?.applyCommand(command);
       if (rejection) send({ type: "rejected", message: rejection });
       if (paused || performance.now() - lastPublishedAt >= 30) publish();
+    } else if (message.type === "resync") {
+      // Reset every replication cursor together without restarting the match.
+      encoder = new SnapshotEncoder();
+      publish();
     } else if (message.type === "pause") {
       if (setup) return;
       paused = message.paused;
@@ -116,10 +119,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
       publish();
     }
   } catch (error) {
-    send({
-      type: "error",
-      message:
-        error instanceof Error ? error.message : "Unable to start this match",
-    });
+    clearInterval(timer);
+    reportFailure(error);
   }
 };

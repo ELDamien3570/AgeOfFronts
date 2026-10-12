@@ -96,6 +96,10 @@ function computeFormationFootprint(s: FormationBody, tick: number): Point[] {
   }));
 }
 const travelHulls = new WeakMap<object, Map<string, readonly Point[][]>>();
+const CAPSULE_DIRECTIONS = Array.from({ length: 8 }, (_, i) => ({
+  x: Math.cos((i * Math.PI) / 4),
+  y: Math.sin((i * Math.PI) / 4),
+}));
 /** Travel is a union of row envelopes: a bend's empty interior is not occupied. */
 function computeFormationFootprints(s: FormationBody, tick: number): Point[][] {
   if (
@@ -117,20 +121,16 @@ function computeFormationFootprints(s: FormationBody, tick: number): Point[][] {
   let cache = travelHulls.get(slots),
     local = cache?.get(key);
   if (!local) {
-    const rows = new Map<number, Point[]>();
+    const rows = new Map<number, Point[]>(), layout = columnLayout(d);
     for (const [index, slot] of slots.entries()) {
-      const row = Math.floor(index / columnLayout(d).columns);
+      const row = Math.floor(index / layout.columns);
       const points = rows.get(row) ?? [],
         x = slot.x * c - slot.y * sin,
         y = slot.x * sin + slot.y * c;
-      const radius = columnLayout(d).radius;
+      const radius = layout.radius;
       // A capsule row stays inside the route planner's circular carrier clearance.
-      points.push(
-        ...Array.from({ length: 8 }, (_, i) => ({
-          x: x + Math.cos((i * Math.PI) / 4) * radius,
-          y: y + Math.sin((i * Math.PI) / 4) * radius,
-        })),
-      );
+      for (const direction of CAPSULE_DIRECTIONS)
+        points.push({ x: x + direction.x * radius, y: y + direction.y * radius });
       rows.set(row, points);
     }
     local = [...rows.values()].map(convexHull);
@@ -325,6 +325,8 @@ export class PreparedFormationBody {
   private parts():Point[][] {
     return this.cached.parts??(this.cached.parts=computeFormationFootprints(this.body,this.tick));
   }
+  footprints():Point[][] {return this.parts();}
+  footprint():Point[] {return this.cached.convex??(this.cached.convex=computeFormationFootprint(this.body,this.tick));}
   contact(other:PreparedFormationBody):FormationContact {
     // Settled bodies are clock-independent and may survive a phase boundary.
     if(this.tick!==other.tick && this.body.formation?.transition && other.body.formation?.transition)

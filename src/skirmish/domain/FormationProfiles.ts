@@ -109,6 +109,10 @@ export function frontageLayout(n: number, d: FormationDoctrine, shape: Formation
     if(row.minWidth>maxWidth)continue;
     const lo=Math.ceil(row.minWidth/FRONTAGE.quantum)*FRONTAGE.quantum;
     const hi=Math.floor(maxWidth/FRONTAGE.quantum)*FRONTAGE.quantum;
+    // A casualty ceiling cannot turn an ordinarily quantized band into a
+    // sub-quantum exception. Such a width would project differently when
+    // decoded/restored without that ceiling. Try the next legal band instead.
+    if(lo>hi && lo<=Math.floor(row.maxWidth/FRONTAGE.quantum)*FRONTAGE.quantum)continue;
     const width=lo<=hi?Math.max(lo,Math.min(hi,Math.round(target/FRONTAGE.quantum)*FRONTAGE.quantum)):Math.max(row.minWidth,Math.min(maxWidth,Math.round(target)));
     const error=Math.abs(width-target);
     if(error<score || error===score && row.files<(best?.files??Infinity)) {

@@ -1,5 +1,6 @@
 import type { LandPaths, WaterPaths } from "./Pathfinding";
 import { PlanningWorkspace, type PlanningPathState } from "./PlanningWorkspace";
+import type { CorridorState } from "./HierarchicalPaths";
 import {
   PLANNER_CALLERS,
   type PlannerCaller,
@@ -34,14 +35,12 @@ interface Job<T> extends ExactRouteRequest<T> {
   resumeExclusiveAfterRelease?: boolean;
   /** Interactive jobs try one hierarchical corridor before exact search. */
   corridorTried?: boolean;
+  corridor?: CorridorState;
   /** Already published; only its arena slots remain to be reclaimed. */
   retired?: boolean;
   /** Its obstacle revision changed mid-search; the result is revalidated. */
   revalidate?: boolean;
 }
-/** Allowance an interactive HPA* corridor attempt needs left in the tick:
- * about one start-cluster tree plus a short abstract search. */
-const CORRIDOR_RESERVE = 1024;
 export type ExactRouteOutcome =
   | "complete"
   | "unreachable"
@@ -52,10 +51,9 @@ export interface RoutePlannerPorts<T> {
   /** Autonomous callers can decline exclusive arena retries without claiming
    * that a capacity-limited result means geographic impossibility. */
   allowExclusiveRetry?(request: ExactRouteRequest<T>): boolean;
-  /** Whether the HPA* corridor may answer this request (default: interactive
-   * requests only). A cold hierarchy builds crossing trees inside the query,
-   * outside any budget; owners gate this on a deterministic schedule, never
-   * on cache state. */
+  /** Whether HPA* may answer this request (default: interactive only). Owners
+   * gate eligibility deterministically; cold cache preparation yields under
+   * the scheduler's reserved work allowance. */
   corridorReady?(request: ExactRouteRequest<T>): boolean;
   /** Domain attribution for fair scheduling and bounded cohort diagnostics. */
   identity?(request: ExactRouteRequest<T>): {
@@ -99,6 +97,9 @@ export class RoutePlanner<T> {
   private readonly jobs = new Map<string, Job<T>>();
   private readonly cohorts = new Map<string, PlannerCohort>();
   private readonly workspace: PlanningWorkspace;
+  // Retain the iterator across cleanup quanta. Starting a new Map iterator
+  // repeatedly walks its deleted prefix even though only live slots are charged.
+  private readonly reclamation = new WeakMap<Map<number, number>, MapIterator<[number, number]>>();
   // Version 1 restores historical FIFO checkpoints without changing their outcomes.
   private schedulingVersion = 3;
   private exclusiveKey?: string;
@@ -134,7 +135,7 @@ export class RoutePlanner<T> {
     this.diagnostics.workspaceBytes = this.workspace.bytes;
   }
   checkpoint() {
-    return structuredClone({
+    const saved = structuredClone({
       landRevision: this.land.revision,
       waterRevision: this.water.revision,
       amphibiousRevision: this.amphibious?.revision,
@@ -149,6 +150,12 @@ export class RoutePlanner<T> {
         retired: this.retiredJobs,
       },
     });
+    // Portable checkpoints support signed 32-bit arrays. Widen retained trees
+    // here while keeping compact 16-bit local scratch during normal planning.
+    for (const job of saved.jobs) if (job.corridor)
+      for (const tree of [job.corridor.startTree, job.corridor.tree])
+        if (tree?.parent instanceof Int16Array) tree.parent = Int32Array.from(tree.parent);
+    return saved;
   }
   restore(
     saved: Omit<
@@ -210,6 +217,13 @@ export class RoutePlanner<T> {
       this.lastCaller.set(player, caller);
     this.jobs.clear();
     for (const job of structuredClone(saved.jobs)) {
+      if(job.corridor){
+        // Portable transport preserves map values rather than object aliases.
+        if(!(job.corridor.nodes instanceof Map) || job.corridor.nodes.size!==job.search.nodes.size ||
+          [...job.search.nodes].some(([id,slot])=>job.corridor!.nodes.get(id)!==slot))throw Error("Corridor does not own its arena nodes");
+        job.corridor.nodes=job.search.nodes;
+        this.pathsFor(job).validateCorridor(job.corridor,this.workspace);
+      }
       if (this.ports.allowExclusiveRetry?.(job) === false) {
         job.waitingForWorkspace = false;
         job.resumeExclusiveAfterRelease = undefined;
@@ -275,13 +289,16 @@ export class RoutePlanner<T> {
     }
     return [...this.cohorts.values()].map((cohort) => ({ ...cohort }));
   }
-  private selectJob(): [string, Job<T>] {
-    if (this.schedulingVersion < 3) return this.nextJob();
+  private selectJob(eligible: (job: Job<T>) => boolean = () => true): [string, Job<T>] | undefined {
+    let available = false;
+    for (const job of this.jobs.values()) if (eligible(job)) { available = true; break; }
+    if (!available) return undefined;
+    if (this.schedulingVersion < 3) return this.nextJob(eligible);
     let humanPending = false;
     if (this.ports.priority) for (const job of this.jobs.values())
-      if (!job.discard && this.ports.priority(job)) { humanPending = true; break; }
+      if (eligible(job) && !job.discard && this.ports.priority(job)) { humanPending = true; break; }
     const exclusive = this.exclusiveKey && this.jobs.get(this.exclusiveKey);
-    if (exclusive && (!humanPending || this.ports.priority!(exclusive))) return [exclusive.key, exclusive];
+    if (exclusive && eligible(exclusive) && (!humanPending || this.ports.priority!(exclusive))) return [exclusive.key, exclusive];
     if (exclusive && !exclusive.releasing && exclusive.search.phase !== "done") {
       // An interactive request preempts an autonomous full-arena search.
       // Reclamation is charged normally; resume its retry after human work,
@@ -290,7 +307,7 @@ export class RoutePlanner<T> {
       exclusive.resumeExclusiveAfterRelease = true;
     }
     this.exclusiveKey = undefined;
-    const canReserve = (job: Job<T>) => !!job.waitingForWorkspace && !job.discard &&
+    const canReserve = (job: Job<T>) => eligible(job) && !!job.waitingForWorkspace && !job.discard &&
       (!humanPending || this.ports.priority!(job));
     let waiting = false;
     for (const job of this.jobs.values())
@@ -298,7 +315,7 @@ export class RoutePlanner<T> {
         waiting = true;
         break;
       }
-    if (!waiting) return this.nextJob(job => !job.waitingForWorkspace || job.releasing !== undefined || !!job.discard);
+    if (!waiting) return this.nextJob(job => eligible(job) && (!job.waitingForWorkspace || job.releasing !== undefined || !!job.discard));
     if (!this.workspace.used) {
       const next = this.nextJob(
         canReserve,
@@ -310,12 +327,14 @@ export class RoutePlanner<T> {
     // Stop new searches allocating while existing searches finish/release.
     // No progress is discarded. The finite arena holders must reach a terminal
     // result or capacity limit; cancellation cleanup keeps its fair turns.
-    return this.nextJob(
-      (job) =>
+    const holder = (job: Job<T>) => eligible(job) && (
         job.search.nodes.size > 0 ||
         job.releasing !== undefined ||
-        job.discard === true,
-    );
+        job.discard === true);
+    let held = false;
+    for (const job of this.jobs.values()) if (holder(job)) { held = true; break; }
+    if (!held) return undefined;
+    return this.nextJob(holder);
   }
   private nextJob(
     eligible: (job: Job<T>) => boolean = () => true,
@@ -378,6 +397,7 @@ export class RoutePlanner<T> {
     if (job.prepare) return false;
     job.obstacleRevision = this.ports.obstacleRevision(job);
     job.revalidate = true;
+    if(job.corridor)job.corridor.validated=0;
     return true;
   }
   cancel(key: string): void {
@@ -433,10 +453,19 @@ export class RoutePlanner<T> {
       throw new Error("Invalid route work budget");
     let used = 0;
     let preparationBudget = Math.min(256, budget),
+      // At most 16,384 local dequeues, with 12,288 reserved for human work.
+      corridorPreparationBudget = Math.min(32, budget),
+      backgroundCorridorPreparationBudget = Math.min(8, budget),
       rayBudget = 32,
       idle = 0;
+    // Exhausted background preparation cannot progress again until next tick.
+    // Exclude it once instead of rescanning it between every runnable quantum.
+    // Human requests retain the existing priority/idle circuit breaker.
+    const deferred = new Set<Job<T>>();
     while (this.jobs.size && used < budget) {
-      const [key, job] = this.selectJob();
+      const selected = this.selectJob(job => !deferred.has(job));
+      if (!selected) break;
+      const [key, job] = selected;
       this.jobs.delete(key);
       const cohort = this.cohort(job),
         before = used;
@@ -446,9 +475,8 @@ export class RoutePlanner<T> {
         if (job.releasing) {
           const slice = Math.min(quantum, budget - used);
           let count = 0;
-          // Reuse one iterator for this charged slice. Recreating it per node
-          // repeatedly walks the deleted prefix of a large search map.
-          const entries = job.search.nodes.entries();
+          let entries = this.reclamation.get(job.search.nodes);
+          if (!entries) this.reclamation.set(job.search.nodes, entries = job.search.nodes.entries());
           while (job.search.nodes.size && count < slice) {
             const [tile, slot] = entries.next().value!;
             this.workspace.release(slot);
@@ -460,6 +488,7 @@ export class RoutePlanner<T> {
             this.jobs.set(key, job);
             continue;
           }
+          this.reclamation.delete(job.search.nodes);
           outcome = job.releasing;
           job.releasing = undefined;
           if (job.retired) continue;
@@ -499,7 +528,8 @@ export class RoutePlanner<T> {
           if (!job.prepared) {
             if (!preparationBudget) {
               this.jobs.set(key, job);
-              if (++idle >= this.jobs.size) break;
+              if (!this.ports.priority?.(job)) deferred.add(job);
+              else if (++idle >= this.jobs.size) break;
               continue;
             }
             const result = this.ports.prepare?.(
@@ -532,6 +562,28 @@ export class RoutePlanner<T> {
               ).state;
               job.prepared = true;
             }
+          } else if (job.corridor) {
+            const priority = this.ports.priority?.(job) ?? false;
+            const preparation = { used: 0 }, work = paths.stepCorridor(
+              job.corridor, this.workspace, slice, this.ports.blocked(job),
+              priority ? corridorPreparationBudget : Math.min(corridorPreparationBudget, backgroundCorridorPreparationBudget),
+              preparation,
+            );
+            corridorPreparationBudget -= preparation.used;
+            if (!priority) backgroundCorridorPreparationBudget -= preparation.used;
+            if (!work) {
+              this.jobs.set(key, job);
+              if (!this.ports.priority?.(job)) deferred.add(job);
+              else if (++idle >= this.jobs.size) break;
+              continue;
+            }
+            idle = 0;
+            used += work;
+            if (job.corridor.phase === "done") {
+              job.output = job.corridor.path;
+              job.corridor = undefined;
+              outcome = "complete";
+            } else if (job.corridor.phase === "failed") job.corridor = undefined;
           } else if (job.search.phase === "done") {
             // The reconstructed path is ordinary storage, independent of the
             // arena, so it publishes before any slot reclamation.
@@ -546,22 +598,14 @@ export class RoutePlanner<T> {
             job.nextCandidate === 0 &&
             job.search.phase === "search" &&
             !job.search.nodes.size &&
-            budget - used >= CORRIDOR_RESERVE &&
+            budget - used >= 1024 &&
             (this.ports.corridorReady?.(job) ?? !!this.ports.priority?.(job))
           ) {
-            // An eligible request first tries the static HPA* corridor, which
-            // costs a few cluster crossings instead of a tile-level search of
-            // the whole map. Any failure resumes the exact search unchanged.
-            // It is attempted only with a reserve left, so one corridor query
-            // is the most a tick can exceed its allowance by.
+            // Preparation, graph search, refinement, validation and fallback
+            // cleanup all yield under the same fair work allowance.
             job.corridorTried = true;
-            const before = paths.work,
-              route = paths.hierarchical(job.start, job.goal, this.ports.blocked(job));
-            used += Math.max(1, paths.work - before);
-            if (route) {
-              job.output = [job.start, ...route];
-              outcome = "complete";
-            }
+            job.corridor = paths.beginCorridor(job.start, job.goal, job.search.nodes);
+            used++;
           } else {
             const search = paths.beginPlanning(
               this.workspace,

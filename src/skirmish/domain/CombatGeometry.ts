@@ -26,6 +26,7 @@ export class CombatGeometry {
     this.poses.set(s,value);return value;
   }
   envelope(s:Squad,tick:number) { return this.pose(s,tick).envelope; }
+  body(s:Squad,tick:number):PreparedFormationBody { return this.pose(s,tick).body; }
   contact(a:Squad,b:Squad,tick:number):FormationContact {
     return this.pose(a,tick).body.contact(this.pose(b,tick).body);
   }

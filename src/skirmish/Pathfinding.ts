@@ -1,6 +1,6 @@
 import { FlatBinaryHeap } from "../core/execution/utils/FlatBinaryHeap";
 import type { GameMap } from "../core/game/GameMap";
-import { HierarchicalPaths } from "./HierarchicalPaths";
+import { HierarchicalPaths, type CorridorState } from "./HierarchicalPaths";
 import { PathTopology, type PathMedium } from "./PathTopology";
 import {IncrementalPath,type IncrementalPathState} from "./IncrementalPath";
 import { PlanningPath, type PlanningPathState, type PlanningWorkspace } from "./PlanningWorkspace";
@@ -141,6 +141,17 @@ class TilePaths {
     const route = this.hierarchy.find(start, goal);
     if (!route || !route.length || route[route.length - 1] !== goal) return null;
     return this.routeClear([start, ...route], blocked) ? route : null;
+  }
+  beginCorridor(start:number,goal:number,nodes:Map<number,number>):CorridorState|undefined {
+    return this.hierarchy && this.connected(start,goal)?this.hierarchy.begin(start,goal,this.revision,nodes):undefined;
+  }
+  stepCorridor(state:CorridorState,workspace:PlanningWorkspace,budget:number,blocked?: (tile:number)=>boolean,preparationBudget=Infinity,preparation:{used:number}={used:0}):number {
+    if(!this.hierarchy)throw Error("Missing hierarchical route topology");
+    return this.hierarchy.step(state,workspace,budget,this.revision,blocked,preparationBudget,preparation);
+  }
+  validateCorridor(state:CorridorState,workspace:PlanningWorkspace):void {
+    if(!this.hierarchy)throw Error("Missing hierarchical route topology");
+    this.hierarchy.validate(state,workspace,this.revision);
   }
 
   /** Whether every cell of `path`, and both corner cells of each diagonal

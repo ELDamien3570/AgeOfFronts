@@ -22,7 +22,7 @@ import type {
 } from "./Protocol";
 import { BUILDING_RULES, MAX_FACTION_SHIPS } from "./Rules";
 import { MAX_SQUADS } from "./Protocol";
-import { packSnapshotDetails, unpackSnapshotDetails, validateSnapshotDetails } from "./SnapshotDetails";
+import { packSnapshotDetails, unpackSnapshotDetails, validateSnapshotDetails, SquadDetailCache } from "./SnapshotDetails";
 
 export type SnapshotSource = Omit<Snapshot, "buildings" | "squads" | "ships"> & {
   readonly buildings: readonly Building[];
@@ -100,6 +100,8 @@ function readOrder(input: Int32Array, at: number): Order {
 // Worker adapter: only presentation fields leave the authoritative domain.
 // Numeric buffers are transferred; ownership/construction changes are deltas.
 export class SnapshotEncoder {
+  private readonly detailCache=new SquadDetailCache();
+  get detailDiagnostics(){return this.detailCache.diagnostics;}
   private journal?: TileChangeJournal;
   private journalRevision = 0;
   readonly diagnostics = { tileReads: 0, squadReads: 0, shipReads: 0, buildingReads: 0,
@@ -112,6 +114,7 @@ export class SnapshotEncoder {
   private barrierJournal?: EntityChangeJournal;
   private barrierCursor = 0;
   private selectEntities(source: SnapshotSource, facts: ReplicatedEntities | undefined, reset: boolean) {
+    if(reset || !facts)this.detailCache.clear();
     const previous = this.entityCursors;
     const squadChanges = !reset && facts && previous?.squads === facts.squads.journal
       ? facts.squads.journal.since(previous.squadRevision) : undefined;
@@ -120,6 +123,8 @@ export class SnapshotEncoder {
     const buildingChanges = !reset && facts && previous?.buildings === facts.buildings.journal
       ? facts.buildings.journal.since(previous.buildingRevision) : undefined;
     const full = !squadChanges || !shipChanges || !buildingChanges;
+    if(full)this.detailCache.retain(new Set(source.squads.map(s=>s.id)));
+    else for(const change of squadChanges)if(change.removed)this.detailCache.forget(change.id);
     if (facts && full && !reset) this.diagnostics.entityFallbacks++;
     const dirtyRows = <T extends {readonly id: number}>(changes: {id: number; removed: boolean}[],
       lookup: (id: number) => T | undefined) => {
@@ -362,7 +367,7 @@ export class SnapshotEncoder {
       details: packSnapshotDetails(
         source.expansion ?? selected.squads.rows.some(s => s.planningPaused === true || s.movementStatus !== undefined || s.meleeStrike !== undefined || s.chargeImpact !== undefined || s.cavalryEngagement !== undefined || s.cavalryMelee !== undefined) ? selected.squads.rows : undefined,
         source.expansion ? selected.buildings.rows : undefined,
-        selected.ships.rows, source.volleys,
+        selected.ships.rows, source.volleys, facts ? this.detailCache : undefined,
       ),
       ships: [],
       volleys: [],
@@ -421,6 +426,11 @@ export class SnapshotDecoder {
           throw new Error("Barrier state has no geometry baseline");
     }
   }
+  /** Latest-state projection: consumers finish update synchronously and retain
+   * only the latest tile view. Entity interpolation captures scalar coordinates
+   * in RenderSamples, not historical ownership buffers. Use decode() for an
+   * independently owned snapshot that must survive later decoder updates. */
+  decodeLatest(packet:SnapshotPacket):Snapshot {return this.decode(packet,false);}
   decode(packet: SnapshotPacket,copyArrays=true,includeChangedTiles=true): Snapshot {
     if(packet.expansion && packet.formationRulesVersion!==FORMATION_RULES_VERSION)throw new Error('Unsupported formation rules version');
     this.validate(packet);

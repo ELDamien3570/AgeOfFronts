@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Late-game local performance</title>
+  </head>
+  <body>
+    <h1>Late-game local worker performance</h1>
+    <p>
+      Runs a restored Migration checkpoint. The default fixture starts at tick
+      6000; the fixture query parameter selects another exported checkpoint.
+      The pace query parameter uses the game's 50 ms interval. Simulation and
+      encoding are measured in a worker; projection is measured separately.
+      Rendering is excluded.
+    </p>
+    <button id="run">Run 600 ticks</button>
+    <pre id="result">Ready</pre>
+    <script type="module" src="./LateGamePerformance.ts"></script>
+  </body>
+</html>

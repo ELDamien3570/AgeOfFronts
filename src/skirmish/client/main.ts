@@ -42,9 +42,11 @@ import type {
 import { MAX_AI_OPPONENTS } from "../FactionRules";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 
+import { defaultUnit, UNIT } from "../content/Units";
 import { BUILDING_RULES } from "../Rules";
 
 import { SnapshotDecoder } from "../SnapshotCodec";
+import { LocalSnapshotStream } from "./LocalSnapshotStream";
 
 import { loadMap, MAPS } from "../Terrain";
 
@@ -508,16 +510,19 @@ async function start(): Promise<void> {
 
     worker = nextWorker;
 
-    const decoder = new SnapshotDecoder();
     let startingCameraPending = true;
+    let recoveryTimer: ReturnType<typeof setTimeout> | undefined;
+    let failed = false;
 
     const fail = (message: string) => {
       if (sequence !== matchSequence) return;
+      failed = true;
+      clearTimeout(recoveryTimer);
 
       element("loading").hidden = false;
 
       element("loading").innerHTML =
-        '<h2>Unable to start the skirmish</h2><p id="load-error"></p>';
+        '<h2>The skirmish stopped</h2><p id="load-error"></p>';
 
       element("load-error").textContent = message;
 
@@ -526,11 +531,17 @@ async function start(): Promise<void> {
       nextWorker.terminate();
     };
 
+    const decoder = new LocalSnapshotStream((error) => {
+      console.error("Local snapshot rejected; requesting a complete baseline", error);
+      nextWorker.postMessage({ type: "resync" } satisfies WorkerRequest);
+      recoveryTimer = setTimeout(() => fail("The game worker did not restore the match state within 5 seconds"), 5000);
+    });
+
     nextWorker.onerror = (event) =>
       fail(event.message || "The game worker could not start");
 
     nextWorker.onmessage = (event: MessageEvent<WorkerResponse>) => {
-      if (sequence !== matchSequence) return;
+      if (sequence !== matchSequence || failed) return;
 
       const message = event.data;
 
@@ -553,14 +564,30 @@ async function start(): Promise<void> {
       element("spawn-selection").hidden = true;
       element<HTMLButtonElement>("pause").disabled = false;
 
-      snapshot = decoder.decode(message.packet);
+      let received: Snapshot | undefined;
+      try {
+        received = browserDiagnostics.measure("decode", () => decoder.decode(message.packet));
+      } catch (error) {
+        console.error(`Local snapshot recovery failed at tick ${message.packet.tick}`, error);
+        fail(`Unable to restore the match at tick ${message.packet.tick}: ${error instanceof Error ? error.message : String(error)}`);
+        return;
+      }
+      if (!received) return;
+      clearTimeout(recoveryTimer);
+      snapshot = received;
       snapshot.localPlayerId=localPlayerId;
 
 
       paused = message.paused;
 
-      browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
-      localPresentation.update(snapshot);
+      try {
+        browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
+        localPresentation.update(snapshot);
+      } catch (error) {
+        console.error(`Local presentation failed at tick ${snapshot.tick}`, error);
+        fail(`Unable to display the match at tick ${snapshot.tick}: ${error instanceof Error ? error.message : String(error)}`);
+        return;
+      }
 
       groups.prune(snapshot);
 
@@ -1794,12 +1821,19 @@ canvas.addEventListener("pointerup", (event) => {
     if(!enemy && tile!==null && (building?.type==="trench"&&building.playerId===localPlayerId||barrier?.kind==="trench"&&barrier.playerId===localPlayerId)) {
       command({type:"occupy",playerId:localPlayerId,squadIds:[...renderer.selected],tile,append:start.shift});return;
     }
-    const structureOrder =
-      !enemy &&
-      (Boolean(building && building.playerId !== localPlayerId) ||
-        Boolean(barrier && barrier.playerId !== localPlayerId));
-    if (!enemy && tile === null) return;
+    const hasEnemyStructure = Boolean(
+      (building && building.playerId !== localPlayerId) ||
+      (barrier && barrier.playerId !== localPlayerId)
+    );
     const ids = [...renderer.selected];
+    const selectedSquads = ids.map(id => snapshot?.squads.find(s => s.id === id)).filter((s): s is NonNullable<typeof s> => !!s);
+    const siegeOnly = selectedSquads.length > 0 && selectedSquads.every(s => {
+      const u = s.definitionId ? UNIT.get(s.definitionId) : defaultUnit(s.kind);
+      return !u?.attack.targets.includes("infantry") && !u?.attack.targets.includes("cavalry") && !u?.attack.targets.includes("archer");
+    });
+    const structureOrder =
+      hasEnemyStructure && (!enemy || siegeOnly);
+    if (!enemy && !structureOrder && tile === null) return;
     const ordinary: Command = structureOrder ? {
         type: "attack-structure",
         playerId: localPlayerId,

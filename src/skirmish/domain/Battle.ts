@@ -1,6 +1,7 @@
 import type { GameMap } from "../../core/game/GameMap";
 import { effectiveRange, maxEffectiveRange, elevationRangeAt, rangedElevation, highGroundDamageModifier } from "./ElevationAdvantage";
 import { radians,formationDoctrine,formationSlots } from "./FormationGeometry";
+import { frontageLayout } from "./FormationProfiles";
 import { CONTACT } from "../content/TacticalRules";
 import { formationContact, formationPointContact, formationSweepEntry, formationFootprint, convexHull, contactParticipants, CONTACT_TOLERANCE } from "./FormationContact";
 import { contactPath } from './ContactFront';
@@ -711,7 +712,9 @@ export class Battle {
             this.world.updateSquad(squad.id,{cavalryEngagement:{phase:entering?'penetrating':'engaged',tick,untilTick:tick+CAVALRY_ENTRY.duration,
               targetIds:footTargets.slice(0,8).map(target=>target.id),
               originX:squad.x,originY:squad.y,goalX:squad.x+dx,goalY:squad.y+dy},
-              formation:squad.formation?{...squad.formation,shape:this.geometry.envelope(squad,tick).shape,transition:undefined}:undefined});
+              formation:squad.formation?{...squad.formation,shape:this.geometry.envelope(squad,tick).shape,
+                frontage:squad.formation.frontage===undefined?undefined:frontageLayout(squad.troops,formationDoctrine(squad.definitionId),this.geometry.envelope(squad,tick).shape,squad.formation.frontage)?.width,
+                transition:undefined}:undefined});
           }
           this.world.updateSquad(squad.id, { charge: { ...squad.charge, phase: "recovery" },
             ...(receiving&&isCavalryTroopClass(definition.troopClass)?{formation:squad.formation}:{}) });
@@ -1416,7 +1419,8 @@ export class Battle {
         }
         const structuralDamage = (health:number,distance:number) => Math.ceil(health*(distance<=radius*0.8 ? 1 : 1-(distance/radius-0.8)*0.5));
         for (const body of this.nearbyStructures.filter(inside).sort((a,b)=>a.id-b.id)) {
-          const building=this.structureById.get(body.id)!;
+          const building=this.structureById.get(body.id);
+          if (!building || (building.health ?? 1) <= 0) continue;
           this.structuralHit(building,p.playerId,p.sourceId,structuralDamage(building.maxHealth??building.health??1200,Math.sqrt(this.distance(body,p))),p.sourceKind);
         }
         for (const wall of this.forts.nearbyBarriers(p.x,p.y,radius)) {
@@ -1494,7 +1498,8 @@ export class Battle {
                 )),
         )
         .sort((a, b) => a.id - b.id)) {
-        const b = this.structureById.get(body.id)!;
+        const b = this.structureById.get(body.id);
+        if (!b || (b.health ?? 1) <= 0) continue;
         const hit = Math.min(
           budget,
           hitDamage(scaled(this.position(b)), STRUCTURE_DEFENCE),

@@ -288,10 +288,66 @@ describe("authoritative recruitment queues", () => {
     }
     expect(restored.snapshot()).toEqual(original.snapshot());
   });
-  it("uses Shift for five recruits only outside WASD mode and removes transport recruitment", () => {
-    expect(recruitmentBatch(true, false)).toBe(5);
-    expect(recruitmentBatch(false, false)).toBe(1);
-    expect(recruitmentBatch(true, true)).toBe(1);
-    expect(NAVAL_RECRUITMENT).toEqual([{ kind: "warship", key: "B" }]);
+  it("recruits units strictly onto adjacent cells around the recruitment barracks", () => {
+    const m = game();
+    const barracks = m.buildings.find(b => b.type === "barracks")!;
+    // Recruit a squad instantly
+    expect(m["recruit"](m.players[0], barracks.id, "stoneage-infantry", "instant")).toBeNull();
+    const squad = m.squads.find(s => s.playerId === 1 && s.troops > 0);
+    expect(squad).toBeDefined();
+    const squadTile = m.tileOf(squad!);
+    const sx = m.map.x(squadTile), sy = m.map.y(squadTile);
+    const bx = m.map.x(barracks.tile), by = m.map.y(barracks.tile);
+    // Footprint is 2x2: x in [bx, bx+1], y in [by, by+1]
+    // Adjacent reserved border: sx in [bx-1, bx+2], sy in [by-1, by+2], not inside [bx, bx+1] x [by, by+1]
+    expect(sx).toBeGreaterThanOrEqual(bx - 1);
+    expect(sx).toBeLessThanOrEqual(bx + 2);
+    expect(sy).toBeGreaterThanOrEqual(by - 1);
+    expect(sy).toBeLessThanOrEqual(by + 2);
+    console.log({ sx, sy, bx, by, bounds: m.map ? { left: bx, right: bx+2, top: by, bottom: by+2 } : null });
+    expect(inside).toBe(false);
+  });
+
+  it("converts recruited units to transport vessels when spawned onto adjacent water cells", () => {
+    const terrain = new Uint8Array(80 * 60).fill(133);
+    const m = new Skirmish(new GameMapImpl(80, 60, terrain, terrain.length), {
+      seed: 42,
+      aiCount: 1,
+      tribes: false,
+      runAi: false,
+      ruleset: "ages-v1",
+    });
+    const player = m.players[0];
+    player.reserves = 100000;
+    player.gold = 100000;
+    const bTile = m.map.ref(20, 20);
+    // Setup barracks at (20, 20). Surrounding cells: all water except the barracks footprint.
+    const bx = 20, by = 20;
+    for (let dy = -1; dy <= 2; dy++) {
+      for (let dx = -1; dx <= 2; dx++) {
+        const t = m.map.ref(bx + dx, by + dy);
+        if (dx >= 0 && dx < 2 && dy >= 0 && dy < 2) {
+          m.owners[t] = player.id;
+          terrain[t] = 133; // Land
+        } else {
+          terrain[t] = 0; // Water
+        }
+      }
+    }
+    const barracks = m.addBuilding({
+      id: 9005,
+      playerId: player.id,
+      type: "barracks",
+      tile: bTile,
+      age: "StoneAge",
+      remainingTicks: 0,
+    });
+    expect(m["recruit"](player, barracks.id, "stoneage-infantry", "instant")).toBeNull();
+    const squad = m.squads.find(s => s.playerId === player.id);
+    expect(squad).toBeDefined();
+    expect(m.map.isWater(m.tileOf(squad!))).toBe(true);
+    expect(squad!.afloat).not.toBeNull();
+    expect(squad!.afloat!.hull).toBeGreaterThan(0);
+    expect(squad!.afloat!.vesselId).toBeDefined();
   });
 });

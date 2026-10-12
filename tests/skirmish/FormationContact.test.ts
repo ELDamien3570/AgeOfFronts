@@ -6,6 +6,7 @@ import { UNIT } from "../../src/skirmish/content/Units";
 import { CONTACT } from '../../src/skirmish/content/TacticalRules';
 import {
   certifyFootprint,
+  convexHull,
   contactParticipants,
   formationApproach,
   formationContact,
@@ -15,6 +16,7 @@ import {
   createFormation,
   facingOf,
   formationEnvelope,
+  formationDoctrine,
   formationSlots,
   TURN,
 } from "../../src/skirmish/domain/FormationGeometry";
@@ -75,6 +77,20 @@ function match(id = "bronzeage-infantry") {
   };
 }
 describe("formation boundary engagement", () => {
+  it("retains the exact soldier-corner hull for singleton, partial and full bodies", () => {
+    const { a } = match("earlymedieval-heavycavalry");
+    for (const troops of [1, 2, 11, 40, 144]) {
+      for (const shape of ["mass", "wedge", "line", "square"] as const) {
+        const body = { ...a, troops, formation: { ...a.formation!, shape, facing: TURN / 8 } };
+        const doctrine = formationDoctrine(body.definitionId);
+        const local = convexHull(formationSlots(body, 0).flatMap(p =>
+          [-1, 1].flatMap(x => [-1, 1].map(y => ({ x: p.x + x * doctrine.bodyWidth / 2, y: p.y + y * doctrine.bodyDepth / 2 })))))
+        const angle = formationEnvelope(body, 0).angle, c = Math.cos(angle), sin = Math.sin(angle);
+        const reference = local.map(p => ({ x: body.x + p.x * c - p.y * sin, y: body.y + p.x * sin + p.y * c }));
+        expect(formationFootprint(body, 0)).toEqual(reference);
+      }
+    }
+  });
   it("stops wide, rotated, column and wedge bodies at weapon reach rather than centre reach", () => {
     const f = match("earlymedieval-heavycavalry");
     for (const shape of ["mass", "column", "wedge"] as const)

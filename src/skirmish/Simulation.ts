@@ -60,6 +60,7 @@ import { PhaseSpatialViews, type SpatialPhase } from "./PhaseSpatialViews";
 import { StructureAttackPreparation } from "./domain/StructureAttackPreparation";
 import { ConquestCredit, DamageLedger } from "./Conquest";
 import { buildingTerrainRejection, constructionRejection } from "./Construction";
+import { buildingGroundBounds } from "./BuildingFootprint";
 import { buildingCostMultiplier, buildingTicks, buildingIntegrity } from "./content/Buildings";
 import { defaultUnit, UNIT, VESSEL, VESSELS } from "./content/Units";
 import { STARTING_AGE_TROOPS, baseReserveIncome, cityReserveIncome } from "./content/Economy";
@@ -340,7 +341,7 @@ export class Skirmish {
   private readonly buildingChanges = new EntityChangeJournal();
   private readonly squadEntities = new EntityCollection<Squad>({
     added: squad => { this.squadIndex.add(squad); this.squadChanges.record(squad.id, "add"); this.landingSpatial?.observe(squad); },
-    changed: squad => { this.squadIndex.changed(squad); this.squadChanges.record(squad.id, "change"); this.landingSpatial?.observe(squad); },
+    changed: (squad,fields) => { const spatialChanged=this.squadIndex.changed(squad,fields); this.squadChanges.record(squad.id, "change"); if(spatialChanged)this.landingSpatial?.observe(squad); },
     removed: id => {
       this.squadIndex.remove(id); this.squadChanges.record(id, "remove"); this.landingSpatial?.remove(id);
       this.navigationProgress.delete(id); this.detours.delete(id);
@@ -625,7 +626,10 @@ export class Skirmish {
     this.movementAdmission.start(playerId, squads, pointTile(this.map, first), this.tick, points, false, target);
   }
   prepareStructureAttack(playerId: number, squads: readonly Squad[], target: NonNullable<Squad["structureTarget"]>): string | null {
-    const tiles = target.buildingId === undefined ? this.expansion!.fortifications.barrier(target.barrierId!)!.tiles : [this.building(target.buildingId)!.tile];
+    const building = target.buildingId === undefined ? undefined : this.building(target.buildingId);
+    const wall = target.barrierId === undefined ? undefined : this.expansion?.fortifications.barrier(target.barrierId);
+    const tiles = building ? [building.tile] : wall?.tiles;
+    if (!tiles || !tiles.length) return "Target structure not found";
     const state = StructureAttackPreparation.create(playerId, squads.map(squad => ({ id: squad.id, kind: squad.kind,
       range: this.expansion!.unit(squad).attack.range, elevationEligible:this.expansion!.unit(squad).attack.perSoldier===true&&this.expansion!.unit(squad).attack.channel==="ranged", origin: { x: squad.x, y: squad.y } })), target);
     return this.movementAdmission.startStructure(playerId, squads, tiles[0], this.tick, state);
@@ -833,8 +837,9 @@ export class Skirmish {
         if (structureTarget && this.expansion) {
           const building = structureTarget.buildingId === undefined ? undefined : this.building(structureTarget.buildingId),
             wall = structureTarget.barrierId === undefined ? undefined : this.expansion.fortifications.barrier(structureTarget.barrierId), target = building ?? wall;
-          if (!target || (target.health ?? 1) <= 0 || !this.hostile(squad.playerId, target.playerId) ||
-            !structureAim({...squad,...point}, building ? [building.tile] : wall!.tiles, elevationRangeAt(this,point,this.expansion.unit(squad).attack),
+          const targetTiles = building ? [building.tile] : wall?.tiles;
+          if (!target || !targetTiles || (target.health ?? 1) <= 0 || !this.hostile(squad.playerId, target.playerId) ||
+            !structureAim({...squad,...point}, targetTiles, elevationRangeAt(this,point,this.expansion.unit(squad).attack),
               squad.playerId, map.width(), this.expansion.fortifications,this.tick)) return false;
         }
         const nearby:Squad[]=[];this.spatial.query(point.x,point.y,2*FIXED,nearby);
@@ -1695,13 +1700,25 @@ export class Skirmish {
       return null;
     }
     const candidates: number[] = [];
-    this.eachInRadius(building.tile, BASE_RADIUS - 1, (tile) => {
-      if (
-        this.owners[tile] === player.id &&
-        this.paths.connected(tile, building.tile)
-      )
-        candidates.push(tile);
-    });
+    const isWater = (t: number) => this.map.isWater(t);
+    const bounds = buildingGroundBounds(this.map, building.tile, building.type);
+    const left = bounds.left - 1, right = bounds.right, top = bounds.top - 1, bottom = bounds.bottom;
+    for (let y = top; y <= bottom; y++) {
+      for (let x = left; x <= right; x++) {
+        if (x >= bounds.left && x < bounds.right && y >= bounds.top && y < bounds.bottom) continue;
+        if (!this.map.isValidCoord(x, y)) continue;
+        const tile = this.map.ref(x, y);
+        if (isWater(tile)) {
+          if (this.waterPaths.walkable(tile)) candidates.push(tile);
+        } else {
+          if (
+            this.owners[tile] === player.id &&
+            this.paths.connected(tile, building.tile)
+          )
+            candidates.push(tile);
+        }
+      }
+    }
     let best = -1,
       score = -Infinity;
     this.movementLand();
@@ -1710,11 +1727,14 @@ export class Skirmish {
     const nearbyRecruit: Squad[] = [];
     const recruitGeometry = { kind, playerId: player.id };
     for (const tile of candidates) {
+      if (this.buildingsAt(tile).length > 0) continue;
+      if (this.expansion?.fortifications.blocked(tile, player.id) || this.expansion?.fortifications.intactWallAt(tile)) continue;
       const point = tilePoint(this.map, tile),
         radius = squadRadius(kind);
       this.spatial.query(point.x,point.y,2*squadRadius("cavalry")+COLLISION_SKIN,nearbyRecruit,player.id);
+      const onWater = isWater(tile);
       if (
-        !standable(this.map, point, radius) ||
+        (!onWater && !standable(this.map, point, radius)) ||
         nearbyRecruit.some(
           (s) =>
             distanceSquared(point, s) <
@@ -1879,13 +1899,16 @@ export class Skirmish {
     return certifyFootprint(this.map,head,tile=>!!this.expansion&&(this.expansion.fortifications.blocked(tile,s.playerId)||this.expansion.fortifications.intactWallAt(tile)),true);
   }
   private columnCertificates=new WeakMap<object,{x:number;y:number;troops:number;capacity:number;environment:string}>();
+  private movementBody(s: Squad) {
+    return this.facingGeometry.body(s, this.tick);
+  }
   private columnCertificate(s:Squad){return {x:s.x,y:s.y,troops:s.troops,capacity:s.manpower?.capacity??s.troops,environment:this.routingObstacleRevision(s.playerId)};}
   private formationMoveClear(s:Squad,end:WorldPoint):boolean {
     // An unchanged root introduces no new swept occupancy.
     if(s.x===end.x && s.y===end.y)return true;
     if(s.formation?.transition && s.formation.shape!=="column" && !COLUMN_TRAVEL.movingDeploy && !movingFormationReform(s))return false;
     if(s.formation?.transition){
-      const from=formationFootprint(s,this.tick),proposed={...s,...end},to=[...formationFootprint(proposed,this.tick),...formationFootprint(proposed,this.tick+1)],t=s.formation.transition;
+      const from=this.movementBody(s).footprint(),proposed={...s,...end},to=[...formationFootprint(proposed,this.tick),...formationFootprint(proposed,this.tick+1)],t=s.formation.transition;
       if(this.tick+1>=t.startTick+t.duration)to.push(...formationFootprint({...proposed,formation:{...s.formation,transition:undefined}},this.tick+1));
       const angle=Math.abs(formationEnvelope(s,this.tick+1).angle-formationEnvelope(s,this.tick).angle),radius=formationEnvelope(s,this.tick).broadRadius;
       const skin=Math.ceil(radius*(1-Math.cos(angle/2))+radius*angle*angle/4)+2;
@@ -1902,18 +1925,20 @@ export class Skirmish {
       const layout=columnLayout(doctrine),proofRadius=(layout.columns-1)*layout.spacing/2+layout.radius+3;
       const reuse=certificate && certificate.x===current.x && certificate.y===current.y && certificate.troops===current.troops && certificate.capacity===current.capacity && certificate.environment===current.environment &&
         proofRadius<=radius*Math.cos(Math.PI/16) && (proposed.formation.trail?.length??0)<256;
-      let from:ReturnType<typeof formationFootprints>|undefined,to:ReturnType<typeof formationFootprints>|undefined;
+      let from:ReturnType<typeof formationFootprints>|undefined,to:ReturnType<typeof formationFootprints>|undefined,sweeps:ReturnType<typeof formationFootprints>|undefined;
       if(reuse){
         // Rows stay inside the previously certified carrier trail. Only the new
         // head segment needs a terrain/wall sweep while its revision is unchanged.
         const head=convexHull([s,end].flatMap(p=>Array.from({length:16},(_,i)=>({x:p.x+Math.cos(i*Math.PI/8)*radius,y:p.y+Math.sin(i*Math.PI/8)*radius}))));
         if(!this.certifyFormationPolygon(s,head,"hold"))return false;
       }else{
-        from=formationFootprints(s,this.tick);to=formationFootprints(proposed,this.tick);
+        from=this.movementBody(s).footprints();to=formationFootprints(proposed,this.tick);
+        sweeps=[];
         for(let i=0;i<to.length;i++){
           const previous=from[i]??to[i],a=previous.reduce((p,q)=>({x:p.x+q.x/previous.length,y:p.y+q.y/previous.length}),{x:0,y:0}),b=to[i].reduce((p,q)=>({x:p.x+q.x/to![i].length,y:p.y+q.y/to![i].length}),{x:0,y:0});
           if(Math.hypot(a.x-b.x,a.y-b.y)>Math.hypot(dx,dy)+FIXED*.5+2)return false;
-          if(!this.certifyFormationPolygon(s,convexHull([...previous,...to[i]]),"hold"))return false;
+          const sweep=convexHull([...previous,...to[i]]);sweeps.push(sweep);
+          if(!this.certifyFormationPolygon(s,sweep,"hold"))return false;
         }
       }
       const nearby:Squad[]=[];
@@ -1921,13 +1946,14 @@ export class Skirmish {
       this.spatial.queryOverlaps(end.x,end.y,depth+FIXED,nearby,s.playerId);
       for(const enemy of nearby){
         if(enemy.embarkedOn!==null || enemy.afloat || !enemy.formation || !this.hostile(s.playerId,enemy.playerId))continue;
-        from??=formationFootprints(s,this.tick);to??=formationFootprints(proposed,this.tick);
+        from??=this.movementBody(s).footprints();to??=formationFootprints(proposed,this.tick);
         const bodies=formationFootprints(enemy,this.tick);
-        if(to.some((p,i)=>bodies.some(b=>polygonsOverlap(convexHull([...(from![i]??p),...p]),b))) && !from.some(p=>bodies.some(b=>polygonsOverlap(p,b))))return false;
+        sweeps??=to.map((p,i)=>convexHull([...(from![i]??p),...p]));
+        if(sweeps.some(p=>bodies.some(b=>polygonsOverlap(p,b))) && !from.some(p=>bodies.some(b=>polygonsOverlap(p,b))))return false;
       }
       return true;
     }
-    const from=formationFootprint(s,this.tick),to=formationFootprint({...s,...end},this.tick),sweep=convexHull([...from,...to]);
+    const from=this.movementBody(s).footprint(),to=formationFootprint({...s,...end},this.tick),sweep=convexHull([...from,...to]);
     if(!this.certifyFormationPolygon(s,sweep,"hold"))return false;
     const nearby:Squad[]=[];
     this.spatial.queryOverlaps(end.x,end.y,formationEnvelope(s,this.tick).broadRadius+Math.hypot(end.x-s.x,end.y-s.y),nearby,s.playerId);
@@ -2117,6 +2143,9 @@ export class Skirmish {
     const definition=this.expansion ? UNIT.get(definitionId??defaultUnit(kind).id)! : undefined;
     const manpower=definition?createManpower(definition,variant):undefined;
     if (consumeReserves) player.reserves -= definition ? scaledRecipeCost(definition,variant).reserves! : SQUAD_TROOPS;
+    const onWater = this.map.isWater(tile);
+    const vessel = onWater ? (this.transportVessel(player.id) ?? FALLBACK_TRANSPORT) : undefined;
+    const afloat = vessel ? { hull: vessel.health, maxHull: vessel.health, vesselId: vessel.id } : null;
     const recruited = this.addSquad({
       id: this.nextId++,
       playerId: player.id,
@@ -2137,6 +2166,7 @@ export class Skirmish {
           }
         : {}),
       embarkedOn: null,
+      afloat,
       lastCombatTick: -REPLENISH_DELAY,
       moved: false,
       firingCharge: 0,

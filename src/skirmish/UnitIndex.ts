@@ -2,6 +2,30 @@ import type { Ship, Squad } from "./Protocol";
 import { physicalGeometryKey } from "./domain/FormationGeometry";
 
 type Unit = Squad | Ship;
+const PHYSICAL_FIELDS = new Set<string>([
+  "x",
+  "y",
+  "playerId",
+  "kind",
+  "definitionId",
+  "troops",
+  "health",
+  "embarkedOn",
+  "afloat",
+  "formation",
+  "manpower",
+  "charge",
+]);
+function physicalWrite(fields: Readonly<Partial<Unit>> | keyof Unit): boolean {
+  if (typeof fields === "string") return PHYSICAL_FIELDS.has(fields);
+  for (const key in fields)
+    if (
+      Object.prototype.hasOwnProperty.call(fields, key) &&
+      PHYSICAL_FIELDS.has(key)
+    )
+      return true;
+  return false;
+}
 interface Facts {
   x: number;
   y: number;
@@ -159,23 +183,54 @@ export class UnitIndex<T extends Unit> {
     this.spatialRevision++;
     this.counters.incrementalUpdates++;
   }
-  changed(record: T): void {
+  changed(record: T, fields?: Readonly<Partial<T>> | keyof T): boolean {
     const before = this.facts.get(record.id);
     if (!before || this.records.get(record.id) !== record)
       throw new Error("Unowned unit change");
+    // The owner supplies the actual write domain. Motion/status/order updates
+    // still advance dynamic replication, but cannot change physical facts.
+    if (
+      fields !== undefined &&
+      !physicalWrite(fields as Readonly<Partial<Unit>> | keyof Unit)
+    ) {
+      this.dynamicRevision++;
+      this.counters.incrementalUpdates++;
+      return false;
+    }
     const alive = "troops" in record ? record.troops > 0 : record.health > 0;
     const carrier = "embarkedOn" in record ? record.embarkedOn : null;
-    const afloat="afloat" in record && !!record.afloat;
-    const geometryInputsChanged = "troops" in record && (before.troops!==record.troops || before.capacity!==record.manpower?.capacity ||
-      before.variant!==record.manpower?.variant || before.formation!==record.formation || before.chargePhase!==record.charge?.phase || before.definition!==record.definitionId);
-    const geometry = geometryInputsChanged ? physicalGeometryKey(record as Squad) : before.geometry;
+    const afloat = "afloat" in record && !!record.afloat;
+    const geometryInputsChanged =
+      "troops" in record &&
+      (before.troops !== record.troops ||
+        before.capacity !== record.manpower?.capacity ||
+        before.variant !== record.manpower?.variant ||
+        before.formation !== record.formation ||
+        before.chargePhase !== record.charge?.phase ||
+        before.definition !== record.definitionId);
+    const geometry = geometryInputsChanged
+      ? physicalGeometryKey(record as Squad)
+      : before.geometry;
     const geometryChanged = before.geometry !== geometry;
-    const spatialChanged=before.x !== record.x || before.y !== record.y || before.owner !== record.playerId ||
-      before.kind !== record.kind || before.alive !== alive || before.carrier !== carrier || before.afloat!==afloat || geometryChanged || before.definition!==record.definitionId;
-    if(spatialChanged)this.spatialRevision++;
-    const after = before.owner !== record.playerId || before.kind !== record.kind ||
-      before.definition !== record.definitionId || before.alive !== alive || before.carrier !== carrier
-      ? this.describe(record, before.ordinal) : before;
+    const spatialChanged =
+      before.x !== record.x ||
+      before.y !== record.y ||
+      before.owner !== record.playerId ||
+      before.kind !== record.kind ||
+      before.alive !== alive ||
+      before.carrier !== carrier ||
+      before.afloat !== afloat ||
+      geometryChanged ||
+      before.definition !== record.definitionId;
+    if (spatialChanged) this.spatialRevision++;
+    const after =
+      before.owner !== record.playerId ||
+      before.kind !== record.kind ||
+      before.definition !== record.definitionId ||
+      before.alive !== alive ||
+      before.carrier !== carrier
+        ? this.describe(record, before.ordinal)
+        : before;
     if (
       before.owner !== after.owner ||
       before.kind !== after.kind ||
@@ -195,13 +250,21 @@ export class UnitIndex<T extends Unit> {
       this.cargoRevision++;
     }
     this.facts.set(record.id, after);
-    after.afloat=afloat;
-    if(spatialChanged)after.poseRevision=this.spatialRevision;
-    if("troops" in record){after.troops=record.troops;after.capacity=record.manpower?.capacity;after.variant=record.manpower?.variant;after.formation=record.formation;after.geometry=geometry;after.chargePhase=record.charge?.phase;}
+    after.afloat = afloat;
+    if (spatialChanged) after.poseRevision = this.spatialRevision;
+    if ("troops" in record) {
+      after.troops = record.troops;
+      after.capacity = record.manpower?.capacity;
+      after.variant = record.manpower?.variant;
+      after.formation = record.formation;
+      after.geometry = geometry;
+      after.chargePhase = record.charge?.phase;
+    }
     after.x = record.x;
     after.y = record.y;
     this.dynamicRevision++;
     this.counters.incrementalUpdates++;
+    return spatialChanged;
   }
   remove(id: number): void {
     const facts = this.facts.get(id);

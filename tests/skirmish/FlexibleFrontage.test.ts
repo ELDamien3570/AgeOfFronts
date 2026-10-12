@@ -3,7 +3,8 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import { UNIT, UNITS } from "../../src/skirmish/content/Units";
 import { FIXED, type Squad } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
-import { createManpower } from "../../src/skirmish/domain/Manpower";
+import { DamageLedger } from "../../src/skirmish/Conquest";
+import { createManpower, HEALTH_SCALE } from "../../src/skirmish/domain/Manpower";
 import { createFormation, formationDoctrine, formationEnvelope, formationSlots, validateFormation } from "../../src/skirmish/domain/FormationGeometry";
 import { formationProfile, frontageCandidates, frontageLayout, frontageSummary } from "../../src/skirmish/domain/FormationProfiles";
 import { layoutBattleLine } from "../../src/skirmish/domain/BattleLineLayout";
@@ -23,6 +24,42 @@ function fixture(count=72) {
   return {game,s:game.squad(s.id)!,map,options};
 }
 describe("bounded flexible frontage",()=>{
+  it("replicates and restores a casualty during an interpolated 238-unit reform",()=>{
+    const {game,s,map,options}=fixture(12),unit=UNIT.get("stoneage-infantry")!;
+    game.updateSquad(s.id,{definitionId:unit.id,kind:unit.line,manpower:createManpower(unit),formation:{...createFormation(unit.id),layoutTroops:12}});
+    const slots=formationSlots(s,0),halfWidth=Math.max(...slots.map(p=>Math.abs(p.x)));
+    const fromSlots=slots.map(p=>({...p,x:Math.round(p.x*87/halfWidth)}));
+    game.updateSquad(s.id,{formation:{...s.formation!,transition:{from:"mass",fromFacing:0,fromSlots,startTick:17,duration:20}}});
+    game.tick=17;
+    expect(formationEnvelope(s,game.tick).width).toBe(238);
+    const encoder=new SnapshotEncoder(),decoder=new SnapshotDecoder();
+    decoder.decodeLatest(encoder.encode(game.replicationSource(),game.tileChanges,game.replicationFacts()));
+    const hits=new DamageLedger();hits.add(s.id,2,s.manpower!.hp/HEALTH_SCALE);
+    game.resolveLandDamage(hits);
+    expect(s.troops).toBe(11);
+    expect(s.formation!.frontage).toBeLessThanOrEqual(238);
+    expect(()=>decoder.decodeLatest(encoder.encode(game.replicationSource(),game.tileChanges,game.replicationFacts()))).not.toThrow();
+    const saved=game.checkpoint(),restored=new Skirmish(map,options);
+    expect(()=>restored.restore(saved)).not.toThrow();
+    expect(restored.squad(s.id)!.formation).toEqual(s.formation);
+  });
+  it("keeps casualty ceilings consistent with unbounded decoding and restore",()=>{
+    const d=formationDoctrine("stoneage-infantry");
+    const next=frontageLayout(11,d,"mass",238,238)!;
+    expect(next.width).toBeLessThanOrEqual(238);
+    expect(frontageLayout(11,d,"mass",next.width)!.width).toBe(next.width);
+    expect(()=>validateFormation({...createFormation("stoneage-infantry"),layoutTroops:11,frontage:next.width},"stoneage-infantry",11)).not.toThrow();
+  });
+  it("round trips every casualty-ceiling result across authored soldier profiles",()=>{
+    for(const u of UNITS){if(u.formationRecipe?.model!=="soldiers")continue;
+      const d=formationDoctrine(u.id);
+      for(const shape of d.shapes)for(let n=1;n<=144;n++)for(const ceiling of [238,255,383,511,767,1023]){
+        const layout=frontageLayout(n,d,shape,ceiling,ceiling);if(!layout)continue;
+        expect(layout.width).toBeLessThanOrEqual(ceiling);
+        expect(frontageLayout(n,d,shape,layout.width)?.width,`${u.id} ${shape} ${n} ${ceiling}`).toBe(layout.width);
+      }
+    }
+  });
   it("projects casualty width downward across a gap between legal profile bands",()=>{
     // A fixed geometry fixture keeps this interval-gap regression independent
     // of authored soldier-size changes.

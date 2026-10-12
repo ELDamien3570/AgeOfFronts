@@ -6,7 +6,7 @@ export class EntityCollection<T extends { readonly id: number }> {
   constructor(
     private readonly hooks: {
       added(record: T): void;
-      changed(record: T): void;
+      changed(record: T, fields?: Readonly<Partial<T>> | keyof T): void;
       removed(id: number): void;
       restored(records: readonly T[]): void;
     },
@@ -42,7 +42,7 @@ export class EntityCollection<T extends { readonly id: number }> {
     const record = this.records.get(id);
     if (!record || Object.is(record[key], value)) return record;
     record[key] = value;
-    this.hooks.changed(record);
+    this.hooks.changed(record, key);
     return record;
   }
   private apply(
@@ -63,7 +63,7 @@ export class EntityCollection<T extends { readonly id: number }> {
     for (const key in changes) if (Object.prototype.hasOwnProperty.call(changes, key) && !Object.is(record[key as keyof T], changes[key as keyof typeof changes])) { changed = true; break; }
     if (!changed) return record;
     Object.assign(record, copy && containers ? structuredClone(changes) : changes);
-    this.hooks.changed(record);
+    this.hooks.changed(record, changes as Partial<T>);
     return record;
   }
   remove(id: number): boolean {

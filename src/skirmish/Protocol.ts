@@ -566,6 +566,7 @@ export type WorkerRequest =
   | { type: "command"; command: Command }
   | { type: "select-spawn"; tile: number }
   | { type: "pause"; paused: boolean }
+  | { type: "resync" }
   | { type: "speed"; speed: 1 | 2 | 4 };
 
 export type WorkerResponse =

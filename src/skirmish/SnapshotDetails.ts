@@ -71,14 +71,105 @@ const boolean = (value: boolean | undefined) =>
 const readBoolean = (value: number) =>
   Number.isNaN(value) ? undefined : !!value
 
+/** Encoder-owned reuse. Owned nested domain values are immutable; scalar
+ * records are not, so every serialized input is captured explicitly. */
+const SQUAD_DETAIL_KEYS = [
+  "stance",
+  "lastWithdrawTick",
+  "occupancy",
+  "chargeStrength",
+  "manpower",
+  "refitVariant",
+  "weaponState",
+  "formation",
+  "meleeStrike",
+  "combatFact",
+  "chargeImpact",
+  "cavalryEngagement",
+  "cavalryMelee",
+];
+const SQUAD_DETAIL_PREFIXES = SQUAD_DETAIL_KEYS.map((key) => `"${key}":`);
+export class SquadDetailCache {
+  private readonly rows = new Map<
+    number,
+    { inputs: readonly unknown[]; parts: (string | undefined)[]; value: string }
+  >();
+  readonly diagnostics = { hits: 0, misses: 0, fieldHits: 0, fieldMisses: 0 };
+  clear(): void {
+    this.rows.clear();
+  }
+  forget(id: number): void {
+    this.rows.delete(id);
+  }
+  retain(ids: ReadonlySet<number>): void {
+    for (const id of this.rows.keys()) if (!ids.has(id)) this.rows.delete(id);
+  }
+  encode(s: Snapshot["squads"][number]): string | undefined {
+    if (
+      !(
+        s.stance ||
+        s.occupancy ||
+        s.manpower ||
+        s.combatFact ||
+        s.meleeStrike ||
+        s.chargeImpact ||
+        s.cavalryEngagement ||
+        s.cavalryMelee ||
+        s.charge?.strength !== undefined
+      )
+    )
+      return undefined;
+    const inputs = [
+      s.stance,
+      s.lastWithdrawTick,
+      s.occupancy,
+      s.charge?.strength,
+      s.manpower,
+      s.refit?.recipeVariant,
+      s.weaponState,
+      s.formation,
+      s.meleeStrike,
+      s.combatFact,
+      s.chargeImpact,
+      s.cavalryEngagement,
+      s.cavalryMelee,
+    ];
+    const old = this.rows.get(s.id);
+    if (old && inputs.every((value, i) => Object.is(value, old.inputs[i]))) {
+      this.diagnostics.hits++;
+      return old.value;
+    }
+    const parts = inputs.map((input, i) => {
+      if (old && Object.is(input, old.inputs[i])) {
+        this.diagnostics.fieldHits++;
+        return old.parts[i];
+      }
+      this.diagnostics.fieldMisses++;
+      return JSON.stringify(input);
+    });
+    let value = "{",
+      separator = "";
+    for (let i = 0; i < parts.length; i++)
+      if (parts[i] !== undefined) {
+        value += separator + SQUAD_DETAIL_PREFIXES[i] + parts[i];
+        separator = ",";
+      }
+    value += "}";
+    this.rows.set(s.id, { inputs, parts, value });
+    this.diagnostics.misses++;
+    return value;
+  }
+}
 export function packSnapshotDetails(
   squads: readonly Snapshot["squads"][number][] | undefined,
   buildings: readonly Building[] | undefined,
   ships: readonly Snapshot["ships"][number][],
   volleys: readonly ArcherVolley[],
+  cache?:SquadDetailCache,
 ): PackedSnapshotDetails {
   const strings: string[] = [],
     stringIds = new Map<string, number>()
+  const detailCache=cache??new SquadDetailCache();
   const string = (value: string | undefined) => {
     if (value === undefined) return NaN;
     let id = stringIds.get(value);
@@ -130,7 +221,7 @@ export function packSnapshotDetails(
       b[at + 5] = number(s.lastAttackTick)
       b[at + 27] = number(s.magazineShots);
       b[at + 28] = number(s.reloadStartedTick);
-      b[at + 29] = string(s.stance || s.occupancy || s.manpower || s.combatFact || s.meleeStrike || s.chargeImpact || s.cavalryEngagement || s.cavalryMelee || s.charge?.strength!==undefined ? JSON.stringify({stance:s.stance,lastWithdrawTick:s.lastWithdrawTick,occupancy:s.occupancy,chargeStrength:s.charge?.strength,manpower:s.manpower,refitVariant:s.refit?.recipeVariant,weaponState:s.weaponState,formation:s.formation,meleeStrike:s.meleeStrike,combatFact:s.combatFact,chargeImpact:s.chargeImpact,cavalryEngagement:s.cavalryEngagement,cavalryMelee:s.cavalryMelee}) : undefined);
+      b[at + 29] = string(detailCache.encode(s));
       b[at + 6] = boolean(s.planningPaused)
       b[at + 7] = s.movementStatus
         ? reasons.indexOf(s.movementStatus.reason)

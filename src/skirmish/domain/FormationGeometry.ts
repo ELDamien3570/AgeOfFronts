@@ -541,7 +541,7 @@ export function validateFormation(
     if(width===undefined)continue;
     if(!Number.isSafeInteger(width)||width<=0||width>128*FIXED||!formationProfile(d,shape))throw new Error("Invalid formation frontage");
     const n=troops??value.layoutTroops;
-    if(n!==undefined) {const layout=frontageLayout(n,d,shape,width);if(!layout||layout.width!==width)throw new Error("Invalid formation frontage band");}
+    if(n!==undefined) {const layout=frontageLayout(n,d,shape,width);if(!layout||layout.width!==width)throw new Error(`Invalid formation frontage band: ${id??"default"}, ${shape}, ${n} troops, width ${width}, expected ${layout?.width??"unavailable"}`);}
   }
   const live=troops??value.layoutTroops;
   if(live!==undefined && formationProfile(d,value.shape) && !frontageLayout(live,d,value.shape))throw new Error("Unavailable formation at live count");
