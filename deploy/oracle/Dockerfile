@@ -4,6 +4,7 @@ RUN npm install --global --ignore-scripts npm@12.1.0
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY tsconfig.json vite.skirmish.config.ts index.html ./
+COPY scripts/technologyPlanDevPlugin.ts ./scripts/
 COPY resources ./resources
 COPY skirmish ./skirmish
 COPY src ./src
