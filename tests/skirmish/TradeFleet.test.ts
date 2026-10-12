@@ -6,6 +6,7 @@ import {
   TRADE_RULES,
 } from "../../src/skirmish/content/Economy";
 import { tradePayout } from "../../src/skirmish/domain/TradeQuote";
+import { VESSEL } from "../../src/skirmish/content/Units";
 import { TradePayoutPresentation } from "../../src/skirmish/client/TradePayoutPresentation";
 import { commandSchema } from "../../src/skirmish/multiplayer/CommandSchema";
 import { FIXED } from "../../src/skirmish/Protocol";
@@ -298,16 +299,74 @@ describe("bounded civilian trade", () => {
     expect(trade.actors).not.toContain(actor);
     expect(trade.deliveredGold[2]).toBe(cargoValue);
   });
-  it("makes merchant capture mutual after a player declares war on neutral AI", () => {
-    const { game, trade, step } = fleet(0, 1, true);
+  it.each([false, true])("automatically captures passing neutral sea trade without a war declaration (AI policy=%s)", aiWarPolicy => {
+    const { game, trade, step } = fleet(0, 1, aiWarPolicy);
     step(22);
     const actor = trade.actors.find(a => a.naval)!;
-    const ship = game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
+    const cargo = actor.cargo, value = cargo * actor.valuePerGood;
+    expect(game.expansion!.relations.atWar(1, 2)).toBe(false);
+    game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship",
+      x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
+    actor.waitTicks = 0;
+    step();
+    expect(actor).toMatchObject({ playerId: 2, state: "prize", cargo });
+    expect(trade.capturedValue[2]).toBe(value);
+    expect(trade.lostValue[1]).toBe(value);
+    step();
+    expect(trade.capturedValue[2]).toBe(value);
+    const cold = new Skirmish(game.map, game.options);
+    cold.restore(game.checkpoint());
+    game.tick++; cold.tick++;
+    trade.step(); cold.expansion!.trade.step();
+    expect(cold.expansion!.trade.checkpoint()).toEqual(trade.checkpoint());
+  });
+  it("protects allied sea trade from automatic capture", () => {
+    const { game, trade, expansion, step } = fleet(0, 1, true);
+    expansion.diplomacy.action(game.players[0], game.players[1], "offer", 0);
+    expansion.diplomacy.action(game.players[1], game.players[0], "accept", 0);
+    step(22);
+    const actor = trade.actors.find(a => a.naval)!;
+    game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship",
+      x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
+    actor.waitTicks = 0;
+    step();
+    expect(actor.playerId).toBe(1);
+    expect(trade.capturedValue[2] ?? 0).toBe(0);
+  });
+  it("lets an idle human warship intercept moving neutral trade without a right-click order", () => {
+    const { game, trade, step } = fleet(0, 1, true);
+    game.setAiController(2, false);
+    game.owners.fill(0);
+    step(22);
+    const actor = trade.actors.find(a => a.naval)!;
+    actor.waitTicks = 0;
+    const ship = game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship",
+      x: actor.x + 5 * FIXED, y: actor.y, health: VESSEL.get("stoneage-warship")!.health,
+      destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
+    expect(game.expansion!.relations.atWar(1, 2)).toBe(false);
+    const initial = { x: ship.x, y: ship.y };
+    let acquired = false;
+    for (let ticks = 0; ticks < 400 && actor.playerId === 1; ticks++) {
+      game.step();
+      acquired ||= game.ship(ship.id)?.navalTargetKind === "trade";
+    }
+    expect(actor.playerId).toBe(2);
+    expect(trade.capturedValue[2]).toBeGreaterThan(0);
+    expect(acquired).toBe(true);
+    expect(Math.hypot(ship.x - initial.x, ship.y - initial.y)).toBeGreaterThan(0);
+    expect(game.expansion!.diplomacy.declaredWar(1, 2)).toBe(false);
+  });
+  it("makes land merchant capture mutual after a player declares war on neutral AI", () => {
+    const { game, trade, step } = fleet(1, 0, true);
+    step(22);
+    const actor = trade.actors.find(a => !a.naval)!;
+    const captor = game.squads.find(s => s.playerId === 2)!;
+    game.updateSquad(captor.id, { x: actor.x, y: actor.y });
     actor.waitTicks = 0;
     step();
     expect(actor.playerId).toBe(1);
     expect(game.applyCommand({ type: "alliance", playerId: 1, otherId: 2, action: "declare" })).toBeNull();
-    game.updateShip(ship.id, { x: actor.x, y: actor.y });
+    game.updateSquad(captor.id, { x: actor.x, y: actor.y });
     step();
     expect(actor).toMatchObject({ playerId: 2, state: "prize" });
   });

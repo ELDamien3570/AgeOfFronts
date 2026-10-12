@@ -1140,7 +1140,9 @@ export class Trade {
       const captor = this.nearby
         .filter(
           (s) =>
-            this.enemy(a.playerId, s.playerId) &&
+            // Sea piracy requires only a non-allied owner. Market access and
+            // land interception retain their separate war/conflict rules.
+            (a.naval ? this.diplomacy.hostile(a.playerId, s.playerId) : this.enemy(a.playerId, s.playerId)) &&
             (s.x - a.x) ** 2 + (s.y - a.y) ** 2 <= (1.2 * FIXED) ** 2 &&
             this.fortifications.clear(a, s, s.playerId),
         )
