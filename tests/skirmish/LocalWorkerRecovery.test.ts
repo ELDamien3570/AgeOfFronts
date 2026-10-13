@@ -21,6 +21,17 @@ async function fixture() {
 }
 
 describe("local worker recovery boundaries", () => {
+  it("acknowledges diagnostic orders at the current simulation tick", async () => {
+    const f = await fixture();
+    f.post({ type: "start", width: 64, height: 48, terrain: new Uint8Array(64 * 48).fill(133), diagnostics: true,
+      options: { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" } });
+    await vi.advanceTimersByTimeAsync(10050);
+    f.post({ type: "resync" });
+    const current = new SnapshotDecoder().decodeLatest(last(f.states()).packet);
+    const squad = current.squads.find(s => s.playerId === 1)!;
+    f.post({ type: "command", diagnosticId: 7, command: { type: "order", playerId: 1, squadIds: [squad.id], order: { type: "hold" } } });
+    expect(f.messages).toContainEqual({ type: "command-admitted", diagnosticId: 7, tick: current.tick, rejected: false });
+  });
   it("publishes a complete reset at the same tick without changing paused state or speed", async () => {
     const f = await fixture();
     f.post({ type: "speed", speed: 4 });

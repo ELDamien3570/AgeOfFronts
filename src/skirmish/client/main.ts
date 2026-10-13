@@ -1,4 +1,5 @@
 import { trenchFrontage } from "../domain/TrenchFrontage";
+import { readDiagnosticReplay } from "../DiagnosticReplay";
 import { certifyFootprint, formationFootprint } from "../domain/FormationContact";
 import { facingOf } from "../domain/FormationGeometry";
 import { TERRAIN } from "../content/TacticalRules";
@@ -369,7 +370,16 @@ const viewModel = () =>
 
 const format = (value: number) => value.toLocaleString("en-US");
 
+let nextDiagnosticCommand = 0;
+const diagnosticCommands = new Map<number, number>();
+let lastDiagnosticCommand: { tick: number; rejected: boolean; admissionMs: number } | undefined;
 function post(message: WorkerRequest): void {
+  if (worker && !onlineMatchId && onlineQuery.has("diagnostics") && message.type === "command") {
+    const diagnosticId = ++nextDiagnosticCommand;
+    diagnosticCommands.set(diagnosticId, performance.now());
+    if (diagnosticCommands.size > 256) diagnosticCommands.delete(diagnosticCommands.keys().next().value!);
+    message = { ...message, diagnosticId };
+  }
   worker?.postMessage(message);
 }
 
@@ -397,6 +407,8 @@ function notify(message: string): void {
 
 async function start(): Promise<void> {
   if(onlineMatchId) { await startOnlineMatch(); return; }
+  diagnosticCommands.clear(); lastDiagnosticCommand = undefined;
+  document.querySelector("#local-diagnostics")?.remove();
   drag=undefined; renderer.selectionBox=undefined; renderer.deploymentPreview=undefined; renderer.trenchPreview=undefined;
   localPresentation?.reset();
   recruitmentControls.clear();
@@ -457,13 +469,24 @@ async function start(): Promise<void> {
     '<span class="spinner"></span><h2>Preparing the battlefield</h2><p>Loading terrain and deploying your squads.</p>';
 
   try {
+    const replayPath = onlineQuery.get("replay");
+    if (replayPath && (!onlineQuery.has("diagnostics") || !replayPath.startsWith("/out/") || replayPath.includes("..")))
+      throw new Error("Replay fixtures require local diagnostics and an /out/ path");
+    const replay = replayPath ? readDiagnosticReplay(await (await fetch(replayPath)).text()) : undefined;
+    if (replay) {
+      localPlayerId = replay.playerId;
+      element<HTMLSelectElement>("map").value = replay.mapId;
+      element<HTMLSelectElement>("world-size").value = String(replay.checkpoint.width);
+      element<HTMLSelectElement>("opponents").value = String(replay.checkpoint.options.aiCount);
+      element<HTMLSelectElement>("starting-age").value = replay.checkpoint.options.startingAge ?? "StoneAge";
+    }
     const mapId = element<HTMLSelectElement>("map").value;
     if (element<HTMLSelectElement>("world-size").value === "2000" && !isProceduralMap(mapId))
       element<HTMLSelectElement>("world-size").value = "1000";
 
     const requestedSeed = (onlineQuery.has("diagnostics") || isProceduralMap(mapId)) && onlineQuery.has("seed")
       ? Number(onlineQuery.get("seed")) : NaN;
-    const seed = Number.isSafeInteger(requestedSeed) && requestedSeed >= 0 && requestedSeed <= 0x7fffffff
+    const seed = replay ? replay.checkpoint.options.seed : Number.isSafeInteger(requestedSeed) && requestedSeed >= 0 && requestedSeed <= 0x7fffffff
       ? requestedSeed : Math.floor(Math.random() * 0x7fffffff);
     diagnosticSeed = seed;
 
@@ -544,6 +567,36 @@ async function start(): Promise<void> {
       if (sequence !== matchSequence || failed) return;
 
       const message = event.data;
+
+      if (message.type === "command-admitted") {
+        const started = diagnosticCommands.get(message.diagnosticId);
+        if (started !== undefined) {
+          diagnosticCommands.delete(message.diagnosticId);
+          const admissionMs = performance.now() - started;
+          browserDiagnostics.record("admission", admissionMs);
+          lastDiagnosticCommand = { tick: message.tick, rejected: message.rejected, admissionMs };
+        }
+        return;
+      }
+
+      if (message.type === "diagnostics") {
+        let panel = document.querySelector<HTMLDetailsElement>("#local-diagnostics");
+        if (!panel) {
+          panel = document.createElement("details"); panel.id = "local-diagnostics"; panel.open = true;
+          panel.style.cssText = "position:fixed;right:12px;top:150px;z-index:50;max-height:45vh;width:330px;overflow:auto;background:#101e29ed;color:#eee;padding:10px;border:1px solid #557";
+          const label = document.createElement("summary"); label.textContent = "Local performance";
+          const output = document.createElement("pre"); output.id = "local-diagnostics-result"; output.style.cssText = "white-space:pre-wrap;font-size:11px";
+          const save = document.createElement("button"); save.textContent = "Save performance report";
+          save.addEventListener("click", () => {
+            const url = URL.createObjectURL(new Blob([output.textContent ?? ""], { type: "application/json" }));
+            const link = document.createElement("a"); link.href = url; link.download = "local-game-performance.json";
+            link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+          });
+          panel.append(label, save, output); document.body.append(panel);
+        }
+        panel.querySelector("pre")!.textContent = JSON.stringify({ ...message, client: browserDiagnostics.snapshot(), commands: { pendingAcknowledgements: diagnosticCommands.size, last: lastDiagnosticCommand, measurement: "Input to worker admission; route execution latency is separate" } }, null, 2);
+        return;
+      }
 
       if (message.type === "error") {
         fail(message.message);
@@ -635,7 +688,9 @@ async function start(): Promise<void> {
       forest: loaded.forest,
       resourceTerrain: loaded.resourceTerrain,
 
-      options: {
+      checkpoint: replay?.checkpoint,
+      diagnostics: onlineQuery.has("diagnostics"),
+      options: replay ? replay.checkpoint.options : {
         ...DEFAULT_AI_POLICIES,
         ...FORMATION_MOVEMENT,
         seed,
@@ -821,12 +876,19 @@ function updateHud(): void {
   if (!snapshot) return;
   limitSquadSelection(renderer.selected, snapshot.squads, localPlayerId);
   const started = performance.now();
+  let sectionStarted = started;
+  const recordSection = (name: "recruitment-feed" | "counters" | "quotes" | "selection" | "empire" | "cards" | "armies" | "roster") => {
+    const now = performance.now();
+    browserDiagnostics.record(`hud.${name}`, now - sectionStarted);
+    sectionStarted = now;
+  };
   try {
 
   updateTerrainHover();
   if (recruitmentProjection) recruitmentProjection.update(snapshot, localPlayerId, renderer.selectedBuildings);
   else recruitmentProjection = new RecruitmentQueueViewModel(snapshot, localPlayerId, renderer.selectedBuildings);
   recruitmentFeed.update(recruitmentProjection);
+  recordSection("recruitment-feed");
 
   const player = snapshot.players.find(player => player.id === localPlayerId)!;
 
@@ -853,11 +915,14 @@ function updateHud(): void {
   hudText("clock", `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`);
 
   hudText("pause", paused ? "Resume" : "Pause");
+  recordSection("counters");
 
   const vm = viewModel()!;
+  const recruitmentQuotes = new Map<import("../Protocol").SquadType | import("../Protocol").ShipType, ReturnType<SkirmishViewModel["recruitment"]>>();
 
   for (const { kind } of [...LAND_RECRUITMENT, ...NAVAL_RECRUITMENT]) {
     const recruitment = vm.recruitment(kind);
+    recruitmentQuotes.set(kind, recruitment);
 
     const naval = kind === "warship";
 
@@ -872,21 +937,27 @@ function updateHud(): void {
       !!empireVm?.buildChoice(type).reason ||
       player.eliminated ||
       snapshot.winner !== null);
+  recordSection("quotes");
 
   updateSelection();
+  recordSection("selection");
 
-  if (empireVm) empire.update(empireVm);
+  if (empireVm) empire.update(empireVm, recruitmentQuotes);
+  recordSection("empire");
   if (hudProjection) hudProjection.update(vm);
   else hudProjection = new HudViewModel(vm);
   hud.update(hudProjection);
+  recordSection("cards");
   if (armyProjection) armyProjection.update(snapshot, renderer.selected, localPlayerId);
   else armyProjection = new ArmyViewModel(snapshot, renderer.selected, localPlayerId);
   const armyVm = armyProjection;
   armyView.update(armyVm);
   if (armyVm.selectedArmy) element("selection-card").hidden = true;
+  recordSection("armies");
 
 
   updateRoster();
+  recordSection("roster");
   } finally { browserDiagnostics.record("hud", performance.now() - started); }
 }
 
@@ -1039,7 +1110,7 @@ function updateGroups(): void {
 
     button.disabled = !snapshot;
 
-    const recalled = snapshot ? groups.recall(digit, snapshot) : undefined;
+    const recalled = snapshot && groups.count(digit) > 0 ? groups.recall(digit, snapshot) : undefined;
 
     const active =
       !!recalled &&

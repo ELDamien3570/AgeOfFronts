@@ -3,7 +3,7 @@ interface Point {
   y: number;
 }
 /** Minimum squared travel assignment (Hungarian), compiled on facing changes.
- * Soldier counts are tiny (6/12). Identity order resolves equal-cost choices.
+ * Identity order resolves equal-cost choices, including full 144-member units.
  * Result is the source index assigned to each destination. */
 export function minimumTravelAssignment(
   source: readonly Point[],
@@ -16,11 +16,18 @@ export function minimumTravelAssignment(
     v = new Float64Array(n + 1);
   const p = new Int32Array(n + 1),
     way = new Int32Array(n + 1);
+  const min = new Float64Array(n + 1), used = new Uint8Array(n + 1);
+  // The augmenting search revisits pairs. Compute their unchanged squared
+  // distances once; retain the original subtraction order for dual costs.
+  const costs = new Float64Array(n * n);
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    const dx = source[i].x - destinations[j].x, dy = source[i].y - destinations[j].y;
+    costs[i * n + j] = dx * dx + dy * dy;
+  }
   for (let i = 1; i <= n; i++) {
     p[0] = i;
     let j0 = 0;
-    const min = new Float64Array(n + 1).fill(Infinity),
-      used = new Uint8Array(n + 1);
+    min.fill(Infinity); used.fill(0);
     do {
       used[j0] = 1;
       const i0 = p[j0];
@@ -28,9 +35,7 @@ export function minimumTravelAssignment(
         j1 = 0;
       for (let j = 1; j <= n; j++) {
         if (used[j]) continue;
-        const dx = source[i0 - 1].x - destinations[j - 1].x;
-        const dy = source[i0 - 1].y - destinations[j - 1].y;
-        const cost = dx * dx + dy * dy - u[i0] - v[j];
+        const cost = costs[(i0 - 1) * n + j - 1] - u[i0] - v[j];
         if (cost < min[j]) {
           min[j] = cost;
           way[j] = j0;

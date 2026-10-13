@@ -6,6 +6,8 @@ export const RUNTIME_PHASES = [
   "bufferCopy", "compression", "hash", "base64", "transfer", "fanout", "socket",
   "decode", "decompression", "unpack", "apply", "projection", "hud",
   "frame", "frameInterval", "presentation", "recovery", "gc",
+  "hud.recruitment-feed", "hud.counters", "hud.quotes", "hud.selection",
+  "hud.empire", "hud.cards", "hud.armies", "hud.roster",
 ] as const;
 export type RuntimePhase = (typeof RUNTIME_PHASES)[number];
 export interface TimingSummary { samples: number; mean: number; p95: number; p99: number; maximum: number }
@@ -138,6 +140,7 @@ export const PLANNER_CALLERS = ["navigation", "admission", "ship-admission", "ar
 export type PlannerCaller = (typeof PLANNER_CALLERS)[number];
 export interface PlannerCohort {
   playerId: number; caller: PlannerCaller; pending: number; oldestAge: number;
+  active?: number; oldestActiveAge?: number; reclaiming?: number;
   work: number; complete: number; unreachable: number; limited: number; superseded: number;
 }
 export interface PathResidency {

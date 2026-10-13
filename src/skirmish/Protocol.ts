@@ -433,6 +433,8 @@ export interface MatchOptions {
   aiEconomy?: boolean;
   /** Bounded transactional route admission. Explicit false preserves legacy replay. */
   deferredPlanning?: boolean;
+  /** Local autonomous search deadline; omitted preserves exhaustive old replays. */
+  autonomousRouteDeadlineTicks?: 40;
   /** City defense trials require the shared opt-in economy coordinator. */
   aiDefenses?: boolean;
   /** Fleet mission trials require economy and deferred route admission. */
@@ -562,14 +564,19 @@ export type WorkerRequest =
       forest?: ForestData;
       resourceTerrain?: ResourceTerrainData;
       options: MatchOptions;
+      /** Local diagnostic replay only; the domain restore validates the state. */
+      checkpoint?: ReturnType<import("./Simulation").Skirmish["checkpoint"]>;
+      diagnostics?: boolean;
     }
-  | { type: "command"; command: Command }
+  | { type: "command"; command: Command; diagnosticId?: number }
   | { type: "select-spawn"; tile: number }
   | { type: "pause"; paused: boolean }
   | { type: "resync" }
   | { type: "speed"; speed: 1 | 2 | 4 };
 
 export type WorkerResponse =
+  | { type: "command-admitted"; diagnosticId: number; tick: number; rejected: boolean }
+  | { type: "diagnostics"; tick: number; pace: ReturnType<import("./RuntimeDiagnostics").RuntimeProgress["snapshot"]>; timings: ReturnType<import("./RuntimeDiagnostics").RuntimeDiagnostics["snapshot"]>; squads: number; ships: number; planner?: import("./RuntimeDiagnostics").PlannerCohort[] }
   | { type: "spawn"; state: SpawnState }
   | { type: "state"; packet: SnapshotPacket; snapshot?:Snapshot; paused: boolean; speed: number }
   | { type: "rejected"; message: string }

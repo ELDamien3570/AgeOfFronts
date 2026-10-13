@@ -4,11 +4,72 @@ import { formationLoad } from './fixtures/FormationLoad';
 import { DamageLedger } from '../../src/skirmish/Conquest';
 import { UnitIndex } from '../../src/skirmish/UnitIndex';
 import { FIXED } from '../../src/skirmish/Protocol';
-import { formationFootprints, polygonsOverlap, formationContact, PreparedFormationBody } from '../../src/skirmish/domain/FormationContact';
+import { formationFootprints, formationFootprint, convexHull, polygonsOverlap, formationContact, formationApproach, PreparedFormationBody } from '../../src/skirmish/domain/FormationContact';
+import { formationEnvelope, TURN } from '../../src/skirmish/domain/FormationGeometry';
 import { CombatActivity } from '../../src/skirmish/domain/CombatActivity';
 import { CombatGeometry } from '../../src/skirmish/domain/CombatGeometry';
 
 describe('formation performance contracts', () => {
+  it('refreshes approach obstacles after borrowed bodies move, lose troops or reform', () => {
+    const { game } = formationLoad('crowded', 60), a = game.squads[0], b = game.squads[50];
+    for (let tick = 0; tick < 12; tick++) {
+      formationApproach(a, b, tick, 80, .3);
+      if (tick % 3 === 0) game.updateSquad(a.id, { x: a.x + 73, y: a.y - 19 });
+      if (tick % 3 === 1) game.updateSquad(b.id, { troops: Math.max(1, b.troops - 3) });
+      if (tick === 2) game.updateSquad(b.id, { formation: { ...b.formation!, facing: TURN / 4,
+        transition: { from: 'line', fromFacing: 0, startTick: 2, duration: 20 } } });
+      for (const angle of [0, .3, 1.7, 3.1]) for (const reach of [0, 80, 500]) {
+        // Fresh identities preserve template seeds but cannot inherit the pair cache.
+        const freshA = { ...structuredClone(a), id: a.id + 100000 + tick * 16 };
+        const freshB = { ...structuredClone(b), id: b.id + 200000 + tick * 16 };
+        expect(formationApproach(a, b, tick, reach, angle)).toEqual(formationApproach(freshA, freshB, tick, reach, angle));
+      }
+    }
+  });
+  it('retains unchanged manpower without suppressing fractional wounds', () => {
+    const { game } = formationLoad('distributed', 15), squad = game.squads[0], before = squad.manpower;
+    const revision = game.replicationFacts().squads.journal.revision;
+    game.resolveLandDamage(new DamageLedger());
+    expect(squad.manpower).toBe(before);
+    expect(game.replicationFacts().squads.journal.revision).toBe(revision);
+    const damage = new DamageLedger(); damage.add(squad.id, game.squads[1].playerId, before!.hp / 100000);
+    game.resolveLandDamage(damage);
+    expect(squad.manpower).not.toBe(before);
+    expect(squad.manpower!.wounds).toBe(Math.round(before!.hp / 100));
+    expect(squad.troops).toBe(before!.capacity);
+  });
+  it('matches unpruned reform sweeps at varied integer poses and facings', () => {
+    const { game } = formationLoad('distributed', 15), source = game.squads[0];
+    for (let i = 0; i < 80; i++) {
+      const tick = i % 20, squad = { ...source, x: 12341 + i * 139, y: 97463 - i * 257,
+        troops: 1 + i * 17 % 144, formation: { ...source.formation!, shape: 'mass' as const, facing: i * 7919 % TURN,
+          transition: { from: 'mass' as const, fromFacing: i * 2347 % TURN, startTick: 0, duration: 20 } } };
+      const end = { x: squad.x + 137 - i * 17, y: squad.y - 239 + i * 31 }, proposed = { ...squad, ...end };
+      const points = [...formationFootprint(squad, tick), ...formationFootprint(proposed, tick), ...formationFootprint(proposed, tick + 1)];
+      if (tick + 1 >= 20) points.push(...formationFootprint({ ...proposed, formation: { ...squad.formation, transition: undefined } }, tick + 1));
+      const angle = Math.abs(formationEnvelope(squad, tick + 1).angle - formationEnvelope(squad, tick).angle), radius = formationEnvelope(squad, tick).broadRadius;
+      const skin = Math.ceil(radius * (1 - Math.cos(angle / 2)) + radius * angle * angle / 4) + 2;
+      const expected = convexHull(points.flatMap(p => [-1, 1].flatMap(x => [-1, 1].map(y => ({ x: p.x + x * skin, y: p.y + y * skin })))));
+      expect(new PreparedFormationBody(squad, tick).movementSweep(end)).toEqual(expected);
+    }
+  });
+  it('matches original movement sweeps across reform boundaries and candidate roots', () => {
+    const { game } = formationLoad('distributed', 15), source = game.squads[0];
+    for (const troops of [1, 11, 40, 144]) for (const tick of [0, 5, 19, 20]) {
+      const squad = { ...source, troops, formation: { ...source.formation!, shape: 'mass' as const, facing: TURN / 8,
+        transition: { from: 'mass' as const, fromFacing: 0, startTick: 0, duration: 20 } } };
+      const body = new PreparedFormationBody(squad, tick);
+      for (const delta of [{x:0,y:0},{x:17,y:21},{x:-40,y:3},{x:1200,y:-1500}]) {
+        const end = {x:squad.x+delta.x,y:squad.y+delta.y}, proposed = {...squad,...end};
+        const points = [...formationFootprint(squad,tick),...formationFootprint(proposed,tick),...formationFootprint(proposed,tick+1)];
+        if(tick+1>=20)points.push(...formationFootprint({...proposed,formation:{...squad.formation,transition:undefined}},tick+1));
+        const angle=Math.abs(formationEnvelope(squad,tick+1).angle-formationEnvelope(squad,tick).angle),radius=formationEnvelope(squad,tick).broadRadius;
+        const skin=Math.ceil(radius*(1-Math.cos(angle/2))+radius*angle*angle/4)+2;
+        const reference=convexHull(points.flatMap(p=>[-1,1].flatMap(x=>[-1,1].map(y=>({x:p.x+x*skin,y:p.y+y*skin})))));
+        expect(body.movementSweep(end)).toEqual(reference);
+      }
+    }
+  });
   it('prepares exact immutable bodies and refreshes borrowed poses on motion and clock changes',()=>{
     const {game}=formationLoad('crowded',60),a=game.squads[0],b=game.squads[50],geometry=new CombatGeometry();
     const preparedA=new PreparedFormationBody(a,0),preparedB=new PreparedFormationBody(b,0),before=formationContact(a,b,0);

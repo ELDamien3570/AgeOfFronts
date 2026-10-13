@@ -214,7 +214,7 @@ export class Skirmish {
   private phaseSpatial?: PhaseSpatialViews;
   get spatialDiagnostics() { return this.phaseSpatial?.diagnostics; }
   spatialFacts(phase: SpatialPhase) {
-    return (this.phaseSpatial ??= new PhaseSpatialViews(this.map.width(), this.map.height(), this)).facts(phase);
+    return (this.phaseSpatial ??= new PhaseSpatialViews(this.map.width(), this.map.height(), this, this.facingGeometry)).facts(phase);
   }
   private readonly controlGenerations = new Map<number, number>();
   aiGeneration(playerId: number): number { return this.controlGenerations.get(playerId) ?? 0; }
@@ -438,7 +438,10 @@ export class Skirmish {
   private movementSpatialRevision = -1;
   private previousPositions = new Float64Array(0);
   private readonly rollbackPoint: WorldPoint = { x: 0, y: 0 };
-  private readonly movementClearance = new Map<number,{tick:number;x:number;y:number;allowed:boolean}>();
+  private readonly movementClearance = new Map<number,{
+    tick:number; x:number; y:number; allowed:boolean; spatialRevision:number;
+    candidates:{x:number;y:number;allowed:boolean}[];
+  }>();
   private readonly approachRevisions = new Map<number, string>();
   private movementLand(): Squad[] {
     if (this.landMembership !== this.squadIndex.membershipRevision ||
@@ -657,6 +660,8 @@ export class Skirmish {
     readonly map: GameMap,
     readonly options: MatchOptions,
   ) {
+    if (options.autonomousRouteDeadlineTicks !== undefined && options.autonomousRouteDeadlineTicks !== 40)
+      throw new Error("Invalid autonomous routing deadline");
     this.territoryAbsorption = new TerritoryAbsorption(map);
     this.coastalTerritory = new CoastalTerritory(map);
     const humanCount = options.humanNames?.length ?? 1;
@@ -709,6 +714,7 @@ export class Skirmish {
       this.corridorTicks = { land, water, amphibious: Infinity };
     }
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
+      deadlineTicks: request => this.interactiveRoute(request.context) ? undefined : this.options.autonomousRouteDeadlineTicks,
       allowExclusiveRetry: request => request.context.kind !== "domain" || request.context.owner !== "trade",
       // Interactive orders and trade use a warmed corridor. Long trade legs
       // (sea lanes, caravans heading home across a continent) otherwise exceed
@@ -864,7 +870,7 @@ export class Skirmish {
       map.height() * FIXED,
       2 * FIXED,
       squad=>squad.playerId,
-      squad=>squad.formation?formationEnvelope(squad,this.tick).broadRadius:0,
+      squad=>squad.formation?this.facingGeometry.envelope(squad,this.tick).broadRadius:0,
     );
     this.heldSpatial = new SpatialGrid(
       map.width() * FIXED,
@@ -1908,14 +1914,18 @@ export class Skirmish {
     if(s.x===end.x && s.y===end.y)return true;
     if(s.formation?.transition && s.formation.shape!=="column" && !COLUMN_TRAVEL.movingDeploy && !movingFormationReform(s))return false;
     if(s.formation?.transition){
-      const from=this.movementBody(s).footprint(),proposed={...s,...end},to=[...formationFootprint(proposed,this.tick),...formationFootprint(proposed,this.tick+1)],t=s.formation.transition;
+      const prepared=this.movementBody(s),from=prepared.footprint(),proposed={...s,...end},t=s.formation.transition,radius=prepared.envelope.broadRadius;
+      let sweep=prepared.movementSweep(end);
+      if (!sweep) {
+      const to=[...formationFootprint(proposed,this.tick),...formationFootprint(proposed,this.tick+1)];
       if(this.tick+1>=t.startTick+t.duration)to.push(...formationFootprint({...proposed,formation:{...s.formation,transition:undefined}},this.tick+1));
-      const angle=Math.abs(formationEnvelope(s,this.tick+1).angle-formationEnvelope(s,this.tick).angle),radius=formationEnvelope(s,this.tick).broadRadius;
+      const angle=Math.abs(formationEnvelope(s,this.tick+1).angle-formationEnvelope(s,this.tick).angle);
       const skin=Math.ceil(radius*(1-Math.cos(angle/2))+radius*angle*angle/4)+2;
-      const sweep=convexHull([...from,...to].flatMap(p=>[-1,1].flatMap(x=>[-1,1].map(y=>({x:p.x+x*skin,y:p.y+y*skin})))));
+      sweep=convexHull([...from,...to].flatMap(p=>[-1,1].flatMap(x=>[-1,1].map(y=>({x:p.x+x*skin,y:p.y+y*skin})))));
+      }
       if(!this.certifyFormationPolygon(s,sweep,"hold"))return false;
       const nearby:Squad[]=[];this.spatial.queryOverlaps(end.x,end.y,radius+Math.hypot(end.x-s.x,end.y-s.y),nearby,s.playerId);
-      return !nearby.some(enemy=>enemy.embarkedOn===null && !enemy.afloat && this.hostile(s.playerId,enemy.playerId) && formationFootprints(enemy,this.tick).some(body=>polygonsOverlap(sweep,body)&&!polygonsOverlap(from,body)));
+      return !nearby.some(enemy=>enemy.embarkedOn===null && !enemy.afloat && this.hostile(s.playerId,enemy.playerId) && this.movementBody(enemy).footprints().some(body=>polygonsOverlap(sweep,body)&&!polygonsOverlap(from,body)));
     }
     if(s.formation?.shape==='column' && !s.formation.transition && !formationDoctrine(s.definitionId).hull){
       const dx=end.x-s.x,dy=end.y-s.y;
@@ -1947,19 +1957,19 @@ export class Skirmish {
       for(const enemy of nearby){
         if(enemy.embarkedOn!==null || enemy.afloat || !enemy.formation || !this.hostile(s.playerId,enemy.playerId))continue;
         from??=this.movementBody(s).footprints();to??=formationFootprints(proposed,this.tick);
-        const bodies=formationFootprints(enemy,this.tick);
+        const bodies=this.movementBody(enemy).footprints();
         sweeps??=to.map((p,i)=>convexHull([...(from![i]??p),...p]));
         if(sweeps.some(p=>bodies.some(b=>polygonsOverlap(p,b))) && !from.some(p=>bodies.some(b=>polygonsOverlap(p,b))))return false;
       }
       return true;
     }
-    const from=this.movementBody(s).footprint(),to=formationFootprint({...s,...end},this.tick),sweep=convexHull([...from,...to]);
+    const prepared=this.movementBody(s),from=prepared.footprint(),sweep=prepared.movementSweep(end)??convexHull([...from,...formationFootprint({...s,...end},this.tick)]);
     if(!this.certifyFormationPolygon(s,sweep,"hold"))return false;
     const nearby:Squad[]=[];
-    this.spatial.queryOverlaps(end.x,end.y,formationEnvelope(s,this.tick).broadRadius+Math.hypot(end.x-s.x,end.y-s.y),nearby,s.playerId);
+    this.spatial.queryOverlaps(end.x,end.y,prepared.envelope.broadRadius+Math.hypot(end.x-s.x,end.y-s.y),nearby,s.playerId);
     for(const enemy of nearby){
       if(enemy.embarkedOn!==null || enemy.afloat || !enemy.formation || !this.hostile(s.playerId,enemy.playerId))continue;
-      const body=formationFootprint(enemy,this.tick);
+      const body=this.movementBody(enemy).footprint();
       if(!polygonsOverlap(sweep,body))continue;
       // A loaded/imported overlap may escape; new interpenetration is rejected.
       const overlapping=polygonsOverlap(from,body);
@@ -1969,13 +1979,16 @@ export class Skirmish {
     return true;
   }
   private syncFormationCounts(land:readonly Squad[]):void {
+    // These internal formation passes transfer newly finalized containers.
+    // Immutable trails and source slots keep their identity across revisions;
+    // external mutation APIs still clone their inputs in updateSquad().
     if(!this.expansion)return;
     for(const s of land){
       if(!s.formation || s.troops<=0 || s.afloat || s.embarkedOn!==null)continue;
       const old=s.formation,n=formationDoctrine(s.definitionId).hull?1:Math.min(s.troops,s.manpower?.capacity??144);
       const previous=old.layoutTroops??(formationDoctrine(s.definitionId).hull?1:s.manpower?.capacity??s.troops);
       if(previous===n)continue;
-      if(old.shape==='column' && n<previous){const d=formationDoctrine(s.definitionId),intent=eligibleShape(n,d,deployedShape(s));this.updateSquad(s.id,{formation:{...old,deployedShape:intent==='column'?undefined:intent,preferredFrontage:old.preferredFrontage===undefined?undefined:frontageLayout(n,d,intent,old.preferredFrontage)?.width,layoutTroops:n,revision:old.revision+1}});continue;}
+      if(old.shape==='column' && n<previous){const d=formationDoctrine(s.definitionId),intent=eligibleShape(n,d,deployedShape(s));this.squadEntities.updateOwned(s.id,{formation:{...old,deployedShape:intent==='column'?undefined:intent,preferredFrontage:old.preferredFrontage===undefined?undefined:frontageLayout(n,d,intent,old.preferredFrontage)?.width,layoutTroops:n,revision:old.revision+1}});continue;}
       const current=formationSlots({...s,troops:previous},this.tick);
       const doctrine=formationDoctrine(s.definitionId),shape=eligibleShape(n,doctrine,old.shape);
       const oldWidth=old.frontage??formationEnvelope({...s,troops:previous},this.tick).width;
@@ -1985,7 +1998,7 @@ export class Skirmish {
       if(n<previous && !old.transition){
         // Losses resize the authoritative body; cosmetic actors close the gaps.
         // They do not initiate a tactical reform or immobilise the survivors.
-        this.updateSquad(s.id,{formation:{...nextState,layoutTroops:n,revision:old.revision+1}});
+        this.squadEntities.updateOwned(s.id,{formation:{...nextState,layoutTroops:n,revision:old.revision+1}});
         continue;
       }
       const next=formationSlots({...s,formation:nextState},this.tick);
@@ -1993,10 +2006,11 @@ export class Skirmish {
       const angle=formationEnvelope(s,this.tick).angle;
       const distance=Math.max(...next.map((p,i)=>Math.hypot(p.x-fromSlots[i].x,p.y-fromSlots[i].y)));
       const duration=n<previous && old.transition?Math.max(1,old.transition.startTick+old.transition.duration-this.tick):Math.min(200,Math.max(20,Math.ceil(distance*20/(FIXED*2.5))));
-      this.updateSquad(s.id,{formation:{...nextState,layoutTroops:n,revision:old.revision+1,transition:{from:old.shape,fromFacing:facingOf(angle),fromSlots,startTick:this.tick,duration}}});
+      this.squadEntities.updateOwned(s.id,{formation:{...nextState,layoutTroops:n,revision:old.revision+1,transition:{from:old.shape,fromFacing:facingOf(angle),fromSlots,startTick:this.tick,duration}}});
     }
   }
   private readonly facingGeometry=new CombatGeometry();
+  get combatGeometry(): CombatGeometry { return this.facingGeometry; }
   private touchingEnemy(s:Squad):boolean {
     const nearby:Squad[]=[];
     this.spatial.queryOverlaps(s.x,s.y,this.facingGeometry.envelope(s,this.tick).broadRadius+CONTACT.release,nearby,s.playerId);
@@ -2019,10 +2033,10 @@ export class Skirmish {
             const source=formationSlots(s,this.tick),shape=transition.from,facing=facingOf(formationEnvelope(s,this.tick).angle);
             const candidate={...s,formation:{...old,shape,facing,mode:shape==='column'?'travel' as const:'deployed' as const,frontage:transition.fromFrontage,automatic:shape==='column'?transition.fromAutomatic:false,autoFrontage:transition.fromAutoFrontage,trail:undefined,blockedSince:undefined,
               retryTick:this.tick+COLUMN_TRAVEL.retryTicks,transition:{from:old.shape,fromFacing:facing,fromSlots:source,startTick:this.tick,duration:transition.duration},revision:old.revision+1}};
-            if(this.certifyFormationPolygon(candidate,transitionFootprint(candidate,this.tick,this.tick+transition.duration),"deploy")){this.updateSquad(s.id,{formation:candidate.formation});continue;}
+            if(this.certifyFormationPolygon(candidate,transitionFootprint(candidate,this.tick,this.tick+transition.duration),"deploy")){this.squadEntities.updateOwned(s.id,{formation:candidate.formation});continue;}
           }
-          this.updateSquad(s.id,{formation:{...old,blocked:true,blockedSince,retryTick,transition:{...transition,startTick:transition.startTick+1},revision:old.revision+1}});
-        }else if(old.blocked || old.blockedSince!==undefined)this.updateSquad(s.id,{formation:{...old,blocked:false,blockedSince:undefined,revision:old.revision+1}});
+          this.squadEntities.updateOwned(s.id,{formation:{...old,blocked:true,blockedSince,retryTick,transition:{...transition,startTick:transition.startTick+1},revision:old.revision+1}});
+        }else if(old.blocked || old.blockedSince!==undefined)this.squadEntities.updateOwned(s.id,{formation:{...old,blocked:false,blockedSince:undefined,revision:old.revision+1}});
         continue;
       }
       if(old.transition?.from==='column' && old.shape!=='column')old={...old,lastDeployTick:this.tick};
@@ -2039,7 +2053,7 @@ export class Skirmish {
       if(facing!==old.facing){
         if(old.shape==='column' && !formationDoctrine(s.definitionId).hull){
           const certificate=this.columnCertificates.get(s.formation!);
-          const turned=this.updateSquad(s.id,{formation:{...old,facing,transition:undefined,layoutTroops:s.troops,revision:old.revision+1}})!;
+          const turned=this.squadEntities.updateOwned(s.id,{formation:{...old,facing,transition:undefined,layoutTroops:s.troops,revision:old.revision+1}})!;
           if(certificate)this.columnCertificates.set(turned.formation!,certificate);
           continue;
         }
@@ -2050,7 +2064,7 @@ export class Skirmish {
           // explicit facing orders remain exact.
           if(Math.abs(delta)<65536/12 && !(s.order.type==='hold' && s.order.facing!==undefined))continue;
           const formation=reorientedFormation(s,this.tick,facing),candidate={...s,formation};
-          if(this.certifyFormationPolygon(candidate,transitionFootprint(candidate,this.tick,this.tick+formation.transition!.duration),'deploy'))this.updateSquad(s.id,{formation});
+          if(this.certifyFormationPolygon(candidate,transitionFootprint(candidate,this.tick,this.tick+formation.transition!.duration),'deploy'))this.squadEntities.updateOwned(s.id,{formation});
           continue;
         }
         const step=Math.max(-MOTION.turnPerTick[old.shape],Math.min(MOTION.turnPerTick[old.shape],delta));
@@ -2060,7 +2074,7 @@ export class Skirmish {
           if(!this.certifyFormationPolygon(s,rotationFootprint({...s,formation:old},this.tick,facing),"hold"))facing=old.facing;
         }
       }
-      if(facing!==old.facing || old.transition || !s.formation || old.trail!==s.formation?.trail)this.updateSquad(s.id,{formation:{...old,facing,revision:old.revision+1,transition:undefined,blocked:false,blockedSince:undefined,layoutTroops:formationDoctrine(s.definitionId).hull?1:s.troops}});
+      if(facing!==old.facing || old.transition || !s.formation || old.trail!==s.formation?.trail)this.squadEntities.updateOwned(s.id,{formation:{...old,facing,revision:old.revision+1,transition:undefined,blocked:false,blockedSince:undefined,layoutTroops:formationDoctrine(s.definitionId).hull?1:s.troops}});
     }
   }
   private readonly routeSuffixLengths=new WeakMap<readonly number[],Float64Array>();
@@ -2084,7 +2098,7 @@ export class Skirmish {
       const pending=this.movementAdmission.hasPending(s.id)||this.routePlanner.has(`navigation:${s.id}`)||this.queuedLegs.has(s.id)||s.queuedOrders.some(o=>o.type==='move');
       const ended=!pending && (s.order.type!=='move'||s.nextPathIndex>=s.path.length);
       const settledSince=ended?(old.settledSince??this.tick):undefined;
-      if(old.settledSince!==settledSince)this.updateSquad(s.id,{formation:{...old,settledSince}});
+      if(old.settledSince!==settledSince)this.squadEntities.updateOwned(s.id,{formation:{...old,settledSince}});
       const last=s.path[s.path.length-1];
       let suffix=this.routeSuffixLengths.get(s.path);if(!suffix){suffix=new Float64Array(s.path.length);for(let i=s.path.length-2;i>=0;i--){const a=tilePoint(this.map,s.path[i]),b=tilePoint(this.map,s.path[i+1]);suffix[i]=suffix[i+1]+Math.hypot(a.x-b.x,a.y-b.y);}this.routeSuffixLengths.set(s.path,suffix);}
       const next=s.path[s.nextPathIndex],point=next===undefined?s:tilePoint(this.map,next),length=(suffix[s.nextPathIndex]??0)+Math.hypot(point.x-s.x,point.y-s.y);
@@ -2117,7 +2131,7 @@ export class Skirmish {
       if(shape===old.shape && distance<1 && facing===old.facing){
         // An equivalent candidate is not another reform. Consume a restore
         // request, or delay a constrained retry, without movement interruption.
-        this.updateSquad(s.id,{formation:{...old,...(decision==='deploy'?{autoFrontage:false,automatic:false,frontage,preferredFrontage:frontage,deployedShape:shape,deploymentFacing:undefined,lastDeployTick:this.tick}:{}),retryTick:this.tick+COLUMN_TRAVEL.retryTicks,revision:old.revision+1}});
+        this.squadEntities.updateOwned(s.id,{formation:{...old,...(decision==='deploy'?{autoFrontage:false,automatic:false,frontage,preferredFrontage:frontage,deployedShape:shape,deploymentFacing:undefined,lastDeployTick:this.tick}:{}),retryTick:this.tick+COLUMN_TRAVEL.retryTicks,revision:old.revision+1}});
         continue;
       }
       const duration=Math.min(200,Math.max(formationDoctrine(s.definitionId).transitionTicks,Math.ceil(distance*20/(FIXED*2.5))));
@@ -2127,9 +2141,9 @@ export class Skirmish {
         transition:{from:old.shape,fromFacing:old.facing,fromSlots:source,startTick:this.tick,duration}};
       const proposed={...s,formation};
       if(!this.certifyFormationPolygon(proposed,transitionFootprint(proposed,this.tick,this.tick+duration))){
-        this.updateSquad(s.id,{formation:{...old,blocked:true,retryTick:this.tick+COLUMN_TRAVEL.retryTicks,revision:old.revision+1}});continue;
+        this.squadEntities.updateOwned(s.id,{formation:{...old,blocked:true,retryTick:this.tick+COLUMN_TRAVEL.retryTicks,revision:old.revision+1}});continue;
       }
-      this.updateSquad(s.id,{formation});
+      this.squadEntities.updateOwned(s.id,{formation});
     }
   }
   private spawnSquad(
@@ -3288,19 +3302,27 @@ export class Skirmish {
         }
       }
       if(!squad.afloat && squad.formation?.shape==='column' && !squad.formation.transition && (changes.x!==squad.x || changes.y!==squad.y)){
-        const moved=this.updateSquad(id,{...changes,formation:{...squad.formation,trail:advanceColumnTrail(squad,changes.x-squad.x,changes.y-squad.y),revision:squad.formation.revision+1}})!;
+        const moved=this.squadEntities.updateOwned(id,{...changes,formation:{...squad.formation,trail:advanceColumnTrail(squad,changes.x-squad.x,changes.y-squad.y),revision:squad.formation.revision+1}})!;
         this.columnCertificates.set(moved.formation!,this.columnCertificate(moved));
       }
       else this.squadEntities.updateOwned(id, changes);
     },
       this.tick, (squad,end) => {
-        const bodyAllowed=this.transportStepClear(squad,end);
-        const allowed=bodyAllowed && (!this.expansion || (this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)) &&
-        (this.aiFootprintAllowed(squad.playerId,this.tileOf(end)) || (!this.aiFootprintAllowed(squad.playerId,this.tileOf(squad)) &&
-          distanceSquared(end,tilePoint(this.map,this.player(squad.playerId)!.base)) < distanceSquared(squad,tilePoint(this.map,this.player(squad.playerId)!.base))))));
-        const proof=this.movementClearance.get(squad.id);
-        if(!proof)this.movementClearance.set(squad.id,{tick:this.tick,x:end.x,y:end.y,allowed});
-        else {proof.tick=this.tick;proof.x=end.x;proof.y=end.y;proof.allowed=allowed;}
+        const revision=this.squadIndex.spatialRevision;
+        let proof=this.movementClearance.get(squad.id);
+        if(!proof){proof={tick:this.tick,x:end.x,y:end.y,allowed:false,spatialRevision:revision,candidates:[]};this.movementClearance.set(squad.id,proof);}
+        if(proof.tick!==this.tick || proof.spatialRevision!==revision)proof.candidates.length=0;
+        const previous=proof.candidates.find(point=>point.x===end.x && point.y===end.y);
+        let allowed=previous?.allowed;
+        if(allowed===undefined){
+          const bodyAllowed=this.transportStepClear(squad,end);
+          allowed=bodyAllowed && (!this.expansion || (this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)) &&
+          (this.aiFootprintAllowed(squad.playerId,this.tileOf(end)) || (!this.aiFootprintAllowed(squad.playerId,this.tileOf(squad)) &&
+            distanceSquared(end,tilePoint(this.map,this.player(squad.playerId)!.base)) < distanceSquared(squad,tilePoint(this.map,this.player(squad.playerId)!.base))))));
+          if(proof.candidates.length===8)proof.candidates.shift();
+          proof.candidates.push({x:end.x,y:end.y,allowed});
+        }
+        proof.tick=this.tick;proof.spatialRevision=revision;proof.x=end.x;proof.y=end.y;proof.allowed=allowed;
         return allowed;
       },
       squad => this.movementAdmission.hasPending(squad.id) || this.queuedLegs.has(squad.id) || this.routePlanner.has(`navigation:${squad.id}`) ? "planning" : "blocked");
@@ -4224,7 +4246,14 @@ export class Skirmish {
         for (const [attacker, amount] of damage.contributions(squad.id))
           if (amount > 0) this.notifyHostileAction(squad.playerId, attacker, this.tileOf(squad));
       } else {
-        if(squad.manpower){const resolved=damageManpower(squad,Math.round(dealt*HEALTH_SCALE));losses=resolved.losses;this.squadEntities.updateOwned(squad.id,{troops:resolved.troops,manpower:resolved.manpower});}
+        if(squad.manpower){
+          const resolved=damageManpower(squad,Math.round(dealt*HEALTH_SCALE));losses=resolved.losses;
+          // A damage calculation with identical values is not a canonical write.
+          // Preserve immutable manpower identity so idle units do not dirty replication.
+          if(resolved.troops!==squad.troops || resolved.manpower.wounds!==squad.manpower.wounds ||
+            resolved.manpower.hullHealth!==squad.manpower.hullHealth || resolved.manpower.revision!==squad.manpower.revision)
+            this.squadEntities.updateOwned(squad.id,{troops:resolved.troops,manpower:resolved.manpower});
+        }
         else {losses = Math.min(squad.troops, dealt);this.squadEntities.setOwned(squad.id, "troops", squad.troops - losses);}
       }
       if (dealt > 0 && !squad.afloat) {

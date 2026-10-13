@@ -74,6 +74,40 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
 }
 
 describe("bounded civilian trade", () => {
+  it("reconciles duplicate pending corridors after restore and commits each merchant's cargo independently", () => {
+    const { game, trade, step, expansion, sources } = fleet(1, 0, false, true);
+    step(20);
+    trade.stepPlanning(32);
+    const saved = trade.checkpoint(), original = saved.admissions[0][1];
+    expect(original.requested).toBe(true);
+    const id = game.allocateId(), actor = structuredClone(saved.actors.find(a => a.id === original.id)!);
+    actor.id = id;
+    actor.shipmentId = saved.nextShipment++;
+    saved.actors.push(actor);
+    const duplicate = { ...structuredClone(original), id, epoch: saved.nextEpoch++, shipmentId: actor.shipmentId };
+    saved.admissions.push([id, duplicate]);
+    trade.restore(saved);
+    const task = game.routePlanner.checkpoint().jobs[0].context;
+    if (task.kind !== "domain" || task.owner !== "trade") throw new Error("Expected a trade route");
+    game.domainRoutes!.request({ ...task, admissionId: id, epoch: duplicate.epoch }, original.start, original.goal!, false);
+    const cancel = vi.spyOn(game.domainRoutes!, "cancel");
+    trade.stepPlanning(32);
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(trade.checkpoint().admissions.filter(([, p]) => p.requested)).toHaveLength(1);
+    const clone = new Skirmish(game.map, game.options);
+    clone.restore(game.checkpoint());
+    for (let tick = 0; tick < 100 && trade.checkpoint().admissions.length; tick++) {
+      game.routePlanner.step(++game.tick);
+      trade.stepPlanning(32);
+      clone.routePlanner.step(++clone.tick);
+      clone.expansion!.trade.stepPlanning(32);
+    }
+    expect(trade.checkpoint().admissions).toHaveLength(0);
+    expect(trade.actors).toHaveLength(2);
+    expect(trade.actors.every(a => a.cargo > 0 && a.destination !== null)).toBe(true);
+    expect(expansion.supply.goods.get(sources[0].id)).toBe(1000 - trade.actors.reduce((n, a) => n + a.cargo, 0));
+    expect(isDeepStrictEqual(clone.checkpoint(), game.checkpoint())).toBe(true);
+  });
   it.each([[false,false],[false,true],[true,false],[true,true]])("pays both participants equally and publishes the recipient's income label (naval=%s, allied=%s)",(naval,allied)=>{
     const {game,trade,step}=fleet(naval?0:1,naval?1:0);
     if(allied){

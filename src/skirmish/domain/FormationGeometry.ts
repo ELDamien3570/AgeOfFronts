@@ -191,7 +191,7 @@ export function columnLayout(d: FormationDoctrine) {
   };
 }
 export function layoutGrid(count: number, shape: FormationShape, d: FormationDoctrine, frontage?:number) {
-  const flexible=frontageLayout(count,d,shape,frontage);
+  const flexible=shape==="mass" && frontage===undefined ? undefined : frontageLayout(count,d,shape,frontage);
   if(flexible && !(shape==="mass" && frontage===undefined))return {pitch:flexible.pitch,rankPitch:flexible.rankPitch,columns:flexible.files,rows:flexible.ranks,width:flexible.width,depth:flexible.depth};
   const pitch =
     shape === "column"
@@ -309,12 +309,19 @@ function computeFormationEnvelope(
     navigationRadius: Math.round(FIXED * (s.kind === "cavalry" ? 0.48 : 0.45) * (d.hull ? 1 : SOLDIER_SCALE)),
   };
 }
-const envelopes=new WeakMap<FormationState,{key:string;seed:number;kind:Squad['kind'];tick:number;value:ReturnType<typeof computeFormationEnvelope>}>();
+interface EnvelopeEntry {key:string;seed:number;kind:Squad['kind'];tick:number;value:ReturnType<typeof computeFormationEnvelope>}
+const envelopes=new WeakMap<FormationState,EnvelopeEntry[]>();
 export function formationEnvelope(s:Parameters<typeof computeFormationEnvelope>[0],tick:number):ReturnType<typeof computeFormationEnvelope> {
   if(!s.formation)return computeFormationEnvelope(s,tick);
-  const key=geometryKey(s),seed=s.id%16,time=s.formation.transition?tick:0,cached=envelopes.get(s.formation);
-  if(cached?.key===key && cached.seed===seed && cached.kind===s.kind && cached.tick===time)return cached.value;
-  const value=computeFormationEnvelope(s,tick);envelopes.set(s.formation,{key,seed,kind:s.kind,tick:time,value});return value;
+  const key=geometryKey(s),seed=s.id%16,time=s.formation.transition?tick:0;
+  let entries=envelopes.get(s.formation);
+  if(entries)for(let i=entries.length-1;i>=0;i--){const cached=entries[i];if(cached.key===key && cached.seed===seed && cached.kind===s.kind && cached.tick===time)return cached.value;}
+  // Movement alternates current and next-tick poses. Keep both rather than
+  // repeatedly evicting the current pose while certifying future occupancy.
+  const value=computeFormationEnvelope(s,tick);
+  if(!entries){entries=[];envelopes.set(s.formation,entries);}
+  if(entries.length>=4)entries.shift();
+  entries.push({key,seed,kind:s.kind,tick:time,value});return value;
 }
 function buildSlots(
   count: number,
@@ -384,10 +391,9 @@ function buildSlots(
   }
   return centered;
 }
-const slotCache = new WeakMap<
-  FormationState,
-  Map<string, readonly Readonly<{ x: number; y: number; row: number }>[]>
->();
+type Slots = readonly Readonly<{ x: number; y: number; row: number }>[];
+interface SlotEntry { definition?: string; seed: number; count: number; shape: FormationShape; frontage?: number; progress: number; slots: Slots }
+const slotCache = new WeakMap<FormationState, SlotEntry[]>();
 export function formationSlots(
   s: Pick<
     Squad,
@@ -407,40 +413,25 @@ export function formationSlots(
       : Math.max(1, Math.min(s.troops, s.manpower?.capacity ?? 144)),
     f = s.formation ?? createFormation(s.definitionId),
     shape = shapeOf(s);
-  const cacheKey = JSON.stringify([
-    s.definitionId,
-    s.id % 16,
-    count,
-    shape,
-    f.frontage,
-    f.transition
-      ? Math.max(
-          0,
-          Math.min(1, (tick - f.transition.startTick) / f.transition.duration),
-        )
-      : 1,
-  ]);
+  const seed = s.id % 16, t = f.transition,
+    p = t ? Math.max(0, Math.min(1, (tick - t.startTick) / t.duration)) : 1;
   let cache = slotCache.get(f);
-  const cached = cache?.get(cacheKey);
-  if (cached) return cached;
-  if (!cache) {
-    cache = new Map();
-    slotCache.set(f, cache);
+  if (cache) for (let i = cache.length - 1; i >= 0; i--) {
+    const entry = cache[i];
+    if (entry.definition === s.definitionId && entry.seed === seed && entry.count === count &&
+      entry.shape === shape && entry.frontage === f.frontage && entry.progress === p) return entry.slots;
   }
-  const remember = (
-    result: readonly Readonly<{ x: number; y: number; row: number }>[],
-  ) => {
-    if (cache!.size >= 8) cache!.delete(cache!.keys().next().value!);
-    cache!.set(cacheKey, result);
+  if (!cache) { cache = []; slotCache.set(f, cache); }
+  const remember = (result: Slots) => {
+    if (cache!.length >= 8) cache!.shift();
+    cache!.push({ definition: s.definitionId, seed, count, shape, frontage: f.frontage, progress: p, slots: result });
     return result;
   };
   const base = f.occupationSlots ? f.occupationSlots.slice(0,count) : template(count, shape, d, s.id, f.frontage).slots;
   const to =
       shape === "column" && f.trail?.length
         ? trailSlots(base, f.trail, radians(f.facing))
-        : base,
-    t = f.transition,
-    p = t ? Math.max(0, Math.min(1, (tick - t.startTick) / t.duration)) : 1;
+        : base;
   const source =
     t?.fromSlots ?? (t ? template(count, t.from, d, s.id, t.fromFrontage).slots : to);
   const from=t?assignedTransitionSources(source,to,t.from==='column'?columnLayout(d).columns:1):source;
@@ -462,10 +453,18 @@ export function formationSlots(
     ),
   );
 }
-const transitionAssignments=new Map<string,readonly Readonly<{x:number;y:number;row:number}>[]>();
+const transitionAssignments=new Map<string,Slots>();
+const assignmentPairs = new WeakMap<object, WeakMap<object, Map<number, Slots>>>();
 function assignedTransitionSources(source:readonly Readonly<{x:number;y:number;row:number}>[],to:readonly Readonly<{x:number;y:number;row:number}>[],groupSize:number) {
+  let destinations = assignmentPairs.get(source);
+  const known = destinations?.get(to)?.get(groupSize); if (known) return known;
+  const rememberPair = (result: Slots) => {
+    if (!destinations) { destinations = new WeakMap(); assignmentPairs.set(source, destinations); }
+    let groups = destinations.get(to); if (!groups) { groups = new Map(); destinations.set(to, groups); }
+    groups.set(groupSize, result); return result;
+  };
   const key=`${groupSize}:${arrayGeometryKey(source)}|${arrayGeometryKey(to)}`;
-  let result=transitionAssignments.get(key);if(result)return result;
+  let result=transitionAssignments.get(key);if(result)return rememberPair(result);
   const sources=to.map((slot,i)=>source[i]??slot);
   if(groupSize===1)result=minimumTravelAssignment(sources,to).map(i=>sources[i]);
   else {
@@ -481,12 +480,13 @@ function assignedTransitionSources(source:readonly Readonly<{x:number;y:number;r
     result=assignment.flatMap((i,j)=>minimumTravelAssignment(sg[i],tg[j]).map(k=>sg[i][k]));
   }
   result=Object.freeze(result);
-  if(transitionAssignments.size>=128)transitionAssignments.delete(transitionAssignments.keys().next().value!);transitionAssignments.set(key,result);return result;
+  if(transitionAssignments.size>=128)transitionAssignments.delete(transitionAssignments.keys().next().value!);transitionAssignments.set(key,result);return rememberPair(result);
 }
 export function validateFormation(
   value: FormationState | undefined,
   id?: string,
   troops?:number,
+  validatedArrays?: WeakSet<object>,
 ): void {
   if (value === undefined) return;
   if (!value) throw new Error("Invalid formation state");
@@ -526,7 +526,7 @@ export function validateFormation(
         value.trail.length > 256 ||
         value.trail[value.trail.length - 1]?.x !== 0 ||
         value.trail[value.trail.length - 1]?.y !== 0 ||
-        value.trail.some(
+        !validatedArrays?.has(value.trail) && value.trail.some(
           (p) =>
             !p ||
             !Number.isSafeInteger(p.x) ||
@@ -545,7 +545,7 @@ export function validateFormation(
   }
   const live=troops??value.layoutTroops;
   if(live!==undefined && formationProfile(d,value.shape) && !frontageLayout(live,d,value.shape))throw new Error("Unavailable formation at live count");
-  if(value.occupationSlots!==undefined && (!Array.isArray(value.occupationSlots)||!value.occupationSlots.length||value.occupationSlots.length>144||value.occupationSlots.some(p=>!p||![p.x,p.y,p.row].every(Number.isSafeInteger)||Math.abs(p.x)>128*FIXED||Math.abs(p.y)>128*FIXED)))throw new Error("Invalid trench formation anchors");
+  if(value.occupationSlots!==undefined && (!Array.isArray(value.occupationSlots)||!value.occupationSlots.length||value.occupationSlots.length>144||!validatedArrays?.has(value.occupationSlots) && value.occupationSlots.some(p=>!p||![p.x,p.y,p.row].every(Number.isSafeInteger)||Math.abs(p.x)>128*FIXED||Math.abs(p.y)>128*FIXED)))throw new Error("Invalid trench formation anchors");
   const t = value.transition;
   if (value.transition !== undefined && !t)
     throw new Error("Invalid formation transition");
@@ -565,7 +565,7 @@ export function validateFormation(
     (!Array.isArray(t.fromSlots) ||
       !t.fromSlots.length ||
       t.fromSlots.length > 144 ||
-      t.fromSlots.some(
+      !validatedArrays?.has(t.fromSlots) && t.fromSlots.some(
         (p) =>
           !p ||
           !Number.isSafeInteger(p.x) ||
@@ -677,6 +677,10 @@ const templates = new Map<
     depth: number;
   }
 >();
+let templateHits = 0, templateMisses = 0, templateSlots = 0;
+export function formationTemplateDiagnostics() {
+  return { hits: templateHits, misses: templateMisses, entries: templates.size, slots: templateSlots };
+}
 function template(
   count: number,
   shape: FormationShape,
@@ -697,6 +701,7 @@ function template(
   ].join(':');
   let result = templates.get(key);
   if (!result) {
+    templateMisses++;
     const slots = buildSlots(count, shape, d, seed % 16, frontage);
     const radiusX = Math.max(...slots.map((p) => Math.abs(p.x))),
       radiusY = Math.max(...slots.map((p) => Math.abs(p.y)));
@@ -709,9 +714,14 @@ function template(
       width: radiusX * 2 + d.bodyWidth,
       depth: radiusY * 2 + d.bodyDepth,
     };
-    if (templates.size >= 512) templates.delete(templates.keys().next().value!);
+    if (templates.size >= 512) {
+      const oldest = templates.keys().next().value!;
+      templateSlots -= templates.get(oldest)!.slots.length;
+      templates.delete(oldest);
+    }
     templates.set(key, result);
-  }
+    templateSlots += result.slots.length;
+  } else templateHits++;
   return result;
 }
 const doctrineTemplateIds=new WeakMap<FormationDoctrine,number>();let nextDoctrineTemplateId=0;

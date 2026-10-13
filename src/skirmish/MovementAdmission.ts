@@ -44,6 +44,7 @@ interface Admission {
   placementRetries?: number;
   /** Route passes that began beside a member yet found no clear connector. */
   connectorMisses?: number;
+  routeCheck?: { revision: string; member: number; stage: 0 | 1; cursor: number; dropped: boolean };
 }
 interface QueuedIntent {
   id: number;
@@ -552,40 +553,48 @@ export class MovementAdmission {
   }
   /** Keeps every finished route that remains clear under the current revision
    * and re-requests the rest. Returns the work spent. */
-  private retainRoutes(admission: Admission): number {
+  private retainRoutes(admission: Admission, budget: number): number {
     const blocked = this.ports.blocked(admission.playerId),
       revision = this.ports.revision(admission.playerId);
-    let work = 1, dropped = false;
-    for (const member of admission.members) {
-      // In-flight searches revalidate their own result against current walls.
-      // A shared spine is spliced in without search, so check it here.
-      if (member.shared) {
-        work += member.shared.spine.length;
-        if (!this.pathsOf(admission.playerId).routeClear(member.shared.spine, blocked)) {
+    if (admission.routeCheck?.revision !== revision) admission.routeCheck =
+      { revision, member: 0, stage: 0, cursor: 0, dropped: false };
+    const check = admission.routeCheck;
+    let work = 0;
+    while (work < budget) {
+      const member = admission.members[check.member],
+        corridor = admission.corridorId === undefined ? undefined : this.corridors.get(admission.corridorId),
+        path = member ? check.stage === 0 ? member.shared?.spine : member.path
+          : corridor?.revision === admission.revision ? corridor.path : undefined;
+      // Include the preceding cell so a diagonal at a quantum boundary keeps
+      // both corner checks. Path arrays are immutable after publication.
+      const end = path ? Math.min(path.length, check.cursor + 63) : 0;
+      const clear = !path || this.pathsOf(admission.playerId).routeClear(
+        path.slice(Math.max(0, check.cursor - 1), end), blocked);
+      work++;
+      check.cursor = end;
+      if (!clear) {
+        if (!member) this.corridors.delete(admission.corridorId!);
+        else if (check.stage === 0) {
           if (member.requested) this.ports.cancel(admission.id, member.id);
           member.requested = false;
           member.shared = undefined;
+        } else {
+          member.path = undefined; member.cursor = 0; check.dropped = true;
         }
+      } else if (path && end < path.length) continue;
+      check.cursor = 0;
+      if (!member) {
+        if (clear && corridor?.revision === admission.revision) corridor.revision = revision;
+        if (check.dropped && admission.phase === "connectors") {
+          admission.phase = "routes"; admission.member = 0;
+        }
+        admission.revision = revision;
+        admission.routeCheck = undefined;
+        break;
       }
-      if (!member.path) continue;
-      work += member.path.length;
-      if (!this.pathsOf(admission.playerId).routeClear(member.path, blocked)) {
-        member.path = undefined;
-        member.cursor = 0;
-        dropped = true;
-      }
+      if (check.stage === 0) check.stage = 1;
+      else { check.stage = 0; check.member++; }
     }
-    const corridor = admission.corridorId === undefined ? undefined : this.corridors.get(admission.corridorId);
-    if (corridor && corridor.revision === admission.revision) {
-      work += corridor.path.length;
-      if (this.pathsOf(admission.playerId).routeClear(corridor.path, blocked)) corridor.revision = revision;
-      else this.corridors.delete(admission.corridorId!);
-    }
-    if (dropped && admission.phase === "connectors") {
-      admission.phase = "routes";
-      admission.member = 0;
-    }
-    admission.revision = revision;
     return work;
   }
   private waitingIntent(admissionId: number): boolean {
@@ -835,13 +844,12 @@ export class MovementAdmission {
         continue;
       }
       if (admission.revision !== this.ports.revision(admission.playerId) &&
-        admission.phase !== "formation" && this.ports.priority?.(admission.playerId)) {
-        // A human order has no AI navigation policy: its obstacle revision only
-        // tracks walls and alliances, which `blocked` reads live. A wall raised
-        // elsewhere must not discard fitted slots and finished routes.
-        // Tile reads are far cheaper than search expansions: one unit per 64,
-        // never more than the remaining allowance callers have budgeted.
-        used += Math.min(budget - used, Math.ceil(this.retainRoutes(admission) / 64));
+        admission.phase !== "formation") {
+        // Permission/wall changes retire only affected paths. In-flight exact
+        // searches observe the live mask and revalidate their own result.
+        used += this.retainRoutes(admission, budget - used);
+        if (admission.revision !== this.ports.revision(admission.playerId)) { idle = 0; continue; }
+        if (used >= budget) continue;
       }
       if (admission.revision !== this.ports.revision(admission.playerId)) {
         if (admission.corridorId !== undefined) this.corridors.delete(admission.corridorId);

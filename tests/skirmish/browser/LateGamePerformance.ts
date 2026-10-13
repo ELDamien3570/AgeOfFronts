@@ -3,8 +3,15 @@ import { SnapshotDecoder } from "../../../src/skirmish/SnapshotCodec";
 
 const run = document.querySelector<HTMLButtonElement>("#run")!;
 const result = document.querySelector<HTMLPreElement>("#result")!;
+const save = document.querySelector<HTMLButtonElement>("#save")!;
+save.addEventListener("click", () => {
+  const url = URL.createObjectURL(new Blob([result.textContent ?? ""], { type: "application/json" }));
+  const link = document.createElement("a"); link.href = url; link.download = "late-game-performance.json";
+  link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
 run.addEventListener("click", () => {
   run.disabled = true;
+  save.disabled = true;
   const decoder = new SnapshotDecoder(),
     projection: number[] = [];
   const worker = new Worker(
@@ -12,6 +19,7 @@ run.addEventListener("click", () => {
     { type: "module" },
   );
   const baseline = new URLSearchParams(location.search).has("baseline");
+  const legacyDetails = new URLSearchParams(location.search).has("legacy-details");
   const combined = new URLSearchParams(location.search).has("combined");
   const query = new URLSearchParams(location.search);
   worker.onmessage = ({ data }) => {
@@ -48,6 +56,7 @@ run.addEventListener("click", () => {
       );
       worker.terminate();
       run.disabled = false;
+      save.disabled = false;
     }
   };
   worker.onerror = (event) => {
@@ -56,5 +65,5 @@ run.addEventListener("click", () => {
     run.disabled = false;
   };
   result.textContent = "Loading map and checkpoint";
-  worker.postMessage({ type: "start", baseline, combined, fixture: query.get("fixture"), pace: query.has("pace") });
+  worker.postMessage({ type: "start", legacyDetails, baseline, combined, source: query.get("source"), fixture: query.get("fixture"), pace: query.has("pace") });
 });

@@ -57,6 +57,21 @@ export function convexHull(points: readonly Point[]): Point[] {
   return [...lower, ...upper];
 }
 const hulls = new WeakMap<object, Map<string, readonly Point[]>>();
+function footprintTemplate(s: FormationBody, tick: number) {
+  const slots = formationSlots(s, tick), d = formationDoctrine(s.definitionId);
+  const key = `${d.bodyWidth}:${d.bodyDepth}`;
+  let cache = hulls.get(slots), local = cache?.get(key);
+  if (!local) {
+    // Hull(A + B) = Hull(Hull(A) + B). Only boundary slots can contribute
+    // to the exact body hull; interior soldiers need no corner allocation.
+    local = convexHull((slots.length <= 1 ? slots : convexHull(slots)).flatMap(p => [-1, 1].flatMap(x => [-1, 1].map(y =>
+      ({ x: p.x + x * d.bodyWidth / 2, y: p.y + y * d.bodyDepth / 2 })))));
+    if (!cache) { cache = new Map(); hulls.set(slots, cache); }
+    cache.set(key, local);
+  }
+  const angle = formationEnvelope(s, tick).angle;
+  return { local, c: Math.cos(angle), sin: Math.sin(angle) };
+}
 /** Convex current body, not the bounding rectangle of a wedge or an endpoint union. */
 function computeFormationFootprint(s: FormationBody, tick: number): Point[] {
   if (
@@ -65,31 +80,7 @@ function computeFormationFootprint(s: FormationBody, tick: number): Point[] {
     !formationDoctrine(s.definitionId).hull
   )
     return convexHull(formationFootprints(s, tick).flat());
-  const slots = formationSlots(s, tick),
-    d = formationDoctrine(s.definitionId);
-  const key = `${d.bodyWidth}:${d.bodyDepth}`;
-  let cache = hulls.get(slots),
-    local = cache?.get(key);
-  if (!local) {
-    local = convexHull(
-      slots.flatMap((p) =>
-        [-1, 1].flatMap((x) =>
-          [-1, 1].map((y) => ({
-            x: p.x + (x * d.bodyWidth) / 2,
-            y: p.y + (y * d.bodyDepth) / 2,
-          })),
-        ),
-      ),
-    );
-    if (!cache) {
-      cache = new Map();
-      hulls.set(slots, cache);
-    }
-    cache.set(key, local);
-  }
-  const angle = formationEnvelope(s, tick).angle,
-    c = Math.cos(angle),
-    sin = Math.sin(angle);
+  const { local, c, sin } = footprintTemplate(s, tick);
   return local.map((p) => ({
     x: s.x + p.x * c - p.y * sin,
     y: s.y + p.x * sin + p.y * c,
@@ -181,16 +172,28 @@ export function polygonsOverlap(
   b: readonly Point[],
   skin = 0,
 ): boolean {
+  const axes: Point[] = [];
   for (const poly of [a, b])
     for (let i = 0; i < poly.length; i++) {
       const p = poly[i],
         q = poly[(i + 1) % poly.length],
         length = Math.hypot(q.x - p.x, q.y - p.y);
       if (!length) continue;
-      const axis = { x: -(q.y - p.y) / length, y: (q.x - p.x) / length },
-        pa = projection(a, axis),
-        pb = projection(b, axis);
-      if (pa.max <= pb.min + skin || pb.max <= pa.min + skin) return false;
+      const axis = { x: -(q.y - p.y) / length, y: (q.x - p.x) / length };
+      // Rectangle/capsule bodies repeat axes. Skip only numerically identical
+      // tests; opposite axes are equivalent without a nonzero rounding skin.
+      if (axes.some(old => old.x === axis.x && old.y === axis.y || skin === 0 && old.x === -axis.x && old.y === -axis.y)) continue;
+      if (axes.length < 6) axes.push(axis);
+      let amin = Infinity, amax = -Infinity, bmin = Infinity, bmax = -Infinity;
+      for (const point of a) {
+        const n = point.x * axis.x + point.y * axis.y;
+        amin = Math.min(amin, n); amax = Math.max(amax, n);
+      }
+      for (const point of b) {
+        const n = point.x * axis.x + point.y * axis.y;
+        bmin = Math.min(bmin, n); bmax = Math.max(bmax, n);
+      }
+      if (amax <= bmin + skin || bmax <= amin + skin) return false;
     }
   return true;
 }
@@ -211,6 +214,18 @@ export interface FormationContact {
   frontage: number;
   facing: number;
 }
+interface PolygonBounds { left: number; right: number; top: number; bottom: number }
+const contactBoundsCache = new WeakMap<object, readonly PolygonBounds[]>();
+/** Footprint parts are immutable prepared geometry, owned by their physical pose. */
+function contactBounds(parts: readonly (readonly Point[])[]): readonly PolygonBounds[] {
+  const previous = contactBoundsCache.get(parts); if (previous) return previous;
+  const result = parts.map(poly => {
+    let left = Infinity, right = -Infinity, top = Infinity, bottom = -Infinity;
+    for (const point of poly) { left = Math.min(left, point.x); right = Math.max(right, point.x); top = Math.min(top, point.y); bottom = Math.max(bottom, point.y); }
+    return { left, right, top, bottom };
+  });
+  contactBoundsCache.set(parts, result); return result;
+}
 function computeFormationContact(
   a: FormationBody,
   b: FormationBody,
@@ -228,14 +243,7 @@ function computeFormationContact(
     bp: bpart[0],
     ...polygonContact(apart[0], bpart[0]),
   };
-  const bounds = (poly: readonly Point[]) => ({
-    left: Math.min(...poly.map((p) => p.x)),
-    right: Math.max(...poly.map((p) => p.x)),
-    top: Math.min(...poly.map((p) => p.y)),
-    bottom: Math.max(...poly.map((p) => p.y)),
-  });
-  const abounds = apart.map(bounds),
-    bbounds = bpart.map(bounds);
+  const abounds = contactBounds(apart), bbounds = contactBounds(bpart);
   // AABB distance is a lower bound. Skip distant rows and stop at the first
   // overlap; neither can improve the exact closest pair or its stable tie order.
   search: for (let i = 0; i < apart.length; i++)
@@ -317,6 +325,8 @@ export class PreparedFormationBody {
   readonly body:FormationBody;
   readonly envelope:ReturnType<typeof formationEnvelope>;
   private readonly cached:BodyFacts;
+  private motion?: { from: Point[]; to: { xa: number; xb: number; ya: number; yb: number; sx: number; sy: number }[] };
+  private readonly movementCandidates: { x: number; y: number; hull: Point[] }[] = [];
   constructor(s:FormationBody,private readonly tick:number,envelope=formationEnvelope(s,tick)) {
     this.body={id:s.id,x:s.x,y:s.y,kind:s.kind,troops:s.troops,manpower:s.manpower,
       definitionId:s.definitionId,formation:s.formation,charge:s.charge};
@@ -327,6 +337,52 @@ export class PreparedFormationBody {
   }
   footprints():Point[][] {return this.parts();}
   footprint():Point[] {return this.cached.convex??(this.cached.convex=computeFormationFootprint(this.body,this.tick));}
+  /** Exact rigid/reforming sweep, prepared once for all candidate roots.
+   * Keep the original addition order for world coordinates and rounding skin.
+   * Columns retain their row-union/trail-specific solver in the caller. */
+  movementSweep(end: Point): Point[] | undefined {
+    const s = this.body, transition = s.formation?.transition;
+    if (s.formation?.shape === "column" || transition?.from === "column") return undefined;
+    for (let i = this.movementCandidates.length - 1; i >= 0; i--) {
+      const candidate = this.movementCandidates[i];
+      if (candidate.x === end.x && candidate.y === end.y) return candidate.hull;
+    }
+    if (!this.motion) {
+      const templates = [footprintTemplate(s, this.tick)];
+      let skin = 0;
+      if (transition) {
+        const future = formationEnvelope(s, this.tick + 1);
+        const angle = Math.abs(future.angle - this.envelope.angle), radius = this.envelope.broadRadius;
+        skin = Math.ceil(radius * (1 - Math.cos(angle / 2)) + radius * angle * angle / 4) + 2;
+        templates.push(footprintTemplate(s, this.tick + 1));
+        if (this.tick + 1 >= transition.startTick + transition.duration)
+          templates.push(footprintTemplate({ ...s, formation: { ...s.formation!, transition: undefined } }, this.tick + 1));
+      }
+      const terms: NonNullable<PreparedFormationBody["motion"]>["to"] = [];
+      const sides = skin ? [-1, 1] : [0];
+      for (const { local, c, sin } of templates) for (const p of local)
+        for (const x of sides) for (const y of sides)
+          terms.push({ xa: p.x * c, xb: p.y * sin, ya: p.x * sin, yb: p.y * c, sx: x * skin, sy: y * skin });
+      let to = terms;
+      if (transition) {
+        const points = terms.map(p => ({ x: s.x + p.xa - p.xb + p.sx, y: s.y + p.ya + p.yb + p.sy }));
+        const indices = new Map(points.map((p, i) => [p, i]));
+        to = convexHull(points).map(p => terms[indices.get(p)!]);
+      }
+      let from = this.footprint();
+      if (skin) {
+        const padded: Point[] = [];
+        for (const p of from) for (const x of sides) for (const y of sides)
+          padded.push({ x: p.x + x * skin, y: p.y + y * skin });
+        from = convexHull(padded);
+      }
+      this.motion = { from, to };
+    }
+    const hull = convexHull([...this.motion.from, ...this.motion.to.map(p => ({ x: end.x + p.xa - p.xb + p.sx, y: end.y + p.ya + p.yb + p.sy }))]);
+    if (this.movementCandidates.length === 8) this.movementCandidates.shift();
+    this.movementCandidates.push({ x: end.x, y: end.y, hull });
+    return hull;
+  }
   contact(other:PreparedFormationBody):FormationContact {
     // Settled bodies are clock-independent and may survive a phase boundary.
     if(this.tick!==other.tick && this.body.formation?.transition && other.body.formation?.transition)
@@ -432,6 +488,23 @@ export function contactParticipants(s:FormationBody,target:FormationBody,tick:nu
   const key=ranks*2+Number(edgeCombat),cached=values.get(key);if(cached!==undefined)return cached;
   const value=computeContactParticipants(s,target,tick,ranks,contact,edgeCombat);values.set(key,value);return value;
 }
+const approachPolygons = new WeakMap<BodyFacts, WeakMap<BodyFacts, readonly Point[][]>>();
+function approachObstacles(s: FormationBody, target: FormationBody, tick: number): readonly Point[][] {
+  const sourceFacts = facts(s, tick), targetFacts = facts(target, tick);
+  let pairs = approachPolygons.get(sourceFacts);
+  const cached = pairs?.get(targetFacts);
+  if (cached) return cached;
+  const sourcePart = s.formation?.shape === "column" && !s.formation.transition
+    ? formationFootprints(s, tick)[0] : formationFootprint(s, tick);
+  const source = sourcePart.map(p => ({ x: p.x - s.x, y: p.y - s.y }));
+  const polygons = formationFootprints(target, tick).map(part => {
+    const body = part.map(p => ({ x: p.x - target.x, y: p.y - target.y }));
+    return convexHull(body.flatMap(b => source.map(a => ({ x: b.x - a.x, y: b.y - a.y }))));
+  });
+  if (!pairs) { pairs = new WeakMap(); approachPolygons.set(sourceFacts, pairs); }
+  pairs.set(targetFacts, polygons);
+  return polygons;
+}
 /** Bounded radial approach, solved against the same current boundaries as combat. */
 export function formationApproach(
   s: FormationBody,
@@ -442,11 +515,6 @@ export function formationApproach(
 ): Point {
   // A travel carrier leads its trail; do not steer a rigid convex hull through
   // a bend or fill the target column's empty interior during approach planning.
-  const sourcePart =
-    s.formation?.shape === "column" && !s.formation.transition
-      ? formationFootprints(s, tick)[0]
-      : formationFootprint(s, tick);
-  const source = sourcePart.map((p) => ({ x: p.x - s.x, y: p.y - s.y }));
   const u = { x: Math.cos(angle), y: Math.sin(angle) },
     r = Math.max(0, reach - 1);
   const far =
@@ -455,11 +523,7 @@ export function formationApproach(
     reach +
     FIXED;
   let distance = 0;
-  for (const part of formationFootprints(target, tick)) {
-    const body = part.map((p) => ({ x: p.x - target.x, y: p.y - target.y }));
-    const poly = convexHull(
-      body.flatMap((b) => source.map((a) => ({ x: b.x - a.x, y: b.y - a.y }))),
-    );
+  for (const poly of approachObstacles(s, target, tick)) {
     const entry = polygonSweepEntry(
       { x: u.x * far, y: u.y * far },
       { x: 0, y: 0 },

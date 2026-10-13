@@ -226,7 +226,7 @@ export class EmpireView {
     return !!this.panel;
   }
 
-  update(vm: EmpireViewModel): void {
+  update(vm: EmpireViewModel, recruitmentQuotes?: Parameters<EmpireHudView["update"]>[1]): void {
     this.vm = vm;
     this.reconcileProductionPriorities();
     this.ageTheme.update(vm.progression.age);
@@ -245,7 +245,7 @@ export class EmpireView {
       .querySelector("#technology-toggle")!
       .setAttribute("title", vm.summary);
 
-    this.dock.update(vm);
+    this.dock.update(vm, recruitmentQuotes);
     this.researchOpportunities.update(vm);
     this.allianceRenewals.update(vm);
 

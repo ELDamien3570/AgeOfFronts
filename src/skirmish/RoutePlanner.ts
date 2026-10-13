@@ -48,6 +48,8 @@ export type ExactRouteOutcome =
   | "superseded";
 export interface RoutePlannerPorts<T> {
   priority?(request: ExactRouteRequest<T>): boolean;
+  /** Canonical autonomous planning deadline; omitted for exhaustive/player work. */
+  deadlineTicks?(request: ExactRouteRequest<T>): number | undefined;
   /** Autonomous callers can decline exclusive arena retries without claiming
    * that a capacity-limited result means geographic impossibility. */
   allowExclusiveRetry?(request: ExactRouteRequest<T>): boolean;
@@ -266,6 +268,9 @@ export class RoutePlanner<T> {
         caller,
         pending: 0,
         oldestAge: 0,
+        active: 0,
+        oldestActiveAge: 0,
+        reclaiming: 0,
         work: 0,
         complete: 0,
         unreachable: 0,
@@ -280,12 +285,19 @@ export class RoutePlanner<T> {
     for (const cohort of this.cohorts.values()) {
       cohort.pending = 0;
       cohort.oldestAge = 0;
+      cohort.active = cohort.oldestActiveAge = cohort.reclaiming = 0;
     }
     // The authoritative queue has at most 128 entries, independent of world size.
     for (const job of this.jobs.values()) {
       const cohort = this.cohort(job);
       cohort.pending++;
       cohort.oldestAge = Math.max(cohort.oldestAge, tick - job.createdTick, 0);
+      if (job.retired || job.discard) cohort.reclaiming!++;
+      const active = job.discard ? job.replacement : job.retired ? undefined : job;
+      if (active) {
+        cohort.active!++;
+        cohort.oldestActiveAge = Math.max(cohort.oldestActiveAge!, tick - active.createdTick, 0);
+      }
     }
     return [...this.cohorts.values()].map((cohort) => ({ ...cohort }));
   }
@@ -451,6 +463,32 @@ export class RoutePlanner<T> {
       quantum < 1
     )
       throw new Error("Invalid route work budget");
+    // Terminal receipts do not wait for arena reclamation. Cleanup remains
+    // scheduled and charged, just as it does after a completed route.
+    for (const job of [...this.jobs.values()]) {
+      if (job.retired) continue;
+      const request = job.discard ? job.replacement : job;
+      if (!request) continue;
+      const deadline = this.ports.deadlineTicks?.(request);
+      if (deadline === undefined) continue;
+      if (!Number.isSafeInteger(deadline) || deadline < 1) throw new Error("Invalid route deadline");
+      if (tick - request.createdTick < deadline) continue;
+      if (job.discard) job.replacement = undefined;
+      else {
+        this.jobs.delete(job.key);
+        if (this.exclusiveKey === job.key) this.exclusiveKey = undefined;
+        if (job.search.nodes.size) {
+          const key = `${job.key}#retired:${this.retiredJobs++}`;
+          this.jobs.set(key, { ...job, key,
+            search: { ...job.search, path: [], heap: [] }, output: [],
+            corridor: undefined, retired: true, discard: true, releasing: "limited",
+            replacement: undefined, waitingForWorkspace: false, resumeExclusiveAfterRelease: undefined });
+        }
+      }
+      this.cohort(request).limited++;
+      this.diagnostics.limited++;
+      this.ports.completed(request, "limited", []);
+    }
     let used = 0;
     let preparationBudget = Math.min(256, budget),
       // At most 16,384 local dequeues, with 12,288 reserved for human work.

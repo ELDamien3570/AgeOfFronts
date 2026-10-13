@@ -676,6 +676,19 @@ export class Trade {
     // Planning commits run before the movement/trade phase. Derived markets
     // must be available here after restore, and reflect current source changes.
     this.refreshMarkets();
+    // A completed corridor already has one shared path owner. Keep the same
+    // ownership while it is pending instead of occupying one planner job per
+    // merchant. Rebuild from canonical admissions so restore needs no new state.
+    const pendingCorridors = new Map<string, number>();
+    const pendingKey = (p: Admission) => `${this.corridorKey(p, p.goal!)}:${this.world.owners?.[p.start] ?? p.playerId}`;
+    if (this.world.domainRoutes) for (const p of this.admissions.values()) {
+      if (!p.requested || p.goal === undefined) continue;
+      const key = pendingKey(p);
+      if (pendingCorridors.has(key)) {
+        this.world.domainRoutes.cancel(this.task(p));
+        p.requested = false;
+      } else pendingCorridors.set(key, p.id);
+    }
     let used = 0,
       idle = 0;
     while (this.admissions.size && used < budget) {
@@ -778,13 +791,18 @@ export class Trade {
         continue;
       }
       if (this.world.domainRoutes) {
+        const key = pendingKey(p), leader = pendingCorridors.get(key);
+        if (leader !== undefined && leader !== p.id) continue;
         p.requested = this.world.domainRoutes.request(
           this.task(p),
           p.start,
           p.goal,
           p.naval,
         );
-        if (p.requested) this.diagnostics.routeRequests++;
+        if (p.requested) {
+          pendingCorridors.set(key, p.id);
+          this.diagnostics.routeRequests++;
+        }
       } else {
         if (
           this.world.paths.work +
@@ -809,28 +827,28 @@ export class Trade {
     }
     return used;
   }
+  private readonly cargoResearch = new Map<number, { tick: number; revision: number; research: readonly string[]; count: number; landCapacity: number; landDefinition: string; seaCapacity: number; seaDefinition: string; seaSpeed: number; handling: number }>();
+  private cargoEffects(owner: number) {
+    const research = this.progression.states[owner].completed;
+    const cached = this.cargoResearch.get(owner);
+    if (cached && cached.tick === this.world.tick && cached.revision === this.progression.revision && cached.research === research && cached.count === research.length) return cached;
+    const tier = landTraderTier(research), vessel = VESSELS.filter(v => v.kind === "trade" && research.includes(v.technologyId)).slice(-1)[0];
+    const value = { tick: this.world.tick, revision: this.progression.revision, research, count: research.length,
+      landCapacity: LAND_TRADE_CAPACITIES[tier], landDefinition: `${AGES[tier].toLowerCase()}-trader`,
+      seaCapacity: vessel ? vesselEffects(vessel, research).capacity! : LAND_TRADE_CAPACITIES[tier],
+      seaDefinition: vessel?.id ?? `${AGES[tier].toLowerCase()}-trader`, seaSpeed: vessel?.speed ?? 70,
+      handling: cargoHandlingPercent(research) * portCargoPercent(research) };
+    this.cargoResearch.set(owner, value); return value;
+  }
   private capacity(site: Site): { value: number; definition: string } {
-    const research = this.progression.states[site.source.playerId].completed,
-      tier = landTraderTier(research),
-      vessel = site.naval
-        ? VESSELS.filter(
-            (v) => v.kind === "trade" && research.includes(v.technologyId),
-          ).slice(-1)[0]
-        : undefined;
+    const effects = this.cargoEffects(site.source.playerId);
     return {
-      value: Math.floor(
-        ((vessel ? vesselEffects(vessel, research).capacity! : LAND_TRADE_CAPACITIES[tier]) *
-          cargoHandlingPercent(research) * portCargoPercent(research) *
-          stackCargoPercent(site.buildings.length)) /
-          1000000,
-      ),
-      definition: vessel?.id ?? `${AGES[tier].toLowerCase()}-trader`,
+      value: Math.floor(((site.naval ? effects.seaCapacity : effects.landCapacity) * effects.handling * stackCargoPercent(site.buildings.length)) / 1000000),
+      definition: site.naval ? effects.seaDefinition : effects.landDefinition,
     };
   }
   private seaPricing(owner:number) {
-    const research=this.progression.states[owner].completed;
-    const vessel=VESSELS.filter(v=>v.kind==="trade" && research.includes(v.technologyId)).slice(-1)[0];
-    return {seaSpeed:vessel?.speed ?? 70};
+    return { seaSpeed: this.cargoEffects(owner).seaSpeed };
   }
   private load(a: TradeActor): boolean {
     const site = this.source(a);

@@ -15,7 +15,7 @@ afterEach(() => {
 describe("Stone/Bronze demo through the normal worker", () => {
   it("starts through spawn selection, accepts movement, pauses, and restarts in Bronze", async () => {
     vi.useFakeTimers({
-      toFake: ["setInterval", "clearInterval", "performance"],
+      toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "performance"],
     });
     const messages: WorkerResponse[] = [];
     const worker: {

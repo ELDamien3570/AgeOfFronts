@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Late-game skirmish lab</title>
+<style>body{background:#10212b;color:#eef3ed;font:16px system-ui;max-width:760px;margin:70px auto;padding:24px}a{color:#e5c788}h1{font-size:32px}li{margin:18px 0;line-height:1.5}p{line-height:1.6}</style></head>
+<body><h1>Late-game skirmish lab</h1><p>Start directly in a saved late-game world. The playable replay uses the ordinary game worker, renderer, controls and HUD. Performance timings appear alongside the game.</p>
+<ul><li><a href="/skirmish/index.html?diagnostics&amp;replay=/out/late-game-playability-20261012/playable-fixture.json">Play the 30-minute Migration replay</a><br>About 530 squads and 270 ships. Takes control of one surviving nation so orders can be tested. Restart returns to the same checkpoint.</li>
+<li><a href="/tests/skirmish/browser/LateGamePerformance.html?pace&amp;fixture=/out/late-game-pace-20261012/browser-fixture.json">Measure the original replay without rendering</a><br>600 ticks at the ordinary 20-tick cadence, with simulation, encoding and decoding measured separately.</li></ul>
+<p>Keep the test tab in the foreground and run one match at a time. “Save performance report” exports the current timings. Command admission measures input reaching the worker; route execution may take longer.</p>
+<p>Generate another playable Migration replay from a captured checkpoint:</p><pre>node node_modules/tsx/dist/cli.mjs scripts/createLateGameReplay.ts checkpoint.v8 out/replay.json 3</pre>
+<p>The final number selects a surviving nation with field squads. Load it with <code>/skirmish/index.html?diagnostics&amp;replay=/out/replay.json</code>. These local fixtures are not bundled into public releases.</p></body></html>

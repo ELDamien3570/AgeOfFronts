@@ -1,3 +1,5 @@
+import { FormationSlotEncoder, FormationSlotDecoder, resolveFormationSlots, type FormationSlotChanges, type FormationSlotRead } from "./FormationSlotStream";
+import type { FormationState } from "./domain/FormationGeometry";
 import { validateOccupancy } from "./domain/TrenchOccupancy";
 import { validateStance } from "./domain/SkirmishStance";
 import { validateCombatFact } from './domain/CombatFact';
@@ -25,7 +27,8 @@ import { MAX_FACTION_SHIPS } from "./Rules";
  * buffer values, never JSON scalars. Variable ID lists use offset/count pairs.
  * Strings are interned once per packet, not repeated for every entity. */
 export interface PackedSnapshotDetails {
-  version: 1 | 2 | 3 | 4;
+  version: 1 | 2 | 3 | 4 | 5;
+  formationSlots?: FormationSlotChanges;
   strings: string[];
   squads?: Float64Array;
   /** Optional squad-level motion extension; legacy 27-value rows stay readable. */
@@ -90,6 +93,10 @@ const SQUAD_DETAIL_KEYS = [
 ];
 const SQUAD_DETAIL_PREFIXES = SQUAD_DETAIL_KEYS.map((key) => `"${key}":`);
 export class SquadDetailCache {
+  private readonly slots?: FormationSlotEncoder;
+  constructor(readonly compactFormationSlots = false) { if (compactFormationSlots) this.slots = new FormationSlotEncoder(); }
+  slotChanges(): FormationSlotChanges | undefined { return this.slots?.drain(); }
+  get retainedSlotEntries(): number { return this.slots?.retainedEntries ?? 0; }
   private readonly rows = new Map<
     number,
     { inputs: readonly unknown[]; parts: (string | undefined)[]; value: string }
@@ -97,12 +104,14 @@ export class SquadDetailCache {
   readonly diagnostics = { hits: 0, misses: 0, fieldHits: 0, fieldMisses: 0 };
   clear(): void {
     this.rows.clear();
+    this.slots?.clear();
   }
   forget(id: number): void {
     this.rows.delete(id);
+    this.slots?.forget(id);
   }
   retain(ids: ReadonlySet<number>): void {
-    for (const id of this.rows.keys()) if (!ids.has(id)) this.rows.delete(id);
+    for (const id of this.rows.keys()) if (!ids.has(id)) this.forget(id);
   }
   encode(s: Snapshot["squads"][number]): string | undefined {
     if (
@@ -117,8 +126,7 @@ export class SquadDetailCache {
         s.cavalryMelee ||
         s.charge?.strength !== undefined
       )
-    )
-      return undefined;
+    ) { this.forget(s.id); return undefined; }
     const inputs = [
       s.stance,
       s.lastWithdrawTick,
@@ -145,7 +153,7 @@ export class SquadDetailCache {
         return old.parts[i];
       }
       this.diagnostics.fieldMisses++;
-      return JSON.stringify(input);
+      return JSON.stringify(i === 7 && this.slots ? this.slots.encode(s.id, input as FormationState | undefined) : input);
     });
     let value = "{",
       separator = "";
@@ -330,7 +338,8 @@ export function packSnapshotDetails(
     }
   }
   return {
-    version: 4,
+    version: detailCache.compactFormationSlots ? 5 : 4,
+    ...(detailCache.compactFormationSlots ? { formationSlots: detailCache.slotChanges() } : {}),
     strings,
     squads: squadData,
     ...(squadMotion ? { squadMotion } : {}),
@@ -350,10 +359,15 @@ export function packSnapshotDetails(
   };
 }
 
+type ParsedSquadPayload = NonNullable<SnapshotPacket["squadDetails"]>[number] & { chargeStrength?: number; refitVariant?: "base" | "enlarged" };
 export function validateSnapshotDetails(
-  data: PackedSnapshotDetails): void {
+  data: PackedSnapshotDetails,
+  context?: { tick?: number; troops?: ReadonlyMap<number, number>; slots?: FormationSlotRead },
+): Map<number, ParsedSquadPayload> {
+  const payloads = new Map<number, ParsedSquadPayload>();
+  const slots = data.version === 5 ? context?.slots ?? new FormationSlotDecoder().stage(data.formationSlots) : undefined;
   if (
-    ![1,2,3,4].includes(data.version) ||
+    ![1,2,3,4,5].includes(data.version) ||
     !Array.isArray(data.strings) ||
     data.strings.some((s) => typeof s !== "string") ||
     !(data.ids instanceof Float64Array)
@@ -385,7 +399,7 @@ export function validateSnapshotDetails(
   }
   rows(
     data.squads,
-    data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27, MAX_SQUADS * 255,
+    data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27, MAX_SQUADS * 255,
   );
   rows(data.squadMotion, 4, MAX_SQUADS * 255)
   rows(data.buildings, DETAIL_STRIDES.building, 1_000_000)
@@ -439,14 +453,14 @@ export function validateSnapshotDetails(
   if ( data.squadMotion) {
     if (data.version < 2) throw new Error("Invalid packed snapshot motion version");
     if (
-      !data.squads || data.squadMotion.length / 4 !== data.squads.length / (data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)
+      !data.squads || data.squadMotion.length / 4 !== data.squads.length / (data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)
     )
       throw new Error("Invalid packed snapshot motion rows");
     for (let at = 0; at < data.squadMotion.length; at += 4) {
       const b = data.squadMotion
       if (
         b[at] !==
-        data.squads[(at / 4) * (data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)]
+        data.squads[(at / 4) * (data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)]
       ) throw new Error("Invalid packed snapshot motion identity");
       if (Number.isNaN(b[at + 1])) {
         if (!Number.isNaN(b[at + 2]) || !Number.isNaN(b[at + 3])) throw new Error("Invalid packed snapshot motion");
@@ -460,16 +474,21 @@ export function validateSnapshotDetails(
   for (const id of data.ids)
     if (!Number.isSafeInteger(id) || id < 0)
       throw new Error("Invalid packed snapshot list identity");
-  if(data.version===4 && data.squads)for(let at=0;at<data.squads.length;at+=DETAIL_STRIDES.squad){
+  if(data.version>=4 && data.squads)for(let at=0;at<data.squads.length;at+=DETAIL_STRIDES.squad){
     const index=data.squads[at+29];if(Number.isNaN(index))continue;
     if(!Number.isSafeInteger(index)||index<0||index>=data.strings.length||data.strings[index].length>20000)throw new Error('Invalid manpower detail');
-    const payload=JSON.parse(data.strings[index]);validateOccupancy(payload.occupancy);validateStance(payload.stance,payload.lastWithdrawTick);validateChargeStrength(payload.chargeStrength);validateManpower(payload.manpower);validateWeaponState(payload.weaponState);validateFormation(payload.formation,data.strings[data.squads[at+1]]);validateMeleeStrike(payload.meleeStrike);validateCombatFact(payload.combatFact);validateChargeImpact(payload.chargeImpact);validateCavalryEngagement(payload.cavalryEngagement);validateCavalryMelee(payload.cavalryMelee);
+    // One owned object per squad row, even when the string table deduplicated
+    // identical JSON. Distinct units must not acquire aliased mutable details.
+    const payload=JSON.parse(data.strings[index]) as ParsedSquadPayload;
+    if (slots) resolveFormationSlots(payload.formation, slots);
+    payloads.set(at,payload);
+    validateOccupancy(payload.occupancy);validateStance(payload.stance,payload.lastWithdrawTick);validateChargeStrength(payload.chargeStrength);validateManpower(payload.manpower,context?.troops?.get(data.squads[at]));validateWeaponState(payload.weaponState);validateFormation(payload.formation,data.strings[data.squads[at+1]],context?.troops?.get(data.squads[at]),slots?.validated);validateMeleeStrike(payload.meleeStrike,context?.tick);validateCombatFact(payload.combatFact,context?.tick);validateChargeImpact(payload.chargeImpact,context?.tick);validateCavalryEngagement(payload.cavalryEngagement,context?.tick);validateCavalryMelee(payload.cavalryMelee,context?.tick);
     if(payload.refitVariant!==undefined&&!['base','enlarged'].includes(payload.refitVariant))throw new Error('Invalid refit recipe variant');
   }
   if (data.squads)
     for (
       let at = 0; at < data.squads.length;
-      at += data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27
+      at += data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27
     ) {
       const b = data.squads
       range(b[at + 9], b[at + 10], 8); string(b[at + 1]);
@@ -515,14 +534,17 @@ export function validateSnapshotDetails(
     finite(data.volleys, at, 3)
     finite(data.volleys, at + 4, data.version >= 3 ? 11 : 5);
   }
+  return payloads;
 }
 
 export function unpackSnapshotDetails(
   data: PackedSnapshotDetails,
+  payloads?: ReadonlyMap<number, ParsedSquadPayload>,
 ): Pick<
   SnapshotPacket,
   "squadDetails" | "buildingDetails" | "ships" | "volleys"
 > {
+  if (data.version === 5 && !payloads) payloads = validateSnapshotDetails(data);
   const string = (id: number) =>
     Number.isNaN(id) ? undefined : data.strings[id]
   const refit = (b: Float64Array, at: number): RefitJob | null | undefined =>
@@ -543,7 +565,7 @@ export function unpackSnapshotDetails(
   if (data.squads)
     for (
       let at = 0; at < data.squads.length;
-      at += data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27
+      at += data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27
     ) {
       const b = data.squads
       const charge: ChargeState | null | undefined = Number.isNaN(b[at + 14])
@@ -558,7 +580,7 @@ export function unpackSnapshotDetails(
               committedTick: b[at + 18],
               targetId: optional(b[at + 19]),
             }
-      const payload=data.version===4&&!Number.isNaN(b[at+29])?JSON.parse(data.strings[b[at+29]]):undefined;
+      const payload=data.version>=4&&!Number.isNaN(b[at+29])?(payloads?.get(at) ?? JSON.parse(data.strings[b[at+29]])):undefined;
       validateChargeStrength(payload?.chargeStrength);
       if(charge && payload?.chargeStrength!==undefined)charge.strength=payload.chargeStrength;
       const landRefit=refit(b,at+11);
@@ -589,22 +611,22 @@ export function unpackSnapshotDetails(
         chargeReadyTick: optional(b[at + 20]),
         locomotion: data.squadMotion &&
           !Number.isNaN( data.squadMotion[
-              (at / (data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)) * 4 + 1
+              (at / (data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)) * 4 + 1
             ],
           )
             ? {
                 heading: data.squadMotion[
-                    (at / (data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)) *
+                    (at / (data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)) *
                       4 +
                       1
                   ],
             targetHeading: data.squadMotion[
-                    (at / (data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)) *
+                    (at / (data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)) *
                       4 +
                       2
                   ],
             speed: data.squadMotion[
-                    (at / (data.version === 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)) *
+                    (at / (data.version >= 4 ? DETAIL_STRIDES.squad : data.version === 3 ? 29 : 27)) *
                       4 +
                       3
                   ],

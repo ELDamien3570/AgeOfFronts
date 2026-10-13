@@ -240,7 +240,7 @@ export class EmpireHudView {
     const key = shortcut ? `<kbd>${action === "build" && this.root.dataset.wasdMode === "true" ? "⇧" : ""}${shortcut.key}</kbd>` : "";
     return `<div class="action-slot" data-dock-tip="${esc(`${label}\n${tip}${reason ? `\n${reason}` : ""}`)}" tabindex="${reason ? 0 : -1}"><button class="hud-action" data-dock-action="${action}" data-value="${value}" ${reason ? "disabled" : ""} aria-label="${esc(label)}">${art ? `<img class="hud-art" src="${art}" alt="">` : `<span class="command-symbol">${esc(label.slice(0, 2))}</span>`}${key}<span class="action-name">${esc(label)}</span></button></div>`;
   }
-  update(vm: EmpireViewModel): void {
+  update(vm: EmpireViewModel, recruitmentQuotes?: ReadonlyMap<SquadType | ShipType, ReturnType<SkirmishViewModel["recruitment"]>>): void {
     this.vm = vm;
     for (const kind of [
       "city",
@@ -326,10 +326,18 @@ export class EmpireHudView {
     for (const type of ["city", "factory", "port", "barracks", "archery", "stables"] as const) {
       this.root.querySelector<HTMLElement>(`#build-${type}`)!.closest<HTMLElement>(".action-slot")!.hidden = !vm.buildingVisible(type);
     }
+    const units = vm.units();
+    // Quotes are borrowed only during this synchronous presentation update.
+    // Selection, stocks and snapshot changes acquire fresh quotes next time.
+    const supportQuotes = new Map<string, ReturnType<EmpireViewModel["recruitDefinition"]>>();
+    const supportQuote = (id: string) => {
+      let quote = supportQuotes.get(id);
+      if (!quote) { quote = vm.recruitDefinition(id); supportQuotes.set(id, quote); }
+      return quote;
+    };
     const support = ["antiCavalry", "heavyCavalry", "rangedCavalry", "siege", "artillery", "anti-air", "launcher"]
       .map((role) => {
-        const candidates = vm
-          .units()
+        const candidates = units
           .filter(
             (u) =>
               (u.troopClass === role || u.role === role) &&
@@ -340,11 +348,11 @@ export class EmpireHudView {
           .slice()
           .reverse();
         const u = this.preferences.autoTier
-          ? (candidates.find((u) => !vm.recruitDefinition(u.id).reason) ??
+          ? (candidates.find((u) => !supportQuote(u.id).reason) ??
             candidates[0])
           : candidates[0];
         if (!u) return "";
-        const quote = vm.recruitDefinition(u.id);
+        const quote = supportQuote(u.id);
         return this.button(
           u.name,
           "support",
@@ -466,7 +474,7 @@ export class EmpireHudView {
       const id =
           kind === "warship" ? kind : `recruit-${kind}`,
         button = this.root.querySelector<HTMLButtonElement>(`#${id}`)!,
-        quote = game.recruitment(kind);
+        quote = recruitmentQuotes?.get(kind) ?? game.recruitment(kind);
       if (button.dataset.definition !== quote.definitionId) {
         const art = button.querySelector(".hud-art,.command-symbol");
         if (art) art.outerHTML = icon(kind, quote.definitionId);

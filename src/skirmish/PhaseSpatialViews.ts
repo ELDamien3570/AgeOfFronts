@@ -1,4 +1,4 @@
-import { formationEnvelope } from "./domain/FormationGeometry";
+import { CombatGeometry } from "./domain/CombatGeometry";
 import { FIXED, type Ship, type Squad } from "./Protocol";
 import { SpatialGrid } from "./SpatialGrid";
 import type { UnitQueries } from "./UnitIndex";
@@ -30,6 +30,8 @@ export class PhaseSpatialViews {
   private readonly groundAlive: View<Squad>;
   private readonly ships: View<Ship>;
   private readonly warshipsAlive: View<Ship>;
+  private groundAliveRevision = -1;
+  private allGroundAlive = false;
   readonly diagnostics = { rebuilds: 0, rows: 0, hits: 0 };
   constructor(
     width: number,
@@ -41,6 +43,7 @@ export class PhaseSpatialViews {
       squadFacts(): UnitQueries<Squad>;
       shipFacts(): UnitQueries<Ship>;
     },
+    private readonly geometry = new CombatGeometry(),
   ) {
     const view = <T extends Squad | Ship>(): View<T> => ({
       grid: new SpatialGrid<T>(
@@ -48,7 +51,7 @@ export class PhaseSpatialViews {
         height * FIXED,
         4 * FIXED,
         (row) => row.playerId,
-        (row)=>"troops" in row && row.formation ? formationEnvelope(row,this.world.tick).broadRadius : 0,
+        (row)=>"troops" in row && row.formation ? this.geometry.envelope(row,this.world.tick).broadRadius : 0,
       ),
       revision: -1,
     });
@@ -86,6 +89,10 @@ export class PhaseSpatialViews {
     };
     const ground = () => {
       check();
+      if (this.groundAliveRevision !== groundRevision) {
+        this.allGroundAlive = this.world.squads.every(s => s.embarkedOn !== null || s.troops > 0);
+        this.groundAliveRevision = groundRevision;
+      }
       return this.read(
         this.ground,
         groundRevision,
@@ -95,6 +102,13 @@ export class PhaseSpatialViews {
     };
     const groundAlive = () => {
       check();
+      // Identical inclusion and source order permit borrowing the same grid.
+      // Casualties advance the revision and restore the alive-only view.
+      if (this.groundAliveRevision !== groundRevision) {
+        this.allGroundAlive = this.world.squads.every(s => s.embarkedOn !== null || s.troops > 0);
+        this.groundAliveRevision = groundRevision;
+      }
+      if (this.allGroundAlive) return ground();
       return this.read(
         this.groundAlive,
         groundRevision,

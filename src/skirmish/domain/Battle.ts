@@ -58,6 +58,7 @@ import { interceptionPoint } from "./MissileInterception";
 import type { PhaseSpatialFacts, SpatialPhase, SpatialQueries } from "../PhaseSpatialViews";
 import type { UnitQueries } from '../UnitIndex';
 export interface BattleWorld {
+  readonly combatGeometry?: CombatGeometry;
   map?: GameMap;
   combatOrderRevision?(id:number):number;
   chargePresentationClear?(s:Squad,dx:number,dy:number,lateral?:number):boolean;
@@ -154,7 +155,7 @@ export class Battle {
   private structureGeometryRevision = -1;
   private readonly structureById = new Map<number, Building>();
 
-  private readonly geometry = new CombatGeometry();
+  private readonly geometry: CombatGeometry;
   private activity?:CombatActivity;
   private groundRevision?:number;
   private acquisition = new Map<number,{revision:number;barriers:number;forts:number;diplomacy:number;
@@ -171,6 +172,7 @@ export class Battle {
     private readonly forts: Fortifications,
     private readonly progression: Progression,
   ) {
+    this.geometry = world.combatGeometry ?? new CombatGeometry();
     this.mapWidth = width;
     this.mapHeight = height;
     this.spatial = new SpatialGrid<Squad>(0, 0, 4 * FIXED);
@@ -231,7 +233,7 @@ export class Battle {
     this.groundRevision=spatialFacts?.groundRevision;
     if (spatialFacts) { this.spatial = spatialFacts.ground; this.naval = spatialFacts.ships; }
     else {
-      this.localSpatial ??= new SpatialGrid(this.mapWidth * FIXED, this.mapHeight * FIXED, 4 * FIXED, (s: Squad) => s.playerId,(s)=>s.formation ? formationEnvelope(s,this.world.tick).broadRadius : 0);
+      this.localSpatial ??= new SpatialGrid(this.mapWidth * FIXED, this.mapHeight * FIXED, 4 * FIXED, (s: Squad) => s.playerId,(s)=>s.formation ? this.geometry.envelope(s,this.world.tick).broadRadius : 0);
       this.localNaval ??= new SpatialGrid(this.mapWidth * FIXED, this.mapHeight * FIXED, 4 * FIXED, (s: Ship) => s.playerId);
       this.localSpatial.rebuild(this.world.squads.filter((s) => s.embarkedOn === null));
       this.localNaval.rebuild(this.world.ships);

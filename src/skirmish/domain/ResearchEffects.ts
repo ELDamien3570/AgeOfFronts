@@ -21,6 +21,10 @@ const improvedVessels = new WeakMap<
   VesselDefinition,
   Map<string, VesselDefinition>
 >();
+const missileTechnology = packageTechnology("Modern", "naval-missiles-air-defence");
+const modernFleetTechnology = packageTechnology("Modern", "ship-improvements");
+const vesselImprovementTechnologies = new Map(AGES.map(age => [age,
+  packageTechnology(age, age === "StoneAge" ? "coastal-navigation" : "ship-improvements")]));
 export function vesselEffects(
   vessel: VesselDefinition,
   research: Research,
@@ -28,18 +32,9 @@ export function vesselEffects(
   const missiles =
     vessel.age === "Modern" &&
     vessel.kind === "warship" &&
-    research.includes(
-      packageTechnology("Modern", "naval-missiles-air-defence"),
-    );
-  const modernFleet = research.includes(
-    packageTechnology("Modern", "ship-improvements"),
-  );
-  const ownImprovement = research.includes(
-    packageTechnology(
-      vessel.age,
-      vessel.age === "StoneAge" ? "coastal-navigation" : "ship-improvements",
-    ),
-  );
+    research.includes(missileTechnology);
+  const modernFleet = research.includes(modernFleetTechnology);
+  const ownImprovement = research.includes(vesselImprovementTechnologies.get(vessel.age)!);
   const coastal =
     ownImprovement && vessel.age === "StoneAge" && vessel.kind !== "trade";
   const general = modernFleet || (ownImprovement && vessel.age !== "StoneAge");

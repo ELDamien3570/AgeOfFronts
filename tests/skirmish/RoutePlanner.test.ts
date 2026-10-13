@@ -39,6 +39,47 @@ function fixture() {
   return { map, land, planner, results, validity, revision, request };
 }
 describe("fair resumable exact planning", () => {
+  it("expires autonomous requests at 40 ticks while preserving human work and charging cleanup", () => {
+    const { map, land } = fixture(), outcomes: { key: string; outcome: ExactRouteOutcome }[] = [];
+    const ports = { priority: (r: { context: number }) => r.context === 1,
+      deadlineTicks: (r: { context: number }) => r.context === 1 ? undefined : 40,
+      valid: () => true, obstacleRevision: () => "0", blocked: () => undefined,
+      completed: (r: { key: string }, outcome: ExactRouteOutcome) => outcomes.push({ key: r.key, outcome }) };
+    const planner = new RoutePlanner<number>(land, new WaterPaths(map, false), ports);
+    for (const context of [1, 2]) planner.request({ key: `p${context}`, start: 0, goal: 17999,
+      water: false, createdTick: 0, obstacleRevision: "0", context });
+    planner.step(1, 30, 1);
+    expect(planner.step(39, 0)).toBe(0);
+    expect(outcomes).toEqual([]);
+    const restored = new RoutePlanner<number>(land, new WaterPaths(map, false), ports);
+    restored.restore(planner.checkpoint());
+    expect(restored.step(40, 0)).toBe(0);
+    expect(outcomes).toEqual([{ key: "p2", outcome: "limited" }]);
+    expect(restored.has("p1")).toBe(true);
+    expect(restored.has("p2")).toBe(false);
+    expect(restored.diagnostics.workspaceUsed).toBeGreaterThan(0);
+    for (let tick = 41; tick < 60; tick++) expect(restored.step(tick, 4, 1)).toBeLessThanOrEqual(4);
+    expect(outcomes).toEqual([{ key: "p2", outcome: "limited" }]);
+    const cohorts = restored.diagnosticCohorts(59);
+    expect(cohorts.reduce((n, c) => n + c.active!, 0)).toBe(1);
+    expect(cohorts.reduce((n, c) => n + c.reclaiming!, 0)).toBe(0);
+  });
+  it("expires a replacement even while its superseded search awaits reclamation", () => {
+    const { map, land } = fixture(), outcomes: ExactRouteOutcome[] = [];
+    const planner = new RoutePlanner(land, new WaterPaths(map, false), {
+      deadlineTicks: () => 40, valid: () => true, obstacleRevision: () => "0", blocked: () => undefined,
+      completed: (_r, outcome) => outcomes.push(outcome),
+    });
+    const request = { key: "ai", start: 0, goal: 17999, water: false, createdTick: 0, obstacleRevision: "0", context: null };
+    planner.request(request); planner.step(1, 100);
+    planner.request({ ...request, createdTick: 2 });
+    planner.step(41, 0); expect(outcomes).toEqual([]);
+    planner.step(42, 0); expect(outcomes).toEqual(["limited"]);
+    expect(planner.has("ai")).toBe(false);
+    planner.step(43, 1000);
+    expect(outcomes).toEqual(["limited"]);
+    expect(planner.diagnostics.workspaceUsed).toBe(0);
+  });
   it("releases a restored background arena reservation so a human route can start", () => {
     const { map, land } = fixture();
     const outcomes: { key: string; outcome: ExactRouteOutcome }[] = [];

@@ -47,11 +47,11 @@ const stats = (values: number[]) => {
 async function receive(data: any) {
   try {
     if (data.type === "start") {
-      const source = data.combined
+      const source = data.source ?? (data.combined
         ? `/out/performance-investigation-20261012/combined-${data.baseline ? "baseline" : "candidate"}/src/skirmish`
         : data.baseline
         ? "/out/performance-investigation-20261012/baseline/src/skirmish"
-        : "/src/skirmish";
+        : "/src/skirmish");
       const { generateMigration } = await import(
         /* @vite-ignore */ `${source}/MigrationMap.ts`
       );
@@ -74,7 +74,7 @@ async function receive(data: any) {
       game.onPhase = (name: string, ms: number) => { phases[name] = ms; };
       initialTick = saved.tick;
       pace = !!data.pace;
-      encoder = new SnapshotEncoder();
+      encoder = new SnapshotEncoder(false, { compactFormationSlots: !data.legacyDetails });
       const packet = encoder.encode(
         game.replicationSource(),
         game.tileChanges,

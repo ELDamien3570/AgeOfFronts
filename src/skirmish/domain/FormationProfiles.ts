@@ -69,7 +69,7 @@ export function frontageCandidates(
   cache.set(key,rows);
   return rows;
 }
-export function frontageSummary(
+function computeFrontageSummary(
   n: number,
   d: FormationDoctrine,
   shape: FormationShape,
@@ -95,6 +95,19 @@ export function frontageSummary(
     wide,
     intervals: rows.map((r) => [r.minWidth, r.maxWidth]),
   };
+}
+
+// Doctrine profiles are immutable authored values, like the candidate cache.
+// The key space is bounded by 144 troop counts and the authored shapes.
+const summaryCache = new WeakMap<FormationDoctrine, Map<string, ReturnType<typeof computeFrontageSummary>>>();
+export function frontageSummary(n: number, d: FormationDoctrine, shape: FormationShape) {
+  let cache = summaryCache.get(d);
+  if (!cache) { cache = new Map(); summaryCache.set(d, cache); }
+  const key = n + ":" + shape;
+  if (cache.has(key)) return cache.get(key);
+  const value = computeFrontageSummary(n, d, shape);
+  if (Number.isInteger(n) && n >= 1 && n <= 144) cache.set(key, value);
+  return value;
 }
 
 /** Project into the interval union, with deterministic quantisation and tie breaking. */

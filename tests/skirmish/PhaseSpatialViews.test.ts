@@ -15,6 +15,21 @@ function fixture() {
   });
 }
 describe("phase spatial ownership", () => {
+  it("shares identical inclusion while keeping casualties and boarding visible", () => {
+    const game = fixture(), squad = game.squads[0];
+    const first = game.spatialFacts("combat");
+    expect(first.groundAlive).toBe(first.ground);
+    expect(game.spatialDiagnostics!.rebuilds).toBe(1);
+    game.updateSquad(squad.id, { troops: 0 });
+    const damaged = game.spatialFacts("trade");
+    expect(damaged.groundAlive).not.toBe(damaged.ground);
+    game.updateSquad(squad.id, { embarkedOn: game.squads[1].id });
+    const boarded = game.spatialFacts("projectiles");
+    expect(boarded.groundAlive).toBe(boarded.ground);
+    game.updateSquad(squad.id, { embarkedOn: null });
+    const landed = game.spatialFacts("combat");
+    expect(landed.groundAlive).not.toBe(landed.ground);
+  });
   it("reuses geometry despite cosmetic/combat writes and invalidates position, membership and restore", () => {
     const game = fixture(),
       squad = game.squads[0],
