@@ -15,6 +15,7 @@ import {
   type Squad,
 } from "../Protocol";
 import type { ExactRouteOutcome } from "../RoutePlanner";
+import { planningDeadline } from "../RouteRetryPolicy";
 import { restoreArray, restoreRecord, restoreSet } from "../StateTransfer";
 import { AGES, type TradeActor, type TradeReceipt } from "./Definitions";
 import type { Diplomacy } from "./Diplomacy";
@@ -69,6 +70,7 @@ interface OwnerMarkets {
   markets: Building[];
 }
 interface Admission {
+  deadline?:number;
   id: number;
   epoch: number;
   playerId: number;
@@ -111,6 +113,7 @@ export class Trade {
   readonly cycleQuotes = new Map<number, TradeCycleQuote>();
   controlRevision = 0;
   readonly diagnostics = {
+    planningLimits: 0,
     marketReads: 0,
     routeRequests: 0,
     routeHits: 0,
@@ -640,6 +643,8 @@ export class Trade {
       return;
     }
     this.admissions.set(a.id, {
+      ...(this.world.domainRoutes?.deadlineTicks?.(a.playerId,"trade") === undefined ? {} :
+        {deadline:planningDeadline(this.world.tick,this.world.domainRoutes.deadlineTicks!(a.playerId,"trade"))}),
       id: a.id,
       epoch: this.nextEpoch++,
       playerId: a.playerId,
@@ -673,6 +678,18 @@ export class Trade {
     }
   }
   stepPlanning(budget: number): number {
+    for(const p of this.admissions.values()) {
+      const limit=this.world.domainRoutes?.deadlineTicks?.(p.playerId,"trade");
+      if(limit===undefined)continue;
+      p.deadline??=planningDeadline(this.world.tick,limit);
+      if(this.world.tick<p.deadline!)continue;
+      this.cancel(p.id);
+      const actor=this.actors.find(a=>a.id===p.id);
+      // Capacity does not disprove this market/route. Preserve cargo and state,
+      // retire the logical attempt and retry after the existing idle interval.
+      if(actor)actor.waitTicks=Math.max(actor.waitTicks,100);
+      this.diagnostics.planningLimits++;
+    }
     // Planning commits run before the movement/trade phase. Derived markets
     // must be available here after restore, and reflect current source changes.
     this.refreshMarkets();

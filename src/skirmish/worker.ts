@@ -15,7 +15,7 @@ const tickMs = 1000 / TICKS_PER_SECOND;
 const clock = new LocalTickSchedule(tickMs);
 let paused = false;
 let speed: 1 | 2 | 4 = 1;
-let encoder = new SnapshotEncoder(false, { compactFormationSlots: true });
+let encoder = new SnapshotEncoder(false, { compactFormationSlots: true, compactTraders: true });
 let setup: SpawnSelection | undefined;
 let spawnDeadline = 0;
 let spawnPublishedAt = 0;
@@ -42,7 +42,7 @@ function publish(): void {
   if (!match) return;
   lastPublishedAt = performance.now();
   const started = diagnostics ? performance.now() : 0;
-  const packet = encoder.encode(match.replicationSource(), match.tileChanges, match.replicationFacts());
+  const packet = encoder.encode(match.replicationSource(true), match.tileChanges, match.replicationFacts());
   diagnostics?.record("encoding", performance.now() - started);
   self.postMessage(
     { type: "state", packet, paused, speed } satisfies WorkerResponse,
@@ -121,7 +121,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
         spawnPublishedAt = performance.now();
         send({ type: "spawn", state: setup.state(SPAWN_SECONDS * 1000) });
       }
-      encoder = new SnapshotEncoder(false, { compactFormationSlots: true });
+      encoder = new SnapshotEncoder(false, { compactFormationSlots: true, compactTraders: true });
       clock.reset(performance.now(), speed);
       if (match) publish();
       schedule();
@@ -156,7 +156,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
       if (paused || performance.now() - lastPublishedAt >= 30) publish();
     } else if (message.type === "resync") {
       // Reset every replication cursor together without restarting the match.
-      encoder = new SnapshotEncoder(false, { compactFormationSlots: true });
+      encoder = new SnapshotEncoder(false, { compactFormationSlots: true, compactTraders: true });
       publish();
     } else if (message.type === "pause") {
       if (setup) return;

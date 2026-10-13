@@ -94,20 +94,20 @@ describe("human movement admission latency", () => {
     expect(requests.map(r => r.squadId)).toEqual([leader.id]);
   });
 
-  it("rejects a unit wedged against water instead of replanning it every tick", () => {
+  it("admits a land carrier at a water corner without repeated replanning", () => {
     const { match, map } = fixture((x, y) => x < 20 && y < 20);
     const [squad] = humanSquads(match, 1, 20, 20);
-    // Factions with transports simply sail off; a land-only faction is wedged.
+    // This land-only carrier is legal even though its formation overlaps water.
     const progression = match.expansion!.progression.states[1];
     progression.completed = progression.completed.filter(id => id !== "rus-stoneage-cargo-canoes");
     expect(match.amphibious(1)).toBe(false);
-    // Exactly on the water corner: the squad's radius overlaps a water tile.
+    // Exactly on the water corner: the carrier's tile is land.
     match.updateSquad(squad.id, { x: 20 * FIXED, y: 20 * FIXED });
     const requests = admissionRequests(match);
     expect(match.applyCommand({ type: "order", playerId: 1, squadIds: [squad.id], order: { type: "move", tile: map.ref(70, 50) } })).toBeNull();
     for (let tick = 0; tick < 300 && match.movementAdmission.pendingCount; tick++) match.step();
     expect(match.movementAdmission.pendingCount).toBe(0);
-    expect(match.movementAdmission.events.slice(-1)[0]).toMatchObject({ status: "rejected", reason: expect.stringContaining("wedged") });
+    expect(match.movementAdmission.events.slice(-1)[0]).toMatchObject({ status: "executed" });
     expect(requests()).toBeLessThanOrEqual(5);
   });
 });

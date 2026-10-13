@@ -249,6 +249,13 @@ describe("minor tribes", () => {
   it("keeps extending its home frontier beyond the former local limit", () => {
     const game = match(),
       tribes = game.players.filter((p) => p.kind === "tribe");
+    // Isolate frontier growth: ordinary moves now intentionally stop to fight.
+    // Nearby hostile armies must not turn this exploration test into a battle.
+    for(const player of game.players)if(player.id!==tribes[0].id)game.setAiController(player.id,false);
+    const distant=game.squads.find(s=>s.playerId===2)!;
+    for(const squad of [...game.squads])if(squad.playerId!==tribes[0].id && squad.id!==distant.id)game.removeSquad(squad.id);
+    game.updateSquad(distant.id,{x:(game.map.x(tribes[0].base)<game.map.width()/2?game.map.width()-2:2)*256,
+      y:(game.map.y(tribes[0].base)<game.map.height()/2?game.map.height()-2:2)*256});
     for (let tick = 0; tick < 1200; tick++) game.step();
     expect(
       tribes.some((tribe) =>

@@ -18,6 +18,7 @@ export function domainRouteKey(task: DomainRouteTask): string {
 }
 /** Existing domain owners stage their work; the match owns the one fair exact router. */
 export interface DomainRoutePorts {
+  deadlineTicks?(playerId: number, owner: DomainRouteOwner): number | undefined;
   hostile?(a: number, b: number): boolean;
   priority?(playerId:number):boolean;
   request(

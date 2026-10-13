@@ -4,7 +4,7 @@ import { FIXED, type Ship } from "../../src/skirmish/Protocol";
 import { SHIP_RULES } from "../../src/skirmish/Rules";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
-function fixture() {
+function fixture(deadline=false) {
   const data = new Uint8Array(100 * 70).fill(133);
   for (let y = 20; y < 70; y++)
     for (let x = 0; x < 100; x++) if (x !== 90) data[y * 100 + x] = 0;
@@ -15,6 +15,7 @@ function fixture() {
       tribes: false,
       runAi: false,
       deferredPlanning: true,
+      ...(deadline?{autonomousRouteDeadlineTicks:40 as const}:{}),
     });
   const ships: Ship[] = ([5, 8].map((x) => ({
     id: match.allocateId(),
@@ -38,6 +39,35 @@ function finish(match: Skirmish) {
   expect(match.shipAdmission.pendingCount).toBe(0);
 }
 describe("transactional sailing admission", () => {
+  it("expires AI replacement setup by its original deadline while preserving the active voyage across restore", () => {
+    const {match,map,ships}=fixture(true),ship=ships[0],goal=map.ref(70,50),active=map.ref(10,50);
+    match.updateShip(ship.id,{playerId:2,destination:active,waypoints:[map.ref(15,50)]});
+    const player=match.players.find(p=>p.id===2)!;
+    expect(match.shipAdmission.command(player,[ship],goal,false,0)).toBeNull();
+    match.shipAdmission.step(39,0);
+    const saved=match.shipAdmission.checkpoint();expect(saved.pending[0][1].deadline).toBe(40);
+    match.shipAdmission.restore(saved);match.shipAdmission.step(40,0);
+    expect(match.shipAdmission.pendingCount).toBe(0);
+    expect(match.shipAdmission.events[match.shipAdmission.events.length-1]).toMatchObject({tick:40,status:"rejected",reason:expect.stringContaining("capacity")});
+    expect(ship.destination).toBe(active);expect(ship.waypoints).toEqual([map.ref(15,50)]);
+  });
+  it("returns terminal capacity for a committed AI waypoint at 40 ticks without dropping later waypoints or retaining live searches", () => {
+    const {match,map,ships}=fixture(true),ship=ships[0],goal=map.ref(70,50);
+    match.updateShip(ship.id,{playerId:2,destination:goal,waypoints:[map.ref(75,50)]});
+    match.shipAdmission.resume(ship,goal,false,0);
+    const cancel=vi.spyOn(match.routePlanner,"cancel"),request=vi.spyOn(match.routePlanner,"request");
+    match.shipAdmission.step(40,0);
+    expect(ship.planningPaused).toBe(true);expect(cancel).toHaveBeenCalled();
+    expect(match.shipAdmission.checkpoint().pending[0][1]).toMatchObject({paused:true,execution:true});
+    const oldId=match.shipAdmission.checkpoint().pending[0][0];
+    match.shipAdmission.step(139,0);expect(request).not.toHaveBeenCalled();
+    match.shipAdmission.step(140,0);
+    const fresh=match.shipAdmission.checkpoint().pending[0];
+    expect(fresh[0]).not.toBe(oldId);expect(fresh[1]).toMatchObject({deadline:180,execution:true});
+    expect(fresh[1].paused).toBeUndefined();expect(ship.planningPaused).toBeUndefined();
+    match.shipAdmission.step(180,0);expect(ship.planningPaused).toBe(true);
+    expect(ship.destination).toBe(goal);expect(ship.waypoints).toEqual([map.ref(75,50)]);
+  });
   it("restores legacy committed retry policy without silently introducing pauses", () => {
     const { map, match, ships } = fixture(),
       ship = ships[0],

@@ -1,5 +1,4 @@
 import { translatedSlots } from "./FormationLine";
-import { FormationOccupancy } from "./FormationOccupancy";
 import type { GameMap } from "../core/game/GameMap";
 import {
   FormationPlanning,
@@ -8,7 +7,7 @@ import {
 import type { LandPaths } from "./Pathfinding";
 import { FIXED, type Order, type Squad } from "./Protocol";
 import type { ExactRouteOutcome } from "./RoutePlanner";
-import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "./RouteRetryPolicy";
+import { limitedRouteRetry, planningDeadline, ROUTE_CAPACITY_REASON } from "./RouteRetryPolicy";
 import type { WorldPoint } from "./SpatialGrid";
 import { distanceSquared, pointTile, tilePoint } from "./SquadGeometry";
 import { StructureAttackPreparation, STRUCTURE_PREPARATION_LIMITS, type StructureAttackPreparationState } from "./domain/StructureAttackPreparation";
@@ -29,6 +28,7 @@ interface Member {
   structureTarget?: Squad["structureTarget"];
 }
 interface Admission {
+  deadline?:number;
   corridorId?: number;
   id: number;
   playerId: number;
@@ -47,6 +47,7 @@ interface Admission {
   routeCheck?: { revision: string; member: number; stage: 0 | 1; cursor: number; dropped: boolean };
 }
 interface QueuedIntent {
+  deadline?:number;
   id: number;
   playerId: number;
   generation: number;
@@ -68,6 +69,7 @@ export interface MovementAdmissionEvent {
   tile?: number;
 }
 export interface MovementAdmissionPorts {
+  deadlineTicks?(playerId:number):number|undefined;
   /** Experimental persistent group offsets for ordinary queued movement. */
   preserveQueuedLayout?: boolean;
   /** The route graph for a faction's squads (amphibious with transports). */
@@ -76,8 +78,6 @@ export interface MovementAdmissionPorts {
   activateStructure?(playerId: number, squads: readonly Squad[], points: Map<number, WorldPoint>, target: NonNullable<Squad["structureTarget"]>): void;
   handoffStructure?(id: number, playerId: number, action: () => void): void;
   squads(): readonly Squad[];
-  /** Conservative canonical roster revision, including position and orders. */
-  occupancyRevision?(): number;
   hostile?(a: number, b: number): boolean;
   priority?(playerId: number): boolean;
   squad(id: number): Squad | undefined;
@@ -125,15 +125,7 @@ export class MovementAdmission {
   readonly events: MovementAdmissionEvent[] = [];
   onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
-  private readonly occupancy: FormationOccupancy;
-  private occupancyRevision: number | undefined;
-  private refreshOccupancy(): void {
-    const revision=this.ports.occupancyRevision?.();
-    if(revision===undefined || revision!==this.occupancyRevision) {
-      this.occupancy.rebuild(this.ports.squads());
-      this.occupancyRevision=revision;
-    }
-  }
+  private handoffDeadline?: number;
   private readonly corridors = new Map<number, { path: number[]; kind: Squad["kind"]; revision: string }>();
   /** An order onto land keeps its formation ashore; squads become afloat
    * only on the way or when ordered onto water itself. */
@@ -176,7 +168,7 @@ export class MovementAdmission {
     private readonly map: GameMap,
     private readonly paths: LandPaths,
     private readonly ports: MovementAdmissionPorts,
-  ) { this.occupancy = new FormationOccupancy(map); }
+  ) {}
   checkpoint() {
     return structuredClone({
       pending: [...this.pending],
@@ -187,7 +179,6 @@ export class MovementAdmission {
     });
   }
   restore(saved: ReturnType<MovementAdmission["checkpoint"]>): void {
-    this.occupancyRevision=undefined;
     this.pending.clear();
     this.corridors.clear();
     for (const [id, corridor] of structuredClone(saved.corridors ?? [])) this.corridors.set(id, corridor);
@@ -260,6 +251,10 @@ export class MovementAdmission {
           "Replaced by a newer command",
         );
   }
+  private deadline(playerId:number,tick:number):{deadline?:number} {
+    const value=planningDeadline(tick,this.ports.deadlineTicks?.(playerId));
+    return value===undefined?{}:{deadline:value};
+  }
   append(ids: readonly number[], order: Order, tick = 0): boolean {
     const selected = [...new Set(ids)],
       members = selected.map((id) => ({
@@ -274,6 +269,7 @@ export class MovementAdmission {
       for (let start = 0; start < selected.length; start += 30) {
         const chunk = members.slice(start, start + 30), squad = this.ports.squad(chunk[0].id)!;
         const intent: QueuedIntent = { id: this.nextId++, playerId: squad.playerId,
+          ...this.deadline(squad.playerId,tick),
           generation: this.ports.generation(squad.playerId), order: { ...order }, members: chunk, travelLayout,
           revision: this.ports.revision(squad.playerId) };
         this.addIntent(intent); this.event(intent, tick, "deferred");
@@ -282,6 +278,7 @@ export class MovementAdmission {
     }
     const squad = this.ports.squad(selected[0])!;
     const intent: QueuedIntent = {
+      ...this.deadline(squad.playerId,tick),
       id: this.nextId++,
       playerId: squad.playerId,
       generation: this.ports.generation(squad.playerId),
@@ -433,7 +430,11 @@ export class MovementAdmission {
         preferred,
       );
     this.destination(formation.state);
+    const deadlineTicks = this.ports.deadlineTicks?.(playerId);
+    if (deadlineTicks !== undefined && (!Number.isSafeInteger(deadlineTicks) || deadlineTicks < 1))
+      throw Error("Invalid admission deadline");
     const admission: Admission = {
+      ...(deadlineTicks === undefined ? {} : { deadline: this.handoffDeadline ?? tick + deadlineTicks }),
       id,
       corridorId,
       playerId,
@@ -767,7 +768,20 @@ export class MovementAdmission {
   step(tick: number, budget = 128): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid admission work budget");
-    if (this.pending.size) this.refreshOccupancy();
+    // An autonomous attempt includes preparation, queueing and every connector
+    // retry. Finishing it leaves the squad's active order untouched.
+    for (const intent of this.intents.values()) {
+      const limit=this.ports.deadlineTicks?.(intent.playerId);
+      if(limit===undefined)continue;
+      intent.deadline??=planningDeadline(tick,limit);
+      if(tick>=intent.deadline!) { this.removeIntent(intent.id);this.event(intent,tick,"rejected",ROUTE_CAPACITY_REASON); }
+    }
+    for(const admission of this.pending.values()) {
+      const limit=this.ports.deadlineTicks?.(admission.playerId);
+      if(limit===undefined)continue;
+      admission.deadline??=planningDeadline(tick,limit); // Upgrade an older restored continuation.
+      if(tick>=admission.deadline!)this.finish(admission,tick,"rejected",ROUTE_CAPACITY_REASON);
+    }
     let used = this.stepIntents(tick, Math.min(32, budget));
     // Reserve two thirds of the allowance for interactive commands. Unused work
     // returns to the ordinary round-robin, which continues serving the AI.
@@ -779,7 +793,6 @@ export class MovementAdmission {
   stepInteractive(tick:number,budget:number):number {
     if(!Number.isInteger(budget)||budget<0)throw new Error("Invalid interactive admission allowance");
     if(![...this.pending.values()].some(p=>this.ports.priority?.(p.playerId)))return 0;
-    this.refreshOccupancy();
     return this.stepAdmissions(tick,budget,true);
   }
   private stepAdmissions(tick: number, budget: number, priority: boolean): number {
@@ -835,7 +848,12 @@ export class MovementAdmission {
           // its external receipt before publishing the preparation completion.
           this.pending.delete(id);
           for (const member of admission.members) this.pendingBySquad.delete(member.id);
-          const activate = () => this.ports.activateStructure!(admission.playerId, squads, state.points, state.target);
+          const activate = () => {
+            const previous = this.handoffDeadline;
+            this.handoffDeadline = admission.deadline;
+            try { this.ports.activateStructure!(admission.playerId, squads, state.points, state.target); }
+            finally { this.handoffDeadline = previous; }
+          };
           if (this.ports.handoffStructure) this.ports.handoffStructure(id, admission.playerId, activate);
           else activate();
           this.preparationDiagnostics.completed++;
@@ -887,7 +905,6 @@ export class MovementAdmission {
           undefined,
           admission.formation,
           undefined,
-          this.occupancy,
         );
         used += formation.step(
           Math.min(16, budget - used),
@@ -1040,7 +1057,6 @@ export class MovementAdmission {
               m.queued,
               m.structureTarget,
             );
-            this.occupancy.refresh(this.ports.squad(m.id)!);
           }
           this.finish(admission, tick, "executed");
         }

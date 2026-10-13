@@ -302,14 +302,15 @@ describe("drawn squad deployment lines", () => {
     ).not.toBeNull();
     const enemy = game.squads.find((s) => s.playerId === 2)!;
     game.updateSquad(enemy.id, point(19.5, 20.5));
-    expect(game.applyCommand(issue())).toContain("blocked");
-    expect(squads.map((s) => s.order)).toEqual(before);
+    expect(game.applyCommand(issue())).toBeNull();
+    expect(squads.every(s=>s.order.type==='move')).toBe(true);
+    const admitted=squads.map(s=>s.order);
     expect(commandSchema.safeParse(issue()).success).toBe(true);
     expect(
       commandSchema.safeParse(
         issue({ start: { x: Infinity, y: 0 }, end: point(8, 20) }),
       ).success,
     ).toBe(false);
-    expect(squads.map((s) => s.order)).toEqual(before);
+    expect(squads.map((s) => s.order)).toEqual(admitted);
   });
 });

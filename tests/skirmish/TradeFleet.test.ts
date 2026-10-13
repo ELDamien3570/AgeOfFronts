@@ -16,7 +16,7 @@ import {
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
 
-function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning = false, tribe = false) {
+function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning = false, tribe = false, deadline = false) {
   const terrain = new Uint8Array(120 * 80).fill(133);
   for (let y = 40; y < 50; y++) terrain.fill(0, y * 120, (y + 1) * 120);
   const game = new Skirmish(new GameMapImpl(120, 80, terrain, terrain.length), {
@@ -28,6 +28,7 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
     ruleset: "ages-v1",
     aiWarPolicy,
     deferredPlanning,
+    ...(deadline?{autonomousRouteDeadlineTicks:40 as const}:{}),
   });
   for (const b of [...game.buildings]) game.removeBuilding(b.id);
   for (const s of game.squads)
@@ -74,6 +75,19 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
 }
 
 describe("bounded civilian trade", () => {
+  it("expires the whole restored planning attempt without condemning its market or losing cargo", () => {
+    const {game,trade,step}=fleet(1,0,false,true,false,true);
+    step(20);trade.stepPlanning(32);
+    const saved=trade.checkpoint(),plan=saved.admissions[0][1],actor=trade.actors.find(a=>a.id===plan.id)!;
+    expect(plan.deadline).toBe(60);
+    const cargo=actor.cargo,state=actor.state,failures=saved.routeFailures;
+    game.tick=59;trade.stepPlanning(0);expect(trade.checkpoint().admissions).toHaveLength(1);
+    trade.restore(trade.checkpoint());game.tick=60;trade.stepPlanning(0);
+    const current=trade.actors.find(a=>a.id===actor.id)!;
+    expect(trade.checkpoint().admissions).toHaveLength(0);
+    expect(current.cargo).toBe(cargo);expect(current.state).toBe(state);expect(current.waitTicks).toBeGreaterThanOrEqual(100);
+    expect(trade.checkpoint().routeFailures).toEqual(failures);expect(trade.diagnostics.planningLimits).toBe(1);
+  });
   it("reconciles duplicate pending corridors after restore and commits each merchant's cargo independently", () => {
     const { game, trade, step, expansion, sources } = fleet(1, 0, false, true);
     step(20);

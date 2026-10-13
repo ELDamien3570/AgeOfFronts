@@ -1828,7 +1828,7 @@ export class Expansion {
     events:this.nextEvent,roadRevision:this.roads.revision,fortificationRevision:this.fortifications.version,
     fallout:this.world.wasteland.revision,
   }};}
-  snapshot(): ExpansionSnapshot {
+  snapshot(includeTraders = true): ExpansionSnapshot {
     return {
       armies: this.armies.snapshot(),
       fallout: this.world.wasteland.snapshot(),
@@ -1851,11 +1851,11 @@ export class Expansion {
       diplomacy: this.diplomacy.state,
       activeOffensives: this.operations.activeOffensives(),
       pairRelations: this.relations.snapshot(),
-      traders: this.trade.actors.map(
+      traders: includeTraders ? this.trade.actors.map(
         ({ path: _path, nextPathIndex: _index, supplyWaitTicks: _supplyWait,
           supplyWaitStartedTick: _waitStart, tripSupplyTicks: _tripSupply, routeOriginOwner: _routeOwner, ...actor }) =>
           ({ ...actor, waitingForCargo: actor.state === "loading" && _waitStart !== undefined }),
-      ),
+      ) : [],
       barriers: this.fortifications.barriers,
       projectiles: this.battle.projectiles,
       aircraft: this.aircraft,

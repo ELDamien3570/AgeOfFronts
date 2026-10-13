@@ -1,7 +1,7 @@
 import type { GameMap } from "../core/game/GameMap";
 import type { LandPaths } from "./Pathfinding";
 import { FIXED, type Squad } from "./Protocol";
-import { SpatialGrid, type WorldPoint } from "./SpatialGrid";
+import { type WorldPoint } from "./SpatialGrid";
 import {
   FORMATION_SPACING,
   distanceSquared,
@@ -27,55 +27,6 @@ export function formationRingPoint(cx: number, cy: number, ring: number, index: 
   if (index < sides) return { x: cx + (index % 2 ? ring : -ring), y: cy - ring + 1 + Math.floor(index / 2) };
   return { x: cx - ring + index - sides, y: cy + ring };
 }
-class Occupancy {
-  readonly grid: SpatialGrid<ReservedPoint>;
-  private readonly points = new Map<number, ReservedPoint[]>();
-  constructor(private readonly map: GameMap) {
-    this.grid = new SpatialGrid(
-      map.width() * FIXED,
-      map.height() * FIXED,
-      4 * FIXED,
-    );
-  }
-  // A full-map grid is costly to allocate on large maps (62,500 buckets at
-  // 1000 x 1000), so instances are reused. Refilling empties the occupied
-  // buckets and re-inserts in the same order, so queries match a fresh grid.
-  reset(others: readonly Squad[]): this {
-    this.grid.rebuild([]);
-    this.points.clear();
-    for (const squad of others) this.refresh(squad);
-    return this;
-  }
-  refresh(squad: Squad) {
-    for (const point of this.points.get(squad.id) ?? [])
-      this.grid.remove(point);
-    const points: ReservedPoint[] = [];
-    if (squad.embarkedOn === null) {
-      points.push({
-        x: squad.x,
-        y: squad.y,
-        kind: squad.kind,
-        playerId: squad.playerId,
-        squadId: squad.id,
-      });
-      for (const order of [squad.order, ...squad.queuedOrders]) {
-        if (order.type !== "move") continue;
-        const end =
-          order.x === undefined
-            ? tilePoint(this.map, order.tile)
-            : { x: order.x, y: order.y! };
-        points.push({
-          ...end,
-          kind: squad.kind,
-          playerId: squad.playerId,
-          squadId: squad.id,
-        });
-      }
-    }
-    this.points.set(squad.id, points);
-    for (const point of points) this.grid.insert(point);
-  }
-}
 export interface FormationMember {
   squad: Squad;
   origin: WorldPoint;
@@ -83,10 +34,6 @@ export interface FormationMember {
 
 // A movement command owns its slots; client control groups only select units.
 export class Formations {
-  private batch?: Occupancy;
-  private batchGrid?: Occupancy;
-  private scratch?: Occupancy;
-  private scratchBusy = false;
   constructor(
     private readonly map: GameMap,
     private readonly paths: LandPaths,
@@ -94,16 +41,6 @@ export class Formations {
     /** A faction's squad graph; amphibious factions may stand on water. */
     private readonly squadPaths?: (playerId: number) => LandPaths,
   ) {}
-
-  beginBatch(others: readonly Squad[]): void {
-    this.batch = (this.batchGrid ??= new Occupancy(this.map)).reset(others);
-  }
-  endBatch(): void {
-    this.batch = undefined;
-  }
-  refresh(squad: Squad): void {
-    this.batch?.refresh(squad);
-  }
 
   plan(
     center: number,
@@ -114,48 +51,10 @@ export class Formations {
     blocked?: (tile: number) => boolean,
     exactPreferred = false,
   ): Map<number, WorldPoint> | null {
-    if (this.batch)
-      return this.planWith(
-        this.batch.grid,
-        center,
-        members,
-        maximumRadius,
-        preferred,
-        blocked,
-        exactPreferred,
-      );
-    // Reuse one scratch grid; a re-entrant call (none today) gets its own.
-    if (this.scratchBusy)
-      return this.planWith(
-        new Occupancy(this.map).reset(others).grid,
-        center,
-        members,
-        maximumRadius,
-        preferred,
-        blocked,
-        exactPreferred,
-      );
-    this.scratchBusy = true;
-    try {
-      const grid = (this.scratch ??= new Occupancy(this.map)).reset(
-        others,
-      ).grid;
-      return this.planWith(
-        grid,
-        center,
-        members,
-        maximumRadius,
-        preferred,
-        blocked,
-        exactPreferred,
-      );
-    } finally {
-      this.scratchBusy = false;
-    }
+    return this.planWith(center,members,maximumRadius,preferred,blocked,exactPreferred);
   }
 
   private planWith(
-    occupied: SpatialGrid<ReservedPoint>,
     center: number,
     members: FormationMember[],
     maximumRadius: number,
@@ -165,12 +64,10 @@ export class Formations {
   ): Map<number, WorldPoint> | null {
     const target = tilePoint(this.map, center);
     const paths = members.length ? this.squadPaths?.(members[0].squad.playerId) ?? this.paths : this.paths;
-    const selected = new Set(members.map(({ squad }) => squad.id));
     // A formation owns only a handful of buckets, never another full-map grid.
     const slots = new Map<number, ReservedPoint[]>();
     const slotColumns = Math.ceil(this.map.width() / 4);
     const slotKey = (point: WorldPoint) => Math.floor(point.x / (4 * FIXED)) + Math.floor(point.y / (4 * FIXED)) * slotColumns;
-    const neighbors: ReservedPoint[] = [];
     const nearbySlots: ReservedPoint[] = [];
     const free = (point: WorldPoint, squad: SquadGeometry) => {
       if (distanceSquared(point, target) > maximumRadius ** 2) return false;
@@ -178,18 +75,12 @@ export class Formations {
       if (blocked?.(pointTile(this.map, point))) return false;
       if (!paths.connected(center, pointTile(this.map, point)))
         return false;
-      occupied.query(point.x, point.y, 2 * FIXED, neighbors);
       nearbySlots.length = 0;
       const cx = Math.floor(point.x / (4 * FIXED)), cy = Math.floor(point.y / (4 * FIXED));
       for (let y = Math.max(0, cy - 1); y <= cy + 1; y++)
         for (let x = Math.max(0, cx - 1); x <= Math.min(slotColumns - 1, cx + 1); x++)
           for (const slot of slots.get(x + y * slotColumns) ?? []) nearbySlots.push(slot);
       return (
-        neighbors.every(
-          (other) =>
-            selected.has(other.squadId) ||
-            distanceSquared(point, other) >= squadSeparation(squad, other, this.hostile) ** 2,
-        ) &&
         nearbySlots.every(
           (other) =>
             distanceSquared(point, other) >= squadSeparation(squad, other, this.hostile) ** 2,

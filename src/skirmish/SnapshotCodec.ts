@@ -1,4 +1,5 @@
 import { FormationSlotDecoder } from "./FormationSlotStream";
+import { TraderEncoder, TraderDecoder } from "./TraderStream";
 import { validateOccupancy } from "./domain/TrenchOccupancy";
 import { validateStance } from "./domain/SkirmishStance";
 import { validateArmyRecords } from './domain/ArmyState';
@@ -26,6 +27,8 @@ import { MAX_SQUADS } from "./Protocol";
 import { packSnapshotDetails, unpackSnapshotDetails, validateSnapshotDetails, SquadDetailCache } from "./SnapshotDetails";
 
 export type SnapshotSource = Omit<Snapshot, "buildings" | "squads" | "ships"> & {
+  /** Synchronous local encoding only; private domain fields never enter packets. */
+  readonly borrowedTraders?: readonly import("./domain/Definitions").TradeActor[];
   readonly buildings: readonly Building[];
   readonly squads: readonly Snapshot["squads"][number][];
   readonly ships: readonly Snapshot["ships"][number][];
@@ -101,6 +104,8 @@ function readOrder(input: Int32Array, at: number): Order {
 // Worker adapter: only presentation fields leave the authoritative domain.
 // Numeric buffers are transferred; ownership/construction changes are deltas.
 export class SnapshotEncoder {
+  private readonly traders = new TraderEncoder();
+  private readonly compactTraders: boolean;
   private readonly detailCache: SquadDetailCache;
   get formationSlotDiagnostics() { return { retainedEntries: this.detailCache.retainedSlotEntries }; }
   get detailDiagnostics(){return this.detailCache.diagnostics;}
@@ -150,7 +155,10 @@ export class SnapshotEncoder {
     return {full, squads, ships, buildings};
   }
   // Fresh network clients reset their arrays to zero, so neutral tiles need no wire entry.
-  constructor(private readonly sparseBaseline = false, options: { compactFormationSlots?: boolean } = {}) { this.detailCache = new SquadDetailCache(options.compactFormationSlots); }
+  constructor(private readonly sparseBaseline = false, options: { compactFormationSlots?: boolean; compactTraders?: boolean } = {}) {
+    this.detailCache = new SquadDetailCache(options.compactFormationSlots);
+    this.compactTraders = options.compactTraders ?? false;
+  }
   private metadataIdentity?:object;
   private metadataRevisions:Partial<Record<keyof NonNullable<Snapshot["expansion"]>,number>>={};
   private selectMetadata(source:NonNullable<Snapshot["expansion"]>,facts:ReplicatedEntities|undefined,reset:boolean){
@@ -187,6 +195,7 @@ export class SnapshotEncoder {
   }
   encode(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities,
     presentation?: { tiles: Uint32Array; reset: boolean; resourcesChanged?: boolean; roadsChanged?: boolean }): SnapshotPacket {
+    if (source.borrowedTraders && !this.compactTraders) throw Error("Borrowed traders require compact local encoding");
     const reset =
       presentation?.reset ?? (!this.previousTiles ||
       this.width !== source.width ||
@@ -348,7 +357,11 @@ export class SnapshotEncoder {
         }
       : undefined;
     this.previousRoadRevision = source.expansion?.roadRevision ?? -1;
+    const traderChanges = this.compactTraders && expansion
+      ? this.traders.encode(source.borrowedTraders ?? source.expansion!.traders, metadata!.full, !!source.borrowedTraders) : undefined;
+    if (traderChanges) delete expansion!.traders;
     return {
+      traderChanges,
       reset,
       formationRulesVersion:FORMATION_RULES_VERSION,
       barrierChanges,
@@ -383,6 +396,7 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
   const details = packet.details;
   return [
     packet.tiles, packet.squads, packet.orders, packet.buildingChanges, packet.removedBuildings,
+    ...(packet.traderChanges ? [packet.traderChanges.motion, packet.traderChanges.removed] : []),
     ...(packet.removedSquads ? [packet.removedSquads] : []),
     ...(packet.removedShips ? [packet.removedShips] : []),
     ...(packet.expansion?.roads ? [packet.expansion.roads] : []),
@@ -397,6 +411,7 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
 }
 
 export class SnapshotDecoder {
+  private readonly traders = new TraderDecoder();
   private readonly formationSlots = new FormationSlotDecoder();
   get formationSlotDiagnostics() { return { retainedEntries: this.formationSlots.retainedEntries }; }
   private readonly barriers = new Map<number, NonNullable<Snapshot["expansion"]>["barriers"][number]>();
@@ -413,6 +428,10 @@ export class SnapshotDecoder {
   private progress = new Uint8Array();
   private readonly buildings = new Map<number, Building>();
   validate(packet: SnapshotPacket) {
+    if (packet.traderChanges && (!packet.expansion || packet.expansion.traders ||
+      ((packet.reset || packet.expansionMode === "full") && !packet.traderChanges.reset)))
+      throw Error("Trader stream requires an unambiguous metadata baseline");
+    const traders = packet.traderChanges ? this.traders.stage(packet.traderChanges) : undefined;
     const slots = packet.details?.version === 5 ? this.formationSlots.stage(packet.details.formationSlots) : undefined;
     if (slots && packet.reset && !packet.details?.formationSlots?.reset) throw new Error("Formation slot reset requires a baseline");
     if(packet.expansion?.armies)validateArmyRecords(packet.expansion.armies);
@@ -434,7 +453,7 @@ export class SnapshotDecoder {
         if (!upserts.has(state.id) && (changes.reset || removed.has(state.id) || !(fresh ? fresh.has(state.id) : this.barriers.has(state.id))))
           throw new Error("Barrier state has no geometry baseline");
     }
-    return { payloads, slots };
+    return { payloads, slots, traders };
   }
   /** Latest-state projection: consumers finish update synchronously and retain
    * only the latest tile view. Entity interpolation captures scalar coordinates
@@ -443,7 +462,7 @@ export class SnapshotDecoder {
   decodeLatest(packet:SnapshotPacket):Snapshot {return this.decode(packet,false);}
   decode(packet: SnapshotPacket,copyArrays=true,includeChangedTiles=true): Snapshot {
     if(packet.expansion && packet.formationRulesVersion!==FORMATION_RULES_VERSION)throw new Error('Unsupported formation rules version');
-    const { payloads, slots } = this.validate(packet);
+    const { payloads, slots, traders } = this.validate(packet);
     const records = packet.details ? unpackSnapshotDetails(packet.details,payloads) : packet;
     // Packed v4 validation consumed these same payload objects with the packet's
     // authoritative count/tick context. Legacy object packets keep their guards.
@@ -573,6 +592,7 @@ export class SnapshotDecoder {
       if (!deposit) throw new Error("Resource ownership delta has no baseline fact");
       deposit.owner = owners[at + 1];
     }
+    if (traders) this.expansionMetadata!.traders = traders.rows;
     const snapshot: Snapshot = {
       tick: packet.tick,
       width: packet.width,
@@ -596,6 +616,8 @@ export class SnapshotDecoder {
     };
     if (slots) this.formationSlots.commit(slots);
     else if (packet.reset) this.formationSlots.clear();
+    if (traders) this.traders.commit(traders);
+    else if (packet.reset || packet.expansion?.traders) this.traders.clear();
     return snapshot;
   }
 }

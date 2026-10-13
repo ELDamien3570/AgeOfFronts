@@ -345,7 +345,8 @@ describe("transactional replacement movement", () => {
         append: true,
       }),
     ).toBeNull();
-    for (let i = 0; i < 3; i++) match.step();
+    // Snapshot the accepted transaction before it runs: placement no longer
+    // waits for other squads, so the order can finish within the old delay.
     const replacementId = match.movementAdmission.checkpoint().pending[0][0];
     const clone = new Skirmish(map, match.options);
     clone.restore(match.checkpoint());

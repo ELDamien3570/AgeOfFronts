@@ -1,4 +1,5 @@
 import type { LandPaths } from "../Pathfinding";
+import { PassageTraffic } from '../PassageTraffic';
 import { FIXED } from "../Protocol";
 import { BUDGETS, POSITIONS } from "../content/TacticalRules";
 import type { TacticalTerrain } from "./TacticalTerrain";
@@ -24,6 +25,27 @@ const directions = Array.from({ length: 8 }, (_, i) => ({
   y: Math.round(Math.sin((i * Math.PI) / 4)),
   angle: (i * Math.PI) / 4,
 }));
+type Connectivity = Pick<LandPaths,'component'|'walkable'|'connected'>;
+interface FeatureCheckpoint {
+  sourceHash:number;rows:number;featureIndexHash:number|undefined;
+  navigationRulesVersion?:2;
+}
+/** Legacy verification only: no search arenas, forest subscriptions or retained
+ * routing caches are needed to validate the previous mountain connectivity. */
+function legacyConnectivity(map:TacticalTerrain['map']):Connectivity {
+  const size=map.width()*map.height(),component=new Int32Array(size),queue=new Int32Array(size),neighbors:number[]=[];
+  const walkable=(tile:number)=>Number.isInteger(tile)&&tile>=0&&tile<size&&map.isLand(tile)&&!map.isImpassable(tile);
+  let id=0;
+  for(let tile=0;tile<size;tile++){
+    if(component[tile]||!walkable(tile))continue;
+    component[tile]=++id;queue[0]=tile;let head=0,tail=1;
+    while(head<tail){
+      const count=map.neighbors4(queue[head++],neighbors);
+      for(let i=0;i<count;i++){const next=neighbors[i];if(component[next]||!walkable(next))continue;component[next]=id;queue[tail++]=next;}
+    }
+  }
+  return {component,walkable,connected:(a,b)=>component[a]>0&&component[a]===component[b]};
+}
 /** Static terrain derivation, incrementally published only when complete. */
 export class TacticalFeatureIndex {
   readonly hills: HillFeature[] = [];
@@ -36,7 +58,7 @@ export class TacticalFeatureIndex {
   readonly diagnostics = { rows: 0, cells: 0 };
   constructor(
     readonly terrain: TacticalTerrain,
-    private readonly paths: LandPaths,
+    private readonly paths: Connectivity,
   ) {
     let hash = 2166136261;
     for (let t = 0; t < terrain.map.width() * terrain.map.height(); t++) {
@@ -48,9 +70,10 @@ export class TacticalFeatureIndex {
   get ready() {
     return this.row >= this.terrain.map.height();
   }
-  checkpoint() {
+  checkpoint():FeatureCheckpoint {
     return {
       sourceHash: this.sourceHash,
+      navigationRulesVersion:2,
       rows: this.row,
       featureIndexHash: this.ready
         ? (this.hash ^ this.chokeHash) >>> 0
@@ -58,8 +81,17 @@ export class TacticalFeatureIndex {
     };
   }
   restore(state: ReturnType<TacticalFeatureIndex["checkpoint"]>) {
+    let migrated=false;
+    if(state.navigationRulesVersion===undefined && state.sourceHash!==this.sourceHash){
+      const connectivity=legacyConnectivity(this.terrain.map),legacy=new TacticalFeatureIndex(this.terrain,connectivity);
+      legacy.setChokes(new PassageTraffic(this.terrain.map,connectivity).staticFeatures());
+      if(legacy.sourceHash!==state.sourceHash)throw Error("Tactical terrain index mismatch");
+      // Verify the old terrain fingerprint and feature state before rebuilding.
+      legacy.restore(state);migrated=true;
+    }
     if (
-      state.sourceHash !== this.sourceHash ||
+      (!migrated && state.sourceHash !== this.sourceHash) ||
+      (state.navigationRulesVersion!==undefined && state.navigationRulesVersion!==2) ||
       !Number.isInteger(state.rows) ||
       state.rows < 0 ||
       state.rows > this.terrain.map.height() ||
@@ -72,7 +104,7 @@ export class TacticalFeatureIndex {
     this.hash = 2166136261;
     this.step(state.rows);
     if (
-      state.featureIndexHash !== undefined &&
+      !migrated && state.featureIndexHash !== undefined &&
       (!this.ready ||
         state.featureIndexHash !== (this.hash ^ this.chokeHash) >>> 0)
     )

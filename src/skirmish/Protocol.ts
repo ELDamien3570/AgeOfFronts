@@ -435,6 +435,8 @@ export interface MatchOptions {
   deferredPlanning?: boolean;
   /** Local autonomous search deadline; omitted preserves exhaustive old replays. */
   autonomousRouteDeadlineTicks?: 40;
+  /** Local bounded autonomous decision cadence; omission preserves 15-tick replays. */
+  autonomousDecisionInterval?: 30;
   /** City defense trials require the shared opt-in economy coordinator. */
   aiDefenses?: boolean;
   /** Fleet mission trials require economy and deferred route admission. */
@@ -479,6 +481,7 @@ export interface Snapshot {
 }
 
 export interface SnapshotPacket {
+  traderChanges?: import("./TraderStream").TraderChanges;
   formationRulesVersion?: number;
   /** Versioned transferable presentation records; legacy object details remain readable. */
   details?: import("./SnapshotDetails").PackedSnapshotDetails;

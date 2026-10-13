@@ -36,7 +36,7 @@ export class PathTopology {
     // Forest clearing changes costs, and continues through the listener below.
     this.passable = new Uint8Array(size);
     for (let tile = 0; tile < size; tile++) this.passable[tile] = Number(
-      (this.water ? map.isWater(tile) : this.amphibious || map.isLand(tile)) && !map.isImpassable(tile));
+      this.water ? map.isWater(tile) : this.amphibious || map.isLand(tile));
     this.cardinal = new Uint8Array(size);
     this.diagonal = new Uint8Array(size);
     for (let tile = 0; tile < size; tile++) {

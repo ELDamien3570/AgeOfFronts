@@ -75,7 +75,12 @@ function scene(
   game.expansion!.progression.states[1].research = {};
   // These are hard narrow-passage fixtures, not shores: water overlap is now
   // explicitly permitted for RTS formation bodies.
-  if(kind!=="open")game.expansion!.fortifications.intactWallAt=tile=>!map.isLand(tile);
+  if(kind!=="open") {
+    const tiles=Array.from({length:size*size},(_,tile)=>tile).filter(tile=>!map.isLand(tile));
+    const endpoints=game.buildings.filter(b=>b.playerId===1);
+    game.expansion!.fortifications.addBarrier({id:game.allocateId(),playerId:1,age:"StoneAge",
+      a:endpoints[0].id,b:endpoints[endpoints.length-1].id,tiles,health:1000,maxHealth:1000,remainingTicks:0});
+  }
   for (const other of [...game.squads])
     if (other.id !== s.id) game.removeSquad(other.id);
   const id = count === 96 ? "latemedieval-infantry" : "napoleonic-infantry",
@@ -211,7 +216,6 @@ describe("authoritative column travel", () => {
         f.options,
       );
       restored.restore(f.game.checkpoint());
-      restored.expansion!.fortifications.intactWallAt=tile=>!restored.map.isLand(tile);
       const packet = new SnapshotEncoder().encode(f.game.snapshot());
       expect(
         new SnapshotDecoder().decode(packet).squads.find((s) => s.id === f.s.id)

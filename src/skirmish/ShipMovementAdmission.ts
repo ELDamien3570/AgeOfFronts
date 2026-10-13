@@ -3,7 +3,7 @@ import type { MovementAdmissionEvent } from "./MovementAdmission";
 import type { WaterPaths } from "./Pathfinding";
 import { MAX_QUEUED_ORDERS, type Player, type Ship } from "./Protocol";
 import type { ExactRouteOutcome } from "./RoutePlanner";
-import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "./RouteRetryPolicy";
+import { limitedRouteRetry, planningDeadline, ROUTE_CAPACITY_REASON } from "./RouteRetryPolicy";
 
 interface Member {
   id: number;
@@ -17,6 +17,8 @@ interface Member {
   append: number[];
 }
 interface Admission {
+  deadline?:number;
+  retryAt?:number;
   id: number;
   playerId: number;
   generation: number;
@@ -29,6 +31,7 @@ interface Admission {
   recovery?: { state: Ship["repairState"]; port: Ship["repairPortId"] };
 }
 export interface ShipMovementAdmissionPorts {
+  deadlineTicks?(playerId:number):number|undefined;
   priority?(playerId: number): boolean;
   ship(id: number): Ship | undefined;
   tileOf(ship: Ship): number;
@@ -168,11 +171,16 @@ export class ShipMovementAdmission {
   }
   /** Activation of an already committed waypoint is executable old intent.
    * It can coexist with a replacement being planned, and survives takeover. */
-  resume(ship: Ship, goal: number, recovery = false): void {
+  private deadline(playerId:number,tick:number|undefined):{deadline?:number} {
+    const value=planningDeadline(tick ?? NaN,this.ports.deadlineTicks?.(playerId));
+    return value===undefined?{}:{deadline:value};
+  }
+  resume(ship: Ship, goal: number, recovery = false, tick?:number): void {
     if (this.executing(ship.id))
       throw new Error("Ship already awaits waypoint activation");
     const id = this.nextId++,
       admission: Admission = {
+        ...this.deadline(ship.playerId,tick),
         id,
         playerId: ship.playerId,
         generation: this.ports.generation(ship.playerId),
@@ -207,7 +215,7 @@ export class ShipMovementAdmission {
     )
       return;
     if (previous) this.finish(previous, tick, "superseded");
-    this.resume(ship, goal, true);
+    this.resume(ship, goal, true, tick);
   }
   command(
     player: Player,
@@ -271,6 +279,7 @@ export class ShipMovementAdmission {
     if (initial.length) {
       const id = this.nextId++,
         admission: Admission = {
+          ...this.deadline(player.id,tick),
           id,
           playerId: player.id,
           generation: this.ports.generation(player.id),
@@ -351,6 +360,30 @@ export class ShipMovementAdmission {
   step(tick: number, budget = 64): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid sailing admission budget");
+    for (const admission of this.pending.values()) {
+      const limit=this.ports.deadlineTicks?.(admission.playerId);
+      if(limit===undefined)continue;
+      if(admission.paused) {
+        if(admission.retryAt!==undefined && tick>=admission.retryAt && admission.members.every(m=>this.valid(admission.id,m.id))) {
+          const ship=this.ports.ship(admission.members[0].id)!;
+          this.finish(admission,tick,"superseded");
+          this.resume(ship,admission.goal,!!admission.recovery,tick);
+        }
+        continue;
+      }
+      admission.deadline??=planningDeadline(tick,limit);
+      if(tick<admission.deadline!)continue;
+      if(!admission.execution) { this.finish(admission,tick,"rejected",ROUTE_CAPACITY_REASON);continue; }
+      // A committed waypoint survives its terminal capacity result. It is now
+      // paused intent, with no live planner work; replacement/cancel releases it.
+      admission.paused=true;
+      admission.retryAt=tick+100;
+      for(const member of admission.members) {
+        this.ports.cancel(admission.id,member.id);member.requested=false;
+        const ship=this.ports.ship(member.id);if(ship)this.ports.paused?.(ship,true);
+      }
+      this.event(admission,tick,"deferred",ROUTE_CAPACITY_REASON);
+    }
     const validated = new Set<number>();
     let used = 0,
       idle = 0, turn = 0;

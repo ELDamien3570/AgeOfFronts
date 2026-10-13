@@ -112,7 +112,12 @@ export default defineConfig({
       },
     },
   ],
-  server: { host: "127.0.0.1", port: 9000, strictPort: true, open: false },
+  server: {
+    host: "127.0.0.1", port: 9000, strictPort: true, open: false,
+    // Replay artifacts and archived source trees are generated test inputs,
+    // not live modules. Keep them out of HMR's recursive workspace watcher.
+    watch: { ignored: ["**/out/**", "**/build/**"] },
+  },
   preview: { host: "127.0.0.1", port: 9000, strictPort: true },
   build: {
     outDir: "build/skirmish",

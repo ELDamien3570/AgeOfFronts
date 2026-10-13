@@ -69,9 +69,13 @@ describe("atomic researched transport handoff", () => {
     expect(f.s.path.length).toBeGreaterThan(0);
     const point={x:79*FIXED,y:f.s.y};
     expect(f.game.formationFits(f.s,point)).toBe(true);
-    const wall=vi.spyOn(f.game.expansion!.fortifications,"intactWallAt").mockImplementation(tile=>f.map.x(tile)===80);
+    const forts=f.game.expansion!.fortifications;
+    const tiles=Array.from({length:f.map.height()},(_,y)=>f.map.ref(80,y));
+    const wall=forts.addBarrier({id:f.game.allocateId(),playerId:1,age:"StoneAge",a:tiles[0],b:tiles[tiles.length-1],
+      tiles,health:1000,maxHealth:1000,remainingTicks:0});
     expect(f.game.formationFits(f.s,point)).toBe(false);
-    wall.mockRestore();
+    forts.updateBarrier(wall.id,{health:0});
+    expect(f.game.formationFits(f.s,point)).toBe(true);
     expect(f.game.formationFits(f.s,{x:79*FIXED,y:0})).toBe(false);
   });
   it.each([12, 72, 96, 144])(

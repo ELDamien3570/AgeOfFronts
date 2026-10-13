@@ -74,7 +74,10 @@ describe('formation performance contracts', () => {
     const {game}=formationLoad('crowded',60),a=game.squads[0],b=game.squads[50],geometry=new CombatGeometry();
     const preparedA=new PreparedFormationBody(a,0),preparedB=new PreparedFormationBody(b,0),before=formationContact(a,b,0);
     expect(preparedA.contact(preparedB)).toBe(before);expect(geometry.contact(a,b,0)).toBe(before);
+    const ownedBody=geometry.body(b,0),captured=structuredClone(ownedBody.footprint());
     game.updateSquad(b.id,{x:b.x+3*FIXED});
+    expect(geometry.body(b,0)).not.toBe(ownedBody);
+    expect(ownedBody.footprint()).toEqual(captured);
     expect(preparedA.contact(preparedB)).toBe(before);
     expect(geometry.contact(a,b,0)).toEqual(formationContact(a,b,0));
     expect(geometry.contact(a,b,1)).toEqual(formationContact(a,b,1));

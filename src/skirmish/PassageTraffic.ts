@@ -44,7 +44,7 @@ export class PassageTraffic {
 
   constructor(
     private readonly map: GameMap,
-    private readonly paths: LandPaths,
+    private readonly paths: Pick<LandPaths,'walkable'|'connected'>,
   ) {
     const size = map.width() * map.height(),
       axes = new Uint8Array(size);

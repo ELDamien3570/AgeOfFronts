@@ -1,4 +1,3 @@
-import { FormationOccupancy } from "../FormationOccupancy";
 import type { GameMap } from "../../core/game/GameMap";
 import {
   FormationPlanning,
@@ -7,7 +6,7 @@ import {
 import type { LandPaths } from "../Pathfinding";
 import { FIXED, MAX_SQUADS, type Squad } from "../Protocol";
 import type { ExactRouteOutcome } from "../RoutePlanner";
-import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "../RouteRetryPolicy";
+import { limitedRouteRetry, planningDeadline, ROUTE_CAPACITY_REASON } from "../RouteRetryPolicy";
 import type { WorldPoint } from "../SpatialGrid";
 import { distanceSquared, pointTile, tilePoint } from "../SquadGeometry";
 import type {
@@ -28,6 +27,7 @@ interface Member {
   retryAt: number;
 }
 export interface CohortPlan {
+  deadline?: number;
   id: number;
   playerId: number;
   generation: number;
@@ -71,11 +71,10 @@ export interface CohortPorts {
 export class CohortAdmission {
   private readonly pending = new Map<number, CohortPlan>();
   private nextId = 1;
-  private readonly occupancy: FormationOccupancy;
   constructor(
     readonly owner: DomainRouteOwner,
     private readonly ports: CohortPorts,
-  ) { this.occupancy = new FormationOccupancy(ports.map); }
+  ) {}
   get pendingCount(): number {
     return this.pending.size;
   }
@@ -106,6 +105,8 @@ export class CohortAdmission {
     const id = this.nextId++,
       routes = this.ports.routes;
     const plan: CohortPlan = {
+      ...(routes.deadlineTicks?.(playerId,this.owner) === undefined ? {} :
+        {deadline:planningDeadline(routes.tick(),routes.deadlineTicks!(playerId,this.owner))}),
       id,
       playerId,
       generation: routes.generation(playerId),
@@ -233,7 +234,12 @@ export class CohortAdmission {
   step(budget: number,interactive=false): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid cohort allowance");
-    if (this.pending.size) this.occupancy.rebuild(this.ports.squads());
+    for (const plan of this.pending.values()) {
+      const limit=this.ports.routes.deadlineTicks?.(plan.playerId,this.owner);
+      if(limit===undefined)continue;
+      plan.deadline??=planningDeadline(this.ports.routes.tick(),limit);
+      if(this.ports.routes.tick()>=plan.deadline!)this.finish(plan,"rejected",ROUTE_CAPACITY_REASON);
+    }
     let work = 0,
       idle = 0;
     while (work < budget && this.pending.size) {
@@ -276,7 +282,6 @@ export class CohortAdmission {
           undefined,
           plan.formation,
           undefined,
-          this.occupancy,
         );
         work += formation.step(
           Math.min(16, budget - work),
@@ -417,7 +422,6 @@ export class CohortAdmission {
             plan.cursor = 0;
           } else {
             const committed = this.ports.commit(plan, accepted);
-            if (committed !== false) for (const member of accepted) this.occupancy.refresh(member.squad);
             this.finish(
               plan,
               committed === false ? "rejected" : "executed",

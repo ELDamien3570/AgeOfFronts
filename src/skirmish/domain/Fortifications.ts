@@ -276,7 +276,7 @@ export class Fortifications {
     return [...candidates];
   }
   /** Physical clearance uses a squad's swept radius. Weapon rays retain clear(). */
-  clearMovement(from:{x:number;y:number},to:{x:number;y:number},owner:number,radius:number):boolean {
+  clearMovement(from:{x:number;y:number},to:{x:number;y:number},owner:number,radius:number,allWalls=false):boolean {
     // The proof must include the full swept body, including adjacent cells.
     const extent = Math.ceil(radius / FIXED);
     // Include the collecting query's cell expansion at exact tile/block edges.
@@ -288,7 +288,7 @@ export class Fortifications {
       for (let yy=Math.max(0,y-extent); yy<=Math.min(this.map.height()-1,y+extent); yy++)
         for (let xx=Math.max(0,x-extent); xx<=Math.min(this.map.width()-1,x+extent); xx++) {
           const tile = this.map.ref(xx,yy);
-          if (this.blocked(tile,owner) && boxSweepEntry(from,to,{x:xx*FIXED,y:yy*FIXED},FIXED,radius)!==null) return false;
+          if ((this.blocked(tile,owner) || allWalls && this.intactWallAt(tile)) && boxSweepEntry(from,to,{x:xx*FIXED,y:yy*FIXED},FIXED,radius)!==null) return false;
         }
     }
     return true;

@@ -38,106 +38,30 @@ export function distanceSquared(a: WorldPoint, b: WorldPoint): number {
   return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
 }
 
-/** Whether a footprint cell is open ground, or open water for amphibious
- * squads (a faction with transport technology). */
+/** Natural mountains are scenery for movement. Only the carrier's medium matters. */
 export function passableCell(map: GameMap, tile: number, amphibious = false): boolean {
-  return !map.isImpassable(tile) && (amphibious || map.isLand(tile));
+  return amphibious || map.isLand(tile);
 }
-
-export function standable(
-  map: GameMap,
-  point: WorldPoint,
-  radius: number,
-  amphibious = false,
-): boolean {
-  const left = Math.floor((point.x - radius) / FIXED);
-  const right = Math.floor((point.x + radius) / FIXED);
-  const top = Math.floor((point.y - radius) / FIXED);
-  const bottom = Math.floor((point.y + radius) / FIXED);
-  for (let y = top; y <= bottom; y++)
-    for (let x = left; x <= right; x++) {
-      const dx = Math.max(x * FIXED - point.x, 0, point.x - (x + 1) * FIXED);
-      const dy = Math.max(y * FIXED - point.y, 0, point.y - (y + 1) * FIXED);
-      if (dx * dx + dy * dy >= radius * radius) continue;
-      if (!map.isValidCoord(x, y)) return false;
-      if (!passableCell(map, map.ref(x, y), amphibious)) return false;
-    }
-  return true;
+export function standable(map: GameMap, point: WorldPoint, radius: number, amphibious = false): boolean {
+  return point.x>=radius && point.y>=radius && point.x<=map.width()*FIXED-radius &&
+    point.y<=map.height()*FIXED-radius && passableCell(map,pointTile(map,point),amphibious);
 }
-
-// Exact capsule-versus-terrain checks prevent corner cutting without sampling.
-export function traversable(
-  map: GameMap,
-  from: WorldPoint,
-  to: WorldPoint,
-  radius: number,
-  amphibious = false,
-): boolean {
-  if (
-    Math.min(from.x, to.x) < radius ||
-    Math.min(from.y, to.y) < radius ||
-    Math.max(from.x, to.x) > map.width() * FIXED - radius ||
-    Math.max(from.y, to.y) > map.height() * FIXED - radius
-  )
-    return false;
-  const dx = to.x - from.x,
-    dy = to.y - from.y,
-    lengthSquared = dx * dx + dy * dy;
-  const left = Math.floor((Math.min(from.x, to.x) - radius) / FIXED);
-  const right = Math.floor((Math.max(from.x, to.x) + radius) / FIXED);
-  const top = Math.floor((Math.min(from.y, to.y) - radius) / FIXED);
-  const bottom = Math.floor((Math.max(from.y, to.y) + radius) / FIXED);
-  for (let y = top; y <= bottom; y++)
-    for (let x = left; x <= right; x++) {
-      if (map.isValidCoord(x, y)) {
-        if (passableCell(map, map.ref(x, y), amphibious)) continue;
-      }
-      const x0 = x * FIXED,
-        x1 = x0 + FIXED,
-        y0 = y * FIXED,
-        y1 = y0 + FIXED;
-      let enter = 0,
-        exit = 1;
-      for (const [origin, direction, low, high] of [
-        [from.x, dx, x0, x1],
-        [from.y, dy, y0, y1],
-      ]) {
-        if (!direction) {
-          if (origin < low || origin > high) {
-            enter = 1;
-            exit = 0;
-          }
-        } else {
-          const a = (low - origin) / direction,
-            b = (high - origin) / direction;
-          enter = Math.max(enter, Math.min(a, b));
-          exit = Math.min(exit, Math.max(a, b));
-        }
-      }
-      if (enter <= exit) return false;
-      let minimum = Infinity;
-      for (const point of [from, to]) {
-        const px = Math.max(x0 - point.x, 0, point.x - x1),
-          py = Math.max(y0 - point.y, 0, point.y - y1);
-        minimum = Math.min(minimum, px * px + py * py);
-      }
-      for (const cx of [x0, x1])
-        for (const cy of [y0, y1]) {
-          const along = lengthSquared
-            ? Math.max(
-                0,
-                Math.min(
-                  1,
-                  ((cx - from.x) * dx + (cy - from.y) * dy) / lengthSquared,
-                ),
-              )
-            : 0;
-          minimum = Math.min(
-            minimum,
-            (cx - from.x - along * dx) ** 2 + (cy - from.y - along * dy) ** 2,
-          );
-        }
-      if (minimum < radius * radius) return false;
-    }
+/** Carrier supercover: formation edges may overlap shores, but a land carrier
+ * cannot shortcut across water. Constructed obstacles are checked by their owner. */
+export function traversable(map: GameMap, from: WorldPoint, to: WorldPoint, radius: number, amphibious = false): boolean {
+  if(!standable(map,from,radius,amphibious)||!standable(map,to,radius,amphibious))return false;
+  if(amphibious)return true;
+  let x=Math.floor(from.x/FIXED),y=Math.floor(from.y/FIXED);
+  const endX=Math.floor(to.x/FIXED),endY=Math.floor(to.y/FIXED),dx=to.x-from.x,dy=to.y-from.y;
+  const sx=Math.sign(dx),sy=Math.sign(dy),stepX=dx?FIXED/Math.abs(dx):Infinity,stepY=dy?FIXED/Math.abs(dy):Infinity;
+  let nextX=dx?((x+(sx>0?1:0))*FIXED-from.x)/dx:Infinity,
+      nextY=dy?((y+(sy>0?1:0))*FIXED-from.y)/dy:Infinity;
+  const open=(cx:number,cy:number)=>map.isValidCoord(cx,cy)&&map.isLand(map.ref(cx,cy));
+  while(x!==endX||y!==endY){
+    if(nextX<nextY){x+=sx;nextX+=stepX;}
+    else if(nextY<nextX){y+=sy;nextY+=stepY;}
+    else {if(!open(x+sx,y)||!open(x,y+sy))return false;x+=sx;y+=sy;nextX+=stepX;nextY+=stepY;}
+    if(!open(x,y))return false;
+  }
   return true;
 }

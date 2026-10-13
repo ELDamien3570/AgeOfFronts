@@ -9,7 +9,6 @@ import { AI_DOCTRINES } from '../content/AiDoctrines';
 import { personalityOf } from '../content/AiPersonalities';
 import type { EngagementManager } from './EngagementManager';
 import { formationLayoutKey } from "./FormationGeometry";
-import { FormationOccupancy } from "../FormationOccupancy";
 import { CohortAdmission } from "./CohortAdmission";
 import { FormationPlanning, type FormationPlanningState } from "../FormationPlanning";
 import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "../RouteRetryPolicy";
@@ -149,7 +148,6 @@ export class Armies {
   private nextAdmission = 1;
   private readonly leaderAdmissions=new Map<number,ArmyLeaderAdmission>();
   private readonly cohortArmies=new Map<number,{armyId:number;revision:number;leaderId?:number}>();
-  private occupancy?: FormationOccupancy;
   private readonly slotPlanning=new Map<number,{revision:number;geometry?:string;formation:FormationPlanningState}>();
   private readonly cohorts?:CohortAdmission;
   constructor(
@@ -234,8 +232,6 @@ export class Armies {
   }
   stepPlanning(budget:number):number {
     const routes=this.world.domainRoutes;if(!routes)return 0;
-    const occupancy = this.occupancy ??= new FormationOccupancy(this.world.map);
-    if (this.slotPlanning.size) occupancy.rebuild(this.world.squads);
     let used=0;
     for(const plan of [...this.leaderAdmissions.values()]){
       if(used>=budget)break;
@@ -269,7 +265,7 @@ export class Armies {
       if(used>=budget)break;
       const army=this.byArmyId.get(id);
       if(!army || army.revision!==plan.revision || plan.geometry!==JSON.stringify(this.members(army).filter(active).map(formationLayoutKey))){this.slotPlanning.delete(id);continue;}
-      const formation=new FormationPlanning(this.world.map,this.world.squadPaths(army.playerId),plan.formation.center,[],()=>this.world.squads,Infinity,undefined,plan.formation,undefined,occupancy);
+      const formation=new FormationPlanning(this.world.map,this.world.squadPaths(army.playerId),plan.formation.center,[],()=>this.world.squads,Infinity,undefined,plan.formation);
       used+=formation.step(Math.min(16,budget-used),t=>this.world.armyBlocked(t,army.playerId));
     }
     return used+(this.cohorts?.step(budget-used)??0);
@@ -1085,7 +1081,9 @@ export class Armies {
       const contact=!!target&&formationContact(leader,target,this.world.tick).gap<8*FIXED;
       const withdrawing=army.order.type==='regroup'&&army.withdrawalTick!==undefined;
       const deliberateMove=army.manual&&(army.order.type==="move"||army.order.type==="regroup")&&!this.world.players.find(p=>p.id===army.playerId)?.ai;
-      const ambush=!withdrawing&&!deliberateMove&&available.some(s=>s.fighting);
+      // A deliberate march can be interrupted by a member's close-contact
+      // Move-to-Attack transition; distant ranged fire alone retains the march.
+      const ambush=!withdrawing&&available.some(s=>s.fighting&&(!deliberateMove||s.order.type==='attack'));
       if(!withdrawing&&(atEnd||contact||ambush||army.order.type==='deploy')){
         march.speed=0;
         const near=this.world.nearbyArmyEnemies(march.deployment?.point??leader,ENGAGEMENT.joinTiles*FIXED,army.playerId);

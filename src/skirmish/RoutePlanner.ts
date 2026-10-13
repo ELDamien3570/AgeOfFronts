@@ -47,6 +47,8 @@ export type ExactRouteOutcome =
   | "limited"
   | "superseded";
 export interface RoutePlannerPorts<T> {
+  /** Loan unused preparation capacity only while no interactive request waits. */
+  lendIdlePreparation?: boolean;
   priority?(request: ExactRouteRequest<T>): boolean;
   /** Canonical autonomous planning deadline; omitted for exhaustive/player work. */
   deadlineTicks?(request: ExactRouteRequest<T>): number | undefined;
@@ -227,8 +229,8 @@ export class RoutePlanner<T> {
         this.pathsFor(job).validateCorridor(job.corridor,this.workspace);
       }
       if (this.ports.allowExclusiveRetry?.(job) === false) {
-        job.waitingForWorkspace = false;
-        job.resumeExclusiveAfterRelease = undefined;
+        if(job.waitingForWorkspace!==undefined)job.waitingForWorkspace = false;
+        if(job.resumeExclusiveAfterRelease!==undefined)job.resumeExclusiveAfterRelease = undefined;
         if (this.exclusiveKey === job.key) this.exclusiveKey = undefined;
       }
       this.jobs.set(job.key, job);
@@ -490,10 +492,14 @@ export class RoutePlanner<T> {
       this.ports.completed(request, "limited", []);
     }
     let used = 0;
+    const humanWaiting=this.ports.lendIdlePreparation && this.ports.priority && [...this.jobs.values()].some(job=>{
+      const live=job.discard?job.replacement:job.retired?undefined:job;
+      return live && this.ports.priority!(live);
+    });
     let preparationBudget = Math.min(256, budget),
       // At most 16,384 local dequeues, with 12,288 reserved for human work.
       corridorPreparationBudget = Math.min(32, budget),
-      backgroundCorridorPreparationBudget = Math.min(8, budget),
+      backgroundCorridorPreparationBudget = Math.min(this.ports.lendIdlePreparation && !humanWaiting ? 32 : 8, budget),
       rayBudget = 32,
       idle = 0;
     // Exhausted background preparation cannot progress again until next tick.

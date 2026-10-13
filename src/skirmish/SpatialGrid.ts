@@ -15,6 +15,7 @@ export class SpatialGrid<T extends WorldPoint> {
   private readonly columns: number;
   private readonly rows: number;
   private readonly partitions: (number | undefined)[];
+  private readonly occupied: Uint32Array;
 
   constructor(
     width: number,
@@ -26,11 +27,13 @@ export class SpatialGrid<T extends WorldPoint> {
     this.columns = Math.ceil(width / cellSize);
     this.rows = Math.ceil(height / cellSize);
     this.buckets = new Array(this.columns * this.rows);
+    this.occupied = new Uint32Array(Math.ceil(this.buckets.length / 32));
     this.partitions = this.partition ? new Array(this.buckets.length) : [];
   }
 
   rebuild(items: Iterable<T>): void {
     this.maximumExtent=0;
+    this.occupied.fill(0);
     if (this.tracking) {
       for (const bucket of this.active) bucket.length = 0;
       this.active.length = 0;
@@ -62,6 +65,7 @@ export class SpatialGrid<T extends WorldPoint> {
           : -1;
     }
     bucket.push(item);
+    this.occupied[key >>> 5] |= 1 << (key & 31);
     if (this.tracking && bucket.length === 1) this.active.push(bucket);
   }
 
@@ -71,7 +75,10 @@ export class SpatialGrid<T extends WorldPoint> {
       Math.floor(item.y / this.cellSize) * this.columns;
     const bucket = this.buckets[key];
     const index = bucket?.indexOf(item) ?? -1;
-    if (index >= 0) bucket!.splice(index, 1);
+    if (index >= 0) {
+      bucket!.splice(index, 1);
+      if (!bucket!.length) this.occupied[key >>> 5] &= ~(1 << (key & 31));
+    }
   }
 
   /** Conservative occupied-cell test. Rebuild/insert makes a new arrival visible
@@ -81,12 +88,21 @@ export class SpatialGrid<T extends WorldPoint> {
     const right = Math.min(this.columns - 1, Math.floor((x + radius) / this.cellSize));
     const top = Math.max(0, Math.floor((y - radius) / this.cellSize));
     const bottom = Math.min(this.rows - 1, Math.floor((y + radius) / this.cellSize));
-    for (let cy = top; cy <= bottom; cy++)
-      for (let cx = left; cx <= right; cx++) {
-        const key = cx + cy * this.columns;
-        if (this.buckets[key]?.length &&
-            (excludedPartition === undefined || this.partitions[key] !== excludedPartition)) return true;
+    if (left > right || top > bottom) return false;
+    for (let cy = top; cy <= bottom; cy++) {
+      const first = left + cy * this.columns, last = right + cy * this.columns;
+      for (let word = first >>> 5; word <= last >>> 5; word++) {
+        let bits = this.occupied[word];
+        if (word === (first >>> 5)) bits &= 0xffffffff << (first & 31);
+        if (word === (last >>> 5)) bits &= 0xffffffff >>> (31 - (last & 31));
+        while (bits) {
+          const key = word * 32 + 31 - Math.clz32(bits & -bits);
+          bits &= bits - 1;
+          if (this.buckets[key]?.length &&
+              (excludedPartition === undefined || this.partitions[key] !== excludedPartition)) return true;
+        }
       }
+    }
     return false;
   }
 
@@ -108,35 +124,69 @@ export class SpatialGrid<T extends WorldPoint> {
       this.rows - 1,
       Math.floor((y + radius) / this.cellSize),
     );
-    for (let cy = top; cy <= bottom; cy++)
-      for (let cx = left; cx <= right; cx++) {
-        const key = cx + cy * this.columns;
-        if (
-          excludedPartition !== undefined &&
-          this.partitions[key] === excludedPartition
-        )
-          continue;
-        const bucket = this.buckets[key];
-        if (bucket)
-          for (const item of bucket) {
-            if (
-              excludedPartition !== undefined &&
-              this.partition?.(item) === excludedPartition
-            )
-              continue;
-            const dx = item.x - x,
-              dy = item.y - y;
-            if (dx * dx + dy * dy <= radius * radius) result.push(item);
-          }
+    if (left > right || top > bottom) return;
+    for (let cy = top; cy <= bottom; cy++) {
+      const first = left + cy * this.columns, last = right + cy * this.columns;
+      for (let word = first >>> 5; word <= last >>> 5; word++) {
+        let bits = this.occupied[word];
+        if (word === (first >>> 5)) bits &= 0xffffffff << (first & 31);
+        if (word === (last >>> 5)) bits &= 0xffffffff >>> (31 - (last & 31));
+        while (bits) {
+          const key = word * 32 + 31 - Math.clz32(bits & -bits);
+          bits &= bits - 1;
+          if (excludedPartition !== undefined && this.partitions[key] === excludedPartition) continue;
+          const bucket = this.buckets[key];
+          if (bucket) for (const item of bucket) {
+              if (excludedPartition !== undefined && this.partition?.(item) === excludedPartition) continue;
+              const dx = item.x - x, dy = item.y - y;
+              if (dx * dx + dy * dy <= radius * radius) result.push(item);
+            }
+        }
       }
+    }
   }
 
   /** Conservative envelope candidates; callers retain their own exact legality. */
   queryOverlaps(x:number,y:number,radius:number,result:T[],excludedPartition?:number):void {
-    this.query(x,y,radius+this.maximumExtent,result,excludedPartition);
-    let count=0;
-    for(const item of result)if((item.x-x)**2+(item.y-y)**2 <= (radius+(this.extent?.(item)??0))**2)result[count++]=item;
-    result.length=count;
+    result.length = 0;
+    this.visitOverlaps(x, y, radius, item => { result.push(item); return false; }, excludedPartition);
+  }
+  /** Exact envelope candidates, with early exit for a conservative absence proof.
+   * Extents are read live, just as queryOverlaps does; no cached bucket radius
+   * may hide an animated or changed body. */
+  mayOverlap(x:number,y:number,radius:number,accept:(item:T)=>boolean,excludedPartition?:number):boolean {
+    return this.visitOverlaps(x, y, radius, accept, excludedPartition);
+  }
+  private visitOverlaps(x:number,y:number,radius:number,visit:(item:T)=>boolean,excludedPartition?:number):boolean {
+    const reach = radius + this.maximumExtent, squared = reach * reach;
+    const left = Math.max(0, Math.floor((x - reach) / this.cellSize)),
+      right = Math.min(this.columns - 1, Math.floor((x + reach) / this.cellSize)),
+      top = Math.max(0, Math.floor((y - reach) / this.cellSize)),
+      bottom = Math.min(this.rows - 1, Math.floor((y + reach) / this.cellSize));
+    if (left > right || top > bottom) return false;
+    for (let cy = top; cy <= bottom; cy++) {
+      const first = left + cy * this.columns, last = right + cy * this.columns;
+      for (let word = first >>> 5; word <= last >>> 5; word++) {
+        let bits = this.occupied[word];
+        if (word === (first >>> 5)) bits &= 0xffffffff << (first & 31);
+        if (word === (last >>> 5)) bits &= 0xffffffff >>> (31 - (last & 31));
+        while (bits) {
+          const key = word * 32 + 31 - Math.clz32(bits & -bits);
+          bits &= bits - 1;
+          if (excludedPartition !== undefined && this.partitions[key] === excludedPartition) continue;
+          const bucket = this.buckets[key];
+          if (!bucket) continue;
+          for (const item of bucket) {
+            if (excludedPartition !== undefined && this.partition?.(item) === excludedPartition) continue;
+            const dx = item.x - x, dy = item.y - y, distance = dx * dx + dy * dy;
+            if (distance > squared) continue;
+            const extent = radius + (this.extent?.(item) ?? 0);
+            if (distance <= extent * extent && visit(item)) return true;
+          }
+        }
+      }
+    }
+    return false;
   }
   /** Bounded advisory neighborhood. Exact collision queries must use query(). */
   sample(x:number,y:number,radius:number,result:T[],accept:(item:T)=>boolean,limit:number,maximumReads:number,offset=0):void {

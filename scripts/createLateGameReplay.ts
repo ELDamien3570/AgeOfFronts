@@ -10,6 +10,7 @@ if (!input || !output || !Number.isSafeInteger(playerId) || playerId < 1)
   throw new Error("Usage: createLateGameReplay.ts checkpoint.v8 replay.json playerId");
 const checkpoint = deserialize(readFileSync(input)) as ReturnType<Skirmish["checkpoint"]>;
 if (process.argv.includes("--autonomous-deadline")) checkpoint.options.autonomousRouteDeadlineTicks = 40;
+if (process.argv.includes("--ai-decisions")) checkpoint.options.autonomousDecisionInterval = 30;
 const player = checkpoint.players.find(p => p.id === playerId && !p.eliminated);
 if (!player || !checkpoint.squads.some(s => s.playerId === playerId && s.troops > 0))
   throw new Error("Choose a surviving nation with field squads");

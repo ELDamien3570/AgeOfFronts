@@ -1,4 +1,3 @@
-import type { FormationOccupancy } from "./FormationOccupancy";
 import type { GameMap } from "../core/game/GameMap";
 import { formationRingPoint, type FormationMember } from "./Formations";
 import type { LandPaths } from "./Pathfinding";
@@ -85,12 +84,11 @@ export class FormationPlanning {
     private readonly paths: LandPaths,
     center: number,
     members: readonly FormationMember[],
-    private readonly others: () => readonly Squad[],
+    _others: () => readonly Squad[],
     maximumRadius = Infinity,
     preferred?: Map<number, WorldPoint>,
     saved?: FormationPlanningState,
     additionalOrders?: Map<number, Order[]>,
-    private readonly sharedOccupancy?: FormationOccupancy,
   ) {
     if (saved) {
       this.state = saved;
@@ -200,56 +198,8 @@ export class FormationPlanning {
           [s.pending[at-1], s.pending[at]] = [s.pending[at], s.pending[at-1]];
         } else { setup.sort++; setup.insert = setup.sort; }
       } else if (s.phase === "occupancy") {
-        if (this.sharedOccupancy && !s.additionalOrders?.size) {
-          s.phase = "slot";
-          continue;
-        }
-        const squad = this.others()[s.other];
-        if (!squad) {
-          s.phase = "slot";
-          continue;
-        }
-        if (squad.embarkedOn !== null || s.selected.has(squad.id) ||
-            (!s.mixedOwners && !squadSeparation(s.pending[0], squad, hostile))) {
-          s.other++;
-          s.order = -1;
-          continue;
-        }
-        if (s.order === -1)
-          this.insert(s.occupied, {
-            id: squad.id,
-            kind: squad.kind,
-            playerId: squad.playerId,
-            x: squad.x,
-            y: squad.y,
-          });
-        else {
-          const index = s.order - 1,
-            extra = s.additionalOrders?.get(squad.id);
-          const order =
-            s.order === 0
-              ? squad.order
-              : index < squad.queuedOrders.length
-                ? squad.queuedOrders[index]
-                : extra?.[index - squad.queuedOrders.length];
-          if (order?.type === "move")
-            this.insert(s.occupied, {
-              id: squad.id,
-              kind: squad.kind,
-              playerId: squad.playerId,
-              ...(order.x === undefined
-                ? tilePoint(this.map, order.tile)
-                : { x: order.x, y: order.y! }),
-            });
-        }
-        if (
-          ++s.order >
-          squad.queuedOrders.length +
-            (s.additionalOrders?.get(squad.id)?.length ?? 0)
-        ) {
-          s.other++;
-          s.order = -1;
-        }
+        // Legacy checkpoints can resume here. Other squads no longer reserve destinations.
+        s.phase = "slot";
       } else if (s.phase === "slot") {
         s.first = 0; s.phase = "first";
       } else if (s.phase === "first") {
@@ -319,6 +269,7 @@ export class FormationPlanning {
           this.tested(false);
           continue;
         }
+        if(!s.mixedOwners){this.tested(true);continue;}
         s.bucket = 0;
         s.entry = 0;
         s.checkingSlots = false;
@@ -328,11 +279,10 @@ export class FormationPlanning {
           x = Math.floor(point.x / (4 * FIXED)),
           y = Math.floor(point.y / (4 * FIXED)),
           key = `${x - 1 + (s.bucket % 3)}:${y - 1 + Math.floor(s.bucket / 3)}`,
-          bucket = (s.checkingSlots ? s.slots : this.sharedOccupancy && !s.additionalOrders?.size ? this.sharedOccupancy.buckets : s.occupied).get(key),
+          bucket = s.slots.get(key),
           other = bucket?.[s.entry++];
         if (
           other &&
-          (s.checkingSlots || !s.selected.has(other.id)) &&
           distanceSquared(point, other) < squadSeparation(s.member!, other, hostile) ** 2
         ) {
           this.tested(false);
@@ -343,11 +293,7 @@ export class FormationPlanning {
           s.bucket++;
         }
         if (s.bucket === 9) {
-          if (s.checkingSlots || !s.mixedOwners) this.tested(true);
-          else {
-            s.checkingSlots = true;
-            s.bucket = 0;
-          }
+          this.tested(true);
         }
       }
     }

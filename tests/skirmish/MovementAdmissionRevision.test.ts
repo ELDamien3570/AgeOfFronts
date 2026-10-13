@@ -23,6 +23,38 @@ function fixture(human = false) {
 }
 
 describe("movement permission revision revalidation", () => {
+  it("expires queued setup independently of its older parent admission, including a zero-work tick and restore", () => {
+    const f=fixture();f.ports.deadlineTicks=()=>40;
+    const before=f.admission.checkpoint();before.pending[0][1].deadline=100;f.admission.restore(before);
+    expect(f.admission.append([f.squad.id],{type:"move",tile:f.map.ref(80,50)},10)).toBe(true);
+    f.admission.step(49,0);
+    const saved=f.admission.checkpoint(),restored=new MovementAdmission(f.map,f.game.paths,f.ports);restored.restore(saved);
+    for(const admission of [f.admission,restored]) {
+      admission.step(50,0);
+      expect(admission.pendingCount).toBe(1);
+      expect(admission.events[admission.events.length-1]).toMatchObject({tick:50,status:"rejected",reason:expect.stringContaining("capacity")});
+    }
+    expect(f.ports.queue).not.toHaveBeenCalled();expect(f.ports.commit).not.toHaveBeenCalled();
+    expect(restored.checkpoint()).toEqual(f.admission.checkpoint());
+  });
+  it("expires the whole autonomous admission across restore without replacing an active order", () => {
+    const f = fixture(), active = structuredClone(f.squad.order);
+    f.ports.deadlineTicks = () => 40;
+    // Existing restored admissions receive one bounded allowance when upgraded.
+    f.admission.step(10, 1);
+    expect(f.admission.checkpoint().pending[0][1].deadline).toBe(50);
+    const restored = new MovementAdmission(f.map, f.game.paths, f.ports);
+    restored.restore(f.admission.checkpoint());
+    for (const admission of [f.admission, restored]) {
+      admission.step(49, 1);
+      expect(admission.checkpoint().pending.length).toBe(1);
+      admission.step(50, 1);
+      expect(admission.checkpoint().pending.length).toBe(0);
+    }
+    expect(f.ports.commit).not.toHaveBeenCalled();
+    expect(f.squad.order).toEqual(active);
+    expect(f.ports.cancel).toHaveBeenCalled();
+  });
   it("retains an in-flight AI route across unrelated permission revisions", () => {
     const f = fixture();
     for (let tick = 1; tick <= 10; tick++) {

@@ -158,7 +158,7 @@ export class Battle {
   private readonly geometry: CombatGeometry;
   private activity?:CombatActivity;
   private groundRevision?:number;
-  private acquisition = new Map<number,{revision:number;barriers:number;forts:number;diplomacy:number;
+  private acquisition = new Map<number,{revision:number;pose?:number;barriers:number;forts:number;diplomacy:number;
     order:Squad['order'];profile:AttackProfile;previous?:number;target?:number;
     engagement?:{profile:AttackProfile;participants:number;canFight:boolean}}>();
   readonly acquisitionWork={searches:0,reused:0};
@@ -539,10 +539,11 @@ export class Battle {
   private hybridContacts(squad:Squad, definition:UnitDefinition, damage:DamageLedger, contributions:Contributions, revision?:number) {
     const profile=definition.meleeAttack!;
     const radius=profile.range+CONTACT.release+(squad.formation?this.geometry.envelope(squad,this.world.tick).broadRadius:0);
-    const epoch=revision===undefined?undefined:this.activity?.region(squad,radius)??revision;
+    const epoch=revision===undefined?undefined:this.activity?.region(squad,radius,squad.playerId)??revision;
+    const pose=this.activity?.pose(squad.id)??this.world.squadFacts?.().poseRevision(squad.id);
     const cached=this.hybridAcquisition.get(squad.id);
     let hits=cached?.hits,remaining=cached?.remaining??squad.troops;
-    if(epoch===undefined || !cached || cached.epoch!==epoch || cached.profile!==profile || cached.barriers!==this.forts.barrierChanges.revision || cached.forts!==this.forts.version || cached.diplomacy!==this.diplomacy.revision){
+    if(epoch===undefined || !cached || cached.epoch!==epoch || cached.pose!==pose || !!squad.formation?.transition || cached.profile!==profile || cached.barriers!==this.forts.barrierChanges.revision || cached.forts!==this.forts.version || cached.diplomacy!==this.diplomacy.revision){
     this.spatial.queryOverlaps(squad.x,squad.y,profile.range+CONTACT.release+
       (squad.formation?this.geometry.envelope(squad,this.world.tick).broadRadius:0),this.hybridNearby,squad.playerId);
     const contacts=this.hybridNearby.filter(other=>!other.afloat && this.diplomacy.hostile(squad.playerId,other.playerId) &&
@@ -558,7 +559,7 @@ export class Battle {
       if(!troops)continue;
       pools.set(edge,used+troops);remaining-=troops;hits.push({target,troops});
     }
-    if(epoch!==undefined)this.hybridAcquisition.set(squad.id,{epoch,profile,barriers:this.forts.barrierChanges.revision,forts:this.forts.version,diplomacy:this.diplomacy.revision,hits,remaining});
+    if(epoch!==undefined)this.hybridAcquisition.set(squad.id,{epoch,pose,profile,barriers:this.forts.barrierChanges.revision,forts:this.forts.version,diplomacy:this.diplomacy.revision,hits,remaining});
     }
     hits??=[];
     if(hits.length && this.commitShot(squad,profile))for(const {target,troops} of hits){
@@ -569,7 +570,7 @@ export class Battle {
     return {target:hits[0]?.target,remaining};
   }
   private readonly hybridNearby:Squad[]=[];
-  private readonly hybridAcquisition=new Map<number,{epoch:number;profile:AttackProfile;barriers:number;forts:number;diplomacy:number;hits:{target:Squad;troops:number}[];remaining:number}>();
+  private readonly hybridAcquisition=new Map<number,{epoch:number;pose?:number;profile:AttackProfile;barriers:number;forts:number;diplomacy:number;hits:{target:Squad;troops:number}[];remaining:number}>();
   fight(aircraft: Aircraft[]): void {
     this.engagedTargets.clear();for(const s of this.world.squads)if(s.fighting && s.combatTargetId!==null)this.engagedTargets.set(s.id,s.combatTargetId);
     this.rebuild("combat");
@@ -806,8 +807,9 @@ export class Battle {
       // Mid-pass charge geometry changes invalidate subsequent reuse immediately.
       // Between passes, local epochs avoid waking every army for a distant turn.
       const currentRevision=revision===undefined || unitFacts && unitFacts.spatialRevision!==revision?undefined:
-        this.activity?.region(squad,Math.max(acquisitionRange,definition.meleeAttack?.range??0)+CONTACT.release+(squad.formation?this.geometry.envelope(squad,tick).broadRadius:0))??revision;
-      const reuse=currentRevision!==undefined && cached?.revision===currentRevision && cached.barriers===this.forts.barrierChanges.revision &&
+        this.activity?.region(squad,Math.max(acquisitionRange,definition.meleeAttack?.range??0)+CONTACT.release+(squad.formation?this.geometry.envelope(squad,tick).broadRadius:0),squad.playerId)??revision;
+      const pose=this.activity?.pose(squad.id)??unitFacts?.poseRevision(squad.id);
+      const reuse=currentRevision!==undefined && cached?.revision===currentRevision && cached.pose===pose && !squad.formation?.transition && cached.barriers===this.forts.barrierChanges.revision &&
         cached.forts===this.forts.version && cached.diplomacy===this.diplomacy.revision &&
         cached.order===squad.order && cached.profile===profile && cached.previous===previousId;
       if(reuse){target=cached.target===undefined?undefined:this.world.squad(cached.target);this.acquisitionWork.reused++;}
@@ -838,7 +840,7 @@ export class Battle {
         target = candidate;
         nearest = distance;
       }}
-      if(currentRevision!==undefined)this.acquisition.set(squad.id,{revision:currentRevision,barriers:this.forts.barrierChanges.revision,
+      if(currentRevision!==undefined)this.acquisition.set(squad.id,{revision:currentRevision,pose,barriers:this.forts.barrierChanges.revision,
         forts:this.forts.version,diplomacy:this.diplomacy.revision,order:squad.order,profile,previous:previousId,target:target?.id});
       }
       const hybrid=definition.meleeAttack?.perSoldier && definition.rangedAttack?.perSoldier && profile.channel==='ranged'
