@@ -291,9 +291,10 @@ describe("authoritative recruitment queues", () => {
   it("recruits units strictly onto adjacent cells around the recruitment barracks", () => {
     const m = game();
     const barracks = m.buildings.find(b => b.type === "barracks")!;
+    const existingIds = new Set(m.squads.map(s => s.id));
     // Recruit a squad instantly
     expect(m["recruit"](m.players[0], barracks.id, "stoneage-infantry", "instant")).toBeNull();
-    const squad = m.squads.find(s => s.playerId === 1 && s.troops > 0);
+    const squad = m.squads.find(s => !existingIds.has(s.id));
     expect(squad).toBeDefined();
     const squadTile = m.tileOf(squad!);
     const sx = m.map.x(squadTile), sy = m.map.y(squadTile);
@@ -304,12 +305,16 @@ describe("authoritative recruitment queues", () => {
     expect(sx).toBeLessThanOrEqual(bx + 2);
     expect(sy).toBeGreaterThanOrEqual(by - 1);
     expect(sy).toBeLessThanOrEqual(by + 2);
-    console.log({ sx, sy, bx, by, bounds: m.map ? { left: bx, right: bx+2, top: by, bottom: by+2 } : null });
+    const inside = sx >= bx && sx < bx + 2 && sy >= by && sy < by + 2;
     expect(inside).toBe(false);
   });
 
   it("converts recruited units to transport vessels when spawned onto adjacent water cells", () => {
     const terrain = new Uint8Array(80 * 60).fill(133);
+    const bx = 20, by = 20;
+    for (let y = by - 1; y <= by + 2; y++) for (let x = bx - 1; x <= bx + 2; x++) {
+      if (x < bx || x >= bx + 2 || y < by || y >= by + 2) terrain[y * 80 + x] = 0;
+    }
     const m = new Skirmish(new GameMapImpl(80, 60, terrain, terrain.length), {
       seed: 42,
       aiCount: 1,
@@ -322,15 +327,11 @@ describe("authoritative recruitment queues", () => {
     player.gold = 100000;
     const bTile = m.map.ref(20, 20);
     // Setup barracks at (20, 20). Surrounding cells: all water except the barracks footprint.
-    const bx = 20, by = 20;
     for (let dy = -1; dy <= 2; dy++) {
       for (let dx = -1; dx <= 2; dx++) {
         const t = m.map.ref(bx + dx, by + dy);
         if (dx >= 0 && dx < 2 && dy >= 0 && dy < 2) {
           m.owners[t] = player.id;
-          terrain[t] = 133; // Land
-        } else {
-          terrain[t] = 0; // Water
         }
       }
     }
@@ -342,8 +343,9 @@ describe("authoritative recruitment queues", () => {
       age: "StoneAge",
       remainingTicks: 0,
     });
+    const existingIds = new Set(m.squads.map(s => s.id));
     expect(m["recruit"](player, barracks.id, "stoneage-infantry", "instant")).toBeNull();
-    const squad = m.squads.find(s => s.playerId === player.id);
+    const squad = m.squads.find(s => !existingIds.has(s.id));
     expect(squad).toBeDefined();
     expect(m.map.isWater(m.tileOf(squad!))).toBe(true);
     expect(squad!.afloat).not.toBeNull();

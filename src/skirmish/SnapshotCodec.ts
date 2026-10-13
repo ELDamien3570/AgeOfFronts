@@ -367,7 +367,7 @@ export class SnapshotEncoder {
       expansion,
       expansionMode:metadata?(metadata.full?"full":"delta"):undefined,
       details: packSnapshotDetails(
-        source.expansion ?? selected.squads.rows.some(s => s.planningPaused === true || s.movementStatus !== undefined || s.meleeStrike !== undefined || s.chargeImpact !== undefined || s.cavalryEngagement !== undefined || s.cavalryMelee !== undefined) ? selected.squads.rows : undefined,
+        source.expansion ?? selected.squads.rows.some(s => s.afloat !== undefined || s.planningPaused === true || s.movementStatus !== undefined || s.meleeStrike !== undefined || s.chargeImpact !== undefined || s.cavalryEngagement !== undefined || s.cavalryMelee !== undefined) ? selected.squads.rows : undefined,
         source.expansion ? selected.buildings.rows : undefined,
         selected.ships.rows, source.volleys, this.detailCache,
       ),

@@ -189,6 +189,8 @@ describe("construction, recruitment, and economy", () => {
   it("charges gold once, blocks unfinished recruitment, and recruits the building's type", () => {
     const m = match();
     const b = build(m, "archery", 30, 25);
+    // Recruitment exits need friendly land around the occupied footprint.
+    for (let y = 24; y <= 27; y++) for (let x = 29; x <= 32; x++) own(m, m.map.ref(x, y));
     expect(m.players[0].gold).toBe(10000 - BUILDING_RULES.archery.cost);
     const reserves = m.players[0].reserves;
     expect(
@@ -202,6 +204,7 @@ describe("construction, recruitment, and economy", () => {
     expect(m.squads[m.squads.length - 1].kind).toBe("archer");
     expect(m.squads[m.squads.length - 1].troops).toBe(1000);
     const stable = build(m, "stables", 38, 25);
+    for (let y = 24; y <= 27; y++) for (let x = 37; x <= 40; x++) own(m, m.map.ref(x, y));
     step(m, BUILDING_RULES.stables.ticks);
     expect(
       m.applyCommand({ type: "recruit", playerId: 1, buildingId: stable.id }),

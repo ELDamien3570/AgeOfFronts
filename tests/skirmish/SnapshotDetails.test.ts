@@ -28,6 +28,24 @@ function fixture() {
   });
 }
 describe("transferable snapshot details", () => {
+  it("preserves legacy transport hull state across boarding, damage and landing", () => {
+    const terrain = new Uint8Array(64 * 48).fill(133);
+    const game = new Skirmish(new GameMapImpl(64, 48, terrain, terrain.length), {
+      seed: 42, aiCount: 1, runAi: false, tribes: false,
+    });
+    const encoder = new SnapshotEncoder(), decoder = new SnapshotDecoder();
+    const id = game.squads[0].id;
+    for (const afloat of [
+      { hull: 120, maxHull: 120, vesselId: "stoneage-transport" },
+      { hull: 37.5, maxHull: 120, vesselId: "stoneage-transport" },
+      null,
+    ]) {
+      game.updateSquad(id, { afloat });
+      const packet = encoder.encode(game.snapshot());
+      const decoded = decoder.decode(structuredClone(packet, { transfer: snapshotTransfers(packet) }));
+      expect(decoded.squads.find(s => s.id === id)!.afloat).toEqual(afloat);
+    }
+  });
   it("preserves precision, absent/null/false values and every combat/movement/refit field", async () => {
     const game = fixture(),
       original = game.squads[0];

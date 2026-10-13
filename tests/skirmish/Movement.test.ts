@@ -130,7 +130,8 @@ describe("compact formations and local avoidance", () => {
         // Keep the empty opponent alive while measuring movement.
         match.addBuilding({id:match.allocateId(),playerId:2,type:"city",tile:21*80+70,remainingTicks:0});
       match.updateSquad(mover.id, { playerId: 1 });
-      for (const unit of [mover, a, b]) match.updateSquad(unit.id, { kind: "infantry" });
+      // This fixture places ground blockers directly, bypassing normal landing.
+      for (const unit of [mover, a, b]) match.updateSquad(unit.id, { kind: "infantry", afloat: null });
       match.updateSquad(mover.id, { x: 10.5 * FIXED });
       match.updateSquad(mover.id, { y: 21.5 * FIXED });
       match.updateSquad(a.id, { x: 30.5 * FIXED });

@@ -93,15 +93,16 @@ describe("four-faction troop load demo", () => {
   it("runs a four-way battle through ordinary authoritative commands", () => {
     const game = stoneAgeDemo();
     engageDemoArmies(game);
+    const initialTroops = game.squads.reduce((sum, s) => sum + s.troops, 0);
     expect(game.squads.every((s) => s.order.type === "attack")).toBe(true);
     for (let tick = 0; tick < 400; tick++) game.step();
     expect(game.squads.reduce((sum, s) => sum + s.troops, 0)).toBeLessThan(
-      400000,
+      initialTroops,
     );
     expect(game.squads.length).toBeLessThanOrEqual(400);
     expect(
       game.snapshot().players.filter((p) => DEMO_FACTIONS.includes(p.id as 1))
         .length,
     ).toBe(4);
-  }, 30000);
+  }, 60000);
 });

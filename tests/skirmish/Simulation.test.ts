@@ -298,7 +298,7 @@ describe("land squad skirmish", () => {
       expect(match.squads.length).toBeGreaterThan(4);
       expect(
         match.squads.every((s) =>
-          s.embarkedOn === null
+          s.embarkedOn === null && !s.afloat
             ? match.paths.walkable(match.tileOf(s))
             : match.waterPaths.walkable(match.tileOf(s)),
         ),

@@ -1900,7 +1900,7 @@ canvas.addEventListener("pointerup", (event) => {
     const selectedSquads = ids.map(id => snapshot?.squads.find(s => s.id === id)).filter((s): s is NonNullable<typeof s> => !!s);
     const siegeOnly = selectedSquads.length > 0 && selectedSquads.every(s => {
       const u = s.definitionId ? UNIT.get(s.definitionId) : defaultUnit(s.kind);
-      return !u?.attack.targets.includes("infantry") && !u?.attack.targets.includes("cavalry") && !u?.attack.targets.includes("archer");
+      return !u?.attack.targets.includes("infantry") && !u?.attack.targets.includes("mounted") && !u?.attack.targets.includes("ranged");
     });
     const structureOrder =
       hasEnemyStructure && (!enemy || siegeOnly);
