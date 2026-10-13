@@ -72,7 +72,10 @@ describe("bounded frontier and river expansion",()=>{
     expect(landed).toBe(true);
     // The landing must register a bridgehead so expansion continues there.
     expect([...game.checkpoint().homeTerritory.bridgeheads.get(tribe.id)?.values()??[]].some(t=>map.x(t)>=41&&game.owners[t]===tribe.id)).toBe(true);
-    expect(game.squads.some(s=>s.playerId===tribe.id&&map.x(game.tileOf(s))>=41)).toBe(true);
+    // Frontier squads may be reassigned after landing; retained expansion,
+    // rather than their position at one tick, proves the bridgehead worked.
+    const captured=Array.from(game.owners).filter((owner,tile)=>owner===tribe.id&&map.x(tile)>=41);
+    expect(captured.length).toBeGreaterThan(60);
   });
   it("sends a small reinforcement cohort to threatened owned land across a river",()=>{
     const {game,map,tribe}=fixture();
