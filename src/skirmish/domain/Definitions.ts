@@ -296,6 +296,7 @@ export interface TradeActor {
   path: number[];
   nextPathIndex: number;
   waitTicks: number;
+  waitingReason?: "cargo" | "planning" | "no-receiver" | "unreachable" | "handling" | "capacity";
   quoteAllies: number[];
 }
 export interface Barrier {

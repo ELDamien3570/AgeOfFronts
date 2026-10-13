@@ -4,7 +4,7 @@ import { generateContinents } from "../../src/skirmish/ContinentsMap";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import { mapIdentity } from "../../src/skirmish/multiplayer/application/MapIdentity";
 import { loadServerMap } from "../../src/skirmish/multiplayer/infrastructure/ServerMap";
-import { loadMap } from "../../src/skirmish/Terrain";
+import { loadMap, terrainSpeed } from "../../src/skirmish/Terrain";
 
 /** Count 4-connected water components. */
 function waterComponents(size: number, regions: Uint8Array) {
@@ -84,6 +84,7 @@ describe("Continents layout", () => {
         impassable = new Map<number, number>();
       for (let tile = 0; tile < m.terrain.length; tile++)
         if (m.map.isImpassable(tile)) {
+          expect(terrainSpeed(m.map, tile)).toBe(20);
           const id = m.layout.regions[tile];
           impassable.set(id, (impassable.get(id) ?? 0) + 1);
         }

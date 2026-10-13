@@ -11,6 +11,7 @@ import { buildingCostMultiplier } from "./content/Buildings";
 import { coastalRanges } from "./content/CoastalTerritory";
 import { coastalWaterDistances } from "./domain/CoastalReach";
 import { availableGold } from "./domain/Gold";
+import { constructionAvailabilityRejection } from "./content/ConstructionAvailability";
 
 // Shared domain validation also drives placement previews. A preview is advisory;
 // applyCommand checks again against the current authoritative simulation state.
@@ -35,6 +36,8 @@ export function constructionRejection(
 ): string | null {
   if (!player || !Object.prototype.hasOwnProperty.call(BUILDING_RULES, type))
     return "Unknown building";
+  const availability = constructionAvailabilityRejection(type);
+  if (availability) return availability;
   const terrain = buildingTerrainRejection(map, owners, player.id, type, tile);
   if (terrain) return terrain;
   const stack = Array.isArray(buildings)

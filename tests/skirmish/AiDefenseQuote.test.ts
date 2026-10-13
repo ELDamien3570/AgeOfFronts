@@ -1,4 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+// Preserve coverage of fortification mechanics for when placement is re-enabled.
+vi.mock("../../src/skirmish/content/ConstructionAvailability", () => ({
+  constructionAvailabilityRejection: () => null,
+}));
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { BuildingIndex } from "../../src/skirmish/BuildingIndex";
 import { Skirmish } from "../../src/skirmish/Simulation";

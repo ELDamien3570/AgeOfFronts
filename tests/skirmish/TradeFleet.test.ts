@@ -88,6 +88,14 @@ describe("bounded civilian trade", () => {
     expect(current.cargo).toBe(cargo);expect(current.state).toBe(state);expect(current.waitTicks).toBeGreaterThanOrEqual(100);
     expect(trade.checkpoint().routeFailures).toEqual(failures);expect(trade.diagnostics.planningLimits).toBe(1);
   });
+  it("keeps paid cargo outside the autonomous quote deadline", () => {
+    const { game, trade, step } = fleet(1, 0, false, true, false, true);
+    step(20);
+    const actor = trade.actors[0];
+    expect(game.domainRoutes!.deadlineTicks!(actor.playerId, "trade", actor.id)).toBe(40);
+    actor.cargo = 20; actor.loaded = 20; actor.state = "returning"; game.tick++;
+    expect(game.domainRoutes!.deadlineTicks!(actor.playerId, "trade", actor.id)).toBeUndefined();
+  });
   it("reconciles duplicate pending corridors after restore and commits each merchant's cargo independently", () => {
     const { game, trade, step, expansion, sources } = fleet(1, 0, false, true);
     step(20);
@@ -366,12 +374,58 @@ describe("bounded civilian trade", () => {
     actor.waitTicks = 0;
     step(25);
     expect(actor).toMatchObject({ playerId: 2, state: "prize", destination: null });
+    expect(actor.waitingReason).toBe("no-receiver");
     expect(actor.cargo * actor.valuePerGood).toBe(cargoValue);
     expect(trade.deliveredGold[2] ?? 0).toBe(0);
     game.addBuilding({ id: game.allocateId(), type: "port", tile: game.map.ref(11, 39), playerId: 2, remainingTicks: 0, age: "StoneAge" });
     step(200);
     expect(trade.actors).not.toContain(actor);
     expect(trade.deliveredGold[2]).toBe(cargoValue);
+  });
+  it("shares water geometry across owners while independently committing their cargo", () => {
+    const { game, trade, step } = fleet(0, 1, false, true);
+    step(20);
+    const ordinary = trade.actors[0], prize = structuredClone(ordinary);
+    Object.assign(prize, { id: game.allocateId(), playerId: 2, state: "prize", cargo: 17, loaded: 17,
+      shipmentId: 9000, destination: null, path: [], waitTicks: 0 });
+    trade.actors.push(prize);
+    step(); trade.stepPlanning(32);
+    expect(game.routePlanner.checkpoint().jobs.filter(j => j.context.kind === "domain" && j.context.owner === "trade")).toHaveLength(1);
+    const requests = trade.diagnostics.routeRequests;
+    for (let i = 0; i < 100 && (ordinary.destination === null || prize.destination === null); i++) {
+      game.routePlanner.step(++game.tick); trade.stepPlanning(32); trade.step();
+    }
+    expect(ordinary.cargo).toBeGreaterThan(0);
+    expect(prize.cargo).toBe(17);
+    expect(ordinary.destination).toBe(prize.destination);
+    expect(ordinary.path).toEqual(prize.path);
+    expect(trade.diagnostics.routeRequests).toBe(requests);
+  });
+  it("redirects a captured courier after its receiver is destroyed and still pays full value once", () => {
+    const { game, trade } = fleet(0, 1, true, true);
+    const advance = () => { game.tick++; game.routePlanner.step(game.tick); trade.stepPlanning(16); trade.step(); };
+    for (let i = 0; i < 100 && !trade.actors.some(a => a.cargo > 0); i++) advance();
+    const actor = trade.actors.find(a => a.cargo > 0)!;
+    const value = actor.cargo * actor.valuePerGood;
+    game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship",
+      x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
+    actor.waitTicks = 0; advance();
+    trade.setPaused(1, true, true); trade.setPaused(2, true, true);
+    for (let i = 0; i < 100 && actor.destination === null; i++) advance();
+    expect(actor.state).toBe("prize");
+    expect(actor.destination).not.toBeNull();
+    game.removeBuilding(actor.destination!);
+    for (let i = 0; i < 110; i++) advance();
+    expect(actor.waitingReason).toBe("no-receiver");
+    expect(actor.cargo * actor.valuePerGood).toBe(value);
+    const receiver = game.addBuilding({ id: game.allocateId(), type: "port", playerId: 2,
+      tile: game.map.ref(20, 39), remainingTicks: 0, age: "StoneAge" });
+    advance();
+    expect(actor.waitingReason).not.toBe("no-receiver");
+    for (let i = 0; i < 1000 && trade.actors.includes(actor); i++) advance();
+    expect(receiver.playerId).toBe(2);
+    expect(trade.actors).not.toContain(actor);
+    expect(trade.deliveredGold[2]).toBe(value);
   });
   it.each([false, true])("automatically captures passing neutral sea trade without a war declaration (AI policy=%s)", aiWarPolicy => {
     const { game, trade, step } = fleet(0, 1, aiWarPolicy);

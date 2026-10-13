@@ -30,7 +30,11 @@ export function baseTerrainSpeed(map: GameMap, tile: number): number {
       return 56;
     case TerrainType.Highland:
       return 35;
+    // Legacy ridge bytes retain their map classification for construction and
+    // geography, but squad routing and collision permit crossing them. They
+    // must share the mountain movement tier rather than stop units at zero.
     case TerrainType.Mountain:
+    case TerrainType.Impassable:
       return 20;
     default:
       return 0;

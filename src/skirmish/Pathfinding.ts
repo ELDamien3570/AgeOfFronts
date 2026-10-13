@@ -1,6 +1,6 @@
 import { FlatBinaryHeap } from "../core/execution/utils/FlatBinaryHeap";
 import type { GameMap } from "../core/game/GameMap";
-import { HierarchicalPaths, type CorridorState } from "./HierarchicalPaths";
+import { HierarchicalPaths, type CorridorState, type SharedPreparationCheckpoint } from "./HierarchicalPaths";
 import { PathTopology, type PathMedium } from "./PathTopology";
 import {IncrementalPath,type IncrementalPathState} from "./IncrementalPath";
 import { PlanningPath, type PlanningPathState, type PlanningWorkspace } from "./PlanningWorkspace";
@@ -12,6 +12,10 @@ const HIERARCHY_MIN_CELLS = 16_384;
 // AI repeat the same pairs constantly, so keep a bounded recency cache.
 const ROUTE_CACHE_ENTRIES = 16_384;
 const ROUTE_CACHE_TILES = 2_000_000;
+export interface WaterShortcut {
+  start: number; goal: number; axis: 0 | 1; current: number;
+  path: number[]; phase: "search" | "done" | "failed";
+}
 
 class TilePaths {
   private readonly cost: Int32Array;
@@ -35,6 +39,8 @@ class TilePaths {
     { revision: number; path: Int32Array | null; work: number }
   >();
   private routeTiles = 0;
+  private readonly waterRows?: Int32Array[];
+  private readonly waterColumns?: Int32Array[];
   get residency() {
     return { routes: this.routes.size, routeTiles: this.routeTiles, routeBytes: this.routeTiles * Int32Array.BYTES_PER_ELEMENT,
       hierarchy: this.hierarchy?.residency ?? { clusters: 0, portals: 0, startTrees: 0, treeBytes: 0 } };
@@ -77,10 +83,37 @@ class TilePaths {
       if (tail > largest.length) largest = Array.from(queue.subarray(0, tail));
     }
     this.largestComponent = largest.sort((a, b) => a - b);
+    // Immutable, compressed water runs certify complete axis legs in logarithmic
+    // time. Obstructed candidates never spend hundreds of live ticks discovering
+    // a coast that was already known when the navigation topology was built.
+    if (this.topology.water) {
+      this.waterRows = this.buildWaterRuns(true);
+      this.waterColumns = this.buildWaterRuns(false);
+    }
     if (size > HIERARCHY_MIN_CELLS) {
       this.hierarchy = new HierarchicalPaths(this.topology);
       if (prepare) this.hierarchy.prepare();
     }
+  }
+  private buildWaterRuns(horizontal: boolean): Int32Array[] {
+    const lines = horizontal ? this.map.height() : this.map.width(), length = horizontal ? this.map.width() : this.map.height();
+    return Array.from({ length: lines }, (_, line) => {
+      const runs: number[] = []; let start = -1;
+      for (let at = 0; at <= length; at++) {
+        const water = at < length && this.walkable(this.map.ref(horizontal ? at : line, horizontal ? line : at));
+        if (water && start < 0) start = at;
+        if (!water && start >= 0) { runs.push(start, at); start = -1; }
+      }
+      return Int32Array.from(runs);
+    });
+  }
+  private waterRunContains(runs: Int32Array, a: number, b: number): boolean {
+    const low = Math.min(a, b), high = Math.max(a, b); let left = 0, right = runs.length / 2;
+    while (left < right) {
+      const mid = (left + right) >>> 1;
+      if (runs[mid * 2] <= low) left = mid + 1; else right = mid;
+    }
+    return left > 0 && runs[(left - 1) * 2 + 1] > high;
   }
 
   prepare(): void {
@@ -131,6 +164,43 @@ class TilePaths {
     if (!saved && !this.connected(start, goal)) job.state.phase = "unreachable";
     return job;
   }
+  beginWaterShortcut(start: number, goal: number): WaterShortcut | undefined {
+    if (!this.waterRows || !this.waterColumns || !this.connected(start, goal)) return undefined;
+    const sx = this.map.x(start), sy = this.map.y(start), gx = this.map.x(goal), gy = this.map.y(goal);
+    const horizontal = this.waterRunContains(this.waterRows[sy], sx, gx) && this.waterRunContains(this.waterColumns[gx], sy, gy);
+    const vertical = this.waterRunContains(this.waterColumns[sx], sy, gy) && this.waterRunContains(this.waterRows[gy], sx, gx);
+    return horizontal || vertical ? { start, goal, axis: horizontal ? 0 : 1, current: start, path: [start], phase: "search" } : undefined;
+  }
+  /** Water has uniform cardinal cost. A fully certified monotone path attains
+   * the Manhattan lower bound, proving optimality without a search arena.
+   * Try two axis orders under the ordinary route allowance, then fall back. */
+  stepWaterShortcut(state: WaterShortcut, budget: number): number {
+    let used = 0;
+    while (used < budget && state.phase === "search") {
+      used++;
+      if (state.current === state.goal) { state.phase = "done"; break; }
+      const x = this.map.x(state.current), y = this.map.y(state.current),
+        dx = this.map.x(state.goal) - x, dy = this.map.y(state.goal) - y;
+      const horizontal = state.axis === 0 ? dx !== 0 : dy === 0;
+      const next = this.map.ref(x + (horizontal ? Math.sign(dx) : 0), y + (horizontal ? 0 : Math.sign(dy)));
+      if (!this.walkable(next)) {
+        if (state.axis === 1) state.phase = "failed";
+        else { state.axis = 1; state.current = state.start; state.path = [state.start]; }
+      } else { state.current = next; state.path.push(next); }
+    }
+    return used;
+  }
+  validateWaterShortcut(state: WaterShortcut, start: number, goal: number): void {
+    if (!this.topology.water || state.start !== start || state.goal !== goal ||
+      ![0, 1].includes(state.axis) || !["search", "done", "failed"].includes(state.phase) ||
+      state.path.length < 1 || state.path.length > this.map.width() + this.map.height() ||
+      state.path[0] !== start || state.path[state.path.length - 1] !== state.current ||
+      (state.phase === "done" && state.current !== goal) || state.path.some((tile, i) => !Number.isInteger(tile) ||
+        tile < 0 || tile >= this.size || !this.walkable(tile) ||
+        (i > 0 && (this.map.manhattanDist(tile, state.path[i - 1]) !== 1 ||
+          this.map.manhattanDist(tile, goal) !== this.map.manhattanDist(state.path[i - 1], goal) - 1))))
+      throw Error("Invalid certified water shortcut");
+  }
 
   /** One HPA* corridor for an incremental planner, or null when the hierarchy
    * has no route clear of `blocked`. Never falls back to an unbudgeted exact
@@ -145,13 +215,19 @@ class TilePaths {
   beginCorridor(start:number,goal:number,nodes:Map<number,number>):CorridorState|undefined {
     return this.hierarchy && this.connected(start,goal)?this.hierarchy.begin(start,goal,this.revision,nodes):undefined;
   }
-  stepCorridor(state:CorridorState,workspace:PlanningWorkspace,budget:number,blocked?: (tile:number)=>boolean,preparationBudget=Infinity,preparation:{used:number}={used:0}):number {
-    if(!this.hierarchy)throw Error("Missing hierarchical route topology");
-    return this.hierarchy.step(state,workspace,budget,this.revision,blocked,preparationBudget,preparation);
+  sharedPreparationCheckpoint(): SharedPreparationCheckpoint | undefined { return this.hierarchy?.sharedCheckpoint(); }
+  restoreSharedPreparation(saved?: SharedPreparationCheckpoint): void {
+    if (saved && !this.hierarchy) throw Error("Missing shared preparation topology");
+    this.hierarchy?.restoreShared(saved);
   }
-  validateCorridor(state:CorridorState,workspace:PlanningWorkspace):void {
+  pinSharedPreparation(origins: Iterable<number>): void { this.hierarchy?.pinShared(origins); }
+  stepCorridor(state:CorridorState,workspace:PlanningWorkspace,budget:number,blocked?: (tile:number)=>boolean,preparationBudget=Infinity,preparation:{used:number}={used:0},shared=false):number {
     if(!this.hierarchy)throw Error("Missing hierarchical route topology");
-    this.hierarchy.validate(state,workspace,this.revision);
+    return this.hierarchy.step(state,workspace,budget,this.revision,blocked,preparationBudget,preparation,shared);
+  }
+  validateCorridor(state:CorridorState,workspace:PlanningWorkspace,shared=false):void {
+    if(!this.hierarchy)throw Error("Missing hierarchical route topology");
+    this.hierarchy.validate(state,workspace,this.revision,shared);
   }
 
   /** Whether every cell of `path`, and both corner cells of each diagonal

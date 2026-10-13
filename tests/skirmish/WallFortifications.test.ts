@@ -1,6 +1,11 @@
 import { claimBuildingFootprint } from "./BuildingFixtures";
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// Preserve coverage of fortification mechanics for when placement is re-enabled.
+vi.mock("../../src/skirmish/content/ConstructionAvailability", () => ({
+  constructionAvailabilityRejection: () => null,
+}));
 import manifest from "../../Art/Terrain/Wall Kit/Wall_Kit_Manifest.json";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { wallTier } from "../../src/skirmish/client/WallArtwork";

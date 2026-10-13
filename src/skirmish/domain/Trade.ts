@@ -76,6 +76,7 @@ interface Admission {
   playerId: number;
   generation: number;
   revision: string;
+  permission?: string;
   shipmentId: number;
   start: number;
   originTile?: number;
@@ -89,6 +90,7 @@ interface Admission {
   retryAt: number;
   goal?: number;
   outcome?: ExactRouteOutcome;
+  cached?: boolean;
   path?: number[];
 }
 
@@ -100,6 +102,8 @@ export class Trade {
   private nextReceipt=1;
   readonly receiving = new TradeReceiving();
   private seaActorTick = -1;
+  private committedActorTick = -1;
+  private readonly committedActors = new Set<number>();
   private readonly seaActorIds = new Map<number, TradeActor>();
   private readonly seaActors: SpatialGrid<TradeActor>;
   private blastActorTick = -1;
@@ -121,6 +125,8 @@ export class Trade {
     spawnActorReads: 0,
     playerReads: 0,
     quotaActorReads: 0,
+    waitingLoaded: 0,
+    waitingReceivers: 0,
   };
   private readonly markets = new Map<number, OwnerMarkets>();
   private marketGeometry = -1;
@@ -212,6 +218,7 @@ export class Trade {
     });
   }
   restore(saved: ReturnType<Trade["checkpoint"]>): void {
+    this.committedActorTick = -1;
     this.seaActorTick = -1;
     this.blastActorTick = -1;
     const s = structuredClone(saved);
@@ -422,6 +429,12 @@ export class Trade {
         }
       }
     }
+    // A newly completed/captured port wakes stranded prizes immediately. The
+    // receiver index, rather than a timer, owns this dependency change.
+    for (const actor of this.actors) if (actor.naval && actor.state === "prize" && actor.waitingReason === "no-receiver" &&
+      (this.seaMarkets.get(this.world.waterPaths.component[this.tile(actor)]) ?? []).some(b => this.allowedMarket(actor, b))) {
+      actor.waitTicks = 0; actor.waitingReason = undefined;
+    }
   }
   private source(a: TradeActor): Site | undefined {
     return this.markets
@@ -584,8 +597,25 @@ export class Trade {
   private revision(owner: number, naval = false): string {
     // Water navigation ignores land fortifications and military policy. Those
     // revisions can change every tick and starve longer sea-route admissions.
-    if (naval) return `water:${this.controlRevision}`;
+    if (naval) return `water:${this.world.waterPaths.revision}`;
     return `${this.world.domainRoutes?.revision(owner, "trade") ?? this.fortifications.version}:${this.controlRevision}:${this.relationRevision(owner)}`;
+  }
+  routeCommitted(task: Pick<DomainRouteTask, "admissionId">): boolean {
+    if (this.committedActorTick !== this.world.tick) {
+      this.committedActorTick = this.world.tick; this.committedActors.clear();
+      for (const actor of this.actors) if (actor.cargo > 0) this.committedActors.add(actor.id);
+      const loadedGeometry = new Set<string>();
+      for (const plan of this.admissions.values()) if (plan.goal !== undefined && this.committedActors.has(plan.id))
+        loadedGeometry.add(this.corridorKey(plan, plan.goal));
+      for (const plan of this.admissions.values()) if (plan.goal !== undefined && loadedGeometry.has(this.corridorKey(plan, plan.goal)))
+        this.committedActors.add(plan.id);
+    }
+    return this.committedActors.has(task.admissionId);
+  }
+  private permission(owner: number, naval: boolean): string {
+    // Water geometry has no treaty/fortification dependency. Receiver access is
+    // fenced independently by allowedMarket at every commitment boundary.
+    return naval ? "water" : `${this.controlRevision}:${this.relationRevision(owner)}`;
   }
   private cancel(id: number): void {
     const p = this.admissions.get(id);
@@ -607,7 +637,8 @@ export class Trade {
       a.shipmentId === p.shipmentId &&
       this.tile(a) === p.start &&
       (this.world.domainRoutes?.generation(p.playerId) ?? 0) === p.generation &&
-      this.revision(p.playerId, p.naval) === p.revision
+      (p.permission === undefined ? this.revision(p.playerId, p.naval) === p.revision :
+        this.permission(p.playerId, p.naval) === p.permission)
     );
   }
   completedRoute(
@@ -643,16 +674,21 @@ export class Trade {
     if (!rows.length) {
       a.destination = null;
       a.waitTicks = 100;
+      a.waitingReason = a.state === "prize" && a.naval &&
+        !(this.seaMarkets.get(this.world.waterPaths.component[this.tile(a)]) ?? [])
+          .some(b => this.allowedMarket(a, b)) ? "no-receiver" : "unreachable";
       return;
     }
+    a.waitingReason = "planning";
     this.admissions.set(a.id, {
-      ...(this.world.domainRoutes?.deadlineTicks?.(a.playerId,"trade") === undefined ? {} :
-        {deadline:planningDeadline(this.world.tick,this.world.domainRoutes.deadlineTicks!(a.playerId,"trade"))}),
+      ...(this.world.domainRoutes?.deadlineTicks?.(a.playerId,"trade",a.id) === undefined ? {} :
+        {deadline:planningDeadline(this.world.tick,this.world.domainRoutes.deadlineTicks!(a.playerId,"trade",a.id))}),
       id: a.id,
       epoch: this.nextEpoch++,
       playerId: a.playerId,
       generation: this.world.domainRoutes?.generation(a.playerId) ?? 0,
       revision: this.revision(a.playerId, a.naval),
+      permission: this.permission(a.playerId, a.naval),
       shipmentId: a.shipmentId,
       start: this.tile(a),
       originTile: a.originTile,
@@ -668,7 +704,8 @@ export class Trade {
     });
   }
   private corridorKey(p: Admission, goal: number): string {
-    return `${p.playerId}:${p.naval ? 1 : 0}:${p.start}:${goal}:${p.revision}`;
+    return p.naval ? `water:${this.world.waterPaths.revision}:${p.start}:${goal}` :
+      `${p.playerId}:0:${p.start}:${goal}:${p.revision}`;
   }
   private remember(key: string, path: number[]): void {
     if (path.length > 4096 || this.corridors.has(key)) return;
@@ -682,7 +719,7 @@ export class Trade {
   }
   stepPlanning(budget: number): number {
     for(const p of this.admissions.values()) {
-      const limit=this.world.domainRoutes?.deadlineTicks?.(p.playerId,"trade");
+      const limit=this.world.domainRoutes?.deadlineTicks?.(p.playerId,"trade",p.id);
       if(limit===undefined)continue;
       p.deadline??=planningDeadline(this.world.tick,limit);
       if(this.world.tick<p.deadline!)continue;
@@ -700,7 +737,8 @@ export class Trade {
     // ownership while it is pending instead of occupying one planner job per
     // merchant. Rebuild from canonical admissions so restore needs no new state.
     const pendingCorridors = new Map<string, number>();
-    const pendingKey = (p: Admission) => `${this.corridorKey(p, p.goal!)}:${this.world.owners?.[p.start] ?? p.playerId}`;
+    const pendingKey = (p: Admission) => p.naval ? this.corridorKey(p, p.goal!) :
+      `${this.corridorKey(p, p.goal!)}:${this.world.owners?.[p.start] ?? p.playerId}`;
     if (this.world.domainRoutes) for (const p of this.admissions.values()) {
       if (!p.requested || p.goal === undefined) continue;
       const key = pendingKey(p);
@@ -743,6 +781,11 @@ export class Trade {
       }
       if (!b || b.id !== p.candidates[p.index]) continue;
       if (p.outcome === "complete") {
+        if (p.cached && p.revision !== this.revision(p.playerId, p.naval)) {
+          p.outcome = undefined; p.path = undefined; p.cached = undefined;
+          p.revision = this.revision(p.playerId, p.naval);
+          continue;
+        }
         this.routeFailures.delete(this.failureKey(a, b, p.state === "returning"));
         if (p.loading && !this.load(a)) {
           this.cancel(id);
@@ -762,6 +805,8 @@ export class Trade {
         a.path = p.path!;
         a.nextPathIndex = 0;
         a.state = p.state;
+        a.waitingReason = a.waitTicks > 0 ? "handling" : undefined;
+        p.revision = this.revision(p.playerId, p.naval);
         this.remember(this.corridorKey(p, p.goal!), p.path!);
         if (!a.naval && roadsUnlocked(this.progression.states[a.playerId].completed))
           this.roads?.add(
@@ -777,11 +822,14 @@ export class Trade {
         p.outcome = undefined;
         p.path = undefined;
         if (outcome === "limited") {
+          a.waitingReason = "capacity";
+          a.waitTicks = Math.max(a.waitTicks, 20);
           this.deferMarket(a, b, p.state === "returning", true);
           p.index++;
           p.goal = undefined;
         } else if (outcome === "superseded") this.cancel(id);
         else {
+          a.waitingReason = "unreachable";
           this.deferMarket(a, b, p.state === "returning");
           p.index++;
           p.goal = undefined;
@@ -803,10 +851,12 @@ export class Trade {
         p.index++;
         continue;
       }
+      p.revision = this.revision(p.playerId, p.naval);
       const cached = this.corridors.get(this.corridorKey(p, p.goal));
       if (cached) {
         p.path = cached;
         p.outcome = "complete";
+        p.cached = true;
         this.diagnostics.routeHits++;
         continue;
       }
@@ -1157,12 +1207,16 @@ export class Trade {
     this.tickStartWork = this.world.paths.work + this.world.waterPaths.work;
     if (tick % 20 === 0) this.spawn();
     this.diagnostics.quotaActorReads = 0;
+    this.diagnostics.waitingLoaded = 0;
+    this.diagnostics.waitingReceivers = 0;
     if (this.actors.length) {
       const facts = this.world.spatialFacts("trade");
       this.land = facts.groundAlive; this.sea = facts.warshipsAlive;
     }
     for (const a of this.actors) {
       if (this.retired.has(a.id)) continue;
+      if (a.cargo > 0 && (a.destination === null || this.admissions.has(a.id))) this.diagnostics.waitingLoaded++;
+      if (a.waitingReason === "no-receiver") this.diagnostics.waitingReceivers++;
       const player = players.get(a.playerId);
       if (!player || player.eliminated) {
         this.discard(a);
@@ -1173,6 +1227,7 @@ export class Trade {
         a.waitTicks--;
         continue;
       }
+      a.waitingReason = undefined;
       if (a.naval) this.sea.query(a.x, a.y, 1.2 * FIXED, this.nearby as Ship[]);
       else this.land.query(a.x, a.y, 1.2 * FIXED, this.nearby as Squad[]);
       const captor = this.nearby
@@ -1200,6 +1255,7 @@ export class Trade {
         a.destination = null;
         a.path = [];
         a.waitTicks = 20;
+        a.waitingReason = "handling";
         continue;
       }
       const site = this.source(a);
@@ -1224,11 +1280,11 @@ export class Trade {
               a.supplyWaitStartedTick = undefined;
             }
             this.begin(a,true);
-          } else a.supplyWaitStartedTick ??= this.world.tick;
+          } else { a.supplyWaitStartedTick ??= this.world.tick; a.waitingReason = "cargo"; }
         } else { a.supplyWaitStartedTick=undefined; a.supplyWaitTicks=0; }
         continue;
       }
-      if (this.admissions.has(a.id)) continue;
+      if (this.admissions.has(a.id)) { a.waitingReason = "planning"; continue; }
       if (a.destination === null) {
         this.begin(a, false);
         continue;
@@ -1297,6 +1353,7 @@ export class Trade {
         a.state = "loading";
         a.destination = null;
         a.waitTicks = 20;
+        a.waitingReason = "handling";
         continue;
       }
       const distance = Math.sqrt(map.euclideanDistSquared(a.originTile, b.tile)),
@@ -1332,6 +1389,7 @@ export class Trade {
       a.destination = null;
       a.path = [];
       a.waitTicks = 20;
+      a.waitingReason = "handling";
       if (a.state === "prize") this.retired.add(a.id);
       else a.state = a.cargo && a.visitedTiles.length < TRADE_RULES.maximumStops ? "outbound" : "returning";
     }

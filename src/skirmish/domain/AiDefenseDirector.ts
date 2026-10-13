@@ -6,6 +6,7 @@ import type { Player } from "../Protocol";
 import { FIXED } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
 import { buildingTechnology } from "../content/Buildings";
+import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import { affordableAiCost } from "./AiBudgetLedger";
 import {
   quoteAiDefense,
@@ -174,6 +175,7 @@ export class AiDefenseDirector {
     return previous;
   }
   private proposal(player: Player): DefenseProject | undefined {
+    if (constructionAvailabilityRejection("tower")) return;
     const { world, progression, fortifications, diplomacy, supply } =
         this.expansion,
       state = progression.states[player.id],

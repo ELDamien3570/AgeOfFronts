@@ -578,7 +578,9 @@ export class Skirmish {
     return this.domainRoutePorts;
   }
   private readonly domainRoutePorts: DomainRoutePorts = {
-    deadlineTicks:(playerId,owner)=>this.interactiveRoute({playerId,kind:"domain",owner}) ? undefined : this.options.autonomousRouteDeadlineTicks,
+    deadlineTicks:(playerId,owner,admissionId)=>this.interactiveRoute({playerId,kind:"domain",owner}) ||
+      (owner === "trade" && admissionId !== undefined && this.expansion?.trade.routeCommitted({ admissionId })) ?
+      undefined : this.options.autonomousRouteDeadlineTicks,
     hostile: this.collisionHostile,
     priority:id=>!this.player(id)?.ai,
     // Caravans keep to land; every military owner moves squads amphibiously.
@@ -725,7 +727,9 @@ export class Skirmish {
       // player preparation reserve when no interactive route is waiting;
       // otherwise busy trade fleets leave that capacity idle for minutes.
       lendIdlePreparation: true,
-      deadlineTicks: request => this.interactiveRoute(request.context) ? undefined : this.options.autonomousRouteDeadlineTicks,
+      deadlineTicks: request => this.interactiveRoute(request.context) ||
+        (request.context.kind === "domain" && request.context.owner === "trade" && this.expansion?.trade.routeCommitted(request.context)) ?
+        undefined : this.options.autonomousRouteDeadlineTicks,
       allowExclusiveRetry: request => request.context.kind !== "domain" || request.context.owner !== "trade",
       // Interactive orders and trade use a warmed corridor. Long trade legs
       // (sea lanes, caravans heading home across a continent) otherwise exceed
@@ -734,6 +738,8 @@ export class Skirmish {
         this.options.autonomousRouteDeadlineTicks===40 && this.map.euclideanDistSquared(request.start,request.goal)>=128**2) &&
         this.tick >= (request.water ? this.corridorTicks.water : request.amphibious ? this.corridorTicks.amphibious : this.corridorTicks.land),
       priority: request => this.interactiveRoute(request.context),
+      committed: request => request.context.kind === "domain" && request.context.owner === "trade" &&
+        (this.expansion?.trade.routeCommitted(request.context) ?? false),
       identity:request=>({playerId:request.context.playerId ?? 0,
         caller:request.context.kind === "domain" ? request.context.owner : request.context.kind}),
       prepare:(request,budget,rays)=>{

@@ -1,4 +1,5 @@
 import { TrenchOccupancy } from "./TrenchOccupancy";
+import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import { SkirmishStance } from "./SkirmishStance";
 import { tacticalTerrain, type TacticalTerrain } from "./TacticalTerrain";
 import { TacticalFeatureIndex } from "./TacticalFeatureIndex";
@@ -338,6 +339,8 @@ export class Expansion {
     age: Age,
     placementOnly = false,
   ): string | null {
+    const availability = constructionAvailabilityRejection(type);
+    if (availability) return availability;
     const technology = buildingTechnology(type, age);
     if (!technology || (!placementOnly && !this.progression.has(player.id, technology)))
       return "Research this building's technology first";

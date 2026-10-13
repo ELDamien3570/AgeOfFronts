@@ -10,9 +10,13 @@ import { createManpower } from '../../src/skirmish/domain/Manpower';
 import { TacticalFeatureIndex } from '../../src/skirmish/domain/TacticalFeatureIndex';
 import { tacticalTerrain } from '../../src/skirmish/domain/TacticalTerrain';
 import { retainSquads } from './UnitFixtures';
+import { terrainSpeed } from '../../src/skirmish/Terrain';
+import { PathTopology } from '../../src/skirmish/PathTopology';
 
-function fixture(deferredPlanning=true) {
-  const terrain=new Uint8Array(64*64).fill(133),map=new GameMapImpl(64,64,terrain,terrain.length);
+function fixture(deferredPlanning=true, mountains=false) {
+  const terrain=new Uint8Array(64*64).fill(133);
+  if(mountains)for(let y=0;y<64;y++)for(let x=22;x<26;x++)terrain[y*64+x]=159;
+  const map=new GameMapImpl(64,64,terrain,terrain.length);
   const game=new Skirmish(map,{seed:42,aiCount:1,tribes:false,runAi:false,ruleset:'ages-v1',deferredPlanning});
   const own=game.squads.find(s=>s.playerId===1)!,enemy=game.squads.find(s=>s.playerId===2)!;
   retainSquads(game,[own,enemy]);
@@ -23,6 +27,28 @@ function fixture(deferredPlanning=true) {
   return {game,map,own,enemy};
 }
 describe('responsive movement gameplay',()=>{
+  it.each([159,255])('gives legacy mountain byte %i a positive movement speed and route cost',byte=>{
+    const map=new GameMapImpl(3,3,new Uint8Array(9).fill(byte),9);
+    const topology=new PathTopology(map,'land');
+    expect(map.isImpassable(4)).toBe(true);
+    expect(topology.walkable(4)).toBe(true);
+    expect(terrainSpeed(map,4)).toBe(20);
+    expect(topology.cost(3,4)).toBe(28);
+    expect(topology.cost(0,4)).toBe(40);
+  });
+  it.each([20.5,23.5])('marches across a mountain band from x=%s and continues identically after restore',startX=>{
+    const {game,map,own,enemy}=fixture(true,true);
+    game.updateSquad(enemy.id,{x:50.5*FIXED,y:50.5*FIXED});
+    game.updateSquad(own.id,{x:startX*FIXED});
+    expect(game.movementSpeed(own)).toBeGreaterThan(0);
+    expect(game.applyCommand({type:'order',playerId:1,squadIds:[own.id],order:{type:'move',tile:map.ref(30,32)}})).toBeNull();
+    for(let tick=0;tick<40;tick++)game.step();
+    const restored=fixture(true,true).game;restored.restore(game.checkpoint());
+    for(let tick=0;tick<400;tick++){game.step();restored.step();}
+    expect(own.x).toBeGreaterThan(26*FIXED);
+    expect(Math.hypot(own.x-30.5*FIXED,own.y-32.5*FIXED)).toBeLessThan(FIXED);
+    expect(restored.checkpoint()).toEqual(game.checkpoint());
+  });
   it('verifies old mountain-connectivity checkpoints before rebuilding their derived terrain index',()=>{
     const data=new Uint8Array(20*20).fill(133),component=new Int32Array(400);
     for(let tile=0;tile<400;tile++){const x=tile%20;component[tile]=x<10?1:x>10?2:0;if(x===10)data[tile]=255;}

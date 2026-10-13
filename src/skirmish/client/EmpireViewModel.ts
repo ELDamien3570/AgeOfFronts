@@ -1,4 +1,5 @@
 import { quoteEnlargement } from '../domain/Enlargement';
+import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import {
   buildingCost,
   buildingTechnology,
@@ -161,6 +162,9 @@ export class EmpireViewModel {
     });
   }
   buildChoice(type: BuildingType, age = this.buildingAge(type)) {
+    const availability = constructionAvailabilityRejection(type);
+    if (availability)
+      return { reason: availability, age, cost: undefined, ticks: undefined };
     if (!age)
       return {
         reason: this.buildingResearchRequirement(type),
@@ -188,6 +192,7 @@ export class EmpireViewModel {
       : "Building unavailable";
   }
   buildingVisible(type: BuildingType): boolean {
+    if (constructionAvailabilityRejection(type)) return false;
     if (productionBuildingType(type, this.progression.age, this.progression.completed) !== type) return false;
     return (
       !!this.buildingAge(type) ||
@@ -207,9 +212,10 @@ export class EmpireViewModel {
       requiredTechnology: age
         ? this.technologyName(buildingTechnology(type, age)!)
         : undefined,
-      reason: unlocked
-        ? this.buildChoice(type, unlocked).reason
-        : this.buildingResearchRequirement(type),
+      reason: constructionAvailabilityRejection(type) ??
+        (unlocked
+          ? this.buildChoice(type, unlocked).reason
+          : this.buildingResearchRequirement(type)),
     };
   }
   get producers() {

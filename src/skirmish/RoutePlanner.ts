@@ -1,4 +1,4 @@
-import type { LandPaths, WaterPaths } from "./Pathfinding";
+import type { LandPaths, WaterPaths, WaterShortcut } from "./Pathfinding";
 import { PlanningWorkspace, type PlanningPathState } from "./PlanningWorkspace";
 import type { CorridorState } from "./HierarchicalPaths";
 import {
@@ -40,6 +40,7 @@ interface Job<T> extends ExactRouteRequest<T> {
   retired?: boolean;
   /** Its obstacle revision changed mid-search; the result is revalidated. */
   revalidate?: boolean;
+  shortcut?: WaterShortcut;
 }
 export type ExactRouteOutcome =
   | "complete"
@@ -47,6 +48,10 @@ export type ExactRouteOutcome =
   | "limited"
   | "superseded";
 export interface RoutePlannerPorts<T> {
+  /** False only for explicitly qualified legacy scheduling/profiles. */
+  sharedPreparation?: boolean;
+  /** Loaded civilian cargo is already committed economic work. */
+  committed?(request: ExactRouteRequest<T>): boolean;
   /** Loan unused preparation capacity only while no interactive request waits. */
   lendIdlePreparation?: boolean;
   priority?(request: ExactRouteRequest<T>): boolean;
@@ -105,11 +110,13 @@ export class RoutePlanner<T> {
   // repeatedly walks its deleted prefix even though only live slots are charged.
   private readonly reclamation = new WeakMap<Map<number, number>, MapIterator<[number, number]>>();
   // Version 1 restores historical FIFO checkpoints without changing their outcomes.
-  private schedulingVersion = 3;
+  private schedulingVersion = 4;
   private exclusiveKey?: string;
   private retiredJobs = 0;
   private lastPlayer = -1;
   private priorityTurn = 0;
+  private backgroundTurn = 0;
+  private currentTick = 0;
   private readonly lastCaller = new Map<number, number>();
   private readonly selection = new Array<Job<T> | undefined>(256 * PLANNER_CALLERS.length);
   private readonly selectionKeys: number[] = [];
@@ -133,6 +140,7 @@ export class RoutePlanner<T> {
     workspaceCapacity = 65_536,
     private readonly amphibious?: LandPaths,
   ) {
+    if (ports.sharedPreparation === false) this.schedulingVersion = 3;
     if (!Number.isInteger(jobLimit) || jobLimit < 1 || jobLimit > 128)
       throw new Error("Invalid route queue limit");
     this.workspace = new PlanningWorkspace(workspaceCapacity);
@@ -144,11 +152,16 @@ export class RoutePlanner<T> {
       waterRevision: this.water.revision,
       amphibiousRevision: this.amphibious?.revision,
       jobs: [...this.jobs.values()],
+      ...(this.schedulingVersion >= 4 ? { sharedPreparation: {
+        land: this.land.sharedPreparationCheckpoint(), water: this.water.sharedPreparationCheckpoint(),
+        amphibious: this.amphibious?.sharedPreparationCheckpoint(),
+      } } : {}),
       workspace: this.workspace.checkpoint(),
       scheduling: {
         version: this.schedulingVersion,
         lastPlayer: this.lastPlayer,
         priorityTurn: this.priorityTurn,
+        ...(this.schedulingVersion >= 4 ? { backgroundTurn: this.backgroundTurn } : {}),
         lastCaller: [...this.lastCaller],
         exclusiveKey: this.exclusiveKey,
         retired: this.retiredJobs,
@@ -177,7 +190,8 @@ export class RoutePlanner<T> {
     const scheduling = saved.scheduling;
     if (
       scheduling &&
-      (![1, 2, 3].includes(scheduling.version) ||
+      (![1, 2, 3, 4].includes(scheduling.version) ||
+        (scheduling.backgroundTurn !== undefined && (!Number.isSafeInteger(scheduling.backgroundTurn) || scheduling.backgroundTurn < 0)) ||
         (scheduling.priorityTurn !== undefined && (!Number.isSafeInteger(scheduling.priorityTurn) || scheduling.priorityTurn < 0)) ||
         !Number.isInteger(scheduling.lastPlayer) ||
         scheduling.lastPlayer < -1 ||
@@ -208,7 +222,7 @@ export class RoutePlanner<T> {
         new PlanningWorkspace(this.workspace.capacity).checkpoint(),
     );
     this.schedulingVersion = saved.scheduling?.version ?? 1;
-    if (![1, 2, 3].includes(this.schedulingVersion))
+    if (![1, 2, 3, 4].includes(this.schedulingVersion))
       throw new Error("Unknown planner scheduling version");
     this.exclusiveKey = saved.scheduling?.exclusiveKey;
     this.retiredJobs = saved.scheduling?.retired ?? 0;
@@ -216,17 +230,26 @@ export class RoutePlanner<T> {
       throw new Error("Invalid planner scheduling checkpoint");
     this.lastPlayer = saved.scheduling?.lastPlayer ?? -1;
     this.priorityTurn = saved.scheduling?.priorityTurn ?? 0;
+    this.backgroundTurn = saved.scheduling?.backgroundTurn ?? 0;
+    if (this.schedulingVersion >= 4 && !saved.sharedPreparation) throw Error("Missing shared preparation checkpoint");
+    this.land.restoreSharedPreparation(saved.sharedPreparation?.land);
+    this.water.restoreSharedPreparation(saved.sharedPreparation?.water);
+    this.amphibious?.restoreSharedPreparation(saved.sharedPreparation?.amphibious);
     this.lastCaller.clear();
     for (const [player, caller] of saved.scheduling?.lastCaller ?? [])
       this.lastCaller.set(player, caller);
     this.jobs.clear();
     for (const job of structuredClone(saved.jobs)) {
+      if (job.shortcut) {
+        if (this.schedulingVersion < 4 || !job.water) throw Error("Invalid shortcut owner");
+        this.pathsFor(job).validateWaterShortcut(job.shortcut, job.start, job.goal);
+      }
       if(job.corridor){
         // Portable transport preserves map values rather than object aliases.
         if(!(job.corridor.nodes instanceof Map) || job.corridor.nodes.size!==job.search.nodes.size ||
           [...job.search.nodes].some(([id,slot])=>job.corridor!.nodes.get(id)!==slot))throw Error("Corridor does not own its arena nodes");
         job.corridor.nodes=job.search.nodes;
-        this.pathsFor(job).validateCorridor(job.corridor,this.workspace);
+        this.pathsFor(job).validateCorridor(job.corridor,this.workspace,this.schedulingVersion >= 4);
       }
       if (this.ports.allowExclusiveRetry?.(job) === false) {
         if(job.waitingForWorkspace!==undefined)job.waitingForWorkspace = false;
@@ -364,6 +387,18 @@ export class RoutePlanner<T> {
         eligible = job => prior(job) && this.ports.priority!(job) === priority;
       }
     }
+    if (this.schedulingVersion >= 4 && this.ports.committed) {
+      const interactive = (job: Job<T>) => !!this.ports.priority?.(job);
+      const urgent = (job: Job<T>) => !!this.ports.committed!(job) || this.currentTick - job.createdTick >= 100;
+      let loaded = false, fresh = false;
+      for (const job of this.jobs.values()) if (eligible(job) && !interactive(job)) {
+        if (urgent(job)) loaded = true; else fresh = true;
+      }
+      if (loaded && fresh) {
+        const protectedTurn = this.backgroundTurn++ % 4 < 3, prior = eligible;
+        eligible = job => prior(job) && (interactive(job) || urgent(job) === protectedTurn);
+      }
+    }
     // One queue scan records each cohort's first eligible entry. Selection still
     // rotates players, then callers, then takes that cohort's original FIFO head.
     // Scratch is dense and bounded; cohort identity is re-read for every quantum.
@@ -439,6 +474,10 @@ export class RoutePlanner<T> {
     if (this.ports.priority && !this.ports.priority(request) && this.jobLimit >= 16 && this.jobs.size >= this.jobLimit - 8) {
       this.diagnostics.admissionDeferred++; return false;
     }
+    if (this.schedulingVersion >= 4 && this.ports.committed && !this.ports.priority?.(request) &&
+      !this.ports.committed(request) && this.jobLimit >= 32 && this.jobs.size >= this.jobLimit - 24) {
+      this.diagnostics.admissionDeferred++; return false;
+    }
     const paths = this.pathsFor(request);
     const search = paths.beginPlanning(
       this.workspace,
@@ -453,11 +492,14 @@ export class RoutePlanner<T> {
       nextCandidate: 0,
       uncertain: false,
       prepared: !request.prepare,
+      ...(this.schedulingVersion >= 4 && request.water && !request.prepare && !this.ports.blocked(request) ?
+        { shortcut: paths.beginWaterShortcut(request.start, request.goal) } : {}),
     });
     this.diagnostics.pending = this.jobs.size;
     return true;
   }
   step(tick: number, budget = 4096, quantum = 64): number {
+    this.currentTick = tick;
     if (
       !Number.isInteger(budget) ||
       budget < 0 ||
@@ -492,6 +534,11 @@ export class RoutePlanner<T> {
       this.ports.completed(request, "limited", []);
     }
     let used = 0;
+    if (this.schedulingVersion >= 4) for (const paths of [this.land, this.water, this.amphibious]) {
+      if (!paths) continue;
+      paths.pinSharedPreparation([...this.jobs.values()].filter(job => this.pathsFor(job) === paths)
+        .flatMap(job => job.corridor?.local ? [job.corridor.local.origin] : []));
+    }
     const humanWaiting=this.ports.lendIdlePreparation && this.ports.priority && [...this.jobs.values()].some(job=>{
       const live=job.discard?job.replacement:job.retired?undefined:job;
       return live && this.ports.priority!(live);
@@ -569,7 +616,30 @@ export class RoutePlanner<T> {
           used++;
         } else {
           const slice = Math.min(quantum, budget - used);
-          if (!job.prepared) {
+          // The static certificate proves terrain only. A newly introduced
+          // dynamic access mask must use the ordinary validated search.
+          if (job.shortcut && this.ports.blocked(job)) job.shortcut = undefined;
+          if (job.shortcut) {
+            used += Math.max(1, paths.stepWaterShortcut(job.shortcut, slice));
+            if (job.shortcut.phase === "done") { job.output = job.shortcut.path; job.shortcut = undefined; outcome = "complete"; }
+            else if (job.shortcut.phase === "failed") { job.shortcut = undefined; this.jobs.set(key, job); continue; }
+            else { this.jobs.set(key, job); continue; }
+          }
+          if (!outcome && this.schedulingVersion >= 4 && !job.prepare && !this.ports.priority?.(job) &&
+            !job.corridor && !job.search.nodes.size && job.search.phase === "search") {
+            // Queue capacity is not arena concurrency. Admit a bounded number
+            // of background searches; retain the rest without reporting a
+            // false capacity failure or discarding their logical request.
+            let active = 0;
+            for (const other of this.jobs.values()) if (!other.retired && !other.discard &&
+              !this.ports.priority?.(other) && (other.corridor || other.search.nodes.size)) active++;
+            const limit = this.ports.committed && !this.ports.committed(job) ? 12 : 16;
+            if (active >= limit) {
+              this.jobs.set(key, job); deferred.add(job); used++; continue;
+            }
+          }
+          if (outcome) { /* Certified shortcut publishes through the normal commit below. */ }
+          else if (!job.prepared) {
             if (!preparationBudget) {
               this.jobs.set(key, job);
               if (!this.ports.priority?.(job)) deferred.add(job);
@@ -612,6 +682,7 @@ export class RoutePlanner<T> {
               job.corridor, this.workspace, slice, this.ports.blocked(job),
               priority ? corridorPreparationBudget : Math.min(corridorPreparationBudget, backgroundCorridorPreparationBudget),
               preparation,
+              this.schedulingVersion >= 4,
             );
             corridorPreparationBudget -= preparation.used;
             if (!priority) backgroundCorridorPreparationBudget -= preparation.used;
@@ -649,6 +720,9 @@ export class RoutePlanner<T> {
             // cleanup all yield under the same fair work allowance.
             job.corridorTried = true;
             job.corridor = paths.beginCorridor(job.start, job.goal, job.search.nodes);
+            // Integer route costs remain primary. Prefer progress toward the
+            // goal on equal-cost water plateaus instead of filling the arena.
+            if (job.corridor && this.schedulingVersion >= 4) job.corridor.heap.precise = true;
             used++;
           } else {
             const search = paths.beginPlanning(
