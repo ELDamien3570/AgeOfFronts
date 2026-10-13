@@ -327,6 +327,32 @@ describe("bounded civilian trade", () => {
     game.step();clone.step();
     expect(isDeepStrictEqual(game.checkpoint(),clone.checkpoint())).toBe(true);
   });
+  it("returns stolen sea cargo through the multiplayer planner and pays its full value once", () => {
+    const { game, trade } = fleet(0, 1, true, true);
+    const advance = () => {
+      game.tick++;
+      game.paths.warm(4);
+      game.waterPaths.warm(4);
+      game.routePlanner.step(game.tick);
+      trade.stepPlanning(16);
+      trade.step();
+    };
+    for (let i = 0; i < 100 && !trade.actors.some(a => a.naval && a.cargo > 0); i++) advance();
+    const actor = trade.actors.find(a => a.naval && a.cargo > 0)!;
+    expect(actor).toBeDefined();
+    const value = actor.cargo * actor.valuePerGood;
+    game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
+    actor.waitTicks = 0;
+    advance();
+    expect(actor).toMatchObject({ playerId: 2, state: "prize" });
+    trade.setPaused(1, true, true);
+    trade.setPaused(2, true, true);
+    for (let i = 0; i < 1000 && trade.actors.includes(actor); i++) advance();
+    expect(trade.actors).not.toContain(actor);
+    expect(trade.deliveredGold[2]).toBe(value);
+    for (let i = 0; i < 100; i++) advance();
+    expect(trade.deliveredGold[2]).toBe(value);
+  });
   it("captures a loaded ship without an owned receiving port, then delivers when one is built", () => {
     const { game, trade, step } = fleet(0, 1);
     step(22);
@@ -482,7 +508,7 @@ describe("bounded civilian trade", () => {
     const request=vi.spyOn(game.domainRoutes!,"request").mockImplementation(task=>{tasks.push(task);return true;});
     step(20);trade.stepPlanning(32);
     expect(tasks).toHaveLength(1);
-    trade.completedRoute(tasks[0],"limited",[]);
+    trade.completedRoute(tasks[0],"unreachable",[]);
     trade.stepPlanning(32);
     expect(trade.actors[0].cargo).toBe(0);
     expect(expansion.supply.goods.get(sources[0].id)).toBe(1000);
@@ -492,6 +518,22 @@ describe("bounded civilian trade", () => {
     expect(request).toHaveBeenCalledTimes(1);
     step(200);trade.stepPlanning(32);
     expect(request.mock.calls.length).toBeGreaterThan(1);
+  });
+  it("retries planner capacity exhaustion promptly without spending cargo or condemning the route", () => {
+    const { game, trade, step, sources, expansion } = fleet(1, 0, false, true);
+    trade.setBlocked(1, 2, true, false);
+    const tasks: Parameters<NonNullable<typeof game.domainRoutes>["request"]>[0][] = [];
+    vi.spyOn(game.domainRoutes!, "request").mockImplementation(task => { tasks.push(task); return true; });
+    step(20); trade.stepPlanning(32);
+    trade.completedRoute(tasks[0], "limited", []);
+    trade.stepPlanning(32);
+    const failure = trade.checkpoint().routeFailures[0][1];
+    expect(failure.retryAt - game.tick).toBe(20);
+    expect(expansion.supply.goods.get(sources[0].id)).toBe(1000);
+    trade.restore(trade.checkpoint());
+    step(103); trade.stepPlanning(32);
+    expect(tasks).toHaveLength(2);
+    expect(trade.actors[0].cargo).toBe(0);
   });
   it("leaves an unrelated active fleet alone when pausing or blocking trade", () => {
     const { trade, step } = fleet(1, 1);

@@ -538,14 +538,17 @@ export class Trade {
   private failureKey(a: TradeActor, market: Building, returning: boolean): string {
     return `${a.playerId}:${a.naval ? 1 : 0}:${this.tile(a)}:${market.id}:${market.playerId}:${returning ? 1 : 0}:${a.naval ? this.controlRevision : this.revision(a.playerId)}`;
   }
-  private deferMarket(a: TradeActor, market: Building, returning: boolean): void {
+  private deferMarket(a: TradeActor, market: Building, returning: boolean, limited = false): void {
     const key = this.failureKey(a, market, returning), previous = this.routeFailures.get(key);
     const attempts = Math.min(5, (previous?.attempts ?? 0) + 1);
     // Capacity is not proof of impossibility. Try another market now, and
     // retain backoff across actor admissions so fleets do not repeat the same
     // expensive failed search every few seconds.
     this.routeFailures.delete(key);
-    this.routeFailures.set(key, { attempts, retryAt: this.world.tick + Math.min(6000, 400 * 2 ** (attempts - 1)) });
+    // A planner capacity result is not geographic failure. Keep retries bounded
+    // and shared, but do not park loaded couriers in the unreachable cooldown.
+    const delay = limited ? 20 * attempts : Math.min(6000, 400 * 2 ** (attempts - 1));
+    this.routeFailures.set(key, { attempts, retryAt: this.world.tick + delay });
     while (this.routeFailures.size > 512) this.routeFailures.delete(this.routeFailures.keys().next().value!);
   }
   routeBlocked(task: DomainRouteTask): ((tile: number) => boolean) | undefined {
@@ -774,7 +777,7 @@ export class Trade {
         p.outcome = undefined;
         p.path = undefined;
         if (outcome === "limited") {
-          this.deferMarket(a, b, p.state === "returning");
+          this.deferMarket(a, b, p.state === "returning", true);
           p.index++;
           p.goal = undefined;
         } else if (outcome === "superseded") this.cancel(id);

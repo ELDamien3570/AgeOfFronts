@@ -200,7 +200,7 @@ export function automaticProduction(
   ).length;
   // Keep several batches per workshop ready for a human recruitment/refit burst.
   // AI demand below replaces these buffers with its exact economic quote.
-  const troopTarget = Math.min(180, Math.max(12, troopCapacity * 3, Math.ceil(squadCount / 3)))
+  const troopTarget = Math.min(180, Math.max(context.ai ? 12 : 100, troopCapacity * 3, Math.ceil(squadCount / 3)))
   const vehicleTarget = Math.min(6, Math.max(2, Math.ceil(squadCount / 12)))
   const siegeTarget = Math.min(4, Math.max(2, Math.ceil(squadCount / 16)))
   for (const kind of ["troop", "vehicle", "siege"] as const) {

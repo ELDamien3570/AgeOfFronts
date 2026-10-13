@@ -81,6 +81,21 @@ function setup() {
 }
 
 describe("shared automatic production allocation", () => {
+  it("maintains 100 human troop kits, counts paid output, and replenishes after a recruitment burst", () => {
+    const buildings = [building(1, "blacksmith"), building(2, "blacksmith")];
+    const item = equipmentItem("LateMedieval");
+    const inventory: Record<string, number> = { ...goods, [item]: 12 };
+    expect(plan({ buildings, inventory }).size).toBe(2);
+    inventory[item] = 99;
+    expect(plan({ buildings, inventory }).size).toBe(1);
+    expect(plan({ buildings, inventory, incoming: { [item]: 1 } }).size).toBe(0);
+    inventory[item] = 100;
+    expect(plan({ buildings, inventory }).size).toBe(0);
+    inventory[item] -= 60;
+    expect(plan({ buildings, inventory }).size).toBe(2);
+    inventory[item] = 12;
+    expect(plan({ buildings, inventory, ai: true }).size).toBe(0);
+  });
   it("uses each specialty's newest researched pattern", () => {
     expect([...plan().values()]).toEqual([
       "make-modern-equipment",
@@ -180,7 +195,7 @@ describe("shared automatic production allocation", () => {
     expect(
       plan({
         incoming: {
-          [equipmentItem("Modern")]: 12,
+          [equipmentItem("Modern")]: 100,
           [equipmentItem("Modern", "siege")]: 4,
           [equipmentItem("Modern", "vehicle")]: 2,
         },
@@ -220,7 +235,7 @@ describe("shared automatic production allocation", () => {
     expect(
       [...plan({ ai: true }).values()].some((r) => r.startsWith("make-icbm")),
     ).toBe(false);
-    const inventory = { ...goods, [equipmentItem("Modern")]: 12 };
+    const inventory = { ...goods, [equipmentItem("Modern")]: 100 };
     expect(
       plan({ buildings: [building(1, "arms-factory")], inventory }).size,
     ).toBe(0);
@@ -291,7 +306,7 @@ describe("automatic paid-batch lifecycle", () => {
     expect(stock.steel).toBe(paid.steel);
     expect(stock[equipmentItem("Modern")]).toBe(1);
     expect(e.supply.jobs[b.id]).toBeUndefined();
-    stock[equipmentItem("Modern")] = 50;
+    stock[equipmentItem("Modern")] = 100;
     expect(e.supply.setProduction(p, b, "make-modern-equipment")).toBeNull();
     step(2001);
     expect(e.supply.jobs[b.id]).toBeDefined();
@@ -299,7 +314,7 @@ describe("automatic paid-batch lifecycle", () => {
     expect(e.supply.productionPlans()[b.id]).toBeUndefined();
     e.supply.jobs[b.id]!.remainingTicks = 1;
     step(2020);
-    expect(stock[equipmentItem("Modern")]).toBe(51);
+    expect(stock[equipmentItem("Modern")]).toBe(101);
     expect(e.supply.jobs[b.id]).toBeUndefined();
     stock[equipmentItem("Modern")] = 0;
     step(2040);

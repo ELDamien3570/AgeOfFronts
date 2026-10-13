@@ -721,7 +721,10 @@ export class Skirmish {
       this.corridorTicks = { land, water, amphibious: options.autonomousRouteDeadlineTicks===40 ? water+ticks(this.amphibiousPaths) : Infinity };
     }
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
-      lendIdlePreparation: options.autonomousRouteDeadlineTicks===40,
+      // Civilian routing always uses the background cohort. Loan the existing
+      // player preparation reserve when no interactive route is waiting;
+      // otherwise busy trade fleets leave that capacity idle for minutes.
+      lendIdlePreparation: true,
       deadlineTicks: request => this.interactiveRoute(request.context) ? undefined : this.options.autonomousRouteDeadlineTicks,
       allowExclusiveRetry: request => request.context.kind !== "domain" || request.context.owner !== "trade",
       // Interactive orders and trade use a warmed corridor. Long trade legs
