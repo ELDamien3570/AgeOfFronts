@@ -1932,7 +1932,8 @@ export class Renderer {
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(
-          "angle" in pose ? pose.angle : this.presentation.shipAngle(ship.id),
+          ("angle" in pose ? pose.angle : this.presentation.shipAngle(ship.id)) +
+            this.eraArtwork.facing(ship.definitionId ?? "", "screen-up"),
         );
         const size = shipSpriteSize(this.scale, ship.kind) * shipArt.extent;
         drawnShipSize = size;

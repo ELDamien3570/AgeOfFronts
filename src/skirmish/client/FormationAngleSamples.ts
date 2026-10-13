@@ -35,7 +35,10 @@ export class FormationAngleSamples {
       const to = formationEnvelope(s, tick).angle,
         old = this.rows.get(s.id);
       this.rows.set(s.id, {
-        from: old
+        // A reorientation has already expressed the preserved occupied slots
+        // in the destination basis. Blending that basis rotates them a second
+        // time; the domain slot morph owns the visible turn instead.
+        from: old && !s.formation.transition?.reorientation
           ? tick !== this.tick
             ? this.angle(s.id, previousBlend)!
             : old.from

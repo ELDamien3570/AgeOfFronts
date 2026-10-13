@@ -117,10 +117,10 @@
     "releasePoints": [
       {
         "x": 0.5,
-        "y": 0.2
+        "y": 0.52
       }
     ],
-    "facingOffset": 3.141592653589793,
+    "facingOffset": 0,
     "vehicle": true,
     "members": 2,
     "widthMetres": 2.1,

@@ -9,6 +9,8 @@ import type {
 } from "../../src/skirmish/client/troops/TroopFormationModel";
 import { actorFormationSlots } from "../../src/skirmish/client/troops/TroopPacking";
 import { TroopVolley } from "../../src/skirmish/client/troops/TroopVolley";
+import calibration from "../../src/skirmish/content/RussianActorCalibration.json";
+import visualCalibration from "../../src/skirmish/content/RussianVisualCalibration.json";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { UNIT, UNITS, VESSELS } from "../../src/skirmish/content/Units";
 import {
@@ -19,6 +21,41 @@ import {
 import { FIXED, type ArcherVolley } from "../../src/skirmish/Protocol";
 
 describe("complete Russian asset integration", () => {
+  it("aligns the machine-gun truck's front and barrel with its squad bearing", () => {
+    const actor = [...RUSSIAN_TROOP_ACTORS.values()].find(
+      (actor) => actor.name === "Modern-MachineGunTruck",
+    )!;
+    const source = JSON.parse(
+      readFileSync(
+        "Art/Cultures/Russians/Units/Modern/MachineGunTruck/animations.json",
+        "utf8",
+      ),
+    );
+    expect(source.facing).toBe("screen-down");
+    expect(actor.facingOffset).toBe(
+      calibration["Modern/MachineGunTruck"].facingOffset,
+    );
+    expect(actor.facingOffset).toBe(
+      visualCalibration["EarlyModern:lightCavalry"].facingOffset,
+    );
+    expect(actor.releasePoints).toEqual(
+      calibration["Modern/MachineGunTruck"].releasePoints,
+    );
+    // The registered gun extends down from the cargo bed to the cab.
+    expect(actor.releasePoints![0].y).toBeGreaterThan(0.5);
+    expect(actor.releasePoints![0].y).toBeLessThan(0.6);
+    for (const [dx, dy] of [
+      [1, 0],
+      [0, 1],
+      [-1, 0],
+      [0, -1],
+    ]) {
+      const rotation =
+        Math.atan2(dy, dx) - Math.PI / 2 + (actor.facingOffset ?? 0);
+      expect(-Math.sin(rotation)).toBeCloseTo(dx);
+      expect(Math.cos(rotation)).toBeCloseTo(dy);
+    }
+  });
   it("keeps spear and ATGM cohorts on foot at the barracks, without horse costs or vehicle tags", () => {
     for (const unit of UNITS.filter(
       (unit) => unit.troopClass === "antiCavalry",

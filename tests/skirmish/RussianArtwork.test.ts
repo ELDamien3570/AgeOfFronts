@@ -8,8 +8,34 @@ import {
   buildingPreviewArtworkId,
   type ArtworkAsset,
 } from "../../src/skirmish/client/ArtworkCatalog";
+import { EraArtwork } from "../../src/skirmish/client/EraArtwork";
 
 describe("Russian runtime artwork", () => {
+  it("points every warship's authored bow along all four travel directions", () => {
+    const art = new EraArtwork();
+    const warships = Object.entries(manifest as Record<string, ArtworkAsset>)
+      .filter(([id]) => id.endsWith("-warship"));
+    for (const [id, asset] of warships) {
+      // Fleet angles rotate an upward-facing marker onto the travel vector.
+      // The authored bow may instead point down, especially in later ages.
+      const bowY = asset.facing === "screen-up" ? -1 : 1;
+      for (const [dx, dy] of [
+        [1, 0],
+        [0, 1],
+        [-1, 0],
+        [0, -1],
+      ]) {
+        const fleetAngle = Math.atan2(dy, dx) + Math.PI / 2;
+        const rotation = fleetAngle + art.facing(id, "screen-up");
+        expect(-bowY * Math.sin(rotation), id).toBeCloseTo(dx);
+        expect(bowY * Math.cos(rotation), id).toBeCloseTo(dy);
+        // Embarked squads use the opposite pose convention with the same art.
+        const squadRotation = Math.atan2(dy, dx) - Math.PI / 2 + art.facing(id);
+        expect(-bowY * Math.sin(squadRotation), id).toBeCloseTo(dx);
+        expect(bowY * Math.cos(squadRotation), id).toBeCloseTo(dy);
+      }
+    }
+  });
   it("uses Russian building previews in every era and binds ready troop portraits", () => {
     for (const age of [
       "StoneAge",

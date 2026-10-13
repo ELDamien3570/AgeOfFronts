@@ -583,7 +583,7 @@
   "EarlyModern:lightCavalry": {
     "memberScale": 1.7812889812889812,
     "bodyAnchorsPx128": {},
-    "facingOffset": 3.141592653589793
+    "facingOffset": 0
   },
   "EarlyModern:rangedCavalry": {
     "memberScale": 1.975578947368421,

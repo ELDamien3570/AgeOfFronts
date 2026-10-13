@@ -121,7 +121,13 @@ export class EraArtwork {
         : undefined,
     };
   }
-  facing(id: string): number {
-    return catalog[id]?.facing === "screen-up" ? Math.PI : 0;
+  // Land poses use screen-down as zero; fleet poses use screen-up.
+  facing(
+    id: string,
+    referenceFacing: "screen-up" | "screen-down" = "screen-down",
+  ): number {
+    const opposite =
+      referenceFacing === "screen-down" ? "screen-up" : "screen-down";
+    return catalog[id]?.facing === opposite ? Math.PI : 0;
   }
 }
