@@ -489,16 +489,32 @@ export function contactParticipants(s:FormationBody,target:FormationBody,tick:nu
   const value=computeContactParticipants(s,target,tick,ranks,contact,edgeCombat);values.set(key,value);return value;
 }
 const approachPolygons = new WeakMap<BodyFacts, WeakMap<BodyFacts, readonly Point[][]>>();
+// Settled non-column bodies have a translation-invariant local shape. Keep
+// these identities separate from world-space contact facts; trails/reforms
+// continue to use their exact pose/tick-sensitive facts.
+const approachShapes = new Map<number, { key: string; value: BodyFacts; body: FormationBody }>();
+function approachShape(s: FormationBody, tick: number): { value: BodyFacts; body: FormationBody } {
+  if (!s.formation || s.formation.transition || s.formation.shape === "column")
+    return { value: facts(s, tick), body: s };
+  const key = s.kind + ":" + physicalGeometryKey(s), old = approachShapes.get(s.id);
+  if (old?.key === key) return old;
+  const body = { ...s, x: 0, y: 0 }, entry = { key, value: {}, body };
+  if (approachShapes.size >= 2048) approachShapes.delete(approachShapes.keys().next().value!);
+  approachShapes.set(s.id, entry);
+  return entry;
+}
 function approachObstacles(s: FormationBody, target: FormationBody, tick: number): readonly Point[][] {
-  const sourceFacts = facts(s, tick), targetFacts = facts(target, tick);
+  const sourceShape = approachShape(s, tick), targetShape = approachShape(target, tick);
+  const sourceFacts = sourceShape.value, targetFacts = targetShape.value;
   let pairs = approachPolygons.get(sourceFacts);
   const cached = pairs?.get(targetFacts);
   if (cached) return cached;
-  const sourcePart = s.formation?.shape === "column" && !s.formation.transition
-    ? formationFootprints(s, tick)[0] : formationFootprint(s, tick);
-  const source = sourcePart.map(p => ({ x: p.x - s.x, y: p.y - s.y }));
-  const polygons = formationFootprints(target, tick).map(part => {
-    const body = part.map(p => ({ x: p.x - target.x, y: p.y - target.y }));
+  const sourceBody = sourceShape.body, targetBody = targetShape.body;
+  const sourcePart = sourceBody.formation?.shape === "column" && !sourceBody.formation.transition
+    ? formationFootprints(sourceBody, tick)[0] : formationFootprint(sourceBody, tick);
+  const source = sourcePart.map(p => ({ x: p.x - sourceBody.x, y: p.y - sourceBody.y }));
+  const polygons = formationFootprints(targetBody, tick).map(part => {
+    const body = part.map(p => ({ x: p.x - targetBody.x, y: p.y - targetBody.y }));
     return convexHull(body.flatMap(b => source.map(a => ({ x: b.x - a.x, y: b.y - a.y }))));
   });
   if (!pairs) { pairs = new WeakMap(); approachPolygons.set(sourceFacts, pairs); }

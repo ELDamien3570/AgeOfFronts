@@ -1,4 +1,5 @@
 import type { ExpansionSnapshot, TradeActor } from "./domain/Definitions";
+import { tradeDetailRevision } from "./domain/TradePublication";
 
 type Trader = ExpansionSnapshot["traders"][number];
 type Detail = Omit<Trader, "x" | "y" | "waitTicks">;
@@ -46,17 +47,19 @@ function copy(row: Detail): Detail {
   return output;
 }
 export class TraderEncoder {
-  private readonly retained = new Map<number, { detail: Detail; keys: string[] }>();
+  private readonly retained = new Map<number, { detail: Detail; keys: string[]; revision?: number; owner?: TradeActor }>();
   encode(rows: readonly (Trader | TradeActor)[], reset: boolean, borrowed = false): TraderChanges {
     if (reset) this.retained.clear();
     const motion = new Float64Array(rows.length * STRIDE), upserts: Detail[] = [], live = new Set<number>();
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i], at = i * STRIDE, old = this.retained.get(row.id);
+      const revision = borrowed ? tradeDetailRevision(row as TradeActor) : undefined;
       live.add(row.id);
       motion[at] = row.id; motion[at + 1] = row.x; motion[at + 2] = row.y; motion[at + 3] = row.waitTicks;
-      if (!old || !same(old.detail, old.keys, row, borrowed)) {
-        const saved = copy(details(row, borrowed)); this.retained.set(row.id, { detail: saved, keys: Object.keys(saved) }); upserts.push(saved);
-      }
+      const needsCheck = !old || revision === undefined || old.owner !== row || old.revision !== revision;
+      if (needsCheck && (!old || !same(old.detail, old.keys, row, borrowed))) {
+        const saved = copy(details(row, borrowed)); this.retained.set(row.id, { detail: saved, keys: Object.keys(saved), revision, owner: revision === undefined ? undefined : row as TradeActor }); upserts.push(saved);
+      } else if (old) { old.revision = revision; old.owner = revision === undefined ? undefined : row as TradeActor; }
     }
     const removed: number[] = [];
     for (const id of this.retained.keys()) if (!live.has(id)) { removed.push(id); this.retained.delete(id); }

@@ -1,8 +1,10 @@
-import { remainingHealth, maximumHealth } from "../../src/skirmish/domain/Manpower";
+import { createManpower, remainingHealth, maximumHealth } from "../../src/skirmish/domain/Manpower";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
+import { UNIT } from "../../src/skirmish/content/Units";
+import { createFormation, formationSlots, validateFormation } from "../../src/skirmish/domain/FormationGeometry";
 import {
   SnapshotDecoder,
   SnapshotEncoder,
@@ -24,6 +26,47 @@ function fixture() {
   return game;
 }
 describe("nuclear land damage", () => {
+  it.each(["deployed", "reforming", "column"] as const)("publishes and restores %s formations immediately after fallout casualties", mode => {
+    const game = fixture(), unit = UNIT.get("stoneage-infantry")!;
+    const squad = game.squads.find(s => s.playerId === 1)!;
+    for (const other of [...game.squads])
+      if (other.id !== squad.id) game.removeSquad(other.id);
+    game.updateSquad(squad.id, {
+      troops: 19, manpower: createManpower(unit, "enlarged"),
+      x: 30.5 * FIXED, y: 30.5 * FIXED, order: { type: "hold" },
+      formation: { ...createFormation(unit.id), layoutTroops: 19,
+        shape: mode === "column" ? "column" : "mass",
+        mode: mode === "column" ? "travel" : "deployed",
+        deployedShape: "mass", frontage: mode === "column" ? undefined : 320,
+        preferredFrontage: 320 },
+    });
+    if (mode === "reforming") game.updateSquad(squad.id, {
+      formation: { ...squad.formation!, transition: {
+        from: "mass", fromFacing: 0, fromSlots: formationSlots(squad, game.tick),
+        startTick: game.tick, duration: 200,
+      } },
+    });
+    const encoder = new SnapshotEncoder(), decoder = new SnapshotDecoder();
+    decoder.decodeLatest(encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts()));
+    game.nuclearBlast(squad.x, squad.y, 2 * FIXED);
+    const capture = game as unknown as { capture(): void };
+    for (let i = 0; i < 30 && squad.troops === 19; i++) {
+      game.tick++;
+      capture.capture();
+    }
+    // The old path left width 320 at 16 soldiers, which decoding projects to 288.
+    expect(squad.troops).toBe(16);
+    expect(squad.formation!.layoutTroops).toBe(16);
+    expect(squad.formation!.preferredFrontage).toBe(288);
+    if (mode !== "column") expect(squad.formation!.frontage).toBe(288);
+    expect(() => validateFormation(squad.formation, squad.definitionId, squad.troops)).not.toThrow();
+    expect(() => decoder.decodeLatest(encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts()))).not.toThrow();
+    expect(() => new SnapshotDecoder().decode(new SnapshotEncoder().encode(game.snapshot()))).not.toThrow();
+    const cold = new Skirmish(game.map, game.options);
+    expect(() => cold.restore(game.checkpoint())).not.toThrow();
+    expect(cold.squad(squad.id)!.formation).toEqual(squad.formation);
+    expect(game.players[0].losses).toBe(3);
+  });
   it("unclaims both factions' land and charges each prior owner once per cell, with no repeat charge for already neutral cells", () => {
     const game = fixture(),
       before = game.players.map((p) => p.land);

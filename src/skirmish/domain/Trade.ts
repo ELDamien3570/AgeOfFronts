@@ -1,3 +1,4 @@
+import { ownTradePublication, tradeDetailsChanged } from "./TradePublication";
 import { portWaterTiles } from "../PortWaterAccess";
 import type { GameMap } from "../../core/game/GameMap";
 import { tradeActorCap } from "../FactionRules";
@@ -223,6 +224,7 @@ export class Trade {
     this.blastActorTick = -1;
     const s = structuredClone(saved);
     restoreArray(this.actors, s.actors);
+    for (const actor of this.actors) ownTradePublication(actor);
     this.receipts.clear();for(const [key,receipt] of s.receipts??[])this.receipts.set(key,receipt);
     this.receiptRevision=s.receiptRevision??0;this.nextReceipt=s.nextReceipt??1;
     restoreRecord(this.deliveredGold, s.deliveredGold);
@@ -318,6 +320,7 @@ export class Trade {
           this.building(a.destination ?? -1)?.playerId === other)
       ) {
         this.cancel(a.id);
+        tradeDetailsChanged(a);
         a.destination = null;
         a.path = [];
         if (a.cargo) a.state = "returning";
@@ -433,6 +436,7 @@ export class Trade {
     // receiver index, rather than a timer, owns this dependency change.
     for (const actor of this.actors) if (actor.naval && actor.state === "prize" && actor.waitingReason === "no-receiver" &&
       (this.seaMarkets.get(this.world.waterPaths.component[this.tile(actor)]) ?? []).some(b => this.allowedMarket(actor, b))) {
+      tradeDetailsChanged(actor);
       actor.waitTicks = 0; actor.waitingReason = undefined;
     }
   }
@@ -663,6 +667,7 @@ export class Trade {
     if (loading) for (const p of this.admissions.values())
       if (p.loading && p.playerId === a.playerId && p.naval === a.naval &&
         (p.originTile ?? this.actors.find(other => other.id === p.id)?.originTile) === a.originTile) return;
+    tradeDetailsChanged(a);
     let returning =
         !loading &&
         a.state !== "prize" &&
@@ -765,6 +770,7 @@ export class Trade {
       }
       used++;
       idle = 0;
+      tradeDetailsChanged(a);
       const b = this.building(p.candidates[p.index]);
       if (!b || !this.allowedMarket(a, b, p.state === "returning")) {
         p.index++;
@@ -921,6 +927,7 @@ export class Trade {
     return { seaSpeed: this.cargoEffects(owner).seaSpeed };
   }
   private load(a: TradeActor): boolean {
+    tradeDetailsChanged(a);
     const site = this.source(a);
     if (
       !site ||
@@ -1083,6 +1090,7 @@ export class Trade {
         // Cheap candidates first; exact reachability still uses the shared bounded planner.
         if (!this.candidates(actor).length) continue;
         actor.id = this.world.allocateId();
+        ownTradePublication(actor);
         this.actors.push(actor);
         count++;
         if (site.naval) seaTally.set(player.id,(seaTally.get(player.id) ?? 0)+1);
@@ -1176,6 +1184,7 @@ export class Trade {
     return null;
   }
   private discard(a: TradeActor): void {
+    tradeDetailsChanged(a);
     this.lostValue[a.playerId] =
       (this.lostValue[a.playerId] ?? 0) + a.cargo * a.valuePerGood;
     a.lost += a.cargo;
@@ -1227,6 +1236,7 @@ export class Trade {
         a.waitTicks--;
         continue;
       }
+      if (a.waitingReason !== undefined) tradeDetailsChanged(a);
       a.waitingReason = undefined;
       if (a.naval) this.sea.query(a.x, a.y, 1.2 * FIXED, this.nearby as Ship[]);
       else this.land.query(a.x, a.y, 1.2 * FIXED, this.nearby as Squad[]);
@@ -1241,6 +1251,7 @@ export class Trade {
         )
         .sort((a, b) => a.id - b.id)[0];
       if (captor && a.cargo) {
+        tradeDetailsChanged(a);
         this.cancel(a.id);
         this.retries.delete(a.id);
         const value = a.cargo * a.valuePerGood;
@@ -1264,6 +1275,7 @@ export class Trade {
           this.retired.add(a.id);
           continue;
         }
+        tradeDetailsChanged(a);
         // Losing the source does not kill its loaded merchant. Salvage its
         // cargo at an owned receiver, then leave service like a captured courier.
         this.cancel(a.id);
@@ -1276,21 +1288,23 @@ export class Trade {
           const capacity = this.capacity(site!).value;
           if (site!.buildings.reduce((n,b)=>n+(this.supply.goods.get(b.id) ?? 0),0) >= capacity) {
             if (a.supplyWaitStartedTick !== undefined) {
+              tradeDetailsChanged(a);
               a.supplyWaitTicks = (a.supplyWaitTicks ?? 0) + this.world.tick-a.supplyWaitStartedTick;
               a.supplyWaitStartedTick = undefined;
             }
             this.begin(a,true);
-          } else { a.supplyWaitStartedTick ??= this.world.tick; a.waitingReason = "cargo"; }
-        } else { a.supplyWaitStartedTick=undefined; a.supplyWaitTicks=0; }
+          } else { if (a.supplyWaitStartedTick === undefined || a.waitingReason !== "cargo") tradeDetailsChanged(a); a.supplyWaitStartedTick ??= this.world.tick; a.waitingReason = "cargo"; }
+        } else { if (a.supplyWaitStartedTick !== undefined) tradeDetailsChanged(a); a.supplyWaitStartedTick=undefined; a.supplyWaitTicks=0; }
         continue;
       }
-      if (this.admissions.has(a.id)) { a.waitingReason = "planning"; continue; }
+      if (this.admissions.has(a.id)) { if (a.waitingReason !== "planning") tradeDetailsChanged(a); a.waitingReason = "planning"; continue; }
       if (a.destination === null) {
         this.begin(a, false);
         continue;
       }
       const b = this.building(a.destination);
       if (!b || !this.allowedMarket(a, b, a.state === "returning")) {
+        tradeDetailsChanged(a);
         a.destination = null;
         a.path = [];
         if (a.state !== "prize") a.state = "returning";
@@ -1308,6 +1322,7 @@ export class Trade {
           (this.landBlocked(a.playerId, a.routeOriginOwner ?? a.playerId)(tile) ||
             !this.fortifications.clear(a, goal, a.playerId))
         ) {
+          tradeDetailsChanged(a);
           // Territory can change without a fortification/treaty revision.
           // Evict this owner's reusable corridors before requesting a new one.
           for (const [key, path] of this.corridors)
@@ -1334,6 +1349,7 @@ export class Trade {
         }
         continue;
       }
+      tradeDetailsChanged(a);
       if (a.state === "returning") {
         const supplyTicks = a.tripSupplyTicks ?? 0;
         const cycleTicks = Math.max(1, this.world.tick - (a.tripStartedTick ?? this.world.tick) + supplyTicks);

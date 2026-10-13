@@ -77,6 +77,19 @@ function match(id = "bronzeage-infantry") {
   };
 }
 describe("formation boundary engagement", () => {
+  it("retains settled approach shapes across translations and invalidates rotation/troop changes", () => {
+    const { a, b } = match();
+    for (const facing of [0, 701, TURN / 4]) for (const troops of [1, a.troops]) {
+      const source = { ...a, troops, formation: { ...a.formation!, facing } };
+      for (let direction = 0; direction < 16; direction++) {
+        const angle = direction * Math.PI / 8;
+        const point = formationApproach(source, b, 0, FIXED, angle);
+        const translated = formationApproach({ ...source, x: source.x + 12345, y: source.y + 6789 },
+          { ...b, x: b.x + 12345, y: b.y + 6789 }, 1, FIXED, angle);
+        expect(translated).toEqual({ x: point.x + 12345, y: point.y + 6789 });
+      }
+    }
+  });
   it("retains the exact soldier-corner hull for singleton, partial and full bodies", () => {
     const { a } = match("earlymedieval-heavycavalry");
     for (const troops of [1, 2, 11, 40, 144]) {

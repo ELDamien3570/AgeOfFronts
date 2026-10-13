@@ -373,51 +373,44 @@ export class RoutePlanner<T> {
     if (!held) return undefined;
     return this.nextJob(holder);
   }
+  private readonly selectionCandidates: Job<T>[] = [];
+  private readonly selectionClasses: number[] = [];
   private nextJob(
     eligible: (job: Job<T>) => boolean = () => true,
   ): [string, Job<T>] {
     if (this.schedulingVersion === 1) return this.jobs.entries().next().value!;
-    if (this.ports.priority) {
-      let human = false, background = false;
-      for (const job of this.jobs.values()) if (eligible(job)) {
-        if (this.ports.priority(job)) human = true; else background = true;
-      }
-      if (human && background) {
-        const priority = this.priorityTurn++ % 3 < 2, prior = eligible;
-        eligible = job => prior(job) && this.ports.priority!(job) === priority;
-      }
+    // Classify each eligible job once. Priority/committed queries are derived
+    // world reads; repeated full scans per quantum used to repeat both reads.
+    const candidates = this.selectionCandidates, classes = this.selectionClasses;
+    candidates.length = 0;
+    let human = false, background = false, loaded = false, fresh = false;
+    for (const job of this.jobs.values()) if (eligible(job)) {
+      const interactive = !!this.ports.priority?.(job);
+      const urgent = this.schedulingVersion >= 4 && !!this.ports.committed &&
+        (!!this.ports.committed(job) || this.currentTick - job.createdTick >= 100);
+      const at = candidates.length;
+      candidates.push(job); classes[at] = Number(interactive) | (Number(urgent) << 1);
+      if (interactive) human = true;
+      else { background = true; if (urgent) loaded = true; else fresh = true; }
     }
-    if (this.schedulingVersion >= 4 && this.ports.committed) {
-      const interactive = (job: Job<T>) => !!this.ports.priority?.(job);
-      const urgent = (job: Job<T>) => !!this.ports.committed!(job) || this.currentTick - job.createdTick >= 100;
-      let loaded = false, fresh = false;
-      for (const job of this.jobs.values()) if (eligible(job) && !interactive(job)) {
-        if (urgent(job)) loaded = true; else fresh = true;
-      }
-      if (loaded && fresh) {
-        const protectedTurn = this.backgroundTurn++ % 4 < 3, prior = eligible;
-        eligible = job => prior(job) && (interactive(job) || urgent(job) === protectedTurn);
-      }
-    }
-    // One queue scan records each cohort's first eligible entry. Selection still
-    // rotates players, then callers, then takes that cohort's original FIFO head.
-    // Scratch is dense and bounded; cohort identity is re-read for every quantum.
+    const priority = human && background ? this.priorityTurn++ % 3 < 2 : undefined;
+    // The previous scheduler tested urgency only after its priority filter.
+    const protectedTurn = priority !== true && loaded && fresh && this.schedulingVersion >= 4 && this.ports.committed
+      ? this.backgroundTurn++ % 4 < 3 : undefined;
     for (const key of this.selectionKeys) this.selection[key] = undefined;
     this.selectionKeys.length = 0;
-    let firstPlayer = Infinity,
-      nextPlayer = Infinity;
-    for (const job of this.jobs.values())
-      if (eligible(job)) {
-        const { playerId, caller } = this.cohort(job);
-        const key = playerId * PLANNER_CALLERS.length + PLANNER_CALLERS.indexOf(caller);
-        if (!this.selection[key]) {
-          this.selection[key] = job;
-          this.selectionKeys.push(key);
-        }
-        firstPlayer = Math.min(firstPlayer, playerId);
-        if (playerId > this.lastPlayer)
-          nextPlayer = Math.min(nextPlayer, playerId);
-      }
+    let firstPlayer = Infinity, nextPlayer = Infinity;
+    for (let at = 0; at < candidates.length; at++) {
+      const job = candidates[at], interactive = !!(classes[at] & 1), urgent = !!(classes[at] & 2);
+      if (priority !== undefined && interactive !== priority ||
+          protectedTurn !== undefined && !interactive && urgent !== protectedTurn) continue;
+      const { playerId, caller } = this.cohort(job);
+      const key = playerId * PLANNER_CALLERS.length + PLANNER_CALLERS.indexOf(caller);
+      if (!this.selection[key]) { this.selection[key] = job; this.selectionKeys.push(key); }
+      firstPlayer = Math.min(firstPlayer, playerId);
+      if (playerId > this.lastPlayer) nextPlayer = Math.min(nextPlayer, playerId);
+    }
+    candidates.length = 0;
     const player = Number.isFinite(nextPlayer) ? nextPlayer : firstPlayer;
     const previous = this.lastCaller.get(player) ?? -1;
     let firstCaller = Infinity,

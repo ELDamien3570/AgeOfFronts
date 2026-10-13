@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from "node:util";
+import { TraderEncoder, TraderDecoder } from "../../src/skirmish/TraderStream";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
@@ -75,6 +76,24 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
 }
 
 describe("bounded civilian trade", () => {
+  it("publishes every owned detail mutation through movement, planning, loading, delivery and restore", () => {
+    const { trade, step } = fleet(1, 1);
+    const owned = new TraderEncoder(), reference = new TraderEncoder();
+    const decoded = new TraderDecoder(), expected = new TraderDecoder();
+    let sawCargo = false, sawMovement = false;
+    for (let tick = 0; tick < 1800; tick++) {
+      step();
+      if (tick === 600 || tick === 1200) trade.restore(trade.checkpoint());
+      const reset = tick === 0;
+      const actualStage = decoded.stage(owned.encode(trade.actors, reset, true));
+      const expectedStage = expected.stage(reference.encode(structuredClone(trade.actors), reset, true));
+      expect(actualStage.rows).toEqual(expectedStage.rows);
+      decoded.commit(actualStage); expected.commit(expectedStage);
+      sawCargo ||= actualStage.rows.some(row => row.cargo > 0);
+      sawMovement ||= trade.actors.some(row => row.nextPathIndex > 0);
+    }
+    expect(sawCargo).toBe(true); expect(sawMovement).toBe(true);
+  });
   it("expires the whole restored planning attempt without condemning its market or losing cargo", () => {
     const {game,trade,step}=fleet(1,0,false,true,false,true);
     step(20);trade.stepPlanning(32);

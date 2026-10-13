@@ -3329,6 +3329,7 @@ export class Skirmish {
         if(slot)intents.push({squad,goal:slot,speed:this.movementSpeed(squad),yieldOnly:true,revision:this.orderRevisions.get(squad.id)??0});
       }
     }
+    const plannedMotion = new Map<number, NonNullable<Squad["locomotion"]>>();
     if (this.options.formationLocomotion) {
       const requested = new Map(intents.map(intent => [intent.squad.id, intent]));
       intents.length = 0;
@@ -3336,20 +3337,17 @@ export class Skirmish {
         if (squad.afloat) {
           const intent = requested.get(squad.id);
           if (intent) intents.push(intent);
-          if (squad.locomotion?.speed) this.squadEntities.updateOwned(squad.id, { locomotion: { ...squad.locomotion, speed: 0 } });
+          if (squad.locomotion?.speed) plannedMotion.set(squad.id, { ...squad.locomotion, speed: 0 });
           continue;
         }
         if(squad.formation?.transition && squad.formation.shape!=="column" && !COLUMN_TRAVEL.movingDeploy && !movingFormationReform(squad)){
-          if(squad.locomotion?.speed)this.updateSquad(squad.id,{locomotion:{...squad.locomotion,speed:0}});
+          if(squad.locomotion?.speed)plannedMotion.set(squad.id,{...squad.locomotion,speed:0});
           intents.push({squad,goal:squad,speed:0,preferredVelocity:{x:0,y:0}});continue;
         }
         let maximum=this.movementSpeed(squad);if(squad.formation?.transition && !movingFormationReform(squad))maximum*=COLUMN_TRAVEL.transitionSpeedBp/10000;const request=requested.get(squad.id);
         if(squad.formation && ["line","shield-wall","square"].includes(squad.formation.shape) && request){const direction=Math.atan2(request.goal.y-squad.y,request.goal.x-squad.x)-Math.PI/2;maximum*=Math.max(MOTION.strafeFloor,Math.cos(direction-radians(squad.formation.facing)));}
         const result = formationLocomotion(squad, request, maximum, this.options.formationReorientation, this.options.formationFreeTravel);
-        const previous = squad.locomotion;
-        if (!previous || previous.heading !== result.motion.heading || previous.targetHeading !== result.motion.targetHeading ||
-          previous.speed !== result.motion.speed)
-          this.squadEntities.updateOwned(squad.id, { locomotion: result.motion });
+        plannedMotion.set(squad.id, result.motion);
         intents.push(result.intent);
       }
     }
@@ -3366,26 +3364,31 @@ export class Skirmish {
     }
     this.avoidance.step(land, intents, this.spatial, (id, changes) => {
       const squad = this.squad(id)!;
-      if (this.options.formationLocomotion && squad.locomotion && !squad.afloat) {
+      let motion = plannedMotion.get(id) ?? squad.locomotion;
+      if (this.options.formationLocomotion && motion && !squad.afloat) {
         const speed = Math.hypot(changes.x - squad.x, changes.y - squad.y);
-        if (speed !== squad.locomotion.speed)
-          this.squadEntities.updateOwned(id, { locomotion: { ...squad.locomotion, speed } });
+        if (speed !== motion.speed) motion = { ...motion, speed };
       }
+      const previousMotion = squad.locomotion;
+      const locomotion = this.options.formationLocomotion && motion &&
+        (!previousMotion || previousMotion.heading !== motion.heading || previousMotion.targetHeading !== motion.targetHeading || previousMotion.speed !== motion.speed)
+        ? { locomotion: motion } : {};
+      const accepted = { ...changes, ...locomotion };
       if(changes.x!==squad.x || changes.y!==squad.y){
         const proposal=this.transportProposal(squad,changes);
-        if(!proposal)return;
+        if(!proposal){if(locomotion.locomotion)this.squadEntities.updateOwned(id,locomotion);return;}
         if(proposal.changes){
           const formation=proposal.changes.formation;
-          this.updateSquad(id,{...changes,...proposal.changes,formation:formation?{...formation,lastDeployTick:proposal.kind==="land"?this.tick:formation.lastDeployTick}:undefined});
+          this.updateSquad(id,{...accepted,...proposal.changes,formation:formation?{...formation,lastDeployTick:proposal.kind==="land"?this.tick:formation.lastDeployTick}:undefined});
           if(proposal.kind==="land" && this.player(squad.playerId)?.ai){const landing=this.tileOf(changes);this.homeTerritory.anchor(squad.playerId,-landing-1,landing,this.owners);}
           return;
         }
       }
       if(!squad.afloat && squad.formation?.shape==='column' && !squad.formation.transition && (changes.x!==squad.x || changes.y!==squad.y)){
-        const moved=this.squadEntities.updateOwned(id,{...changes,formation:{...squad.formation,trail:advanceColumnTrail(squad,changes.x-squad.x,changes.y-squad.y),revision:squad.formation.revision+1}})!;
+        const moved=this.squadEntities.updateOwned(id,{...accepted,formation:{...squad.formation,trail:advanceColumnTrail(squad,changes.x-squad.x,changes.y-squad.y),revision:squad.formation.revision+1}})!;
         this.columnCertificates.set(moved.formation!,this.columnCertificate(moved));
       }
-      else this.squadEntities.updateOwned(id, changes);
+      else this.squadEntities.updateOwned(id, accepted);
     },
       this.tick, (squad,end) => {
         const revision=this.squadIndex.spatialRevision;
@@ -4548,6 +4551,9 @@ export class Skirmish {
       else this.squadEntities.setOwned(squad.id,'troops',squad.troops-loss);
       this.recordSoldierCasualties(squad.playerId,manpowerCount(UNIT.get(squad.definitionId??""),squad.manpower?.model,loss),squad.id,exposure);
       if((this.squad(squad.id)?.troops??0)<=0){this.forgetCapture(squad.id);this.removeSquad(squad.id);}
+      // Fallout capture happens after the combat/replenishment formation pass.
+      // Finalize each survivor's casualty geometry before snapshot publication.
+      else if(loss>0)this.syncFormationCounts([this.squad(squad.id)!]);
     }
   }
 

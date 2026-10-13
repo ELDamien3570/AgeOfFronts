@@ -39,11 +39,13 @@ export class TerritoryAbsorption {
     restoreSet(this.watched, state.watched);
     restoreMap(this.pending, state.pending);
     this.neutral.restore(state.neutral);
+    this.pocketGeometry.clear();
   }
 
   private readonly dirty = new Set<number>();
   private readonly watched = new Set<number>();
   private readonly pending = new Map<number, Pending>();
+  private readonly pocketGeometry = new Map<number, Pocket>();
 
   private readonly neutral: NeutralTerritoryClaims;
   constructor(private readonly map: GameMap) {
@@ -54,6 +56,15 @@ export class TerritoryAbsorption {
     this.neutral.changed(tile);
     this.dirty.add(tile);
     for (const neighbor of this.map.neighbors(tile)) this.dirty.add(neighbor);
+    // A two-cell pocket's structural dependency extends at most two edges
+    // from its root. Buildings and diplomacy remain checked live each second.
+    if (this.pocketGeometry.size) {
+      this.pocketGeometry.delete(tile);
+      for (const neighbor of this.map.neighbors(tile)) {
+        this.pocketGeometry.delete(neighbor);
+        for (const next of this.map.neighbors(neighbor)) this.pocketGeometry.delete(next);
+      }
+    }
   }
 
   step(
@@ -81,8 +92,11 @@ export class TerritoryAbsorption {
     this.watched.clear();
     const pockets = new Map<number, Pocket>();
     for (const tile of checks) {
-      const pocket = this.inspect(tile, owners);
-      if (pocket) pockets.set(pocket.tiles[0], pocket);
+      const pocket = this.pocketGeometry.get(tile) ?? this.inspect(tile, owners);
+      if (pocket) {
+        pockets.set(pocket.tiles[0], pocket);
+        this.pocketGeometry.set(pocket.tiles[0], pocket);
+      }
     }
     const ready: Pocket[] = [];
     for (const [root, pocket] of pockets) {

@@ -33,6 +33,41 @@ export class NeutralTerritoryClaims {
   private pending = new Map<number, Region>();
   private indexed = new Map<number, number>();
   private scan?: Scan;
+  // Derived cell facts: ownership changes dirty only their region/neighbours.
+  // Checkpoints retain canonical pending regions; restore discards this cache.
+  private validation = new WeakMap<Region, { remaining: Set<number>; frontier: Set<number>; invalid: Set<number>; dirty: Set<number> }>();
+  private validationOf(region: Region) {
+    let state = this.validation.get(region);
+    if (!state) {
+      state = { remaining: new Set<number>(), frontier: new Set<number>(), invalid: new Set<number>(), dirty: new Set(region.tiles) };
+      this.validation.set(region, state);
+    }
+    return state;
+  }
+  private validateCells(root: number, region: Region, owners: Uint8Array, budget: number): number {
+    const state = this.validationOf(region);
+    let used = 0;
+    for (const tile of state.dirty) {
+      if (used >= budget) break;
+      state.dirty.delete(tile); used++;
+      state.remaining.delete(tile); state.frontier.delete(tile); state.invalid.delete(tile);
+      if (!this.map.isLand(tile)) continue;
+      if (owners[tile]) { if (owners[tile] !== region.recipient) state.invalid.add(tile); continue; }
+      state.remaining.add(tile);
+      const neighbors = this.map.neighbors(tile);
+      let invalid = neighbors.length !== 4, adjacent = false;
+      for (const n of neighbors) {
+        if (!this.map.isLand(n)) continue;
+        if (!owners[n]) { if (this.indexed.get(n) !== root) invalid = true; }
+        else if (owners[n] !== region.recipient) invalid = true;
+        else adjacent = true;
+      }
+      if (invalid) state.invalid.add(tile);
+      if (adjacent) state.frontier.add(tile);
+    }
+    return used;
+  }
+
   private revision = 1;
   private rejectedRevision = 0;
   private rejected: Uint8Array;
@@ -74,6 +109,7 @@ export class NeutralTerritoryClaims {
     this.revision = s.revision;
     this.rejectedRevision = s.rejectedRevision;
     this.rejected = s.rejected;
+    this.validation = new WeakMap();
     this.indexed.clear();
     for (const [root, region] of this.pending)
       for (const tile of region.tiles) this.indexed.set(tile, root);
@@ -85,7 +121,12 @@ export class NeutralTerritoryClaims {
       this.revision = 1;
     }
     this.dirty.add(tile);
-    for (const n of this.map.neighbors(tile)) this.dirty.add(n);
+    const affected = [tile, ...this.map.neighbors(tile)];
+    for (const cell of affected) {
+      this.dirty.add(cell);
+      const root = this.indexed.get(cell), region = root === undefined ? undefined : this.pending.get(root);
+      if (region) this.validationOf(region).dirty.add(cell);
+    }
     if (
       this.scan &&
       (this.scan.seen.has(tile) || this.scan.boundary.has(tile))
@@ -186,32 +227,21 @@ export class NeutralTerritoryClaims {
       }
       if (invalid) this.discardScan();
     }
+    let validationBudget = NEUTRAL_TERRITORY_RULES.scanTilesPerTick;
+    for (const [root, region] of this.pending) {
+      validationBudget -= this.validateCells(root, region, owners, validationBudget);
+      if (validationBudget <= 0) break;
+    }
     if (tick % TICKS_PER_SECOND) return [];
     const ready: NeutralClaim[] = [];
     for (const [root, region] of this.pending) {
-      const remaining = region.tiles.filter(
-        (t) => owners[t] === 0 && this.map.isLand(t),
-      );
-      let invalid = region.tiles.some(
-        (t) =>
-          this.map.isLand(t) &&
-          owners[t] !== 0 &&
-          owners[t] !== region.recipient,
-      );
-      const frontier: number[] = [];
-      for (const tile of remaining) {
-        const neighbors = this.map.neighbors(tile);
-        if (neighbors.length !== 4) invalid = true;
-        let adjacent = false;
-        for (const n of neighbors) {
-          if (!this.map.isLand(n)) continue;
-          if (!owners[n]) {
-            if (this.indexed.get(n) !== root) invalid = true;
-          } else if (owners[n] !== region.recipient) invalid = true;
-          else adjacent = true;
-        }
-        if (adjacent) frontier.push(tile);
-      }
+      // Finish only outstanding changes at the authoritative boundary. Never
+      // publish a stale frontier or defer an already-due ownership layer.
+      this.validateCells(root, region, owners, Infinity);
+      const state = this.validationOf(region);
+      const remaining = [...state.remaining].sort((a, b) => a - b);
+      const frontier = [...state.frontier].sort((a, b) => a - b);
+      const invalid = state.invalid.size > 0;
       if (invalid || !remaining.length) {
         this.pending.delete(root);
         for (const tile of region.tiles) this.indexed.delete(tile);
