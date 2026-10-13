@@ -57,7 +57,7 @@ describe("amphibious squads", () => {
       const live = match.squad(squad.id)!;
       if (live.afloat && embarked < 0) {
         embarked = tick;
-        expect(live.afloat).toEqual({ hull: vessel.health, maxHull: vessel.health, vesselId: vessel.id });
+        expect(live.afloat).toMatchObject({ hull: vessel.health, maxHull: vessel.health, vesselId: vessel.id });
         expect(map.isLand(map.ref(Math.floor(live.x / FIXED), Math.floor(live.y / FIXED)))).toBe(false);
       }
       if (embarked >= 0 && !live.afloat && live.x > 50 * FIXED) landed = tick;
@@ -128,7 +128,7 @@ function putAfloat(match: Skirmish, squad: Squad, x: number, y: number) {
     afloat: { hull: vessel.health, maxHull: vessel.health, vesselId: vessel.id } });
 }
 describe("afloat combat", () => {
-  it("absorbs hits on the hull, leaving the soldiers aboard untouched until it fails", () => {
+  it("harms passengers before sinking and kills only the remaining passengers on hull failure", () => {
     const { match, squad } = fixture();
     putAfloat(match, squad, 44.5, 35.5);
     match.step();
@@ -137,14 +137,15 @@ describe("afloat combat", () => {
     hit.add(squad.id, 2, afloat.hull - 1);
     match.resolveLandDamage(hit);
     expect(match.squad(squad.id)!.afloat!.hull).toBe(1);
-    expect(match.squad(squad.id)!.troops).toBe(troops);
+    expect(match.squad(squad.id)!.troops).toBeLessThan(troops);
+    const remaining = match.squad(squad.id)!.troops;
     const losses = match.player(1)!.losses, kills = match.player(2)!.kills ?? 0;
     const sink = new DamageLedger();
     sink.add(squad.id, 2, 5);
     match.resolveLandDamage(sink);
     expect(match.squad(squad.id)).toBeUndefined();
-    expect(match.player(1)!.losses - losses).toBe(troops);
-    expect((match.player(2)!.kills ?? 0) - kills).toBe(troops);
+    expect(match.player(1)!.losses - losses).toBe(remaining);
+    expect((match.player(2)!.kills ?? 0) - kills).toBe(remaining);
   });
 
   it("is sunk by warship fire with every soldier aboard", () => {
@@ -157,7 +158,7 @@ describe("afloat combat", () => {
     for (let tick = 0; tick < 2000 && match.squad(squad.id); tick++) {
       match.step();
       const live = match.squad(squad.id);
-      if (live) expect(live.troops).toBe(troops);
+      if (live) expect(live.troops).toBeLessThanOrEqual(troops);
     }
     expect(match.squad(squad.id)).toBeUndefined();
     expect(match.player(1)!.losses - losses).toBe(troops);
@@ -211,7 +212,7 @@ describe("amphibious orders", () => {
     expect(vessel.health).toBeGreaterThanOrEqual(bronze.health);
     putAfloat(match, squad, 44.5, 35.5);
     match.step();
-    expect(match.squad(squad.id)!.afloat).toEqual({ hull: vessel.health, maxHull: vessel.health, vesselId: "bronzeage-transport" });
+    expect(match.squad(squad.id)!.afloat).toMatchObject({ hull: vessel.health, maxHull: vessel.health, vesselId: "bronzeage-transport" });
   });
 
   it("keeps a Shift-queued leg on the far bank through the crossing", () => {

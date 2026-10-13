@@ -75,6 +75,8 @@ import { FactionRoster } from "./domain/FactionRoster";
 import { AiForceInventory } from "./domain/AiForceInventory";
 import { canPromoteTribe } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
+import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
+import { vesselEffects } from "./domain/ResearchEffects";
 import { commandRejection } from "./domain/CommandPolicy";
 import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
@@ -259,6 +261,9 @@ export class Skirmish {
       }
     }
     if (this.expansion) for(const squad of saved.squads) { validateRecipeManpower(UNIT.get(squad.definitionId??""),squad.manpower,squad.troops); validateWeaponState(squad.weaponState);validateOccupancy(squad.occupancy);validateStance(squad.stance,squad.lastWithdrawTick);validateFormation(squad.formation,squad.definitionId,squad.troops); if([squad.formation?.lastDeployTick,squad.formation?.blockedSince,squad.formation?.settledSince].some(clock=>(clock??0)>saved.tick))throw new Error("Invalid formation deployment clock"); }
+    for (const squad of saved.squads) validateTransportDamage(squad.afloat);
+    for (const ship of saved.ships) if (ship.navalPriority !== undefined && !["transports", "warships"].includes(ship.navalPriority))
+      throw new Error("Invalid naval priority");
     if(this.expansion)for(const job of saved.recruitment.jobs)if(job.category==="land")validateRecruitmentRecipe(UNIT.get(job.definitionId??""),job);
     for(const player of saved.players) if(!Number.isSafeInteger(player.reserves)||player.reserves<0||!Number.isSafeInteger(player.reserveRemainder??0)||(player.reserveRemainder??0)<0||(player.reserveRemainder??0)>=1000) throw new Error('Invalid checkpoint reserves');
     if (saved.forest && !forestOf(this.map)) throw new Error("Missing forest field");
@@ -2063,10 +2068,20 @@ export class Skirmish {
     // external mutation APIs still clone their inputs in updateSquad().
     if(!this.expansion)return;
     for(const s of land){
-      if(!s.formation || s.troops<=0 || s.afloat || s.embarkedOn!==null)continue;
+      if(!s.formation || s.troops<=0)continue;
       const old=s.formation,n=formationDoctrine(s.definitionId).hull?1:Math.min(s.troops,s.manpower?.capacity??144);
       const previous=old.layoutTroops??(formationDoctrine(s.definitionId).hull?1:s.manpower?.capacity??s.troops);
       if(previous===n)continue;
+      if(s.afloat || s.embarkedOn!==null){
+        // Passenger casualties change the remembered land body even at sea.
+        // Resize its canonical bands without starting a land reform aboard.
+        const d=formationDoctrine(s.definitionId),shape=eligibleShape(n,d,old.shape),intent=eligibleShape(n,d,old.deployedShape??shape);
+        this.squadEntities.updateOwned(s.id,{formation:{...old,shape,mode:shape==='column'?'travel':'deployed',
+          frontage:old.frontage===undefined?undefined:frontageLayout(n,d,shape,old.frontage)?.width,
+          preferredFrontage:old.preferredFrontage===undefined?undefined:frontageLayout(n,d,intent,old.preferredFrontage)?.width,
+          deployedShape:intent==='column'?undefined:intent,layoutTroops:n,transition:undefined,revision:old.revision+1}});
+        continue;
+      }
       if(old.shape==='column' && n<previous){const d=formationDoctrine(s.definitionId),intent=eligibleShape(n,d,deployedShape(s));this.squadEntities.updateOwned(s.id,{formation:{...old,deployedShape:intent==='column'?undefined:intent,preferredFrontage:old.preferredFrontage===undefined?undefined:frontageLayout(n,d,intent,old.preferredFrontage)?.width,layoutTroops:n,revision:old.revision+1}});continue;}
       const current=formationSlots({...s,troops:previous},this.tick);
       const doctrine=formationDoctrine(s.definitionId),shape=eligibleShape(n,doctrine,old.shape);
@@ -2238,7 +2253,8 @@ export class Skirmish {
     if (consumeReserves) player.reserves -= definition ? scaledRecipeCost(definition,variant).reserves! : SQUAD_TROOPS;
     const onWater = this.map.isWater(tile);
     const vessel = onWater ? (this.transportVessel(player.id) ?? FALLBACK_TRANSPORT) : undefined;
-    const afloat = vessel ? { hull: vessel.health, maxHull: vessel.health, vesselId: vessel.id } : null;
+    const afloat = vessel ? { hull: vessel.health, maxHull: vessel.health, vesselId: vessel.id,
+      passengerHealth: remainingHealth({ troops: manpower?.capacity ?? SQUAD_TROOPS, manpower }), passengerHullDamage: 0 } : null;
     const recruited = this.addSquad({
       id: this.nextId++,
       playerId: player.id,
@@ -2610,8 +2626,16 @@ export class Skirmish {
     }
   }
 
+  navalVelocity(target: NavalTarget): { x: number; y: number } {
+    const speed = "troops" in target ? this.movementSpeed(target)
+      : this.expansion?.vessel(target).speed ?? SHIP_RULES[target.kind].speed;
+    return navalVelocity(this.map, target, speed);
+  }
+
   private fightShips(): void {
     const hits = new DamageLedger();
+    const committed = incomingNavalDamage(this.expansion?.battle.projectiles ?? [], this.tick,
+      id => this.ship(id) ?? this.squad(id), target => this.navalVelocity(target), (a, b) => this.hostile(a, b));
     const contributions = new Map<number, { id: string; damage: number }[]>();
     // Afloat squads are hulls too; their damage resolves on the squad's hull.
     const afloatHits = new DamageLedger();
@@ -2620,10 +2644,11 @@ export class Skirmish {
       const list = contributions.get(target.id) ?? [];
       list.push({ id: `ship:${source.id}`, damage: amount });
       contributions.set(target.id, list);
+      committed.set(target.id, (committed.get(target.id) ?? 0) + amount);
     };
     this.navalSpatial.rebuild(this.ships);
     const nearby: Ship[] = [], nearbySquads: Squad[] = [];
-    for (const ship of this.ships) {
+    for (const ship of [...this.ships].sort((a, b) => a.id - b.id)) {
       this.shipEntities.setOwned(ship.id, "fighting", false);
       if (ship.refit || ship.health <= 0) continue;
       // A peace-time fleet has no automatic naval firing candidates. Explicit
@@ -2665,6 +2690,17 @@ export class Skirmish {
       if (!rules.damage) continue;
       let target: Ship | Squad | undefined,
         nearest = rules.range ** 2 + 1;
+      const priority = ship.navalPriority ?? DEFAULT_NAVAL_PRIORITY;
+      const consider = (enemy: NavalTarget) => {
+        if (navalHealth(enemy) <= (committed.get(enemy.id) ?? 0)) return;
+        const distance = this.distanceSquared(ship, enemy);
+        if (distance > rules.range ** 2) return;
+        const rank = navalRank(enemy, priority), previousRank = target ? navalRank(target, priority) : Infinity;
+        if (rank < previousRank || rank === previousRank &&
+          (distance < nearest || distance === nearest && target && enemy.id < target.id)) {
+          target = enemy; nearest = distance;
+        }
+      };
       this.navalSpatial.query(ship.x, ship.y, rules.range, nearby);
       for (const enemy of nearby) {
         if (
@@ -2674,14 +2710,7 @@ export class Skirmish {
           !this.waterPaths.connected(this.tileOf(ship), this.tileOf(enemy))
         )
           continue;
-        const distance = this.distanceSquared(ship, enemy);
-        if (
-          distance < nearest ||
-          (distance === nearest && target && enemy.id < target.id)
-        ) {
-          target = enemy;
-          nearest = distance;
-        }
+        consider(enemy);
       }
       if (!profile || profile.targets.includes("ship")) {
         this.spatial.query(ship.x, ship.y, rules.range, nearbySquads);
@@ -2690,11 +2719,7 @@ export class Skirmish {
             (this.expansion && !this.expansion.fortifications.clear(ship,enemy,ship.playerId)) ||
             !this.waterPaths.connected(this.tileOf(ship), this.tileOf(enemy)))
             continue;
-          const distance = this.distanceSquared(ship, enemy);
-          if (distance < nearest || (distance === nearest && target && enemy.id < target.id)) {
-            target = enemy;
-            nearest = distance;
-          }
+          consider(enemy);
         }
       }
       const afloatTarget = ship.attackTargetId ? this.squad(ship.attackTargetId) : undefined;
@@ -2704,7 +2729,7 @@ export class Skirmish {
           (afloatTarget?.afloat ? afloatTarget : undefined))
         : undefined;
       if (
-        explicit && ("troops" in explicit || (explicit.health??1)>0) && profile?.targets.includes("tile" in explicit ? "structure" : "ship") &&
+        explicit && ("troops" in explicit ? navalHealth(explicit)>0 : (explicit.health??1)>0) && profile?.targets.includes("tile" in explicit ? "structure" : "ship") &&
         this.hostile(ship.playerId, explicit.playerId) &&
         this.expansion
       ) {
@@ -2760,12 +2785,16 @@ export class Skirmish {
         if (this.tick < (ship.nextAttackTick ?? 0)) continue;
         this.shipEntities.setOwned(ship.id, "nextAttackTick", this.tick + vessel!.attack!.reloadTicks);
         if (vessel!.attack!.projectile) {
-          this.expansion.battle.fire(
+          const fired = this.expansion.battle.fire(
             { ...ship, domain: "ship" },
             p,
             effectiveAttack!,
             scaledDamage,
+            "shell", undefined, 0, undefined, undefined, undefined,
+            "tile" in explicit ? undefined : explicit.id,
           );
+          if (fired && !("tile" in explicit)) committed.set(explicit.id, (committed.get(explicit.id) ?? 0) + navalDamage());
+          if (!fired) this.shipEntities.setOwned(ship.id, "nextAttackTick", this.tick);
           continue;
         }
         if ("tile" in explicit) {
@@ -2799,12 +2828,15 @@ export class Skirmish {
         this.shipEntities.setOwned(ship.id, "nextAttackTick", this.tick + vessel.attack!.reloadTicks);
       }
       if (vessel?.attack?.projectile) {
-        this.expansion!.battle.fire(
+        const fired = this.expansion!.battle.fire(
           { ...ship, domain: "ship" },
           target,
           effectiveAttack!,
           Math.max(1, scaledDamage),
+          "shell", undefined, 0, undefined, undefined, undefined, target.id,
         );
+        if (fired) committed.set(target.id, (committed.get(target.id) ?? 0) + navalDamage());
+        else this.shipEntities.setOwned(ship.id, "nextAttackTick", this.tick);
         continue;
       }
       hitShip(ship, target, navalDamage());
@@ -2972,6 +3004,7 @@ export class Skirmish {
   }
 
   private readonly navalShipCandidates: Ship[] = [];
+  private readonly navalSquadCandidates: Squad[] = [];
   private readonly navalTradeCandidates: import("./domain/Definitions").TradeActor[] = [];
   private autonomousVoyage(ship: Ship, goal: number): boolean {
     if (this.shipAdmission.replacement(ship.id) !== undefined) return false;
@@ -3013,28 +3046,38 @@ export class Skirmish {
       this.aiCanPursue(ship.playerId,target.playerId,this.tileOf(target)) &&
       this.waterPaths.component[this.tileOf(target)]===sea &&
       this.map.euclideanDistSquared(anchor,this.tileOf(target))<=32**2;
-    let target: {id:number;x:number;y:number;playerId:number} | undefined = ship.navalTargetKind==="ship"
-      ? this.ship(ship.navalTargetId ?? -1) : this.expansion.trade.seaActor(ship.navalTargetId ?? -1);
-    if (!target || !legal(target) || (ship.navalTargetKind === "ship" && (this.ship(target.id)?.health ?? 0) <= 0) || (ship.navalTargetKind==="trade" && !this.expansion.trade.seaActor(target.id)?.cargo)) target=undefined;
-    if (!target) {
-      this.spatialFacts("combat").ships.sample(ship.x,ship.y,16*FIXED,this.navalShipCandidates,
+    let kind = ship.navalTargetKind;
+    let target: Ship | Squad | import("./domain/Definitions").TradeActor | undefined = kind==="ship"
+      ? this.ship(ship.navalTargetId ?? -1) : kind==="transport" ? this.squad(ship.navalTargetId ?? -1)
+        : this.expansion.trade.seaActor(ship.navalTargetId ?? -1);
+    if (!target || !legal(target) || ("cargo" in target ? !target.cargo : navalHealth(target)<=0)) target=undefined;
+    const priority = ship.navalPriority ?? DEFAULT_NAVAL_PRIORITY;
+    const desiredKind = priority === "transports" ? "transport" : "ship";
+    if (!target || kind !== desiredKind) {
+      const facts = this.spatialFacts("combat");
+      facts.ships.sample(ship.x,ship.y,16*FIXED,this.navalShipCandidates,
         s=>s.id!==ship.id && s.health>0 && legal(s),32,256,(Math.floor(this.tick/10)+ship.id)*256);
-      this.navalShipCandidates.sort((a,b)=>this.distanceSquared(ship,a)-this.distanceSquared(ship,b) || a.id-b.id);
-      target=this.navalShipCandidates[0];
-      let kind:"ship"|"trade"="ship";
+      facts.ground.sample(ship.x,ship.y,16*FIXED,this.navalSquadCandidates,
+        s=>!!s.afloat && navalHealth(s)>0 && legal(s),32,256,(Math.floor(this.tick/10)+ship.id)*256);
+      const candidates: NavalTarget[] = [...this.navalShipCandidates, ...this.navalSquadCandidates];
+      if (target && !("cargo" in target) && !candidates.some(s=>s.id===target!.id)) candidates.push(target);
+      candidates.sort((a,b)=>navalRank(a,priority)-navalRank(b,priority) || this.distanceSquared(ship,a)-this.distanceSquared(ship,b) || a.id-b.id);
+      target=candidates[0];
+      kind=target ? "troops" in target ? "transport" : "ship" : undefined;
       if (!target) {
         this.expansion.trade.raidTargets(ship.x,ship.y,16*FIXED,ship.playerId,this.navalTradeCandidates);
         target=this.navalTradeCandidates.filter(legal).sort((a,b)=>this.distanceSquared(ship,a)-this.distanceSquared(ship,b)||a.id-b.id)[0];
-        kind="trade";
+        kind=target ? "trade" : undefined;
       }
       this.shipEntities.updateOwned(ship.id,{navalTargetId:target?.id,navalTargetKind:target?kind:undefined});
     }
     if (!target) return false;
     const range = ship.navalTargetKind==="trade" ? FIXED*.8 : (this.expansion.vessel(ship).attack?.range ?? FIXED)*.75;
     if (this.distanceSquared(ship,target)>range**2) {
-      const actor=ship.navalTargetKind==="trade" ? this.expansion.trade.seaActor(target.id) : undefined;
-      const goal=actor ? navalInterceptTile(this.map,{...ship,speed:this.expansion.vessel(ship).speed},
-        {...actor,speed:VESSEL.get(actor.definitionId)?.speed ?? 70},FIXED,anchor) : this.tileOf(target);
+      const targetSpeed = "cargo" in target ? VESSEL.get(target.definitionId)?.speed ?? 70
+        : "troops" in target ? this.movementSpeed(target) : this.expansion.vessel(target).speed;
+      const goal=navalInterceptTile(this.map,{...ship,speed:this.expansion.vessel(ship).speed},
+        {...target,speed:targetSpeed},FIXED,anchor);
       this.autonomousVoyage(ship,goal);
     }
     return true;
@@ -3575,7 +3618,11 @@ export class Skirmish {
   combatOrderRevision(id:number):number {return this.orderRevisions.get(id)??0;}
   ordinarySpeed(squad: Squad): number {
     if (squad.refit || squad.charge?.phase === "recovery" && squad.cavalryEngagement?.phase!=='penetrating' || chargeDisrupted(squad,this.tick)) return 0;
-    if (squad.afloat) return this.zoneSpeed(squad, (VESSELS.find(v=>v.id===squad.afloat!.vesselId) ?? FALLBACK_TRANSPORT).speed);
+    if (squad.afloat) {
+      const vessel = VESSEL.get(squad.afloat.vesselId) ?? FALLBACK_TRANSPORT;
+      const research = this.expansion?.progression.states[squad.playerId]?.completed ?? [];
+      return this.zoneSpeed(squad, vesselEffects(vessel, research).speed);
+    }
     const speed = Math.floor(
       (terrainSpeed(this.map, this.tileOf(squad)) *
         (squad.charge?.phase === "committed" || squad.cavalryEngagement?.phase==='penetrating'
@@ -4343,10 +4390,23 @@ export class Skirmish {
       // An afloat squad's hull takes every hit; when it fails, all aboard are lost.
       let losses: number;
       if (squad.afloat && dealt > 0) {
-        const hull = Math.max(0, squad.afloat.hull - dealt);
-        this.squadEntities.updateOwned(squad.id, { afloat: { ...squad.afloat, hull } });
-        losses = hull ? 0 : squad.troops;
-        if (!hull) this.squadEntities.updateOwned(squad.id,{troops:0,...(squad.manpower?{manpower:{...squad.manpower,wounds:0}}:{})});
+        const afloat = squad.afloat, applied = Math.min(afloat.hull, dealt), hull = afloat.hull - applied;
+        const baseline = afloat.passengerHealth ?? remainingHealth(squad);
+        const previous = afloat.passengerHullDamage ?? 0, accumulated = previous + applied;
+        const passengerDamage = Math.floor(baseline * accumulated * PASSENGER_DAMAGE_PERCENT / (afloat.maxHull * 100))
+          - Math.floor(baseline * previous * PASSENGER_DAMAGE_PERCENT / (afloat.maxHull * 100));
+        this.squadEntities.updateOwned(squad.id, { afloat: { ...afloat, hull,
+          passengerHealth: baseline, passengerHullDamage: accumulated }, fighting: true, lastCombatTick: this.tick });
+        if (!hull) {
+          losses = squad.troops;
+          this.squadEntities.updateOwned(squad.id,{troops:0,...(squad.manpower?{manpower:{...squad.manpower,wounds:0,...(squad.manpower.model==='hull'?{hullHealth:0}:{})}}:{})});
+        } else if (squad.manpower) {
+          const resolved = damageManpower(squad, passengerDamage); losses = resolved.losses;
+          this.squadEntities.updateOwned(squad.id, { troops: resolved.troops, manpower: resolved.manpower });
+        } else {
+          losses = Math.min(squad.troops, passengerDamage);
+          this.squadEntities.setOwned(squad.id, "troops", squad.troops - losses);
+        }
         for (const [attacker, amount] of damage.contributions(squad.id))
           if (amount > 0) this.notifyHostileAction(squad.playerId, attacker, this.tileOf(squad));
       } else {

@@ -68,7 +68,7 @@ describe("air and strategic naval blast targets",()=>{
   it("damages both transport hulls and warships with a bombing run",()=>{
     const {game,victim,ship,fire}=fixture();fire("bomb");
     expect(game.squad(victim.id)!.afloat!.hull).toBe(5900);
-    expect(game.squad(victim.id)!.troops).toBe(12);
+    expect(game.squad(victim.id)!.troops).toBeLessThan(12);
     expect(game.ship(ship.id)!.health).toBe(5900);
   });
   it.each(["icbm","hydrogen","warhead"] as const)("sinks a full transport hull and warship with %s",payload=>{

@@ -1,5 +1,6 @@
 import { FIXED, TICKS_PER_SECOND, type SquadType } from "../Protocol";
 import { damageAmount } from "../domain/Combat";
+import { TRANSPORT_SPEED_PERCENT } from "../domain/NavalCombat";
 import {
   AGES,
   isCavalryTroopClass,
@@ -476,10 +477,11 @@ for (const [index, age] of AGES.entries())
                   bonusResistance: {},
                 },
               ) *
-                (1 + index * 0.5),
+                (index < 4 ? 2 : 3),
             )
           : Math.round((kind === "warship" ? 1000 : 600) * 1.3 ** index),
-      speed: (kind === "warship" ? 55 : 70) + index * 6,
+      speed: kind === "transport" ? Math.round((55 + index * 6) * TRANSPORT_SPEED_PERCENT / 100)
+        : (kind === "warship" ? 55 : 70) + index * 6,
       capacity:
         kind === "transport"
           ? TRANSPORT_CAPACITIES[index]

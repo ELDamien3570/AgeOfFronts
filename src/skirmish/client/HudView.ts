@@ -165,7 +165,7 @@ export function hudMarkup(): string {
         </button>
       </div>
       <span id="selected" hidden></span><span id="selected-orders" hidden></span>
-      <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span></div>
+      <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span><label>Target priority <select id="naval-priority" aria-label="Warship target priority"><option value="transports">Intercept transports</option><option value="warships">Engage warships</option><option value="mixed" disabled>Mixed priorities</option></select></label></div>
       <button id="delete-building" type="button" hidden>Delete building</button>
     </aside>
     <dialog id="delete-building-dialog" class="building-delete-dialog" aria-labelledby="delete-building-title"><button type="button" id="delete-building-close" aria-label="Close deletion confirmation">×</button><h2 id="delete-building-title">Are you sure?</h2><p id="delete-building-message"></p><p>This removes one building. There is no building refund.</p><div><button type="button" id="delete-building-cancel" autofocus>Cancel</button><button type="button" id="delete-building-confirm">Confirm Delete</button></div></dialog>
@@ -230,6 +230,12 @@ export class HudView {
       const ship = this.vm.game.state.ships.find(s => s.id === this.deletableShipId);
       if (ship?.playerId === this.playerId && ship.kind === "warship")
         this.command({type: "delete-ship", playerId: this.playerId, shipId: ship.id});
+    });
+    this.el("naval-priority").addEventListener("change", () => {
+      const priority=(this.el("naval-priority") as HTMLSelectElement).value;
+      if(!this.vm || (priority!=="transports" && priority!=="warships"))return;
+      const shipIds=this.vm.game.state.ships.filter(s=>s.playerId===this.playerId && this.vm!.game.selection.selectedShips.has(s.id)).map(s=>s.id);
+      if(shipIds.length)this.command({type:"naval-priority",playerId:this.playerId,shipIds,priority});
     });
     root.querySelector(".dock-age")!.addEventListener("click", () => {
       this.drawer.toggleMode();
@@ -390,6 +396,11 @@ export class HudView {
   update(vm: HudViewModel) {
     this.playerId = vm.playerId;
     this.vm = vm;
+    const ships=vm.game.state.ships.filter(s=>s.playerId===this.playerId && vm.game.selection.selectedShips.has(s.id));
+    const priorities=new Set(ships.map(s=>s.navalPriority??"transports"));
+    const priority=this.el("naval-priority") as HTMLSelectElement;
+    priority.value=priorities.size>1?"mixed":[...priorities][0]??"transports";
+    priority.disabled=!ships.length;
     this.deletion.reconcile(vm.game.state, vm.playerId);
     const dialog = this.el("delete-building-dialog") as HTMLDialogElement;
     if (dialog.open && this.deletion.pendingId === null) dialog.close();

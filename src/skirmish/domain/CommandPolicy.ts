@@ -28,6 +28,7 @@ export function commandRejection(command: Command): string | null {
   if(command.type==='occupy'&&command.frontageTiles!==undefined&&(!Array.isArray(command.frontageTiles)||!command.frontageTiles.length||command.frontageTiles.length>64||command.frontageTiles.some(t=>!Number.isSafeInteger(t)||t<0)||new Set(command.frontageTiles).size!==command.frontageTiles.length))return 'Invalid trench frontage';
   if(command.type==='stance'&&! ['default','skirmish'].includes(command.stance))return 'Invalid squad stance';
   if(command.type==='army-posture'&&!['line','defend','skirmish'].includes(command.posture))return 'Invalid army posture';
+  if(command.type==='naval-priority'&&!['transports','warships'].includes(command.priority))return 'Invalid naval priority';
   if (command.type === "upgrade-building" && (!Array.isArray(command.buildingIds) || command.buildingIds.length > 200))
     return "Select up to 200 buildings";
   for (const field of ["squadIds", "shipIds", "aircraftIds", "buildingIds"] as const)

@@ -675,6 +675,8 @@ kbd {
   flex: 1;
   font-size: 9px;
 }
+.naval-orders label { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.naval-orders select { max-width: 100%; color: inherit; background: #142331; border: 1px solid #506479; border-radius: 4px; padding: 4px; }
 #mixed-title {
   margin: 0;
   font-size: 16px;

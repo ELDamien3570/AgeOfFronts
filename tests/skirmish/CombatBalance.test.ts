@@ -11,13 +11,14 @@ import { FIXED } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
 describe("retained hull defence and explicit troop counters", () => {
-  it("gives transports one same-age warship hit-equivalent, plus half per age", () => {
+  it("gives transports two early-age and three later-age same-age warship hits", () => {
     for (const [index, age] of AGES.entries()) {
       const transport = VESSELS.find(v => v.kind === "transport" && v.age === age)!,
         warship = VESSELS.find(v => v.kind === "warship" && v.age === age)!;
       const hit = damageAmount(warship.attack!, { tags: ["ship"], meleeArmour: 1000, rangedArmour: 2000, bonusResistance: {} });
-      expect(transport.health).toBe(Math.round(hit * (1 + index * 0.5)));
-      expect(Math.ceil(transport.health / hit)).toBe(Math.ceil(1 + index * 0.5));
+      expect(transport.health).toBe(hit * (index < 4 ? 2 : 3));
+      expect(Math.ceil(transport.health / hit)).toBe(index < 4 ? 2 : 3);
+      expect(transport.speed).toBe(Math.round(warship.speed * 0.8));
     }
   });
   it("subtracts base and matching bonus armour independently, preserves minimum damage and percentage hulls", () => {

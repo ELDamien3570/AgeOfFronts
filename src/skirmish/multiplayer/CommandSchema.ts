@@ -60,6 +60,7 @@ export const commandSchema = z.discriminatedUnion("type", [
   }),
   command("refit-ships", { shipIds: ids, definitionId: text }),
   command("naval-attack", { shipIds: ids, targetId: id }),
+  command("naval-priority", { shipIds: ids, priority: z.enum(["transports", "warships"]) }),
   command("research", { technologyId: text }),
   command("advance-age"),
   command("produce", { buildingId: id, recipeId: text.nullable() }),

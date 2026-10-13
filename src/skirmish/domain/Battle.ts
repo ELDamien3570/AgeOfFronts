@@ -11,6 +11,7 @@ import { legacyWeaponStrength, remainingHealth, HEALTH_SCALE } from './Manpower'
 import { commitWeaponShot } from "./WeaponTiming";
 import { afterWeaponShot } from "../content/WeaponCycles";
 import { predictiveAim } from "../RangedAim";
+import { navalAim, type NavalTarget } from "./NavalCombat";
 import { restoreArray } from "../StateTransfer";
 import { DamageLedger } from "../Conquest";
 import { CombatGeometry } from './CombatGeometry';
@@ -68,6 +69,7 @@ export interface BattleWorld {
   squads: readonly Squad[];
   squad(id: number): Squad | undefined;
   ship(id: number): Ship | undefined;
+  navalVelocity?(target: NavalTarget): { x: number; y: number };
   building(id: number): Building | undefined;
   buildingFacts(): BuildingQueries;
   updateSquad(id: number, changes: Partial<Omit<Squad, "id">>): Squad | undefined;
@@ -127,6 +129,7 @@ export class Battle {
   restore(saved: ReturnType<Battle["checkpoint"]>): void {
     const state=structuredClone(saved);
     for(const p of state.projectiles)if(!Number.isInteger(p.elevationDamageBp??10000)||(p.elevationDamageBp??10000)<10000||(p.elevationDamageBp??10000)>11000)throw Error("Invalid committed elevation bonus");
+    for(const p of state.projectiles)if(p.navalTargetId!==undefined&&(!Number.isSafeInteger(p.navalTargetId)||p.navalTargetId<0))throw Error("Invalid naval projectile target");
     restoreArray(this.projectiles,state.projectiles);
     this.reservedWarheads = this.projectiles.reduce((n,p) => n + (!p.impacted && p.kind === "mirv" ? p.warheads : 0),0);
     this.definitions.clear();
@@ -311,12 +314,17 @@ export class Battle {
     definitionId?: string,
     targetBuildingId?: number,
     targetAircraftId?: number,
+    navalTargetId?: number,
   ): boolean {
     if (!this.canFire(kind === "mirv" ? warheads : 0)) return false;
     const elevationDamageBp=rangedElevation(this.world,source,profile,target).damageBp;
     damage=Math.floor(Math.round(damage*1000)*elevationDamageBp/10000)/1000;
     const a=source.domain===undefined || source.domain==="squad"?this.world.squad(source.id):undefined,b=this.world.squad((target as {id?:number}).id??-1);
     if(a?.formation && b?.formation && !a.afloat && !b.afloat){const contact=this.contact(a,b);source={...source,x:Math.round(contact.source.x),y:Math.round(contact.source.y)};target={...target,x:Math.round(contact.target.x),y:Math.round(contact.target.y)};}
+    if (navalTargetId !== undefined) {
+      const hull = this.world.ship(navalTargetId) ?? this.world.squad(navalTargetId);
+      if (hull) target = navalAim(source, target, this.world.navalVelocity?.(hull) ?? { x: 0, y: 0 }, profile.projectile?.speed ?? FIXED);
+    }
     const unit = definitionId && UNIT.get(definitionId);
     if (unit && unit.attack.channel === "ranged" && ["StoneAge","BronzeAge","ClassicalAge","EarlyMedieval","LateMedieval"].includes(unit.age) && unit.troopClass) {
       const motion = (target as Squad).locomotion;
@@ -335,6 +343,7 @@ export class Battle {
       elevationDamageBp,
       definitionId,
       ...(targetAircraftId === undefined ? {} : {targetAircraftId}),
+      ...(navalTargetId === undefined ? {} : {navalTargetId}),
       ...(targetBuildingId === undefined ? {} : {targetBuildingId}),
       originTile: source.originTile,
       fromX: source.x,
@@ -1387,7 +1396,10 @@ export class Battle {
           penetration: p.penetration,
           targets: p.targets ?? GROUND,
         };
-      const scaled = (position: Position) => {
+      const scaled = (position: Position & { id?: number }) => {
+        // A naval shell's direct hull hit delivers its authored damage. Splash
+        // retains falloff; stopping at the collision rim must not weaken every hit.
+        if (p.sourceKind === "ship" && directHit && directHit.id === position.id) return profile;
         const fraction =
           1 - (0.5 * Math.sqrt(this.distance(position, p))) / radius;
         return {

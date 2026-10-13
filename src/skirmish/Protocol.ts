@@ -66,6 +66,7 @@ export type Command =
       shipIds: number[];
       targetId: number;
     }
+  | { type: "naval-priority"; playerId: number; shipIds: number[]; priority: import("./domain/NavalCombat").NavalPriority }
   | { type: "research"; playerId: number; technologyId: string }
   | { type: "advance-age"; playerId: number }
   | {
@@ -268,13 +269,16 @@ export interface Squad {
   readonly afloat?: Readonly<Afloat> | null;
 }
 
-/** A squad on water is carried by its faction's current transport. The hull
- * absorbs every hit; at zero it sinks with all troops aboard. A fresh hull is
- * issued on each embarkation. */
+/** Hull damage also harms passengers; sinking kills all remaining passengers.
+ * A fresh hull is issued on embarkation without repairing passenger damage. */
 export interface Afloat {
   hull: number;
   maxHull: number;
   vesselId: string;
+  /** Health at embarkation, in native manpower subunits (legacy: troop units). */
+  passengerHealth?: number;
+  /** Cumulative applied hull damage, for partition-independent fractional damage. */
+  passengerHullDamage?: number;
 }
 
 export interface Player {
@@ -368,7 +372,8 @@ export interface Ship {
   readonly patrolTile?: number | null;
   readonly patrolDwellTicks?: number;
   readonly navalTargetId?: number;
-  readonly navalTargetKind?: "ship" | "trade";
+  readonly navalTargetKind?: "ship" | "trade" | "transport";
+  readonly navalPriority?: import("./domain/NavalCombat").NavalPriority;
   readonly autonomousVoyage?: boolean;
   readonly lastCombatTick?: number;
   readonly repairPortId?: number | null;

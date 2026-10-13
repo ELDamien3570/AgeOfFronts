@@ -11,6 +11,7 @@ import { validateChargeImpact } from './domain/ChargeImpact';
 import { validateCavalryEngagement } from './domain/CavalryEngagement';
 import { validateManpower } from './domain/Manpower';
 import { validateChargeStrength } from './domain/ChargeStrength';
+import { validateTransportDamage } from './domain/NavalCombat';
 import type { Age, ChargeState, RefitJob } from "./domain/Definitions";
 import { AGES } from "./domain/Definitions";
 import type {
@@ -36,6 +37,8 @@ export interface PackedSnapshotDetails {
   buildings?: Float64Array;
   ships: Float64Array;
   shipAirDefense?: Float64Array;
+  shipNavalPriority?: Float64Array;
+  squadTransportDamage?: Float64Array;
   volleys: Float64Array;
   ids: Float64Array;
 }
@@ -345,6 +348,10 @@ export function packSnapshotDetails(
     ...(squadMotion ? { squadMotion } : {}),
     buildings: buildingData,
     ships: shipData,
+    ...(ships.some(s=>s.navalPriority!==undefined) ? { shipNavalPriority: new Float64Array(
+      ships.filter(s=>s.navalPriority!==undefined).flatMap(s=>[s.id,s.navalPriority==='warships'?1:0])) } : {}),
+    ...(squads?.some(s=>s.afloat?.passengerHealth!==undefined) ? { squadTransportDamage: new Float64Array(
+      squads.filter(s=>s.afloat?.passengerHealth!==undefined).flatMap(s=>[s.id,s.afloat!.passengerHealth!,s.afloat!.passengerHullDamage??0])) } : {}),
     ...(ships.some((s) =>s.airDefenseTick!==undefined)
       ? {
   shipAirDefense: new Float64Array(
@@ -405,6 +412,12 @@ export function validateSnapshotDetails(
   rows(data.buildings, DETAIL_STRIDES.building, 1_000_000)
   rows(data.ships, DETAIL_STRIDES.ship, MAX_FACTION_SHIPS * 255, true)
   rows(data.shipAirDefense,2,MAX_FACTION_SHIPS*255)
+  rows(data.shipNavalPriority,2,MAX_FACTION_SHIPS*255);
+  if(data.shipNavalPriority)for(let at=0;at<data.shipNavalPriority.length;at+=2)
+    if(![0,1].includes(data.shipNavalPriority[at+1]))throw new Error("Invalid naval priority");
+  rows(data.squadTransportDamage,3,MAX_SQUADS*255);
+  if(data.squadTransportDamage)for(let at=0;at<data.squadTransportDamage.length;at+=3)
+    if(![data.squadTransportDamage[at+1],data.squadTransportDamage[at+2]].every(v=>Number.isFinite(v)&&v>=0))throw new Error("Invalid transport passenger damage");
   if(data.shipAirDefense)for(let at=0;at<data.shipAirDefense.length;at+=2)if(!Number.isSafeInteger(data.shipAirDefense[at+1])||data.shipAirDefense[at+1]<0)throw new Error("Invalid ship air defence tick");
   rows(
     data.volleys,
@@ -647,6 +660,18 @@ export function unpackSnapshotDetails(
             : { hull: b[at + 24], maxHull: b[at + 25], vesselId: string(b[at + 26])! },
       });
     }
+  if(data.squadTransportDamage && squadDetails) {
+    const damage = new Map<number,{passengerHealth:number;passengerHullDamage:number}>();
+    for(let at=0;at<data.squadTransportDamage.length;at+=3)damage.set(data.squadTransportDamage[at],{
+      passengerHealth:data.squadTransportDamage[at+1],passengerHullDamage:data.squadTransportDamage[at+2]});
+    for(let i=0;i<squadDetails.length;i++) {
+      const s=squadDetails[i], accounting=damage.get(s.id);
+      if(accounting && s.afloat) {
+        const afloat={...s.afloat,...accounting}; validateTransportDamage(afloat);
+        squadDetails[i]={...s,afloat};
+      }
+    }
+  }
   const buildingDetails: SnapshotPacket["buildingDetails"] = data.buildings
     ? []
     : undefined
@@ -695,6 +720,11 @@ export function unpackSnapshotDetails(
   if(data.shipAirDefense) {
     const cooldown=new Map<number,number>();for(let at=0;at<data.shipAirDefense.length;at+=2)cooldown.set(data.shipAirDefense[at],data.shipAirDefense[at+1]);
     for(let i=0;i<ships.length;i++)if(cooldown.has(ships[i].id))ships[i]={...ships[i],airDefenseTick:cooldown.get(ships[i].id)};
+  }
+  if(data.shipNavalPriority) {
+    const priorities=new Map<number,"transports"|"warships">();
+    for(let at=0;at<data.shipNavalPriority.length;at+=2)priorities.set(data.shipNavalPriority[at],data.shipNavalPriority[at+1]===1?'warships':'transports');
+    for(let i=0;i<ships.length;i++)if(priorities.has(ships[i].id))ships[i]={...ships[i],navalPriority:priorities.get(ships[i].id)};
   }
   const volleys: ArcherVolley[] = []
   for (

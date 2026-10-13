@@ -341,6 +341,8 @@ export interface Projectile {
   warheads: number;
   targetBuildingId?: number;
   targetAircraftId?: number;
+  /** Intended naval hull, used only for fire allocation; shells never home. */
+  navalTargetId?: number;
   impacted: boolean;
   impactAt?: number;
   interception?: { defenseId: number; playerId: number; tick: number; impactTick: number; fromX: number; fromY: number; toX: number; toY: number };

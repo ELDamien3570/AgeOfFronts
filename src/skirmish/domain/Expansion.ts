@@ -638,6 +638,15 @@ export class Expansion {
       }
       return null;
     }
+    if (command.type === "naval-priority") {
+      const selected = [...new Set(command.shipIds)].map(id => world.ship(id));
+      if (!selected.length || selected.some(s => !s || s.playerId !== player.id || s.kind !== "warship"))
+        return "Select your warships";
+      for (const s of selected as Ship[]) world.updateShip(s.id, {
+        navalPriority: command.priority, navalTargetId: undefined, navalTargetKind: undefined,
+      });
+      return null;
+    }
     if (command.type === "naval-attack") {
       const afloat = world.squad(command.targetId),
         target =

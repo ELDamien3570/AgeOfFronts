@@ -705,6 +705,7 @@ export class HudViewModel {
                     : "Holding",
         stats: [
           stat("Queued waypoints", String(s.waypoints.length)),
+          stat("Target priority", (s.navalPriority??"transports")==="transports"?"Intercept transports":"Engage warships"),
           ...(s.definitionId
             ? [
                 stat(

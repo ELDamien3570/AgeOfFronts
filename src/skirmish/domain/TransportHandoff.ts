@@ -2,6 +2,7 @@ import { eligibleShape, frontageLayout } from "./FormationProfiles";
 import type { Afloat, Squad } from "../Protocol";
 import type { WorldPoint } from "../SpatialGrid";
 import { deployedShape } from "./ColumnTravel";
+import { remainingHealth } from "./Manpower";
 import {
   createFormation,
   facingOf,
@@ -28,6 +29,8 @@ export function transportHandoff(
       hull: vessel.health,
       maxHull: vessel.health,
       vesselId: vessel.id,
+      passengerHealth: remainingHealth(s),
+      passengerHullDamage: 0,
     };
     return {
       kind: "embark",

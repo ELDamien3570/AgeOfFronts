@@ -404,6 +404,8 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
     ...(packet.barrierChanges ? [packet.barrierChanges.removed] : []),
     ...(details ? [details.ships, details.volleys, details.ids,
       ...(details.shipAirDefense ? [details.shipAirDefense] : []),
+      ...(details.shipNavalPriority ? [details.shipNavalPriority] : []),
+      ...(details.squadTransportDamage ? [details.squadTransportDamage] : []),
       ...(details.squads ? [details.squads] : []), ...(details.squadMotion ? [details.squadMotion] : []),
       ...(details.buildings ? [details.buildings] : []),
       ...(details.formationSlots ? [details.formationSlots.removed, ...details.formationSlots.upserts.map(row => row.coordinates)] : [])] : []),

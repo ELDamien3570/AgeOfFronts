@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Soldier presentation lab · Age of Fronts</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <span class="eyebrow">AGE OF FRONTS / PROTOTYPE</span>
+          <h1>Soldier presentation lab</h1>
+          <p>
+            Compare scale, formation density and weapon readability using the
+            current game assets.
+          </p>
+        </div>
+        <div class="actions">
+          <button id="pause">Pause</button
+          ><button id="reset">Reset experiment</button
+          ><button id="export">Export settings</button>
+        </div>
+      </header>
+      <p class="notice">
+        Local preview only. Settings do not change gameplay. Formation offsets
+        come from game geometry; experimental spacing scales those offsets.
+        Statistics below are sandbox estimates.
+      </p>
+      <div class="layout">
+        <aside>
+          <section>
+            <h2>Scene</h2>
+            <label
+              >Unit
+              <select id="unit"></select></label
+            ><label
+              >Formation
+              <select id="shape"></select></label
+            ><label
+              >Animation
+              <select id="pose">
+                <option value="idle">Idle</option>
+                <option value="running">Running</option>
+                <option value="attack">Attack</option>
+              </select></label
+            >
+            <div id="scene-controls"></div>
+            <label
+              ><input id="footprint" type="checkbox" checked /> Show body
+              envelope</label
+            >
+          </section>
+          <section>
+            <h2>Cavalry experiment</h2>
+            <div id="cavalry-controls"></div>
+            <p>
+              Size and pitch are independent. Values multiply the current game
+              settings, including its existing 0.5 soldier scale and 0.8 cavalry
+              pitch.
+            </p>
+          </section>
+          <section>
+            <h2>Projectile experiment</h2>
+            <label
+              >Projectile
+              <select id="projectile">
+                <option value="javelin">Javelin</option>
+                <option value="bow">Arrow</option>
+                <option value="bolt">Bolt</option>
+                <option value="bullet">Bullet</option>
+                <option value="rocket">Rocket silhouette</option>
+              </select></label
+            >
+            <div id="projectile-controls"></div>
+            <p>
+              Separate multipliers for flight, ground and embedded shafts. The
+              same silhouettes are used in all three states.
+            </p>
+          </section>
+          <section>
+            <h2>Naval volleys</h2>
+            <label
+              ><input id="naval" type="checkbox" checked /> Show proposed
+              projectiles</label
+            ><label
+              >Proposed weapon
+              <select id="naval-kind">
+                <option value="bow">Arrows</option>
+                <option value="javelin">Javelins</option>
+                <option value="bolt">Bolts</option>
+              </select></label
+            >
+            <div id="naval-controls"></div>
+            <p>
+              Early warships have direct attacks today. Weapon choice, flight
+              time and shot count here are presentation proposals; they do not
+              multiply ship damage.
+            </p>
+          </section>
+        </aside>
+        <div class="scenes">
+          <section>
+            <div class="section-head">
+              <h2>Formation comparison</h2>
+              <span id="asset-status" role="status">Loading artwork…</span>
+            </div>
+            <div class="compare">
+              <article>
+                <h3>Current</h3>
+                <canvas
+                  id="baseline"
+                  aria-label="Current unit formation"
+                ></canvas>
+                <p id="baseline-metrics"></p>
+              </article>
+              <article>
+                <h3>Experiment</h3>
+                <canvas
+                  id="experiment"
+                  aria-label="Experimental unit formation"
+                ></canvas>
+                <p id="experiment-metrics"></p>
+              </article>
+            </div>
+            <p id="overlap" class="warning"></p>
+            <p>
+              Both views use the same camera scale and soldier count. Artwork
+              overlap depends on each pose; body envelopes describe geometry,
+              not transparent image margins.
+            </p>
+          </section>
+          <section>
+            <h2>Projectile states</h2>
+            <div class="compare">
+              <article>
+                <h3>Current</h3>
+                <canvas
+                  id="projectile-baseline"
+                  aria-label="Current projectiles in flight, grounded and embedded"
+                ></canvas>
+              </article>
+              <article>
+                <h3>Experiment</h3>
+                <canvas
+                  id="projectile-experiment"
+                  aria-label="Experimental projectiles in flight, grounded and embedded"
+                ></canvas>
+              </article>
+            </div>
+            <p>
+              Embedded shafts are drawn beneath the soldier, matching live
+              layering. This is a controlled size comparison, not a collision or
+              damage test.
+            </p>
+          </section>
+          <section>
+            <h2>Early warship engagements</h2>
+            <div class="naval-grid" id="ships"></div>
+            <p>
+              All four ages share the selected proposed weapon. Ship attack
+              cadence and hull art use their current definitions. Flight follows
+              a synthetic arc between stationary hulls.
+            </p>
+          </section>
+          <section>
+            <h2>Statistical sandbox</h2>
+            <p>
+              Unit selection loads authored health and speed percentages,
+              damage, range and reload. Accuracy starts at 100% as an explicit
+              estimate; the game has no authored accuracy field. Changing units
+              resets these statistical inputs.
+            </p>
+            <div id="stat-controls" class="stat-grid"></div>
+            <div id="stats" class="stat-results" aria-live="polite"></div>
+            <p>
+              Expected volley = troop count × damage × accuracy; expected DPS =
+              volley ÷ reload seconds. Assumes every soldier fires once per
+              cycle. Armour, ranks, movement penalties, magazine timing, charge
+              and target bonuses are excluded. Health is the unit's health
+              modifier, not individual HP.
+            </p>
+          </section>
+          <p id="save-status" role="status"></p>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="/src/skirmish/client/lab/SoldierLab.ts"></script>
+  </body>
+</html>
