@@ -918,11 +918,10 @@ function updateHud(): void {
   recordSection("counters");
 
   const vm = viewModel()!;
-  const recruitmentQuotes = new Map<import("../Protocol").SquadType | import("../Protocol").ShipType, ReturnType<SkirmishViewModel["recruitment"]>>();
+  const recruitmentQuotes = vm.recruitmentQuotes([...LAND_RECRUITMENT, ...NAVAL_RECRUITMENT].map(({kind}) => kind));
 
   for (const { kind } of [...LAND_RECRUITMENT, ...NAVAL_RECRUITMENT]) {
-    const recruitment = vm.recruitment(kind);
-    recruitmentQuotes.set(kind, recruitment);
+    const recruitment = recruitmentQuotes.get(kind)!;
 
     const naval = kind === "warship";
 

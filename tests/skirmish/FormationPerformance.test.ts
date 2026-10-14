@@ -85,6 +85,23 @@ describe('formation performance contracts', () => {
     expect(geometry.contact(a,b,2)).toEqual(formationContact(a,b,2));
     expect(geometry.contact(a,b,12)).toEqual(formationContact(a,b,12));
   });
+  it('keeps dimensions independent of translation while refreshing every physical envelope input',()=>{
+    const {game}=formationLoad('distributed',15),s=game.squads[0],geometry=new CombatGeometry();
+    const before=geometry.envelope(s,0),body=geometry.body(s,0);
+    game.updateSquad(s.id,{x:s.x+FIXED,y:s.y+FIXED});
+    expect(geometry.envelope(s,0)).toBe(before);
+    expect(geometry.body(s,0)).not.toBe(body);
+    for(const change of [{troops:s.troops-1},{kind:'cavalry' as const},
+      {formation:{...s.formation!,facing:16384,transition:{from:'line' as const,fromFacing:0,startTick:0,duration:20}}}]){
+      game.updateSquad(s.id,change);
+      for(const tick of [0,1,10,20])expect(geometry.envelope(s,tick)).toEqual(formationEnvelope(s,tick));
+    }
+    const old=geometry.envelope(s,20);
+    game.restore(game.checkpoint());
+    const restored=game.squad(s.id)!;
+    expect(geometry.envelope(restored,20)).toEqual(formationEnvelope(restored,20));
+    expect(geometry.envelope(restored,20)).not.toBe(old);
+  });
   it('wakes local searches for arrivals, casualties and removals without waking distant battles',()=>{
     const {game}=formationLoad('distributed',15),a=game.squads[0],b=game.squads[14],geometry=new CombatGeometry();
     const activity=new CombatActivity(500,250);activity.update(game.squads,game.squadFacts(),geometry,0);

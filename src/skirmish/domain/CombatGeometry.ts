@@ -8,24 +8,38 @@ interface Pose {
   tick:number; envelope:ReturnType<typeof formationEnvelope>;
   body?:PreparedFormationBody;
 }
+type EnvelopePose = Omit<Pose, 'x' | 'y' | 'body'>;
 /** Exact prepared geometry. Domain formation containers are immutable;
  * owned scalar records can move or lose soldiers, so every lookup checks those inputs.
  * No hull approximation or historical pose is introduced here.
  */
 export class CombatGeometry {
   private readonly poses = new WeakMap<Squad,Pose>();
+  private readonly envelopes = new WeakMap<Squad,EnvelopePose>();
   private pose(s:Squad,tick:number):Pose {
     const old=this.poses.get(s), time=s.formation?.transition?tick:0;
     if(old && old.x===s.x && old.y===s.y && old.troops===s.troops && old.definition===s.definitionId &&
       old.kind===s.kind && old.formation===s.formation && old.capacity===s.manpower?.capacity &&
       old.variant===s.manpower?.variant && old.charge===s.charge?.phase && old.tick===time)return old;
-    const envelope=formationEnvelope(s,tick);
+    const envelope=this.envelope(s,tick);
     const value={x:s.x,y:s.y,troops:s.troops,definition:s.definitionId,kind:s.kind,formation:s.formation,
       capacity:s.manpower?.capacity,variant:s.manpower?.variant,charge:s.charge?.phase,tick:time,
       envelope};
     this.poses.set(s,value);return value;
   }
-  envelope(s:Squad,tick:number) { return this.pose(s,tick).envelope; }
+  envelope(s:Squad,tick:number) {
+    // Dimensions and facing depend on the formation, not its translated root.
+    // Spatial rebuilds after movement must not prepare a new full world pose
+    // for an envelope-only read. Body/contact lookup still checks x and y.
+    const old=this.envelopes.get(s), time=s.formation?.transition?tick:0;
+    if(old && old.troops===s.troops && old.definition===s.definitionId &&
+      old.kind===s.kind && old.formation===s.formation && old.capacity===s.manpower?.capacity &&
+      old.variant===s.manpower?.variant && old.charge===s.charge?.phase && old.tick===time)return old.envelope;
+    const envelope=formationEnvelope(s,tick);
+    this.envelopes.set(s,{troops:s.troops,definition:s.definitionId,kind:s.kind,formation:s.formation,
+      capacity:s.manpower?.capacity,variant:s.manpower?.variant,charge:s.charge?.phase,tick:time,envelope});
+    return envelope;
+  }
   body(s:Squad,tick:number):PreparedFormationBody {
     const pose=this.pose(s,tick);
     return pose.body ?? (pose.body=new PreparedFormationBody(s,tick,pose.envelope));

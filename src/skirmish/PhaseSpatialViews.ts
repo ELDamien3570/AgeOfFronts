@@ -32,6 +32,8 @@ export class PhaseSpatialViews {
   private readonly warshipsAlive: View<Ship>;
   private groundAliveRevision = -1;
   private allGroundAlive = false;
+  private warshipsAliveRevision = -1;
+  private allShipsAliveWarships = false;
   readonly diagnostics = { rebuilds: 0, rows: 0, hits: 0 };
   constructor(
     width: number,
@@ -122,6 +124,13 @@ export class PhaseSpatialViews {
     };
     const warshipsAlive = () => {
       check();
+      if (this.warshipsAliveRevision !== shipRevision) {
+        this.allShipsAliveWarships = this.world.ships.every(s => s.kind === 'warship' && s.health > 0);
+        this.warshipsAliveRevision = shipRevision;
+      }
+      // Preserve the filtered inclusion contract when a dead/non-warship row
+      // exists; otherwise the canonical row order is identical to all ships.
+      if (this.allShipsAliveWarships) return ships();
       return this.read(
         this.warshipsAlive,
         shipRevision,

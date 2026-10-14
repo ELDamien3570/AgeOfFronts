@@ -20,6 +20,17 @@ export interface SelectionState {
   selectedDeposit?: number | null;
   inspectedSquadId?: number | null;
 }
+interface RecruitmentFacts {
+  player: Snapshot['players'][number];
+  scope?: ReadonlySet<number>;
+  selectedBuilding: number | null;
+  workloads: Map<number, number>;
+  origin: { x: number; y: number };
+  squadCount: number;
+  warshipCount: number;
+  queuedLand: number;
+  queuedWarships: number;
+}
 
 // Presentation state derives from a read-only domain snapshot. No recruitment,
 // combat, resource transfers, or construction happens in the view model.
@@ -74,6 +85,48 @@ export class SkirmishViewModel {
     capacity: number | undefined;
     buildingIds: number[] | undefined;
   } {
+    return this.recruitmentFor(kind, this.recruitmentFacts());
+  }
+
+  /** Borrow common facts only inside this synchronous query batch. Every new
+   * snapshot/selection update and command acquires fresh counts and origin. */
+  recruitmentQuotes(kinds: readonly (SquadType | ShipType)[]) {
+    const facts = this.recruitmentFacts();
+    return new Map(kinds.map(kind => [kind, this.recruitmentFor(kind, facts)] as const));
+  }
+
+  private recruitmentFacts(): RecruitmentFacts {
+    const player = this.player, playerId = this.playerId;
+    let squadCount = 0, warshipCount = 0, queuedLand = 0, queuedWarships = 0;
+    const forces: { x: number; y: number }[] = [];
+    for (const squad of this.state.squads) if (squad.playerId === playerId) {
+      squadCount++;
+      if (squad.embarkedOn === null && this.selection.selected.has(squad.id)) forces.push(squad);
+    }
+    for (const ship of this.state.ships) if (ship.playerId === playerId) {
+      if (ship.kind === 'warship') warshipCount++;
+      if (this.selection.selectedShips.has(ship.id)) forces.push(ship);
+    }
+    const workloads = new Map<number, number>();
+    for (const job of this.state.expansion?.recruitment ?? []) {
+      workloads.set(job.buildingId, (workloads.get(job.buildingId) ?? 0) + job.remainingTicks);
+      if (job.playerId === playerId) {
+        if (job.category === 'land') queuedLand++;
+        else if (job.category === 'ship' && job.kind === 'warship') queuedWarships++;
+      }
+    }
+    const origin = forces.length ? {
+      x: forces.reduce((sum, unit) => sum + unit.x, 0) / forces.length,
+      y: forces.reduce((sum, unit) => sum + unit.y, 0) / forces.length,
+    } : {
+      x: ((player.base % this.state.width) + 0.5) * FIXED,
+      y: (Math.floor(player.base / this.state.width) + 0.5) * FIXED,
+    };
+    return {player, scope: this.selection.selectedBuildings?.size ? this.selection.selectedBuildings : undefined,
+      selectedBuilding: this.selection.selectedBuilding, workloads, origin, squadCount, warshipCount, queuedLand, queuedWarships};
+  }
+
+  private recruitmentFor(kind: SquadType | ShipType, facts: RecruitmentFacts) {
     const naval = kind === "warship";
     if (this.autoTier && this.state.expansion) {
       const candidates = (
@@ -94,11 +147,15 @@ export class SkirmishViewModel {
         .reverse();
       if (this.building)
         for (const candidate of candidates) {
-          const quote = this.recruitmentQuote(kind, candidate.id, true);
+          // Research is a necessary condition for every quote. Do not prepare
+          // queue, selection and building facts for a tier that cannot be used.
+          if (!this.state.expansion.progression[this.playerId].completed.includes(candidate.technologyId)) continue;
+          const quote = this.recruitmentQuote(kind, candidate.id, facts, true);
           if (quote.enabled) return quote;
         }
       for (const candidate of candidates) {
-        const quote = this.recruitmentQuote(kind, candidate.id);
+        if (!this.state.expansion.progression[this.playerId].completed.includes(candidate.technologyId)) continue;
+        const quote = this.recruitmentQuote(kind, candidate.id, facts);
         if (quote.enabled) return quote;
       }
       const latest = candidates.find((u) =>
@@ -106,17 +163,19 @@ export class SkirmishViewModel {
           u.technologyId,
         ),
       );
-      return this.recruitmentQuote(kind, latest?.id ?? `stoneage-${kind}`);
+      return this.recruitmentQuote(kind, latest?.id ?? `stoneage-${kind}`, facts);
     }
     return this.recruitmentQuote(
       kind,
       this.choices[kind] ?? `stoneage-${kind}`,
+      facts,
     );
   }
 
   private recruitmentQuote(
     kind: SquadType | ShipType,
     definitionId: string,
+    facts: RecruitmentFacts,
     selectedOnly = false,
   ) {
     const naval = kind === "warship";
@@ -128,24 +187,7 @@ export class SkirmishViewModel {
     const variant=landDefinition?recruitmentVariant(landDefinition.id,this.state.expansion!.progression[this.playerId].completed):"base";
     const cost=landDefinition?scaledRecipeCost(landDefinition,variant):vesselDefinition?.cost;
     const capacity=landDefinition?recipeCapacity(landDefinition,variant):undefined;
-    const scope = this.selection.selectedBuildings?.size ? this.selection.selectedBuildings : undefined;
-    const workloads = new Map<number, number>();
-    for (const job of this.state.expansion?.recruitment ?? []) workloads.set(job.buildingId, (workloads.get(job.buildingId) ?? 0) + job.remainingTicks);
-    const forces = [
-      ...this.selectedSquads,
-      ...this.state.ships.filter(
-        (s) => this.selection.selectedShips.has(s.id) && s.playerId === this.playerId,
-      ),
-    ];
-    const origin = forces.length
-      ? {
-          x: forces.reduce((sum, unit) => sum + unit.x, 0) / forces.length,
-          y: forces.reduce((sum, unit) => sum + unit.y, 0) / forces.length,
-        }
-      : {
-          x: ((this.player.base % this.state.width) + 0.5) * FIXED,
-          y: (Math.floor(this.player.base / this.state.width) + 0.5) * FIXED,
-        };
+    const { scope, workloads, origin, player, selectedBuilding } = facts;
     const distance = (tile: number) =>
       (((tile % this.state.width) + 0.5) * FIXED - origin.x) ** 2 +
       ((Math.floor(tile / this.state.width) + 0.5) * FIXED - origin.y) ** 2;
@@ -154,7 +196,7 @@ export class SkirmishViewModel {
         (b) =>
           b.playerId === this.playerId &&
           (!scope || scope.has(b.id)) &&
-          (!selectedOnly || (scope ? scope.has(b.id) : b.id === this.selection.selectedBuilding)) &&
+          (!selectedOnly || (scope ? scope.has(b.id) : b.id === selectedBuilding)) &&
           (b.health ?? 1) > 0 &&
           this.state.owners[b.tile] === this.playerId &&
           b.remainingTicks === 0 &&
@@ -168,12 +210,12 @@ export class SkirmishViewModel {
       )
       .sort(
         (a, b) =>
-          (scope ? (workloads.get(a.id) ?? 0) - (workloads.get(b.id) ?? 0) : Number(b.id === this.selection.selectedBuilding) - Number(a.id === this.selection.selectedBuilding)) ||
+          (scope ? (workloads.get(a.id) ?? 0) - (workloads.get(b.id) ?? 0) : Number(b.id === selectedBuilding) - Number(a.id === selectedBuilding)) ||
           distance(a.tile) - distance(b.tile) ||
           a.id - b.id,
       )[0];
     let reason = "";
-    if (this.player.eliminated || this.state.winner !== null)
+    if (player.eliminated || this.state.winner !== null)
       reason = "Skirmish finished";
     else if (
       this.state.expansion &&
@@ -187,22 +229,21 @@ export class SkirmishViewModel {
         : "Unit definition unavailable";
     else if (!building)
       reason = `Needs a completed friendly ${BUILDING_RULES[landDefinition?.building ?? (naval ? "port" : kind === "infantry" ? "barracks" : kind === "archer" ? "archery" : "stables")].name.toLowerCase()}${definition ? ` (${AGE_NAMES[AGES.indexOf(definition.age)]} or later)` : ""}`;
-    else if (naval && availableGold(this.player) < SHIP_RULES[kind].cost)
+    else if (naval && availableGold(player) < SHIP_RULES[kind].cost)
       reason = "Not enough gold";
-    else if (!naval && this.player.reserves < (landDefinition?.cost.reserves ?? SQUAD_TROOPS))
+    else if (!naval && player.reserves < (landDefinition?.cost.reserves ?? SQUAD_TROOPS))
       reason = this.state.expansion ? `Needs ${landDefinition?.cost.reserves??12} reserve soldiers` : "Needs 1,000 reserve troops";
     else if (
       naval &&
-      this.state.ships.filter((s) => s.playerId === this.playerId && s.kind === kind).length +
-        (this.state.expansion?.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "ship" && j.kind === kind).length >= shipCap(this.player, kind as ShipType)
+      facts.warshipCount + facts.queuedWarships >= shipCap(player, kind as ShipType)
     )
       reason = `${kind === "warship" ? "Warship" : "Transport"} limit reached`;
-    else if (!naval && this.ownSquads.length + (this.state.expansion?.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "land").length >= this.squadCapacity)
+    else if (!naval && facts.squadCount + facts.queuedLand >= this.squadCapacity)
       reason = "Squad limit reached";
     if (!reason && definition)
       reason =
         costRejection(
-          this.player,
+          player,
           this.state.expansion!.inventories[this.player.id],
           cost!,
         ) ?? "";

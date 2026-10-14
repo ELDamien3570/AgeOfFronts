@@ -11,6 +11,7 @@ import {
 import { SpatialGrid, type WorldPoint } from "./SpatialGrid";
 import {
   COLLISION_SKIN,
+  squadCollisionRadius,
   squadRadius,
   squadSeparation,
   traversable,
@@ -50,6 +51,7 @@ interface Obstacle {
   moving: boolean;
 }
 interface MotionScratch {
+  pass: number;
   intent?: MovementIntent;
   preferred: Velocity;
   proposed: Velocity;
@@ -128,8 +130,8 @@ export class LocalAvoidance {
   private readonly crowd = new CrowdVelocity();
   private readonly recovery = new CrowdRecovery();
   private readonly active: Squad[] = [];
-  private readonly rows: MotionScratch[] = [];
   private readonly motion = new Map<number, MotionScratch>();
+  private motionPass = 0;
   private readonly neighbors: Squad[] = [];
   private readonly stopped: Squad[] = [];
   constructor(
@@ -171,22 +173,30 @@ export class LocalAvoidance {
     for (const squad of squads)
       if (squad.embarkedOn === null) active.push(squad);
     active.sort((a, b) => a.id - b.id);
-    motion.clear();
+    const pass = this.motionPass = (this.motionPass + 1) >>> 0;
     for (let at = 0; at < active.length; at++) {
-      const row =
-        this.rows[at] ??
-        (this.rows[at] = {
+      const id = active[at].id;
+      let row = motion.get(id);
+      if (!row) {
+        row = {
+          pass,
           preferred: { x: 0, y: 0 },
           proposed: { x: 0, y: 0 },
           forecast: { x: 0, y: 0, length: 0, moving: false },
           blockers: [],
-        });
+        };
+        motion.set(id, row);
+      }
+      row.pass = pass;
       row.intent = undefined;
       row.preferred.x = row.preferred.y = 0;
       row.proposed.x = row.proposed.y = 0;
       row.blockers.length = 0;
-      motion.set(active[at].id, row);
     }
+    // Reuse ID-owned scratch instead of clearing/reallocating hundreds of Map
+    // entries per tick. Retired rows leave immediately; no unit reference is
+    // retained beyond this synchronous solve. Proposal order stays ID-sorted.
+    for (const [id, row] of motion) if (row.pass !== pass) motion.delete(id);
     for (const intent of intents) {
       const row = motion.get(intent.squad.id);
       if (!row) continue;
@@ -217,8 +227,9 @@ export class LocalAvoidance {
       output.x = velocity.x;
       output.y = velocity.y;
     };
-    let maximumForecast = 0;
+    let maximumForecast = 0, maximumRootRadius = 0;
     for (const squad of active) {
+      maximumRootRadius = Math.max(maximumRootRadius, squadCollisionRadius(squad));
       const row = motion.get(squad.id)!;
       const desired = row.intent ? row.preferred : undefined;
       const moving = !!desired && !!(desired.x || desired.y);
@@ -310,10 +321,10 @@ export class LocalAvoidance {
       let obstacleCount = 0;
       const maximumTravel =
         Math.sqrt(desired.x * desired.x + desired.y * desired.y) + 2;
-      const maximumClearance = Math.max(
-        FIXED * 1.15,
-        2 * squadRadius("cavalry") + COLLISION_SKIN,
-      );
+      // Same-owner soft spacing has its separate sample above. This query
+      // excludes that owner, so its comfort bound is the exact root separation.
+      // Two extra units also cover the preferred-path squared tolerance (+4).
+      const maximumClearance = squadCollisionRadius(squad) + maximumRootRadius + COLLISION_SKIN + 2;
       grid.query(
         squad.x,
         squad.y,
@@ -495,8 +506,8 @@ export class LocalAvoidance {
         Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y),
       );
     }
-    const guardRadius =
-      2 * squadRadius("cavalry") + COLLISION_SKIN + 2 * maximumMotion;
+    const guardRadius = (squad: Squad) =>
+      squadCollisionRadius(squad) + maximumRootRadius + COLLISION_SKIN + 2 * maximumMotion;
     const cancel = (squad: Squad) => {
       const velocity = motion.get(squad.id)!.proposed;
       if (velocity.x || velocity.y) {
@@ -505,7 +516,7 @@ export class LocalAvoidance {
       }
     };
     for (const squad of active) {
-      grid.query(squad.x, squad.y, guardRadius, neighbors, squad.playerId);
+      grid.query(squad.x, squad.y, guardRadius(squad), neighbors, squad.playerId);
       for (const other of neighbors)
         if (
           other.id > squad.id &&
@@ -525,7 +536,7 @@ export class LocalAvoidance {
     }
     for (let i = 0; i < stopped.length; i++) {
       const squad = stopped[i];
-      grid.query(squad.x, squad.y, guardRadius, neighbors, squad.playerId);
+      grid.query(squad.x, squad.y, guardRadius(squad), neighbors, squad.playerId);
       for (const other of neighbors)
         if (
           other.id !== squad.id &&
@@ -598,7 +609,7 @@ export class LocalAvoidance {
     for (const id of this.previous.keys())
       if (!motion.has(id)) this.previous.delete(id);
     // Intents carry live squad/goal references; scratch must not retain retired units.
-    for (const row of this.rows) row.intent = undefined;
+    for (const row of motion.values()) row.intent = undefined;
     active.length = neighbors.length = stopped.length = 0;
   }
 }

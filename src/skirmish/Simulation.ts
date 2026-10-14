@@ -105,7 +105,7 @@ import { FiringPositions } from "./FiringPositions";
 import { HomeTerritory } from "./HomeTerritory";
 import { PlayerAttackContinuation } from "./domain/PlayerAttackContinuation";
 import { LocalAvoidance, type MovementIntent } from "./LocalAvoidance";
-import { formationLocomotion } from "./FormationLocomotion";
+import { formationLocomotion, settledFormationLocomotion } from "./FormationLocomotion";
 import { crossedWaypoint } from "./RouteWaypoint";
 import { formationMovementProfile } from "./FormationMovementProfile";
 import { LocalDetours } from "./LocalDetours";
@@ -2646,7 +2646,8 @@ export class Skirmish {
       contributions.set(target.id, list);
       committed.set(target.id, (committed.get(target.id) ?? 0) + amount);
     };
-    this.navalSpatial.rebuild(this.ships);
+    const naval = this.spatialFacts?.('combat').ships ?? this.navalSpatial;
+    if (naval === this.navalSpatial) this.navalSpatial.rebuild(this.ships);
     const nearby: Ship[] = [], nearbySquads: Squad[] = [];
     for (const ship of [...this.ships].sort((a, b) => a.id - b.id)) {
       this.shipEntities.setOwned(ship.id, "fighting", false);
@@ -2701,7 +2702,7 @@ export class Skirmish {
           target = enemy; nearest = distance;
         }
       };
-      this.navalSpatial.query(ship.x, ship.y, rules.range, nearby);
+      naval.query(ship.x, ship.y, rules.range, nearby);
       for (const enemy of nearby) {
         if (
           enemy.health<=0 || (profile && !profile.targets.includes("ship")) ||
@@ -3387,7 +3388,10 @@ export class Skirmish {
           if(squad.locomotion?.speed)plannedMotion.set(squad.id,{...squad.locomotion,speed:0});
           intents.push({squad,goal:squad,speed:0,preferredVelocity:{x:0,y:0}});continue;
         }
-        let maximum=this.movementSpeed(squad);if(squad.formation?.transition && !movingFormationReform(squad))maximum*=COLUMN_TRAVEL.transitionSpeedBp/10000;const request=requested.get(squad.id);
+        const request=requested.get(squad.id);
+        const settled=settledFormationLocomotion(squad,request,this.options.formationFreeTravel);
+        if(settled){intents.push(settled.intent);continue;}
+        let maximum=this.movementSpeed(squad);if(squad.formation?.transition && !movingFormationReform(squad))maximum*=COLUMN_TRAVEL.transitionSpeedBp/10000;
         if(squad.formation && ["line","shield-wall","square"].includes(squad.formation.shape) && request){const direction=Math.atan2(request.goal.y-squad.y,request.goal.x-squad.x)-Math.PI/2;maximum*=Math.max(MOTION.strafeFloor,Math.cos(direction-radians(squad.formation.facing)));}
         const result = formationLocomotion(squad, request, maximum, this.options.formationReorientation, this.options.formationFreeTravel);
         plannedMotion.set(squad.id, result.motion);

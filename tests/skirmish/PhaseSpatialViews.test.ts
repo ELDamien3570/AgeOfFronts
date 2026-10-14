@@ -15,6 +15,26 @@ function fixture() {
   });
 }
 describe("phase spatial ownership", () => {
+  it('shares all-ships and alive-warship grids only while inclusion is identical', () => {
+    const game=fixture();
+    const ship=game.addShip({id:game.allocateId(),playerId:1,kind:'warship',x:8*FIXED,y:8*FIXED,
+      health:100,path:[],nextPathIndex:0,destination:null,waypoints:[],nextAttackTick:0,fighting:false});
+    const first=game.spatialFacts('combat');
+    expect(first.warshipsAlive).toBe(first.ships);
+    const before=game.spatialDiagnostics!.rebuilds;
+    game.updateShip(ship.id,{health:0});
+    expect(()=>first.ships).toThrow('expired');
+    const dead=game.spatialFacts('trade');
+    expect(dead.warshipsAlive).not.toBe(dead.ships);
+    const all:typeof game.ships[number][]=[],alive:typeof all=[];
+    dead.ships.query(ship.x,ship.y,FIXED,all);dead.warshipsAlive.query(ship.x,ship.y,FIXED,alive);
+    expect(all).toContain(ship);expect(alive).not.toContain(ship);
+    expect(game.spatialDiagnostics!.rebuilds).toBeGreaterThan(before);
+    game.updateShip(ship.id,{health:100});
+    expect(game.spatialFacts('projectiles').warshipsAlive).toBe(game.spatialFacts('combat').ships);
+    game.restore(game.checkpoint());
+    expect(game.spatialFacts('trade').warshipsAlive).toBe(game.spatialFacts('combat').ships);
+  });
   it("shares identical inclusion while keeping casualties and boarding visible", () => {
     const game = fixture(), squad = game.squads[0];
     const first = game.spatialFacts("combat");

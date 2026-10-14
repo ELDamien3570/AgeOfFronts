@@ -4,6 +4,7 @@ import {
   chargeAligned,
   FORMATION_MOTION,
   formationLocomotion,
+  settledFormationLocomotion,
   headingDifference,
 } from "../../src/skirmish/FormationLocomotion";
 import { formationMovementProfile } from "../../src/skirmish/FormationMovementProfile";
@@ -35,6 +36,29 @@ function isolated() {
 }
 
 describe("authoritative formation locomotion", () => {
+  it('matches the full idle integrator exactly and wakes for changed input or nonstationary motion', () => {
+    const {cavalry:source}=isolated();
+    for(const kind of ['infantry','cavalry'] as const)for(const angle of [0,-0,.7,-.9894161429899967,Math.PI]) {
+      const squad={...source,kind,charge:null,afloat:null,order:{type:'hold' as const},
+        locomotion:{heading:angle,targetHeading:angle,speed:0}};
+      const fast=settledFormationLocomotion(squad,undefined,true);
+      if(Object.is(angle,0))expect(fast).toBeDefined();
+      if(fast)expect(fast).toEqual(formationLocomotion(squad,undefined,24,true,true));
+      const normalized=formationLocomotion(squad,undefined,24,true,true);
+      const settled={...squad,locomotion:normalized.motion};
+      const after=settledFormationLocomotion(settled,undefined,true);
+      if(after) {
+        expect(after).toEqual(formationLocomotion(settled,undefined,24,true,true));
+        const moved={...settled,x:settled.x+FIXED};
+        expect(settledFormationLocomotion(moved,undefined,true)).toEqual(formationLocomotion(moved,undefined,24,true,true));
+      }
+      const intent={squad,goal:{x:squad.x+FIXED,y:squad.y},speed:24};
+      expect(settledFormationLocomotion(squad,intent,true)).toBeUndefined();
+      expect(settledFormationLocomotion({...squad,locomotion:{...squad.locomotion,speed:1}},undefined,true)).toBeUndefined();
+      expect(settledFormationLocomotion({...squad,order:{type:'hold',facing:.5}},undefined,true)).toBeUndefined();
+      expect(settledFormationLocomotion(squad,undefined,false)).toBeUndefined();
+    }
+  });
   it("steers moving crowds through corners and pivots before launching toward a rear goal", () => {
     for (const kind of ["infantry", "cavalry"] as const) {
       let squad: Squad = {

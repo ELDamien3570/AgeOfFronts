@@ -21,6 +21,30 @@ export const pointHeading = (from: WorldPoint, to: WorldPoint) =>
 const normalize = (angle: number) =>
   Math.atan2(Math.sin(angle), Math.cos(angle));
 
+const settledMotions = new WeakMap<Squad, { motion: FormationMotion; intent: MovementIntent }>();
+/** Exact fixed point of the free-travel integrator with no requested goal.
+ * Reuse is derived and weakly owned. The avoidance/clearance/rollback phase
+ * still sees the same zero-velocity intent, including its defined idle state. */
+export function settledFormationLocomotion(
+  squad: Squad, intent: MovementIntent | undefined, freeTravel = false,
+): { motion: FormationMotion; intent: MovementIntent } | undefined {
+  const motion = squad.locomotion;
+  if (!freeTravel || intent || squad.charge || squad.afloat || !motion || !Object.is(motion.speed, 0) ||
+      squad.order.type === 'hold' && squad.order.facing !== undefined) return;
+  if (formationMovementProfile(squad.kind === 'cavalry').squadBraking <= 0) return;
+  // Preserve floating-point normalization and signed zero exactly. A squad
+  // still converging toward the fixed point must take the ordinary integrator.
+  if (!Object.is(motion.heading, normalize(motion.heading + 0)) ||
+      !Object.is(motion.targetHeading, normalize(motion.heading))) return;
+  let cached = settledMotions.get(squad);
+  if (!cached || cached.motion !== motion || cached.intent.goal.x !== squad.x || cached.intent.goal.y !== squad.y) {
+    cached = {motion, intent: {squad, speed: 0, goal: {x: squad.x, y: squad.y},
+      preferredVelocity: {x: 0, y: 0}, movementHeading: undefined}};
+    settledMotions.set(squad, cached);
+  }
+  return cached;
+}
+
 /** One fixed-tick squad controller, upstream of the existing swept collision solver.
  * It never consults artwork or individual soldier state. */
 export function formationLocomotion(

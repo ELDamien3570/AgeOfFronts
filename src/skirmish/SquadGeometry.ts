@@ -11,13 +11,17 @@ export function squadRadius(kind: SquadType): number {
 }
 export type SquadGeometry = Pick<Squad, "kind" | "playerId"> & Partial<Pick<Squad,"formation"|"definitionId"|"afloat">>;
 export type FactionHostility = (a: number, b: number) => boolean;
+/** Radius used by the root trajectory guard. Formation bodies have their own
+ * exact sweep; afloat and legacy carriers still need their root disc. */
+export function squadCollisionRadius(s: SquadGeometry): number {
+  return s.formation && !s.afloat ? 0 : squadRadius(s.kind);
+}
 export function squadSeparation(a: SquadGeometry, b: SquadGeometry, hostile?: FactionHostility): number {
   if (a.playerId === b.playerId || (hostile && !hostile(a.playerId, b.playerId))) return 0;
   // Authoritative ground bodies use exact swept formation collision. A second
   // root disc is not an inscribed body (especially for jittered single soldiers
   // or bent columns), and can prevent otherwise legal physical contact.
-  const radiusOf=(s:SquadGeometry)=>s.formation && !s.afloat?0:squadRadius(s.kind);
-  const radius = radiusOf(a) + radiusOf(b);
+  const radius = squadCollisionRadius(a) + squadCollisionRadius(b);
   return Math.round(radius) + COLLISION_SKIN;
 }
 export function meleeContact(a: SquadType, b: SquadType): number {

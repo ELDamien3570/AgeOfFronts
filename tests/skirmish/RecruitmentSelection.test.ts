@@ -73,6 +73,27 @@ function fixture(water = false, legacy = false) {
 }
 
 describe("selected recruitment building", () => {
+  it('shares only synchronous quote facts and refreshes research, stock and selection on the next query', () => {
+    const {match,selection,building,vm}=fixture(true);
+    const first=building('barracks',16),second=building('barracks',55,'Modern');
+    building('archery',38,'Modern');building('stables',60,'Modern');building('port',55,'Modern');
+    const model=vm(true),kinds=['infantry','archer','cavalry','warship'] as const;
+    const check=()=>{
+      const batch=model.recruitmentQuotes(kinds);
+      for(const kind of kinds)expect(batch.get(kind)).toEqual(model.recruitment(kind));
+      return batch;
+    };
+    selection.selectedBuilding=first.id;
+    expect(check().get('infantry')?.building?.id).toBe(first.id);
+    selection.selectedBuilding=second.id;
+    expect(check().get('infantry')?.building?.id).toBe(second.id);
+    model.state.players[0].gold=0;
+    expect(check().get('infantry')?.enabled).toBe(false);
+    model.state.players[0].gold=1e6;
+    model.state.expansion!.progression[1].completed=[];
+    expect(check().get('infantry')?.reason).toMatch(/Requires research/);
+    expect(match.players[0].gold).toBe(1e6);
+  });
   it("balances five recruits among only the selected compatible queues, including a mixed building group", () => {
     const { match, selection, building, vm } = fixture();
     const outside = building("barracks", 16);
