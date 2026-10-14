@@ -48,6 +48,9 @@ export type ExactRouteOutcome =
   | "limited"
   | "superseded";
 export interface RoutePlannerPorts<T> {
+  /** Opt-in read-view revision for priority/commitment classification. Request
+   * identity must be immutable; omit to keep live callback reads. */
+  classificationRevision?(request: ExactRouteRequest<T>): string | number | boolean;
   /** False only for explicitly qualified legacy scheduling/profiles. */
   sharedPreparation?: boolean;
   /** Loaded civilian cargo is already committed economic work. */
@@ -105,6 +108,30 @@ export interface RoutePlannerPorts<T> {
 export class RoutePlanner<T> {
   private readonly jobs = new Map<string, Job<T>>();
   private readonly cohorts = new Map<string, PlannerCohort>();
+  private classifications = new WeakMap<ExactRouteRequest<T>, { revision: string | number | boolean; priority: boolean; committed?: boolean }>();
+  private cohortReads = new WeakMap<ExactRouteRequest<T>, PlannerCohort>();
+  private classification(request: ExactRouteRequest<T>): { priority: boolean; committed?: boolean } {
+    const revision = this.ports.classificationRevision?.(request);
+    if (revision !== undefined) {
+      const old = this.classifications.get(request);
+      if (old?.revision === revision) return old;
+    }
+    const priority = !!this.ports.priority?.(request);
+    if (revision !== undefined) {
+      const value = { revision, priority };
+      this.classifications.set(request, value);
+      return value;
+    }
+    return { priority };
+  }
+  private priorityOf(request: ExactRouteRequest<T>): boolean {
+    return this.ports.classificationRevision ? this.classification(request).priority : !!this.ports.priority?.(request);
+  }
+  private committedOf(request: ExactRouteRequest<T>): boolean {
+    if (!this.ports.classificationRevision) return !!this.ports.committed?.(request);
+    const facts = this.classification(request);
+    return facts.committed ??= !!this.ports.committed?.(request);
+  }
   private readonly workspace: PlanningWorkspace;
   // Retain the iterator across cleanup quanta. Starting a new Map iterator
   // repeatedly walks its deleted prefix even though only live slots are charged.
@@ -239,6 +266,8 @@ export class RoutePlanner<T> {
     for (const [player, caller] of saved.scheduling?.lastCaller ?? [])
       this.lastCaller.set(player, caller);
     this.jobs.clear();
+    this.classifications = new WeakMap();
+    this.cohortReads = new WeakMap();
     for (const job of structuredClone(saved.jobs)) {
       if (job.shortcut) {
         if (this.schedulingVersion < 4 || !job.water) throw Error("Invalid shortcut owner");
@@ -273,6 +302,10 @@ export class RoutePlanner<T> {
     return !!job && (!job.discard || !!job.replacement);
   }
   private cohort(request: ExactRouteRequest<T>): PlannerCohort {
+    if (this.ports.classificationRevision) {
+      const old = this.cohortReads.get(request);
+      if (old) return old;
+    }
     const identity = this.ports.identity?.(request);
     const playerId =
       identity &&
@@ -304,6 +337,7 @@ export class RoutePlanner<T> {
       };
       this.cohorts.set(key, cohort);
     }
+    if (this.ports.classificationRevision) this.cohortReads.set(request, cohort);
     return cohort;
   }
   diagnosticCohorts(tick: number): PlannerCohort[] {
@@ -339,7 +373,7 @@ export class RoutePlanner<T> {
     const available = this.eligibleJobs, priorities = this.eligiblePriorities;
     let humanPending = false;
     for (const job of this.jobs.values()) if (eligible(job)) {
-      const priority = !!this.ports.priority?.(job);
+      const priority = this.priorityOf(job);
       priorities.push(priority); available.push(job);
       if (!job.discard && priority) humanPending = true;
     }
@@ -357,7 +391,7 @@ export class RoutePlanner<T> {
       }
       this.exclusiveKey = undefined;
       const canReserve = (job: Job<T>) => !!job.waitingForWorkspace && !job.discard &&
-        (!humanPending || this.ports.priority!(job));
+        (!humanPending || this.priorityOf(job));
       let waiting = false;
       for (const job of available)
         if (canReserve(job)) {
@@ -406,9 +440,9 @@ export class RoutePlanner<T> {
     for (const job of available ?? this.jobs.values()) {
       ordinal++;
       if (!eligible(job)) continue;
-      const interactive = priorities?.[ordinal] ?? !!this.ports.priority?.(job);
+      const interactive = priorities?.[ordinal] ?? this.priorityOf(job);
       const urgent = this.schedulingVersion >= 4 && !!this.ports.committed &&
-        (!!this.ports.committed(job) || this.currentTick - job.createdTick >= 100);
+        (this.committedOf(job) || this.currentTick - job.createdTick >= 100);
       const at = candidates.length;
       candidates.push(job); classes[at] = Number(interactive) | (Number(urgent) << 1);
       if (interactive) human = true;
@@ -485,11 +519,11 @@ export class RoutePlanner<T> {
       this.diagnostics.admissionDeferred++;
       return false;
     }
-    if (this.ports.priority && !this.ports.priority(request) && this.jobLimit >= 16 && this.jobs.size >= this.jobLimit - 8) {
+    if (this.ports.priority && !this.priorityOf(request) && this.jobLimit >= 16 && this.jobs.size >= this.jobLimit - 8) {
       this.diagnostics.admissionDeferred++; return false;
     }
-    if (this.schedulingVersion >= 4 && this.ports.committed && !this.ports.priority?.(request) &&
-      !this.ports.committed(request) && this.jobLimit >= 32 && this.jobs.size >= this.jobLimit - 24) {
+    if (this.schedulingVersion >= 4 && this.ports.committed && !this.priorityOf(request) &&
+      !this.committedOf(request) && this.jobLimit >= 32 && this.jobs.size >= this.jobLimit - 24) {
       this.diagnostics.admissionDeferred++; return false;
     }
     const paths = this.pathsFor(request);
@@ -555,7 +589,7 @@ export class RoutePlanner<T> {
     }
     const humanWaiting=this.ports.lendIdlePreparation && this.ports.priority && [...this.jobs.values()].some(job=>{
       const live=job.discard?job.replacement:job.retired?undefined:job;
-      return live && this.ports.priority!(live);
+      return live && this.priorityOf(live);
     });
     let preparationBudget = Math.min(256, budget),
       // At most 16,384 local dequeues, with 12,288 reserved for human work.
@@ -639,15 +673,15 @@ export class RoutePlanner<T> {
             else if (job.shortcut.phase === "failed") { job.shortcut = undefined; this.jobs.set(key, job); continue; }
             else { this.jobs.set(key, job); continue; }
           }
-          if (!outcome && this.schedulingVersion >= 4 && !job.prepare && !this.ports.priority?.(job) &&
+          if (!outcome && this.schedulingVersion >= 4 && !job.prepare && !this.priorityOf(job) &&
             !job.corridor && !job.search.nodes.size && job.search.phase === "search") {
             // Queue capacity is not arena concurrency. Admit a bounded number
             // of background searches; retain the rest without reporting a
             // false capacity failure or discarding their logical request.
             let active = 0;
             for (const other of this.jobs.values()) if (!other.retired && !other.discard &&
-              !this.ports.priority?.(other) && (other.corridor || other.search.nodes.size)) active++;
-            const limit = this.ports.committed && !this.ports.committed(job) ? 12 : 16;
+              !this.priorityOf(other) && (other.corridor || other.search.nodes.size)) active++;
+            const limit = this.ports.committed && !this.committedOf(job) ? 12 : 16;
             if (active >= limit) {
               this.jobs.set(key, job); deferred.add(job); used++; continue;
             }
@@ -656,7 +690,7 @@ export class RoutePlanner<T> {
           else if (!job.prepared) {
             if (!preparationBudget) {
               this.jobs.set(key, job);
-              if (!this.ports.priority?.(job)) deferred.add(job);
+              if (!this.priorityOf(job)) deferred.add(job);
               else if (++idle >= this.jobs.size) break;
               continue;
             }
@@ -691,7 +725,7 @@ export class RoutePlanner<T> {
               job.prepared = true;
             }
           } else if (job.corridor) {
-            const priority = this.ports.priority?.(job) ?? false;
+            const priority = this.priorityOf(job);
             const preparation = { used: 0 }, work = paths.stepCorridor(
               job.corridor, this.workspace, slice, this.ports.blocked(job),
               priority ? corridorPreparationBudget : Math.min(corridorPreparationBudget, backgroundCorridorPreparationBudget),
@@ -702,7 +736,7 @@ export class RoutePlanner<T> {
             if (!priority) backgroundCorridorPreparationBudget -= preparation.used;
             if (!work) {
               this.jobs.set(key, job);
-              if (!this.ports.priority?.(job)) deferred.add(job);
+              if (!this.priorityOf(job)) deferred.add(job);
               else if (++idle >= this.jobs.size) break;
               continue;
             }
@@ -728,7 +762,7 @@ export class RoutePlanner<T> {
             job.search.phase === "search" &&
             !job.search.nodes.size &&
             budget - used >= 1024 &&
-            (this.ports.corridorReady?.(job) ?? !!this.ports.priority?.(job))
+            (this.ports.corridorReady?.(job) ?? this.priorityOf(job))
           ) {
             // Preparation, graph search, refinement, validation and fallback
             // cleanup all yield under the same fair work allowance.

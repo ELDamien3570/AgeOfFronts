@@ -1245,12 +1245,14 @@ export class Trade {
           (s) =>
             // Sea piracy requires only a non-allied owner. Market access and
             // land interception retain their separate war/conflict rules.
-            (a.naval ? this.diplomacy.hostile(a.playerId, s.playerId) : this.enemy(a.playerId, s.playerId)) &&
+            (this.diplomacy.raids?this.diplomacy.canSteal(s.playerId,a.playerId,this.world.tick,!players.get(s.playerId)?.ai):
+              (a.naval ? this.diplomacy.hostile(a.playerId, s.playerId) : this.enemy(a.playerId, s.playerId))) &&
             (s.x - a.x) ** 2 + (s.y - a.y) ** 2 <= (1.2 * FIXED) ** 2 &&
             this.fortifications.clear(a, s, s.playerId),
         )
         .sort((a, b) => a.id - b.id)[0];
       if (captor && a.cargo) {
+        this.diplomacy.recordTheft(captor.playerId,a.playerId,this.world.tick);
         tradeDetailsChanged(a);
         this.cancel(a.id);
         this.retries.delete(a.id);

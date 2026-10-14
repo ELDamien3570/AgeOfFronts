@@ -122,7 +122,7 @@ export function incomingNavalDamage(
     if (
       !target ||
       navalHealth(target) <= 0 ||
-      !hostile(p.playerId, target.playerId)
+      !(p.launchUnitOwners?.includes(target.playerId)??hostile(p.playerId, target.playerId))
     )
       continue;
     const velocity = velocityOf(target),

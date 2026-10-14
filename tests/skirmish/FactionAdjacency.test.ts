@@ -23,6 +23,11 @@ it("matches independent border scans through ownership changes and rebuilds", ()
     owners[tile] = (i * 7) % 5; index.changed(tile, previous);
     if (i % 19 === 0) index.rebuild();
     for (let a = 0; a < 5; a++) for (let b = 0; b < 5; b++) expect(index.adjacent(a, b)).toBe(reference(a, b));
+    for (let a = 1; a < 5; a++) {
+      const frontier = owners.some((owner, tile) => owner === a && map.isLand(tile) &&
+        map.neighbors(tile).some(next => map.isLand(next) && owners[next] === 0));
+      expect(index.hasUnclaimedFrontier(a)).toBe(frontier);
+    }
   }
-  expect(index.retainedBytes).toBe(65 * 65 * 4);
+  expect(index.retainedBytes).toBe((65 * 65 + 65) * 4);
 });

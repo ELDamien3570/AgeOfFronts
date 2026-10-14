@@ -1,4 +1,6 @@
 import { TERRAIN } from "../../src/skirmish/content/TacticalRules";
+import { UNIT } from "../../src/skirmish/content/Units";
+import { createManpower } from "../../src/skirmish/domain/Manpower";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ArmyViewModel } from "../../src/skirmish/client/ArmyViewModel";
@@ -282,6 +284,24 @@ describe("persistent armies and Bronze tree", () => {
       expect(own.reduce((n, s) => n + s.troops, 0)).toBe(count * 12);
     },
   );
+  it("shares local army admission connectors and caps travel at the slowest member without a speed bonus",()=>{
+    const m=make(6,false,undefined,true);m.options.armyTravel="corridors-v1";
+    const own=m.squads.filter(s=>s.playerId===1);m.updateSquad(own[0].id,{kind:"archer",definitionId:"stoneage-archer",manpower:createManpower(UNIT.get("stoneage-archer")!)});
+    expect(create(m)).toBeNull();
+    expect(m.applyCommand({type:"army-order",playerId:1,armyId:1,order:{type:"move",tile:m.map.ref(60,30)}})).toBeNull();
+    let marching=false;
+    for(let t=0;t<1500;t++){
+      m.step();const army=m.expansion!.armies.armies[0];
+      if(army.state==="marching"){
+        marching=true;expect(m.movementSpeed(own[0])).toBe(Math.floor(Math.min(...own.map(s=>m.ordinarySpeed(s)))));
+      }
+      if(marching&&army.state==="holding")break;
+    }
+    expect(marching).toBe(true);expect(m.expansion!.armies.armies[0].state).toBe("holding");
+    expect(m.expansion!.armies.travelWork.directAdmissions).toBeGreaterThan(0);
+    expect(own.every(s=>Math.abs(s.x-60.5*FIXED)<12*FIXED)).toBe(true);
+    const saved=m.checkpoint();m.restore(saved);expect(m.options.armyTravel).toBe("corridors-v1");
+  });
   it("keeps manual hold priority when auto tactics are enabled", () => {
     const m = make(3);
     create(m);
@@ -362,11 +382,12 @@ describe("persistent armies and Bronze tree", () => {
     // The column waits for its rear and deploys, but never crawls.
     expect(army).toBeLessThan(squads * 1.6);
   });
-  it("crosses a narrow land bridge with deferred planning", () => {
+  it.each([false,true])("crosses a narrow land bridge with deferred planning (shared=%s)", (shared) => {
     const data = new Uint8Array(96 * 64).fill(133);
     for (let y = 0; y < 64; y++)
       for (let x = 38; x < 43; x++) if (y < 39 || y > 41) data[y * 96 + x] = 0;
     const m = make(8, false, data, true);
+    if(shared)m.options.armyTravel="corridors-v1";
     create(m);
     expect(
       m.applyCommand({

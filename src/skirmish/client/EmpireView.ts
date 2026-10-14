@@ -8,6 +8,7 @@ import { UNIT } from "../content/Units";
 import { TRADE_RULES } from "../content/Economy";
 
 import { AllianceRenewalView } from "./AllianceRenewalView";
+import { PeaceOfferView } from "./PeaceOfferView";
 import { AgeThemeView } from "./AgeThemeView";
 import { AGE_UI_THEMES } from "./AgeUiTheme";
 import { EmpireHudView } from "./EmpireHudView";
@@ -54,6 +55,7 @@ export class EmpireView {
   private readonly researchOpportunities: ResearchOpportunitiesView;
   private readonly ageTheme: AgeThemeView;
   private readonly allianceRenewals: AllianceRenewalView;
+  private readonly peaceOffers: PeaceOfferView;
   readonly buildAges: Partial<Record<BuildingType, Age>> = {};
   readonly choices: Partial<Record<SquadType | ShipType, string>> = {};
 
@@ -87,7 +89,11 @@ export class EmpireView {
   ) {
     this.ageTheme = new AgeThemeView(root);
     const main = root.querySelector(".battlefield")!;
-    this.allianceRenewals = new AllianceRenewalView(main, command => this.actions.command(command));
+    const diplomaticNotices = document.createElement("div");
+    diplomaticNotices.className = "diplomatic-notices";
+    main.append(diplomaticNotices);
+    this.allianceRenewals = new AllianceRenewalView(diplomaticNotices, command => this.actions.command(command));
+    this.peaceOffers=new PeaceOfferView(diplomaticNotices,command=>this.actions.command(command));
     this.researchOpportunities = new ResearchOpportunitiesView(
       main,
       (command) => this.actions.command(command),
@@ -175,6 +181,7 @@ export class EmpireView {
   reset(): void {
     this.ageTheme.reset();
     this.allianceRenewals.reset();
+    this.peaceOffers.reset();
     this.researchOpportunities.reset();
     this.dock.reset();
     this.close();
@@ -248,6 +255,7 @@ export class EmpireView {
     this.dock.update(vm, recruitmentQuotes);
     this.researchOpportunities.update(vm);
     this.allianceRenewals.update(vm);
+    this.peaceOffers.update(vm);
 
     const focus = this.actions.focusedRef();
 
@@ -450,15 +458,7 @@ export class EmpireView {
         type: "alliance",
         playerId: this.playerId,
         otherId: Number(d.other),
-        action: d.diplomacy as
-          | "offer"
-          | "offer-long-term"
-          | "accept"
-          | "reject"
-          | "renew"
-          | "break"
-          | "declare"
-          | "end-long-term",
+        action: d.diplomacy as Extract<Command,{type:"alliance"}>["action"],
       });
 
     if (d.inspect) this.inspectPlayer(Number(d.inspect));
@@ -747,20 +747,31 @@ export class EmpireView {
           (t.a === this.playerId && t.b === p.id) ||
           (t.b === this.playerId && t.a === p.id),
       ),
-      incoming = vm.incoming.find((o) => o.proposer === p.id);
+      incoming = vm.incoming.find((o) => o.proposer === p.id && o.kind!=="peace");
 
-    const outgoing = vm.expansion.diplomacy.offers.find(o => o.proposer === this.playerId && o.recipient === p.id),
+    const outgoing = vm.expansion.diplomacy.offers.find(o => o.proposer === this.playerId && o.recipient === p.id && o.kind!=="peace"),
       atWar = (vm.expansion.diplomacy.wars ?? []).some(w => (w.a === this.playerId && w.b === p.id) || (w.b === this.playerId && w.a === p.id)),
       seconds = treaty ? Math.max(0, Math.ceil((treaty.expiresTick - vm.state.tick) / 20)) : 0,
       status = treaty?.longTerm ? (treaty.ending ? `Alliance ends in ${seconds}s` : "Long Term Alliance · renews automatically") : treaty ? `Allied · ${seconds}s remaining` : atWar ? "At war" : "Independent faction";
     let buttons = "";
+    const raids=vm.expansion.diplomacyRules==="raids-v1",dip=vm.expansion.diplomacy;
+    const protection=dip.peaceProtection?.find(r=>(r.a===this.playerId&&r.b===p.id||r.b===this.playerId&&r.a===p.id)&&r.untilTick>vm.state.tick);
+    const raid=dip.embargoes?.some(r=>(r.initiator===this.playerId&&r.victim===p.id||r.victim===this.playerId&&r.initiator===p.id)&&r.lastTheftTick+1200>vm.state.tick);
+    const relation=protection?`Protected peace · ${Math.ceil((protection.untilTick-vm.state.tick)/20)}s remaining`:raid&&!atWar?"Raid · military combat permitted; no territorial capture":raids&&!treaty&&!atWar?"Neutral":status;
+    if(raids&&!p.eliminated&&p.id!==this.playerId){
+      const excluded=dip.dontEmbargo?.some(e=>e.playerId===this.playerId&&e.otherId===p.id),peace=vm.incoming.find(o=>o.proposer===p.id&&o.kind==="peace");
+      buttons+=`<button data-diplomacy="${excluded?'allow-embargo':'dont-embargo'}" data-other="${p.id}" aria-pressed="${!!excluded}">${excluded?'Allow peacetime interception':"Don't embargo"}</button>`;
+      if(peace)buttons+=`<button data-diplomacy="accept-peace" data-other="${p.id}">Accept peace</button><button data-diplomacy="reject-peace" data-other="${p.id}">Reject peace</button>`;
+      else if(atWar||raid)buttons+=`<button data-diplomacy="offer-peace" data-other="${p.id}">Offer peace</button>`;
+      if(p.kind==="tribe"&&!atWar&&!protection)buttons+=`<button data-diplomacy="declare" data-other="${p.id}">Declare war</button>`;
+    }
     if (p.kind !== "tribe" && !p.eliminated && p.id !== this.playerId) {
       if (incoming) buttons += `<button data-diplomacy="accept" data-other="${p.id}">Accept ${incoming.longTerm ? "Long Term Alliance" : "alliance"}</button><button data-diplomacy="reject" data-other="${p.id}">Reject</button>`;
       else if (outgoing) buttons += `<p>${outgoing.longTerm ? "Long Term Alliance" : "Alliance"} offered · awaiting acceptance</p>`;
       else if (!treaty?.longTerm) buttons += `${treaty ? "" : `<button data-diplomacy="offer" data-other="${p.id}">Offer alliance</button>`}<button data-diplomacy="offer-long-term" data-other="${p.id}">Long Term Alliance</button>`;
       if (treaty) buttons += `${treaty.longTerm ? (treaty.ending ? "" : `<button data-diplomacy="end-long-term" data-other="${p.id}">End alliance in 3 minutes</button>`) : `<button data-diplomacy="renew" data-other="${p.id}">Agree to renewal</button>`}<button data-diplomacy="break" data-other="${p.id}">Break alliance · ${treaty.longTerm ? 60 : 30}s betrayal penalty</button>`;
-      if (!atWar) buttons += `<button data-diplomacy="declare" data-other="${p.id}">Declare War${treaty ? ` · ${treaty.longTerm ? 120 : 30}s betrayal penalty` : ""}</button>`;
+      if (!atWar&&!protection) buttons += `<button data-diplomacy="declare" data-other="${p.id}">Declare War${treaty ? ` · ${treaty.longTerm ? 120 : 30}s betrayal penalty` : ""}</button>`;
     }
-    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : status}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p><p>${fmt(forces.squads)} squads · ${fmt(forces.boats)} warships · ${fmt(forces.planes)} plane squadrons</p>${buttons}${treaty?.longTerm ? "" : "<p>Long Term Alliance requires mutual acceptance, renews automatically, and carries a 60s betrayal penalty.</p>"}`;
+    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${raids?relation:p.kind === "tribe" ? "Tribes do not negotiate" : status}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p><p>${fmt(forces.squads)} squads · ${fmt(forces.boats)} warships · ${fmt(forces.planes)} plane squadrons</p>${buttons}${treaty?.longTerm ? "" : "<p>Long Term Alliance requires mutual acceptance, renews automatically, and carries a 60s betrayal penalty.</p>"}`;
   }
 }

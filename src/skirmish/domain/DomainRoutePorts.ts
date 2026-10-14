@@ -12,6 +12,8 @@ export interface DomainRouteTask {
   stage: string;
   generation: number;
   epoch?: number;
+  /** Strategic feasibility only; never grants actual entry or capture permission. */
+  prospectiveOwner?: number;
 }
 export function domainRouteKey(task: DomainRouteTask): string {
   return `domain:${task.owner}:${task.admissionId}:${task.memberId}:${task.stage}:${task.epoch ?? 0}`;

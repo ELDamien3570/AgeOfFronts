@@ -1,4 +1,5 @@
 import { FormationSlotDecoder } from "./FormationSlotStream";
+import {validateRaidDiplomacy} from './domain/DiplomacyValidation';
 import { TraderEncoder, TraderDecoder } from "./TraderStream";
 import { validateOccupancy } from "./domain/TrenchOccupancy";
 import { validateStance } from "./domain/SkirmishStance";
@@ -446,6 +447,7 @@ export class SnapshotDecoder {
     const slots = packet.details?.version === 5 ? this.formationSlots.stage(packet.details.formationSlots) : undefined;
     if (slots && packet.reset && !packet.details?.formationSlots?.reset) throw new Error("Formation slot reset requires a baseline");
     if(packet.expansion?.armies)validateArmyRecords(packet.expansion.armies);
+    if(packet.expansion?.diplomacy)validateRaidDiplomacy(packet.expansion.diplomacy);
     const troops = new Map<number, number>();
     if (packet.expansion) for (let at = 0; at < packet.squads.length; at += SQUAD_STRIDE) troops.set(packet.squads[at],packet.squads[at+4]);
     const payloads = packet.details ? validateSnapshotDetails(packet.details,{ tick: packet.tick, troops, slots }) : undefined;

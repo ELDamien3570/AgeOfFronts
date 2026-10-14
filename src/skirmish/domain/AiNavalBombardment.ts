@@ -66,7 +66,7 @@ export function stepBombardment(
     return end("complete", "Coastal bombardment objective destroyed");
   if (
     target &&
-    (!world.hostile(player.id, target.playerId) ||
+    (!e.diplomacy.canAttackStructure(player.id, target.playerId) ||
       (operations.enabled(player) &&
         (!operations.canTarget(player.id, target.playerId) ||
           !operations.canEnter(player.id, target.playerId, target.tile))))
@@ -87,7 +87,7 @@ export function stepBombardment(
         building &&
         !building.remainingTicks &&
         (building.health ?? 1) > 0 &&
-        world.hostile(player.id, building.playerId) &&
+        e.diplomacy.canAttackStructure(player.id, building.playerId) &&
         (!operations.enabled(player) ||
           (operations.canTarget(player.id, building.playerId) &&
             operations.canEnter(

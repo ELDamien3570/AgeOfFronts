@@ -78,7 +78,7 @@ export class EmpireViewModel {
     if (!player || !progression) return null;
     return {
       player,
-      identity: new FactionViewModel(player),
+      identity: new FactionViewModel(player, this.expansion.diplomacyRules),
       age: progression.age,
       ageName: AGE_NAMES[AGES.indexOf(progression.age)],
       advancementSeconds: progression.advancement

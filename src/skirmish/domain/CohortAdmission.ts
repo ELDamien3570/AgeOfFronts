@@ -49,6 +49,8 @@ export interface CohortPorts {
   routes: DomainRoutePorts;
   blocked(playerId: number, plan: CohortPlan): (tile: number) => boolean;
   valid(plan: CohortPlan, squad: Squad): boolean;
+  /** Owner-certified short connector; undefined requests exact routing. */
+  directRoute?(squad: Squad, destination: WorldPoint): number[] | undefined;
   embarked?(plan: CohortPlan): boolean;
   commit(
     plan: CohortPlan,
@@ -320,10 +322,12 @@ export class CohortAdmission {
           !member.requested &&
           member.retryAt <= this.ports.routes.tick()
         ) {
-          member.start = pointTile(this.ports.map, this.live(plan, member)!);
-          member.requested = this.ports.routes.request(
-            this.task(plan, member),
-            member.start,
+          const squad=this.live(plan,member)!;
+          member.start = pointTile(this.ports.map, squad);
+          const direct=this.ports.directRoute?.(squad,member.destination!);
+          if(direct!==undefined){member.path=direct;member.cursor=0;}
+          else member.requested = this.ports.routes.request(
+            this.task(plan, member), member.start,
             pointTile(this.ports.map, member.destination!),
           );
         }

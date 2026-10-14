@@ -102,7 +102,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   wasteland: NuclearWasteland;
   spatialFacts(phase: import("../PhaseSpatialViews").SpatialPhase): import("../PhaseSpatialViews").PhaseSpatialFacts;
   recruitment: Recruitment;
-  options?: { runAi?: boolean; formationLocomotion?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge; maximumAge?: Age };
+  options?: { runAi?: boolean; formationLocomotion?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; diplomacyRules?:"raids-v1"; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge; maximumAge?: Age };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
@@ -118,6 +118,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   ownedLand(playerId: number): Iterable<number>;
   /** The `limit` owned tiles closest to `anchor`, ordered by distance then id. */
   ownedLandNearest(playerId: number, anchor: number, limit: number, after?: number): number[];
+  hasUnclaimedFrontier?(owner:number):boolean;
   buildingSite(playerId: number, type: BuildingType, tile: number, age?: Age): string | null;
   squadCapacity(player: Player): number;
   canDeploy?(squad:Squad,troops:number,definitionId?:string):boolean;
@@ -171,7 +172,7 @@ export class Expansion {
   readonly features:TacticalFeatureIndex;
   readonly progression: Progression;
   private readonly automaticTiers = new AutomaticBuildingTiers();
-  readonly diplomacy = new Diplomacy();
+  readonly diplomacy: Diplomacy;
   readonly fortifications: Fortifications;
   readonly supply: Supply;
   readonly trade: Trade;
@@ -211,6 +212,8 @@ export class Expansion {
     this.towerSites={at:tile=>world.buildingsAt(tile),nearby:(tile,radius)=>world.towersNear(tile,radius)};
     this.progression = new Progression(technologySpeed, startingAge, world.options?.maximumAge);
     this.victoryMode = mode;
+    this.diplomacy = new Diplomacy(undefined,world.options?.diplomacyRules);
+    this.diplomacy.onAutomaticAction=(actorId,otherId,action)=>this.announce({kind:"diplomacy",actorId,otherId,action});
     this.fortifications = new Fortifications(world.map, this.diplomacy);
     this.supply = new Supply(world.map, this.progression, seed, world.options?.resourceDensity, world.options?.resourceOutput);
     this.roads = new Roads(world.map);
@@ -224,7 +227,7 @@ export class Expansion {
       this.fortifications,
       this.roads,
       (a,b)=>this.relations.atWar(a,b),
-      (a,b)=>this.relations.atWar(a,b),
+      (a,b)=>this.diplomacy.raids?this.diplomacy.declaredWar(a,b):this.relations.atWar(a,b),
       owner=>this.relations.signatureFor(owner),
     );
     this.battle = new Battle(
@@ -260,7 +263,7 @@ export class Expansion {
     if (budget === 0) return 0;
     const building = state.target.buildingId === undefined ? undefined : this.world.building(state.target.buildingId),
       wall = state.target.barrierId === undefined ? undefined : this.fortifications.barrier(state.target.barrierId), target = building ?? wall;
-    if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.hostile(state.playerId, target.playerId)) {
+    if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.canAttackStructure(state.playerId, target.playerId)) {
       state.stage = "failed"; state.reason = "Structure target is no longer hostile or available"; return 1;
     }
     const key = building ? `b:${building.id}:${building.playerId}:${building.tile}` : `w:${wall!.id}:${wall!.playerId}:${this.fortifications.version}`;
@@ -423,7 +426,7 @@ export class Expansion {
   }
   command(player: Player, command: Command): string | null | undefined {
     const { world } = this;
-    if (command.type === "alliance" && command.action !== "declare" && world.options?.alliances === false) return "Alliances are disabled for this match";
+    if (command.type === "alliance" && !["declare", "offer-peace", "accept-peace", "reject-peace", "dont-embargo", "allow-embargo"].includes(command.action) && world.options?.alliances === false) return "Alliances are disabled for this match";
     if (command.type === "upgrade-building") return "Buildings upgrade automatically with research";
     if(command.type==="occupy") {const result=this.trenches.command(command);if(!result)this.skirmish.observe(command);return result;}
     if(command.type==="stance")return this.skirmish.command(command);
@@ -478,7 +481,7 @@ export class Expansion {
               ? "accept"
               : command.action,
         });
-      if (!result && this.diplomacy.allied(player.id, command.otherId)) {
+      if (!result && (this.diplomacy.allied(player.id, command.otherId)||command.action==="accept-peace"||command.action==="offer-peace"&&!this.diplomacy.hostile(player.id,command.otherId))) {
         for (const s of world.squads) {
           if (
             s.charge?.targetId &&
@@ -656,7 +659,9 @@ export class Expansion {
         selected = [...new Set(command.shipIds)].map((id) =>
           world.ship(id),
         );
-      if (!target || !this.diplomacy.hostile(player.id, target.playerId))
+      if (!target || !("tile" in target
+        ? this.diplomacy.canAttackStructure(player.id, target.playerId)
+        : this.diplomacy.hostile(player.id, target.playerId)))
         return "Choose an enemy vessel or coastal structure";
       if (
         !selected.length ||
@@ -790,7 +795,7 @@ export class Expansion {
           (w) => w.id === command.barrierId,
         ),
         target = building ?? barrier;
-      if (!target || !this.diplomacy.hostile(player.id, target.playerId))
+      if (!target || !this.diplomacy.canAttackStructure(player.id, target.playerId))
         return "Choose an enemy structure";
       const selected = [...new Set(command.squadIds)].map((id) =>
         world.squad(id),
@@ -959,7 +964,7 @@ export class Expansion {
   ): string | null {
     if (targetBuildingId !== undefined) {
       const target = this.world.building(targetBuildingId);
-      if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.hostile(player.id, target.playerId))
+      if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.canAttackStructure(player.id, target.playerId))
         return "Choose an enemy building";
       x = ((target.tile % this.world.map.width()) + .5) * FIXED;
       y = (Math.floor(target.tile / this.world.map.width()) + .5) * FIXED;
@@ -1054,6 +1059,24 @@ export class Expansion {
       targetBuildingId,
     );
     return null;
+  }
+  private thinkPeace(player:Player):void {
+    const {world,diplomacy}=this;
+    const own=world.squadFacts().aliveByOwner(player.id).reduce((n,s)=>n+s.troops,0);
+    const willing=(other:Player)=>{
+      const hostile=world.squadFacts().aliveByOwner(other.id).reduce((n,s)=>n+s.troops,0);
+      return !diplomacy.declaredWar(player.id,other.id)||this.operations.state(player.id)?.phase!=="war"||own<hostile;
+    };
+    for(const offer of [...diplomacy.state.offers])if(offer.kind==="peace"&&offer.recipient===player.id){
+      const other=world.players.find(p=>p.id===offer.proposer);if(!other)continue;
+      this.command(player,{type:"alliance",playerId:player.id,otherId:other.id,action:willing(other)?"accept-peace":"reject-peace"});
+    }
+    for(const other of world.players)if(other.id!==player.id&&!other.eliminated&&diplomacy.hostile(player.id,other.id)&&willing(other)){
+      const enemy=world.squadFacts().aliveByOwner(other.id).reduce((n,s)=>n+s.troops,0);
+      const context=`${diplomacy.declaredWar(player.id,other.id)}:${Math.floor(own/100)}:${Math.floor(enemy/100)}:${Math.floor(player.land/100)}:${Math.floor(other.land/100)}`;
+      const result=diplomacy.action(player,other,"offer-peace",world.tick,context);
+      if(!result)this.announce({kind:"diplomacy",actorId:player.id,otherId:other.id,action:"offer-peace"});
+    }
   }
   beforeStep(): void {
     this.features.step();
@@ -1294,11 +1317,13 @@ export class Expansion {
       )
         continue;
       if (player.kind === "tribe") {
+        if(this.diplomacy.raids)this.thinkPeace(player);
         this.thinkTribeDevelopment(player);
         continue;
       }
       const state = this.progression.states[player.id];
       const personality = personalityOf(player);
+      if(this.diplomacy.raids)this.thinkPeace(player);
       if (!this.economy.enabled(player)) {
       if (
         !advanceRejection(state, availableGold(player), this.progression.technologySpeed, this.progression.maximumAge)
@@ -1403,7 +1428,7 @@ export class Expansion {
       }
       this.thinkAirAndStrategic(player);
       for (const offer of this.diplomacy.state.offers.filter(
-        (o) => o.recipient === player.id,
+        (o) => o.recipient === player.id && o.kind!=="peace",
       )) {
         const proposer = this.world.players.find(
           (p) => p.id === offer.proposer,
@@ -1788,6 +1813,9 @@ export class Expansion {
     return this.captureEligible(squad, tile, false);
   }
   private captureEligible(squad: Squad, tile: number, obstacleFree: boolean): boolean {
+    if(!this.diplomacy.canCapture(squad.playerId,this.world.owners[tile]))return false;
+    if(this.diplomacy.raids&&this.world.buildingsAt(tile).some(b=>!this.diplomacy.canCapture(squad.playerId,b.playerId)))return false;
+    if(this.diplomacy.raids&&this.world.buildingsAt(tile).some(b=>!this.diplomacy.canCapture(squad.playerId,b.playerId)))return false;
     if (!this.operations.canEnter(squad.playerId, this.world.owners[tile], tile)) return false;
     if (
       this.world.owners[tile] !== squad.playerId &&
@@ -1861,6 +1889,7 @@ export class Expansion {
       productionPriorities: this.supply.priorities,
       deposits: this.supply.deposits,
       diplomacy: this.diplomacy.state,
+      ...(this.diplomacy.raids?{diplomacyRules:this.diplomacy.rules}:{}),
       activeOffensives: this.operations.activeOffensives(),
       pairRelations: this.relations.snapshot(),
       traders: includeTraders ? this.trade.actors.map(

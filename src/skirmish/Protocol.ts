@@ -118,7 +118,12 @@ export type Command =
         | "renew"
         | "break"
         | "declare"
-        | "end-long-term";
+        | "end-long-term"
+        | "offer-peace"
+        | "accept-peace"
+        | "reject-peace"
+        | "dont-embargo"
+        | "allow-embargo";
     }
   | {
       type: "repair";
@@ -453,6 +458,10 @@ export interface MatchOptions {
   tribeCount?: number;
   territoryIncomeScale?: number;
   ruleset?: "sandbox-v1" | "ages-v1";
+  /** Omission preserves historical saves/replays; new games record explicit permissions. */
+  diplomacyRules?: "raids-v1";
+  /** Coordinated travel policy, recorded for checkpoint/replay compatibility. */
+  armyTravel?: "corridors-v1";
   victoryMode?: "solo" | "allied";
   technologySpeed?: TechnologySpeed;
   startingAge?: StartingAge;

@@ -664,6 +664,8 @@ async function start(): Promise<void> {
       (element<HTMLSelectElement>("starting-age")?.value as StartingAge) || "StoneAge";
     const spawnOptions: MatchOptions = {
       ...DEFAULT_AI_POLICIES,
+      diplomacyRules: "raids-v1",
+      armyTravel: "corridors-v1",
         ...FORMATION_MOVEMENT,
       seed,
       aiCount: Number(element<HTMLSelectElement>("opponents").value),
@@ -692,6 +694,8 @@ async function start(): Promise<void> {
       diagnostics: onlineQuery.has("diagnostics"),
       options: replay ? replay.checkpoint.options : {
         ...DEFAULT_AI_POLICIES,
+      diplomacyRules: "raids-v1",
+      armyTravel: "corridors-v1",
         ...FORMATION_MOVEMENT,
         seed,
         ...(validFactionColor(preferredFactionColor)

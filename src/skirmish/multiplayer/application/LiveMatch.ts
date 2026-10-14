@@ -145,6 +145,8 @@ export class LiveMatch {
     );
     this.options = {
       ...DEFAULT_AI_POLICIES,
+      diplomacyRules: "raids-v1" as const,
+      armyTravel: "corridors-v1" as const,
       ...FORMATION_MOVEMENT,
       seed: Math.floor(Math.random() * 0x7fffffff),
       humanNames: reservation.members.map((member) => member.profile.name),

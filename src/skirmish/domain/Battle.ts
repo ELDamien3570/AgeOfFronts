@@ -134,10 +134,25 @@ export class Battle {
     this.reservedWarheads = this.projectiles.reduce((n,p) => n + (!p.impacted && p.kind === "mirv" ? p.warheads : 0),0);
     this.definitions.clear();
     this.hybridAcquisition.clear();
+    this.acquisition.clear();this.activity=undefined;
+    this.launchPermissions.clear();
     this.structureBodies.clear(); this.structureRevision = -1;
   }
 
   readonly projectiles: Projectile[] = [];
+  private readonly launchPermissions = new Map<number, { signature: string; launchUnitOwners: number[]; launchStructureOwners: number[] }>();
+  private permissionsAtLaunch(owner: number): { launchUnitOwners: number[]; launchStructureOwners: number[] } {
+    const signature = this.diplomacy.permissionSignature(owner);
+    let permissions = this.launchPermissions.get(owner);
+    if (!permissions || permissions.signature !== signature) {
+      permissions = { signature,
+        launchUnitOwners: this.world.players.filter(p => this.diplomacy.hostile(owner, p.id)).map(p => p.id),
+        launchStructureOwners: this.world.players.filter(p => this.diplomacy.canAttackStructure(owner, p.id)).map(p => p.id) };
+      this.launchPermissions.set(owner, permissions);
+    }
+    // Never mutate these lists: in-flight shots retain the old permission set.
+    return { launchUnitOwners: permissions.launchUnitOwners, launchStructureOwners: permissions.launchStructureOwners };
+  }
   private reservedWarheads = 0;
   canFire(warheads = 0): boolean {
     return this.projectiles.length + this.reservedWarheads + 1 + warheads <= 4096;
@@ -161,10 +176,10 @@ export class Battle {
   private readonly geometry: CombatGeometry;
   private activity?:CombatActivity;
   private groundRevision?:number;
-  private acquisition = new Map<number,{revision:number;pose?:number;barriers:number;forts:number;diplomacy:number;
+  private acquisition = new Map<number,{revision:number;pose?:number;barriers:number;forts:number;diplomacy:number|string;
     order:Squad['order'];profile:AttackProfile;previous?:number;target?:number;
     engagement?:{profile:AttackProfile;participants:number;canFight:boolean}}>();
-  readonly acquisitionWork={searches:0,reused:0};
+  readonly acquisitionWork={searches:0,reused:0,noOpponentSkips:0};
   private readonly definitions = new Map<number, Map<string, { revision: number; unit: UnitDefinition }>>();
   private mapWidth: number;
   constructor(
@@ -334,6 +349,7 @@ export class Battle {
     }
     if (kind === "mirv") this.reservedWarheads += warheads;
     this.projectiles.push({
+      ...(this.diplomacy.raids?this.permissionsAtLaunch(source.playerId):{}),
       id: this.world.allocateId(),
       playerId: source.playerId,
       sourceId: source.id,
@@ -552,7 +568,7 @@ export class Battle {
     const pose=this.activity?.pose(squad.id)??this.world.squadFacts?.().poseRevision(squad.id);
     const cached=this.hybridAcquisition.get(squad.id);
     let hits=cached?.hits,remaining=cached?.remaining??squad.troops;
-    if(epoch===undefined || !cached || cached.epoch!==epoch || cached.pose!==pose || !!squad.formation?.transition || cached.profile!==profile || cached.barriers!==this.forts.barrierChanges.revision || cached.forts!==this.forts.version || cached.diplomacy!==this.diplomacy.revision){
+    if(epoch===undefined || !cached || cached.epoch!==epoch || cached.pose!==pose || !!squad.formation?.transition || cached.profile!==profile || cached.barriers!==this.forts.barrierChanges.revision || cached.forts!==this.forts.version || cached.diplomacy!==(this.diplomacy.raids?this.diplomacy.permissionSignature(squad.playerId):this.diplomacy.revision)){
     this.spatial.queryOverlaps(squad.x,squad.y,profile.range+CONTACT.release+
       (squad.formation?this.geometry.envelope(squad,this.world.tick).broadRadius:0),this.hybridNearby,squad.playerId);
     const contacts=this.hybridNearby.filter(other=>!other.afloat && this.diplomacy.hostile(squad.playerId,other.playerId) &&
@@ -568,7 +584,7 @@ export class Battle {
       if(!troops)continue;
       pools.set(edge,used+troops);remaining-=troops;hits.push({target,troops});
     }
-    if(epoch!==undefined)this.hybridAcquisition.set(squad.id,{epoch,pose,profile,barriers:this.forts.barrierChanges.revision,forts:this.forts.version,diplomacy:this.diplomacy.revision,hits,remaining});
+    if(epoch!==undefined)this.hybridAcquisition.set(squad.id,{epoch,pose,profile,barriers:this.forts.barrierChanges.revision,forts:this.forts.version,diplomacy:this.diplomacy.raids?this.diplomacy.permissionSignature(squad.playerId):this.diplomacy.revision,hits,remaining});
     }
     hits??=[];
     if(hits.length && this.commitShot(squad,profile))for(const {target,troops} of hits){
@@ -579,19 +595,23 @@ export class Battle {
     return {target:hits[0]?.target,remaining};
   }
   private readonly hybridNearby:Squad[]=[];
-  private readonly hybridAcquisition=new Map<number,{epoch:number;pose?:number;profile:AttackProfile;barriers:number;forts:number;diplomacy:number;hits:{target:Squad;troops:number}[];remaining:number}>();
+  private readonly hybridAcquisition=new Map<number,{epoch:number;pose?:number;profile:AttackProfile;barriers:number;forts:number;diplomacy:number|string;hits:{target:Squad;troops:number}[];remaining:number}>();
   fight(aircraft: Aircraft[]): void {
     this.engagedTargets.clear();for(const s of this.world.squads)if(s.fighting && s.combatTargetId!==null)this.engagedTargets.set(s.id,s.combatTargetId);
     this.rebuild("combat");
     const { tick, squads } = this.world,
       damage = new DamageLedger(),
       contributions: Contributions = new Map();
-    this.acquisitionWork.searches=this.acquisitionWork.reused=0;
+    this.acquisitionWork.searches=this.acquisitionWork.reused=this.acquisitionWork.noOpponentSkips=0;
+    // Permissions, not nearby motion, determine whether acquisition is possible.
+    // Keep charge/cycle progression and already-launched projectile resolution.
+    const quietOwners=this.diplomacy.raids?new Set(this.world.players.filter(p=>this.permissionsAtLaunch(p.id).launchUnitOwners.length===0).map(p=>p.id)):undefined;
     const unitFacts=this.world.squadFacts?.();
     // Local epochs mark animated bodies every tick. Worlds without the
     // lifecycle owner always use fresh acquisition rather than stale reuse.
     const revision=unitFacts?this.groundRevision:undefined;
-    if(unitFacts && revision!==undefined)(this.activity??=new CombatActivity(this.mapWidth,this.mapHeight)).update(squads,unitFacts,this.geometry,tick);
+    if(unitFacts && revision!==undefined&&(!quietOwners||squads.some(s=>!quietOwners.has(s.playerId))))(this.activity??=new CombatActivity(this.mapWidth,this.mapHeight)).update(squads,unitFacts,this.geometry,tick,
+      quietOwners?new Set(this.world.players.filter(p=>!quietOwners.has(p.id)).map(p=>p.id)):undefined);
     for(const id of this.acquisition.keys())if(!this.world.squad(id))this.acquisition.delete(id);
     for(const id of this.hybridAcquisition.keys())if(!this.world.squad(id))this.hybridAcquisition.delete(id);
     for (const squad of squads
@@ -750,6 +770,7 @@ export class Battle {
         else continue;
       }
       if(squad.cavalryEngagement?.phase==='penetrating')continue;
+      if(quietOwners?.has(squad.playerId)&&!squad.structureTarget){this.acquisitionWork.noOpponentSkips++;continue;}
       if (profile.targets.includes("aircraft")) {
         const target = aircraft
           .filter(
@@ -816,10 +837,11 @@ export class Battle {
       // Mid-pass charge geometry changes invalidate subsequent reuse immediately.
       // Between passes, local epochs avoid waking every army for a distant turn.
       const currentRevision=revision===undefined || unitFacts && unitFacts.spatialRevision!==revision?undefined:
-        this.activity?.region(squad,Math.max(acquisitionRange,definition.meleeAttack?.range??0)+CONTACT.release+(squad.formation?this.geometry.envelope(squad,tick).broadRadius:0),squad.playerId)??revision;
+        this.activity?.region(squad,Math.max(acquisitionRange,definition.meleeAttack?.range??0)+CONTACT.release+(squad.formation?this.geometry.envelope(squad,tick).broadRadius:0),squad.playerId,
+          this.diplomacy.raids?this.permissionsAtLaunch(squad.playerId).launchUnitOwners:undefined)??revision;
       const pose=this.activity?.pose(squad.id)??unitFacts?.poseRevision(squad.id);
       const reuse=currentRevision!==undefined && cached?.revision===currentRevision && cached.pose===pose && !squad.formation?.transition && cached.barriers===this.forts.barrierChanges.revision &&
-        cached.forts===this.forts.version && cached.diplomacy===this.diplomacy.revision &&
+        cached.forts===this.forts.version && cached.diplomacy===(this.diplomacy.raids?this.diplomacy.permissionSignature(squad.playerId):this.diplomacy.revision) &&
         cached.order===squad.order && cached.profile===profile && cached.previous===previousId;
       if(reuse){target=cached.target===undefined?undefined:this.world.squad(cached.target);this.acquisitionWork.reused++;}
       else {
@@ -850,7 +872,7 @@ export class Battle {
         nearest = distance;
       }}
       if(currentRevision!==undefined)this.acquisition.set(squad.id,{revision:currentRevision,pose,barriers:this.forts.barrierChanges.revision,
-        forts:this.forts.version,diplomacy:this.diplomacy.revision,order:squad.order,profile,previous:previousId,target:target?.id});
+        forts:this.forts.version,diplomacy:this.diplomacy.raids?this.diplomacy.permissionSignature(squad.playerId):this.diplomacy.revision,order:squad.order,profile,previous:previousId,target:target?.id});
       }
       const hybrid=definition.meleeAttack?.perSoldier && definition.rangedAttack?.perSoldier && profile.channel==='ranged'
         ? this.hybridContacts(squad,definition,damage,contributions,currentRevision===undefined?undefined:revision):undefined;
@@ -975,6 +997,7 @@ export class Battle {
         !b.remainingTicks &&
         (b.health ?? 1) > 0 &&
         tick >= (b.nextAttackTick ?? 0)
+        && !quietOwners?.has(b.playerId)
       ) {
         const p = this.position(b);
         this.spatial.queryOverlaps(p.x,p.y,GUN_NEST_ATTACK.range,this.nearby,b.playerId);
@@ -1022,7 +1045,7 @@ export class Battle {
         : this.forts.barrier(squad.structureTarget!.barrierId!);
     if (
       !target ||
-      !this.diplomacy.hostile(squad.playerId, target.playerId) ||
+      !this.diplomacy.canAttackStructure(squad.playerId, target.playerId) ||
       (target.health ?? 1) <= 0
     ) {
       this.world.updateSquad(squad.id, { structureTarget: null });
@@ -1179,6 +1202,9 @@ export class Battle {
             0,
             "mirv-warhead",
           );
+          const child=this.projectiles[this.projectiles.length-1];
+          if(p.launchUnitOwners)child.launchUnitOwners=[...p.launchUnitOwners];
+          if(p.launchStructureOwners)child.launchStructureOwners=[...p.launchStructureOwners];
         }
         continue;
       }
@@ -1214,7 +1240,7 @@ export class Battle {
         const hit = [...this.nearby, ...this.nearbyShips]
           .filter(
             (s) =>
-              this.diplomacy.hostile(s.playerId, p.playerId) &&
+              (p.launchUnitOwners?.includes(s.playerId) ?? this.diplomacy.hostile(s.playerId,p.playerId)) &&
               (p.targets ?? GROUND).some((tag) =>
                 ("troops" in s ? this.targetTags(s) : SHIP_DEFENCE.tags).includes(
                   tag,
@@ -1254,7 +1280,7 @@ export class Battle {
               .filter(
                 (b) =>
                   (this.structureById.get(b.id)?.health ?? 1) > 0 &&
-                  this.diplomacy.hostile(b.playerId, p.playerId),
+                  (p.launchStructureOwners?.includes(b.playerId) ?? this.diplomacy.canAttackStructure(p.playerId,b.playerId)),
               )
               .map((body) => ({
                 b: this.structureById.get(body.id)!,
@@ -1285,12 +1311,12 @@ export class Battle {
               (b) =>
                 b.tile === wall.tile &&
                 b.health! > 0 &&
-                this.diplomacy.hostile(b.playerId, p.playerId),
+                (p.launchStructureOwners?.includes(b.playerId) ?? this.diplomacy.canAttackStructure(p.playerId,b.playerId)),
             ) ??
             this.forts.barriersAt(wall.tile).find(
               (b) =>
                 b.kind !== "trench" && b.health > 0 &&
-                this.diplomacy.hostile(b.playerId, p.playerId),
+                (p.launchStructureOwners?.includes(b.playerId) ?? this.diplomacy.canAttackStructure(p.playerId,b.playerId)),
             );
         } else if (structure && (!hit || structure.t <= hit.t)) {
           p.x = Math.round(old.x + dx * structure.t);
@@ -1314,7 +1340,7 @@ export class Battle {
         // Contact weapons have one target. A miss is not a small explosion.
         if (
           directHit &&
-          this.diplomacy.hostile(directHit.playerId, p.playerId)
+          (p.launchUnitOwners?.includes(directHit.playerId) ?? this.diplomacy.hostile(directHit.playerId,p.playerId))
         ) {
           const hit = hitDamage(
             {
@@ -1350,7 +1376,7 @@ export class Battle {
             hit,
             p.sourceKind,
           );
-        } else if (directStructure) {
+        } else if (directStructure && (p.launchStructureOwners?.includes(directStructure.playerId)??this.diplomacy.canAttackStructure(p.playerId,directStructure.playerId))) {
           let hit = hitDamage(
             {
               channel: p.channel,
@@ -1417,7 +1443,7 @@ export class Battle {
       this.naval.query(p.x, p.y, radius, this.nearbyShips);
       this.structures.query(p.x, p.y, radius, this.nearbyStructures);
       const indiscriminate = p.kind === "bomb" || p.kind === "icbm" || p.kind === "warhead";
-      const blastVictim = (owner:number) => indiscriminate || this.diplomacy.hostile(owner,p.playerId);
+      const blastVictim = (owner:number) => indiscriminate || (p.launchUnitOwners?.includes(owner) ?? this.diplomacy.hostile(owner,p.playerId));
       if (indiscriminate)
         this.world.destroyTradersInBlast?.(p.playerId,p.x,p.y,radius);
       if (p.kind === "icbm" || p.kind === "warhead" || p.definitionId === "atomic") {
@@ -1504,7 +1530,7 @@ export class Battle {
       for (const body of this.nearbyStructures
         .filter(
           (b) =>
-            blastVictim(b.playerId) &&
+            (indiscriminate||(p.launchStructureOwners?.includes(b.playerId)??this.diplomacy.canAttackStructure(p.playerId,b.playerId))) &&
             this.distance(this.position(b), p) <= radius ** 2 &&
             (p.kind !== "shell" ||
               this.forts
@@ -1525,7 +1551,7 @@ export class Battle {
       }
       for (const wall of this.forts.nearbyBarriers(p.x, p.y, radius))
         if (
-          blastVictim(wall.playerId) &&
+          (indiscriminate||(p.launchStructureOwners?.includes(wall.playerId)??this.diplomacy.canAttackStructure(p.playerId,wall.playerId))) &&
           wall.tiles.some(
             (t) =>
               this.distance(

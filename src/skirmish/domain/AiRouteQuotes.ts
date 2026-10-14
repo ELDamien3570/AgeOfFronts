@@ -10,6 +10,7 @@ interface Quote {
   start: number;
   goal: number;
   water: boolean;
+  prospectiveOwner?: number;
   revision: string;
   expires: number;
   task: DomainRouteTask;
@@ -49,6 +50,7 @@ export class AiRouteQuotes implements DomainRouteConsumer {
     start: number,
     goal: number,
     water = false,
+    prospectiveOwner?: number,
   ): { pending: boolean; path?: readonly number[]; reason?: string } {
     const { world } = this.expansion,
       ports = world.domainRoutes;
@@ -62,6 +64,7 @@ export class AiRouteQuotes implements DomainRouteConsumer {
       (quote.start !== start ||
         quote.goal !== goal ||
         quote.water !== water ||
+        quote.prospectiveOwner !== prospectiveOwner ||
         quote.generation !== generation ||
         quote.revision !== revision ||
         quote.expires <= world.tick)
@@ -84,6 +87,7 @@ export class AiRouteQuotes implements DomainRouteConsumer {
         start,
         goal,
         water,
+        prospectiveOwner,
         revision,
         expires: world.tick + 1200,
         requested: false,
@@ -96,7 +100,8 @@ export class AiRouteQuotes implements DomainRouteConsumer {
           playerId,
           admissionId: id,
           memberId: 0,
-          stage: "quote",
+          stage: prospectiveOwner===undefined?"quote":"invasion-quote",
+          ...(prospectiveOwner===undefined?{}:{prospectiveOwner}),
           generation,
         },
       };

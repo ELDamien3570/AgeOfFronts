@@ -11,6 +11,7 @@ export class CombatActivity {
   private epochs:Float64Array;
   private owners:Uint16Array;
   private otherEpochs:Float64Array;
+  private readonly ownerEpochs=new Map<number,Float64Array>();
   private epoch=0;
   private columns:number;
   private rows:number;
@@ -21,6 +22,7 @@ export class CombatActivity {
     this.otherEpochs=new Float64Array(this.epochs.length);
   }
   private mark(cell:number,owner:number,epoch:number):void {
+    const scoped=this.ownerEpochs.get(owner);if(scoped)scoped[cell]=epoch;
     // The two latest distinct owners suffice to exclude exactly one faction.
     // This remains fixed-size storage, independent of match history/population.
     if(this.owners[cell]!==owner){this.otherEpochs[cell]=this.epochs[cell];this.owners[cell]=owner;}
@@ -31,9 +33,14 @@ export class CombatActivity {
     const top=Math.max(0,Math.floor((y-radius)/size)),bottom=Math.min(this.rows-1,Math.floor((y+radius)/size));
     for(let y=top;y<=bottom;y++)for(let x=left;x<=right;x++)visit(y*this.columns+x);
   }
-  update(squads:readonly Squad[],facts:UnitQueries<Squad>,geometry:CombatGeometry,tick:number):void {
+  update(squads:readonly Squad[],facts:UnitQueries<Squad>,geometry:CombatGeometry,tick:number,activeOwners?:ReadonlySet<number>):void {
+    if(activeOwners){
+      for(const owner of this.ownerEpochs.keys())if(!activeOwners.has(owner))this.ownerEpochs.delete(owner);
+      for(const owner of activeOwners)if(!this.ownerEpochs.has(owner))this.ownerEpochs.set(owner,new Float64Array(this.epochs.length));
+    }
     const seen=new Set<number>();
     for(const squad of squads) {
+      if(activeOwners&&!activeOwners.has(squad.playerId))continue;
       seen.add(squad.id);const old=this.bodies.get(squad.id),revision=facts.poseRevision(squad.id)!;
       const exposure=cavalryRankExposure(squad.cavalryMelee?.current,tick)|(cavalryRankExposure(squad.cavalryMelee?.previous,tick)<<3);
       if(old?.revision===revision && old.exposure===exposure && !squad.formation?.transition)continue;
@@ -46,7 +53,13 @@ export class CombatActivity {
       const epoch=++this.epoch;this.cells(old.x,old.y,old.radius,i=>this.mark(i,old.owner,epoch));this.bodies.delete(id);
     }
   }
-  region(s:Squad,radius:number,excludeOwner?:number):number {
+  region(s:Squad,radius:number,excludeOwner?:number,opponents?:readonly number[]):number {
+    if(opponents){
+      let epoch=0;
+      const fields=opponents.map(owner=>this.ownerEpochs.get(owner)).filter((field):field is Float64Array=>!!field);
+      this.cells(s.x,s.y,radius,cell=>{for(const field of fields)epoch=Math.max(epoch,field[cell]);});
+      return epoch;
+    }
     let epoch=0;this.cells(s.x,s.y,radius,i=>epoch=Math.max(epoch,
       excludeOwner!==undefined && this.owners[i]===excludeOwner?this.otherEpochs[i]:this.epochs[i]));return epoch;
   }

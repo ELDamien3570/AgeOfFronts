@@ -6,12 +6,19 @@ import { MAX_PLAYER_ID } from "./FactionRules";
 export class FactionAdjacency {
   private readonly side = MAX_PLAYER_ID + 1;
   private readonly edges = new Uint32Array((MAX_PLAYER_ID + 1) ** 2);
+  private readonly unclaimedEdges = new Uint32Array(MAX_PLAYER_ID + 1);
+  hasUnclaimedFrontier(owner:number):boolean{return (this.unclaimedEdges[owner]??0)>0;}
   constructor(private readonly map: GameMap, private readonly owners: Uint8Array,
     private readonly passable: (tile: number) => boolean = tile => map.isLand(tile)) {}
   adjacent(a: number, b: number): boolean {
     return a > 0 && b > 0 && a !== b && a <= MAX_PLAYER_ID && b <= MAX_PLAYER_ID && this.edges[a * this.side + b] > 0;
   }
   private adjust(a: number, b: number, amount: number): boolean {
+    if((a===0)!==(b===0)){
+      const owner=a||b;if(owner>MAX_PLAYER_ID)return true;
+      if(amount<0&&!this.unclaimedEdges[owner])return false;
+      this.unclaimedEdges[owner]+=amount;return true;
+    }
     if (!a || !b || a === b || a > MAX_PLAYER_ID || b > MAX_PLAYER_ID) return true;
     const index = a * this.side + b;
     if (amount < 0 && !this.edges[index]) return false;
@@ -32,6 +39,7 @@ export class FactionAdjacency {
   }
   rebuild(): void {
     this.edges.fill(0);
+    this.unclaimedEdges.fill(0);
     for (let tile = 0; tile < this.owners.length; tile++) {
       if (!this.passable(tile)) continue;
       const x = this.map.x(tile), y = this.map.y(tile);
@@ -42,5 +50,5 @@ export class FactionAdjacency {
       }
     }
   }
-  get retainedBytes(): number { return this.edges.byteLength; }
+  get retainedBytes(): number { return this.edges.byteLength + this.unclaimedEdges.byteLength; }
 }

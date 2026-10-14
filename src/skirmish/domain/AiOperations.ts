@@ -102,13 +102,14 @@ export class AiOperations {
     const firstAttack=!threat || threat.until<world.tick;
     if (threat) { threat.tile = tile; threat.until = world.tick + 600; }
     else { record.threats.push({ rival, tile, until: world.tick + 600 }); this.revision++; }
-    this.permissionRevision++;
+    if(!diplomacy.raids)this.permissionRevision++;
     // Tactical defense reads refreshed threats immediately. Continuing fire
     // must not turn strategic readiness/target selection into per-tick work.
     if(firstAttack)record.nextThink = Math.min(record.nextThink, world.tick);
   }
   /** Offensive permission and remembered defensive retaliation are separate. */
   canTarget(playerId: number, rival: number): boolean {
+    if(this.expansion.diplomacy.raids)return this.expansion.diplomacy.hostile(playerId,rival);
     const player = this.expansion.world.players.find(p => p.id === playerId);
     if (!this.enabled(player)) return true;
     if (this.expansion.diplomacy.declaredWar(playerId, rival)) return true;
@@ -154,6 +155,7 @@ export class AiOperations {
   /** Only this faction's actual entry permissions fence its route work. */
   private readonly navigationKeys = new Map<number, {target: number | null | undefined; threats: number[]; wars: string; value: string}>();
   navigationRevision(playerId: number): string {
+    if(this.expansion.diplomacy.raids)return this.expansion.diplomacy.permissionSignature(playerId);
     const record = this.records.get(playerId), tick = this.expansion.world.tick;
     if (!this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return "unrestricted";
     const wars = (this.expansion.diplomacy.state.wars ?? [])
@@ -177,6 +179,10 @@ export class AiOperations {
     return value;
   }
   canEnter(playerId: number, rival: number, tile: number): boolean {
+    if(this.expansion.diplomacy.raids){
+      const d=this.expansion.diplomacy;
+      return !rival||rival===playerId||d.allied(playerId,rival)||!d.protected(playerId,rival)&&(d.declaredWar(playerId,rival)||d.embargo(playerId,rival));
+    }
     if (!rival || rival === playerId || !this.expansion.diplomacy.hostile(playerId, rival)) return true;
     if (!this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return true;
     if (this.expansion.diplomacy.declaredWar(playerId, rival)) return true;
@@ -186,6 +192,7 @@ export class AiOperations {
       this.expansion.world.map.euclideanDistSquared(t.tile, tile) <= 12 ** 2);
   }
   canPursue(playerId: number, rival: number, tile: number): boolean {
+    if(this.expansion.diplomacy.raids)return this.expansion.diplomacy.hostile(playerId,rival);
     if (!this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return true;
     if (this.expansion.diplomacy.declaredWar(playerId, rival)) return true;
     const r = this.records.get(playerId);
@@ -193,13 +200,14 @@ export class AiOperations {
       t.until >= this.expansion.world.tick && this.expansion.world.map.euclideanDistSquared(t.tile, tile) <= 12 ** 2));
   }
   private transition(player: Player, record: AiOperation, phase: OperationPhase, target?: number): void {
+    if(phase==="war"&&target!==undefined&&this.expansion.diplomacy.raids&&this.expansion.diplomacy.establishWar(player.id,target,this.expansion.world.tick,"invasion"))return;
     const previous = record.phase, oldTarget = record.target, tick = this.expansion.world.tick;
     record.retreatFrom = phase === "recovery" && previous === "war" ? oldTarget : undefined;
     record.phase = phase; record.target = target; record.since = tick;
     record.finishCount = undefined; record.finishProgressAt = undefined;
     record.nextThink = tick + (phase === "war" ? 20 : 60 + player.id % 20);
     record.cursor = 0; record.candidate = undefined; record.score = Infinity; this.revision++;
-    if (phase === "war") this.expansion.announce({ kind: "war", actorId: player.id, otherId: target, action: "declare" });
+    if (phase === "war"&&!this.expansion.diplomacy.raids) this.expansion.announce({ kind: "war", actorId: player.id, otherId: target, action: "declare" });
     else if (previous === "war") this.expansion.announce({ kind: "war", actorId: player.id, otherId: oldTarget, action: "withdraw" });
   }
   /** At most sixteen geographic candidate reads across all factions per tick.
@@ -220,12 +228,13 @@ export class AiOperations {
       const threats = r.threats.filter(t => t.until >= tick && world.players.some(p => p.id === t.rival && !p.eliminated) && diplomacy.hostile(player.id, t.rival));
       if (threats.length !== r.threats.length) { r.threats = threats; this.revision++; }
       const target = world.players.find(p => p.id === r.target);
-      if (r.target && (!target || target.eliminated || !diplomacy.hostile(player.id, r.target))) {
+      if (r.target && (!target || target.eliminated || !(diplomacy.raids?diplomacy.nonAllied(player.id,r.target):diplomacy.hostile(player.id, r.target)) ||
+        diplomacy.raids&&(diplomacy.protected(player.id,r.target)||r.phase==="war"&&!diplomacy.declaredWar(player.id,r.target)))) {
         this.transition(player, r, "recovery"); continue;
       }
       if (tick < r.nextThink) continue;
       this.refreshTheatres(player,r);
-      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=12}:${diplomacyKey}:${r.territorialRevision??0}:${ageKey}`;
+      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=12}:${diplomacyKey}:${diplomacy.raids?diplomacy.permissionSignature(player.id):""}:${r.territorialRevision??0}:${ageKey}`;
       if(r.phase==="peace" && !r.threats.length && r.sleepKey===sleepKey){r.nextThink=tick+200;continue;}
       r.readiness=forceReadiness(this.expansion,player,2);
       const invasionTroops=r.threats.reduce((sum,t)=>sum+world.squadFacts().aliveByOwner(t.rival)
@@ -252,8 +261,13 @@ export class AiOperations {
         continue;
       }
       if (r.phase === "preparing") {
-        if (tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks+80 && strength >= 2 && r.readiness.reason==="ready" && !defending && target && (combatAdvantage(composition(player.id),composition(target.id)) >= 1.1 || (strength >= profile.minimumRaidSquads && combatAdvantage(composition(player.id),composition(target.id)) >= .9)))
-          this.transition(player, r, "war", r.target);
+        if (tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks+80 && strength >= 2 && r.readiness.reason==="ready" && !defending && target && (combatAdvantage(composition(player.id),composition(target.id)) >= 1.1 || (strength >= profile.minimumRaidSquads && combatAdvantage(composition(player.id),composition(target.id)) >= .9))) {
+          const goal=conquestBuildings(world.buildingFacts().byOwner(target.id),target.ai)[0]?.tile??target.base;
+          const route=diplomacy.raids?this.expansion.economy.routes.request(`invasion:${player.id}`,player.id,player.base,goal,false,target.id):undefined;
+          if(!diplomacy.raids||route?.path?.length)this.transition(player, r, "war", r.target);
+          else if(!route?.pending)this.transition(player,r,"recovery");
+          else r.nextThink=tick+60;
+        }
         else if (tick - r.since >= 1200 || strength < 2) this.transition(player, r, "recovery");
         else r.nextThink = tick + 60;
         continue;
@@ -261,19 +275,24 @@ export class AiOperations {
       if (defending || strength < 2 || r.readiness.reason!=="ready" || tick < profile.raidAfterTicks) {
         r.nextThink = tick + 60 + player.id % 20; continue;
       }
+      const expanding=diplomacy.raids&&!r.threats.length&&world.hasUnclaimedFrontier?.(player.id);
       let slice = 0;
       while (r.cursor < world.players.length && this.work < 16 && slice++ < 4) {
         const rival = world.players[r.cursor++]; this.work++;
-        if (rival.id === player.id || rival.eliminated || !diplomacy.hostile(player.id, rival.id) ||
+        if (rival.id === player.id || rival.eliminated || !(diplomacy.raids?diplomacy.nonAllied(player.id,rival.id)&&!diplomacy.protected(player.id,rival.id):diplomacy.hostile(player.id, rival.id)) ||
           !this.expansion.geography.eligible(player, rival)) continue;
         const commitments = [...this.records.values()].filter(other => other.target === rival.id && ["preparing", "war"].includes(other.phase)).length;
         const advantage = combatAdvantage(composition(player.id), composition(rival.id));
+        const retaliating=diplomacy.raids&&(r.threats.some(t=>t.rival===rival.id)||
+          diplomacy.state.wars?.some(w=>w.initiator===rival.id&&(w.a===player.id||w.b===player.id))||
+          diplomacy.state.embargoes?.some(raid=>raid.initiator===rival.id&&raid.victim===player.id&&diplomacy.embargo(player.id,rival.id)));
+        if(expanding&&!retaliating&&advantage<(profile.id==="conqueror"?1.6:2.5))continue;
         const required = ["warden","builder","diplomat"].includes(profile.id) ? 1.6 : profile.id === "conqueror" ? 1.1 : 1.25;
         // Healthy parity-sized forces still commit; small forces need a clear
         // equipment/strength advantage instead of waiting for eight squads.
         if (advantage < required && !(advantage >= .9 && strength >= profile.minimumRaidSquads)) continue;
         const opportunity = rival.kind === "tribe" && advantage>=2 ? 2 : 1;
-        const score = Math.floor(world.map.euclideanDistSquared(player.base, rival.base) / (Math.max(.25,advantage)*opportunity)) + commitments * 4096;
+        const score = Math.floor(world.map.euclideanDistSquared(player.base, rival.base) / (Math.max(.25,advantage)*opportunity*(retaliating?2:1))) + commitments * 4096;
         if (score < r.score || (score === r.score && rival.id < (r.candidate ?? Infinity))) { r.score = score; r.candidate = rival.id; }
       }
       if (r.cursor === world.players.length) {

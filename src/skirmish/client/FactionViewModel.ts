@@ -3,7 +3,7 @@ import { personalityOf } from "../content/AiPersonalities";
 import { FACTION } from "../content/Factions";
 
 export class FactionViewModel {
-  constructor(readonly player: Player) {}
+  constructor(readonly player: Player, private readonly diplomacyRules?: "raids-v1") {}
   get identity() {
     return this.player.factionId
       ? FACTION.get(this.player.factionId)
@@ -25,7 +25,7 @@ export class FactionViewModel {
     if (!this.player.ai) return "Player-controlled faction.";
     const profile = personalityOf(this.player);
     if (this.player.kind === "tribe")
-      return `Expands continuously around its homeland with up to ten infantry squads. Pursues nearby threats and replenishes below ${Math.round(profile.replenishBelow / 10)}% strength; never negotiates or researches.`;
+      return `Expands continuously around its homeland with up to ten infantry squads. Pursues nearby threats and replenishes below ${Math.round(profile.replenishBelow / 10)}% strength; ${this.diplomacyRules === "raids-v1" ? "does not research" : "never negotiates or researches"}.`;
     return profile.description;
   }
 }

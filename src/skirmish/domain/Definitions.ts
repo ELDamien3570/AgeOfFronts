@@ -247,6 +247,7 @@ export interface AllianceOffer {
   recipient: number;
   expiresTick: number;
   longTerm?: boolean;
+  kind?: "peace";
 }
 export interface Alliance {
   id: number;
@@ -262,7 +263,10 @@ export interface DiplomacyState {
   alliances: Alliance[];
   betrayal: Record<number, number>;
   cooldowns: Record<string, number>;
-  wars?: { a: number; b: number }[];
+  wars?: { a: number; b: number; initiator?: number; cause?: "declaration" | "entry" | "invasion"; startedTick?: number }[];
+  embargoes?: { initiator: number; victim: number; lastTheftTick: number }[];
+  peaceProtection?: { a: number; b: number; untilTick: number }[];
+  dontEmbargo?: { playerId: number; otherId: number }[];
 }
 export interface TradeActor {
   id: number;
@@ -313,6 +317,9 @@ export interface Barrier {
 }
 export type CombatSourceKind = "squad" | "ship" | "building" | "aircraft";
 export interface Projectile {
+  /** Launch permissions survive later peace/alliance transitions. */
+  launchUnitOwners?: number[];
+  launchStructureOwners?: number[];
   id: number;
   playerId: number;
   sourceId: number;
@@ -389,6 +396,7 @@ export interface ExpansionSnapshot {
   depositGeometryRevision?: number;
   depositOwnershipRevision?: number;
   diplomacy: DiplomacyState;
+  diplomacyRules?: "raids-v1";
   /** Undirected active AI offensive pairs; presentation only, separate from wars. */
   activeOffensives?: { a: number; b: number }[];
   pairRelations?: import("./PairRelations").PairRelationRow[];
@@ -475,7 +483,15 @@ export interface MatchEvent {
     | "end-long-term"
     | "expire"
     | "declare"
-    | "withdraw";
+    | "withdraw"
+    | "raid"
+    | "raid-expire"
+    | "peace"
+    | "offer-peace"
+    | "accept-peace"
+    | "reject-peace"
+    | "dont-embargo"
+    | "allow-embargo";
 }
 
 /** Anti-cavalry is an infantry role, never a mounted movement family. */

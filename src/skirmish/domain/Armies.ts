@@ -44,6 +44,8 @@ import type { ArmyRouteRequest } from "./RouteTask";
 // Coordination owns intent and membership; the existing simulation still owns
 // every physical position, collision, shot, transport and pathfinding operation.
 export interface ArmyWorld {
+  readonly sharedArmyTravel?: boolean;
+  clearArmyLeg?(squad:Squad,end:WorldPoint):boolean;
   readonly domainRoutes?: DomainRoutePorts;
   map: GameMap;
   paths: LandPaths;
@@ -116,6 +118,7 @@ const attackOrder = (
   o: ArmyOrder,
 ): o is Extract<ArmyOrder, { targetId: number }> => "targetId" in o;
 export class Armies {
+  readonly travelWork = { directLegs: 0, sharedLegs: 0, recoveryMembers: 0, directAdmissions: 0 };
   checkpoint() { return structuredClone({armies:this.armies, membership:this.membership, marches:this.marches, externalActions:this.externalActions,commandHistory:[...this.commandHistory], nextId:this.nextId, leaderAdmissions:[...this.leaderAdmissions], nextAdmission:this.nextAdmission, cohorts:this.cohorts?.checkpoint(), cohortArmies:[...this.cohortArmies], slotPlanning:[...this.slotPlanning]}); }
   restore(saved: ReturnType<Armies["checkpoint"]>): void {
     const state=structuredClone(saved);
@@ -158,6 +161,12 @@ export class Armies {
       map:world.map,paths:world.paths,squadPaths:id=>world.squadPaths(id),squads:()=>world.squads,squad:id=>world.squad(id),routes:world.domainRoutes,
       blocked:id=>t=>world.armyBlocked(t,id),
       valid:(plan,squad)=>{const link=this.cohortArmies.get(plan.id),army=link&&this.byArmyId.get(link.armyId);return !!army && army.revision===link!.revision && this.membership.get(squad.id)===army.id && mayNavigateArmy(this.controls,squad);},
+      directRoute:(squad,point)=>{
+        const tile=pointTile(world.map,point);
+        if(!world.sharedArmyTravel||!world.clearArmyLeg?.(squad,point)||!world.clearArmyLeg(squad,tilePoint(world.map,tile)))return undefined;
+        this.travelWork.directAdmissions++;
+        return pointTile(world.map,squad)===tile?[]:[tile];
+      },
       commit:(plan,members)=>{
         const link=this.cohortArmies.get(plan.id)!,army=this.byArmyId.get(link.armyId)!;
         if(link.leaderId!==undefined){
@@ -716,7 +725,11 @@ export class Armies {
   private onRoute(march: March, distance: number): WorldPoint {
     distance = Math.max(0, distance);
     const { route, lengths } = march;
-    for (let i = 1; i < route.length; i++)
+    // First segment whose accumulated length reaches the requested distance.
+    // Equal-length vertices retain the previous interpolation/tie behavior.
+    let low=1,high=route.length-1;
+    while(low<high){const mid=(low+high)>>>1;if(lengths[mid]<distance)low=mid+1;else high=mid;}
+    for (let i = low; i < route.length; i++)
       if (distance <= lengths[i] || i === route.length - 1) {
         const span = lengths[i] - lengths[i - 1],
           f = span ? Math.min(1, (distance - lengths[i - 1]) / span) : 0;
@@ -820,6 +833,37 @@ export class Armies {
     march.pending.delete(s.id);
     this.world.setArmyMove(s, slot, tile === pointTile(this.world.map, s) ? [] : [tile]);
     march.planned.set(s.id, slot);
+    this.travelWork.directLegs++;
+    return true;
+  }
+  /** Reuse a bounded section of the army corridor with checked root connectors.
+   * Actual formation sweeps remain the simulation's per-member responsibility. */
+  private followCorridor(army:Army,march:March,s:Squad,slot:WorldPoint):boolean {
+    const clear=this.world.clearArmyLeg;
+    if(!this.world.sharedArmyTravel||!clear||march.deployment||march.route.length<2)return false;
+    let upper=1,high=march.lengths.length-1;
+    while(upper<high){const mid=(upper+high)>>>1;if(march.lengths[mid]<march.cursor)upper=mid+1;else high=mid;}
+    upper=Math.min(march.route.length-1,upper+4);
+    let start=-1,goal=-1,startDistance=(DIRECT_STEP*FIXED)**2,goalDistance=startDistance;
+    for(let i=upper,reads=0;i>=0&&reads++<96;i--){
+      if(march.lengths[i]<march.cursor-40*FIXED)break;
+      const point=march.route[i],from=distanceSquared(s,point),to=distanceSquared(slot,point);
+      if(from<=startDistance){start=i;startDistance=from;}
+      if(to<=goalDistance){goal=i;goalDistance=to;}
+    }
+    if(start<0||goal<0||Math.abs(start-goal)>24||!clear.call(this.world,s,march.route[start]))return false;
+    const path:number[]=[];let previous:WorldPoint=s;
+    const direction=start<=goal?1:-1;
+    for(let i=start;;i+=direction){
+      const point=march.route[i];
+      if(!clear.call(this.world,{...s,x:previous.x,y:previous.y},point))return false;
+      const tile=pointTile(this.world.map,point);if(path[path.length-1]!==tile)path.push(tile);
+      previous=point;if(i===goal)break;
+    }
+    if(!clear.call(this.world,{...s,x:previous.x,y:previous.y},slot))return false;
+    const tile=pointTile(this.world.map,slot);if(path[path.length-1]!==tile)path.push(tile);
+    this.world.cancelArmyRoute(`army:${army.id}:${s.id}`);march.pending.delete(s.id);
+    this.world.setArmyMove(s,slot,path);march.planned.set(s.id,slot);this.travelWork.sharedLegs++;
     return true;
   }
   private deploy(
@@ -874,6 +918,7 @@ export class Armies {
       // as the synchronous path does; only distant or obstructed members need
       // a transactional cohort admission (which pauses the march meanwhile).
       let needs=false;
+      const recovery:Squad[]=[];
       for(const s of members){
         const slot=slots.get(s.id)!,planned=march.planned.get(s.id);
         if(distanceSquared(s,slot)<=(FIXED/5)**2)continue;
@@ -882,10 +927,13 @@ export class Armies {
             this.world.updateSquad(s.id,{order:{...s.order,x:slot.x,y:slot.y}});
           continue;
         }
-        if(!this.directMove(army,march,s,slot))needs=true;
+        if(!this.directMove(army,march,s,slot)&&!this.followCorridor(army,march,s,slot)){needs=true;recovery.push(s);}
       }
       if(needs){
-        const id=this.cohorts.start(army.playerId,members,pointTile(this.world.map,slots.values().next().value!),slots);
+        const reconnect=this.world.sharedArmyTravel?recovery:members;
+        this.travelWork.recoveryMembers+=reconnect.length;
+        march.slots=slots;
+        const id=this.cohorts.start(army.playerId,reconnect,pointTile(this.world.map,slots.values().next().value!),new Map(reconnect.map(s=>[s.id,slots.get(s.id)!])));
         if(id!==undefined)this.cohortArmies.set(id,{armyId:army.id,revision:army.revision});
         return false;
       }
@@ -1137,7 +1185,7 @@ export class Armies {
         march.speed = available.some((s) => s.charge || s.fighting&&!withdrawing&&!deliberateMove)
           ? 0
           : Math.floor(
-              1.1 *
+              (this.world.sharedArmyTravel?1:1.1) *
                 Math.min(...available.map((s) => this.world.ordinarySpeed(s))),
             );
         const previous = this.onRoute(march, march.cursor);

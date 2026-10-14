@@ -37,9 +37,14 @@ export class PairRelations {
     const set=(a:number,b:number,state:PairRelation)=>{
       if(a!==b && live.has(a) && live.has(b))this.pairs.set(key(a,b),state);
     };
-    for(const w of diplomacy.state.wars??[])set(w.a,w.b,"war");
-    for(const w of operations.activeConflicts())set(w.a,w.b,"conflict");
-    for(const w of this.recent.values())if(w.until>=world.tick)set(w.a,w.b,"conflict");
+    if(diplomacy.raids){
+      for(const w of diplomacy.state.embargoes??[])if(diplomacy.embargo(w.initiator,w.victim))set(w.initiator,w.victim,"conflict");
+      for(const w of diplomacy.state.wars??[])set(w.a,w.b,"war");
+    } else {
+      for(const w of diplomacy.state.wars??[])set(w.a,w.b,"war");
+      for(const w of operations.activeConflicts())set(w.a,w.b,"conflict");
+      for(const w of this.recent.values())if(w.until>=world.tick)set(w.a,w.b,"conflict");
+    }
     for(const t of diplomacy.state.alliances)set(t.a,t.b,"allied");
     this.rows=[...this.pairs].map(([k,state])=>{
       const [a,b]=k.split(":").map(Number);return {a,b,state:state as PairRelationRow["state"]};
