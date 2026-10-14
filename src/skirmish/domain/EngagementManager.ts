@@ -331,15 +331,19 @@ export class EngagementManager {
     ]
       .filter((id) => !!this.army(id))
       .slice(0, ENGAGEMENT.maxArmies);
-    for (const { e: other } of matches.filter((m) => m.e.id !== e!.id))
+    for (const { e: other } of matches.filter((m) => m.e.id !== e!.id)) {
+      // Records can outlive disbanded armies. Reconcile the merge source too,
+      // before capacity checks or publishing membership for geometry/planning.
+      const liveIds = other.armyIds.filter((id) => !!this.army(id));
       if (
-        [...new Set([...joined, ...other.armyIds])].length <=
+        [...new Set([...joined, ...liveIds])].length <=
         ENGAGEMENT.maxArmies
       ) {
-        joined.push(...other.armyIds.filter((id) => !joined.includes(id)));
+        joined.push(...liveIds.filter((id) => !joined.includes(id)));
         this.engagements.delete(other.id);
         this.jobs.delete(other.id);
       }
+    }
     joined.sort((x, y) => x - y);
     const loose = [
       ...new Set([

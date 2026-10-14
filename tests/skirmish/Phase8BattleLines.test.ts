@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
+import { ENGAGEMENT } from "../../src/skirmish/content/TacticalRules";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { UNIT } from "../../src/skirmish/content/Units";
 import { validateArmyRecords } from "../../src/skirmish/domain/ArmyState";
@@ -260,6 +261,55 @@ describe("phase 8 persistent battle lines", () => {
     expect(counts.size).toBeGreaterThan(1);
     expect([...counts.values()].every((n) => n <= 2)).toBe(true);
   });
+  it.each([1, ENGAGEMENT.maxArmies - 1])(
+    "merges engagements with %i removed armies using only live membership",
+    (removedCount) => {
+      const { game, e, map, options } = fixture();
+      game.step();
+      const [own, enemy] = e.armies.armies;
+      const saved = e.engagements.checkpoint();
+      const record = (id: number, armyIds: number[]) => ({
+        id,
+        armyIds,
+        looseSquadIds: [],
+        axis: { x: 1, y: 0 },
+        centre: { x: own.x, y: own.y },
+        revision: 0,
+        plannedRevision: 0,
+        nextPlanTick: game.tick,
+        createdTick: game.tick,
+        lastContactTick: game.tick,
+        soldiers: 0,
+        slotSignature: "",
+      });
+      // Engagement records survive army removal until detection reconciles them.
+      saved.engagements = [
+        [1, record(1, [own.id])],
+        [
+          2,
+          record(2, [
+            enemy.id,
+            ...Array.from({ length: removedCount }, (_, i) => 1000 + i),
+          ]),
+        ],
+      ];
+      saved.nextId = 3;
+      e.engagements.restore(saved);
+      const copy = new Skirmish(map, options);
+      copy.restore(game.checkpoint());
+      expect(() => e.engagements.step()).not.toThrow();
+      expect(() => copy.expansion!.engagements.step()).not.toThrow();
+      expect(
+        [...e.engagements.engagements.values()].map((row) => row.armyIds),
+      ).toEqual([[own.id, enemy.id].sort((a, b) => a - b)]);
+      expect(copy.expansion!.engagements.checkpoint()).toEqual(
+        e.engagements.checkpoint(),
+      );
+      expect(() => game.step()).not.toThrow();
+      expect(() => copy.step()).not.toThrow();
+      expect(copy.checkpoint()).toEqual(game.checkpoint());
+    },
+  );
   it("maps fire-retreat to a stable skirmish line without shot-triggered displacement", () => {
     const { game, e } = fixture();
     step(game, 1);
