@@ -17,9 +17,9 @@ let expectedMap: { width: number; height: number } | undefined;
 let incoming = Promise.resolve();
 self.onmessage = (
   event: MessageEvent<
-    | (EncodedState & { expectedMap: { width: number; height: number }; presentation?: boolean; packed?: boolean })
+    | (EncodedState & { expectedMap: { width: number; height: number }; presentation?: boolean; packed?: boolean; entities?: boolean })
     | { type: "presented"; sequence: number }
-    | { type: "presentation"; packed?: boolean }
+    | { type: "presentation"; packed?: boolean; entities?: boolean }
   >,
 ) => {
   incoming = incoming.then(async () => {
@@ -29,6 +29,12 @@ self.onmessage = (
         try {
           if (!stream) throw new Error("Canonical state is unavailable");
           const projectionStarted = performance.now();
+          if (event.data.entities) {
+            const state = stream.presentationState();
+            self.postMessage({ packet: { tick: state.view.snapshot.tick, reset: state.view.reset }, ...state,
+              projectionMs: performance.now() - projectionStarted }, { transfer: [state.view.tiles.buffer] });
+            return;
+          }
           if (event.data.packed) {
             const view = stream.presentationPacket();
             self.postMessage({ packet: { tick: view.viewPacket.tick, reset: view.viewPacket.reset }, ...view,
@@ -88,6 +94,13 @@ self.onmessage = (
         // busy; no throwaway complete snapshot is cloned or transferred.
         self.postMessage({ packet: { tick: packet.tick, reset: packet.reset }, canonicalOnly: true,
           decodeMs: decoded - started, applyMs: applied - decoded, decodeStats });
+        return;
+      }
+      if (event.data.entities) {
+        const state = stream.presentationState();
+        self.postMessage({ packet: { tick: packet.tick, reset: packet.reset }, ...state,
+          decodeMs: decoded - started, applyMs: applied - decoded, projectionMs: performance.now() - applied, decodeStats },
+          { transfer: [state.view.tiles.buffer] });
         return;
       }
       if (event.data.packed) {

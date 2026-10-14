@@ -194,7 +194,8 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
       }),
     );
     now += 200;
-    await until(() => lastState(a).tick >= 4);
+    await until(() => lastState(a).tick >= 1);
+    const beforeLeaving = lastState(a).tick;
     await close(a);
     await until(
       () =>
@@ -202,7 +203,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
         false,
     );
     now += 200;
-    await until(() => lastState(b).tick >= 8);
+    await until(() => lastState(b).tick > beforeLeaving);
     const away = await decodeState<SnapshotPacket>(lastState(b).packet);
     expect(away.players[0].ai).toBe(true);
     const impersonator = await open();

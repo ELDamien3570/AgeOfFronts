@@ -5,6 +5,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { SnapshotEncoder, SnapshotDecoder } from "../../src/skirmish/SnapshotCodec";
 import { encodeState } from "../../src/skirmish/multiplayer/StateCodec";
+import { PresentationStateDecoder } from "../../src/skirmish/client/PresentationState";
 
 afterEach(() => vi.unstubAllGlobals());
 async function worker() {
@@ -32,6 +33,29 @@ function fixture() {
   };
 }
 describe("real network state decode worker", () => {
+  it("delivers validated entities and sparse tiles without repacking or transferring canonical maps", async () => {
+    const surface = await worker(), { match, expectedMap } = fixture();
+    const encoder = new SnapshotEncoder(true, { compactFormationSlots: true, compactTraders: true });
+    const receiver = new PresentationStateDecoder();
+    const send = async (presentation: boolean) => surface.onmessage!({ data: {
+      ...(await encodeState(encoder.encode(match.snapshot()), undefined, {}, true)), expectedMap, entities: true, presentation,
+    } });
+    await send(true); await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(1));
+    const first = surface.postMessage.mock.calls[0][0];
+    expect(first.viewPacket).toBeUndefined(); expect(first.view.snapshot.owners).toBeUndefined();
+    expect(surface.postMessage.mock.calls[0][1].transfer).toEqual([first.view.tiles.buffer]);
+    const delivered = structuredClone(first, { transfer: surface.postMessage.mock.calls[0][1].transfer });
+    expect(receiver.apply(delivered.view).owners).toEqual(match.owners);
+    surface.onmessage!({ data: { type: "presented", sequence: first.canonicalSequence } });
+    match.tick++; match.owners[100] = 2; await send(false);
+    match.tick++; match.owners[100] = 0; await send(false);
+    await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(3));
+    surface.onmessage!({ data: { type: "presentation", entities: true } });
+    await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(4));
+    const latest = surface.postMessage.mock.calls[3][0];
+    expect(receiver.apply(structuredClone(latest.view)).owners[100]).toBe(0);
+    expect(latest.view.snapshot.tick).toBe(2);
+  });
   it("transfers packed views while retaining worker canonical buffers through binary decode and hidden updates", async () => {
     const surface=await worker(), {match,encoder,expectedMap}=fixture(), decoder=new SnapshotDecoder();
     const send=async(presentation:boolean) => surface.onmessage!({data:{...(await encodeState(encoder.encode(match.snapshot()),undefined,{},true)),expectedMap,packed:true,presentation}});

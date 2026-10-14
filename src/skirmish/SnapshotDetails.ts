@@ -99,6 +99,7 @@ export class SquadDetailCache {
   private readonly slots?: FormationSlotEncoder;
   constructor(readonly compactFormationSlots = false) { if (compactFormationSlots) this.slots = new FormationSlotEncoder(); }
   slotChanges(): FormationSlotChanges | undefined { return this.slots?.drain(); }
+  slotBaseline(): FormationSlotChanges | undefined { return this.slots?.baseline(); }
   get retainedSlotEntries(): number { return this.slots?.retainedEntries ?? 0; }
   private readonly rows = new Map<
     number,
@@ -177,6 +178,7 @@ export function packSnapshotDetails(
   ships: readonly Snapshot["ships"][number][],
   volleys: readonly ArcherVolley[],
   cache?:SquadDetailCache,
+  slotBaseline = false,
 ): PackedSnapshotDetails {
   const strings: string[] = [],
     stringIds = new Map<string, number>()
@@ -342,7 +344,7 @@ export function packSnapshotDetails(
   }
   return {
     version: detailCache.compactFormationSlots ? 5 : 4,
-    ...(detailCache.compactFormationSlots ? { formationSlots: detailCache.slotChanges() } : {}),
+    ...(detailCache.compactFormationSlots ? { formationSlots: slotBaseline ? detailCache.slotBaseline() : detailCache.slotChanges() } : {}),
     strings,
     squads: squadData,
     ...(squadMotion ? { squadMotion } : {}),

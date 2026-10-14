@@ -19,19 +19,20 @@ export class FormationSlotEncoder {
   private readonly owners = new Map<number, Set<number>>();
   private readonly upserts = new Map<number, FormationSlotChanges["upserts"][number]>();
   private readonly removed = new Set<number>();
+  private readonly retired = new Map<number, Entry>();
   private nextId = 1;
   private resetPending = true;
   get retainedEntries(): number { return this.entries.size; }
   clear(): void {
     this.ids = new WeakMap(); this.inline = new WeakSet(); this.entries.clear(); this.owners.clear();
-    this.upserts.clear(); this.removed.clear(); this.nextId = 1; this.resetPending = true;
+    this.upserts.clear(); this.removed.clear(); this.retired.clear(); this.nextId = 1; this.resetPending = true;
   }
   private release(id: number): void {
     const entry = this.entries.get(id)!;
     if (--entry.references > 0) return;
     this.entries.delete(id);
     // An entry created and retired before publication needs no wire removal.
-    if (!this.upserts.delete(id)) this.removed.add(id);
+    if (!this.upserts.delete(id)) { this.removed.add(id); this.retired.set(id, entry); }
   }
   forget(owner: number): void {
     for (const id of this.owners.get(owner) ?? []) this.release(id);
@@ -57,7 +58,9 @@ export class FormationSlotEncoder {
       if (this.entries.size >= LIMIT) throw new Error("Formation slot table capacity exceeded");
       this.entries.set(id, { kind, points, references: 0 });
       // Resurrecting an entry removed earlier in this packet keeps its baseline.
-      if (!this.removed.delete(id)) {
+      const restored = this.removed.delete(id);
+      this.retired.delete(id);
+      if (!restored) {
         const stride = kind === "trail" ? 2 : 3;
         const coordinates = new Float64Array(points.length * stride);
         for (let i = 0; i < points.length; i++) {
@@ -90,7 +93,23 @@ export class FormationSlotEncoder {
   }
   drain(): FormationSlotChanges {
     const result = { reset: this.resetPending, upserts: [...this.upserts.values()], removed: new Int32Array([...this.removed]) };
-    this.resetPending = false; this.upserts.clear(); this.removed.clear(); return result;
+    this.resetPending = false; this.upserts.clear(); this.removed.clear(); this.retired.clear(); return result;
+  }
+  /** Copy this stream's IDs for a new subscriber without draining changes. */
+  baseline(): FormationSlotChanges {
+    // Include entries retired since the last shared capture: the next delta
+    // still owes their removals, and a new subscriber must recognize them too.
+    return { reset: true, removed: new Int32Array(), upserts: [...this.entries, ...this.retired].map(([id, entry]) => {
+      const stride = entry.kind === "trail" ? 2 : 3;
+      const coordinates = new Float64Array(entry.points.length * stride);
+      for (let i = 0; i < entry.points.length; i++) {
+        const point = entry.points[i];
+        coordinates[i * stride] = point.x === 0 ? 0 : point.x;
+        coordinates[i * stride + 1] = point.y === 0 ? 0 : point.y;
+        if (stride === 3) coordinates[i * stride + 2] = point.row === 0 ? 0 : point.row!;
+      }
+      return { id, kind: entry.kind, coordinates };
+    }) };
   }
 }
 

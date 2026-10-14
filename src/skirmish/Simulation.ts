@@ -4450,11 +4450,11 @@ export class Skirmish {
   private readonly captureFootprints = new Map<number, readonly number[]>();
   private readonly captureContributions = new Map<number, {
     x: number; y: number; owner: number; position: number; key: string;
-    tiles: readonly number[]; originIndependent: boolean; dirty: boolean; seen: number;
+    tiles: readonly number[]; originIndependent: boolean; dirty: boolean; seen: number; allOwned: boolean;
   }>();
   private readonly captureCenters = new Map<number, Set<number>>();
   private readonly captureBuildings = new Map<number, {tile: number; key: string}>();
-  readonly captureWork = { refreshed: 0, reused: 0 };
+  readonly captureWork = { refreshed: 0, reused: 0, ownedSkipped: 0 };
   private capturePass = 0;
   private invalidateCapture(tile: number): void {
     const cx=this.map.x(tile),cy=this.map.y(tile);
@@ -4486,7 +4486,7 @@ export class Skirmish {
   }
   private capture(): void {
     const pass=++this.capturePass;
-    this.captureWork.refreshed=this.captureWork.reused=0;
+    this.captureWork.refreshed=this.captureWork.reused=this.captureWork.ownedSkipped=0;
     // Only defensive anchor eligibility depends on building lifecycle here;
     // barrier geometry has its own revision below. Damage above zero is inert.
     const defenses=new Set<number>();
@@ -4540,7 +4540,8 @@ export class Skirmish {
           this.forgetCapture(squad.id);
           for(const tile of tiles)this.pressure.retain(tile,squad.playerId);
         }
-        row={x:squad.x,y:squad.y,owner:squad.playerId,position,key,tiles,originIndependent:canCapture?.originIndependent??true,dirty:false,seen:pass};
+        row={x:squad.x,y:squad.y,owner:squad.playerId,position,key,tiles,originIndependent:canCapture?.originIndependent??true,dirty:false,seen:pass,
+          allOwned:tiles.every(tile=>this.owners[tile]===squad.playerId)};
         this.captureContributions.set(squad.id,row);
         let center=this.captureCenters.get(position);if(!center)this.captureCenters.set(position,center=new Set());
         center.add(squad.id);
@@ -4558,6 +4559,11 @@ export class Skirmish {
         )
           ? definition.undefendedCaptureTicks
           : undefined;
+      // Ownership changes invalidate every contributing center through
+      // changeOwner/invalidateCapture. With no acceleration or fallout work,
+      // an entirely owned footprint adds no claims or hostile notifications.
+      // Pressure stays retained: competing claims still resolve below.
+      if(row.allOwned && !captureTicks && !cleanup){this.captureWork.ownedSkipped++;continue;}
       for (const tile of row.tiles) {
         if(cleanup && this.wasteland.has(tile)) {
           const distance=this.distanceSquared(squad,tilePoint(this.map,tile)),old=cleanup.get(tile);

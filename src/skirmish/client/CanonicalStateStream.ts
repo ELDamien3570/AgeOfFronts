@@ -1,6 +1,7 @@
 import type { Snapshot, SnapshotPacket } from "../Protocol";
 import { MAX_QUEUED_ORDERS, MAX_SQUADS } from "../Protocol";
 import { SNAPSHOT_LAYOUT, SnapshotDecoder, SnapshotEncoder } from "../SnapshotCodec";
+import type { PresentationState } from "./PresentationState";
 const {
   squadStride: SQUAD_STRIDE,
   orderStride: ORDER_STRIDE,
@@ -29,7 +30,6 @@ export class CanonicalStateStream {
     private readonly expectedMap?: { width: number; height: number },
   ) {}
   apply(packet: SnapshotPacket): void {
-    this.decoder.validate(packet);
     if (
       this.expectedMap &&
       (packet.width !== this.expectedMap.width ||
@@ -89,6 +89,9 @@ export class CanonicalStateStream {
       throw new Error("A canonical stream needs a baseline before deltas");
     if (this.latest && packet.tick < this.latest.tick)
       throw new Error("Canonical updates arrived out of order");
+    // decode validates the complete untrusted packet before committing its
+    // state. Do not parse/validate formation detail JSON a second time here.
+    const latest = this.decoder.decode(packet, false, false);
     this.sequence++;
     if (packet.reset) {
       this.dirty.clear();
@@ -106,7 +109,7 @@ export class CanonicalStateStream {
           break;
         }
       }
-    this.latest = this.decoder.decode(packet, false, false);
+    this.latest = latest;
     if (packet.reset || packet.expansion?.barriers) {
       this.barrierViews.clear();
       for (const wall of this.latest.expansion?.barriers ?? []) this.barrierViews.set(wall.id, { ...wall, tiles: [...wall.tiles] });
@@ -124,6 +127,28 @@ export class CanonicalStateStream {
   }
   presentation(): { snapshot: Snapshot; canonicalSequence: number } {
     return this.project(false);
+  }
+  /** Immediate synchronous postMessage only. Avoid encoding already decoded
+   * formations into JSON and rebuilding them on the rendering thread. */
+  presentationState(): { view: PresentationState; canonicalSequence: number } {
+    if (!this.latest) throw new Error("Canonical state is unavailable");
+    const source = this.latest, reset = this.resetSequence > this.presented;
+    const tiles: number[] = [];
+    const append = (tile: number) => {
+      const value = source.owners[tile] | (source.claims[tile] << 8) | (source.progress[tile] << 16);
+      if (!reset || value !== 0) tiles.push(tile, value);
+    };
+    if (reset) for (let tile = 0; tile < source.owners.length; tile++) append(tile);
+    else for (const tile of this.dirty.keys()) append(tile);
+    const { owners, claims, progress, changedTiles, expansion, ...entities } = source;
+    const snapshot: PresentationState["snapshot"] = { ...entities,
+      expansion: expansion ? { ...expansion,
+        roads: reset || expansion.roadRevision !== this.acknowledgedRoadRevision ? expansion.roads : undefined,
+        deposits: reset || this.depositRevision !== this.acknowledgedDepositRevision ? expansion.deposits : undefined,
+      } : undefined };
+    this.pendingGeometry.set(this.sequence, { roads: expansion?.roadRevision ?? -1, deposits: this.depositRevision });
+    if (this.pendingGeometry.size > 4) this.pendingGeometry.delete(this.pendingGeometry.keys().next().value!);
+    return { view: { snapshot, tiles: new Uint32Array(tiles), reset }, canonicalSequence: this.sequence };
   }
   /** Only for immediate synchronous postMessage. Its structured clone isolates
    * recipients. Roads are replaced, never mutated by the decoder; deposit

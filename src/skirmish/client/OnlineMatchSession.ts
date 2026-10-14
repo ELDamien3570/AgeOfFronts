@@ -13,11 +13,12 @@ import { mapIdentity } from "../multiplayer/application/MapIdentity";
 import { OnlineLobbyConnection } from "./lobby/OnlineLobbyConnection";
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
 import { SNAPSHOT_QUEUE_LIMITS } from "../multiplayer/StateLimits";
+import { PresentationStateDecoder, type PresentationState } from "./PresentationState";
 
 const MAX_PENDING_STATES = SNAPSHOT_QUEUE_LIMITS.states;
 const MAX_PENDING_BYTES=SNAPSHOT_QUEUE_LIMITS.bytes;
-interface DecodedState {canonicalOnly?:boolean;packet:SnapshotPacket;viewPacket?:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;projectionMs?:number;decodeStats?:StateDecodeStats;}
-interface Presentation {data:Extract<WorkerResponse,{type:"state"}>;sequence?:number;}
+interface DecodedState {canonicalOnly?:boolean;packet:SnapshotPacket;viewPacket?:SnapshotPacket;view?:PresentationState;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;projectionMs?:number;decodeStats?:StateDecodeStats;}
+interface Presentation {data:Extract<WorkerResponse,{type:"state"}>;sequence?:number;view?:PresentationState;}
 
 /** Thin presentation client. The server alone advances the simulation. */
 export class OnlineMatchSession {
@@ -32,6 +33,7 @@ export class OnlineMatchSession {
   onerror: ((event: { message: string }) => void) | null = null;
   disconnectedPlayerIds: number[] = [];
   private decoder?: Worker;
+  private readonly presentationDecoder = new PresentationStateDecoder();
   private expectedMap?: {width: number; height: number};
   private connection: OnlineLobbyConnection;
   private decoding?: {
@@ -234,7 +236,7 @@ export class OnlineMatchSession {
     } as Parameters<OnlineLobbyConnection["request"]>[0]);
   }
   private decode(packet: EncodedState, presentation = true): Promise<DecodedState> {
-    return this.decoderRequest({ ...packet, expectedMap: this.expectedMap, presentation, packed: true });
+    return this.decoderRequest({ ...packet, expectedMap: this.expectedMap, presentation, entities: true });
   }
   private decoderRequest(message: unknown): Promise<DecodedState> {
     return new Promise((resolve, reject) => {
@@ -261,6 +263,7 @@ export class OnlineMatchSession {
     let data: Presentation["data"] | undefined = update.data;
     const task=Promise.resolve().then(()=>{
       const delivered = data; data = undefined;
+      if (!this.stopped && delivered && update.view) delivered.snapshot = this.presentationDecoder.apply(update.view);
       return this.stopped ? undefined : this.onmessage?.({data:delivered} as MessageEvent<WorkerResponse>);
     })
       .then(()=>{
@@ -287,12 +290,12 @@ export class OnlineMatchSession {
       if (this.presenting || this.recovering || this.stopped) return;
       const context = this.pendingView; this.pendingView = undefined;
       if (!context) return;
-      const decoded = await this.decoderRequest({ type: "presentation", packed: true });
+      const decoded = await this.decoderRequest({ type: "presentation", entities: true });
       if (decoded.projectionMs !== undefined) this.timings.record("projection", decoded.projectionMs);
       if (this.stopped || context.generation !== this.receiveGeneration) return;
-      if (!decoded.snapshot && !decoded.viewPacket) throw new Error("Missing canonical presentation");
+      if (!decoded.snapshot && !decoded.viewPacket && !decoded.view) throw new Error("Missing canonical presentation");
       this.queuePresentation({ data: { type: "state", packet: decoded.viewPacket ?? decoded.packet, snapshot: decoded.snapshot,
-        paused: context.paused, speed: 1 }, sequence: decoded.canonicalSequence });
+        paused: context.paused, speed: 1 }, sequence: decoded.canonicalSequence, view: decoded.view });
     }).catch(error => this.fail(error.message));
   }
   private queuePresentation(update:Presentation):void {
@@ -435,8 +438,8 @@ export class OnlineMatchSession {
         throw new Error(
           "The match view is unavailable. Return to the lobby to rejoin.",
         );
-      const hasView = !!(decoded.snapshot ?? decoded.viewPacket);
-      const update:Presentation={data:{type:"state",packet:decoded.viewPacket ?? packet,snapshot:decoded.snapshot,paused:message.paused,speed:1},sequence:decoded.canonicalSequence};
+      const hasView = !!(decoded.snapshot ?? decoded.viewPacket ?? decoded.view);
+      const update:Presentation={data:{type:"state",packet:decoded.viewPacket ?? packet,snapshot:decoded.snapshot,paused:message.paused,speed:1},sequence:decoded.canonicalSequence,view:decoded.view};
       if (hasView) this.pendingView = undefined;
       if (decoded.canonicalOnly) {
         if (message.syncId || message.rebase) throw new Error("A synchronization baseline requires presentation");
@@ -498,10 +501,10 @@ export class OnlineMatchSession {
       const context = this.pendingView;
       this.pendingView = undefined;
       if (context && !this.stopped && context.generation === this.receiveGeneration) {
-        const decoded = await this.decoderRequest({ type: "presentation", packed: true });
-        if (!decoded.snapshot && !decoded.viewPacket) throw new Error("Missing final match presentation");
+        const decoded = await this.decoderRequest({ type: "presentation", entities: true });
+        if (!decoded.snapshot && !decoded.viewPacket && !decoded.view) throw new Error("Missing final match presentation");
         await this.present({ data: { type: "state", packet: decoded.viewPacket ?? decoded.packet,
-          snapshot: decoded.snapshot, paused: context.paused, speed: 1 }, sequence: decoded.canonicalSequence });
+          snapshot: decoded.snapshot, paused: context.paused, speed: 1 }, sequence: decoded.canonicalSequence, view: decoded.view });
       }
       this.status(`${message.message}. Return to the lobby to play again.`);
       this.terminate();

@@ -326,57 +326,75 @@ export class RoutePlanner<T> {
     }
     return [...this.cohorts.values()].map((cohort) => ({ ...cohort }));
   }
+  private readonly eligibleJobs: Job<T>[] = [];
+  private readonly eligiblePriorities: boolean[] = [];
   private selectJob(eligible: (job: Job<T>) => boolean = () => true): [string, Job<T>] | undefined {
-    let available = false;
-    for (const job of this.jobs.values()) if (eligible(job)) { available = true; break; }
-    if (!available) return undefined;
-    if (this.schedulingVersion < 3) return this.nextJob(eligible);
+    if (this.schedulingVersion < 3) {
+      for (const job of this.jobs.values()) if (eligible(job)) return this.nextJob(eligible);
+      return undefined;
+    }
+    // A quantum selects before processing any job or invoking its completion
+    // callback. Eligibility and priority are stable during this selection only;
+    // refresh both next quantum, including after domain mutations/completions.
+    const available = this.eligibleJobs, priorities = this.eligiblePriorities;
     let humanPending = false;
-    if (this.ports.priority) for (const job of this.jobs.values())
-      if (eligible(job) && !job.discard && this.ports.priority(job)) { humanPending = true; break; }
-    const exclusive = this.exclusiveKey && this.jobs.get(this.exclusiveKey);
-    if (exclusive && eligible(exclusive) && (!humanPending || this.ports.priority!(exclusive))) return [exclusive.key, exclusive];
-    if (exclusive && !exclusive.releasing && exclusive.search.phase !== "done") {
-      // An interactive request preempts an autonomous full-arena search.
-      // Reclamation is charged normally; resume its retry after human work,
-      // without publishing a false route failure to its domain owner.
-      exclusive.releasing = "limited";
-      exclusive.resumeExclusiveAfterRelease = true;
+    for (const job of this.jobs.values()) if (eligible(job)) {
+      const priority = !!this.ports.priority?.(job);
+      priorities.push(priority); available.push(job);
+      if (!job.discard && priority) humanPending = true;
     }
-    this.exclusiveKey = undefined;
-    const canReserve = (job: Job<T>) => eligible(job) && !!job.waitingForWorkspace && !job.discard &&
-      (!humanPending || this.ports.priority!(job));
-    let waiting = false;
-    for (const job of this.jobs.values())
-      if (canReserve(job)) {
-        waiting = true;
-        break;
+    try {
+      if (!available.length) return undefined;
+      const exclusive = this.exclusiveKey && this.jobs.get(this.exclusiveKey);
+      const exclusiveIndex = exclusive ? available.indexOf(exclusive) : -1;
+      if (exclusive && exclusiveIndex >= 0 && (!humanPending || priorities[exclusiveIndex])) return [exclusive.key, exclusive];
+      if (exclusive && !exclusive.releasing && exclusive.search.phase !== "done") {
+        // An interactive request preempts an autonomous full-arena search.
+        // Reclamation is charged normally; resume its retry after human work,
+        // without publishing a false route failure to its domain owner.
+        exclusive.releasing = "limited";
+        exclusive.resumeExclusiveAfterRelease = true;
       }
-    if (!waiting) return this.nextJob(job => eligible(job) && (!job.waitingForWorkspace || job.releasing !== undefined || !!job.discard));
-    if (!this.workspace.used) {
-      const next = this.nextJob(
-        canReserve,
-      );
-      next[1].waitingForWorkspace = false;
-      this.exclusiveKey = next[0];
-      return next;
+      this.exclusiveKey = undefined;
+      const canReserve = (job: Job<T>) => !!job.waitingForWorkspace && !job.discard &&
+        (!humanPending || this.ports.priority!(job));
+      let waiting = false;
+      for (const job of available)
+        if (canReserve(job)) {
+          waiting = true;
+          break;
+        }
+      if (!waiting) return this.nextJob(job => !job.waitingForWorkspace || job.releasing !== undefined || !!job.discard, available, priorities);
+      if (!this.workspace.used) {
+        const next = this.nextJob(
+          canReserve, available, priorities,
+        );
+        next[1].waitingForWorkspace = false;
+        this.exclusiveKey = next[0];
+        return next;
+      }
+      // Stop new searches allocating while existing searches finish/release.
+      // No progress is discarded. The finite arena holders must reach a terminal
+      // result or capacity limit; cancellation cleanup keeps its fair turns.
+      const holder = (job: Job<T>) => (
+          job.search.nodes.size > 0 ||
+          job.releasing !== undefined ||
+          job.discard === true);
+      let held = false;
+      for (const job of available) if (holder(job)) { held = true; break; }
+      if (!held) return undefined;
+      return this.nextJob(holder, available, priorities);
+    } finally {
+      // Scratch must not retain retired jobs and their search arenas.
+      available.length = 0; priorities.length = 0;
     }
-    // Stop new searches allocating while existing searches finish/release.
-    // No progress is discarded. The finite arena holders must reach a terminal
-    // result or capacity limit; cancellation cleanup keeps its fair turns.
-    const holder = (job: Job<T>) => eligible(job) && (
-        job.search.nodes.size > 0 ||
-        job.releasing !== undefined ||
-        job.discard === true);
-    let held = false;
-    for (const job of this.jobs.values()) if (holder(job)) { held = true; break; }
-    if (!held) return undefined;
-    return this.nextJob(holder);
   }
   private readonly selectionCandidates: Job<T>[] = [];
   private readonly selectionClasses: number[] = [];
   private nextJob(
     eligible: (job: Job<T>) => boolean = () => true,
+    available?: readonly Job<T>[],
+    priorities?: readonly boolean[],
   ): [string, Job<T>] {
     if (this.schedulingVersion === 1) return this.jobs.entries().next().value!;
     // Classify each eligible job once. Priority/committed queries are derived
@@ -384,8 +402,11 @@ export class RoutePlanner<T> {
     const candidates = this.selectionCandidates, classes = this.selectionClasses;
     candidates.length = 0;
     let human = false, background = false, loaded = false, fresh = false;
-    for (const job of this.jobs.values()) if (eligible(job)) {
-      const interactive = !!this.ports.priority?.(job);
+    let ordinal = -1;
+    for (const job of available ?? this.jobs.values()) {
+      ordinal++;
+      if (!eligible(job)) continue;
+      const interactive = priorities?.[ordinal] ?? !!this.ports.priority?.(job);
       const urgent = this.schedulingVersion >= 4 && !!this.ports.committed &&
         (!!this.ports.committed(job) || this.currentTick - job.createdTick >= 100);
       const at = candidates.length;

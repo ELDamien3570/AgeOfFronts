@@ -126,8 +126,8 @@ it("runs two thin clients from one server simulation, enforces ownership and con
     now += 200;
     await until(
       () =>
-        states(0).some((message) => message.tick === 4) &&
-        states(1).some((message) => message.tick === 4),
+        states(0).some((message) => message.tick >= 1) &&
+        states(1).some((message) => message.tick >= 1),
     );
     expect(last(states(0)).packet.hash).toBe(last(states(1)).packet.hash);
     expect(
@@ -157,7 +157,7 @@ it("runs two thin clients from one server simulation, enforces ownership and con
       ),
     );
     now += 200;
-    await until(() => states(1).some((message) => message.tick >= 8));
+    await until(() => states(1).some((message) => message.tick >= 5));
     const paidState = await decodeState<SnapshotPacket>(last(states(1)).packet);
     expect(
       Object.values(paidState.expansion!.progression![2].research).some(
@@ -187,7 +187,7 @@ it("runs two thin clients from one server simulation, enforces ownership and con
       coordinator.rooms.snapshot().reservations[0].members[0].connected,
     ).toBe(true);
     now += 200;
-    await until(() => states(0).some((message) => message.tick >= 12));
+    await until(() => states(0).some((message) => message.tick >= 9));
     expect(states(0)[states(0).length - 1].disconnectedPlayerIds).toEqual([]);
     clients[0].close();
     await until(

@@ -190,8 +190,17 @@ export class SnapshotEncoder {
   } {
     return {
       shared: this.encode(source, journal, facts),
-      baseline: new SnapshotEncoder(true).encode(source, journal, facts),
+      baseline: this.encodeBaseline(source, journal, facts),
     };
+  }
+  /** A fresh subscriber shares the live formation dictionary's identity space,
+   * but must not advance any shared entity, tile or metadata cursor. */
+  encodeBaseline(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities): SnapshotPacket {
+    const packet = new SnapshotEncoder(true, { compactTraders: this.compactTraders }).encode(source, journal, facts);
+    if (this.detailCache.compactFormationSlots) {
+      packet.details = packSnapshotDetails(source.squads, source.buildings, source.ships, source.volleys, this.detailCache, true);
+    }
+    return packet;
   }
   encode(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities,
     presentation?: { tiles: Uint32Array; reset: boolean; resourcesChanged?: boolean; roadsChanged?: boolean }): SnapshotPacket {

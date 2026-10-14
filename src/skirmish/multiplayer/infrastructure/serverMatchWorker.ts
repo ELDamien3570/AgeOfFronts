@@ -36,7 +36,8 @@ let diagnosticContext = { matchId: "unassigned", runtimeId: "unknown" };
 let captureSequence = 0, capturedTick = 0;
 let nextDiagnosticTick = 600;
 const observeMatch = () => { match!.onPhase = (phase, ms) => diagnostics.record(phase, ms); };
-const encoder = new SnapshotEncoder(true);
+const networkEncoding = { compactFormationSlots: true, compactTraders: true };
+const encoder = new SnapshotEncoder(true, networkEncoding);
 let setup: SpawnSelection | undefined;
 let preparedMap: RuntimeMap | undefined;
 let pending = Promise.resolve();
@@ -73,7 +74,7 @@ const encodePacket = (packet: SnapshotPacket) => diagnostics.measureAsync("encod
 const snapshot = () => encodePacket(capture());
 const recoveryBaseline = () => baselines.get(canonicalVersion, () => {
   const state = diagnostics.measure("extraction", () => match!.replicationSource());
-  const packet = diagnostics.measure("snapshot", () => new SnapshotEncoder(true).encode(state, match!.tileChanges, match!.replicationFacts()));
+  const packet = diagnostics.measure("snapshot", () => encoder.encodeBaseline(state, match!.tileChanges, match!.replicationFacts()));
   capturedTick = state.tick; captureSequence++;
   return encodePacket(packet);
 });

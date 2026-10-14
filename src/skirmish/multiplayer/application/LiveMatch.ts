@@ -33,6 +33,7 @@ export const MAX_QUEUED_COMMANDS = MAX_COMMAND_BATCH;
 export const EMPTY_MATCH_GRACE_MS = 120_000;
 const TICK_MS = 1000 / TICKS_PER_SECOND;
 const SNAPSHOT_MS = 200;
+const SNAPSHOT_TICKS = Math.round(TICKS_PER_SECOND * SNAPSHOT_MS / 1000);
 interface Seat {
   playerId: number;
   guestId: string;
@@ -96,6 +97,7 @@ export class LiveMatch {
   }
   private nextTickAt = 0;
   private nextSnapshotAt = 0;
+  private nextSnapshotTick = 0;
   private disconnected = new Set<number>();
   private initializedAt = 0;
   private initialized = false;
@@ -486,6 +488,7 @@ export class LiveMatch {
     this.nextSyncAt = this.now() + (this.config.cooldownMs ?? 2_000);
     this.nextTickAt = this.now() + TICK_MS;
     this.nextSnapshotAt = this.now() + SNAPSHOT_MS;
+    this.nextSnapshotTick = this.tick + SNAPSHOT_TICKS;
     this.cadence.reset(this.tick, this.now());
     if (!this.stopped)
       this.status(
@@ -651,16 +654,27 @@ export class LiveMatch {
    * coordinator's fixed 50 ms poll alone aliased against the 50 ms deadline:
    * jitter that landed just early cost a whole extra interval and then a
    * two-tick catch-up batch. The poll remains as a backstop. */
-  private tickTimer?: ReturnType<typeof setTimeout>;
+  private tickTimer?: { cancel(): void };
   private scheduleTick(): void {
     if (this.stopped || !this.running || this.tickTimer !== undefined) return;
-    const timer = setTimeout(() => {
+    const dispatch = () => {
       this.tickTimer = undefined;
       void this.advance().catch((error) =>
         this.end(`Match stopped: ${(error as Error).message}`));
-    }, Math.max(0, this.nextTickAt - this.now()));
-    (timer as { unref?: () => void }).unref?.();
-    this.tickTimer = timer;
+    };
+    const delay = Math.max(0, this.nextTickAt - this.now());
+    if (delay === 0) {
+      // An overdue tick needs a new event-loop turn, not the timeout API's
+      // minimum 1 ms sleep. Poll services worker/publication/socket messages
+      // before this immediate, retaining input fairness without clock overhead.
+      const immediate = setImmediate(dispatch);
+      immediate.unref();
+      this.tickTimer = { cancel: () => clearImmediate(immediate) };
+    } else {
+      const timer = setTimeout(dispatch, delay);
+      timer.unref();
+      this.tickTimer = { cancel: () => clearTimeout(timer) };
+    }
   }
   private async advanceWorld(): Promise<void> {
     const now = this.now();
@@ -693,6 +707,7 @@ export class LiveMatch {
       this.runtimeSeats = initial.seats ?? [];
       this.nextTickAt = this.now() + TICK_MS;
       this.nextSnapshotAt = this.now() + SNAPSHOT_MS;
+      this.nextSnapshotTick = this.tick + SNAPSHOT_TICKS;
       this.cadence.reset(this.tick, this.now());
       this.publicationSequence++;
       this.broadcast(this.state(initial.packet!));
@@ -701,16 +716,26 @@ export class LiveMatch {
     if (now < this.nextTickAt) return;
     this.diagnostics.record("scheduler", now - this.nextTickAt);
     const due = Math.floor((now - this.nextTickAt) / TICK_MS) + 1,
-      ticks = Math.min(MAX_ADVANCE_TICKS, due);
+      ticks = 1;
+    // Return to the coordinator after every canonical tick. A four-tick
+    // synchronous catch-up request delayed new orders, command receipts and
+    // completed encoder publications behind the whole batch. Keep at most
+    // four ticks of clock debt, but service it through separate requests.
     this.nextTickAt =
       due > MAX_ADVANCE_TICKS
-        ? now + TICK_MS
-        : this.nextTickAt + ticks * TICK_MS;
-    const publish = now >= this.nextSnapshotAt;
-    if (publish)
+        ? now - (MAX_ADVANCE_TICKS - 2) * TICK_MS
+        : this.nextTickAt + TICK_MS;
+    // Background replication is at most 5 Hz in both wall and game time.
+    // Under overload, publishing every 200 wall ms despite less than four
+    // ticks of progress steals CPU from an already late simulation. Executed
+    // commands still trigger their immediate publication inside the worker.
+    const publish = now >= this.nextSnapshotAt && this.tick + ticks >= this.nextSnapshotTick;
+    if (publish) {
       this.nextSnapshotAt +=
         (Math.floor((now - this.nextSnapshotAt) / SNAPSHOT_MS) + 1) *
         SNAPSHOT_MS;
+      this.nextSnapshotTick = this.tick + ticks + SNAPSHOT_TICKS;
+    }
     const commands = this.commands
       .splice(0)
       .filter((item) => !this.disconnected.has(item.command.playerId));
@@ -805,7 +830,7 @@ export class LiveMatch {
   async end(message: string, completed = false): Promise<void> {
     if (this.stopped) return;
     this.stopped = true;
-    clearTimeout(this.tickTimer);
+    this.tickTimer?.cancel();
     this.tickTimer = undefined;
     this.unsubscribePublication?.();
     clearTimeout(this.syncTimer);

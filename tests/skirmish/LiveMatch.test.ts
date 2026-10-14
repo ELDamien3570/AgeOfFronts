@@ -151,20 +151,21 @@ describe("server-authoritative live match", () => {
     f.setTime(10_500);
     await f.match.advance();
     const observed = f.match.runtimeDiagnostics();
-    expect(observed).toMatchObject({ matchId: "test", runtimeId: "version", tick: 4,
-      progress: { simulatedMs: 200, wallMs: 500, ratio: 0.4 } });
+    expect(observed).toMatchObject({ matchId: "test", runtimeId: "version", tick: 1,
+      progress: { simulatedMs: 50, wallMs: 500, ratio: 0.1 } });
     expect(observed.timings.scheduler?.maximum).toBe(450);
     expect(() => f.match.command("a", "bad", { type: "invalid" })).toThrow();
     f.match.command("a", "accepted", { type: "advance-age" });
     expect(f.match.runtimeDiagnostics().timings.validation?.samples).toBeGreaterThanOrEqual(3);
     expect(f.match.runtimeDiagnostics().timings.admission?.samples).toBe(1);
     expect(f.messages.some(({ message }) => "diagnostics" in message)).toBe(false);
-    expect(f.requests.find(request => request.type === "advance")).toMatchObject({ ticks: 4 });
+    expect(f.requests.find(request => request.type === "advance")).toMatchObject({ ticks: 1 });
     await f.match.end("test complete");
   });
   it("labels delayed publication with its capture tick without rewinding simulation progress", async () => {
     const f = await fixture(true);
     f.setTime(10_200); await f.match.advance();
+    await f.match.advance(); await f.match.advance(); await f.match.advance();
     expect(f.match.progress().tick).toBe(4);
     f.publish(1);
     const states = f.messages.filter(m => m.message.type === "match-state");
@@ -254,24 +255,33 @@ describe("server-authoritative live match", () => {
     await f.match.advance();
     expect(f.requests[1]).toMatchObject({
       type: "advance",
-      ticks: 3,
-      publish: true,
+      ticks: 1,
+      publish: false,
     });
-    expect(f.messages).toHaveLength(2);
+    expect(f.messages).toHaveLength(0);
+    f.match.command("a", "between-ticks", { type: "advance-age" });
     await f.match.advance();
-    expect(f.requests).toHaveLength(2);
+    expect(f.requests[2]).toMatchObject({ commands: [{ id: "between-ticks", command: { type: "advance-age", playerId: 1 } }] });
+    await f.match.advance();
+    await f.match.advance();
+    expect(f.requests).toHaveLength(4);
+    expect(f.requests[3]).toMatchObject({ ticks: 1, publish: true });
+    expect(f.messages).toHaveLength(2);
     f.setTime(12_000);
     await f.match.advance();
-    expect(f.requests[2]).toMatchObject({
+    expect(f.requests[4]).toMatchObject({
       type: "advance",
-      ticks: 4,
-      publish: true,
+      ticks: 1,
+      publish: false,
     });
     await f.match.advance();
-    expect(f.requests).toHaveLength(3);
+    await f.match.advance();
+    await f.match.advance();
+    expect(f.requests).toHaveLength(8);
+    expect(f.requests[7]).toMatchObject({ ticks: 1, publish: true });
     f.setTime(12_050);
     await f.match.advance();
-    expect(f.requests[3]).toMatchObject({
+    expect(f.requests[8]).toMatchObject({
       type: "advance",
       ticks: 1,
       publish: false,
@@ -290,7 +300,7 @@ describe("server-authoritative live match", () => {
     const pending = f.match.advance();
     f.setTime(12_600);
     await f.match.advance();
-    expect(f.requests).toHaveLength(5);
+    expect(f.requests).toHaveLength(10);
     complete({ tick: 10, winner: null, rejectedCommands: [] });
     await pending;
   });
@@ -342,8 +352,10 @@ describe("server-authoritative live match", () => {
       type: "advance",
       disconnectedPlayerIds: [1],
       commands: [],
-      publish: true,
+      publish: false,
     });
+    await f.match.advance(); await f.match.advance(); await f.match.advance();
+    expect(f.requests[3]).toMatchObject({ publish: true });
     expect(f.messages).toHaveLength(1);
     expect(f.messages[0].guest).toBe("b");
     expect(f.messages[0].message).toMatchObject({

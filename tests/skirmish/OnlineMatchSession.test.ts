@@ -6,6 +6,7 @@ import type {
   WorkerResponse,
 } from "../../src/skirmish/Protocol";
 import { OnlineMatchSession } from "../../src/skirmish/client/OnlineMatchSession";
+import type { PresentationState } from "../../src/skirmish/client/PresentationState";
 import { RUNTIME_PHASES } from "../../src/skirmish/RuntimeDiagnostics";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import type {
@@ -40,7 +41,7 @@ vi.mock("../../src/skirmish/client/lobby/OnlineLobbyConnection", () => ({
 class DecoderWorker {
   static instances: DecoderWorker[] = [];
   onmessage?: (event: { data: { packet: SnapshotPacket;canonicalOnly?:boolean;snapshot?:Snapshot;canonicalSequence?:number;
-    decodeMs?:number;applyMs?:number;projectionMs?:number } }) => void;
+    decodeMs?:number;applyMs?:number;projectionMs?:number;view?:PresentationState } }) => void;
   onerror?: (event: { message: string }) => void;
   postMessage = vi.fn();
   terminate = vi.fn();
@@ -113,6 +114,30 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
+  it("applies sparse entity views only at presentation and keeps map changes fenced behind a stalled renderer", async () => {
+    await initialize(); const decoder = DecoderWorker.instances[0];
+    const view = (tick: number, owner: number): PresentationState => ({ reset: tick === 0,
+      tiles: new Uint32Array([100, owner]), snapshot: { tick, width:160,height:100,
+        squads:[],ships:[],buildings:[],players:[],winner:null,combatTicks:0,volleys:[] } });
+    let finish!: () => void, first!: Snapshot;
+    session.onmessage = vi.fn().mockImplementationOnce(event => {
+      first = event.data.snapshot; return new Promise<void>(resolve => { finish = resolve; });
+    }).mockImplementation(updates);
+    connection().message(state(0));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledTimes(1));
+    decoder.onmessage!({ data: { packet:packet(0),canonicalSequence:1,view:view(0,1) } });
+    await vi.waitFor(() => expect(first.owners[100]).toBe(1));
+    connection().message(state(4));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledTimes(2));
+    decoder.onmessage!({ data: { packet:packet(4),canonicalSequence:2,view:view(4,2) } });
+    await vi.waitFor(() => expect(session.runtimeDiagnostics().tick).toBe(4));
+    expect(first.owners[100]).toBe(1); expect(updates).not.toHaveBeenCalled();
+    finish(); await vi.waitFor(() => expect(updates).toHaveBeenCalledTimes(1));
+    expect(updates.mock.calls[0][0].data).toMatchObject({snapshot:{tick:4}});
+    expect((updates.mock.calls[0][0].data as Extract<WorkerResponse,{type:"state"}>).snapshot!.owners[100]).toBe(2);
+    expect(decoder.postMessage).toHaveBeenCalledWith({type:"presented",sequence:2});
+    expect(errors).not.toHaveBeenCalled();
+  });
   it("projects a coalesced final allied victory after a stalled renderer finishes", async () => {
     await initialize();
     const decoder = DecoderWorker.instances[0];
@@ -129,7 +154,7 @@ describe("server-only match client", () => {
     await vi.waitFor(() => expect(session.runtimeDiagnostics().tick).toBe(4));
     expect(decoder.terminate).not.toHaveBeenCalled();
     finish();
-    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledWith({ type: "presentation", packed: true }));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledWith({ type: "presentation", entities: true }));
     decoder.deliver(packet(4), { tick: 4, winner: -1, expansion: { winners: [1, 2] } } as Snapshot, 2);
     await vi.waitFor(() => expect(decoder.terminate).toHaveBeenCalled());
     expect(updates).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ snapshot: expect.objectContaining({ winner: -1 }) }) }));
@@ -217,7 +242,7 @@ describe("server-only match client", () => {
       await vi.waitFor(() => expect(session.diagnostics.pendingStates).toBe(0));
     }
     expect(presented).toEqual([0]); finish();
-    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledWith({ type: "presentation", packed: true }));
+    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledWith({ type: "presentation", entities: true }));
     worker.deliver(packet(8), { tick: 8 } as Snapshot, 3);
     await vi.waitFor(() => expect(presented).toEqual([0, 8]));
     expect(errors).not.toHaveBeenCalled();

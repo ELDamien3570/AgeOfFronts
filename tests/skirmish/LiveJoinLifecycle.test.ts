@@ -287,13 +287,15 @@ describe("bounded live admission lifecycle", () => {
   it("rebases a slow flow-controlled client without changing other clients' delta cursor or pausing the match",async()=>{
     const f=await fixture();const original=f.executor.request;
     f.executor.request=async<T extends ExecutorResult>(request:ExecutorRequest)=>request.type==="client-baseline"
-      ? ({tick:4,winner:null,baseline:packet} as T) : original<T>(request);
+      ? ({tick:f.match.progress().tick,winner:null,baseline:packet} as T) : original<T>(request);
     f.watch("slow",3);await f.match.qualify("slow","build",true);
     const baseline=f.baseline("slow");f.match.stateApplied("slow",baseline.publicationSequence!,baseline.flowEpoch!);
     f.match.acknowledge("slow",baseline.syncId!,baseline.publicationSequence!);
-    for(const time of [10_200,10_400,10_600,10_800]){f.time(time);await f.match.advance();}
+    // Catch-up is serviced one tick at a time. Fill the four-publication
+    // window with four logical ticks at each background deadline.
+    for(const time of [10_200,10_400,10_600,10_800]){f.time(time);for(let tick=0;tick<4;tick++)await f.match.advance();}
     const sent=f.baseline("slow");
-    f.time(11_000);await f.match.advance();expect(f.baseline("slow").publicationSequence).toBe(sent.publicationSequence);
+    f.time(11_000);for(let tick=0;tick<4;tick++)await f.match.advance();expect(f.baseline("slow").publicationSequence).toBe(sent.publicationSequence);
     f.match.stateApplied("slow",sent.publicationSequence!,sent.flowEpoch!);
     await Promise.resolve();await Promise.resolve();
     const rebased=f.baseline("slow");expect(rebased.rebase).toBe(true);expect(rebased.flowEpoch).toBeGreaterThan(sent.flowEpoch!);

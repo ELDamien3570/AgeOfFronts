@@ -9,6 +9,27 @@ const formation = (): FormationState => ({ ...createFormation("napoleonic-infant
   occupationSlots: [{ x: 0, y: 0, row: 0 }, { x: 256, y: 0, row: 0 }] });
 
 describe("local formation slot stream", () => {
+  it("joins and recovers with shared dictionary IDs without consuming pending changes", () => {
+    const { game } = formationLoad("distributed", 15), encoder = new SnapshotEncoder(true, { compactFormationSlots: true, compactTraders: true });
+    const existing = new SnapshotDecoder(), joining = new SnapshotDecoder(), recovering = new SnapshotDecoder();
+    const squad = game.squads[0];
+    const publish = () => encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts());
+    game.updateSquad(squad.id, { formation: formation() }); existing.decodeLatest(publish());
+    for (let i = 0; i < 4; i++) { game.updateSquad(squad.id, { formation: formation() }); existing.decodeLatest(publish()); }
+    const aligned = encoder.encodeJoinBarrier(game.replicationSource(), game.tileChanges, game.replicationFacts());
+    existing.decodeLatest(aligned.shared); joining.decodeLatest(aligned.baseline);
+    game.updateSquad(squad.id, { formation: formation() });
+    const baseline = encoder.encodeBaseline(game.replicationSource(), game.tileChanges, game.replicationFacts());
+    recovering.decodeLatest(structuredClone(baseline, { transfer: snapshotTransfers(baseline) }));
+    const delta = publish();
+    const a = existing.decodeLatest(structuredClone(delta));
+    const b = joining.decodeLatest(structuredClone(delta));
+    const c = recovering.decodeLatest(structuredClone(delta));
+    expect(a.squads).toEqual(b.squads); expect(a.squads).toEqual(c.squads);
+    game.removeSquad(squad.id); const removed = publish();
+    expect(existing.decodeLatest(structuredClone(removed)).squads).toEqual(joining.decodeLatest(structuredClone(removed)).squads);
+    expect(existing.decodeLatest(encoder.encodeBaseline(game.replicationSource(), game.tileChanges, game.replicationFacts())).squads).toEqual(recovering.decodeLatest(structuredClone(removed)).squads);
+  });
   it("recovers a rejected dictionary delta only through a fresh complete baseline", () => {
     const { game } = formationLoad("distributed", 15), encoder = new SnapshotEncoder(false, { compactFormationSlots: true });
     let requests = 0;

@@ -410,26 +410,29 @@ export function formationSeparationLowerBound(a:FormationBody,b:FormationBody,ti
   const dx=Math.max(0,Math.abs(b.x-a.x)-ae.halfX-be.halfX),dy=Math.max(0,Math.abs(b.y-a.y)-ae.halfY-be.halfY);
   return dx*dx+dy*dy;
 }
+function containsPoint(poly: readonly Point[], p: Point): boolean {
+  if (poly.length < 3) return false;
+  for (let at = 0; at < poly.length; at++)
+    if (!(cross(poly[at], poly[(at + 1) % poly.length], p) >= -1e-8)) return false;
+  return true;
+}
 export function polygonContact(
   pa: readonly Point[],
   pb: readonly Point[],
 ): { gap: number; source: Point; target: Point } {
-  const contains = (poly: readonly Point[], p: Point) =>
-    poly.length >= 3 &&
-    poly.every((a, i) => cross(a, poly[(i + 1) % poly.length], p) >= -1e-8);
-  const shared =
-    pa.find((p) => contains(pb, p)) ?? pb.find((p) => contains(pa, p));
+  let shared: Point | undefined;
+  for (const p of pa) if (containsPoint(pb, p)) { shared = p; break; }
+  if (!shared) for (const p of pb) if (containsPoint(pa, p)) { shared = p; break; }
   if (shared) return { gap: 0, source: shared, target: shared };
   let source = pa[0],
     target = pb[0],
     best = Infinity;
-  for (let i = 0; i < pa.length; i++)
+  for (let i = 0; i < pa.length; i++) {
+    const ae = pa[(i + 1) % pa.length], ax = ae.x - pa[i].x,
+      ay = ae.y - pa[i].y, al = ax * ax + ay * ay;
     for (let j = 0; j < pb.length; j++) {
-      const ae = pa[(i + 1) % pa.length],
-        be = pb[(j + 1) % pb.length];
-      const ax = ae.x - pa[i].x,
-        ay = ae.y - pa[i].y,
-        bx = be.x - pb[j].x,
+      const be = pb[(j + 1) % pb.length];
+      const bx = be.x - pb[j].x,
         by = be.y - pb[j].y,
         det = ax * by - ay * bx;
       if (Math.abs(det) > 1e-8) {
@@ -448,10 +451,11 @@ export function polygonContact(
       const bl=bx*bx+by*by,bt=bl?Math.max(0,Math.min(1,((pa[i].x-pb[j].x)*bx+(pa[i].y-pb[j].y)*by)/bl)):0;
       const qx=pb[j].x+bt*bx,qy=pb[j].y+bt*by,dq=(pa[i].x-qx)**2+(pa[i].y-qy)**2;
       if(dq<best){best=dq;source=pa[i];target={x:qx,y:qy};}
-      const al=ax*ax+ay*ay,at=al?Math.max(0,Math.min(1,((pb[j].x-pa[i].x)*ax+(pb[j].y-pa[i].y)*ay)/al)):0;
+      const at=al?Math.max(0,Math.min(1,((pb[j].x-pa[i].x)*ax+(pb[j].y-pa[i].y)*ay)/al)):0;
       const px=pa[i].x+at*ax,py=pa[i].y+at*ay,dp=(px-pb[j].x)**2+(py-pb[j].y)**2;
       if(dp<best){best=dp;source={x:px,y:py};target=pb[j];}
     }
+  }
   const overlapping = polygonsOverlap(pa, pb);
   if (overlapping) {
     const mid = { x: (source.x + target.x) / 2, y: (source.y + target.y) / 2 };
