@@ -6,7 +6,7 @@ import { hudMarkup, HudView } from "../../src/skirmish/client/HudView";
 import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
 import { SkirmishViewModel } from "../../src/skirmish/client/SkirmishViewModel";
 
-it("shows Delete warship for an owned side-card ship and routes deletion through the match", () => {
+it("shows Disband for an owned side-card ship and routes deletion through the match", () => {
   const data = new Uint8Array(48 * 48).fill(133);
   const match = new Skirmish(new GameMapImpl(48, 48, data, data.length), {
     seed:42, aiCount:1, runAi:false, tribes:false, ruleset:"ages-v1",
@@ -25,6 +25,7 @@ it("shows Delete warship for an owned side-card ship and routes deletion through
   update();
   const button = root.querySelector<HTMLButtonElement>("#delete-ship")!;
   expect(button.hidden).toBe(false);
+  expect(button.textContent).toBe("Disband");
   expect(button.closest(".selection-heading")).not.toBeNull();
   const other = match.addShip({id:match.allocateId(), playerId:1, kind:"warship", health:1000,
     x:144, y:128, destination:null, waypoints:[], path:[], nextPathIndex:0, fighting:false});

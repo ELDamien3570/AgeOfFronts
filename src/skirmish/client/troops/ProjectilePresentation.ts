@@ -1,3 +1,4 @@
+import { projectilePresentationScale, type ProjectilePresentationState } from '../../content/ProjectileScale';
 /** Shared silhouettes for flying, grounded and embedded preview projectiles.
  * angle points toward the impact: tip forward, fletching behind. */
 export function drawPreviewProjectile(
@@ -7,10 +8,13 @@ export function drawPreviewProjectile(
   y: number,
   angle: number,
   embedded = false,
+  state: ProjectilePresentationState = embedded ? 'embedded' : 'flight',
 ) {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(angle);
+  const scale = projectilePresentationScale(kind, state);
+  ctx.scale(scale, scale);
   const length =
     kind === "javelin"
       ? 36

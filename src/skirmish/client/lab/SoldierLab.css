@@ -1,6 +1,202 @@
 * {
   box-sizing: border-box;
 }
+[hidden] {
+  display: none !important;
+}
+.lab-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+}
+.lab-tabs [aria-selected="true"] {
+  border-color: #d6b477;
+  background: #384633;
+}
+.catalog-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.catalog-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+#unit-panel > section:first-of-type .stat-grid,
+#catalog-filters .stat-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.catalog-card {
+  padding: 16px;
+  background: #1a2620;
+  border: 1px solid #445a4b;
+  border-radius: 8px;
+}
+.catalog-card[open] {
+  grid-column: 1/-1;
+}
+.catalog-card summary {
+  cursor: pointer;
+  list-style: none;
+}
+.catalog-card summary::-webkit-details-marker {
+  display: none;
+}
+.catalog-card h3 {
+  background: transparent;
+  padding: 0;
+  font-size: 17px;
+  color: #e6ebe2;
+}
+.catalog-card dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 10px;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.catalog-card dd {
+  margin: 0;
+  color: #e0c58a;
+}
+.catalog-card dt {
+  color: #a9b9a9;
+}
+.catalog-card .catalog-layout {
+  margin-top: 20px;
+}
+.catalog-card img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  float: right;
+}
+#catalog-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 28px;
+}
+#catalog-editor {
+  display: block;
+}
+#catalog-editor > section {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.editor-group {
+  margin: 0;
+  padding: 18px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid #445a4b;
+  border-radius: 0;
+}
+.editor-group h3 {
+  background: transparent;
+  padding: 0;
+  font-size: 17px;
+  color: #e6ebe2;
+  margin-bottom: 14px;
+}
+.editor-fields,
+.derived-cost {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+.editor-group[data-group="recipe"],
+.editor-estimate {
+  grid-column: 1/-1;
+}
+#catalog-preview-section {
+  padding: 0;
+  margin: 16px 0 0;
+  background: transparent;
+  border: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+#catalog-preview-section h3,
+#catalog-upgrade,
+#catalog-shapes,
+#catalog-preview-status {
+  grid-column: 1/-1;
+}
+#catalog-preview {
+  grid-column: 1/-1;
+  height: 260px;
+}
+#catalog-dps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+}
+.derived-cost input[readonly] {
+  width: 100%;
+  background: #111c16;
+  border: 1px solid #445a4b;
+  border-radius: 4px;
+  color: #e0c58a;
+  padding: 8px;
+}
+#catalog-editor > section > details {
+  margin-top: 24px;
+  border-top: 1px solid #445a4b;
+  padding-top: 16px;
+}
+@media (max-width: 650px) {
+  #catalog-fields {
+    grid-template-columns: 1fr;
+  }
+  #catalog-dps {
+    grid-template-columns: 1fr;
+  }
+}
+#unit-panel input[type="number"],
+#unit-panel input[type="search"],
+#unit-panel textarea {
+  width: 100%;
+  background: #111c16;
+  color: #e6ebe2;
+  border: 1px solid #445a4b;
+  padding: 8px;
+  border-radius: 4px;
+}
+#catalog-json {
+  font: 12px/1.5 monospace;
+}
+#catalog-shapes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  border: 1px solid #445a4b;
+}
+#catalog-shapes label {
+  margin: 4px 0;
+}
+#catalog-dps label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+#catalog-dps input {
+  font-size: 22px;
+  color: #e0c58a;
+  background: #111c16;
+  border: 1px solid #445a4b;
+  border-radius: 4px;
+  padding: 8px;
+  width: 100%;
+}
+@media (max-width: 1050px) {
+  .catalog-layout {
+    grid-template-columns: 1fr;
+  }
+}
 body {
   margin: 0;
   background: #111917;
@@ -136,6 +332,10 @@ canvas {
   width: 100%;
   height: 320px;
 }
+#baseline,
+#experiment {
+  height: 500px;
+}
 #projectile-baseline,
 #projectile-experiment {
   height: 240px;
@@ -147,6 +347,9 @@ canvas {
 }
 .naval-grid canvas {
   height: 190px;
+}
+#ranged-engagement {
+  height: 380px;
 }
 .stat-grid {
   display: grid;

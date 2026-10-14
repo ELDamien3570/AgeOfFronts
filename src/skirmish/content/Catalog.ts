@@ -35,6 +35,7 @@ import {
   validateTechnologies,
 } from "./Technology";
 import { UNITS, VESSELS } from "./Units";
+import { SOLDIER_SCALE, CAVALRY_SCALE, CAVALRY_SPACING, CAVALRY_PITCH } from './SoldierScale';
 
 // A culture is resolved once before a match starts. Only the authored default
 // culture is selectable; future substitutions must resolve to complete content
@@ -108,6 +109,7 @@ export const CONTENT_HASH = hash({
   },
   combatRevision: 8,
   formationDoctrines,
+  formationScale: { soldier: SOLDIER_SCALE, cavalryBody: CAVALRY_SCALE, cavalrySpacing: CAVALRY_SPACING, cavalryTravelPitch: CAVALRY_PITCH },
   flights:{rules:FLIGHT_RULES,atomic:ATOMIC_ATTACK,drone:DRONE_ATTACK,navalAir:NAVAL_AIR_ATTACK},
   nuclearLand:{reserveLossPerCell:NUCLEAR_RESERVE_LOSS_PER_CELL,troopLossPerCell:FALLOUT_TROOP_LOSS_PER_CELL},
   shoreTransportRevision: 1,
@@ -129,7 +131,7 @@ export const CONTENT_HASH = hash({
     reserves: RESERVE_GROWTH,
     startingTroops: STARTING_AGE_TROOPS,
     startingEconomy: STARTING_ECONOMY,
-    tribeDevelopmentRevision: 2,
+    tribeDevelopmentRevision: 3,
     waterTrade: WATER_TRADE_PRICING,
     trade: TRADE_RULES,
     tradeRoutingRevision: 3,

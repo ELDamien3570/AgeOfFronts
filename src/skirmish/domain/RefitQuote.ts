@@ -55,7 +55,6 @@ type RefitShip = Pick<
   | "kind"
   | "refit"
   | "fighting"
-  | "destination"
 >;
 interface Context {
   player: Player;
@@ -80,6 +79,7 @@ function choose<T extends { id: number }, D>(
   price: (d: D, n: number) => Cost,
   context: Context,
   noUpgrade: string,
+  ineligibleReason: string,
 ): Choice<T, D> | null {
   if (!selected.length) return null;
   const focused = selected.find((s) => s.id === focusedId),
@@ -123,7 +123,7 @@ function choose<T extends { id: number }, D>(
   const reason = count
     ? null
     : !valid.length
-      ? "Needs owned land and no combat or active refit"
+      ? ineligibleReason
       : (costRejection(context.player, context.inventory, price(target, 1)) ??
         "No eligible refit");
   return {
@@ -177,6 +177,7 @@ export function quoteLandRefits<T extends RefitSquad>(
     selected.every((s) => AGES.indexOf(definition(s).age) === AGES.length - 1)
       ? "Maximum tier reached"
       : "Research a later tier to unlock a refit",
+    "Needs owned land and no combat or active refit",
   );
 }
 export function quoteShipRefits<T extends RefitShip>(
@@ -203,10 +204,10 @@ export function quoteShipRefits<T extends RefitShip>(
     (s) =>
       s.playerId === context.player.id &&
       !s.refit &&
-      !s.fighting &&
-      s.destination === null,
+      !s.fighting,
     vesselRefitCost,
     context,
     "Research the next vessel tier",
+    "Needs no combat or active refit",
   );
 }

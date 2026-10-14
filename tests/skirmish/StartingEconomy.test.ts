@@ -56,7 +56,7 @@ describe("age-scaled opening resources and tribes", () => {
     const wrong = TECHNOLOGIES.find(t => age === "Modern" ? t.age !== age : AGES.indexOf(t.age) > AGES.indexOf(age))!;
     expect(m.applyCommand({ type: "research", playerId: tribe.id, technologyId: wrong.id })).toContain(age === "Modern" ? "already completed" : "Advance to this age first");
   });
-  it("enforces one economic and two military structures and rejects types unavailable in the starting age", () => {
+  it("enforces one non-mine economic and two military structures and rejects types unavailable in the starting age", () => {
     const { m, e, tribe } = fixture("BronzeAge");
     e.progression.states[tribe.id].completed = TECHNOLOGIES.map(t => t.id);
     tribe.gold = 1e6; m.owners.fill(tribe.id); e.supply.replaceDeposits([]);
@@ -67,6 +67,41 @@ describe("age-scaled opening resources and tribes", () => {
     expect(build("airstrip", 50)).toContain("current age");
     expect(tribeBuildingLimit("port", "BronzeAge")).toBe(1);
     expect(tribeBuildingLimit("tower", "BronzeAge")).toBe(2);
+  });
+  it("lets tribes build multiple mines but rejects stacking during and after construction", () => {
+    const { m, e, tribe } = fixture("BronzeAge");
+    e.progression.states[tribe.id].completed = TECHNOLOGIES.map(t => t.id);
+    tribe.gold = 1e6;
+    m.owners.fill(tribe.id);
+    for (const b of [...m.buildings]) m.removeBuilding(b.id);
+    e.supply.replaceDeposits((["stone", "copper", "tin"] as const).map((resource, id) => ({
+      id: id + 1, tile: m.map.ref(20 + id * 5, 40),
+      resource, owner: tribe.id, yieldPerSecond: 1,
+    })));
+    const build = (tile: number) => m.applyCommand({
+      type: "build", playerId: tribe.id, buildingType: "mine", tile, age: "BronzeAge",
+    });
+    expect(tribeBuildingLimit("mine", "BronzeAge")).toBe(Infinity);
+    for (const deposit of e.supply.deposits) {
+      expect(build(deposit.tile)).toBeNull();
+      const gold = tribe.gold;
+      expect(build(deposit.tile)).toContain("cannot stack mines");
+      expect(m.buildingSite(tribe.id, "mine", deposit.tile)).toContain("cannot stack mines");
+      expect(tribe.gold).toBe(gold);
+    }
+    const mine = m.buildings[0];
+    m.updateBuilding(mine.id, { remainingTicks: 0 });
+    expect(build(mine.tile)).toContain("cannot stack mines");
+    expect(m.buildings).toHaveLength(3);
+    for (const b of [...m.buildings].slice(1)) m.removeBuilding(b.id);
+    for (const squad of [...m.squads]) m.removeSquad(squad.id);
+    // Expire the AI's ordinary cooldown for rebuilding a lost site.
+    m.tick += 1201;
+    const develop = () => (e as unknown as { thinkTribeDevelopment(p: typeof tribe): void }).thinkTribeDevelopment(tribe);
+    for (let pass = 0; pass < 50; pass++) develop();
+    const mines = m.buildings.filter(b => b.type === "mine");
+    expect(mines).toHaveLength(3);
+    expect(new Set(mines.map(b => b.tile)).size).toBe(3);
   });
   it("bounds tribe placement attempts and checkpoints its cursors", () => {
     const { m, e, tribe } = fixture("BronzeAge");

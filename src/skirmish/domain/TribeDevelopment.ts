@@ -31,5 +31,6 @@ export const TRIBE_BUILDING_ORDER: readonly BuildingType[] = [
 /** Capability and copy limits are independent of affordability, technology
  * completion and placement, which remain ordinary command rules. */
 export function tribeBuildingLimit(type: BuildingType, age: Age): number {
-  return buildingTechnology(type, age) ? MILITARY.has(type) ? 2 : 1 : 0;
+  if (!buildingTechnology(type, age)) return 0;
+  return type === "mine" ? Infinity : MILITARY.has(type) ? 2 : 1;
 }

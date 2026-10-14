@@ -729,7 +729,7 @@ export class EmpireView {
 
   private tradeDiplomacyControl(): string {
     const vm = this.vm!, p = vm.faction(this.inspectedPlayer)?.player;
-    if (!p || p.id === this.playerId || p.kind === "tribe" || p.eliminated) return "";
+    if (!p || p.id === this.playerId || p.eliminated) return "";
     const control = vm.expansion.tradeControls?.[this.playerId], atWar = vm.expansion.tradeEnemies?.[this.playerId]?.includes(p.id);
     return ["land", "sea"].map(mode=>{
       const blocked = (mode === "sea" ? control?.seaBlocked : control?.landBlocked)?.includes(p.id) ?? control?.blocked.includes(p.id) ?? false;

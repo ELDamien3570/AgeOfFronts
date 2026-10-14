@@ -13,7 +13,8 @@ import { TroopImpacts } from "./TroopImpacts";
 import { drawPreviewProjectile } from "./ProjectilePresentation";
 import { weaponCycle } from "../../content/WeaponCycles";
 import { UNIT } from "../../content/Units";
-import { SOLDIER_SCALE } from '../../content/SoldierScale';
+import { SOLDIER_SCALE, CAVALRY_SCALE } from '../../content/SoldierScale';
+import { projectilePresentationScale } from '../../content/ProjectileScale';
 import { chargeReactions } from './ChargeImpactPresentation';
 import { CHARGE_IMPACT } from '../../domain/ChargeImpact';
 import { CavalryPoseContinuity } from './CavalryPoseContinuity';
@@ -329,7 +330,7 @@ export class TroopActors {
     const scaleTroop = (troop: TroopActorDefinition): TroopActorDefinition => {
       let value = scaled.get(troop);
       if (!value) {
-        value = troop.vehicle ? troop : {...troop, memberScale: troop.memberScale * SOLDIER_SCALE};
+        value = troop.vehicle ? troop : {...troop, memberScale: troop.memberScale * SOLDIER_SCALE * (troop.mounted ? CAVALRY_SCALE : 1)};
         scaled.set(troop, value);
       }
       return value;
@@ -568,7 +569,8 @@ export class TroopActors {
         continue;
       ctx.save();
       ctx.translate(p.x, p.y);
-      ctx.scale(tileSize / 32, tileSize / 32);
+      const projectileScale = projectilePresentationScale(weaponVisual(volley.definitionId), 'flight');
+      ctx.scale(tileSize / 32 * projectileScale, tileSize / 32 * projectileScale);
       ctx.rotate(flight.angle);
       ctx.imageSmoothingQuality = "high";
       // Crop transparent margins when sampling the preserved generated master.

@@ -47,6 +47,8 @@ export function constructionRejection(
       : [];
   if (stack.length > 0 && stack[0].type !== type)
     return "Only buildings of the same type can share a tile";
+  if (player.kind === "tribe" && type === "mine" && stack.length > 0)
+    return "Tribes cannot stack mines on the same deposit";
   if (stack.length >= MAX_BUILDING_STACK)
     return `A single site can support at most ${MAX_BUILDING_STACK} stacked buildings`;
   const bounds = buildingReservationBounds(map, tile, type);

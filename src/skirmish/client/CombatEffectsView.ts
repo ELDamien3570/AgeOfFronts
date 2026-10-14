@@ -1,3 +1,4 @@
+import { projectilePresentationScale } from '../content/ProjectileScale';
 import type {
   Point,
   TargetMarker,
@@ -16,6 +17,8 @@ export class CombatEffectsView {
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.rotate(angle);
+    const presentationScale = projectilePresentationScale(style, 'flight');
+    ctx.scale(presentationScale, presentationScale);
     ctx.globalAlpha *= opacity;
     if (style === "stone") {
       const r = Math.max(3, Math.min(8, size));

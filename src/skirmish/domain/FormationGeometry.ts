@@ -2,7 +2,7 @@ import { formationProfile, frontageLayout, type ShapeProfile } from "./Formation
 import { minimumTravelAssignment } from './FormationSlotAssignment';
 import { FIXED, type Squad } from "../Protocol";
 import doctrines from "../content/formation-doctrines.json";
-import { SOLDIER_SCALE, CAVALRY_SPACING } from '../content/SoldierScale';
+import { SOLDIER_SCALE, CAVALRY_SPACING, CAVALRY_SCALE, CAVALRY_PITCH } from '../content/SoldierScale';
 export const FORMATION_SHAPES = [
   "mass",
   "shield-wall",
@@ -85,8 +85,8 @@ export function formationDoctrine(id?: string): FormationDoctrine {
   let scaled = scaledDoctrines.get(authored);
   if (!scaled) {
     scaled = {...authored, spacing: Math.round(authored.spacing * SOLDIER_SCALE * (authored.mounted?CAVALRY_SPACING:1)),
-      bodyWidth: Math.round(authored.bodyWidth * SOLDIER_SCALE),
-      bodyDepth: Math.round(authored.bodyDepth * SOLDIER_SCALE)};
+      bodyWidth: Math.round(authored.bodyWidth * SOLDIER_SCALE * (authored.mounted?CAVALRY_SCALE:1)),
+      bodyDepth: Math.round(authored.bodyDepth * SOLDIER_SCALE * (authored.mounted?CAVALRY_SCALE:1))};
     scaledDoctrines.set(authored, scaled);
   }
   return scaled;
@@ -186,8 +186,8 @@ export function columnLayout(d: FormationDoctrine) {
   const scale = d.hull ? 1 : SOLDIER_SCALE;
   return {
     columns: d.mounted ? 1 : 2,
-    spacing: d.mounted ? Math.round(FIXED * scale) : Math.floor(FIXED * 0.375 * scale),
-    radius: d.mounted ? Math.round(0.45 * FIXED * scale) : d.bodyWidth / 2 - 3 * scale,
+    spacing: d.mounted ? Math.round(FIXED * scale * CAVALRY_PITCH) : Math.floor(FIXED * 0.375 * scale),
+    radius: d.mounted ? Math.round(0.45 * FIXED * scale * CAVALRY_SCALE) : d.bodyWidth / 2 - 3 * scale,
   };
 }
 export function layoutGrid(count: number, shape: FormationShape, d: FormationDoctrine, frontage?:number) {
@@ -306,7 +306,7 @@ function computeFormationEnvelope(
     ),
     halfX: Math.ceil((width * c + depth * sin) / 2),
     halfY: Math.ceil((width * sin + depth * c) / 2),
-    navigationRadius: Math.round(FIXED * (s.kind === "cavalry" ? 0.48 : 0.45) * (d.hull ? 1 : SOLDIER_SCALE)),
+    navigationRadius: Math.round(FIXED * (s.kind === "cavalry" ? 0.48 : 0.45) * (d.hull ? 1 : SOLDIER_SCALE) * (d.mounted ? CAVALRY_SCALE : 1)),
   };
 }
 interface EnvelopeEntry {key:string;seed:number;kind:Squad['kind'];tick:number;value:ReturnType<typeof computeFormationEnvelope>}
@@ -392,7 +392,7 @@ function buildSlots(
   return centered;
 }
 type Slots = readonly Readonly<{ x: number; y: number; row: number }>[];
-interface SlotEntry { definition?: string; seed: number; count: number; shape: FormationShape; frontage?: number; progress: number; slots: Slots }
+interface SlotEntry { definition?: string; doctrine: FormationDoctrine; seed: number; count: number; shape: FormationShape; frontage?: number; progress: number; slots: Slots }
 const slotCache = new WeakMap<FormationState, SlotEntry[]>();
 export function formationSlots(
   s: Pick<
@@ -406,8 +406,9 @@ export function formationSlots(
     | "kind"
   >,
   tick: number,
+  doctrineOverride?: FormationDoctrine,
 ) {
-  const d = formationDoctrine(s.definitionId),
+  const d = doctrineOverride ?? formationDoctrine(s.definitionId),
     count = d.hull
       ? 1
       : Math.max(1, Math.min(s.troops, s.manpower?.capacity ?? 144)),
@@ -418,13 +419,13 @@ export function formationSlots(
   let cache = slotCache.get(f);
   if (cache) for (let i = cache.length - 1; i >= 0; i--) {
     const entry = cache[i];
-    if (entry.definition === s.definitionId && entry.seed === seed && entry.count === count &&
+    if (entry.definition === s.definitionId && entry.doctrine === d && entry.seed === seed && entry.count === count &&
       entry.shape === shape && entry.frontage === f.frontage && entry.progress === p) return entry.slots;
   }
   if (!cache) { cache = []; slotCache.set(f, cache); }
   const remember = (result: Slots) => {
     if (cache!.length >= 8) cache!.shift();
-    cache!.push({ definition: s.definitionId, seed, count, shape, frontage: f.frontage, progress: p, slots: result });
+    cache!.push({ definition: s.definitionId, doctrine: d, seed, count, shape, frontage: f.frontage, progress: p, slots: result });
     return result;
   };
   const base = f.occupationSlots ? f.occupationSlots.slice(0,count) : template(count, shape, d, s.id, f.frontage).slots;

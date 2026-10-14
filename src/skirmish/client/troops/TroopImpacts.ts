@@ -172,7 +172,7 @@ export class TroopImpacts {
       if (stain.missed && age >= 8000) {ctx.restore();continue;}
       if (age < 8000 && ["bow", "bolt", "javelin"].includes(stain.kind)) {
         ctx.globalAlpha *= 0.65;
-        drawPreviewProjectile(ctx, stain.kind, 10, 3, stain.angle);
+        drawPreviewProjectile(ctx, stain.kind, 10, 3, stain.angle, false, 'ground');
       }
       if (stain.kind === "bullet") {
         ctx.fillStyle = "#302b25";

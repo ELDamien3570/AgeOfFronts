@@ -73,8 +73,10 @@ describe("trade controls presentation", () => {
     });
     expect(button('[data-trade-mode="land"]').textContent).toContain("Stop");
   });
-  it("blocks a specific nation from diplomacy and removes that control for self inspection", () => {
+  it.each(["regular", "tribe"] as const)("blocks a specific %s faction from diplomacy and removes that control for self inspection", (kind) => {
     const { game, view, command, button, update } = fixture();
+    game.players.find(p => p.id === 2)!.kind = kind;
+    update();
     view.inspectPlayer(2);
     button('[data-trade-faction="2"]').click();
     update();

@@ -185,15 +185,17 @@ export function attackContributors(
   squad: Pick<Squad, "troops" | "manpower" | "formation" | "definitionId">,
   profile: AttackProfile,
   target?: Pick<Squad, "troops" | "manpower">,
+  doctrineOverride?: ReturnType<typeof formationDoctrine>,
 ): number {
   if (!profile.perSoldier)
     return (1000 * squad.troops) / (squad.manpower?.capacity ?? 1000);
   const column=squad.formation?.shape==="column" || squad.formation?.transition?.from==="column";
-  const columnWidth=columnLayout(formationDoctrine(squad.definitionId)).columns;
+  const doctrine=doctrineOverride??formationDoctrine(squad.definitionId);
+  const columnWidth=columnLayout(doctrine).columns;
   if (profile.channel === "ranged" && squad.formation?.occupationSlots) return squad.troops;
   if (profile.channel === "ranged") return column ? Math.min(squad.troops,columnWidth*2):
     squad.formation?.shape==='line'&&!squad.formation.transition?squad.troops:Math.ceil(squad.troops*SHAPES.nonLineFire/10000);
-  const width = column ? columnWidth : squad.formation ? layoutGrid(squad.troops,squad.formation.shape,formationDoctrine(squad.definitionId),squad.formation.frontage).columns : Math.ceil(Math.sqrt(squad.manpower?.capacity ?? squad.troops));
+  const width = column ? columnWidth : squad.formation ? layoutGrid(squad.troops,squad.formation.shape,doctrine,squad.formation.frontage).columns : Math.ceil(Math.sqrt(squad.manpower?.capacity ?? squad.troops));
   const targetWidth = target
     ? Math.ceil(Math.sqrt(target.manpower?.capacity ?? target.troops))
     : width;

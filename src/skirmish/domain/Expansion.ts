@@ -447,7 +447,7 @@ export class Expansion {
     }
     if (command.type === "trade-block") {
       const other = world.players.find(p => p.id === command.otherId);
-      if (!other || other.id === player.id || other.eliminated || other.kind === "tribe" || typeof command.blocked !== "boolean") return "Choose a living regular trading faction";
+      if (!other || other.id === player.id || other.eliminated || typeof command.blocked !== "boolean") return "Choose a living trading faction";
       this.trade.setBlocked(player.id, other.id, command.blocked, command.naval); return null;
     }
     if (command.type === "produce")
@@ -628,13 +628,13 @@ export class Expansion {
         !this.progression.has(player.id, target.technologyId)
       )
         return "Research a military vessel refit first";
-      const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.destination===null&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
-      if(!eligible.length)return "Refit a compatible stationary fleet out of combat";
+      const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      if(!eligible.length)return "Refit a compatible fleet out of combat with no active refit";
       const count=affordableRefitCount(vesselRefitCost(target),availableGold(player),this.supply.inventories[player.id],eligible.length);
       if(!count)return costRejection(player,this.supply.inventories[player.id],vesselRefitCost(target))??"No affordable vessel refit";
       spend(player,this.supply.inventories[player.id],vesselRefitCost(target,count));
       for(const s of eligible.slice(0,count)){
-        world.updateShip(s.id,{refit:{targetId:target.id,remainingTicks:200,totalTicks:200},waypoints:[],path:[],attackTargetId:null});
+        world.updateShip(s.id,{refit:{targetId:target.id,remainingTicks:200,totalTicks:200},destination:null,waypoints:[],path:[],nextPathIndex:0,attackTargetId:null});
       }
       return null;
     }

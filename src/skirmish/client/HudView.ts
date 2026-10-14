@@ -101,7 +101,7 @@ export function hudMarkup(): string {
       .join("");
   return `
     <aside id="selection-card" class="selection-card hud-surface" aria-label="Selection details" hidden>
-      <div class="selection-heading"><span class="eyebrow" id="selection-label">SELECTION</span><button id="selection-back" class="text-button" hidden>Back to selection</button><button id="delete-ship" type="button" title="Remove this warship without a refund" hidden>Delete warship</button></div>
+      <div class="selection-heading"><span class="eyebrow" id="selection-label">SELECTION</span><button id="selection-back" class="text-button" hidden>Back to selection</button><button id="delete-ship" class="text-button" type="button" title="Disband this warship without a refund" hidden>Disband</button></div>
       <div id="refit-actions" class="refit-actions" hidden></div>
       <div id="selection-detail">
         <div class="unit-heading"><div id="selection-portrait" class="unit-portrait"></div><div><h2 id="selection-title"></h2><p id="selection-subtitle"></p><span id="selection-status" class="status-chip"></span></div></div><div id="selection-promotion" class="promotion-progress" hidden></div>

@@ -23,166 +23,394 @@
           ><button id="export">Export settings</button>
         </div>
       </header>
-      <p class="notice">
-        Local preview only. Settings do not change gameplay. Formation offsets
-        come from game geometry; experimental spacing scales those offsets.
-        Statistics below are sandbox estimates.
-      </p>
-      <div class="layout">
-        <aside>
-          <section>
-            <h2>Scene</h2>
+      <nav class="lab-tabs" role="tablist" aria-label="Soldier lab views">
+        <button
+          id="presentation-tab"
+          role="tab"
+          aria-selected="true"
+          aria-controls="presentation-panel"
+        >
+          Presentation
+        </button>
+        <button
+          id="unit-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="unit-panel"
+        >
+          Units &amp; stats
+        </button>
+      </nav>
+      <div
+        id="presentation-panel"
+        role="tabpanel"
+        aria-labelledby="presentation-tab"
+      >
+        <p class="notice">
+          Local preview only. Settings do not change gameplay. Formation offsets
+          come from game geometry; experimental spacing scales those offsets.
+          Statistics below are sandbox estimates.
+        </p>
+        <div class="layout">
+          <aside>
+            <section>
+              <h2>Scene</h2>
+              <label
+                >Unit
+                <select id="unit"></select></label
+              ><label
+                >Formation
+                <select id="shape"></select></label
+              ><label
+                >Animation
+                <select id="pose">
+                  <option value="idle">Idle</option>
+                  <option value="running">Running</option>
+                  <option value="attack">Attack</option>
+                </select></label
+              >
+              <div id="scene-controls"></div>
+              <label
+                ><input id="footprint" type="checkbox" checked /> Show body
+                envelope</label
+              >
+            </section>
+            <section>
+              <h2>Infantry comparisons</h2>
+              <label
+                >Reference infantry A
+                <select id="reference-a"></select
+              ></label>
+              <label
+                >Reference infantry B
+                <select id="reference-b"></select
+              ></label>
+              <div id="reference-controls"></div>
+              <p id="reference-status" role="status"></p>
+              <p>
+                Both references keep their current size and formation spacing in
+                both views. Choose any age or disable a reference.
+              </p>
+            </section>
+            <section>
+              <h2>Cavalry experiment</h2>
+              <div id="cavalry-controls"></div>
+              <p>
+                Size and pitch are independent. Values multiply the current game
+                settings, including the approved cavalry 0.9 body and 0.7 pitch
+                multipliers. Set both controls to 1 to inspect the live
+                baseline.
+              </p>
+            </section>
+            <section>
+              <h2>Projectile experiment</h2>
+              <label
+                >Projectile
+                <select id="projectile">
+                  <option value="javelin">Javelin</option>
+                  <option value="bow">Arrow</option>
+                  <option value="bolt">Bolt</option>
+                  <option value="bullet">Bullet</option>
+                  <option value="rocket">Rocket silhouette</option>
+                </select></label
+              >
+              <div id="projectile-controls"></div>
+              <p>
+                Additional multipliers on the approved live baseline: 0.45
+                flight, 0.45 ground and 0.7 embedded for arrows, javelins and
+                bolts.
+              </p>
+            </section>
+            <section>
+              <h2>Naval volleys</h2>
+              <label
+                ><input id="naval" type="checkbox" checked /> Show proposed
+                projectiles</label
+              ><label
+                >Proposed weapon
+                <select id="naval-kind">
+                  <option value="bow">Arrows</option>
+                  <option value="javelin">Javelins</option>
+                  <option value="bolt">Bolts</option>
+                </select></label
+              >
+              <div id="naval-controls"></div>
+              <p>
+                Early warships have direct attacks today. Weapon choice, flight
+                time and shot count here are presentation proposals; they do not
+                multiply ship damage.
+              </p>
+            </section>
+          </aside>
+          <div class="scenes">
+            <section>
+              <div class="section-head">
+                <h2>Formation comparison</h2>
+                <span id="asset-status" role="status">Loading artwork…</span>
+              </div>
+              <div class="compare">
+                <article>
+                  <h3>Current</h3>
+                  <canvas
+                    id="baseline"
+                    aria-label="Current unit formation"
+                  ></canvas>
+                  <p id="baseline-metrics"></p>
+                </article>
+                <article>
+                  <h3>Experiment</h3>
+                  <canvas
+                    id="experiment"
+                    aria-label="Experimental unit formation"
+                  ></canvas>
+                  <p id="experiment-metrics"></p>
+                </article>
+              </div>
+              <p id="overlap" class="warning"></p>
+              <p>
+                Both views use the same camera scale and soldier count. Artwork
+                overlap depends on each pose; body envelopes describe geometry,
+                not transparent image margins.
+              </p>
+            </section>
+            <section>
+              <h2>Projectile states</h2>
+              <div class="compare">
+                <article>
+                  <h3>Current</h3>
+                  <canvas
+                    id="projectile-baseline"
+                    aria-label="Current projectiles in flight, grounded and embedded"
+                  ></canvas>
+                </article>
+                <article>
+                  <h3>Experiment</h3>
+                  <canvas
+                    id="projectile-experiment"
+                    aria-label="Experimental projectiles in flight, grounded and embedded"
+                  ></canvas>
+                </article>
+              </div>
+              <p>
+                Embedded shafts are drawn beneath the soldier, matching live
+                layering. This is a controlled size comparison, not a collision
+                or damage test.
+              </p>
+            </section>
+            <section>
+              <h2>Early warship engagements</h2>
+              <div class="naval-grid" id="ships"></div>
+              <p>
+                All four ages share the selected proposed weapon. Ship attack
+                cadence and hull art use their current definitions. Shots follow
+                straight ground paths; their size increases at midflight to show
+                height.
+              </p>
+            </section>
+            <section>
+              <h2>Soldier projectile engagement</h2>
+              <div class="stat-grid">
+                <label
+                  >Left ranged formation
+                  <select id="ranged-left"></select
+                ></label>
+                <label
+                  >Right ranged formation
+                  <select id="ranged-right"></select
+                ></label>
+                <label
+                  >Formation shape
+                  <select id="ranged-shape">
+                    <option value="line">Line</option>
+                    <option value="mass">Mass</option>
+                    <option value="column">Column</option>
+                  </select></label
+                >
+              </div>
+              <div id="ranged-controls" class="stat-grid"></div>
+              <button id="ranged-restart">Restart engagement</button>
+              <p id="ranged-status" role="status"></p>
+              <canvas
+                id="ranged-engagement"
+                aria-label="Two ranged formations shooting at each other"
+              ></canvas>
+              <p>
+                Presentation experiment: one cosmetic shot per visible soldier
+                each cycle, with a short release stagger. Both sides retain
+                their soldier counts. Uses runtime actors, formation geometry
+                and weapon silhouettes; does not simulate damage or enforce
+                attack range. Flight size and midpoint height are shared with
+                naval shots. Pause and scrub to inspect.
+              </p>
+            </section>
+            <section>
+              <h2>Statistical sandbox</h2>
+              <p>
+                Unit selection loads authored health and speed percentages,
+                damage, range and reload. Accuracy starts at 100% as an explicit
+                estimate; the game has no authored accuracy field. Changing
+                units resets these statistical inputs.
+              </p>
+              <div id="stat-controls" class="stat-grid"></div>
+              <div id="stats" class="stat-results" aria-live="polite"></div>
+              <p>
+                Expected volley = troop count × damage × accuracy; expected DPS
+                = volley ÷ reload seconds. Assumes every soldier fires once per
+                cycle. Armour, ranks, movement penalties, magazine timing,
+                charge and target bonuses are excluded. Health is the unit's
+                health modifier, not individual HP.
+              </p>
+            </section>
+            <p id="save-status" role="status"></p>
+          </div>
+        </div>
+      </div>
+      <div id="unit-panel" role="tabpanel" aria-labelledby="unit-tab" hidden>
+        <p class="notice">
+          Local content drafts. Edits affect this inspector only; export them
+          for review and later integration. Your drafts persist in this browser.
+        </p>
+        <section>
+          <h2>Catalogue</h2>
+          <div class="stat-grid">
             <label
-              >Unit
-              <select id="unit"></select></label
+              >Category
+              <select id="catalog-category">
+                <option value="">All</option>
+                <option value="unit">Soldiers / vehicles / siege</option>
+                <option value="vessel">Boats</option>
+                <option value="aircraft">Aircraft</option>
+                <option value="weapon">Emplacements / strategic weapons</option>
+                <option value="building">Buildings</option>
+              </select></label
+            ><label>Search <input id="catalog-search" type="search" /></label
             ><label
-              >Formation
-              <select id="shape"></select></label
+              >Entity
+              <select id="catalog-entity"></select
+            ></label>
+          </div>
+          <button id="catalog-reset">Reset this draft</button>
+          <button id="catalog-export">Export all drafts</button>
+          <p id="catalog-status" role="status"></p>
+        </section>
+        <section id="catalog-filters">
+          <div class="stat-grid">
+            <label
+              >Age
+              <select id="catalog-age">
+                <option value="">All ages</option>
+              </select></label
             ><label
-              >Animation
-              <select id="pose">
-                <option value="idle">Idle</option>
-                <option value="running">Running</option>
-                <option value="attack">Attack</option>
+              >Unit type
+              <select id="catalog-type">
+                <option value="">All types</option>
+              </select></label
+            ><label
+              >Sort
+              <select id="catalog-sort">
+                <option value="age">Age, then name</option>
+                <option value="name">Name</option>
+                <option value="dps">eDPS, highest first</option>
+                <option value="health">Health, highest first</option>
               </select></label
             >
-            <div id="scene-controls"></div>
-            <label
-              ><input id="footprint" type="checkbox" checked /> Show body
-              envelope</label
-            >
-          </section>
+          </div>
+          <p id="catalog-count"></p>
+        </section>
+        <div id="catalog-cards" class="catalog-cards"></div>
+        <div class="catalog-layout" id="catalog-editor" hidden>
           <section>
-            <h2>Cavalry experiment</h2>
-            <div id="cavalry-controls"></div>
-            <p>
-              Size and pitch are independent. Values multiply the current game
-              settings, including its existing 0.5 soldier scale and 0.8 cavalry
-              pitch.
-            </p>
+            <h2 id="catalog-title">Unit statistics</h2>
+            <p id="catalog-meta"></p>
+            <div id="catalog-fields"></div>
+            <details>
+              <summary>Complete definition / advanced edit</summary>
+              <p>
+                Native content units: positions/ranges use 256 fixed units per
+                tile, time uses 20 ticks per second, armour and penetration
+                percentages use basis points. Apply validates the draft; it does
+                not write to the game.
+              </p>
+              <textarea
+                id="catalog-json"
+                rows="16"
+                spellcheck="false"
+                aria-label="Complete draft definition"
+              ></textarea
+              ><button id="catalog-apply">Apply JSON to draft</button>
+            </details>
           </section>
-          <section>
-            <h2>Projectile experiment</h2>
-            <label
-              >Projectile
-              <select id="projectile">
-                <option value="javelin">Javelin</option>
-                <option value="bow">Arrow</option>
-                <option value="bolt">Bolt</option>
-                <option value="bullet">Bullet</option>
-                <option value="rocket">Rocket silhouette</option>
-              </select></label
-            >
-            <div id="projectile-controls"></div>
-            <p>
-              Separate multipliers for flight, ground and embedded shafts. The
-              same silhouettes are used in all three states.
-            </p>
-          </section>
-          <section>
-            <h2>Naval volleys</h2>
-            <label
-              ><input id="naval" type="checkbox" checked /> Show proposed
-              projectiles</label
-            ><label
-              >Proposed weapon
-              <select id="naval-kind">
-                <option value="bow">Arrows</option>
-                <option value="javelin">Javelins</option>
-                <option value="bolt">Bolts</option>
-              </select></label
-            >
-            <div id="naval-controls"></div>
-            <p>
-              Early warships have direct attacks today. Weapon choice, flight
-              time and shot count here are presentation proposals; they do not
-              multiply ship damage.
-            </p>
-          </section>
-        </aside>
-        <div class="scenes">
-          <section>
-            <div class="section-head">
-              <h2>Formation comparison</h2>
-              <span id="asset-status" role="status">Loading artwork…</span>
-            </div>
-            <div class="compare">
-              <article>
-                <h3>Current</h3>
-                <canvas
-                  id="baseline"
-                  aria-label="Current unit formation"
-                ></canvas>
-                <p id="baseline-metrics"></p>
-              </article>
-              <article>
-                <h3>Experiment</h3>
-                <canvas
-                  id="experiment"
-                  aria-label="Experimental unit formation"
-                ></canvas>
-                <p id="experiment-metrics"></p>
-              </article>
-            </div>
-            <p id="overlap" class="warning"></p>
-            <p>
-              Both views use the same camera scale and soldier count. Artwork
-              overlap depends on each pose; body envelopes describe geometry,
-              not transparent image margins.
-            </p>
-          </section>
-          <section>
-            <h2>Projectile states</h2>
-            <div class="compare">
-              <article>
-                <h3>Current</h3>
-                <canvas
-                  id="projectile-baseline"
-                  aria-label="Current projectiles in flight, grounded and embedded"
-                ></canvas>
-              </article>
-              <article>
-                <h3>Experiment</h3>
-                <canvas
-                  id="projectile-experiment"
-                  aria-label="Experimental projectiles in flight, grounded and embedded"
-                ></canvas>
-              </article>
-            </div>
-            <p>
-              Embedded shafts are drawn beneath the soldier, matching live
-              layering. This is a controlled size comparison, not a collision or
-              damage test.
-            </p>
-          </section>
-          <section>
-            <h2>Early warship engagements</h2>
-            <div class="naval-grid" id="ships"></div>
-            <p>
-              All four ages share the selected proposed weapon. Ship attack
-              cadence and hull art use their current definitions. Flight follows
-              a synthetic arc between stationary hulls.
-            </p>
-          </section>
-          <section>
-            <h2>Statistical sandbox</h2>
-            <p>
-              Unit selection loads authored health and speed percentages,
-              damage, range and reload. Accuracy starts at 100% as an explicit
-              estimate; the game has no authored accuracy field. Changing units
-              resets these statistical inputs.
-            </p>
-            <div id="stat-controls" class="stat-grid"></div>
-            <div id="stats" class="stat-results" aria-live="polite"></div>
-            <p>
-              Expected volley = troop count × damage × accuracy; expected DPS =
-              volley ÷ reload seconds. Assumes every soldier fires once per
-              cycle. Armour, ranks, movement penalties, magazine timing, charge
-              and target bonuses are excluded. Health is the unit's health
-              modifier, not individual HP.
-            </p>
-          </section>
-          <p id="save-status" role="status"></p>
+          <div>
+            <section>
+              <h2>eDPS target</h2>
+              <div id="target-fields" class="stat-grid"></div>
+              <label
+                >Target class
+                <select id="target-tag">
+                  <option>infantry</option>
+                  <option>ranged</option>
+                  <option>mounted</option>
+                  <option>vehicle</option>
+                  <option>siege</option>
+                  <option>ship</option>
+                  <option>aircraft</option>
+                  <option>structure</option>
+                  <option>wall</option>
+                </select></label
+              ><label
+                >Armour model
+                <select id="target-armour">
+                  <option value="points">Points</option>
+                  <option value="percentage">Percentage (basis points)</option>
+                </select></label
+              ><label
+                ><input id="target-soldiers" type="checkbox" checked /> Target
+                consists of soldiers</label
+              >
+              <div id="catalog-dps"></div>
+              <p>
+                Stationary full-strength estimate. Accuracy is hypothetical.
+                Target class, armour, penetration, bonuses, cover, contributor
+                count and sustained cadence are included. Channels are shown
+                separately; shared commitments mean their eDPS cannot simply be
+                added. Contact geometry, charge, splash victim count and
+                elevation are excluded. Mission payloads use the editable
+                estimated sortie duration.
+              </p>
+            </section>
+            <section id="catalog-preview-section">
+              <h3>Inspect squad</h3>
+              <label
+                >Recipe variant
+                <select id="catalog-variant">
+                  <option value="base">Base</option>
+                  <option value="enlarged">
+                    After larger formation upgrade
+                  </option>
+                </select></label
+              >
+              <p id="catalog-upgrade"></p>
+              <fieldset id="catalog-shapes">
+                <legend>Allowed formations for this recipe</legend>
+              </fieldset>
+              <label
+                >Inspect formation
+                <select id="catalog-shape"></select></label
+              ><label
+                >Camera pixels / tile
+                <input
+                  id="catalog-zoom"
+                  type="range"
+                  min="8"
+                  max="96"
+                  value="48" /></label
+              ><canvas
+                id="catalog-preview"
+                aria-label="Selected unit recipe and formation preview"
+              ></canvas>
+              <p id="catalog-preview-status"></p>
+            </section>
+          </div>
         </div>
       </div>
     </main>

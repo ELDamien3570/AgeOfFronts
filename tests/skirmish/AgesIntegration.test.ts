@@ -17,6 +17,7 @@ import {
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
 import { SpatialGrid } from "../../src/skirmish/SpatialGrid";
+import { quoteShipRefits, vesselRefitCost } from "../../src/skirmish/domain/RefitQuote";
 
 function match(water = false, ai = false) {
   const data = new Uint8Array(96 * 64).fill(133);
@@ -265,6 +266,37 @@ describe("integrated shipments and military progression", () => {
     const health = t.health;
     m.step();
     expect(t.health).toBe(health);
+  });
+  it.each([0, 1, 2])("quotes and refits a moving ship in territory owned by %s, but rejects combat and active refits", (owner) => {
+    const m = match(true);
+    complete(m);
+    const s = ship(m, 10), target = VESSEL.get("bronzeage-warship")!;
+    m.owners.fill(owner);
+    m.expansion!.supply.inventories[1] = { ...vesselRefitCost(target).items };
+    const destination = m.map.ref(20, 30);
+    m.updateShip(s.id, { destination, waypoints: [destination], path: [destination], nextPathIndex: 1, attackTargetId: 999, fighting: true });
+    const quote = () => quoteShipRefits([s], undefined, {
+      player: m.players[0], research: [target.technologyId], inventory: m.expansion!.supply.inventories[1],
+    })!;
+    const command = { type: "refit-ships" as const, playerId: 1, shipIds: [s.id], definitionId: target.id };
+    const gold = m.players[0].gold;
+    expect(quote().reason).toBe("Needs no combat or active refit");
+    expect(m.applyCommand(command)).toMatch(/out of combat/);
+    expect(m.players[0].gold).toBe(gold);
+    m.updateShip(s.id, { fighting: false });
+    expect(quote().reason).toBeNull();
+    expect(quote().selected.map(s => s.id)).toEqual([s.id]);
+    expect(m.applyCommand(command)).toBeNull();
+    expect(s.refit?.targetId).toBe(target.id);
+    expect(s.destination).toBeNull();
+    expect(s.waypoints).toEqual([]);
+    expect(s.path).toEqual([]);
+    expect(s.nextPathIndex).toBe(0);
+    expect(s.attackTargetId).toBeNull();
+    const paidGold = m.players[0].gold;
+    expect(quote().reason).toBe("Needs no combat or active refit");
+    expect(m.applyCommand(command)).not.toBeNull();
+    expect(m.players[0].gold).toBe(paidGold);
   });
   it("refits a fleet atomically, preserves health, resets XP and rejects movement during refit", () => {
     const m = match(true);

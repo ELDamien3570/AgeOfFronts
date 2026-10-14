@@ -4065,7 +4065,11 @@ export class Skirmish {
         if(replacement){this.activateOrder(squad,{type:"attack",targetId:replacement.id},[],true);return null;}
       }
       const engagementDistance=ranged?stopDistance:cavalryAttackGap(squad,target);
-      if(gap<=engagementDistance+(ranged && squad.fighting && squad.combatTargetId===target.id?CONTACT.release:CONTACT_TOLERANCE) && legalShot)return null;
+      // A rank-wave rider must finish braking against its admitted standoff
+      // point. Dropping intent at the first in-range tick lets its remaining
+      // velocity coast through the gap, especially with a compact footprint.
+      const brakingAtStandoff=!ranged && engagementDistance>CONTACT.enter && (squad.locomotion?.speed??0)>0;
+      if(gap<=engagementDistance+(ranged && squad.fighting && squad.combatTargetId===target.id?CONTACT.release:CONTACT_TOLERANCE) && legalShot && !brakingAtStandoff)return null;
       const approach = this.attackApproaches.point(squad);
       if (approach && !ranged && !squad.charge && gap>stopDistance+CONTACT.release && distanceSquared(squad,approach) > (FIXED/4)**2 &&
         standable(this.map,approach,squadRadius(squad.kind), this.amphibious(squad.playerId)) &&
