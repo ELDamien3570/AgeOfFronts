@@ -36,7 +36,17 @@ function serveStatic(
 ): boolean {
   if (!existsSync(staticDir)) return false;
   const rawUrl = req.url?.split("?")[0] ?? "/";
-  let pathname = normalize(decodeURIComponent(rawUrl)).replace(
+  let decodedPath: string;
+  try {
+    decodedPath = decodeURIComponent(rawUrl);
+  } catch {
+    // Invalid escapes/UTF-8 are request errors, never coordinator failures.
+    // Letting URIError escape the HTTP listener loses every live match.
+    res.setHeader("Cache-Control", "no-store");
+    res.writeHead(400).end();
+    return true;
+  }
+  let pathname = normalize(decodedPath).replace(
     /^(\.\.[/\\])+/,
     "",
   );
