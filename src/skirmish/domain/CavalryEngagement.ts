@@ -1,5 +1,6 @@
+import { secondsToTicks } from '../Protocol';
 import type { Squad } from '../Protocol';
-export const CAVALRY_ENTRY = Object.freeze({maximum:384,duration:40,corridor:64});
+export const CAVALRY_ENTRY = Object.freeze({maximum:384,duration:secondsToTicks(2),corridor:64});
 export interface CavalryEngagement {
   phase:'penetrating'|'engaged'|'withdrawing';
   tick:number;untilTick:number;

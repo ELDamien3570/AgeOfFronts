@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import {describe,it,expect,vi} from 'vitest';
 import {Diplomacy} from '../../src/skirmish/domain/Diplomacy';
 import {GameMapImpl} from '../../src/core/game/GameMap';
@@ -20,9 +21,9 @@ describe('raid diplomacy permissions',()=>{
   const {game,d,a,b}=fixture();expect(d.canSteal(b.id,a.id,0,false)).toBe(false);
   expect(d.beginAiRaid(b,a,0)).toBeNull();expect(d.canSteal(b.id,a.id,0,false)).toBe(true);
   expect(d.hostile(a.id,b.id)).toBe(true);expect(d.canCapture(b.id,a.id)).toBe(false);
-  expect(d.beginAiRaid(a,b,0)).toContain('AI raid');d.step(1200,game.players);expect(d.hostile(a.id,b.id)).toBe(false);
-  d.beginAiRaid(b,a,1201);d.action(a,b,'offer-peace',1202);d.action(b,a,'accept-peace',1203);
-  expect(d.beginAiRaid(b,a,1204)).toContain('Peace');
+  expect(d.beginAiRaid(a,b,0)).toContain('AI raid');d.step(secondsToTicks(60),game.players);expect(d.hostile(a.id,b.id)).toBe(false);
+  d.beginAiRaid(b,a,secondsToTicks(60.05));d.action(a,b,'offer-peace',secondsToTicks(60.1));d.action(b,a,'accept-peace',secondsToTicks(60.15));
+  expect(d.beginAiRaid(b,a,secondsToTicks(60.2))).toContain('Peace');
  });
  it('prefers unclaimed expansion at parity, but permits preparing retaliation against a trade raider',()=>{
   const {game,d,a,b}=fixture();b.personalityId='balanced';
@@ -30,9 +31,9 @@ describe('raid diplomacy permissions',()=>{
     for(let i=0;i<12;i++)game.addSquad({...structuredClone(template),id:game.allocateId(),x:template.x+i*FIXED,y:template.y});}
   game.players[2].eliminated=true;
   const eligible=vi.spyOn(game.expansion!.geography,'eligible').mockReturnValue(true);
-  const forces=new Map(game.players.map(p=>[p.id,15]));game.tick=3000;game.expansion!.operations.step(forces);
+  const forces=new Map(game.players.map(p=>[p.id,15]));game.tick=secondsToTicks(150);game.expansion!.operations.step(forces);
   expect(game.hasUnclaimedFrontier(b.id)).toBe(true);expect(game.expansion!.operations.state(b.id)?.phase).toBe('peace');
-  d.recordTheft(a.id,b.id,game.tick);game.tick+=300;game.expansion!.operations.step(forces);
+  d.recordTheft(a.id,b.id,game.tick);game.tick+=secondsToTicks(15);game.expansion!.operations.step(forces);
   expect(game.expansion!.operations.state(b.id)).toMatchObject({phase:'preparing',target:a.id});
   expect(d.declaredWar(a.id,b.id)).toBe(false);eligible.mockRestore();
  });
@@ -89,20 +90,20 @@ describe('raid diplomacy permissions',()=>{
   game.tick++;game.expansion!.battle.advanceProjectiles();expect(remainingHealth(target)).toBeLessThan(before);
  });
  it('neutrality prevents military attacks and foreign capture while preserving unclaimed expansion',()=>{const {d}=fixture();expect(d.hostile(1,2)).toBe(false);expect(d.canCapture(1,2)).toBe(false);expect(d.canCapture(1,0)).toBe(true);expect(d.canSteal(1,2,0,true)).toBe(true);expect(d.canSteal(2,1,0,false)).toBe(false);});
- it('actual theft establishes directional raid and mutual combat but no conquest',()=>{const {d}=fixture();d.recordTheft(1,2,10);expect(d.state.embargoes).toEqual([{initiator:1,victim:2,lastTheftTick:10}]);expect(d.hostile(1,2)).toBe(true);expect(d.hostile(2,1)).toBe(true);expect(d.canCapture(1,2)).toBe(false);expect(d.canAttackStructure(1,2)).toBe(false);});
- it('theft refresh does not invalidate permission caches and expiry removes raid permission',()=>{const {d,game}=fixture();d.recordTheft(1,2,0);const revision=d.permissionSignature(1);d.recordTheft(1,2,100);expect(d.permissionSignature(1)).toBe(revision);d.step(1299,game.players);expect(d.hostile(1,2)).toBe(true);d.step(1300,game.players);expect(d.hostile(1,2)).toBe(false);expect(d.permissionSignature(1)).not.toBe(revision);});
- it('exemption suppresses peacetime theft but leaves raid and wartime theft intact',()=>{const {d,a,b}=fixture();d.recordTheft(1,2,0);expect(d.action(a,b,'dont-embargo',1)).toBeNull();expect(d.embargo(1,2)).toBe(true);expect(d.canSteal(1,2,1,true)).toBe(false);d.establishWar(1,2,2,'entry');expect(d.canSteal(1,2,2,true)).toBe(true);expect(d.state.wars?.[0]).toMatchObject({initiator:1,cause:'entry',startedTick:2});});
- it('accepted peace ends raids and war, protects for one minute and persists cooldowns',()=>{const {d,a,b,game}=fixture();d.establishWar(1,2,0);expect(d.action(a,b,'offer-peace',1)).toBeNull();expect(d.action(b,a,'accept-peace',2)).toBeNull();expect(d.declaredWar(1,2)).toBe(false);expect(d.hostile(1,2)).toBe(false);expect(d.canSteal(1,2,3,true)).toBe(false);expect(d.establishWar(1,2,3)).toContain('Peace');const restored=new Diplomacy(undefined,'raids-v1');restored.restore(d.checkpoint());restored.step(3,game.players);expect(restored.protected(1,2)).toBe(true);restored.step(1202,game.players);expect(restored.protected(1,2)).toBe(false);restored.establishWar(1,2,1203);expect(restored.action(a,b,'offer-peace',1204)).toContain('cooldown');});
+ it('actual theft establishes directional raid and mutual combat but no conquest',()=>{const {d}=fixture();d.recordTheft(1,2,secondsToTicks(0.5));expect(d.state.embargoes).toEqual([{initiator:1,victim:2,lastTheftTick:secondsToTicks(0.5)}]);expect(d.hostile(1,2)).toBe(true);expect(d.hostile(2,1)).toBe(true);expect(d.canCapture(1,2)).toBe(false);expect(d.canAttackStructure(1,2)).toBe(false);});
+ it('theft refresh does not invalidate permission caches and expiry removes raid permission',()=>{const {d,game}=fixture();d.recordTheft(1,2,0);const revision=d.permissionSignature(1);d.recordTheft(1,2,secondsToTicks(5));expect(d.permissionSignature(1)).toBe(revision);d.step(secondsToTicks(65)-1,game.players);expect(d.hostile(1,2)).toBe(true);d.step(secondsToTicks(65),game.players);expect(d.hostile(1,2)).toBe(false);expect(d.permissionSignature(1)).not.toBe(revision);});
+ it('exemption suppresses peacetime theft but leaves raid and wartime theft intact',()=>{const {d,a,b}=fixture();d.recordTheft(1,2,0);expect(d.action(a,b,'dont-embargo',1)).toBeNull();expect(d.embargo(1,2)).toBe(true);expect(d.canSteal(1,2,1,true)).toBe(false);d.establishWar(1,2,secondsToTicks(0.1),'entry');expect(d.canSteal(1,2,secondsToTicks(0.1),true)).toBe(true);expect(d.state.wars?.[0]).toMatchObject({initiator:1,cause:'entry',startedTick:secondsToTicks(0.1)});});
+ it('accepted peace ends raids and war, protects for one minute and persists cooldowns',()=>{const {d,a,b,game}=fixture();d.establishWar(1,2,0);expect(d.action(a,b,'offer-peace',1)).toBeNull();expect(d.action(b,a,'accept-peace',secondsToTicks(0.1))).toBeNull();expect(d.declaredWar(1,2)).toBe(false);expect(d.hostile(1,2)).toBe(false);expect(d.canSteal(1,2,secondsToTicks(0.15),true)).toBe(false);expect(d.establishWar(1,2,secondsToTicks(0.15))).toContain('Peace');const restored=new Diplomacy(undefined,'raids-v1');restored.restore(d.checkpoint());restored.step(secondsToTicks(0.15),game.players);expect(restored.protected(1,2)).toBe(true);restored.step(secondsToTicks(60.1),game.players);expect(restored.protected(1,2)).toBe(false);restored.establishWar(1,2,secondsToTicks(60.15));expect(restored.action(a,b,'offer-peace',secondsToTicks(60.2))).toContain('cooldown');});
  it('AI threat observation cannot manufacture neutral combat/capture permission',()=>{const {d,game}=fixture();game.expansion!.operations.threatened(2,1,game.players[1].base);expect(d.hostile(1,2)).toBe(false);expect(game.expansion!.operations.canTarget(2,1)).toBe(false);expect(game.expansion!.operations.canEnter(2,1,game.players[0].base)).toBe(false);});
  it('AI prepares an invasion but waits for a route certificate before declaring actual war',()=>{
   const {game,d,b}=fixture(),template=game.squads.find(s=>s.playerId===b.id)!;b.reserves=2000;
   for(let i=0;i<12;i++)game.addSquad({...structuredClone(template),id:game.allocateId(),x:template.x+i*FIXED,y:template.y});
   game.expansion!.operations.restore({records:[[b.id,{phase:'preparing',target:1,since:0,nextThink:0,threats:[],cursor:0,score:0}]],revision:0,territorialRevision:0});
   const quote=vi.spyOn(game.expansion!.economy.routes,'request').mockReturnValue({pending:true});
-  game.tick=1000;game.expansion!.operations.step(new Map(game.players.map(p=>[p.id,p.id===b.id?15:3])));
+  game.tick=secondsToTicks(50);game.expansion!.operations.step(new Map(game.players.map(p=>[p.id,p.id===b.id?15:3])));
   expect(d.declaredWar(1,2)).toBe(false);expect(quote).toHaveBeenCalled();
-  quote.mockReturnValue({pending:false,path:[b.base,game.players[0].base]});game.tick=1100;
-  game.expansion!.operations.step(new Map(game.players.map(p=>[p.id,p.id===b.id?15:3])));expect(d.state.wars).toContainEqual({a:2,b:1,initiator:2,cause:'invasion',startedTick:1100});quote.mockRestore();
+  quote.mockReturnValue({pending:false,path:[b.base,game.players[0].base]});game.tick=secondsToTicks(55);
+  game.expansion!.operations.step(new Map(game.players.map(p=>[p.id,p.id===b.id?15:3])));expect(d.state.wars).toContainEqual({a:2,b:1,initiator:2,cause:'invasion',startedTick:secondsToTicks(55)});quote.mockRestore();
  });
  it('new actions pass the authoritative multiplayer command schema and states survive codec',()=>{const {d,a,b,game}=fixture();for(const action of ['offer-peace','accept-peace','reject-peace','dont-embargo','allow-embargo'])expect(commandSchema.safeParse({type:'alliance',playerId:1,otherId:2,action}).success).toBe(true);d.recordTheft(1,2,0);d.action(a,b,'dont-embargo',0);const decoded=new SnapshotDecoder().decodeLatest(new SnapshotEncoder().encode(game.snapshot(),game.tileChanges,game.replicationFacts()));expect(decoded.expansion?.diplomacy.embargoes).toEqual(d.state.embargoes);expect(decoded.expansion?.diplomacyRules).toBe('raids-v1');});
 });

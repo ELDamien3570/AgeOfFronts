@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
@@ -76,7 +77,7 @@ describe("AI equipment production and refit rotation", () => {
     ).toBeNull();
     e.supply.step(1, m.players, m.buildings, m.owners);
     expect(stock.bronze).toBe(0);
-    for (let i = 0; i < 55; i++) m.step();
+    for (let i = 0; i < secondsToTicks(2.75); i++) m.step();
     expect(e.supply.jobs[b.id]?.recipeId).toBe("make-bronzeage-equipment");
     expect(e.supply.productionPlans()[b.id].recipeId).toBe(
       "make-bronzeage-equipment",
@@ -97,11 +98,11 @@ describe("AI equipment production and refit rotation", () => {
       m.updateSquad(s.id, { moved: true });
       m.updateSquad(s.id, { order: { type: "move", tile: p.base } });
     }
-    for (let i = 0; i < 55; i++) m.step();
+    for (let i = 0; i < secondsToTicks(2.75); i++) m.step();
     expect(
       own.filter((s) => e.modernization.holds(s.id) || s.refit),
     ).toHaveLength(1);
-    for (let i = 0; i < 300; i++) m.step();
+    for (let i = 0; i < secondsToTicks(15); i++) m.step();
     expect(
       own.filter((s) => s.definitionId === "modern-infantry"),
     ).toHaveLength(1);
@@ -129,7 +130,7 @@ describe("AI equipment production and refit rotation", () => {
     expect(e.supply.setProduction(m.players[0], b, null)).not.toBeNull();
     expect(e.supply.setProduction(p, b, null)).toBeNull();
     for (let i = 0; i < 900; i++)
-      e.supply.step(i + 2, m.players, m.buildings, m.owners);
+      e.supply.step(secondsToTicks(((i)/20+0.1)), m.players, m.buildings, m.owners);
     expect(stock["equipment:modern"]).toBe(1);
     expect(e.supply.jobs[b.id]).toBeUndefined();
   });

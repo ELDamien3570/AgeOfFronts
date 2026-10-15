@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import type { Player } from "../Protocol";
 import type { Diplomacy } from "./Diplomacy";
 import type { AiOperations } from "./AiOperations";
@@ -24,7 +25,7 @@ export class PairRelations {
   }
   threatened(a:number,b:number):void {
     if(!this.diplomacy.hostile(a,b))return;
-    this.recent.set(key(a,b),{a:Math.min(a,b),b:Math.max(a,b),until:this.world.tick+600});
+    this.recent.set(key(a,b),{a:Math.min(a,b),b:Math.max(a,b),until:this.world.tick+secondsToTicks(30)});
     this.stamp="";
   }
   private refresh():void {

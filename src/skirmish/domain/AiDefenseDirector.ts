@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from '../Protocol';
+import { secondsToTicks } from '../Protocol';
 import { effectiveRange, maxEffectiveRange } from "./ElevationAdvantage";
 import { readyFraction } from './Manpower';
 import { UNITS } from "../content/Units";
@@ -131,7 +133,7 @@ export class AiDefenseDirector {
   private abandon(project: DefenseProject, reason: string): void {
     project.phase = "abandoned";
     project.reason = reason;
-    project.nextDecision = this.expansion.world.tick + 400;
+    project.nextDecision = this.expansion.world.tick + secondsToTicks(20);
     this.economy.ledger.release(project.id);
     this.economy.assets.release(project.id);
     this.diagnostics.abandoned++;
@@ -166,8 +168,8 @@ export class AiDefenseDirector {
       120000,
       previous.amount +
         Math.floor(
-          (income * Math.min(120, world.tick - previous.tick) * fraction) /
-            2000,
+          (income * Math.min(secondsToTicks(6), world.tick - previous.tick) * fraction) /
+            (100*TICKS_PER_SECOND),
         ),
     );
     previous.tick = world.tick;
@@ -196,7 +198,7 @@ export class AiDefenseDirector {
           c.kind !== "outpost" &&
           c.sites.length >= 2 &&
           this.economy.cities.valid(c) &&
-          world.tick - c.stableSince >= 100,
+          world.tick - c.stableSince >= secondsToTicks(5),
       )
       .sort(
         (a, b) =>
@@ -241,7 +243,7 @@ export class AiDefenseDirector {
         ![...facts.nearby(tile, 3)].some(b => world.map.euclideanDistSquared(tile, b.tile) < 9), pending?.state);
       this.diagnostics.outlineWork = outline.step(32);
       this.outlines.set(player.id, { cityId: city.id, revision: city.revision,
-        retryAt: outline.state.phase === "failed" ? world.tick + 400 : 0, state: outline.state });
+        retryAt: outline.state.phase === "failed" ? world.tick + secondsToTicks(20) : 0, state: outline.state });
       const result = outline.result();
       if (!result) {
         if (outline.state.phase === "complete") this.outlines.delete(player.id);
@@ -353,7 +355,7 @@ export class AiDefenseDirector {
           generation: project.generation,
           priority: "defense" as const,
           createdTick: world.tick,
-          expiresTick: world.tick + 200,
+          expiresTick: world.tick + secondsToTicks(10),
         })),
       )
     )
@@ -474,7 +476,7 @@ export class AiDefenseDirector {
           missing > 0 &&
           (!previous ||
             previous.health <= health ||
-            (previous.health - health) * 20 <=
+            (previous.health - health) * TICKS_PER_SECOND <=
               50 * Math.max(1, world.tick - previous.tick))
         );
       })
@@ -504,7 +506,7 @@ export class AiDefenseDirector {
           amounts: cost,
           createdTick: world.tick,
           progressTick: world.tick,
-          expiresTick: world.tick + 200,
+          expiresTick: world.tick + secondsToTicks(10),
         },
         liquid,
       )
@@ -526,7 +528,7 @@ export class AiDefenseDirector {
   step(): void {
     const { world } = this.expansion;
     this.diagnostics.outlineWork = 0;
-    if (world.tick % 3) return;
+    if (world.tick % secondsToTicks(.15)) return;
     for (let i = 0; i < world.players.length; i++) {
       const player = world.players[this.cursor % world.players.length];
       this.cursor = (this.cursor + 1) % world.players.length;
@@ -544,7 +546,7 @@ export class AiDefenseDirector {
         if ((this.proposalRetry.get(player.id) ?? 0) > world.tick) continue;
         project = this.proposal(player);
         if (project) this.projects.set(player.id, project);
-        else if (!this.outlines.has(player.id)) this.proposalRetry.set(player.id, world.tick + 120);
+        else if (!this.outlines.has(player.id)) this.proposalRetry.set(player.id, world.tick + secondsToTicks(6));
       }
       if (project) this.advance(project, player, allowance);
       break;
@@ -557,7 +559,7 @@ export class AiDefenseDirector {
   ): void {
     const { world, progression } = this.expansion,
       city = this.economy.cities.records.get(project.cityId);
-    project.nextDecision = world.tick + 20;
+    project.nextDecision = world.tick + secondsToTicks(1);
     if (
       project.generation !== world.aiGeneration(player.id) ||
       progression.states[player.id].age !== project.age ||
@@ -575,7 +577,7 @@ export class AiDefenseDirector {
       this.abandon(project, "Hub, tier, ownership or a paid endpoint changed");
       return;
     }
-    if (world.tick - project.lastProgress > 2400) {
+    if (world.tick - project.lastProgress > secondsToTicks(120)) {
       this.abandon(project, "Funding or construction made no progress");
       return;
     }
@@ -628,7 +630,7 @@ export class AiDefenseDirector {
       project.reason = "Waiting for troops to clear the planned footprint";
       return;
     }
-    if (world.tick - project.quietSince < 100) return;
+    if (world.tick - project.quietSince < secondsToTicks(5)) return;
     const sites = project.sites.slice(project.next, end),
       quote = quoteAiDefense({
         map: world.map,
@@ -647,7 +649,7 @@ export class AiDefenseDirector {
       this.abandon(project, quote);
       return;
     }
-    const extent=Math.max(40,Math.ceil((quote.ticks+100)*Math.ceil(56*Math.max(...UNITS.map(u=>Math.max(u.speedPercent,u.charge?.speedPercent??0)))/100)/FIXED)+Math.ceil(Math.max(...UNITS.map(u=>maxEffectiveRange(u.attack)))/FIXED)+12);
+    const extent=Math.max(40,Math.ceil((quote.ticks+secondsToTicks(5))*Math.ceil(1120/TICKS_PER_SECOND*Math.max(...UNITS.map(u=>Math.max(u.speedPercent,u.charge?.speedPercent??0)))/100)/FIXED)+Math.ceil(Math.max(...UNITS.map(u=>maxEffectiveRange(u.attack)))/FIXED)+12);
     const candidates=world.nearbyArmyEnemies({x:(world.map.x(city.anchorTile)+.5)*FIXED,y:(world.map.y(city.anchorTile)+.5)*FIXED},extent*FIXED,player.id);
     for (const enemy of candidates)
       if (
@@ -680,7 +682,7 @@ export class AiDefenseDirector {
             Math.max(...sites.map(s=>effectiveRange(world,enemy,this.expansion.unit(enemy).attack,{x:(world.map.x(s.tile)+.5)*FIXED,y:(world.map.y(s.tile)+.5)*FIXED}))),
           arrival =
             Math.max(0, distance) / Math.max(1, world.ordinarySpeed(enemy));
-        if (arrival < quote.ticks + 100) {
+        if (arrival < quote.ticks + secondsToTicks(5)) {
           project.phase = "paused";
           project.reason = "No safe construction window before hostile contact";
           project.quietSince = world.tick;
@@ -712,7 +714,7 @@ export class AiDefenseDirector {
           amounts: cost,
           createdTick: world.tick,
           progressTick: world.tick,
-          expiresTick: world.tick + 2400,
+          expiresTick: world.tick + secondsToTicks(120),
         },
         liquid,
       )
@@ -744,7 +746,7 @@ export class AiDefenseDirector {
     project.lastProgress = world.tick;
     project.phase = project.next === 1 ? "building" : "linking";
     allowance.amount = Math.max(0, allowance.amount - (step.cost.gold ?? 0));
-    this.nextBuild = world.tick + 20;
+    this.nextBuild = world.tick + secondsToTicks(1);
     // Preserve the rest of the useful opening phase after its first payment.
     const remaining: Cost = {
       gold: Math.max(0, (cost.gold ?? 0) - (step.cost.gold ?? 0)),
@@ -765,7 +767,7 @@ export class AiDefenseDirector {
           amounts: remaining,
           createdTick: world.tick,
           progressTick: world.tick,
-          expiresTick: world.tick + 2400,
+          expiresTick: world.tick + secondsToTicks(120),
         },
         this.liquid(player),
       );

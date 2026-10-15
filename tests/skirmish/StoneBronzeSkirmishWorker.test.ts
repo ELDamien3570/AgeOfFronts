@@ -77,7 +77,7 @@ describe("Stone/Bronze demo through the normal worker", () => {
     });
     await vi.advanceTimersByTimeAsync(1000);
     snapshot = latest();
-    expect(snapshot.tick).toBeGreaterThanOrEqual(20);
+    expect(snapshot.tick).toBeGreaterThanOrEqual(8);
     expect(
       snapshot.squads.find((s) => s.id === squad.id)!.locomotion,
     ).toBeTruthy();
@@ -87,7 +87,7 @@ describe("Stone/Bronze demo through the normal worker", () => {
     expect(messages.filter((m) => m.type === "state")).toHaveLength(0);
     send({ type: "pause", paused: false });
     expect(latest().tick).toBe(pausedTick);
-    await vi.advanceTimersByTimeAsync(50);
+    await vi.advanceTimersByTimeAsync(125);
     expect(latest().tick).toBe(pausedTick + 1);
     messages.length = 0;
     decoder = new SnapshotDecoder();

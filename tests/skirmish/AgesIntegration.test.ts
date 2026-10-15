@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { remainingHealth, HEALTH_SCALE } from "../../src/skirmish/domain/Manpower";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -200,7 +201,7 @@ describe("integrated shipments and military progression", () => {
       b = building(m, "city", 18, 10);
     e.progression.states[1].completed.push("rus-stoneage-land-traders");
     e.supply.goods.set(factory.id, 25);
-    tradeStep(m, 22);
+    tradeStep(m, secondsToTicks(1.1));
     const actor = e.trade.actors[0];
     expect(actor.loaded).toBe(25);
     m.removeBuilding(a.id);
@@ -223,7 +224,7 @@ describe("integrated shipments and military progression", () => {
     const prize = building(m, "city", 11, 10, 2);
     e.progression.states[1].completed.push("rus-stoneage-land-traders");
     e.supply.goods.set(factory.id, 25);
-    tradeStep(m, 22);
+    tradeStep(m, secondsToTicks(1.1));
     const actor = e.trade.actors[0];
     expect(actor.valuePerGood).toBe(20);
     e.progression.states[1].age = "Modern";
@@ -236,7 +237,7 @@ describe("integrated shipments and military progression", () => {
     tradeStep(m);
     expect(actor.state).toBe("prize");
     expect(actor.playerId).toBe(2);
-    tradeStep(m, 23);
+    tradeStep(m, secondsToTicks(1.15));
     expect(actor.destination).toBe(prize.id);
     m.updateSquad(captor.id, { x: 85 * FIXED });
     for (let i = 0; i < 200 && e.trade.actors.includes(actor); i++)
@@ -244,7 +245,7 @@ describe("integrated shipments and military progression", () => {
     expect(e.trade.actors).not.toContain(actor);
     expect(e.trade.deliveredGold[2]).toBe(500);
     const paid = m.players[1].gold;
-    tradeStep(m, 100);
+    tradeStep(m, secondsToTicks(5));
     expect(m.players[1].gold).toBe(paid);
   });
   it("approaches naval attack targets, damages on cooldown and awards effective promotion XP", () => {
@@ -463,10 +464,10 @@ describe("integrated shipments and military progression", () => {
     });
     const airfield = building(m, "airstrip", 85, 55, 2, "Modern");
     m.owners[airfield.tile] = p.id;
-    for (let i = 0; i < 10; i++) m.step();
+    for (let i = 0; i < secondsToTicks(3); i++) m.step();
     expect(m.recruitment.jobs.some(j => j.playerId === p.id && j.category === "aircraft")).toBe(true);
     m.options.runAi = false;
-    for (let i = 0; i < 600; i++) m.step();
+    for (let i = 0; i < secondsToTicks(30); i++) m.step();
     expect(m.expansion!.aircraft.some((a) => a.playerId === p.id)).toBe(true);
     expect(
       m.buildings.some((b) => b.playerId === p.id && b.type === "city"),
@@ -490,7 +491,7 @@ describe("integrated shipments and military progression", () => {
     };
     expect(m.applyCommand(command)).toMatch(/five seconds/);
     expect(stock["payload:mirv"]).toBe(1);
-    m.updateSquad(s.id, { deploymentTicks: 100 });
+    m.updateSquad(s.id, { deploymentTicks: secondsToTicks(5) });
     expect(m.applyCommand(command)).toBeNull();
     expect(stock["payload:mirv"]).toBe(0);
     expect(m.applyCommand(command)).toMatch(/reloading/);
@@ -503,7 +504,7 @@ describe("integrated shipments and military progression", () => {
     const e = m.expansion!, stock = e.supply.inventories[1];
     m.updateSquad(s.id, { definitionId: "modern-launcher" });
     m.updateSquad(s.id, { order: { type: "hold" } });
-    m.updateSquad(s.id, { deploymentTicks: 100 });
+    m.updateSquad(s.id, { deploymentTicks: secondsToTicks(5) });
     stock["payload:mirv"] = 1;
     const command = {
       type: "launch" as const,
@@ -518,8 +519,8 @@ describe("integrated shipments and military progression", () => {
       {
         refit: {
           targetId: s.definitionId!,
-          totalTicks: 200,
-          remainingTicks: 200,
+          totalTicks: secondsToTicks(10),
+          remainingTicks: secondsToTicks(10),
         },
       },
       { fighting: true },
@@ -547,7 +548,7 @@ describe("integrated shipments and military progression", () => {
     }
     expect(e.battle.projectiles).toHaveLength(0);
     m.updateSquad(s.id, { deploymentTicks: 0 });
-    for (let i = 0; i < 99; i++) e.afterMovement();
+    for (let i = 0; i < secondsToTicks(5)-1; i++) e.afterMovement();
     expect(m.applyCommand(command)).not.toBeNull();
     e.afterMovement();
     expect(m.applyCommand(command)).toBeNull();

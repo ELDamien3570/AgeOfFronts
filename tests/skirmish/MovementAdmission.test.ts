@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -28,7 +29,7 @@ describe("transactional replacement movement", () => {
     const interactive=vi.spyOn(match.movementAdmission,"stepInteractive"),routes=vi.spyOn(match.routePlanner,"step");
     expect(match.applyCommand({type:"order",playerId:1,squadIds:selected.map(s=>s.id),order:{type:"move",tile:map.ref(14,14)}})).toBeNull();
     expect(selected.every((s,i)=>s.x===origins[i].x&&s.y===origins[i].y)).toBe(true);
-    for(let tick=0;tick<3;tick++){
+    for(let tick=0;tick<secondsToTicks(0.15);tick++){
       const start=interactive.mock.results.length,routeStart=routes.mock.results.length;
       match.step();
       expect(interactive.mock.results.slice(start).reduce((sum,r)=>sum+(r.value as number),0)).toBeLessThanOrEqual(128);
@@ -61,9 +62,9 @@ describe("transactional replacement movement", () => {
     const {match,map,own}=fixture();
     own.forEach((s,i)=>match.updateSquad(s.id,{x:(10.5+i)*FIXED,y:10.5*FIXED}));
     expect(match.applyCommand({type:"order",playerId:1,squadIds:own.map(s=>s.id),order:{type:"move",tile:map.ref(80,55)}})).toBeNull();
-    for(let i=0;i<25;i++)match.step();
+    for(let i=0;i<secondsToTicks(1.25);i++)match.step();
     const clone=new Skirmish(map,match.options); clone.restore(match.checkpoint());
-    for(let i=0;i<160;i++){match.step();clone.step();}
+    for(let i=0;i<secondsToTicks(8);i++){match.step();clone.step();}
     expect(clone.checkpoint()).toEqual(match.checkpoint());
     expect(match.movementAdmission.events.slice(-1)[0]?.status).toBe("executed");
     expect(match.routePlanner.diagnosticCohorts(match.tick).find(c=>c.caller==="admission")?.complete).toBeGreaterThan(own.length);
@@ -79,7 +80,7 @@ describe("transactional replacement movement", () => {
     const later={type:"move" as const,tile:map.ref(65,45)};
     match.updateSquad(mover.id,{queuedOrders:[later]});
     let replacement=false;
-    for(let i=0;i<800;i++){
+    for(let i=0;i<secondsToTicks(40);i++){
       match.step();
       if(mover.order.type==="move" && (mover.order.tile!==order.tile || mover.order.x!==order.x || mover.order.y!==order.y))replacement=true;
       if(mover.order.type==="hold")break;
@@ -94,12 +95,12 @@ describe("transactional replacement movement", () => {
     const orders = own.map(s => structuredClone(s.order));
     match.applyCommand({ type: "order", playerId: 1, squadIds: own.map(s => s.id), order: { type: "move", tile: map.ref(75, 50) } });
     const id = match.movementAdmission.events.slice(-1)[0]!.id;
-    match.movementAdmission.completed(id, own[0].id, "limited", [], 10);
+    match.movementAdmission.completed(id, own[0].id, "limited", [], secondsToTicks(0.5));
     const saved = match.checkpoint();
-    expect(saved.admission.pending[0][1].members[0]).toMatchObject({ limitedAttempts: 1, retryAt: 30 });
+    expect(saved.admission.pending[0][1].members[0]).toMatchObject({ limitedAttempts: 1, retryAt: secondsToTicks(1.5) });
     match.restore(saved);
-    match.movementAdmission.completed(id, own[0].id, "limited", [], 40);
-    match.movementAdmission.completed(id, own[0].id, "limited", [], 100);
+    match.movementAdmission.completed(id, own[0].id, "limited", [], secondsToTicks(2));
+    match.movementAdmission.completed(id, own[0].id, "limited", [], secondsToTicks(5));
     expect(match.movementAdmission.pendingCount).toBe(0);
     expect(match.movementAdmission.events.slice(-1)[0]).toMatchObject({ status: "rejected", reason: expect.stringContaining("capacity") });
     expect(match.squads.filter(s => s.playerId === 1).map(s => s.order)).toEqual(orders);
@@ -115,7 +116,7 @@ describe("transactional replacement movement", () => {
     expect(squad.queuedOrders).toEqual([{ type: "move", tile: second }]);
     expect(match.checkpoint().queuedLegs.size).toBe(1);
     const restored = new Skirmish(map, match.options); restored.restore(match.checkpoint());
-    for (let i = 0; i < 50; i++) { match.step(); restored.step(); }
+    for (let i = 0; i < secondsToTicks(2.5); i++) { match.step(); restored.step(); }
     expect(restored.checkpoint()).toEqual(match.checkpoint());
     expect(sync).not.toHaveBeenCalled();
     expect(match.checkpoint().queuedLegs.size).toBe(0);
@@ -261,7 +262,7 @@ describe("transactional replacement movement", () => {
         order: { type: "move", tile: map.ref(60, 50) },
       }),
     ).toBeNull();
-    for (let i = 0; i < 5; i++) match.step();
+    for (let i = 0; i < secondsToTicks(0.25); i++) match.step();
     const clone = new Skirmish(map, match.options);
     clone.restore(match.checkpoint());
     for (let i = 0; i < 400 && match.movementAdmission.pendingCount; i++) {
@@ -313,7 +314,7 @@ describe("transactional replacement movement", () => {
     expect(own.map((s) => s.order)).toEqual(old);
     expect(status(match)).toBe("deferred");
     let executed = false;
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < secondsToTicks(15); i++) {
       const moving = own.filter((s) => s.order.type === "move").length;
       expect(moving === 0 || moving === own.length).toBe(true);
       match.step();
@@ -351,7 +352,7 @@ describe("transactional replacement movement", () => {
     const clone = new Skirmish(map, match.options);
     clone.restore(match.checkpoint());
     let executed = false;
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < secondsToTicks(15); i++) {
       match.step();
       clone.step();
       if (match.movementAdmission.events.some(e => e.id === replacementId && e.status === "executed")) {
@@ -385,7 +386,7 @@ describe("transactional replacement movement", () => {
       }),
     ).toBeNull();
     expect(status(match)).toBe("superseded");
-    for (let i = 0; i < 10; i++) match.step();
+    for (let i = 0; i < secondsToTicks(0.5); i++) match.step();
     expect(own.every((s) => s.order.type === "hold")).toBe(true);
     expect(match.routePlanner.diagnostics.pending).toBe(0);
   });

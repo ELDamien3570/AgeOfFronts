@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { readyFraction } from './Manpower';
 import { MAX_ORDER_SQUADS } from "../FactionRules";
 import { type Player, type Squad } from "../Protocol";
@@ -177,7 +178,7 @@ export class AiInvasionResponse {
           controller: response!.id,
           priority: "emergency-defense" as const,
           createdTick: world.tick,
-          expiresTick: world.tick + 600,
+          expiresTick: world.tick + secondsToTicks(30),
         })),
       )
     ) {
@@ -213,7 +214,7 @@ export class AiInvasionResponse {
     }
     if (complete) {
       response.cursor = 0;
-      response.nextThink = world.tick + 10;
+      response.nextThink = world.tick + secondsToTicks(0.5);
     }
     return this.diagnostics.work;
   }

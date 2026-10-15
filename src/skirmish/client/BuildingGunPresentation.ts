@@ -1,4 +1,5 @@
 import type { ArcherVolley, Building } from "../Protocol";
+import { TICKS_PER_SECOND } from "../Protocol";
 
 /** Cosmetic state driven exclusively by authoritative firing events. */
 export class BuildingGunPresentation {
@@ -27,7 +28,7 @@ export class BuildingGunPresentation {
       if (
         !guns.has(volley.squadId) ||
         volley.tick > tick ||
-        tick - volley.tick >= 15
+        tick - volley.tick >= 0.75 * TICKS_PER_SECOND
       )
         continue;
       const previous = this.shots.get(volley.squadId);
@@ -49,7 +50,7 @@ export class BuildingGunPresentation {
     visualTick: number,
   ): { facing: string; elapsed: number } | undefined {
     const shot = this.shots.get(buildingId);
-    if (!shot || visualTick < shot.tick || visualTick - shot.tick >= 14.4)
+    if (!shot || visualTick < shot.tick || visualTick - shot.tick >= 0.72 * TICKS_PER_SECOND)
       return;
     return { facing: shot.facing, elapsed: visualTick - shot.tick };
   }

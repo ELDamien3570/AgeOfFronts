@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../Protocol';
 import { availableGold, spendGold } from "./Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import { producerCompatible } from "../content/Buildings";
@@ -286,7 +287,7 @@ export class Supply {
       )
         delete this.jobs[Number(id)];
     }
-    const activeIds = tick % 20 === 0 || !facts ? undefined : new Set(Object.keys(this.jobs).map(Number));
+    const activeIds = tick % secondsToTicks(1) === 0 || !facts ? undefined : new Set(Object.keys(this.jobs).map(Number));
     if (activeIds) for (const [id, selection] of this.selectedRecipes)
       if (selection.recipeId !== "paused") activeIds.add(id);
     const activeBuildings = activeIds ? facts!.buildings.byIds(activeIds) : buildings;
@@ -336,7 +337,7 @@ export class Supply {
           };
         }
       }
-      if (tick % 20 !== 0) continue;
+      if (tick % secondsToTicks(1) !== 0) continue;
       const age = b.age ?? "StoneAge";
       if (b.type === "factory" || b.type === "port") {
         this.goodsOwners.set(b.id, player.id);
@@ -351,7 +352,7 @@ export class Supply {
       )
         inventory.horses +=
           breedingPerSecond(this.progression.states[player.id].completed) ||
-          (tick % 80 === 0 ? 1 : 0);
+          (tick % secondsToTicks(4) === 0 ? 1 : 0);
       if (b.type === "mine" || b.type === "oil-well" || b.type === "oil-rig") {
         const node = this.resourceSites.at(b.tile);
         if (
@@ -367,14 +368,14 @@ export class Supply {
       if (node.owner !== owners[node.tile])
         this.depositEntities.updateOwned(node.id, {owner: owners[node.tile]});
       if (
-        tick % 20 === 0 &&
+        tick % secondsToTicks(1) === 0 &&
         node.owner &&
         node.resource === "horses" &&
         this.progression.has(node.owner, resourceTechnology("horses").id)
       )
         this.inventories[node.owner].horses += node.yieldPerSecond;
     }
-    if (tick % 20 !== 0) return;
+    if (tick % secondsToTicks(1) !== 0) return;
     // Group once per allocation pass; never scan the map or squads per factory.
     const own = new Map<number, Building[]>(),
       counts = new Map<number, number>();

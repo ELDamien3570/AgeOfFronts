@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { constructionRejection } from "../../src/skirmish/Construction";
@@ -76,7 +77,7 @@ describe("scaled coastal water rights and offshore oil", () => {
       }),
     ).toContain("claimed");
     (m as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner(m.map.ref(149,61),1);
-    for (let i = 0; i < 800; i++) m.step();
+    for (let i = 0; i < secondsToTicks(40); i++) m.step();
     expect(m.owners[site]).toBe(1);
     expect(
       m.applyCommand({
@@ -88,7 +89,7 @@ describe("scaled coastal water rights and offshore oil", () => {
     ).toBeNull();
     m.updateBuilding((m.buildings.find((b) => b.type === "oil-rig")!).id, { remainingTicks: 0 });
     const oil = expansion.supply.inventories[1].oil;
-    for (let i = 0; i < 20; i++) m.step();
+    for (let i = 0; i < secondsToTicks(1); i++) m.step();
     expect(expansion.supply.inventories[1].oil).toBeGreaterThan(oil);
     for (const player of m.players) {
       const land = [...m.ownedLand(player.id)];
@@ -109,12 +110,12 @@ describe("scaled coastal water rights and offshore oil", () => {
   });
   it("advances one water layer every twenty seconds and stops at the originating-shore range", () => {
     const f = fixture();
-    for (let tick = 20; tick < 400; tick += 20) f.apply(tick);
+    for (let tick = secondsToTicks(1); tick < secondsToTicks(20); tick += secondsToTicks(1)) f.apply(tick);
     expect(f.owners[f.map.ref(10, 20)]).toBe(0);
-    f.apply(400);
+    f.apply(secondsToTicks(20));
     expect(f.owners[f.map.ref(10, 20)]).toBe(1);
     expect(f.owners[f.map.ref(11, 20)]).toBe(0);
-    for (let tick = 420; tick <= 4000; tick += 20) f.apply(tick);
+    for (let tick = secondsToTicks(21); tick <= secondsToTicks(200); tick += secondsToTicks(1)) f.apply(tick);
     expect(f.owners[f.map.ref(17, 20)]).toBe(1);
     expect(f.owners[f.map.ref(18, 20)]).toBe(0);
   });
@@ -127,17 +128,17 @@ describe("scaled coastal water rights and offshore oil", () => {
       y: 20.5 * FIXED,
       health: 100,
     } as Ship;
-    for (let tick = 20; tick <= 200; tick += 20) f.apply(tick, [ship]);
+    for (let tick = secondsToTicks(1); tick <= secondsToTicks(10); tick += secondsToTicks(1)) f.apply(tick, [ship]);
     expect(f.owners[f.map.ref(10, 20)]).toBe(1);
     expect(f.owners[f.map.ref(10, 10)]).toBe(0);
     const hostile = fixture();
-    for (let tick = 20; tick <= 200; tick += 20)
+    for (let tick = secondsToTicks(1); tick <= secondsToTicks(10); tick += secondsToTicks(1))
       hostile.apply(tick, [{ ...ship, playerId: 2 }]);
     expect(hostile.owners[hostile.map.ref(10, 20)]).toBe(0);
     const shore = f.map.ref(9, 20);
     f.owners[shore] = 0;
     f.policy.changed(shore);
-    f.apply(220, [ship]);
+    f.apply(secondsToTicks(11), [ship]);
     expect(f.owners[f.map.ref(10, 20)]).toBe(0);
   });
   it("keeps equidistant opposing shores contested and does not overwrite enemy water", () => {
@@ -148,10 +149,10 @@ describe("scaled coastal water rights and offshore oil", () => {
       f.owners[t] = 2;
       f.policy.changed(t);
     }
-    for (let tick = 20; tick <= 800; tick += 20) f.apply(tick);
+    for (let tick = secondsToTicks(1); tick <= secondsToTicks(40); tick += secondsToTicks(1)) f.apply(tick);
     expect(f.owners[f.map.ref(10, 20)]).toBe(0);
     f.owners[f.map.ref(10, 20)] = 2;
-    for (let tick = 820; tick <= 1200; tick += 20) f.apply(tick);
+    for (let tick = 820; tick <= secondsToTicks(60); tick += secondsToTicks(1)) f.apply(tick);
     expect(f.owners[f.map.ref(10, 20)]).toBe(2);
   });
   it("places offshore oil inside the same scaled band used by rig placement", () => {
@@ -192,8 +193,8 @@ describe("scaled coastal water rights and offshore oil", () => {
     for (let t = 20; t <= 240; t += 20) f.apply(t);
     const restored = new CoastalTerritory(f.map);
     restored.restore(f.policy.checkpoint());
-    expect(restored.step(260, f.owners, [])).toEqual(
-      f.policy.step(260, f.owners, []),
+    expect(restored.step(secondsToTicks(13), f.owners, [])).toEqual(
+      f.policy.step(secondsToTicks(13), f.owners, []),
     );
     expect(restored.checkpoint()).toEqual(f.policy.checkpoint());
     const m = new Skirmish(f.map, { seed: 1, aiCount: 1, runAi: false });

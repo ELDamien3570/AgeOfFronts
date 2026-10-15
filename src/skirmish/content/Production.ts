@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import type { ProductionRecipe } from "../domain/Definitions";
 import {
   canonicalTechnologyId,
@@ -13,7 +14,7 @@ export const REFINING: ProductionRecipe[] = [
     building: "factory",
     inputs: { copper: 8, tin: 2 },
     outputs: { bronze: 10 },
-    ticks: 200,
+    ticks: secondsToTicks(10),
   },
   {
     id: "refine-iron",
@@ -22,7 +23,7 @@ export const REFINING: ProductionRecipe[] = [
     building: "factory",
     inputs: { ironOre: 10 },
     outputs: { iron: 10 },
-    ticks: 200,
+    ticks: secondsToTicks(10),
   },
   {
     id: "refine-steel",
@@ -31,7 +32,7 @@ export const REFINING: ProductionRecipe[] = [
     building: "factory",
     inputs: { iron: 8, carbon: 2 },
     outputs: { steel: 10 },
-    ticks: 240,
+    ticks: secondsToTicks(12),
   },
   ...["icbm", "hydrogen", "mirv"].map((name, i) => ({
     id: `make-${name}`,
@@ -47,7 +48,7 @@ export const REFINING: ProductionRecipe[] = [
       tin: 10 + i * 5,
     },
     outputs: { [`payload:${name}`]: 1 },
-    ticks: (2400 + i * 600) / 2,
+    ticks: secondsToTicks(60 + i * 15),
   })),
 ];
 REFINING.push({
@@ -57,7 +58,7 @@ REFINING.push({
   building: "nuclear-facility",
   inputs: { steel: 200, gunpowder: 150, oil: 100 },
   outputs: { "payload:atomic": 1 },
-  ticks: 1200,
+  ticks: secondsToTicks(60),
 });
 // Explicit salvage orders only: automatic input dependencies must not turn
 // equipment manufacture/recycling into a circular production graph.
@@ -79,7 +80,7 @@ for (const age of [
         age === "BronzeAge"
           ? { copper: kind ? 12 : 7, tin: kind ? 3 : 2 }
           : { iron: kind ? 15 : 9 },
-      ticks: 200,
+      ticks: secondsToTicks(10),
     });
 }
 for (const recipe of [...REFINING, ...RECIPES])

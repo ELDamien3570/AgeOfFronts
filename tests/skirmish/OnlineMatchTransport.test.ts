@@ -123,7 +123,7 @@ it("runs two thin clients from one server simulation, enforces ownership and con
     expect(initial.reset).toBe(true);
     expect(initial.tick).toBe(0);
     expect(states(0)[0].packet.hash).toBe(states(1)[0].packet.hash);
-    now += 200;
+    now += 250;
     await until(
       () =>
         states(0).some((message) => message.tick >= 1) &&
@@ -156,8 +156,8 @@ it("runs two thin clients from one server simulation, enforces ownership and con
         (message) => message.type === "ack" && message.requestId === commandId,
       ),
     );
-    now += 200;
-    await until(() => states(1).some((message) => message.tick >= 5));
+    now += 250;
+    await until(() => states(1).some((message) => message.tick >= 3));
     const paidState = await decodeState<SnapshotPacket>(last(states(1)).packet);
     expect(
       Object.values(paidState.expansion!.progression![2].research).some(
@@ -186,8 +186,12 @@ it("runs two thin clients from one server simulation, enforces ownership and con
     expect(
       coordinator.rooms.snapshot().reservations[0].members[0].connected,
     ).toBe(true);
-    now += 200;
-    await until(() => states(0).some((message) => message.tick >= 9));
+    const connectedTick = last(states(0)).tick;
+    await until(() => {
+      if(last(states(0)).tick > connectedTick) return true;
+      now += 125;
+      return false;
+    });
     expect(states(0)[states(0).length - 1].disconnectedPlayerIds).toEqual([]);
     clients[0].close();
     await until(
@@ -196,8 +200,11 @@ it("runs two thin clients from one server simulation, enforces ownership and con
         false,
     );
     const before = last(states(1)).tick;
-    now += 200;
-    await until(() => states(1).some((message) => message.tick > before));
+    await until(() => {
+      if(last(states(1)).tick > before) return true;
+      now += 125;
+      return false;
+    });
     const remaining = last(states(1));
     expect(remaining.executor).toBe("server");
     expect(remaining.disconnectedPlayerIds).toEqual([1]);

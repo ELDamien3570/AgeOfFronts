@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import { ARTWORK_CATALOG, type ArtworkAsset } from "./ArtworkCatalog";
 import type { ArtworkFrame } from "./UnitArtwork";
 const catalog = ARTWORK_CATALOG;
@@ -97,7 +98,7 @@ export class EraArtwork {
           }
         : undefined;
     }
-    const phase = Math.max(0, Math.floor((elapsedTicks * animation.fps) / 20)),
+    const phase = Math.max(0, Math.floor((elapsedTicks * animation.fps) / TICKS_PER_SECOND)),
       frame = animation.loop
         ? phase % animation.frames
         : Math.min(animation.frames - 1, phase);

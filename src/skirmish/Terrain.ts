@@ -1,3 +1,4 @@
+import { TICKS_PER_SECOND } from './Protocol';
 import { TerrainType } from "../core/game/Game";
 import type { GameMap } from "../core/game/GameMap";
 import { GameMapImpl } from "../core/game/GameMap";
@@ -27,15 +28,15 @@ export function terrainSpeed(map: GameMap, tile: number): number {
 export function baseTerrainSpeed(map: GameMap, tile: number): number {
   switch (map.terrainType(tile)) {
     case TerrainType.Plains:
-      return 56;
+      return 1120 / TICKS_PER_SECOND;
     case TerrainType.Highland:
-      return 35;
+      return 700 / TICKS_PER_SECOND;
     // Legacy ridge bytes retain their map classification for construction and
     // geography, but squad routing and collision permit crossing them. They
     // must share the mountain movement tier rather than stop units at zero.
     case TerrainType.Mountain:
     case TerrainType.Impassable:
-      return 20;
+      return 400 / TICKS_PER_SECOND;
     default:
       return 0;
   }

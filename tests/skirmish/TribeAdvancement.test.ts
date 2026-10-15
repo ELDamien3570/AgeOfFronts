@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -39,11 +40,11 @@ describe("tribe catch-up progression", () => {
     tribe.gold = 100_000;
     state.completed = TECHNOLOGIES.filter(t => t.age === "StoneAge").map(t => t.id);
     game.options.runAi = true;
-    game.tick = (tribe.id % 20) * 3;
+    game.tick = (tribe.id * 3)%secondsToTicks(3);
     game.expansion!.beforeStep();
     expect(state.advancement).toBeNull();
     for (const player of game.players.filter(p => p.kind !== "tribe")) progression.states[player.id].age = "BronzeAge";
-    game.tick += 60;
+    game.tick += secondsToTicks(3);
     game.expansion!.beforeStep();
     expect(state.advancement).toMatchObject({ target: "BronzeAge", remainingTicks: ADVANCES[0].ticks });
   });
@@ -92,8 +93,8 @@ describe("tribe catch-up progression", () => {
 
 describe("age-up pacing", () => {
   it("preserves gold discounts with 35 to 70 second advancement at every technology speed", () => {
-    const original = [{ gold: 3000, ticks: 2000 }, { gold: 75000, ticks: 900 }, { gold: 110000, ticks: 1000 },
-      { gold: 160000, ticks: 1100 }, { gold: 230000, ticks: 1200 }, { gold: 330000, ticks: 1300 }, { gold: 480000, ticks: 1400 }];
+    const original = [{ gold: 3000, ticks: secondsToTicks(100) }, { gold: 75000, ticks: secondsToTicks(45) }, { gold: 110000, ticks: secondsToTicks(50) },
+      { gold: 160000, ticks: secondsToTicks(55) }, { gold: 230000, ticks: secondsToTicks(60) }, { gold: 330000, ticks: secondsToTicks(65) }, { gold: 480000, ticks: secondsToTicks(70) }];
     for (const speed of [1, 2, 3] as const) for (let i = 0; i < ADVANCES.length; i++) {
       const progression = new Progression(speed);
       progression.add(1, AGES[i]);

@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { claimBuildingFootprint } from "./BuildingFixtures";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
@@ -217,7 +218,7 @@ describe("transferable presentation snapshots", () => {
     match.owners[20] = 2;
     match.claims[21] = 1;
     match.progress[21] = 15;
-    match.updateBuilding((match.buildings[0]).id, { remainingTicks: 10 });
+    match.updateBuilding((match.buildings[0]).id, { remainingTicks: secondsToTicks(0.5) });
     match.removeBuilding(match.buildings[match.buildings.length - 1].id);
     const secondPacket = encoder.encode(match.snapshot());
     expect(secondPacket.tiles).toHaveLength(4);
@@ -340,11 +341,11 @@ describe("stacked buildings and large fleets", () => {
     match.addBuilding({id:match.allocateId(),playerId:1,type:"city",tile:match.player(1)!.base,remainingTicks:0});
     match.updateSquad(enemy.id, { x: 30.5 * FIXED });
     match.updateSquad(enemy.id, { y: 25.5 * FIXED });
-    for (let i = 0; i < 60; i++) match.step();
+    for (let i = 0; i < secondsToTicks(3); i++) match.step();
     const stack = match.buildings.filter((b) => b.tile === tile);
     expect(stack).toHaveLength(3);
     expect(stack.every((b) => b.playerId === 2)).toBe(true);
-    expect(stack[0].remainingTicks).toBe(buildingTicks("city", 0) - 60);
+    expect(stack[0].remainingTicks).toBe(buildingTicks("city", 0) - secondsToTicks(3));
     expect(stack[1].remainingTicks).toBe(buildingTicks("city", 1));
     expect(stack[2].remainingTicks).toBe(buildingTicks("city", 2));
   });

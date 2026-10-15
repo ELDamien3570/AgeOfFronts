@@ -1,3 +1,4 @@
+import {COMMIT_TICKS} from '../../src/skirmish/multiplayer/application/HostedRuntime';
 import { describe, expect, it } from "vitest";
 import { CommitVerifier } from "../../src/skirmish/multiplayer/application/CommitVerifier";
 import {
@@ -56,7 +57,7 @@ describe("host commit validation", () => {
       verifier.verify(batch(0), { ...proposal, baseId: "1".repeat(64) }),
     ).rejects.toThrow("extend");
     const verified = await verifier.verify(batch(0), proposal);
-    expect(verified.tick).toBe(4);
+    expect(verified.tick).toBe(COMMIT_TICKS);
     await verifier.accept(verified);
     expect(await verifier.initial()).toEqual({
       ...verified,
@@ -73,13 +74,13 @@ describe("host commit validation", () => {
     const accepted = await decodeState<SnapshotPacket>(
       await verifier.accept(prepared),
     );
-    expect(accepted.tick).toBe(4);
+    expect(accepted.tick).toBe(COMMIT_TICKS);
     expect(accepted.reset).toBe(true);
-    const next = await verifier.verify(batch(4), await host.run(batch(4)));
+    const next = await verifier.verify(batch(COMMIT_TICKS), await host.run(batch(COMMIT_TICKS)));
     const delta = await decodeState<SnapshotPacket>(
       await verifier.accept(next),
     );
-    expect(delta.tick).toBe(8);
+    expect(delta.tick).toBe(2*COMMIT_TICKS);
     expect(delta.reset).toBe(false);
     expect(
       (await decodeState<SnapshotPacket>(await verifier.baseline())).reset,
@@ -90,12 +91,12 @@ describe("host commit validation", () => {
       verifier = new CommitVerifier(makeRuntime());
     const first = await verifier.verify(batch(0), await host.run(batch(0)));
     await verifier.accept(first);
-    const secondBatch = { ...batch(4), disconnectedPlayerIds: [1] };
+    const secondBatch = { ...batch(COMMIT_TICKS), disconnectedPlayerIds: [1] };
     const fallback = await verifier.fallback(secondBatch);
     const original = await host.run(secondBatch);
     expect(fallback.delta).toEqual(original.delta);
     expect(fallback.stateId).toEqual(original.stateId);
     await verifier.accept(await verifier.verify(secondBatch, fallback));
-    expect((await verifier.initial()).tick).toBe(8);
+    expect((await verifier.initial()).tick).toBe(2*COMMIT_TICKS);
   });
 });

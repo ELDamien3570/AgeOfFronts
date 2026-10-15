@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 interface LossHistory {
   last: number;
   samples: { tick: number; deaths: number }[];
@@ -15,9 +16,9 @@ export class AiLossWindow {
     }
     const deaths = Math.max(0, lifetimeDeaths - history.last);
     history.last = lifetimeDeaths;
-    history.samples = history.samples.filter((s) => tick - s.tick < 2400);
+    history.samples = history.samples.filter((s) => tick - s.tick < secondsToTicks(120));
     if (deaths) {
-      const bucket = Math.floor(tick / 50) * 50;
+      const bucket = Math.floor(tick / secondsToTicks(2.5)) * secondsToTicks(2.5);
       const last = history.samples[history.samples.length - 1];
       if (last?.tick === bucket) last.deaths += deaths;
       else history.samples.push({ tick: bucket, deaths });

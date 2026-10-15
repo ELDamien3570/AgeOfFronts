@@ -20,7 +20,7 @@ export async function chainStateId(
     .join("");
 }
 
-export const COMMIT_TICKS = 4;
+export const COMMIT_TICKS = 1;
 export interface RuntimeMap {
   width: number;
   height: number;

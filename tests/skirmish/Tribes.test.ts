@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { claimBuildingFootprint } from "./BuildingFixtures";
 import { startingEconomy } from "../../src/skirmish/content/StartingEconomy";
 import { startingCamp } from "../../src/skirmish/domain/StartingCamp";
@@ -121,7 +122,7 @@ describe("minor tribes", () => {
     game.updateSquad(own[0].id, { embarkedOn: null });
     for (const record of game.squads.slice(game.squads.indexOf(own[0]), (game.squads.indexOf(own[0])) + (1))) game.removeSquad(record.id);
     tribe.losses += own[0].troops;
-    for (let tick = 0; tick < 180; tick++) game.step();
+    for (let tick = 0; tick < secondsToTicks(9); tick++) game.step();
     expect(game.squads.filter((s) => s.playerId === tribe.id)).toHaveLength(10);
     expect(
       game.buildings
@@ -256,7 +257,7 @@ describe("minor tribes", () => {
     for(const squad of [...game.squads])if(squad.playerId!==tribes[0].id && squad.id!==distant.id)game.removeSquad(squad.id);
     game.updateSquad(distant.id,{x:(game.map.x(tribes[0].base)<game.map.width()/2?game.map.width()-2:2)*256,
       y:(game.map.y(tribes[0].base)<game.map.height()/2?game.map.height()-2:2)*256});
-    for (let tick = 0; tick < 1200; tick++) game.step();
+    for (let tick = 0; tick < secondsToTicks(60); tick++) game.step();
     expect(
       tribes.some((tribe) =>
         Array.from(game.owners).some(
@@ -296,14 +297,14 @@ describe("home consolidation", () => {
       map.ref(19, 20),
     );
     owners[map.ref(19, 20)] = 2;
-    expect(home.frontier(2, base, owners, 61)).not.toContain(map.ref(19, 20));
+    expect(home.frontier(2, base, owners, secondsToTicks(3.05))).not.toContain(map.ref(19, 20));
   });
 
   it("grows regular AI land around its starting camp before launching distant raids", () => {
     const game = match(1, true, false),
       ai = game.players[1],
       initial = ai.land;
-    for (let tick = 0; tick < 600; tick++) game.step();
+    for (let tick = 0; tick < secondsToTicks(30); tick++) game.step();
     expect(ai.land).toBeGreaterThan(initial * 2);
     const owned = Array.from(game.owners).flatMap((owner, tile) =>
       owner === ai.id ? [tile] : [],

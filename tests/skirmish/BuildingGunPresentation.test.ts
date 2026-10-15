@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from "../../src/skirmish/Protocol";
 import { describe, expect, it } from "vitest";
 import { BuildingGunPresentation } from "../../src/skirmish/client/BuildingGunPresentation";
 import type { ArcherVolley, Building } from "../../src/skirmish/Protocol";
@@ -25,7 +26,7 @@ describe("building gun presentation", () => {
     expect(view.firing(12, 12)).toEqual({ facing: "e", elapsed: 2 });
     view.update([gun], [shot(10, 100, 20)], 12);
     expect(view.firing(12, 15)?.elapsed).toBe(5);
-    expect(view.firing(12, 24.5)).toBeUndefined();
+    expect(view.firing(12, 10+0.725*TICKS_PER_SECOND)).toBeUndefined();
     expect(view.idleFacing(12)).toBe("e");
     view.update([gun], [shot(25, -100, 20)], 25);
     expect(view.firing(12, 25)?.facing).toBe("w");

@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import type { GameMap } from "../../core/game/GameMap";
 import { BuildingIndex, type BuildingQueries } from "../BuildingIndex";
 import { constructionRejection } from "../Construction";
@@ -133,7 +134,7 @@ export function quoteAiDefense(input: {
     cost.gold! += stepCost.gold;
     for (const [id, n] of Object.entries(stepCost.items ?? {}))
       items[id] = (items[id] ?? 0) + n;
-    totalTicks += Math.max(20, ticks);
+    totalTicks += Math.max(TICKS_PER_SECOND, ticks);
     const building: Building = {
       ...site,
       id: nextId++,

@@ -1,3 +1,4 @@
+import { secondsToTicks } from './Protocol';
 import type { BuildingType, ShipType, SquadType } from "./Protocol";
 import { FIXED, MELEE_RANGE, TICKS_PER_SECOND } from "./Protocol";
 
@@ -19,8 +20,8 @@ export const SQUAD_RULES: Record<
     glyph: "I",
     speedPercent: 100,
     range: MELEE_RANGE,
-    damage: 7,
-    closeDamage: 7,
+    damage: 140 / TICKS_PER_SECOND,
+    closeDamage: 140 / TICKS_PER_SECOND,
   },
   archer: {
     name: "Archers",
@@ -35,8 +36,8 @@ export const SQUAD_RULES: Record<
     glyph: "C",
     speedPercent: 160,
     range: MELEE_RANGE,
-    damage: 9,
-    closeDamage: 9,
+    damage: 180 / TICKS_PER_SECOND,
+    closeDamage: 180 / TICKS_PER_SECOND,
   },
 };
 
@@ -107,7 +108,7 @@ export const BUILDING_RULES: Record<
     name: "Mine",
     glyph: "M",
     cost: 600,
-    ticks: 160,
+    ticks: secondsToTicks(8),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -115,7 +116,7 @@ export const BUILDING_RULES: Record<
     name: "Blacksmith",
     glyph: "K",
     cost: 1500,
-    ticks: 200,
+    ticks: secondsToTicks(10),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -123,7 +124,7 @@ export const BUILDING_RULES: Record<
     name: "Armory",
     glyph: "A",
     cost: 3000,
-    ticks: 240,
+    ticks: secondsToTicks(12),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -131,7 +132,7 @@ export const BUILDING_RULES: Record<
     name: "Arms factory",
     glyph: "W",
     cost: 5000,
-    ticks: 300,
+    ticks: secondsToTicks(15),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -139,7 +140,7 @@ export const BUILDING_RULES: Record<
     name: "Siege workshop",
     glyph: "S",
     cost: 1800,
-    ticks: 200,
+    ticks: secondsToTicks(10),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -147,7 +148,7 @@ export const BUILDING_RULES: Record<
     name: "Vehicle depot",
     glyph: "V",
     cost: 5000,
-    ticks: 300,
+    ticks: secondsToTicks(15),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -155,7 +156,7 @@ export const BUILDING_RULES: Record<
     name: "Tower",
     glyph: "T",
     cost: 900,
-    ticks: 160,
+    ticks: secondsToTicks(8),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -163,7 +164,7 @@ export const BUILDING_RULES: Record<
     name: "Military airstrip",
     glyph: "A",
     cost: 7000,
-    ticks: 400,
+    ticks: secondsToTicks(20),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -171,7 +172,7 @@ export const BUILDING_RULES: Record<
     name: "Oil well",
     glyph: "O",
     cost: 4000,
-    ticks: 240,
+    ticks: secondsToTicks(12),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -179,7 +180,7 @@ export const BUILDING_RULES: Record<
     name: "Oil rig",
     glyph: "O",
     cost: 6000,
-    ticks: 300,
+    ticks: secondsToTicks(15),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -187,7 +188,7 @@ export const BUILDING_RULES: Record<
     name: "Gun nest",
     glyph: "N",
     cost: 3000,
-    ticks: 200,
+    ticks: secondsToTicks(10),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -195,7 +196,7 @@ export const BUILDING_RULES: Record<
     name: "Trench",
     glyph: "H",
     cost: 1800,
-    ticks: 160,
+    ticks: secondsToTicks(8),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -203,7 +204,7 @@ export const BUILDING_RULES: Record<
     name: "Missile silo",
     glyph: "I",
     cost: 12000,
-    ticks: 600,
+    ticks: secondsToTicks(30),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -211,7 +212,7 @@ export const BUILDING_RULES: Record<
     name: "MIRV launch complex",
     glyph: "R",
     cost: 16000,
-    ticks: 600,
+    ticks: secondsToTicks(30),
     reserveIncome: 0,
     goldIncome: 0,
   },
@@ -219,13 +220,13 @@ export const BUILDING_RULES: Record<
     name: "Missile defence",
     glyph: "D",
     cost: 9000,
-    ticks: 400,
+    ticks: secondsToTicks(20),
     reserveIncome: 0,
     goldIncome: 0,
   },
-  "nuclear-facility": {name:"Nuclear weapons facility",glyph:"N",cost:6000,ticks:600,reserveIncome:0,goldIncome:0},
-  "anti-air-emplacement": {name:"Anti-aircraft emplacement",glyph:"AA",cost:3000,ticks:300,reserveIncome:0,goldIncome:0},
-  "drone-facility": {name:"Drone facility",glyph:"D",cost:4000,ticks:400,reserveIncome:0,goldIncome:0},
+  "nuclear-facility": {name:"Nuclear weapons facility",glyph:"N",cost:6000,ticks:secondsToTicks(30),reserveIncome:0,goldIncome:0},
+  "anti-air-emplacement": {name:"Anti-aircraft emplacement",glyph:"AA",cost:3000,ticks:secondsToTicks(15),reserveIncome:0,goldIncome:0},
+  "drone-facility": {name:"Drone facility",glyph:"D",cost:4000,ticks:secondsToTicks(20),reserveIncome:0,goldIncome:0},
 };
 
 export const SHIP_RULES: Record<
@@ -246,10 +247,10 @@ export const SHIP_RULES: Record<
     glyph: "W",
     cost: 700,
     health: 1000,
-    speed: 55,
+    speed: 1100 / TICKS_PER_SECOND,
     capacity: 0,
     range: 7 * FIXED,
-    damage: 8,
+    damage: 160 / TICKS_PER_SECOND,
   },
 };
 
@@ -261,6 +262,6 @@ export const REPLENISH_DELAY = 3 * TICKS_PER_SECOND;
 export const REPLENISH_PER_SECOND = 50;
 
 export const ARCHER_CHARGE_REQUIRED = 100;
-export const ARCHER_STATIONARY_CHARGE = 5; // One volley per second.
-export const ARCHER_MOVING_CHARGE = 1; // One volley per five seconds.
-export const ARCHER_ARROW_TICKS = 12;
+export const ARCHER_STATIONARY_CHARGE = 100 / TICKS_PER_SECOND; // One volley per second.
+export const ARCHER_MOVING_CHARGE = 20 / TICKS_PER_SECOND; // One volley per five seconds.
+export const ARCHER_ARROW_TICKS = secondsToTicks(0.6);

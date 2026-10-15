@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { AttackApproaches } from "../../src/skirmish/AttackApproaches";
 import {
@@ -39,7 +41,7 @@ describe("formation movement stability and shoreline policy", () => {
     const f=transportScene(72,false);
     for(const shape of ["line","column"] as const){
       const s={...f.s,fighting:true,combatTargetId:999,formation:{...f.s.formation!,shape,automatic:shape==='column',autoFrontage:shape==='line',deployedShape:"line" as const}};
-      for(let tick=0;tick<300;tick++)expect(columnDecision(s,tick,true,{complete:true,winding:true})).toBe(shape==='column'?"deploy":"keep");
+      for(let tick=0;tick<secondsToTicks(15);tick++)expect(columnDecision(s,tick,true,{complete:true,winding:true})).toBe(shape==='column'?"deploy":"keep");
     }
   });
   it("preserves occupied ground while reversing a deployed formation", () => {
@@ -54,12 +56,12 @@ describe("formation movement stability and shoreline policy", () => {
     });
     const points=()=>{const angle=formationEnvelope(f.s,f.game.tick).angle;return formationSlots(f.s,f.game.tick).map(p=>({x:p.x*Math.cos(angle)-p.y*Math.sin(angle),y:p.x*Math.sin(angle)+p.y*Math.cos(angle)}));};
     let previous=points();
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < secondsToTicks(1.5); i++) {
       f.game.step();
       const next=points();
       // The basis may reverse immediately; occupied positions may only reseat
       // locally at the authored reform speed, rather than orbit the centre.
-      for(const p of previous)expect(Math.min(...next.map(q=>Math.hypot(p.x-q.x,p.y-q.y)))).toBeLessThanOrEqual(FIXED*2.5/20+2);
+      for(const p of previous)expect(Math.min(...next.map(q=>Math.hypot(p.x-q.x,p.y-q.y)))).toBeLessThanOrEqual(FIXED*2.5/TICKS_PER_SECOND+2);
       previous=next;
     }
     expect(
@@ -141,9 +143,9 @@ describe("formation movement stability and shoreline policy", () => {
         path: Array(40).fill(100),
         nextPathIndex: 0,
       };
-    expect(columnDecision(s, 100, false, { winding: false })).toBe("keep");
-    expect(columnDecision(s, 100, false, { winding: true })).toBe("fold");
-    expect(columnDecision(s, 100, true, { winding: false })).toBe("fold");
+    expect(columnDecision(s, secondsToTicks(5), false, { winding: false })).toBe("keep");
+    expect(columnDecision(s, secondsToTicks(5), false, { winding: true })).toBe("fold");
+    expect(columnDecision(s, secondsToTicks(5), true, { winding: false })).toBe("fold");
     expect(
       columnDecision(
         {
@@ -155,7 +157,7 @@ describe("formation movement stability and shoreline policy", () => {
             automatic: true,
           },
         },
-        100,
+        secondsToTicks(5),
         false,
         { complete: false },
       ),
@@ -169,7 +171,7 @@ describe("formation movement stability and shoreline policy", () => {
       1,
       1,
     );
-    a.update([{ ...f.s, formation: { ...f.s.formation!, facing: 200 } }], 2, 1);
+    a.update([{ ...f.s, formation: { ...f.s.formation!, facing: 200 } }], secondsToTicks(0.1), 1);
     const start = a.angle(f.s.id, 0)!,
       mid = a.angle(f.s.id, 0.5)!,
       end = a.angle(f.s.id, 1)!;
@@ -177,7 +179,7 @@ describe("formation movement stability and shoreline policy", () => {
     expect(mid).toBeCloseTo((start + end) / 2);
     a.update(
       [{ ...f.s, formation: { ...f.s.formation!, facing: 200 } }],
-      2,
+      secondsToTicks(0.1),
       0.5,
     );
     expect(a.angle(f.s.id, 0.5)).toBe(mid);
@@ -218,7 +220,7 @@ describe("formation movement stability and shoreline policy", () => {
       ...f.s,
       id: 900,
       playerId: 2,
-      weaponState:{sharedReadyTick:9000},
+      weaponState:{sharedReadyTick:secondsToTicks(450)},
       x: f.s.x,
       y: f.s.y + 4 * FIXED,
       formation: { ...f.s.formation!, facing: TURN / 2 },
@@ -232,7 +234,7 @@ describe("formation movement stability and shoreline policy", () => {
     );
     f.game.updateSquad(f.s.id, {
       ...point,
-      weaponState:{sharedReadyTick:9000},
+      weaponState:{sharedReadyTick:secondsToTicks(450)},
       formation: { ...f.s.formation!, facing: 0 },
       order: { type: "hold" },
     });
@@ -255,7 +257,7 @@ describe("formation movement stability and shoreline policy", () => {
     ).toThrow();
     expect(() =>
       validateFormation(
-        { ...f.s.formation!, blockedSince: 2 },
+        { ...f.s.formation!, blockedSince: secondsToTicks(0.1) },
         f.s.definitionId,
       ),
     ).toThrow();

@@ -64,7 +64,7 @@ for (const age of ["EarlyModern", "Modern"] as const)
             channel: "ranged",
             damage: 200,
             range: 8 * FIXED,
-            reloadTicks: 40,
+            reloadTicks: 2*TICKS_PER_SECOND,
             movingReloadPercent: 100,
             bonuses: {},
             penetration: 0,

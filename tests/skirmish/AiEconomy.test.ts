@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { TICKS_PER_SECOND } from "../../src/skirmish/Protocol";
 import { productionTicks } from "../../src/skirmish/domain/Supply";
 import { describe, expect, it, vi } from "vitest";
@@ -38,16 +39,16 @@ describe("coordinated AI economy", () => {
     game.options.deferredPlanning=true;
     expansion.progression.states[player.id].completed.push("rus-stoneage-land-traders","rus-stoneage-factories-mines");
     const source=game.addBuilding({id:game.allocateId(),playerId:player.id,type:"factory",tile:player.base,age:"StoneAge",remainingTicks:0});
-    expansion.supply.goods.set(source.id,25);game.tick=20;expansion.trade.step();
+    expansion.supply.goods.set(source.id,25);game.tick=secondsToTicks(1);expansion.trade.step();
     const actor=expansion.trade.actors.find(a=>a.playerId===player.id)!;
     expect(actor).toBeDefined();
     const market=game.buildings.find(b=>b.playerId===player.id && b.type==="city")!;
-    expansion.trade.cycleQuotes.set(actor.id,{completedTick:20,sourceId:source.id,marketId:market.id,
-      quantity:25,delivered:25,returned:0,guaranteedGold:250,supplyTicks:40,handlingTicks:60,
-      travelTicks:60,cycleTicks:160,goldPer1000Ticks:1562,observedRisk:0,riskAdjustedGoldPer1000Ticks:1562});
-    expansion.economy.tradeQuotes.step(8);
+    expansion.trade.cycleQuotes.set(actor.id,{completedTick:secondsToTicks(1),sourceId:source.id,marketId:market.id,
+      quantity:25,delivered:25,returned:0,guaranteedGold:250,supplyTicks:secondsToTicks(2),handlingTicks:secondsToTicks(3),
+      travelTicks:secondsToTicks(3),cycleTicks:secondsToTicks(8),goldPer1000Ticks:Math.floor(250*1000/secondsToTicks(8)),observedRisk:0,riskAdjustedGoldPer1000Ticks:Math.floor(250*1000/secondsToTicks(8))});
+    expansion.economy.tradeQuotes.step(secondsToTicks(0.4));
     expect(expansion.economy.tradeQuotes.best(player.id,false)).toBeDefined();
-    game.tick=621;expansion.economy.tradeQuotes.step(8);
+    game.tick=secondsToTicks(31.05);expansion.economy.tradeQuotes.step(secondsToTicks(0.4));
     expect(expansion.economy.tradeQuotes.best(player.id,false)).toBeUndefined();
   });
   it("expands markets rather than producers when profitable couriers return unsold cargo", () => {
@@ -65,7 +66,7 @@ describe("coordinated AI economy", () => {
       buildings:game.buildingFacts().byOwner(player.id),squads:game.squads,ships:[],jobs:[],production:{},cap:20,threatTroops:0});
     snapshot.readyTroops=6000;
     const quote=tradeCycleQuote({naval:false,stock:30,capacity:30,valuePerGood:10,supplyTicks:0,
-      legs:[{marketId:city.id,quantity:10,distance:10,foreign:false,allied:false,travelTicks:60}],returnTicks:60,observedRisk:0});
+      legs:[{marketId:city.id,quantity:10,distance:10,foreign:false,allied:false,travelTicks:secondsToTicks(3)}],returnTicks:secondsToTicks(3),observedRisk:0});
     const best=vi.spyOn(expansion.economy.tradeQuotes,"best").mockImplementation((_id,naval)=>naval?undefined:
       {source:factories[0].id,market:city.id,quote,tick:0,generation:game.aiGeneration(player.id)});
     try {
@@ -77,13 +78,13 @@ describe("coordinated AI economy", () => {
       quote.returned=0;quote.delivered=30;
       expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,snapshot)).flat()
         .some(c=>c.type==="factory"&&c.objective>0)).toBe(false);
-      quote.supplyTicks=60;
+      quote.supplyTicks=secondsToTicks(3);
       for(const b of factories)expansion.supply.goods.set(b.id,0);
       expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,snapshot)).flat()
         .some(c=>c.type==="factory"&&c.objective>=3000)).toBe(true);
       // Construction already paid for must finish before funding its remedy again.
       const pendingSnapshot={...snapshot,buildings:snapshot.buildings.map(b=>
-        b.id===factories[1].id?{...b,remainingTicks:100}:b)};
+        b.id===factories[1].id?{...b,remainingTicks:secondsToTicks(5)}:b)};
       expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,pendingSnapshot)).flat()
         .some(c=>c.type==="factory"&&c.objective>=3000)).toBe(false);
     } finally {best.mockRestore();}
@@ -327,7 +328,7 @@ describe("coordinated AI economy", () => {
         amounts: { gold: now },
         createdTick: 0,
         progressTick: 0,
-        expiresTick: 500,
+        expiresTick: secondsToTicks(25),
       },
       { gold: now },
     );
@@ -358,11 +359,11 @@ describe("coordinated AI economy", () => {
   it("continues identically after restoring candidate cursors, savings and production demand", () => {
     const { game, player } = fixture();
     player.gold = 500;
-    for (let i = 0; i < 100; i++) game.step();
+    for (let i = 0; i < secondsToTicks(5); i++) game.step();
     const saved = game.checkpoint();
     const clone = fixture().game;
     clone.restore(saved);
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < secondsToTicks(6); i++) {
       game.step();
       clone.step();
     }

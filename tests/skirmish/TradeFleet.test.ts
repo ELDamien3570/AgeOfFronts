@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { isDeepStrictEqual } from "node:util";
 import { TraderEncoder, TraderDecoder } from "../../src/skirmish/TraderStream";
 import { describe, expect, it, vi } from "vitest";
@@ -29,7 +30,7 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
     ruleset: "ages-v1",
     aiWarPolicy,
     deferredPlanning,
-    ...(deadline?{autonomousRouteDeadlineTicks:40 as const}:{}),
+    ...(deadline?{autonomousRouteDeadlineTicks:16 as const}:{}),
   });
   for (const b of [...game.buildings]) game.removeBuilding(b.id);
   for (const s of game.squads)
@@ -81,7 +82,7 @@ describe("bounded civilian trade", () => {
     const owned = new TraderEncoder(), reference = new TraderEncoder();
     const decoded = new TraderDecoder(), expected = new TraderDecoder();
     let sawCargo = false, sawMovement = false;
-    for (let tick = 0; tick < 1800; tick++) {
+    for (let tick = 0; tick < secondsToTicks(90); tick++) {
       step();
       if (tick === 600 || tick === 1200) trade.restore(trade.checkpoint());
       const reset = tick === 0;
@@ -96,28 +97,28 @@ describe("bounded civilian trade", () => {
   });
   it("expires the whole restored planning attempt without condemning its market or losing cargo", () => {
     const {game,trade,step}=fleet(1,0,false,true,false,true);
-    step(20);trade.stepPlanning(32);
+    step(secondsToTicks(1));trade.stepPlanning(32);
     const saved=trade.checkpoint(),plan=saved.admissions[0][1],actor=trade.actors.find(a=>a.id===plan.id)!;
-    expect(plan.deadline).toBe(60);
+    expect(plan.deadline).toBe(secondsToTicks(3));
     const cargo=actor.cargo,state=actor.state,failures=saved.routeFailures;
-    game.tick=59;trade.stepPlanning(0);expect(trade.checkpoint().admissions).toHaveLength(1);
-    trade.restore(trade.checkpoint());game.tick=60;trade.stepPlanning(0);
+    game.tick=secondsToTicks(3)-1;trade.stepPlanning(0);expect(trade.checkpoint().admissions).toHaveLength(1);
+    trade.restore(trade.checkpoint());game.tick=secondsToTicks(3);trade.stepPlanning(0);
     const current=trade.actors.find(a=>a.id===actor.id)!;
     expect(trade.checkpoint().admissions).toHaveLength(0);
-    expect(current.cargo).toBe(cargo);expect(current.state).toBe(state);expect(current.waitTicks).toBeGreaterThanOrEqual(100);
+    expect(current.cargo).toBe(cargo);expect(current.state).toBe(state);expect(current.waitTicks).toBeGreaterThanOrEqual(secondsToTicks(5));
     expect(trade.checkpoint().routeFailures).toEqual(failures);expect(trade.diagnostics.planningLimits).toBe(1);
   });
   it("keeps paid cargo outside the autonomous quote deadline", () => {
     const { game, trade, step } = fleet(1, 0, false, true, false, true);
-    step(20);
+    step(secondsToTicks(1));
     const actor = trade.actors[0];
-    expect(game.domainRoutes!.deadlineTicks!(actor.playerId, "trade", actor.id)).toBe(40);
+    expect(game.domainRoutes!.deadlineTicks!(actor.playerId, "trade", actor.id)).toBe(secondsToTicks(2));
     actor.cargo = 20; actor.loaded = 20; actor.state = "returning"; game.tick++;
     expect(game.domainRoutes!.deadlineTicks!(actor.playerId, "trade", actor.id)).toBeUndefined();
   });
   it("reconciles duplicate pending corridors after restore and commits each merchant's cargo independently", () => {
     const { game, trade, step, expansion, sources } = fleet(1, 0, false, true);
-    step(20);
+    step(secondsToTicks(1));
     trade.stepPlanning(32);
     const saved = trade.checkpoint(), original = saved.admissions[0][1];
     expect(original.requested).toBe(true);
@@ -137,7 +138,7 @@ describe("bounded civilian trade", () => {
     expect(trade.checkpoint().admissions.filter(([, p]) => p.requested)).toHaveLength(1);
     const clone = new Skirmish(game.map, game.options);
     clone.restore(game.checkpoint());
-    for (let tick = 0; tick < 100 && trade.checkpoint().admissions.length; tick++) {
+    for (let tick = 0; tick < secondsToTicks(5) && trade.checkpoint().admissions.length; tick++) {
       game.routePlanner.step(++game.tick);
       trade.stepPlanning(32);
       clone.routePlanner.step(++clone.tick);
@@ -155,7 +156,7 @@ describe("bounded civilian trade", () => {
       game.expansion!.diplomacy.action(game.players[0],game.players[1],"offer",0);
       game.expansion!.diplomacy.action(game.players[1],game.players[0],"accept",0);
     }
-    step(22);
+    step(secondsToTicks(1.1));
     const actor=trade.actors.find(a=>a.playerId===1)!;
     const market=game.buildings.find(b=>b.playerId===2 && b.type===(naval?"port":"city"))!;
     const before=game.players.map(p=>p.gold);
@@ -178,7 +179,7 @@ describe("bounded civilian trade", () => {
     expect(game.players[1].gold-before[1]).toBe(income);
   });
   it("pays domestic deliveries once rather than doubling the owner's income",()=>{
-    const {game,trade,step}=fleet(1,0);step(22);
+    const {game,trade,step}=fleet(1,0);step(secondsToTicks(1.1));
     const actor=trade.actors[0],market=game.buildings.find(b=>b.playerId===1 && b.type==="city")!;
     const before=game.players[0].gold;
     Object.assign(actor,{destination:market.id,path:[],waitTicks:0});step();
@@ -189,65 +190,65 @@ describe("bounded civilian trade", () => {
   it("borrows land slots when paused and restores the reservation without interrupting sea voyages", () => {
     const {trade,step}=fleet(1,50);
     trade.setPaused(1,false,true);
-    step(200);
+    step(secondsToTicks(10));
     const sea=()=>trade.actors.filter(a=>a.playerId===1 && a.naval);
     expect(sea()).toHaveLength(48);
     const ships=sea().map(a=>a.id);
     trade.setPaused(1,false,false);
-    step(20);
+    step(secondsToTicks(1));
     expect(sea().map(a=>a.id)).toEqual(ships);
     expect(trade.actors.filter(a=>a.playerId===1 && !a.naval)).toHaveLength(0);
     // Complete eight voyages through the real returning/loading transition.
     for(const actor of sea().slice(-8))Object.assign(actor,{state:"returning",destination:actor.factoryId,
       path:[],nextPathIndex:0,waitTicks:0,cargo:0});
-    step(40);
+    step(secondsToTicks(2));
     expect(sea()).toHaveLength(40);
     expect(trade.actors.filter(a=>a.playerId===1 && !a.naval).length).toBeGreaterThan(0);
     expect(trade.actors.filter(a=>a.playerId===1).length).toBeLessThanOrEqual(48);
   });
   it("releases paused empty land couriers so their slots can be used at sea", () => {
     const {trade,step}=fleet(8,50);
-    step(200);
+    step(secondsToTicks(10));
     const land=trade.actors.filter(a=>a.playerId===1 && !a.naval);
     expect(land).toHaveLength(8);
     for(const actor of land)Object.assign(actor,{state:"loading",destination:null,path:[],cargo:0,waitTicks:0});
     trade.setPaused(1,false,true);
-    step(40);
+    step(secondsToTicks(2));
     expect(trade.actors.filter(a=>a.playerId===1 && !a.naval)).toHaveLength(0);
     expect(trade.actors.filter(a=>a.playerId===1 && a.naval)).toHaveLength(48);
   });
   it("reserves eight owner slots for factories even when ports fill first", () => {
     const {trade,expansion,sources,step}=fleet(1,50);
     expansion.supply.goods.set(sources[0].id,0);
-    step(200);
+    step(secondsToTicks(10));
     expect(trade.actors.filter(a=>a.playerId===1 && a.naval)).toHaveLength(40);
     expansion.supply.goods.set(sources[0].id,1000);
-    step(200);
+    step(secondsToTicks(10));
     expect(trade.actors.filter(a=>a.playerId===1 && !a.naval)).toHaveLength(8);
     expect(trade.actors.filter(a=>a.playerId===1)).toHaveLength(48);
   });
   it.each([false,true])("dispatches only a full load and permits additional couriers from one stocked site (naval=%s)", naval => {
     const {trade,expansion,sources,step}=fleet(naval?0:1,naval?1:0);
     expansion.supply.goods.set(sources[0].id,24);
-    step(40);expect(trade.actors).toHaveLength(0);
+    step(secondsToTicks(2));expect(trade.actors).toHaveLength(0);
     expansion.supply.goods.set(sources[0].id,25);
-    step(22);expect(trade.actors).toHaveLength(1);
+    step(secondsToTicks(1.1));expect(trade.actors).toHaveLength(1);
     expect(trade.actors[0].loaded).toBe(25);
     expect(expansion.supply.goods.get(sources[0].id)).toBe(0);
     expansion.supply.goods.set(sources[0].id,25);
-    step(20);expect(trade.actors).toHaveLength(2);
+    step(secondsToTicks(1));expect(trade.actors).toHaveLength(2);
     expect(trade.actors.every(a=>a.loaded===25)).toBe(true);
   });
   it("reuses a returning courier and tops up its unsold cargo before departure",()=>{
     const {game,trade,expansion,sources,step}=fleet(1,0);
-    expansion.supply.goods.set(sources[0].id,25);step(22);
+    expansion.supply.goods.set(sources[0].id,25);step(secondsToTicks(1.1));
     const a=trade.actors[0],id=a.id;
     Object.assign(a,{state:"returning",destination:sources[0].id,path:[],waitTicks:0,cargo:15,delivered:10});
     step();expect(expansion.supply.goods.get(sources[0].id)).toBe(15);
-    expansion.supply.goods.set(sources[0].id,24);step(40);
+    expansion.supply.goods.set(sources[0].id,24);step(secondsToTicks(2));
     expect(a.state).toBe("loading");expect(a.cargo).toBe(0);
     expect(game.snapshot().expansion!.traders.find(t=>t.id===id)?.waitingForCargo).toBe(true);
-    expansion.supply.goods.set(sources[0].id,25);step(4);
+    expansion.supply.goods.set(sources[0].id,25);step(secondsToTicks(0.2));
     expect(trade.actors).toHaveLength(1);expect(a.id).toBe(id);
     expect(a.loaded).toBe(25);expect(a.tripSupplyTicks).toBeGreaterThan(0);
   });
@@ -257,7 +258,7 @@ describe("bounded civilian trade", () => {
       const b=game.addBuilding({...sources[0],id:game.allocateId()});expansion.supply.goods.set(b.id,1000);
     }
     const first=game.buildings.find(b=>b.playerId===2 && b.type==="port")!;
-    step(22);
+    step(secondsToTicks(1.1));
     const a=trade.actors.find(a=>a.playerId===1)!;expect(a.loaded).toBe(75);
     const arrive=(b:typeof first)=>{
       a.state="outbound";a.destination=b.id;a.path=[];a.waitTicks=0;
@@ -271,19 +272,19 @@ describe("bounded civilian trade", () => {
     expect(a.loaded).toBe(a.delivered+a.returned+a.lost+a.cargo);
   });
   it("finishes an accepted sea leg when war begins, but blocks new enemy voyages", () => {
-    const {game,trade,step}=fleet(0,1,true);step(22);
+    const {game,trade,step}=fleet(0,1,true);step(secondsToTicks(1.1));
     const a=trade.actors.find(a=>a.playerId===1)!;expect(a.cargo).toBeGreaterThan(0);
     expect(game.applyCommand({type:"alliance",playerId:1,otherId:2,action:"declare"})).toBeNull();
     a.waitTicks=0;a.path=[];step();
     expect(trade.deliveredGold[1]??0).toBeGreaterThan(0);
-    step(22);
+    for(let i=0;i<secondsToTicks(10) && a.state!=="loading";i++) step();
     expect(a.state).toBe("loading");
     expect(trade.controls[1]?.blocked ?? []).toEqual([]);
     expect(trade.permitted(1,2,true)).toBe(false);
   });
   it.each([false, true])("commits completed loading routes identically after cold restore (naval=%s)", (naval) => {
     const { game, trade, step } = fleet(naval ? 0 : 1, naval ? 1 : 0, false, true);
-    step(20);
+    step(secondsToTicks(1));
     let ready = false;
     for (let i = 0; i < 100; i++) {
       trade.stepPlanning(1);
@@ -306,7 +307,7 @@ describe("bounded civilian trade", () => {
     expect(diplomacy.action(game.players[0],game.players[1],"offer",game.tick)).toBeNull();
     expect(diplomacy.action(game.players[1],game.players[0],"accept",game.tick)).toBeNull();
     let found = false;
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < secondsToTicks(100); i++) {
       game.step();
       const a = trade.actors.find(a => a.naval);
       if (!a) continue;
@@ -326,7 +327,7 @@ describe("bounded civilian trade", () => {
     expect(found).toBe(true);
     const restored = new Skirmish(game.map, game.options);
     restored.restore(game.checkpoint());
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < secondsToTicks(6); i++) {
       game.step(); restored.step();
       expect(isDeepStrictEqual(restored.checkpoint(), game.checkpoint()), `first continuation difference at ${phase}, tick ${i + 1}`).toBe(true);
     }
@@ -337,7 +338,7 @@ describe("bounded civilian trade", () => {
     for (const b of game.buildings.filter(b => b.type === "port"))
       game.updateBuilding(b.id, { tile: game.map.ref(game.map.x(b.tile), 38) });
     expect(game.map.neighbors(sources[0].tile).some(t => game.map.isWater(t))).toBe(false);
-    step(22);
+    step(secondsToTicks(1.1));
     expect(trade.actors.some(a => a.naval && a.cargo > 0)).toBe(true);
     game.expansion!.progression.states[1].completed.push("rus-stoneage-port-sea-trade", "rus-stoneage-warships");
     game.players[0].gold=100000;
@@ -345,9 +346,9 @@ describe("bounded civilian trade", () => {
   });
   it("retires an orphaned source identically after cold restoration", () => {
     const {game,trade,sources,step}=fleet(0,1,false,true);
-    step(20);
+    step(secondsToTicks(1));
     game.removeBuilding(sources[0].id);
-    step(401);
+    step(secondsToTicks(20.05));
     expect(trade.actors.some(a=>a.factoryId===sources[0].id && a.state!=="prize")).toBe(false);
     const clone=new Skirmish(game.map,game.options);
     clone.restore(game.checkpoint());
@@ -382,7 +383,7 @@ describe("bounded civilian trade", () => {
   });
   it("captures a loaded ship without an owned receiving port, then delivers when one is built", () => {
     const { game, trade, step } = fleet(0, 1);
-    step(22);
+    step(secondsToTicks(1.1));
     const actor = trade.actors.find(a => a.naval)!;
     expect(actor.cargo).toBeGreaterThan(0);
     const cargoValue = actor.cargo * actor.valuePerGood;
@@ -391,19 +392,19 @@ describe("bounded civilian trade", () => {
     for (const port of game.buildings.filter(b => b.type === "port" && b.playerId === 2)) game.removeBuilding(port.id);
     game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
     actor.waitTicks = 0;
-    step(25);
+    step(secondsToTicks(1.25));
     expect(actor).toMatchObject({ playerId: 2, state: "prize", destination: null });
     expect(actor.waitingReason).toBe("no-receiver");
     expect(actor.cargo * actor.valuePerGood).toBe(cargoValue);
     expect(trade.deliveredGold[2] ?? 0).toBe(0);
     game.addBuilding({ id: game.allocateId(), type: "port", tile: game.map.ref(11, 39), playerId: 2, remainingTicks: 0, age: "StoneAge" });
-    step(200);
+    step(secondsToTicks(10));
     expect(trade.actors).not.toContain(actor);
     expect(trade.deliveredGold[2]).toBe(cargoValue);
   });
   it("shares water geometry across owners while independently committing their cargo", () => {
     const { game, trade, step } = fleet(0, 1, false, true);
-    step(20);
+    step(secondsToTicks(1));
     const ordinary = trade.actors[0], prize = structuredClone(ordinary);
     Object.assign(prize, { id: game.allocateId(), playerId: 2, state: "prize", cargo: 17, loaded: 17,
       shipmentId: 9000, destination: null, path: [], waitTicks: 0 });
@@ -448,7 +449,7 @@ describe("bounded civilian trade", () => {
   });
   it.each([false, true])("automatically captures passing neutral sea trade without a war declaration (AI policy=%s)", aiWarPolicy => {
     const { game, trade, step } = fleet(0, 1, aiWarPolicy);
-    step(22);
+    step(secondsToTicks(1.1));
     const actor = trade.actors.find(a => a.naval)!;
     const cargo = actor.cargo, value = cargo * actor.valuePerGood;
     expect(game.expansion!.relations.atWar(1, 2)).toBe(false);
@@ -471,7 +472,7 @@ describe("bounded civilian trade", () => {
     const { game, trade, expansion, step } = fleet(0, 1, true);
     expansion.diplomacy.action(game.players[0], game.players[1], "offer", 0);
     expansion.diplomacy.action(game.players[1], game.players[0], "accept", 0);
-    step(22);
+    step(secondsToTicks(1.1));
     const actor = trade.actors.find(a => a.naval)!;
     game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship",
       x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
@@ -484,7 +485,7 @@ describe("bounded civilian trade", () => {
     const { game, trade, step } = fleet(0, 1, true);
     game.setAiController(2, false);
     game.owners.fill(0);
-    step(22);
+    step(secondsToTicks(1.1));
     const actor = trade.actors.find(a => a.naval)!;
     actor.waitTicks = 0;
     const ship = game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship",
@@ -493,7 +494,7 @@ describe("bounded civilian trade", () => {
     expect(game.expansion!.relations.atWar(1, 2)).toBe(false);
     const initial = { x: ship.x, y: ship.y };
     let acquired = false;
-    for (let ticks = 0; ticks < 400 && actor.playerId === 1; ticks++) {
+    for (let ticks = 0; ticks < secondsToTicks(20) && actor.playerId === 1; ticks++) {
       game.step();
       acquired ||= game.ship(ship.id)?.navalTargetKind === "trade";
     }
@@ -505,7 +506,7 @@ describe("bounded civilian trade", () => {
   });
   it("makes land merchant capture mutual after a player declares war on neutral AI", () => {
     const { game, trade, step } = fleet(1, 0, true);
-    step(22);
+    step(secondsToTicks(1.1));
     const actor = trade.actors.find(a => !a.naval)!;
     const captor = game.squads.find(s => s.playerId === 2)!;
     game.updateSquad(captor.id, { x: actor.x, y: actor.y });
@@ -525,7 +526,7 @@ describe("bounded civilian trade", () => {
     if (reason === "eliminated") tribe.eliminated = true;
     else for (const port of game.buildings.filter((b) => b.type === "port"))
       game.updateBuilding(port.id, { playerId: tribe.id });
-    step(40);
+    step(secondsToTicks(2));
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(0);
   });
   it("lets a researched tribe dispatch full loads from a shared stacked port", () => {
@@ -537,26 +538,26 @@ describe("bounded civilian trade", () => {
     game.updateBuilding(destination.id, { playerId: 1 });
     const research = expansion.progression.states[tribe.id].completed;
     research.splice(0, research.length);
-    step(20);
+    step(secondsToTicks(1));
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(0);
     research.push("rus-stoneage-port-sea-trade");
-    step(20);
+    step(secondsToTicks(1));
     const actors = trade.actors.filter((a) => a.playerId === tribe.id);
     // Two stacked ports share one physical spawn site, not two timers.
     expect(actors).toHaveLength(1);
     expect(actors[0]).toMatchObject({ naval: true, definitionId: "stoneage-trade" });
     const origin = { x: actors[0].x, y: actors[0].y };
-    step(19);
+    step(secondsToTicks(1)-1);
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(1);
     step();
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(2);
-    step(1800);
+    step(secondsToTicks(90));
     expect(Math.hypot(actors[0].x - origin.x, actors[0].y - origin.y)).toBeGreaterThan(FIXED);
     expect(trade.deliveredGold[tribe.id]).toBeGreaterThan(0);
   });
   it("includes age-scaled tribe pools in the global ceiling while regular pools remain 48", () => {
     const { game, expansion, trade, sources, step } = fleet(40, 20, false, false, true);
-    step(20);
+    step(secondsToTicks(1));
     expect(trade.actors.filter((a) => a.playerId === 1)).toHaveLength(48);
     const tribe = game.players.find((p) => p.kind === "tribe")!;
     game.players.find((p) => p.id === 2)!.eliminated = true;
@@ -564,13 +565,13 @@ describe("bounded civilian trade", () => {
     const destination = game.buildings.find((b) => b.type === "port" && !sources.includes(b))!;
     game.updateBuilding(destination.id, { playerId: 1 });
     expansion.progression.states[tribe.id].completed.push("rus-stoneage-land-traders", "rus-stoneage-port-sea-trade");
-    step(20);
+    step(secondsToTicks(1));
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(16);
-    step(800);
+    step(secondsToTicks(40));
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(16);
     expect(trade.actors.length).toBeLessThanOrEqual(48 + 16);
     expansion.progression.states[tribe.id].age = "BronzeAge";
-    step(800);
+    step(secondsToTicks(40));
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(18);
     expect(trade.actors.length).toBeLessThanOrEqual(48 + 18);
   });
@@ -579,7 +580,7 @@ describe("bounded civilian trade", () => {
     trade.setBlocked(1,2,true,false);
     const tasks:Parameters<NonNullable<typeof game.domainRoutes>["request"]>[0][]=[];
     const request=vi.spyOn(game.domainRoutes!,"request").mockImplementation(task=>{tasks.push(task);return true;});
-    step(20);trade.stepPlanning(32);
+    step(secondsToTicks(1));trade.stepPlanning(32);
     expect(tasks).toHaveLength(1);
     trade.completedRoute(tasks[0],"unreachable",[]);
     trade.stepPlanning(32);
@@ -587,9 +588,9 @@ describe("bounded civilian trade", () => {
     expect(expansion.supply.goods.get(sources[0].id)).toBe(1000);
     expect(trade.checkpoint().routeFailures).toHaveLength(1);
     trade.restore(trade.checkpoint());
-    step(300);trade.stepPlanning(32);
+    step(secondsToTicks(15));trade.stepPlanning(32);
     expect(request).toHaveBeenCalledTimes(1);
-    step(200);trade.stepPlanning(32);
+    step(secondsToTicks(10));trade.stepPlanning(32);
     expect(request.mock.calls.length).toBeGreaterThan(1);
   });
   it("retries planner capacity exhaustion promptly without spending cargo or condemning the route", () => {
@@ -597,20 +598,20 @@ describe("bounded civilian trade", () => {
     trade.setBlocked(1, 2, true, false);
     const tasks: Parameters<NonNullable<typeof game.domainRoutes>["request"]>[0][] = [];
     vi.spyOn(game.domainRoutes!, "request").mockImplementation(task => { tasks.push(task); return true; });
-    step(20); trade.stepPlanning(32);
+    step(secondsToTicks(1)); trade.stepPlanning(32);
     trade.completedRoute(tasks[0], "limited", []);
     trade.stepPlanning(32);
     const failure = trade.checkpoint().routeFailures[0][1];
-    expect(failure.retryAt - game.tick).toBe(20);
+    expect(failure.retryAt - game.tick).toBe(secondsToTicks(1));
     expect(expansion.supply.goods.get(sources[0].id)).toBe(1000);
     trade.restore(trade.checkpoint());
-    step(103); trade.stepPlanning(32);
+    step(secondsToTicks(5.15)); trade.stepPlanning(32);
     expect(tasks).toHaveLength(2);
     expect(trade.actors[0].cargo).toBe(0);
   });
   it("leaves an unrelated active fleet alone when pausing or blocking trade", () => {
     const { trade, step } = fleet(1, 1);
-    step(100);
+    step(secondsToTicks(5));
     const sea = trade.actors.find((a) => a.playerId === 1 && a.naval)!;
     const land = trade.actors.find((a) => a.playerId === 1 && !a.naval)!;
     expect(sea.state).toBe("outbound");
@@ -635,7 +636,7 @@ describe("bounded civilian trade", () => {
       remainingTicks: 0,
       age: "StoneAge",
     });
-    step(22);
+    step(secondsToTicks(1.1));
     const actor = trade.actors.find((a) => a.playerId === 1)!;
     expect(actor.destination).toBe(market.id);
     const captor = game.squads.find((s) => s.playerId === 2)!;
@@ -678,7 +679,7 @@ describe("bounded civilian trade", () => {
       remainingTicks: 0,
       age: "StoneAge",
     });
-    step(22);
+    step(secondsToTicks(1.1));
     expect(trade.actors.find((a) => a.playerId === 1)!.destination).toBe(
       market.id,
     );
@@ -686,16 +687,16 @@ describe("bounded civilian trade", () => {
   });
   it("caps a stocked sixty-level economy at 48 couriers", () => {
     const { trade, step } = fleet(40, 20);
-    step(20);
+    step(secondsToTicks(1));
     expect(trade.actors.filter(a=>a.playerId===1)).toHaveLength(48);
-    step(800);
+    step(secondsToTicks(40));
     expect(trade.actors.filter((a) => a.playerId === 1)).toHaveLength(
       TRADE_RULES.actorCap,
     );
   });
   it("requires replacement cargo after capture and continues identically after restoration", () => {
     const { game, trade, sources, expansion, step } = fleet(0, 1);
-    step(20);
+    step(secondsToTicks(1));
     game.updateBuilding(
       game.buildings.find((b) => b.type === "port" && b.playerId === 2)!.id,
       { tile: game.map.ref(25, 39) },
@@ -714,8 +715,8 @@ describe("bounded civilian trade", () => {
     const saved = game.checkpoint(),
       clone = new Skirmish(game.map, game.options);
     clone.restore(saved);
-    step(399);
-    for (let i = 0; i < 399; i++) {
+    step(secondsToTicks(19.95));
+    for (let i = 0; i < secondsToTicks(20); i++) {
       clone.tick++;
       clone.expansion!.trade.step();
     }
@@ -724,7 +725,7 @@ describe("bounded civilian trade", () => {
     expect(trade.actors).not.toContain(actor);
     expect(trade.deliveredGold[2]).toBe(400);
     expansion.supply.goods.set(sources[0].id,25);
-    step();
+    step(secondsToTicks(1));
     expect(trade.actors.filter((a) => a.playerId === 1)).toHaveLength(1);
     expect(expansion.supply.goods.get(sources[0].id)).toBeLessThanOrEqual(1000);
   });
@@ -739,7 +740,7 @@ describe("bounded civilian trade", () => {
     const { game, trade, sources, step } = fleet(0, 1);
     for (let i = 0; i < 9; i++)
       game.addBuilding({ ...sources[0], id: game.allocateId() });
-    step(20);
+    step(secondsToTicks(1));
     expect(trade.actors[0].capacity).toBe(75);
     expect(trade.actors.filter((a) => a.playerId === 1)).toHaveLength(1);
   });
@@ -773,7 +774,7 @@ describe("bounded civilian trade", () => {
   });
   it("finishes launched sea cargo before pausing, blocks new voyages both ways, and replicates controls", () => {
     const { game, trade, step } = fleet(0, 1);
-    step(22);
+    step(secondsToTicks(1.1));
     const actor = trade.actors[0];
     expect(actor.cargo).toBeGreaterThan(0);
     const encoder = new SnapshotEncoder(),
@@ -787,7 +788,7 @@ describe("bounded civilian trade", () => {
         paused: true,
       }),
     ).toBeNull();
-    step(900);
+    step(secondsToTicks(45));
     expect(actor.cargo).toBe(0);
     expect(actor.returned + actor.delivered).toBe(actor.loaded);
     expect(trade.deliveredGold[1] ?? 0).toBeGreaterThan(0);
@@ -824,7 +825,7 @@ describe("bounded civilian trade", () => {
   it("reuses route corridors without consuming another factory's goods for sea trade", () => {
     const { trade, expansion, sources, step } = fleet(1, 1);
     trade.setPaused(1, false, true);
-    step(6000);
+    step(secondsToTicks(300));
     expect(expansion.supply.goods.get(sources[0].id)).toBe(1000);
     expect(trade.deliveredGold[1]).toBeGreaterThan(0);
     expect(trade.diagnostics.routeHits).toBeGreaterThan(0);

@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from '../Protocol';
+import { secondsToTicks } from '../Protocol';
 import type { ExactRouteOutcome } from "../RoutePlanner";
 import type { DomainRouteConsumer, DomainRouteTask } from "./DomainRoutePorts";
 import type { Expansion } from "./Expansion";
@@ -89,7 +91,7 @@ export class AiRouteQuotes implements DomainRouteConsumer {
         water,
         prospectiveOwner,
         revision,
-        expires: world.tick + 1200,
+        expires: world.tick + secondsToTicks(60),
         requested: false,
         attempts: 0,
         retryAt: world.tick,
@@ -115,7 +117,7 @@ export class AiRouteQuotes implements DomainRouteConsumer {
       quote.requested = ports.request(quote.task, start, goal, water);
       if (!quote.requested) {
         quote.attempts++;
-        quote.retryAt = world.tick + 20 * quote.attempts;
+        quote.retryAt = world.tick + TICKS_PER_SECOND * quote.attempts;
         if (quote.attempts >= 4) {
           quote.outcome = "limited";
           return { pending: false, reason: "Exact route admission exhausted" };

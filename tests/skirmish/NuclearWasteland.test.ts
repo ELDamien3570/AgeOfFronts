@@ -1,7 +1,7 @@
 import { createManpower, remainingHealth, maximumHealth } from "../../src/skirmish/domain/Manpower";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { FIXED } from "../../src/skirmish/Protocol";
+import { FIXED, secondsToTicks } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { UNIT } from "../../src/skirmish/content/Units";
 import { createFormation, formationSlots, validateFormation } from "../../src/skirmish/domain/FormationGeometry";
@@ -43,7 +43,7 @@ describe("nuclear land damage", () => {
     if (mode === "reforming") game.updateSquad(squad.id, {
       formation: { ...squad.formation!, transition: {
         from: "mass", fromFacing: 0, fromSlots: formationSlots(squad, game.tick),
-        startTick: game.tick, duration: 200,
+        startTick: game.tick, duration: secondsToTicks(10),
       } },
     });
     const encoder = new SnapshotEncoder(), decoder = new SnapshotDecoder();

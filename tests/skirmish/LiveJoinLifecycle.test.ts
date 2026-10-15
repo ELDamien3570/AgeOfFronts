@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import { LiveMatch } from "../../src/skirmish/multiplayer/application/LiveMatch";
@@ -195,7 +196,7 @@ describe("bounded live admission lifecycle", () => {
     ).toThrow(/expired/);
     f.match.acknowledge("new", b.syncId!, b.publicationSequence!);
     expect(f.match.playerId("new")).toBe(3);
-    f.time(160050);
+    f.time(160125);
     await f.match.advance();
     expect(f.requests.slice(-1)[0]).toMatchObject({
       type: "advance",
@@ -219,7 +220,7 @@ describe("bounded live admission lifecycle", () => {
       f.match.acknowledge("slow", b.syncId!, b.publicationSequence!),
     ).toThrow(/expired/);
     expect(f.match.summary("other")?.status).toBe("running");
-    f.time(25051);
+    f.time(25126);
     await f.match.advance();
     expect(f.requests.slice(-1)[0]).toMatchObject({
       type: "advance",
@@ -268,7 +269,7 @@ describe("bounded live admission lifecycle", () => {
     expect(f.requests.some((r) => r.type === "join-barrier")).toBe(false);
     f.time(17_000); // Worker wait exceeds the former five-second application limit.
     finish({
-      tick: 4,
+      tick: secondsToTicks(0.2),
       winner: null,
       packet,
       rejectedCommands: [],
@@ -293,9 +294,9 @@ describe("bounded live admission lifecycle", () => {
     f.match.acknowledge("slow",baseline.syncId!,baseline.publicationSequence!);
     // Catch-up is serviced one tick at a time. Fill the four-publication
     // window with four logical ticks at each background deadline.
-    for(const time of [10_200,10_400,10_600,10_800]){f.time(time);for(let tick=0;tick<4;tick++)await f.match.advance();}
+    for(const time of [10_250,10_500,10_750,11_000]){f.time(time);for(let tick=0;tick<secondsToTicks(0.2);tick++)await f.match.advance();}
     const sent=f.baseline("slow");
-    f.time(11_000);for(let tick=0;tick<4;tick++)await f.match.advance();expect(f.baseline("slow").publicationSequence).toBe(sent.publicationSequence);
+    f.time(11_250);for(let tick=0;tick<secondsToTicks(0.2);tick++)await f.match.advance();expect(f.baseline("slow").publicationSequence).toBe(sent.publicationSequence);
     f.match.stateApplied("slow",sent.publicationSequence!,sent.flowEpoch!);
     await Promise.resolve();await Promise.resolve();
     const rebased=f.baseline("slow");expect(rebased.rebase).toBe(true);expect(rebased.flowEpoch).toBeGreaterThan(sent.flowEpoch!);

@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED, type Ship } from "../../src/skirmish/Protocol";
@@ -67,7 +68,7 @@ function fixture(split = false, compact = false, island = false) {
     game.restore(game.checkpoint());
     const before = facts.diagnostics.passes;
     for (let i = 0; i < 100 && before === facts.diagnostics.passes; i++)
-      facts.step(game.tick + 100, 32);
+      facts.step(game.tick + 100, secondsToTicks(1.6));
     expect(facts.diagnostics.passes).toBe(before + 1);
   };
   const assess = (budget = 3) => {
@@ -143,7 +144,7 @@ describe("persistent concentrated port defense", () => {
     const mission=f.planner.missions.get(f.player.id)!;
     expect(mission.members.slice(0,4).map(id=>f.planner.fleetLane(f.game.ship(id)!))).toEqual([0,1,2,3]);
     const saved=f.game.checkpoint(),cold=new Skirmish(f.map,f.game.options);cold.restore(saved);
-    for(let i=0;i<350;i++){f.game.step();cold.step();}
+    for(let i=0;i<secondsToTicks(17.5);i++){f.game.step();cold.step();}
     expect(cold.checkpoint()).toEqual(f.game.checkpoint());
     expect(f.game.ships.every(s=>f.map.euclideanDistSquared(f.game.tileOf(s),mission.anchor!)>12**2)).toBe(true);
   });
@@ -154,7 +155,7 @@ describe("persistent concentrated port defense", () => {
     f.game.updateShip(first.id,{x:40.5*FIXED,destination:null});
     f.game.updateShip(second.id,{x:52.5*FIXED,destination:null});
     f.game.updateShip(enemy.id,{x:70.5*FIXED});
-    f.game.tick+=100;
+    f.game.tick+=secondsToTicks(5);
     f.refresh();
     const apply=vi.spyOn(f.game,"applyCommand"),mission=f.assess();
     expect(mission.state).toBe("execute");
@@ -170,7 +171,7 @@ describe("persistent concentrated port defense", () => {
     for(let i=0;i<10;i++) {
       const goal=mission.patrolGoal!;
       f.game.updateShip(ship.id,{x:(f.map.x(goal)+.5)*FIXED,y:(f.map.y(goal)+.5)*FIXED,destination:null});
-      f.game.tick+=100;f.refresh();mission=f.assess();
+      f.game.tick+=secondsToTicks(5);f.refresh();mission=f.assess();
       expect(mission.state).toBe("stage");
       expect(f.planner.allowsLocalPursuit(f.game.ship(ship.id)!)).toBe(true);
     }
@@ -208,7 +209,7 @@ describe("persistent concentrated port defense", () => {
     expect(f.game.recruitment.jobs).toHaveLength(4);
     const spending=f.planner.checkpoint().funding[0][1];expect(spending.purchases).toBe(4);
     const gold=f.player.gold, saved=f.game.checkpoint();f.game.restore(saved);
-    f.game.tick=500;f.assess();
+    f.game.tick=secondsToTicks(25);f.assess();
     expect(f.game.recruitment.jobs).toHaveLength(4);expect(f.player.gold).toBe(gold);
     expect(f.planner.checkpoint().funding[0][1].windowSpent).toBe(spending.windowSpent);
   });
@@ -229,7 +230,7 @@ describe("persistent concentrated port defense", () => {
   it("physically patrols while the mission retains movement ownership",()=>{
     const f=fixture(),ship=f.addShip();f.refresh();f.assess();
     const start={x:ship.x,y:ship.y};
-    for(let i=0;i<120;i++){f.game.step();f.facts.step(f.game.tick,32);f.planner.step(16);}
+    for(let i=0;i<secondsToTicks(6);i++){f.game.step();f.facts.step(f.game.tick,secondsToTicks(1.6));f.planner.step(secondsToTicks(0.8));}
     expect(Math.hypot(f.game.ship(ship.id)!.x-start.x,f.game.ship(ship.id)!.y-start.y)).toBeGreaterThan(FIXED);
     expect(f.planner.missions.get(f.player.id)?.members).toContain(ship.id);
   });
@@ -261,7 +262,7 @@ describe("persistent concentrated port defense", () => {
     }
     f.refresh();
     f.game.options.runAi = true;
-    f.game.tick = 200;
+    f.game.tick = secondsToTicks(10);
     const facts = vi.spyOn(f.facts, "step"),
       cities = vi.spyOn(f.expansion.economy.cities, "step"),
       naval = vi.spyOn(f.planner, "step");
@@ -291,7 +292,7 @@ describe("persistent concentrated port defense", () => {
       port: recovering.repairPortId,
       destination: recovering.destination,
     });
-    f.game.tick += 100;
+    f.game.tick += secondsToTicks(5);
     f.refresh();
     const apply = vi.spyOn(f.game, "applyCommand");
     mission = f.assess();
@@ -315,7 +316,7 @@ describe("persistent concentrated port defense", () => {
     const healed = f.game.ship(first.id)!;
     f.game.updateShip(healed.id, { health: 1000 });
     f.game.updateShip(healed.id, { repairState: "patrolling" });
-    f.game.tick += 100;
+    f.game.tick += secondsToTicks(5);
     f.refresh();
     mission = f.assess();
     expect(mission.members).toContain(first.id);
@@ -333,7 +334,7 @@ describe("persistent concentrated port defense", () => {
       id: f.game.allocateId(),
       tile: f.map.ref(80, 19),
     });
-    f.game.tick += 100;
+    f.game.tick += secondsToTicks(5);
     f.refresh();
     const current = f.assess();
     expect(current.port).toBe(f.port.id);
@@ -366,7 +367,7 @@ describe("persistent concentrated port defense", () => {
     const gold = f.player.gold,
       first = f.assess();
     expect(first.purchases).toBe(1);
-    f.game.tick += 100;
+    f.game.tick += secondsToTicks(5);
     f.assess();
     expect(first.purchases).toBe(2);
     for (const job of f.game.recruitment.jobs) f.game.recruitment.updateJob(job.id, {remainingTicks: 1});
@@ -386,7 +387,7 @@ describe("persistent concentrated port defense", () => {
     f.game.tick = first.deadline;
     f.planner.step();
     expect(first.state).toBe("abort");
-    f.game.tick += 400;
+    f.game.tick += secondsToTicks(20);
     f.refresh();
     const saved = f.game.checkpoint(),
       clone = new Skirmish(f.map, f.game.options);
@@ -430,7 +431,7 @@ describe("persistent concentrated port defense", () => {
       f.game.recruitment.jobs.filter((j) => j.category === "ship"),
     ).toHaveLength(1);
     expect(f.player.gold).toBe(gold - definition.cost.gold!);
-    f.game.tick += 100;
+    f.game.tick += secondsToTicks(5);
     f.assess();
     expect(mission.purchases).toBe(1);
     expect(

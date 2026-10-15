@@ -33,7 +33,6 @@ export const MAX_QUEUED_COMMANDS = MAX_COMMAND_BATCH;
 export const EMPTY_MATCH_GRACE_MS = 120_000;
 const TICK_MS = 1000 / TICKS_PER_SECOND;
 const SNAPSHOT_MS = 200;
-const SNAPSHOT_TICKS = Math.round(TICKS_PER_SECOND * SNAPSHOT_MS / 1000);
 interface Seat {
   playerId: number;
   guestId: string;
@@ -97,7 +96,7 @@ export class LiveMatch {
   }
   private nextTickAt = 0;
   private nextSnapshotAt = 0;
-  private nextSnapshotTick = 0;
+  private nextSnapshotSimulationMs = 0;
   private disconnected = new Set<number>();
   private initializedAt = 0;
   private initialized = false;
@@ -490,7 +489,7 @@ export class LiveMatch {
     this.nextSyncAt = this.now() + (this.config.cooldownMs ?? 2_000);
     this.nextTickAt = this.now() + TICK_MS;
     this.nextSnapshotAt = this.now() + SNAPSHOT_MS;
-    this.nextSnapshotTick = this.tick + SNAPSHOT_TICKS;
+    this.nextSnapshotSimulationMs = this.tick * TICK_MS + SNAPSHOT_MS;
     this.cadence.reset(this.tick, this.now());
     if (!this.stopped)
       this.status(
@@ -652,10 +651,8 @@ export class LiveMatch {
       this.scheduleTick();
     }
   }
-  /** A running match wakes exactly at its next tick deadline. The
-   * coordinator's fixed 50 ms poll alone aliased against the 50 ms deadline:
-   * jitter that landed just early cost a whole extra interval and then a
-   * two-tick catch-up batch. The poll remains as a backstop. */
+  /** Wake at the next simulation deadline; the coordinator poll is a backstop.
+   * A poll landing just before the deadline must not delay the next tick. */
   private tickTimer?: { cancel(): void };
   private scheduleTick(): void {
     if (this.stopped || !this.running || this.tickTimer !== undefined) return;
@@ -709,7 +706,7 @@ export class LiveMatch {
       this.runtimeSeats = initial.seats ?? [];
       this.nextTickAt = this.now() + TICK_MS;
       this.nextSnapshotAt = this.now() + SNAPSHOT_MS;
-      this.nextSnapshotTick = this.tick + SNAPSHOT_TICKS;
+      this.nextSnapshotSimulationMs = this.tick * TICK_MS + SNAPSHOT_MS;
       this.cadence.reset(this.tick, this.now());
       this.publicationSequence++;
       this.broadcast(this.state(initial.packet!));
@@ -728,15 +725,15 @@ export class LiveMatch {
         ? now - (MAX_ADVANCE_TICKS - 2) * TICK_MS
         : this.nextTickAt + TICK_MS;
     // Background replication is at most 5 Hz in both wall and game time.
-    // Under overload, publishing every 200 wall ms despite less than four
-    // ticks of progress steals CPU from an already late simulation. Executed
+    // Under overload, publishing every 200 wall ms despite less than 200 ms
+    // of simulation progress steals CPU from an already late simulation. Executed
     // commands still trigger their immediate publication inside the worker.
-    const publish = now >= this.nextSnapshotAt && this.tick + ticks >= this.nextSnapshotTick;
+    const publish = now >= this.nextSnapshotAt && (this.tick + ticks) * TICK_MS >= this.nextSnapshotSimulationMs;
     if (publish) {
       this.nextSnapshotAt +=
         (Math.floor((now - this.nextSnapshotAt) / SNAPSHOT_MS) + 1) *
         SNAPSHOT_MS;
-      this.nextSnapshotTick = this.tick + ticks + SNAPSHOT_TICKS;
+      this.nextSnapshotSimulationMs += (Math.floor(((this.tick+ticks)*TICK_MS-this.nextSnapshotSimulationMs)/SNAPSHOT_MS)+1)*SNAPSHOT_MS;
     }
     const commands = this.commands
       .splice(0)

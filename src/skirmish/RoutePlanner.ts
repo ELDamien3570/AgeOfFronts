@@ -1,3 +1,4 @@
+import {secondsToTicks} from './Protocol';
 import type { LandPaths, WaterPaths, WaterShortcut } from "./Pathfinding";
 import { PlanningWorkspace, type PlanningPathState } from "./PlanningWorkspace";
 import type { CorridorState } from "./HierarchicalPaths";
@@ -444,7 +445,7 @@ export class RoutePlanner<T> {
       if (!eligible(job)) continue;
       const interactive = priorities?.[ordinal] ?? this.priorityOf(job);
       const urgent = this.schedulingVersion >= 4 && !!this.ports.committed &&
-        (this.committedOf(job) || this.currentTick - job.createdTick >= 100);
+        (this.committedOf(job) || this.currentTick - job.createdTick >= secondsToTicks(5));
       const at = candidates.length;
       candidates.push(job); classes[at] = Number(interactive) | (Number(urgent) << 1);
       if (interactive) human = true;
@@ -593,7 +594,7 @@ export class RoutePlanner<T> {
       const live=job.discard?job.replacement:job.retired?undefined:job;
       return live && this.priorityOf(live);
     });
-    let preparationBudget = Math.min(256, budget),
+    let preparationBudget = Math.min(Math.ceil(budget/16), budget),
       // At most 16,384 local dequeues, with 12,288 reserved for human work.
       corridorPreparationBudget = Math.min(32, budget),
       backgroundCorridorPreparationBudget = Math.min(this.ports.lendIdlePreparation && !humanWaiting ? 32 : 8, budget),

@@ -1,3 +1,4 @@
+import { TICKS_PER_SECOND } from "../Protocol";
 /** Cosmetic trailing health: canonical strength always remains authoritative. */
 export class HealthLossTrail {
   private readonly rows = new Map<number, {strength:number;previous:number;tick:number}>();
@@ -13,7 +14,7 @@ export class HealthLossTrail {
   }
   value(id:number,tick:number){
     const row=this.rows.get(id);if(!row)return 0;
-    const fade=Math.max(0,1-Math.max(0,tick-row.tick-4)/16);
+    const fade=Math.max(0,1-Math.max(0,tick-row.tick-0.2*TICKS_PER_SECOND)/(0.8*TICKS_PER_SECOND));
     return row.strength+(row.previous-row.strength)*fade;
   }
 }

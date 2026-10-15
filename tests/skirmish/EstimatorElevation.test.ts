@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { combatCohorts } from "../../src/skirmish/domain/AiCombatPower";
 import { damageAmount, defenceOf } from "../../src/skirmish/domain/Combat";
@@ -35,7 +36,7 @@ describe("elevated combat estimates", () => {
           undefined,
           bp,
         ) *
-          20) /
+          TICKS_PER_SECOND) /
         sustainedInterval(a.unit.attack);
       expect(cohortDps(own, enemy, { elevationBpA: bp })).toBeCloseTo(
         expected,

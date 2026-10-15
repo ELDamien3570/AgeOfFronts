@@ -1,3 +1,6 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
+const presentationTicks=(seconds:number)=>seconds*TICKS_PER_SECOND;
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { EraArtwork } from "../../src/skirmish/client/EraArtwork";
@@ -13,7 +16,7 @@ function fixture() {
     new GameMapImpl(80, 40, terrain, terrain.length),
     { seed: 42, aiCount: 1, runAi: false, tribes: false, ruleset: "ages-v1" },
   ).snapshot();
-  snapshot.tick = 20;
+  snapshot.tick = presentationTicks(1);
   const trader: NonNullable<Snapshot["expansion"]>["traders"][number] = {
     id: 500,
     playerId: 1,
@@ -59,55 +62,56 @@ describe("trader presentation", () => {
   });
   it("faces actual travel, interpolates position, and keeps heading when stopped", () => {
     const { snapshot, trader, presentation } = fixture();
-    expect(presentation.pose(trader.id, 20)?.clip).toBe("idle");
+    expect(presentation.pose(trader.id, presentationTicks(1))?.clip).toBe("idle");
     trader.x += FIXED;
-    snapshot.tick++;
+    snapshot.tick+=presentationTicks(.05);
     const before = JSON.stringify(snapshot);
     presentation.update(snapshot);
-    expect(presentation.pose(trader.id, 21, 0.5)).toMatchObject({
+    expect(presentation.pose(trader.id, presentationTicks(1.05), 0.5)).toMatchObject({
       x: 20.5 * FIXED,
       y: 20 * FIXED,
       clip: "running",
       elapsedTicks: 0,
     });
-    expect(presentation.pose(trader.id, 21)?.angle).toBeCloseTo(-Math.PI / 2);
+    expect(presentation.pose(trader.id, presentationTicks(1.05))?.angle).toBeCloseTo(-Math.PI / 2);
     expect(JSON.stringify(snapshot)).toBe(before);
     // Outbound is still the shipment state while loading at a stop.
-    snapshot.tick++;
+    snapshot.tick+=presentationTicks(.05);
     presentation.update(snapshot);
-    expect(presentation.pose(trader.id, 22)?.clip).toBe("idle");
-    expect(presentation.pose(trader.id, 22)?.angle).toBeCloseTo(-Math.PI / 2);
+    expect(presentation.pose(trader.id, presentationTicks(1.1))?.clip).toBe("idle");
+    expect(presentation.pose(trader.id, presentationTicks(1.1))?.angle).toBeCloseTo(-Math.PI / 2);
     trader.y -= FIXED;
-    snapshot.tick++;
+    snapshot.tick+=presentationTicks(.05);
     presentation.update(snapshot);
-    expect(presentation.pose(trader.id, 23)?.angle).toBeCloseTo(-Math.PI);
+    expect(presentation.pose(trader.id, presentationTicks(1.15))?.angle).toBeCloseTo(-Math.PI);
   });
 
   it("preserves travel animation on duplicate packets, turns on a prize route, and removes stale actors", () => {
     const { snapshot, trader, presentation } = fixture();
     trader.x += FIXED;
-    snapshot.tick++;
+    snapshot.tick+=presentationTicks(.05);
     presentation.update(snapshot);
     presentation.update(snapshot);
-    expect(presentation.pose(trader.id, 23)).toMatchObject({
+    expect(presentation.pose(trader.id, presentationTicks(1.15))).toMatchObject({
       clip: "running",
-      elapsedTicks: 2,
+
     });
+    expect(presentation.pose(trader.id,presentationTicks(1.15))!.elapsedTicks).toBeCloseTo(presentationTicks(.1));
     trader.state = "prize";
     trader.playerId = 2;
     trader.x -= FIXED;
-    snapshot.tick++;
+    snapshot.tick+=presentationTicks(.05);
     presentation.update(snapshot);
-    expect(presentation.pose(trader.id, 24)?.angle).toBeCloseTo(Math.PI / 2);
-    expect(presentation.pose(trader.id, 24)?.elapsedTicks).toBe(3);
+    expect(presentation.pose(trader.id, presentationTicks(1.2))?.angle).toBeCloseTo(Math.PI / 2);
+    expect(presentation.pose(trader.id, presentationTicks(1.2))?.elapsedTicks).toBeCloseTo(presentationTicks(0.15),12);
     snapshot.expansion!.traders = [];
     presentation.update(snapshot);
-    expect(presentation.pose(trader.id, 24)).toBeUndefined();
+    expect(presentation.pose(trader.id, presentationTicks(1.2))).toBeUndefined();
     snapshot.expansion!.traders = [trader];
     presentation.update(snapshot);
-    expect(presentation.pose(trader.id, 24)?.angle).toBe(0);
+    expect(presentation.pose(trader.id, presentationTicks(1.2))?.angle).toBe(0);
     presentation.reset();
-    expect(presentation.pose(trader.id, 24)).toBeUndefined();
+    expect(presentation.pose(trader.id, presentationTicks(1.2))).toBeUndefined();
   });
 
   it("plays every land trader's authored travel frames and applies the trade ship's opposite source facing", () => {
@@ -125,10 +129,10 @@ describe("trader presentation", () => {
       const id = `${age.toLowerCase()}-trader`;
       const frames = Array.from(
         { length: 10 },
-        (_, i) => art.get(id, "running", (i * 20) / 12)!,
+        (_, i) => art.get(id, "running", (i * TICKS_PER_SECOND) / 12)!,
       );
       expect(new Set(frames.map((f) => `${f.x}:${f.y}`)).size).toBe(10);
-      expect(art.get(id, "running", (20 * 10) / 12)).toMatchObject({
+      expect(art.get(id, "running", (TICKS_PER_SECOND * 10) / 12)).toMatchObject({
         x: 0,
         y: 0,
       });
@@ -138,10 +142,10 @@ describe("trader presentation", () => {
     trader.naval = true;
     trader.definitionId = "bronzeage-trade";
     trader.x += FIXED;
-    snapshot.tick++;
+    snapshot.tick+=presentationTicks(.05);
     presentation.update(snapshot);
     expect(
-      presentation.pose(trader.id, 21)!.angle + art.facing(trader.definitionId),
+      presentation.pose(trader.id, presentationTicks(1.05))!.angle + art.facing(trader.definitionId),
     ).toBeCloseTo(Math.PI / 2);
     expect(art.get(trader.definitionId, "running", 5)).toBeDefined();
   });

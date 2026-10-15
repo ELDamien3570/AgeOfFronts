@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import {
   boundsOverlap,
@@ -193,7 +194,7 @@ describe("production resource accessibility", () => {
       arms = build("arms-factory"),
       siege = build("siege-workshop"),
       depot = build("depot");
-    e.supply.step(20, m.players, m.buildings, m.owners);
+    e.supply.step(secondsToTicks(1), m.players, m.buildings, m.owners);
     expect(stock.copper).toBeGreaterThan(0);
     expect(stock.tin).toBeGreaterThan(0);
     expect(stock.ironOre).toBeGreaterThan(0);

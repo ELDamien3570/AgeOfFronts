@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FormationPlanning } from "../../src/skirmish/FormationPlanning";
@@ -152,7 +153,7 @@ describe("remaining roadmap integration", () => {
         undefined,
         state,
       );
-      expect(planner.step(3)).toBeLessThanOrEqual(3);
+      expect(planner.step(secondsToTicks(0.15))).toBeLessThanOrEqual(3);
       if (i === 20) state = structuredClone(state);
     }
     expect(state.phase).toBe("done");
@@ -177,7 +178,7 @@ describe("remaining roadmap integration", () => {
     });
     cohort.start(2, f.own, f.map.ref(28, 30));
     for (let i = 0; i < 12000 && cohort.pendingCount; i++) {
-      expect(cohort.step(7)).toBeLessThanOrEqual(7);
+      expect(cohort.step(secondsToTicks(0.35))).toBeLessThanOrEqual(7);
       for (const request of p.tasks.splice(0))
         cohort.completedRoute(
           request.task,
@@ -210,9 +211,9 @@ describe("remaining roadmap integration", () => {
       commit,
     });
     cohort.start(2, f.own, f.map.ref(30, 30));
-    cohort.step(2);
+    cohort.step(secondsToTicks(0.1));
     p.setRevision("captured-wall");
-    cohort.step(2);
+    cohort.step(secondsToTicks(0.1));
     expect(cohort.pendingCount).toBe(0);
     expect(commit).not.toHaveBeenCalled();
     expect(p.events[p.events.length - 1]).toMatchObject({
@@ -317,7 +318,7 @@ describe("remaining roadmap integration", () => {
     expect(quote.status).toBe("available");
     expect(quote.materials.iron).toBe(16);
     expect(quote.materials.ironOre).toBe(30);
-    expect(quote.ticks).toBe(1080);
+    expect(quote.ticks).toBe(secondsToTicks(54));
     expect(quote.reasons.some((r) => r.reason === "workshop")).toBe(true);
     expect(quote.reasons.some((r) => r.reason === "protected")).toBe(true);
   });
@@ -331,7 +332,7 @@ describe("remaining roadmap integration", () => {
     expect(AI_DOCTRINES.skirmisher.engagement).toBe("fire-retreat");
     expect(forceReadiness(f.expansion, f.player, 6).reason).toBe("force");
     f.game.options.aiWarPolicy = true;
-    f.game.tick = 5000;
+    f.game.tick = secondsToTicks(250);
     f.expansion.operations.step(new Map([[2, 20]]));
     expect(f.expansion.operations.state(2)?.phase).not.toBe("war");
   });
@@ -341,19 +342,19 @@ describe("remaining roadmap integration", () => {
       b = f.game.players[0],
       dip = new Diplomacy({
         maximumOutgoing: 1,
-        proposerTicks: 2400,
-        recipientTicks: 1200,
-        declinedPairTicks: 3600,
-        brokenPairTicks: 6000,
+        proposerTicks: secondsToTicks(120),
+        recipientTicks: secondsToTicks(60),
+        declinedPairTicks: secondsToTicks(180),
+        brokenPairTicks: secondsToTicks(300),
       });
     expect(dip.action(a, b, "offer", 0)).toBeNull();
     expect(dip.action(b, a, "reject", 1)).toBeNull();
-    expect(dip.action(a, b, "offer", 3000)).toMatch(/cooldown|recent|contact/i);
+    expect(dip.action(a, b, "offer", secondsToTicks(150))).toMatch(/cooldown|recent|contact/i);
     const saved = dip.checkpoint();
     dip.restore(saved);
     expect(dip.checkpoint()).toEqual(saved);
-    dip.step(4000, [a, b]);
-    expect(dip.action(a, b, "offer", 4000)).toBeNull();
+    dip.step(secondsToTicks(200), [a, b]);
+    expect(dip.action(a, b, "offer", secondsToTicks(200))).toBeNull();
   });
   it("keeps all staged planners deterministic across a mid-admission authoritative checkpoint", () => {
     const f = fixture(true, 4);
@@ -366,11 +367,11 @@ describe("remaining roadmap integration", () => {
         order: { type: "move", tile: f.map.ref(70, 30) },
       }),
     ).toBeNull();
-    for (let i = 0; i < 40; i++) f.game.step();
+    for (let i = 0; i < secondsToTicks(2); i++) f.game.step();
     const saved = f.game.checkpoint(),
       other = fixture(true, 4).game;
     other.restore(saved);
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < secondsToTicks(4); i++) {
       f.game.step();
       other.step();
     }

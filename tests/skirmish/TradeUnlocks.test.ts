@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
@@ -40,7 +41,7 @@ function fixture(port = false, deferredPlanning = false) {
   }
   for (const b of m.buildings.filter(b=>b.playerId===1 && (b.type==="factory" || b.type==="port"))) m.expansion!.supply.goods.set(b.id,100);
   const dispatch = () => {
-    m.tick += 20;
+    m.tick += secondsToTicks(1);
     m.expansion!.trade.step();
   };
   return {

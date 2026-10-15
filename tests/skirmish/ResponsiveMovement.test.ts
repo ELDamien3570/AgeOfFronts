@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from 'vitest';
 import { GameMapImpl } from '../../src/core/game/GameMap';
 import { LandPaths, AmphibiousPaths } from '../../src/skirmish/Pathfinding';
@@ -32,7 +34,7 @@ describe('responsive movement gameplay',()=>{
     const topology=new PathTopology(map,'land');
     expect(map.isImpassable(4)).toBe(true);
     expect(topology.walkable(4)).toBe(true);
-    expect(terrainSpeed(map,4)).toBe(20);
+    expect(terrainSpeed(map,4)).toBe(400/TICKS_PER_SECOND);
     expect(topology.cost(3,4)).toBe(28);
     expect(topology.cost(0,4)).toBe(40);
   });
@@ -42,9 +44,9 @@ describe('responsive movement gameplay',()=>{
     game.updateSquad(own.id,{x:startX*FIXED});
     expect(game.movementSpeed(own)).toBeGreaterThan(0);
     expect(game.applyCommand({type:'order',playerId:1,squadIds:[own.id],order:{type:'move',tile:map.ref(30,32)}})).toBeNull();
-    for(let tick=0;tick<40;tick++)game.step();
+    for(let tick=0;tick<secondsToTicks(2);tick++)game.step();
     const restored=fixture(true,true).game;restored.restore(game.checkpoint());
-    for(let tick=0;tick<400;tick++){game.step();restored.step();}
+    for(let tick=0;tick<secondsToTicks(20);tick++){game.step();restored.step();}
     expect(own.x).toBeGreaterThan(26*FIXED);
     expect(Math.hypot(own.x-30.5*FIXED,own.y-32.5*FIXED)).toBeLessThan(FIXED);
     expect(restored.checkpoint()).toEqual(game.checkpoint());
@@ -54,7 +56,7 @@ describe('responsive movement gameplay',()=>{
     for(let tile=0;tile<400;tile++){const x=tile%20;component[tile]=x<10?1:x>10?2:0;if(x===10)data[tile]=255;}
     const map=new GameMapImpl(20,20,data,400),terrain=tacticalTerrain(map),legacy=new TacticalFeatureIndex(terrain,{
       component,walkable:t=>component[t]>0,connected:(a,b)=>component[a]>0&&component[a]===component[b]});
-    legacy.step(20);
+    legacy.step(secondsToTicks(1));
     const {navigationRulesVersion:_version,...saved}=legacy.checkpoint();
     const current=()=>new TacticalFeatureIndex(terrain,new LandPaths(map,false));
     const restored=current();restored.restore(saved);
@@ -84,8 +86,8 @@ describe('responsive movement gameplay',()=>{
   it('finishes a reform overlapping mountains rather than pausing it',()=>{
     const {game,map,own,enemy}=fixture();game.updateSquad(enemy.id,{x:50*FIXED,y:50*FIXED});
     for(let y=28;y<37;y++)for(let x=17;x<25;x++)map.setMagnitude(map.ref(x,y),31);
-    game.updateSquad(own.id,{formation:{...own.formation!,shape:'line',transition:{from:'mass',fromFacing:0,startTick:game.tick,duration:20}}});
-    for(let i=0;i<25;i++)game.step();
+    game.updateSquad(own.id,{formation:{...own.formation!,shape:'line',transition:{from:'mass',fromFacing:0,startTick:game.tick,duration:secondsToTicks(1)}}});
+    for(let i=0;i<secondsToTicks(1.25);i++)game.step();
     expect(own.formation?.transition).toBeUndefined();
     expect(own.formation?.blocked).not.toBe(true);
   });

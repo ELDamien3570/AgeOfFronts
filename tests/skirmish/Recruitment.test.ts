@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
@@ -86,13 +87,13 @@ describe("authoritative recruitment queues", () => {
     expect(p.gold).toBe(99700);
     expect(p.reserves).toBe(99940);
     const initial = m.squads.filter((s) => s.playerId === 1).length;
-    for (let i = 0; i < 239; i++) m.step();
+    for (let i = 0; i < secondsToTicks(12)-1; i++) m.step();
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(initial);
     expect(m.recruitment.jobs[0].remainingTicks).toBe(1);
     m.step();
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(initial + 1);
     expect(m.recruitment.jobs).toHaveLength(4);
-    expect(m.recruitment.jobs[0].remainingTicks).toBe(240);
+    expect(m.recruitment.jobs[0].remainingTicks).toBe(secondsToTicks(12));
     expect(p.reserves).toBe(99942); // twelve seconds of base plus starting-city reserve income
     const decoded = new SnapshotDecoder().decode(
       new SnapshotEncoder().encode(m.snapshot()),
@@ -166,10 +167,10 @@ describe("authoritative recruitment queues", () => {
         kind,
         definitionId,
         cost: {},
-        totalTicks,
+        totalTicks: secondsToTicks(totalTicks/20),
       });
-    m.recruitment.updateJob(m.recruitment.jobs[0].id, {remainingTicks: 80});
-    m.recruitment.updateJob(m.recruitment.jobs[1].id, {remainingTicks: 20});
+    m.recruitment.updateJob(m.recruitment.jobs[0].id, {remainingTicks: secondsToTicks(4)});
+    m.recruitment.updateJob(m.recruitment.jobs[1].id, {remainingTicks: secondsToTicks(1)});
     const vm = new RecruitmentQueueViewModel(m.snapshot());
     expect(vm.entries).toHaveLength(3);
     expect(vm.entries[0]).toMatchObject({
@@ -197,7 +198,7 @@ describe("authoritative recruitment queues", () => {
       9000, 9001, 9000, 9001, 9000,
     ]);
     const before = m.squads.filter((s) => s.playerId === 1).length;
-    for (let i = 0; i < 240; i++) m.step();
+    for (let i = 0; i < secondsToTicks(12); i++) m.step();
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(before + 2);
     expect(new RecruitmentQueueViewModel(m.snapshot()).entries[0].count).toBe(
       3,
@@ -265,7 +266,7 @@ describe("authoritative recruitment queues", () => {
       ["warship", 4],
       ["fighter", 4],
     ]);
-    for (let i = 0; i < 600; i++) m.step();
+    for (let i = 0; i < secondsToTicks(30); i++) m.step();
     expect(m.ships.filter((s) => s.playerId === 1)).toHaveLength(2);
     expect(expansion.aircraft.filter((a) => a.playerId === 1)).toHaveLength(2);
     expect(
@@ -275,14 +276,14 @@ describe("authoritative recruitment queues", () => {
   it("restores training progress and queue identity from authoritative checkpoints", () => {
     const original = game();
     expect(train(original)).toBeNull();
-    for (let i = 0; i < 40; i++) original.step();
+    for (let i = 0; i < secondsToTicks(2); i++) original.step();
     const restored = game();
     restored.restore(original.checkpoint());
     expect(restored.recruitment.jobs).toEqual(original.recruitment.jobs);
     expect(train(restored)).toBeNull();
     expect(train(original)).toBeNull();
     expect(restored.recruitment.jobs).toEqual(original.recruitment.jobs);
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < secondsToTicks(3); i++) {
       restored.step();
       original.step();
     }

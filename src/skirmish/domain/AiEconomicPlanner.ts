@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from "../Protocol";
+import {secondsToTicks} from '../Protocol';
 import { recruitmentVariant } from '../content/FormationRecipes';
 import { scaledRecipeCost } from './Manpower';
 import { researchUtility, type ResearchOpportunity } from "./AiResearchUtility";
@@ -89,10 +91,10 @@ export function economicCandidates(
         snapshot.threatTroops > snapshot.readyTroops / 2 && kind === "recruit"
           ? "emergency"
           : kind === "research" || kind === "advance" ? "committed" : "growth",
-      score: Math.floor((benefit * 2400) / Math.max(2400, delay+(kind==="construct" && ["blacksmith","armory","arms-factory"].includes((command as {buildingType?:string}).buildingType??"") ? Math.min(2400,demand.timeToOutput??0)/4:0))) - opportunity,
+      score: Math.floor((benefit * secondsToTicks(120)) / Math.max(secondsToTicks(120), delay+(kind==="construct" && ["blacksmith","armory","arms-factory"].includes((command as {buildingType?:string}).buildingType??"") ? Math.min(secondsToTicks(120),demand.timeToOutput??0)/4:0))) - opportunity,
       reason,
       earliestTick: snapshot.tick,
-      expiresTick: snapshot.tick + (kind === "research" || kind === "advance" ? 12000 : 2400),
+      expiresTick: snapshot.tick + (kind === "research" || kind === "advance" ? secondsToTicks(600) : secondsToTicks(120)),
       prerequisites,
     });
   };
@@ -130,8 +132,8 @@ export function economicCandidates(
       value +=
         reserveShortage > 0
           ? Math.floor(
-              (Math.max(0, 2400 - ticks) * cityReserveIncome(snapshot.age)) /
-                20,
+              (Math.max(0, secondsToTicks(120) - ticks) * cityReserveIncome(snapshot.age)) /
+                TICKS_PER_SECOND,
             ) + Math.min(4000, reserveShortage)
           : 0;
     if (site.type === "factory") {
@@ -155,7 +157,7 @@ export function economicCandidates(
         snapshot.headroom > 0 &&
         availableKits > 0 &&
         (snapshot.liquid.reserves ?? 0) >= 12 &&
-        snapshot.trainingTicks > 400
+        snapshot.trainingTicks > secondsToTicks(20)
           ? 4500
           : 0;
     if (["blacksmith", "armory", "arms-factory"].includes(site.type)) {

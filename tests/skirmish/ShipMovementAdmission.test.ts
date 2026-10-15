@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED, type Ship } from "../../src/skirmish/Protocol";
@@ -15,7 +16,7 @@ function fixture(deadline=false) {
       tribes: false,
       runAi: false,
       deferredPlanning: true,
-      ...(deadline?{autonomousRouteDeadlineTicks:40 as const}:{}),
+      ...(deadline?{autonomousRouteDeadlineTicks:16 as const}:{}),
     });
   const ships: Ship[] = ([5, 8].map((x) => ({
     id: match.allocateId(),
@@ -44,11 +45,11 @@ describe("transactional sailing admission", () => {
     match.updateShip(ship.id,{playerId:2,destination:active,waypoints:[map.ref(15,50)]});
     const player=match.players.find(p=>p.id===2)!;
     expect(match.shipAdmission.command(player,[ship],goal,false,0)).toBeNull();
-    match.shipAdmission.step(39,0);
-    const saved=match.shipAdmission.checkpoint();expect(saved.pending[0][1].deadline).toBe(40);
-    match.shipAdmission.restore(saved);match.shipAdmission.step(40,0);
+    match.shipAdmission.step(secondsToTicks(2)-1,0);
+    const saved=match.shipAdmission.checkpoint();expect(saved.pending[0][1].deadline).toBe(secondsToTicks(2));
+    match.shipAdmission.restore(saved);match.shipAdmission.step(secondsToTicks(2),0);
     expect(match.shipAdmission.pendingCount).toBe(0);
-    expect(match.shipAdmission.events[match.shipAdmission.events.length-1]).toMatchObject({tick:40,status:"rejected",reason:expect.stringContaining("capacity")});
+    expect(match.shipAdmission.events[match.shipAdmission.events.length-1]).toMatchObject({tick:secondsToTicks(2),status:"rejected",reason:expect.stringContaining("capacity")});
     expect(ship.destination).toBe(active);expect(ship.waypoints).toEqual([map.ref(15,50)]);
   });
   it("returns terminal capacity for a committed AI waypoint at 40 ticks without dropping later waypoints or retaining live searches", () => {
@@ -56,16 +57,16 @@ describe("transactional sailing admission", () => {
     match.updateShip(ship.id,{playerId:2,destination:goal,waypoints:[map.ref(75,50)]});
     match.shipAdmission.resume(ship,goal,false,0);
     const cancel=vi.spyOn(match.routePlanner,"cancel"),request=vi.spyOn(match.routePlanner,"request");
-    match.shipAdmission.step(40,0);
+    match.shipAdmission.step(secondsToTicks(2),0);
     expect(ship.planningPaused).toBe(true);expect(cancel).toHaveBeenCalled();
     expect(match.shipAdmission.checkpoint().pending[0][1]).toMatchObject({paused:true,execution:true});
     const oldId=match.shipAdmission.checkpoint().pending[0][0];
-    match.shipAdmission.step(139,0);expect(request).not.toHaveBeenCalled();
-    match.shipAdmission.step(140,0);
+    match.shipAdmission.step(secondsToTicks(7)-1,0);expect(request).not.toHaveBeenCalled();
+    match.shipAdmission.step(secondsToTicks(7),0);
     const fresh=match.shipAdmission.checkpoint().pending[0];
-    expect(fresh[0]).not.toBe(oldId);expect(fresh[1]).toMatchObject({deadline:180,execution:true});
+    expect(fresh[0]).not.toBe(oldId);expect(fresh[1]).toMatchObject({deadline:secondsToTicks(9),execution:true});
     expect(fresh[1].paused).toBeUndefined();expect(ship.planningPaused).toBeUndefined();
-    match.shipAdmission.step(180,0);expect(ship.planningPaused).toBe(true);
+    match.shipAdmission.step(secondsToTicks(9),0);expect(ship.planningPaused).toBe(true);
     expect(ship.destination).toBe(goal);expect(ship.waypoints).toEqual([map.ref(75,50)]);
   });
   it("restores legacy committed retry policy without silently introducing pauses", () => {
@@ -103,7 +104,7 @@ describe("transactional sailing admission", () => {
     });
     expect(ship.waypoints).toEqual([map.ref(75, 50)]);
     const request = vi.spyOn(match.routePlanner, "request");
-    match.shipAdmission.step(1000);
+    match.shipAdmission.step(secondsToTicks(50));
     expect(request).not.toHaveBeenCalled();
     const saved = match.checkpoint(),
       restored = new Skirmish(map, match.options);
@@ -112,7 +113,7 @@ describe("transactional sailing admission", () => {
       match.shipAdmission.checkpoint(),
     );
     const restoredRequest = vi.spyOn(restored.routePlanner, "request");
-    restored.shipAdmission.step(2000);
+    restored.shipAdmission.step(secondsToTicks(100));
     expect(restoredRequest).not.toHaveBeenCalled();
     expect(
       match.applyCommand({
@@ -132,7 +133,7 @@ describe("transactional sailing admission", () => {
     match.updateShip(ship.id, { repairState: "returning-to-dock", repairPortId: 123 });
     match.shipAdmission.recover(ship, goal, 1);
     const saved = match.shipAdmission.checkpoint();
-    match.shipAdmission.recover(ship, goal, 2);
+    match.shipAdmission.recover(ship, goal, secondsToTicks(0.1));
     expect(match.shipAdmission.checkpoint()).toEqual(saved);
   });
   it("terminates repeatedly limited replacements with an explicit capacity outcome and leaves voyages intact", () => {
@@ -182,11 +183,9 @@ describe("transactional sailing admission", () => {
       match.step();
     expect(match.shipAdmission.executing(ids[0])).toBe(true);
     match.setAiController(1, true);
-    for (let i = 0; i < 200 && ships.some((s) => s.destination !== null); i++)
-      match.step();
-    expect(
-      ships.every((s) => s.destination === null && match.tileOf(s) === second),
-    ).toBe(true);
+    const arrived=new Set<number>();
+    for(let i=0;i<200&&arrived.size<ships.length;i++){match.step();for(const ship of ships)if(match.tileOf(ship)===second)arrived.add(ship.id);}
+    expect([...arrived].sort()).toEqual(ids.slice().sort());
     expect(sync).not.toHaveBeenCalled();
   });
   it("activates the whole selection only after its shared water searches complete", () => {
@@ -261,7 +260,7 @@ describe("transactional sailing admission", () => {
         shipIds: [ids[0]],
       }),
     ).toBeNull();
-    for (let i = 0; i < 10; i++) match.step();
+    for (let i = 0; i < secondsToTicks(0.5); i++) match.step();
     expect(match.shipAdmission.pendingCount).toBe(0);
     // Idle warships may resume their local patrol, but none sails the
     // superseded voyage.

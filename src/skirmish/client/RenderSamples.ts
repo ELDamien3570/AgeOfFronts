@@ -1,3 +1,4 @@
+import {TICK_MS} from '../Protocol';
 export interface RenderSample<T> {
   current: T;
   /** Where the current segment starts: the position drawn when `current`
@@ -18,7 +19,7 @@ export class RenderSamples<T extends { id: number; x: number; y: number }> {
   private readonly samples = new Map<number, RenderSample<T>>();
   private tick?: number;
   private segmentStart = 0;
-  private segmentMs = 50;
+  private segmentMs = TICK_MS;
   get size(): number {
     return this.samples.size;
   }
@@ -44,7 +45,7 @@ export class RenderSamples<T extends { id: number; x: number; y: number }> {
   /** `now` is the arrival time; `segmentMs` the real time the new tick span
    * represents. Duplicate-tick publications refresh entities in place and keep
    * the running segment. */
-  update(entities: readonly T[], tick: number, now = 0, segmentMs = 50): void {
+  update(entities: readonly T[], tick: number, now = 0, segmentMs = TICK_MS): void {
     const live = new Set<number>(), advanced = tick !== this.tick;
     for (const entity of entities) {
       live.add(entity.id);

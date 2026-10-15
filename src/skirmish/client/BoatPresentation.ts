@@ -70,7 +70,7 @@ export class BoatPresentation {
     if (advanced) {
       if (!first && !discontinuity) {
         const measured = clamp(gap, 50, 400);
-        // The first real interval identifies local 20 Hz versus online 5 Hz.
+        // The first real interval identifies local versus online publication cadence.
         this.intervalMs = !this.measuredInterval
           ? measured
           : this.intervalMs * 0.8 + measured * 0.2;

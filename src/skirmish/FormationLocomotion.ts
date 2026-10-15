@@ -110,7 +110,7 @@ export function formationLocomotion(
                   Math.abs(Math.sin(headingDifference(heading, targetHeading))),
                 ),
             ),
-            intent.passThrough ? maximum : remaining / 6,
+            intent.passThrough ? maximum : remaining / (0.3 * TICKS_PER_SECOND),
           );
     if (
       goal &&

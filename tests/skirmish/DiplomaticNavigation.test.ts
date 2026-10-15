@@ -1,7 +1,7 @@
 import {expect,it,vi} from 'vitest';
 import {GameMapImpl} from '../../src/core/game/GameMap';
 import {Skirmish} from '../../src/skirmish/Simulation';
-import {FIXED} from '../../src/skirmish/Protocol';
+import {FIXED,secondsToTicks} from '../../src/skirmish/Protocol';
 import {LocalDetours} from '../../src/skirmish/LocalDetours';
 import {SpatialGrid} from '../../src/skirmish/SpatialGrid';
 import {SnapshotEncoder,SnapshotDecoder} from '../../src/skirmish/SnapshotCodec';
@@ -32,14 +32,14 @@ it('a blocked route waits for queue capacity or permission changes instead of re
  expect(request).toHaveBeenCalledTimes(1);expect(repair).not.toHaveBeenCalled();
  g.expansion!.diplomacy.establishWar(2,3,g.tick);(g as any).navigation(s);expect(repair).toHaveBeenCalled();
 });
-it('AI withdrawal has one 600-tick deadline, owns movement, persists and does not declare war',()=>{
+it('AI withdrawal has one 30-second deadline, owns movement, persists and does not declare war',()=>{
  const g=fixture(),s=g.squads.find(s=>s.playerId===2)!;g.updateSquad(s.id,point(20));g.owners[g.map.ref(20,20)]=1;
- g.tick=10;(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal).toMatchObject({owner:1,since:10,deadline:610,phase:'withdrawing'});
+ g.tick=10;(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal).toMatchObject({owner:1,since:10,deadline:10+secondsToTicks(30),phase:'withdrawing'});
  expect(controllerOf({armyOf:()=>undefined},s)).toBe('domain');expect(g.applyCommand({type:'order',playerId:2,squadIds:[s.id],order:{type:'hold'}})).toContain('withdrawing');
  const c=g.checkpoint(),restored=fixture();restored.restore(c);expect(restored.squad(s.id)!.aiWithdrawal).toEqual(s.aiWithdrawal);
  const decoded=new SnapshotDecoder().decodeLatest(new SnapshotEncoder().encode(g.snapshot()));expect(decoded.squads.find(u=>u.id===s.id)!.aiWithdrawal).toEqual(s.aiWithdrawal);
- g.tick=609;(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal?.phase).toBe('withdrawing');
- g.tick=610;(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal?.phase).toBe('recovery');expect(s.order.type).toBe('hold');expect(g.expansion!.diplomacy.state.wars).toEqual([]);
+ g.tick=10+secondsToTicks(30)-1;(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal?.phase).toBe('withdrawing');
+ g.tick=10+secondsToTicks(30);(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal?.phase).toBe('recovery');expect(s.order.type).toBe('hold');expect(g.expansion!.diplomacy.state.wars).toEqual([]);
  g.owners[g.map.ref(20,20)]=2;(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal).toBeUndefined();expect(g.expansion!.economy.assets.held(`squad:${s.id}`)).toBe(false);
 });
 it('grace permits retreat within its original country but not entry into a different neutral country',()=>{
@@ -74,6 +74,6 @@ it('persisted diplomatic waits do not manufacture a new request after restore',(
 it('raid expiry starts withdrawal, and another border change cannot reset its deadline',()=>{
  const g=fixture(),s=g.squads.find(s=>s.playerId===2)!,d=g.expansion!.diplomacy;g.updateSquad(s.id,point(20));g.owners[g.map.ref(20,20)]=1;
  expect(d.beginAiRaid(g.players[1],g.players[0],0)).toBeNull();(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal).toBeUndefined();
- g.tick=1200;d.step(g.tick,g.players);(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal).toMatchObject({since:1200,deadline:1800,owner:1});
- g.owners[g.map.ref(20,20)]=3;g.tick++;(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal).toMatchObject({since:1200,deadline:1800,owner:3});expect(d.state.wars).toEqual([]);
+ g.tick=1200;d.step(g.tick,g.players);(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal).toMatchObject({since:1200,deadline:1200+secondsToTicks(30),owner:1});
+ g.owners[g.map.ref(20,20)]=3;g.tick++;(g as any).advanceDiplomaticWithdrawal();expect(s.aiWithdrawal).toMatchObject({since:1200,deadline:1200+secondsToTicks(30),owner:3});expect(d.state.wars).toEqual([]);
 });

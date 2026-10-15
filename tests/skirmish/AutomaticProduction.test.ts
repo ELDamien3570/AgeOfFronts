@@ -1,3 +1,4 @@
+import {secondsToTicks,TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { equipmentItem } from "../../src/skirmish/content/Equipment";
@@ -253,14 +254,14 @@ describe("shared automatic production allocation", () => {
 
 describe("automatic paid-batch lifecycle", () => {
   it.each([
-    ["make-bronzeage-equipment", 200],
-    ["make-classicalage-equipment", 250],
-    ["make-earlymedieval-equipment", 300],
-    ["make-latemedieval-equipment", 350],
-    ["make-napoleonic-equipment", 400],
-    ["make-earlymodern-equipment", 450],
-    ["make-modern-equipment", 500],
-    ["make-icbm", 1200], ["make-hydrogen", 1500], ["make-mirv", 1800],
+    ["make-bronzeage-equipment", secondsToTicks(10)],
+    ["make-classicalage-equipment", secondsToTicks(12.5)],
+    ["make-earlymedieval-equipment", secondsToTicks(15)],
+    ["make-latemedieval-equipment", secondsToTicks(17.5)],
+    ["make-napoleonic-equipment", secondsToTicks(20)],
+    ["make-earlymodern-equipment", secondsToTicks(22.5)],
+    ["make-modern-equipment", secondsToTicks(25)],
+    ["make-icbm", secondsToTicks(60)], ["make-hydrogen", secondsToTicks(75)], ["make-mirv", secondsToTicks(90)],
   ] as const)("finishes %s at its halved base duration (%i ticks)", (id, ticks) => {
     const {e, p, stock, add, step} = setup();
     const recipe = PRODUCTION_RECIPES.find(r => r.id === id)!;
@@ -284,7 +285,7 @@ describe("automatic paid-batch lifecycle", () => {
       p.ai = ai;
       const b = add("arms-factory");
       Object.assign(stock, { steel: 12, gunpowder: 10 });
-      step(20);
+      step(secondsToTicks(1));
       expect(e.supply.jobs[b.id]?.recipeId).toBe("make-modern-equipment");
       expect(stock.steel).toBe(0);
       expect(stock.gunpowder).toBe(0);
@@ -298,7 +299,7 @@ describe("automatic paid-batch lifecycle", () => {
     const { e, p, stock, add, step } = setup(),
       b = add("arms-factory");
     Object.assign(stock, goods);
-    step(20);
+    step(secondsToTicks(1));
     const job = e.supply.jobs[b.id]!;
     expect(e.supply.setProduction(p, b, null)).toBeNull();
     const paid = { ...stock };
@@ -308,16 +309,16 @@ describe("automatic paid-batch lifecycle", () => {
     expect(e.supply.jobs[b.id]).toBeUndefined();
     stock[equipmentItem("Modern")] = 100;
     expect(e.supply.setProduction(p, b, "make-modern-equipment")).toBeNull();
-    step(2001);
+    step(secondsToTicks(100.05));
     expect(e.supply.jobs[b.id]).toBeDefined();
     expect(e.supply.setProduction(p, b, "auto")).toBeNull();
     expect(e.supply.productionPlans()[b.id]).toBeUndefined();
     e.supply.jobs[b.id]!.remainingTicks = 1;
-    step(2020);
+    step(secondsToTicks(101));
     expect(stock[equipmentItem("Modern")]).toBe(101);
     expect(e.supply.jobs[b.id]).toBeUndefined();
     stock[equipmentItem("Modern")] = 0;
-    step(2040);
+    step(secondsToTicks(102));
     expect(e.supply.jobs[b.id]).toBeDefined();
   });
   it.each(["capture", "destroy", "health", "eliminate"])(
@@ -326,13 +327,13 @@ describe("automatic paid-batch lifecycle", () => {
       const { m, e, p, stock, add, step } = setup(),
         b = add("arms-factory");
       Object.assign(stock, { steel: 12, gunpowder: 10 });
-      step(20);
+      step(secondsToTicks(1));
       if (reason === "capture") m.updateBuilding((b).id, { playerId: 2 });
       else if (reason === "destroy")
         m.removeBuilding(b.id);
       else if (reason === "health") m.updateBuilding((b).id, { health: 0 });
       else p.eliminated = true;
-      step(21);
+      step(secondsToTicks(1.05));
       expect(e.supply.jobs[b.id]).toBeUndefined();
       expect(stock.steel).toBe(0);
       expect(stock[equipmentItem("Modern")] ?? 0).toBe(0);
@@ -345,7 +346,7 @@ describe("automatic paid-batch lifecycle", () => {
       b = add("depot");
     Object.assign(stock, goods);
     e.supply.setProduction(p, b, null);
-    step(20);
+    step(secondsToTicks(1));
     const checkpoint = e.supply.checkpoint();
     for (let t = 21; t < 1400; t++) step(t);
     const expected = e.supply.checkpoint();
@@ -359,7 +360,7 @@ describe("automatic paid-batch lifecycle", () => {
     const { m, e, p, stock, add, step } = setup(),
       b = add("siege-workshop");
     Object.assign(stock, { steel: 20, gunpowder: 10 });
-    step(20);
+    step(secondsToTicks(1));
     const ticks = e.supply.jobs[b.id]!.remainingTicks;
     for (let t = 21; t <= 20 + ticks; t++) step(t);
     const kit = equipmentItem("Modern", "siege");
@@ -404,7 +405,7 @@ describe("automatic paid-batch lifecycle", () => {
         definitionId: "modern-siege",
       }),
     ).toBeNull();
-    for (let t = 0; t < 450; t++) m.step();
+    for (let t = 0; t < secondsToTicks(22.5); t++) m.step();
     expect(
       m.squads.some(
         (s) => s.playerId === p.id && s.definitionId === "modern-siege",
@@ -458,7 +459,7 @@ describe("persistent building-type priorities", () => {
     stock["payload:icbm"] = 2;
     Object.assign(stock, { steel: 400, gunpowder: 300, oil: 200, copper: 60, tin: 20 });
     expect(e.supply.setPriorities(p, [b], "arms-factory", ["make-icbm"])).toBeNull();
-    step(20);
+    step(secondsToTicks(1));
     expect(e.supply.jobs[b.id]?.recipeId).toBe("make-icbm");
     const firstTicks = e.supply.jobs[b.id]!.totalTicks;
     for (let t = 21; t <= 20 + firstTicks + 20; t++) step(t);
@@ -471,7 +472,7 @@ describe("persistent building-type priorities", () => {
     expect(stock["payload:icbm"]).toBe(4);
     expect(e.supply.jobs[b.id]).toBeUndefined();
     Object.assign(stock, { steel: 200, gunpowder: 150, oil: 100, copper: 30, tin: 10 });
-    const restart = Math.ceil((20 + firstTicks * 2 + 80) / 20) * 20;
+    const restart = Math.ceil((20 + firstTicks * 2 + 80) / TICKS_PER_SECOND) * 20;
     step(restart);
     expect(e.supply.jobs[b.id]?.recipeId).toBe("make-icbm");
     expect(e.supply.setPriorities(p, [b], "arms-factory", [])).toBeNull();
@@ -542,12 +543,12 @@ describe("persistent building-type priorities", () => {
       PRODUCTION_RECIPES.find((r) => r.id === "make-bronzeage-equipment")!
         .technologyId,
     ];
-    step(20);
+    step(secondsToTicks(1));
     expect(e.supply.jobs[a.id]?.recipeId).toBe("make-bronzeage-equipment");
     e.progression.states[p.id].age = "Modern";
     e.progression.states[p.id].completed = research;
     const b = add("arms-factory");
-    step(40);
+    step(secondsToTicks(2));
     expect(e.supply.jobs[b.id]?.recipeId).toBe("make-bronzeage-equipment");
     expect(
       m.snapshot().expansion!.productionPriorities?.[p.id]["arms-factory"],
@@ -556,7 +557,7 @@ describe("persistent building-type priorities", () => {
       m.applyCommand({ type: "reset-production-priorities", playerId: p.id }),
     ).toBeNull();
     const c = add("arms-factory");
-    step(60);
+    step(secondsToTicks(3));
     expect(e.supply.jobs[c.id]?.recipeId).toBe("make-modern-equipment");
     expect(e.supply.jobs[a.id]?.recipeId).toBe("make-bronzeage-equipment");
     expect(e.supply.priorities[p.id]).toBeUndefined();
@@ -564,7 +565,7 @@ describe("persistent building-type priorities", () => {
   it("validates ownership, research and compatibility atomically, but allows settings during construction", () => {
     const { m, e, p, add } = setup(),
       a = add("arms-factory");
-    m.updateBuilding((a).id, { remainingTicks: 100 });
+    m.updateBuilding((a).id, { remainingTicks: secondsToTicks(5) });
     const set = (recipeIds: string[] | null) =>
       m.applyCommand({
         type: "production-priority",
@@ -610,10 +611,10 @@ describe("persistent building-type priorities", () => {
     ).toBeNull();
     const saved = e.supply.checkpoint();
     e.supply.resetPriorities(p.id);
-    step(20);
+    step(secondsToTicks(1));
     expect(Object.values(e.supply.jobs).some(Boolean)).toBe(true);
     e.supply.restore(saved);
-    step(20);
+    step(secondsToTicks(1));
     expect(Object.values(e.supply.jobs).some(Boolean)).toBe(false);
     expect(e.supply.priorities[p.id]["arms-factory"]).toEqual([]);
   });
@@ -631,7 +632,7 @@ it("transports manual priorities through snapshot deltas and preserves a paid ba
       recipeIds: ["make-modern-equipment"],
     }),
   ).toBeNull();
-  step(20);
+  step(secondsToTicks(1));
   const encoder = new SnapshotEncoder(),
     decoder = new SnapshotDecoder();
   const encoded = decoder.decode(encoder.encode(m.snapshot()));
@@ -639,12 +640,12 @@ it("transports manual priorities through snapshot deltas and preserves a paid ba
     encoded.expansion!.productionPriorities?.[p.id]["arms-factory"],
   ).toEqual(["make-modern-equipment"]);
   const remaining = e.supply.jobs[b.id]!.remainingTicks;
-  m.updateBuilding((b).id, { remainingTicks: 50 });
-  step(21);
+  m.updateBuilding((b).id, { remainingTicks: secondsToTicks(2.5) });
+  step(secondsToTicks(1.05));
   expect(e.supply.jobs[b.id]!.remainingTicks).toBe(remaining);
   m.updateBuilding((b).id, { remainingTicks: 0 });
   e.supply.jobs[b.id]!.remainingTicks = 1;
-  step(22);
+  step(secondsToTicks(1.1));
   expect(stock[equipmentItem("Modern")]).toBe(1);
   expect(stock.steel).toBe(0);
   expect(

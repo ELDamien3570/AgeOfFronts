@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import { damageAmount,defenceOf } from './Combat';
 import { sustainedInterval } from './WeaponTiming';
 import { formationModifiers } from './FormationTactics';
@@ -19,7 +20,7 @@ export function cohortDps(own:readonly Cohort[],enemy:readonly Cohort[],context:
       ?Math.min(a.contributors,targetWidth*a.count*(a.shape==='modern-loose'?1:attack.ranks??2)):a.contributors;
     const facts=formationModifiers(b.shape,b.deployed,attack.channel,context.arc??'front',a.unit.tags.includes('mounted'));
     total+=damageAmount(attack,{...defenceOf(b.unit,context.cover),tacticalBp:facts.bp},attack.perSoldier?contributors:1000,a.xp,1000,undefined,context.elevationBpA??context.elevationBp??10000)
-      *(attack.perSoldier?1:a.strength)*(b.health/health)*20/Math.max(1,sustainedInterval(attack));
+      *(attack.perSoldier?1:a.strength)*(b.health/health)*TICKS_PER_SECOND/Math.max(1,sustainedInterval(attack));
   }
   return total;
 }

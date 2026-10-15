@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../Protocol';
 import { availableGold, spendGold } from "./Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, Player } from "../Protocol";
@@ -422,7 +423,7 @@ export class Fortifications {
       dirty = true;
     }
     if (dirty) this.reindex();
-    if (tick % 20) return;
+    if (tick % secondsToTicks(1)) return;
     for (const [key, repair] of this.repairs) {
       const [kind, value] = key.split(":"),
         target =

@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND,TICK_MS} from '../../src/skirmish/Protocol';
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { FormationSoldierMotion } from "../../src/skirmish/client/FormationSoldierMotion";
 import {
@@ -73,8 +75,8 @@ describe("authoritative formation locomotion", () => {
         const previous = squad.locomotion!;
         const result = formationLocomotion(
           squad,
-          { squad, goal, speed: 24 },
-          24,
+          { squad, goal, speed: 60 },
+          60,
           true,
           true,
         );
@@ -85,7 +87,7 @@ describe("authoritative formation locomotion", () => {
         );
         expect(change).toBeLessThanOrEqual(
           (formationMovementProfile(kind === "cavalry").squadBraking * FIXED) /
-            400 +
+            TICKS_PER_SECOND**2 +
             0.71,
         );
         squad = {
@@ -97,10 +99,10 @@ describe("authoritative formation locomotion", () => {
         return velocity;
       };
       expect(advance({ x: 0, y: -40 * FIXED }).y).toBe(0);
-      for (let i = 0; i < 45; i++) advance({ x: 0, y: -40 * FIXED });
+      for (let i = 0; i < secondsToTicks(2.25); i++) advance({ x: 0, y: -40 * FIXED });
       expect(squad.y).toBeLessThan(isolated().cavalry.y);
       const speeds: number[] = [];
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < secondsToTicks(2); i++) {
         advance({ x: 40 * FIXED, y: squad.y });
         speeds.push(squad.locomotion!.speed);
       }
@@ -115,7 +117,7 @@ describe("authoritative formation locomotion", () => {
           y: squad.y,
         },
       };
-      const charge = formationLocomotion(preparing, undefined, 24, true, true);
+      const charge = formationLocomotion(preparing, undefined, 60, true, true);
       expect(charge.motion.speed).toBeLessThan(squad.locomotion!.speed);
       expect(chargeAligned({ ...preparing, locomotion: charge.motion })).toBe(
         false,
@@ -136,12 +138,12 @@ describe("authoritative formation locomotion", () => {
         order: { type: "move", tile },
       }),
     ).toBeNull();
-    for (let i = 0; i < 30; i++) game.step();
+    for (let i = 0; i < secondsToTicks(1.5); i++) game.step();
     const restored = stoneAgeDemo();
     restored.options.formationFreeTravel = true;
     restored.options.formationReorientation = true;
     restored.restore(game.checkpoint());
-    for (let i = 0; i < 570; i++) {
+    for (let i = 0; i < secondsToTicks(28.5); i++) {
       game.step();
       restored.step();
     }
@@ -162,13 +164,13 @@ describe("authoritative formation locomotion", () => {
       locomotion: { heading: 0, targetHeading: 0, speed: 0 },
     };
     const goal = { x: squad.x, y: squad.y + 10 * FIXED };
-    const held = formationLocomotion(squad, undefined, 24);
+    const held = formationLocomotion(squad, undefined, 60);
     expect(held.motion.speed).toBe(0);
     expect(held.intent.preferredVelocity).toEqual({ x: 0, y: 0 });
     expect(formationLocomotion(squad,{squad,goal,speed:24},24).motion.speed).toBeGreaterThan(0);
     const moving = { ...squad, order: { type: "move" as const, tile: 1 } };
     expect(
-      formationLocomotion(moving, { squad: moving, goal, speed: 24 }, 24).motion
+      formationLocomotion(moving, { squad: moving, goal, speed: 60 }, 24).motion
         .speed,
     ).toBeGreaterThan(0);
   });
@@ -209,12 +211,12 @@ describe("authoritative formation locomotion", () => {
         options,
       );
       let worstGap = 0;
-      for (let tick = 1; tick <= 320; tick++) {
+      for (let tick = 1; tick <= secondsToTicks(16); tick++) {
         const before = squad;
         const result = formationLocomotion(
           squad,
-          { squad, speed: 32, goal: { x: (tick < 80 ? 16 : 0) * FIXED, y: 0 } },
-          32,
+          { squad, speed: 80, goal: { x: (tick < secondsToTicks(4) ? 16 : 0) * FIXED, y: 0 } },
+          80,
         );
         const velocity = result.intent.preferredVelocity!;
         squad = {
@@ -240,7 +242,7 @@ describe("authoritative formation locomotion", () => {
             ) *
               fraction;
           const soldiers = followers.sample(
-            (tick - 1 + fraction) * 50,
+            (tick - 1 + fraction) * TICK_MS,
             anchor,
             heading,
             slots,
@@ -282,8 +284,8 @@ describe("authoritative formation locomotion", () => {
       const oldHeading = squad.locomotion!.heading;
       const result = formationLocomotion(
         squad,
-        { squad, goal: { x, y: squad.y }, speed: 24 },
-        24,
+        { squad, goal: { x, y: squad.y }, speed: 60 },
+        60,
       );
       expect(
         Math.abs(headingDifference(oldHeading, result.motion.heading)),
@@ -297,13 +299,13 @@ describe("authoritative formation locomotion", () => {
       };
       return step;
     };
-    for (let at = 0; at < 20; at++) advance(60 * FIXED);
-    expect(squad.locomotion!.speed).toBe(24);
+    for (let at = 0; at < secondsToTicks(1); at++) advance(60 * FIXED);
+    expect(squad.locomotion!.speed).toBe(60);
     const reverseGoal = squad.x - 10 * FIXED;
     expect(advance(reverseGoal).x).toBeGreaterThan(0);
-    expect(squad.locomotion!.speed).toBeLessThan(24);
+    expect(squad.locomotion!.speed).toBeLessThan(60);
     let firstBackward = -1;
-    for (let at = 0; at < 200; at++) {
+    for (let at = 0; at < secondsToTicks(10); at++) {
       const step = advance(reverseGoal);
       if (step.x < 0 && firstBackward === -1) {
         firstBackward = at;
@@ -312,8 +314,8 @@ describe("authoritative formation locomotion", () => {
         ).toBeLessThan(Math.PI / 3);
       }
     }
-    expect(firstBackward).toBeGreaterThan(30);
-    expect(squad.locomotion!.speed).toBe(24);
+    expect(firstBackward).toBeGreaterThan(secondsToTicks(1.5));
+    expect(squad.locomotion!.speed).toBe(60);
   });
 
   it("holds its travel heading while individual soldiers handle combat attention", () => {
@@ -322,7 +324,7 @@ describe("authoritative formation locomotion", () => {
       locomotion: { heading: 0, targetHeading: 0, speed: 0 },
       fighting: true,
     };
-    const small = formationLocomotion(squad, undefined, 24);
+    const small = formationLocomotion(squad, undefined, 60);
     expect(small.motion.heading).toBe(0);
     expect(small.intent.preferredVelocity).toEqual({ x: 0, y: 0 });
     const large = formationLocomotion(
@@ -349,7 +351,7 @@ describe("authoritative formation locomotion", () => {
     expect(cavalry.charge?.phase).toBe("approach");
     const startY = cavalry.y;
     let committed = false;
-    for (let at = 0; at < 150; at++) {
+    for (let at = 0; at < secondsToTicks(7.5); at++) {
       game.step();
       if (cavalry.charge?.phase === "committed") {
         expect(chargeAligned(cavalry)).toBe(true);
@@ -374,7 +376,7 @@ describe("authoritative formation locomotion", () => {
         order: { type: "move", tile },
       }),
     ).toBeNull();
-    for (let at = 0; at < 600; at++) game.step();
+    for (let at = 0; at < secondsToTicks(30); at++) game.step();
     expect({ x: cavalry.x, y: cavalry.y }).toEqual(goal);
     expect(cavalry.order.type).toBe("hold");
     expect(cavalry.locomotion!.speed).toBe(0);
@@ -390,7 +392,7 @@ describe("authoritative formation locomotion", () => {
       y: enemy.y,
       targetId: enemy.id,
     });
-    for (let at = 0; at < 15; at++) game.step();
+    for (let at = 0; at < secondsToTicks(0.75); at++) game.step();
     const packet = new SnapshotEncoder().encode(game.snapshot());
     const transferred = structuredClone(packet, {
       transfer: snapshotTransfers(packet),
@@ -412,7 +414,7 @@ describe("authoritative formation locomotion", () => {
         await encodeState(game.checkpoint()),
       ),
     );
-    for (let at = 0; at < 100; at++) {
+    for (let at = 0; at < secondsToTicks(5); at++) {
       game.step();
       restored.step();
     }

@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -24,7 +25,7 @@ describe("explicit war and long-term alliances", () => {
     expect(action("declare")).toBeNull();
     expect(diplomacy.declaredWar(1, 2)).toBe(true);
     expect(diplomacy.declaredWar(2, 1)).toBe(true);
-    game.tick = 10000;
+    game.tick = secondsToTicks(500);
     diplomacy.step(game.tick, game.players);
     expect(game.expansion!.operations.canTarget(2, 1)).toBe(true);
     expect(game.expansion!.operations.canEnter(2, 1, game.players[0].base)).toBe(true);
@@ -49,7 +50,7 @@ describe("explicit war and long-term alliances", () => {
     expect(action("offer", 1, 3)).toBeNull();
     expect(action("accept", 3, 1)).toBeNull();
     const regular = diplomacy.state.alliances.find(t => t.a === 3 || t.b === 3)!;
-    game.tick = 601;
+    game.tick = secondsToTicks(30.05);
     expect(action("offer-long-term", 1, 3)).toBeNull();
     const events = game.expansion!.events;
     expect(events[events.length - 1]?.action).toBe("offer-long-term");
@@ -62,32 +63,32 @@ describe("explicit war and long-term alliances", () => {
     const { game, diplomacy, action } = fixture();
     expect(action("offer-long-term")).toBeNull();
     expect(action("accept", 2, 1)).toBeNull();
-    game.tick = 18001;
+    game.tick = secondsToTicks(900.05);
     const revision = diplomacy.revision;
     diplomacy.step(game.tick, game.players);
-    expect(diplomacy.state.alliances[0].expiresTick).toBe(24000);
+    expect(diplomacy.state.alliances[0].expiresTick).toBe(secondsToTicks(1200));
     expect(diplomacy.revision).toBeGreaterThan(revision);
     const encoder = new SnapshotEncoder(), decoder = new SnapshotDecoder();
     const snapshot = decoder.decode(encoder.encode(game.snapshot()));
     expect(snapshot.expansion!.diplomacy.alliances[0].longTerm).toBe(true);
     game.restore(game.checkpoint());
-    expect(game.expansion!.diplomacy.state.alliances[0]).toMatchObject({longTerm: true, expiresTick: 24000});
+    expect(game.expansion!.diplomacy.state.alliances[0]).toMatchObject({longTerm: true, expiresTick: secondsToTicks(1200)});
   });
 
   it("honors three-minute notice without extension, renewal bypass, or betrayal", () => {
     const { game, diplomacy, action } = fixture();
     expect(action("offer-long-term")).toBeNull();
     expect(action("accept", 2, 1)).toBeNull();
-    game.tick = 100;
+    game.tick = secondsToTicks(5);
     expect(action("end-long-term")).toBeNull();
-    expect(diplomacy.state.alliances[0]).toMatchObject({ ending: true, expiresTick: 3700 });
+    expect(diplomacy.state.alliances[0]).toMatchObject({ ending: true, expiresTick: secondsToTicks(185) });
     expect(action("end-long-term", 2, 1)).toBe("Alliance is already ending");
     expect(action("renew", 2, 1)).toBe("This alliance is ending");
     game.restore(game.checkpoint());
     const restored = game.expansion!.diplomacy;
-    restored.step(3699, game.players);
+    restored.step(secondsToTicks(185)-1, game.players);
     expect(restored.allied(1, 2)).toBe(true);
-    restored.step(3700, game.players);
+    restored.step(secondsToTicks(185), game.players);
     expect(restored.allied(1, 2)).toBe(false);
     expect(restored.state.betrayal[1]).toBeUndefined();
   });
@@ -96,12 +97,12 @@ describe("explicit war and long-term alliances", () => {
     const { game, diplomacy, action } = fixture();
     expect(action("offer-long-term")).toBeNull();
     expect(action("accept", 2, 1)).toBeNull();
-    game.tick = 500;
+    game.tick = secondsToTicks(25);
     expect(action(value)).toBeNull();
     expect(diplomacy.allied(1, 2)).toBe(false);
-    expect(diplomacy.state.betrayal[1]).toBe(500 + penalty);
+    expect(diplomacy.state.betrayal[1]).toBe(secondsToTicks(25+penalty/20));
     expect(diplomacy.declaredWar(1, 2)).toBe(value === "declare");
-    diplomacy.step(500 + penalty, game.players);
+    diplomacy.step(secondsToTicks((25+(penalty)/20)), game.players);
     expect(diplomacy.state.betrayal[1]).toBeUndefined();
   });
 

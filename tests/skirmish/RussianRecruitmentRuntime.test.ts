@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -85,7 +86,7 @@ describe("all Russian troop recruitment in normal skirmish", () => {
       expect(p.reserves).toBe(100000-u.cost.reserves!);
       expect(m.recruitment.jobs[0]).toMatchObject({
         definitionId: u.id,
-        totalTicks: u.trainingSeconds! * 20,
+        totalTicks: u.trainingSeconds! * TICKS_PER_SECOND,
       });
       const save = m.checkpoint();
       m.restore(save);
@@ -94,7 +95,7 @@ describe("all Russian troop recruitment in normal skirmish", () => {
       );
       expect(decoded.expansion!.recruitment![0].definitionId).toBe(u.id);
       const count = m.squads.length;
-      for (let tick = 0; tick < u.trainingSeconds! * 20; tick++) m.step();
+      for (let tick = 0; tick < u.trainingSeconds! * TICKS_PER_SECOND; tick++) m.step();
       expect(m.recruitment.jobs).toHaveLength(0);
       expect(m.squads.length).toBe(count + 1);
       expect(

@@ -1,3 +1,4 @@
+import {secondsToTicks} from './Protocol';
 import { restoreMap } from "./StateTransfer";
 import type { GameMap } from "../core/game/GameMap";
 
@@ -49,12 +50,12 @@ export class HomeTerritory {
   }
   anchors(playerId:number,owners:Uint8Array):number[] {return [...(this.bridgeheads.get(playerId)?.values()??[])].filter(t=>owners[t]===playerId);}
   failed(playerId:number,tile:number,tick:number):void {
-    this.failures.set(`${playerId}:${tile}`,tick+600);
+    this.failures.set(`${playerId}:${tile}`,tick+secondsToTicks(30));
     while(this.failures.size>2048)this.failures.delete(this.failures.keys().next().value!);
   }
   available(playerId:number,tile:number,tick:number):boolean {return (this.failures.get(`${playerId}:${tile}`)??0)<=tick;}
   crossingReady(playerId:number,tick:number):boolean {return tick>=(this.crossings.get(playerId)??0);}
-  crossed(playerId:number,tick:number,delay=600):void {this.crossings.set(playerId,tick+delay);}
+  crossed(playerId:number,tick:number,delay=secondsToTicks(30)):void {this.crossings.set(playerId,tick+delay);}
   shores(playerId:number):readonly number[] {return this.cache.get(playerId)?.shores??[];}
   constructor(private readonly map: GameMap) {
     this.visited = new Uint32Array(map.width() * map.height());
@@ -73,7 +74,7 @@ export class HomeTerritory {
       previous &&
       previous.baseOwned === baseOwned &&
       (previous.anchors??"")===anchorKey &&
-      tick - previous.tick < 60
+      tick - previous.tick < secondsToTicks(3)
     )
       return previous.tiles;
     if (++this.stamp === 0xffffffff) {

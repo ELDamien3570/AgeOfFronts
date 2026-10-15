@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { BLACK_FOREST_THEME } from "../../src/skirmish/BlackForestLayout";
 import { generateBlackForest } from "../../src/skirmish/BlackForestMap";
@@ -68,7 +70,7 @@ describe("authored Black Forest", () => {
           Math.floor(clearing.y),
         );
         expect(cover[tile]).toBe(0);
-        expect(terrainSpeed(loaded.map, tile)).toBe(56);
+        expect(terrainSpeed(loaded.map, tile)).toBe(1120/TICKS_PER_SECOND);
       }
       for (const passage of loaded.layout.passages)
         for (const point of passage.points) {
@@ -77,7 +79,7 @@ describe("authored Black Forest", () => {
           expect(cover[tile]).toBeLessThan(90);
         }
       const forest = cover.findIndex((value) => value > 230);
-      expect(terrainSpeed(loaded.map, forest)).toBeLessThanOrEqual(36);
+      expect(terrainSpeed(loaded.map, forest)).toBeLessThanOrEqual(720/TICKS_PER_SECOND);
       expect(loaded.environment!.familyAt(forest)).toBe("boreal-conifer");
   }, 15000);
 
@@ -120,11 +122,11 @@ describe("authored Black Forest", () => {
               a.map.euclideanDistSquared(player.base, deposit.tile) <= 36 ** 2,
           ),
         ).toBe(true);
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < secondsToTicks(5); i++) {
       a.step();
       b.step();
     }
-    expect(a.tick).toBe(100);
+    expect(a.tick).toBe(secondsToTicks(5));
     expect(a.checkpoint()).toEqual(b.checkpoint());
   }, 30_000);
 

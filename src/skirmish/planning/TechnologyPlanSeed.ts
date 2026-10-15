@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import technologies from "../content/technologies.json";
 import { UNITS } from "../content/Units";
 
@@ -90,7 +91,7 @@ export function createInitialPlan(): TechnologyPlan {
       decision: "baseline",
       kind: "unlock",
       gold: t.gold,
-      researchSeconds: Math.round(t.ticks / 20),
+      researchSeconds: Math.round(t.ticks / TICKS_PER_SECOND),
     })),
     units: AGES.flatMap((age) =>
       UNIT_ROLES.map((role) => {

@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../Protocol';
 import { AiArmyPlanner } from "./AiArmyPlanner";
 import { UNIT } from "../content/Units";
 import type { Player } from "../Protocol";
@@ -87,7 +88,7 @@ export class AiMilitaryDirector {
             amounts: cost,
             createdTick: lease.startedTick,
             progressTick: world.tick,
-            expiresTick: lease.startedTick + 600,
+            expiresTick: lease.startedTick + secondsToTicks(30),
           },
           {
             gold: player.gold,
@@ -106,7 +107,7 @@ export class AiMilitaryDirector {
             controller,
             priority: "modernization",
             createdTick: lease.startedTick,
-            expiresTick: lease.startedTick + 600,
+            expiresTick: lease.startedTick + secondsToTicks(30),
           },
         ])
       ) {

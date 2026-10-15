@@ -1,3 +1,5 @@
+import {secondsToTicks} from '../Protocol';
+import {TICKS_PER_SECOND} from '../Protocol';
 import { formationProfile, frontageLayout, type ShapeProfile } from "./FormationProfiles";
 import { minimumTravelAssignment } from './FormationSlotAssignment';
 import { FIXED, type Squad } from "../Protocol";
@@ -72,7 +74,7 @@ const fallback: FormationDoctrine = {
   spacing: 128,
   bodyWidth: 128,
   bodyDepth: 128,
-  transitionTicks: 20,
+  transitionTicks: TICKS_PER_SECOND,
 };
 const scaledDoctrines = new WeakMap<FormationDoctrine, FormationDoctrine>();
 export function formationDoctrine(id?: string): FormationDoctrine {
@@ -114,7 +116,7 @@ export function reorientedFormation(s:Squad,tick:number,facing:number):Formation
   const formation={...old,facing,transition:undefined,revision:old.revision+1};
   const to=formationSlots({...s,formation},tick),assignment=minimumTravelAssignment(source,to);
   const distance=Math.max(0,...to.map((p,i)=>Math.hypot(p.x-source[assignment[i]].x,p.y-source[assignment[i]].y)));
-  return {...formation,transition:{reorientation:true,from:formationEnvelope(s,tick).shape,fromFacing:facing,fromSlots:source,startTick:tick,duration:Math.min(200,Math.max(1,Math.ceil(distance*20/(FIXED*2.5))))}};
+  return {...formation,transition:{reorientation:true,from:formationEnvelope(s,tick).shape,fromFacing:facing,fromSlots:source,startTick:tick,duration:Math.min(secondsToTicks(10),Math.max(1,Math.ceil(distance*TICKS_PER_SECOND/(FIXED*2.5))))}};
 }
 export function geometryKey(
   s: Pick<
@@ -557,7 +559,7 @@ export function validateFormation(
       [t.fromAutomatic,t.fromAutoFrontage,t.reorientation,t.occupationReform].some(v=>v!==undefined && typeof v!=="boolean") ||
       !integer(t.fromFacing, TURN - 1) ||
       !integer(t.startTick) ||
-      !integer(t.duration, 200) ||
+      !integer(t.duration, secondsToTicks(10)) ||
       !t.duration)
   )
     throw new Error("Invalid formation transition");

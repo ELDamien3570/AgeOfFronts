@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND,secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { soldierWeaponStats } from "../../src/skirmish/client/WeaponStats";
@@ -160,7 +161,7 @@ describe("per-soldier weapons and exact cycles", () => {
     const p = { ...gun, rpm: 47, shotsPerReload: 1000, reloadMs: 0 };
     let state: WeaponState | undefined,
       shots = 0;
-    for (let tick = 0; tick < 12000; tick++) {
+    for (let tick = 0; tick < secondsToTicks(600); tick++) {
       const next = commitWeaponShot(p, state, tick, false);
       if (next) {
         state = next;
@@ -173,11 +174,10 @@ describe("per-soldier weapons and exact cycles", () => {
     const p = { ...gun, shotsPerReload: 47, reloadMs: 5000 };
     let state: WeaponState | undefined,
       shots = 0;
-    for (let tick = 0; tick < 1920; tick++) {
-      const next = commitWeaponShot(p, state, tick, false);
-      if (next) {
-        state = next;
-        shots++;
+    for (let tick = 0; tick < secondsToTicks(96); tick++) {
+      for(let burst=0;burst<Math.ceil(p.rpm!/(60*TICKS_PER_SECOND))+1;burst++){
+        const next = commitWeaponShot(p, state, tick, false);
+        if(!next)break;state=next;shots++;
       }
     }
     expect(shots).toBe(470);
@@ -190,9 +190,9 @@ describe("per-soldier weapons and exact cycles", () => {
     ).toBeUndefined();
     const melee = commitWeaponShot(infantry.meleeAttack!, state, 2, false)!;
     expect(melee.ranged).toEqual(state.ranged);
-    expect(commitWeaponShot(ranged, melee, 99, false)).toBeUndefined();
+    expect(commitWeaponShot(ranged, melee, secondsToTicks(5)-1, false)).toBeUndefined();
     const resumed = commitWeaponShot(ranged, melee, 1000, false)!;
-    expect(resumed.ranged!.nextTick).toBe(1100);
+    expect(resumed.ranged!.nextTick).toBe(1000+secondsToTicks(5));
   });
   it("scales ranged fire with living soldiers while bounding melee by frontage", () => {
     const unit = UNIT.get("napoleonic-infantry")!;

@@ -1,5 +1,5 @@
 import type { TargetTag, UnitDefinition } from "../domain/Definitions";
-import { FIXED } from "../Protocol";
+import { FIXED, TICKS_PER_SECOND, TICK_MS, secondsToTicks } from "../Protocol";
 import catalogue from "./soldier-weapons.json";
 /** Explicit authored HP and cadence; no era exponential or sustained-DPS compensation. */
 export function applySoldierWeapons(unit: UnitDefinition): void {
@@ -17,7 +17,7 @@ export function applySoldierWeapons(unit: UnitDefinition): void {
     ranks: data.melee.ranks,
     shotsPerReload: 1,
     reloadMs: 0,
-    reloadTicks: Math.ceil(1200 / data.melee.rpm),
+    reloadTicks: Math.ceil((60 * TICKS_PER_SECOND) / data.melee.rpm),
     movingReloadPercent: 100,
     // Physical weapon reach beyond the body, rather than legacy centre range.
     range: Math.round((unit.tags.includes("mounted") ? 0.75 : 0.5) * FIXED),
@@ -34,7 +34,7 @@ export function applySoldierWeapons(unit: UnitDefinition): void {
       rpm: data.ranged.rpm,
       shotsPerReload: data.ranged.shotsPerReload,
       reloadMs: data.ranged.reloadMs,
-      reloadTicks: Math.ceil(1200 / data.ranged.rpm),
+      reloadTicks: Math.ceil((60 * TICKS_PER_SECOND) / data.ranged.rpm),
       bonuses,
       penetration: 0,
     };

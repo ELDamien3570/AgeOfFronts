@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { FIXED, type Command, type Squad } from "../Protocol";
 import { BUDGETS, SKIRMISH } from "../content/TacticalRules";
 import type { Expansion } from "./Expansion";
@@ -253,7 +254,7 @@ export class SkirmishStance {
           SKIRMISH.cooldownTicks
       )
         continue;
-      state.withdrawals = state.withdrawals.filter((t) => w.tick - t < 1200);
+      state.withdrawals = state.withdrawals.filter((t) => w.tick - t < secondsToTicks(60));
       if (state.withdrawals.length >= SKIRMISH.maxPerMinute) continue;
       if (
         state.threatId !== threat.id ||
@@ -271,7 +272,7 @@ export class SkirmishStance {
       state.threatY = threat.y;
       if (
         state.stationaryWithdrawal &&
-        w.tick - (state.stationarySince ?? w.tick) >= 60
+        w.tick - (state.stationarySince ?? w.tick) >= secondsToTicks(3)
       )
         continue;
       const anchor = army

@@ -1,3 +1,6 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
+const presentationTicks=(seconds:number)=>seconds*TICKS_PER_SECOND;
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { createManpower } from "../../src/skirmish/domain/Manpower";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
@@ -114,7 +117,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
     expect(right[3].x - 100).toBeCloseTo(down[3].y - 100);
     const volley = {
       id: 1,
-      tick: 10,
+      tick: presentationTicks(0.5),
       squadId: 1,
       playerId: 1,
       definitionId: "earlymodern-archer",
@@ -126,11 +129,11 @@ describe("read-only enemy inspection and weapon presentation", () => {
     const before = structuredClone(volley),
       from = { x: 10, y: 20 },
       to = { x: 100, y: 20 };
-    const visual = volleyVisual(volley, 10, from, to, 40)!;
+    const visual = volleyVisual(volley, presentationTicks(0.5), from, to, 40)!;
     expect(visual.points.map(({ x, y }) => ({ x, y }))).toEqual(
       visual.emitters,
     );
-    expect(volleyVisual(volley, 14, from, to, 40)).toBeNull();
+    expect(volleyVisual(volley, presentationTicks(0.7), from, to, 40)).toBeNull();
     expect(volley).toEqual(before);
   });
   it("stores firing definitions on released events, and cosmetic bomb size does not change gameplay radius", () => {
@@ -167,15 +170,15 @@ describe("read-only enemy inspection and weapon presentation", () => {
     const m = setup(),
       squad = m.squads[0];
     m.updateSquad(squad.id, { definitionId: "stoneage-archer" });
-    m.updateSquad(squad.id, { lastAttackTick: 100 });
-    m.updateSquad(squad.id, { nextAttackTick: 140 });
+    m.updateSquad(squad.id, { lastAttackTick: presentationTicks(5) });
+    m.updateSquad(squad.id, { nextAttackTick: presentationTicks(7) });
     m.updateSquad(squad.id, { fighting: true });
     // Individual actor clips supersede the removed baked infantry atlas.
     const clip={id:'attack',file:'attack.png',frameCount:6,fps:10,releaseFrame:5,frames:[]};
-    expect(javelinThrowTime(squad,100,clip)).toBe(500);
-    expect(javelinThrowTime(squad,110,clip)).toBeUndefined();
-    expect(javelinThrowTime(squad,135,clip)).toBe(250);
-    expect(squad.lastAttackTick).toBe(100);
+    expect(javelinThrowTime(squad,presentationTicks(5),clip)).toBe(500);
+    expect(javelinThrowTime(squad,presentationTicks(5.5),clip)).toBeUndefined();
+    expect(javelinThrowTime(squad,presentationTicks(6.75),clip)).toBe(250);
+    expect(squad.lastAttackTick).toBe(presentationTicks(5));
   });
   it("shows own committed missile and bombing targets and removes resolved or foreign targets", () => {
     const m = setup(),
@@ -191,7 +194,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
       target: { x: 40 * FIXED, y: 40 * FIXED },
       state: "outbound",
       reloadTick: 0,
-      fuelTicks: 500,
+      fuelTicks: presentationTicks(25),
     });
     expect(combatTargets(state).map((t) => t.kind)).toEqual(["bombing"]);
     state.expansion!.aircraft[0].state = "returning";

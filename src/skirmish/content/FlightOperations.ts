@@ -12,11 +12,11 @@ export const FLIGHT_RULES = {
   fighter: {
     preModernSeconds: 180,
     modernSeconds: 240,
-    speed: 180,
+    speed: 3600 / TICKS_PER_SECOND,
     gold: 5000,
   },
-  bomber: { preModernSeconds: 120, modernSeconds: 180, speed: 180, gold: 5000 },
-  drone: { preModernSeconds: 120, modernSeconds: 120, speed: 90, gold: 3000 },
+  bomber: { preModernSeconds: 120, modernSeconds: 180, speed: 3600 / TICKS_PER_SECOND, gold: 5000 },
+  drone: { preModernSeconds: 120, modernSeconds: 120, speed: 1800 / TICKS_PER_SECOND, gold: 3000 },
 } as const;
 export function flightTicks(kind: AircraftKind, age: Age): number {
   const rule = FLIGHT_RULES[kind];

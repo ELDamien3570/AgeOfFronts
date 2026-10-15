@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { marketDropLimit } from "../../src/skirmish/content/Economy";
 import { TradeReceiving } from "../../src/skirmish/domain/TradeReceiving";
@@ -44,11 +45,11 @@ describe("per-trip market limits and multi-stop trade", () => {
     expect(tradePayout(quote)).toBe(3000);
   });
   it("quotes partial stops by location and returns unsold cargo", () => {
-    const q=tradeCycleQuote({naval:false,stock:450,capacity:450,valuePerGood:10,supplyTicks:0,returnTicks:100,observedRisk:0,
-      legs:[{marketId:1,location:10,quantity:50,distance:1,foreign:false,allied:false,travelTicks:10},
-        {marketId:2,location:10,quantity:50,distance:1,foreign:false,allied:false,travelTicks:10},
-        {marketId:3,location:20,quantity:63,distance:20,foreign:true,allied:true,travelTicks:100}]});
-    expect(q).toMatchObject({quantity:450,delivered:113,returned:337,guaranteedGold:1445,handlingTicks:80});
+    const q=tradeCycleQuote({naval:false,stock:450,capacity:450,valuePerGood:10,supplyTicks:0,returnTicks:secondsToTicks(5),observedRisk:0,
+      legs:[{marketId:1,location:10,quantity:50,distance:1,foreign:false,allied:false,travelTicks:secondsToTicks(0.5)},
+        {marketId:2,location:10,quantity:50,distance:1,foreign:false,allied:false,travelTicks:secondsToTicks(0.5)},
+        {marketId:3,location:20,quantity:63,distance:20,foreign:true,allied:true,travelTicks:secondsToTicks(5)}]});
+    expect(q).toMatchObject({quantity:450,delivered:113,returned:337,guaranteedGold:1445,handlingTicks:secondsToTicks(4)});
   });
   it("partially delivers once per tile, visits a second market, and returns leftover cargo exactly", () => {
     const data = new Uint8Array(80*64).fill(133);
@@ -63,7 +64,7 @@ describe("per-trip market limits and multi-stop trade", () => {
     const first=add("city",11), second=add("city",18);
     for(let i=1;i<10;i++) {add("city",11); add("city",18);}
     const trade=game.expansion!.trade;
-    game.tick=20;trade.step();
+    game.tick=secondsToTicks(1);trade.step();
     const a=trade.actors[0]; expect(a.loaded).toBe(810);
     const arrive=(b:typeof first)=>{
       a.state="outbound";a.destination=b.id;a.path=[];a.nextPathIndex=0;a.waitTicks=0;

@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { TACTICAL_CHARGE } from '../content/TacticalRules';
 import { damageAmount, type Defence } from './Combat';
 import { contactParticipants, formationContact } from './FormationContact';
@@ -42,7 +43,7 @@ export interface ChargeImpact {
   participants?:number;
   radius?:number;
 }
-export const CHARGE_IMPACT = Object.freeze({duration:24,disruption:8,maxOffset:160,maxRiderOffset:256,maxMembers:8});
+export const CHARGE_IMPACT = Object.freeze({duration:secondsToTicks(1.2),disruption:secondsToTicks(.4),maxOffset:160,maxRiderOffset:256,maxMembers:8});
 export function chargeDisrupted(s:{chargeImpact?:ChargeImpact},tick:number):boolean {
   return s.chargeImpact?.role==='defender' && tick<s.chargeImpact.disruptedUntilTick;
 }

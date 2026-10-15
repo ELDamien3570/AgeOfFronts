@@ -1,3 +1,4 @@
+import {TICK_MS} from '../../Protocol';
 import { FIXED } from '../../Protocol';
 import { CHARGE_IMPACT, type ChargeImpact } from '../../domain/ChargeImpact';
 interface Member {id:number;x:number;y:number;angle:number;scale:number}
@@ -28,7 +29,7 @@ export function chargeReactions(impact:ChargeImpact|undefined,tick:number,member
     result.set(member.id,{x:member.x+impact.dx/FIXED*travel*carryWeight,
       y:member.y+impact.dy/FIXED*travel*carryWeight-flight*(.09+weight*.08),
       angle:member.angle+(impact.role==='defender'?Math.sin(Math.PI*p)*spin:0),
-      scale:member.scale*(1+flight*.12),time:Math.max(0,elapsed-delay)*50,role:impact.role});
+      scale:member.scale*(1+flight*.12),time:Math.max(0,elapsed-delay)*TICK_MS,role:impact.role});
     if(impact.role==='defender'){const reaction=result.get(member.id)!;reaction.x+=sideX*length/FIXED*lateral*travel;reaction.y+=sideY*length/FIXED*lateral*travel;}
   }
   return result;

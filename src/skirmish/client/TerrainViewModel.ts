@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import { TerrainType } from "../../core/game/Game";
 import type { GameMap } from "../../core/game/GameMap";
 import { elevationOf } from "../Elevation";
@@ -21,7 +22,7 @@ export class TerrainViewModel {
     const cover = forestOf(this.map)?.coverAt(tile) ?? 0;
     const movement = this.map.isWater(tile)
       ? "Water · no land movement"
-      : `${terrain} · ${Math.round((terrainSpeed(this.map, tile) / 56) * 100)}% speed${cover > 0 ? ` · Forest ${Math.round(cover * 100)}% cover (−${Math.round(cover * 40)}%)` : ""}`;
+      : `${terrain} · ${Math.round((terrainSpeed(this.map, tile) / (1120/TICKS_PER_SECOND)) * 100)}% speed${cover > 0 ? ` · Forest ${Math.round(cover * 100)}% cover (−${Math.round(cover * 40)}%)` : ""}`;
     const elevation = elevationOf(this.map);
     return elevation
       ? `${movement} · ${format.format(elevation.heightAt(tile))} m elevation`

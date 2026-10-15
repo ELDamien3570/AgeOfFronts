@@ -1,10 +1,11 @@
+import {TICK_MS,TICKS_PER_SECOND} from '../../Protocol';
 import { FIXED } from '../../Protocol';
 import type { CavalryCycle,CavalryMelee } from '../../domain/CavalryMelee';
 import { waveTick,cavalryRanks,cavalryStrikeReach,CAVALRY_RANK_MOTION,CAVALRY_RANK_SPEED } from '../../domain/CavalryMelee';
 import type { ActorClip } from './TroopFormationModel';
 import { contactPath } from '../../domain/ContactFront';
 type Member={id:number;x:number;y:number;scale:number};
-const RANK_PEAK_SPEED=1.5*CAVALRY_RANK_SPEED/20; // Tiles per tick; independent of sprite-sheet scale.
+const RANK_PEAK_SPEED=1.5*CAVALRY_RANK_SPEED/TICKS_PER_SECOND; // Tiles per tick; independent of sprite-sheet scale.
 export interface CavalryCohort extends Map<number,{rank:number;contact:number;travel:number;lane:number;returnLane:number;bearing?:number}>{maximum:number}
 const smooth=(n:number)=>{const t=Math.max(0,Math.min(1,n));return t*t*(3-2*t);};
 /** Integrate smooth acceleration ramps around a steady-speed middle. The
@@ -18,7 +19,7 @@ function returnTravel(u:number){
 /** Continuous position and velocity at strike, braking, return and arrival.
  * The strike is peak forward speed, followed by recovery and a curved return.
  * Cadence bounds travel, never forces a fast catch-up or stationary spin. */
-export function rankMotion(distance:number,elapsed:number,advance:number,turn:number,back:number,settle=Math.min(8,back*.25),entrySpeed=0,brakeTicks=8){
+export function rankMotion(distance:number,elapsed:number,advance:number,turn:number,back:number,settle=Math.min(.4*TICKS_PER_SECOND,back*.25),entrySpeed=0,brakeTicks=.4*TICKS_PER_SECOND){
   if(elapsed < -advance-1e-9 || elapsed>=turn+back)return undefined;
   const brake=Math.min(brakeTicks,turn*.4),basePeak=Math.min(RANK_PEAK_SPEED,2*distance/(advance+brake));
   const initial=Math.min(entrySpeed,basePeak*.4),peak=Math.min(RANK_PEAK_SPEED,(2*distance-initial*advance)/(advance+brake));
@@ -126,7 +127,7 @@ export function cavalryWaves(state:CavalryMelee|undefined,tick:number,clip:Actor
         const heading=(initialSide<0?-1:1)*Math.PI;
         rotation=returning?heading*(1-(motion.settling??0)):heading*smooth((elapsed-CAVALRY_RANK_MOTION.brake)/CAVALRY_RANK_MOTION.turn);
       }
-      const bearing=assignment.bearing??p.bearing??Math.PI/2,time=release+(tick-hit)*50;
+      const bearing=assignment.bearing??p.bearing??Math.PI/2,time=release+(tick-hit)*TICK_MS;
       result.set(member.id,{x:member.x+Math.cos(bearing)*forward-Math.sin(bearing)*bend,
         y:member.y+Math.sin(bearing)*forward+Math.cos(bearing)*bend,
         angle:bearing-Math.PI/2+rotation,time:Math.max(0,time),

@@ -1,5 +1,5 @@
 import type { MovementIntent } from "./LocalAvoidance";
-import { FIXED, type Squad } from "./Protocol";
+import { FIXED, secondsToTicks, type Squad } from "./Protocol";
 import type { SpatialGrid, WorldPoint } from "./SpatialGrid";
 
 interface Progress {
@@ -18,8 +18,8 @@ export interface RecoveryFrame {
   leases: Lease[];
   waiting: Map<number, Progress>;
 }
-const WAIT = 20,
-  TERM = 60,
+const WAIT = secondsToTicks(1),
+  TERM = secondsToTicks(3),
   MAX_CLUSTERS = 8,
   MAX_MEMBERS = 8;
 

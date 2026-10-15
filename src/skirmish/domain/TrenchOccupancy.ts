@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../Protocol';
 import { FIXED, type Command, type Squad } from "../Protocol";
 import { BUDGETS, TRENCH } from "../content/TacticalRules";
 import type { Expansion } from "./Expansion";
@@ -657,7 +658,7 @@ export class TrenchOccupancy {
           fromFacing: f.facing,
           fromSlots: source,
           startTick: this.e.world.tick,
-          duration: 40,
+          duration: secondsToTicks(2),
         },
       },
     });
@@ -733,7 +734,7 @@ export class TrenchOccupancy {
           fromFacing: facing,
           fromSlots: source,
           startTick: w.tick,
-          duration: 40,
+          duration: secondsToTicks(2),
         },
       },
     });

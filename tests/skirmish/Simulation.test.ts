@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { retainSquads } from "./UnitFixtures";
 import fs from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -106,8 +107,8 @@ describe("land squad skirmish", () => {
     isolate(match);
     const tile = match.tileOf(match.squads[0]);
     match.owners[tile] = 0;
-    step(match, 12);
-    expect(match.progress[tile]).toBe(12);
+    step(match, secondsToTicks(0.6));
+    expect(match.progress[tile]).toBe(secondsToTicks(.6));
     place(match, match.squads[0], 10, 30);
     match.step();
     expect(match.progress[tile]).toBe(0);
@@ -136,7 +137,7 @@ describe("land squad skirmish", () => {
           order: { type: "move", tile: match.map.ref(45, 20) },
         }),
       ).toBeNull();
-      step(match, 40);
+      step(match, secondsToTicks(2));
       expect(squad.troops).toBe(1_000);
     }
     expect(plains.squads[0].x).toBeGreaterThan(hills.squads[0].x);
@@ -204,13 +205,13 @@ describe("land squad skirmish", () => {
       }),
     ).toBeNull();
     const start = squad.x;
-    step(match, 20);
+    step(match, secondsToTicks(1));
     expect(squad.x).toBeGreaterThan(start);
     match.addSquad({...structuredClone(target),id:match.allocateId(),x:60.5*FIXED,y:35.5*FIXED,order:{type:"hold"},path:[]});
     for (const record of match.squads.slice(match.squads.indexOf(target), (match.squads.indexOf(target)) + (1))) match.removeSquad(record.id);
     match.step();
     expect(squad.order.type).toBe("attack");
-    step(match,60);
+    step(match,secondsToTicks(3));
     expect(squad.order.type).toBe("hold");
   });
 
@@ -239,7 +240,7 @@ describe("land squad skirmish", () => {
   it("preserves troop accounting and deterministic results through an AI battle", () => {
     const a = create(133, true, 12),
       b = create(133, true, 12);
-    for (let i = 0; i < 1_000; i++) {
+    for (let i = 0; i < secondsToTicks(50); i++) {
       if (i === 10) {
         for (const match of [a, b])
           match.applyCommand({
@@ -294,7 +295,7 @@ describe("land squad skirmish", () => {
         seed: 42,
         aiCount: 3,
       });
-      step(match, 2000);
+      step(match, secondsToTicks(100));
       expect(match.squads.length).toBeGreaterThan(4);
       expect(
         match.squads.every((s) =>

@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -63,7 +64,7 @@ describe("slow assault occupation", () => {
     (id) => {
       const { m, unit, tile } = fixture(id);
       m.owners.fill(2);
-      for (let i = 0; i < 3; i++) m.step();
+      for (let i = 0; i < secondsToTicks(.2)-1; i++) m.step();
       expect(m.owners[tile]).toBe(2);
       m.step();
       expect(m.owners[tile]).toBe(1);
@@ -84,7 +85,7 @@ describe("slow assault occupation", () => {
     m.updateSquad(enemy.id, { definitionId: "modern-launcher" });
     m.updateSquad(enemy.id, { x: 35.5 * FIXED });
     m.updateSquad(enemy.id, { y: 20.5 * FIXED });
-    for (let i = 0; i < 4; i++) m.step();
+    for (let i = 0; i < secondsToTicks(0.2); i++) m.step();
     expect(m.owners[tile]).toBe(2);
     m.updateSquad(enemy.id, { embarkedOn: 999 });
     m.step();
@@ -95,8 +96,8 @@ describe("slow assault occupation", () => {
     (type) => {
       const { m, tile } = fixture();
       const b = building(m, type, 35, 20);
-      m.updateBuilding((b).id, { nextAttackTick: 1000 }); // Isolate occupation resistance from lethal gunfire.
-      for (let i = 0; i < 4; i++) m.step();
+      m.updateBuilding((b).id, { nextAttackTick: secondsToTicks(50) }); // Isolate occupation resistance from lethal gunfire.
+      for (let i = 0; i < secondsToTicks(0.2); i++) m.step();
       expect(m.owners[tile]).toBe(0);
       m.updateBuilding((b).id, { health: 0 });
       m.step();
@@ -111,17 +112,17 @@ describe("slow assault occupation", () => {
     forts.addTower(b, forts.towerPlan(b.tile, 2, "StoneAge", [a, b]));
     forts.updateBarrier(forts.barriers[0].id, { remainingTicks: 0 });
     const tile = m.map.ref(33, 20);
-    for (let i = 0; i < 4; i++) m.step();
+    for (let i = 0; i < secondsToTicks(0.2); i++) m.step();
     expect(m.owners[tile]).toBe(0);
     m.updateBuilding((a).id, { health: 0 });
     m.updateBuilding((b).id, { health: 0 });
     forts.updateBarrier(forts.barriers[0].id, { health: 0 });
-    for (let i = 0; i < 4; i++) m.step();
+    for (let i = 0; i < secondsToTicks(0.2); i++) m.step();
     expect(m.owners[tile]).toBe(1);
   });
   it("keeps ranged artillery from capturing land", () => {
     const { m, tile } = fixture("modern-siege");
-    for (let i = 0; i < 35; i++) m.step();
+    for (let i = 0; i < secondsToTicks(1.75); i++) m.step();
     expect(m.owners[tile]).toBe(0);
   });
 });

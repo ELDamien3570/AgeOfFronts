@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import { TRADE_RULES, WATER_TRADE_PRICING } from "../content/Economy";
 export interface SeaPricing {
   routeTiles?: number;
@@ -115,7 +116,7 @@ export function tradeCycleQuote(
     outwardTicks += Math.max(0, leg.travelTicks);
     if (!left) break;
   }
-  const handlingTicks = 40 + visited.size * 20;
+  const handlingTicks = (2 + visited.size) * TICKS_PER_SECOND;
   const travelTicks = Math.max(0, input.returnTicks) + outwardTicks;
   const cycleTicks = Math.max(
     1,

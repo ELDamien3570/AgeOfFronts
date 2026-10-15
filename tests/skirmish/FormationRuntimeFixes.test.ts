@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import {describe,expect,it} from "vitest";
 import {GameMapImpl} from "../../src/core/game/GameMap";
 import {Skirmish} from "../../src/skirmish/Simulation";
@@ -38,12 +39,12 @@ describe("formation review runtime contracts",()=>{
   });
   it("fires the authored 30-round rifle magazine and retains phase across snapshot/recovery",()=>{
     const unit=UNIT.get("modern-infantry")!, weapon=unit.rangedAttack!;
-    const a=commitWeaponShot(weapon,undefined,100,false)!;
-    const b=commitWeaponShot(weapon,a,102,false)!;
-    expect(a.ranged).toMatchObject({shots:1,nextTick:102});
+    const a=commitWeaponShot(weapon,undefined,secondsToTicks(5),false)!;
+    const b=commitWeaponShot(weapon,a,secondsToTicks(5.1),false)!;
+    expect(a.ranged).toMatchObject({shots:1,nextTick:secondsToTicks(5.1)});
     let cycle=b;
-    for(let shot=2;shot<30;shot++)cycle=commitWeaponShot(weapon,cycle,100+shot*2,false)!;
-    expect(cycle.ranged).toMatchObject({shots:0,reloadStartedTick:158,nextTick:218});
+    for(let shot=2;shot<30;shot++)cycle=commitWeaponShot(weapon,cycle,secondsToTicks((5+(shot*0.1))),false)!;
+    expect(cycle.ranged).toMatchObject({shots:0,reloadStartedTick:secondsToTicks(7.9),nextTick:secondsToTicks(10.9)});
     const game=fixture(),squad=game.squads[0];game.updateSquad(squad.id,{definitionId:unit.id,troops:unit.formationRecipe!.capacity,manpower:createManpower(unit),weaponState:b});
     const packed=packSnapshotDetails(game.snapshot().squads,[],[],[]);
     expect(unpackSnapshotDetails(packed).squadDetails?.find(s=>s.id===squad.id)?.weaponState).toEqual(b);
@@ -58,7 +59,7 @@ describe("formation review runtime contracts",()=>{
     const target=UNIT.get(planner.leases.get(squad.id)!.targetId)!;expect(target.troopClass).toBe("antiCavalry");
   });
   it("keeps casualty/contact identities in the packed stream and salvages old equipment only on explicit orders",()=>{
-    const fact={id:40,tick:100,squadId:2,playerId:1,fromX:0,fromY:0,toX:FIXED,toY:FIXED,targetId:5,damage:30,melee:true};
+    const fact={id:40,tick:secondsToTicks(5),squadId:2,playerId:1,fromX:0,fromY:0,toX:FIXED,toY:FIXED,targetId:5,damage:30,melee:true};
     expect(unpackSnapshotDetails(packSnapshotDetails([],[],[],[fact])).volleys[0]).toEqual(fact);
     const salvage=PRODUCTION_RECIPES.filter(r=>r.id.startsWith("recycle-"));expect(salvage).toHaveLength(8);
     expect(salvage.every(r=>r.manualOnly&&r.building==="blacksmith"&&r.technologyId==="rus-earlymodern-factories-mines")).toBe(true);
@@ -67,8 +68,8 @@ describe("formation review runtime contracts",()=>{
   it("publishes fighter damage as visible contacts without adding a second damaging projectile",()=>{
     const game=fixture(),e=game.expansion!,p=game.players[0],point=e.battle.position(game.buildings[0]);
     const base=game.addBuilding({id:game.allocateId(),type:"airstrip",tile:p.base,playerId:p.id,remainingTicks:0,age:"EarlyModern"});
-    e.aircraft.push({id:game.allocateId(),playerId:p.id,definitionId:"fighter",airfieldId:base.id,x:point.x,y:point.y,health:1000,state:"patrolling",target:point,reloadTick:0,fuelTicks:3600});
-    const bomber={id:game.allocateId(),playerId:game.players[1].id,definitionId:"bomber" as const,airfieldId:base.id,x:point.x+FIXED,y:point.y,health:1000,state:"outbound" as const,target:point,reloadTick:0,fuelTicks:2400};e.aircraft.push(bomber);
+    e.aircraft.push({id:game.allocateId(),playerId:p.id,definitionId:"fighter",airfieldId:base.id,x:point.x,y:point.y,health:1000,state:"patrolling",target:point,reloadTick:0,fuelTicks:secondsToTicks(180)});
+    const bomber={id:game.allocateId(),playerId:game.players[1].id,definitionId:"bomber" as const,airfieldId:base.id,x:point.x+FIXED,y:point.y,health:1000,state:"outbound" as const,target:point,reloadTick:0,fuelTicks:secondsToTicks(120)};e.aircraft.push(bomber);
     (e as any).advanceAircraft();
     expect(game.volleys.find(v=>v.sourceKind==="aircraft")).toMatchObject({targetId:bomber.id,damage:200});
     expect(e.battle.projectiles).toHaveLength(0);

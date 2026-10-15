@@ -1,3 +1,4 @@
+import {secondsToTicks} from "../../src/skirmish/Protocol";
 import {describe,it,expect} from "vitest";
 import {GameMapImpl} from "../../src/core/game/GameMap";
 import {HomeTerritory} from "../../src/skirmish/HomeTerritory";
@@ -36,7 +37,7 @@ describe("bounded frontier and river expansion",()=>{
     expect(next).not.toBe(first);
     const saved=home.checkpoint(),cold=new HomeTerritory(map);cold.restore(saved);
     expect(cold.goal(2,base,base,owners,frontier,new Set())).toBe(home.goal(2,base,base,owners,frontier,new Set()));
-    expect(home.available(2,first,600)).toBe(false);expect(home.available(2,first,601)).toBe(true);
+    expect(home.available(2,first,secondsToTicks(30))).toBe(false);expect(home.available(2,first,secondsToTicks(30)+1)).toBe(true);
     const edge=home.goal(2,base,base,owners,frontier,new Set(),tile=>map.x(tile)>=130);
     expect(edge).toBeDefined();
   });

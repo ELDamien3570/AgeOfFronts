@@ -1,3 +1,4 @@
+import {TICK_MS,TICKS_PER_SECOND} from '../Protocol';
 import { effectiveRange, rangedElevation } from "../domain/ElevationAdvantage";
 import type { BattleLineDeployment } from "../domain/BattleLineLayout";
 import { facingOf, formationSlots, formationDoctrine } from "../domain/FormationGeometry";
@@ -399,7 +400,7 @@ export class Renderer {
       spanTicks = this.snapshot ? Math.max(1, snapshot.tick - this.snapshot.tick) : 1;
     this.formationAngles.update(snapshot.squads,snapshot.tick,this.squadSamples.progress(arrivedAt));
     this.squadSamples.update(snapshot.squads, snapshot.tick, arrivedAt,
-      Math.min(600, Math.max(50, (spanTicks * 50) / Math.max(1, this.drawSpeed))));
+      Math.min(600, Math.max(50, (spanTicks * TICK_MS) / Math.max(1, this.drawSpeed))));
     this.combatMarkers = combatTargets(snapshot);
     this.snapshot = snapshot;
     this.healthLoss.update(snapshot.squads.map(s => ({id:s.id,strength:s.afloat ? s.afloat.hull/s.afloat.maxHull : strengthFraction(s)})),snapshot.tick);
@@ -1340,7 +1341,7 @@ export class Renderer {
         const label =
           rules.name +
           (count > 1 ? ` ×${count}` : "") +
-          (remainingTicks ? ` · ${Math.ceil(remainingTicks / 20)}s` : "");
+          (remainingTicks ? ` · ${Math.ceil(remainingTicks / TICKS_PER_SECOND)}s` : "");
         ctx.font = "600 10px system-ui";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
@@ -1646,7 +1647,7 @@ export class Renderer {
           const lunge =
             !squad.afloat && definition &&
             (definition.attack.channel !== "melee" ||
-              visualTick - (squad.lastAttackTick ?? 0) > 20)
+              visualTick - (squad.lastAttackTick ?? 0) > TICKS_PER_SECOND)
               ? { x: 0, y: 0 }
               : this.presentation.meleeLunge(
                   squad.id,
@@ -1834,7 +1835,7 @@ export class Renderer {
           ? definition.attack.channel === "melee"
           : squad.kind !== "archer")
       ) {
-        const shots=snapshot.volleys.filter(v=>v.squadId===squad.id && v.melee && !v.impact && visualTick-v.tick>=0 && visualTick-v.tick<10);
+        const shots=snapshot.volleys.filter(v=>v.squadId===squad.id && v.melee && !v.impact && visualTick-v.tick>=0 && visualTick-v.tick<0.5*TICKS_PER_SECOND);
         const shot=shots[shots.length-1];
         const target=shot?this.squadSamples.get(shot.targetId??-1)?.current:undefined;
         if(shot){

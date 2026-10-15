@@ -1,3 +1,4 @@
+import {TICK_MS} from '../../Protocol';
 import {FIXED} from '../../Protocol';
 import type {MeleeStrike} from '../../domain/MeleeStrike';
 import type {ActorClip} from './TroopFormationModel';
@@ -6,7 +7,7 @@ import type {ActorClip} from './TroopFormationModel';
 export function committedMeleeActors(strike:MeleeStrike|undefined,tick:number,clip:ActorClip,soldiers:readonly {id:number;x:number;y:number;scale:number;front?:boolean;angle?:number}[],footprint:number,localContact=false) {
   const result=new Map<number,{time:number;angle:number}>();
   if(!strike || !soldiers.length)return result;
-  const elapsed=(tick-strike.tick)*50,frames=clip.durations??Array(clip.frameCount).fill(1000/(clip.fps??6));
+  const elapsed=(tick-strike.tick)*TICK_MS,frames=clip.durations??Array(clip.frameCount).fill(1000/(clip.fps??6));
   const release=frames.slice(0,clip.releaseFrame??0).reduce((a,b)=>a+b,0),duration=frames.reduce((a,b)=>a+b,0),time=release+elapsed;
   if(elapsed<0 || time>=duration)return result;
   for(const contact of strike.contacts){

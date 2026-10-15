@@ -1,3 +1,5 @@
+import { TICKS_PER_SECOND } from "../../Protocol";
+import {TICK_MS} from '../../Protocol';
 import { formationRenderPose, type FormationRenderPose } from "../FormationRenderPose";
 import { formationDoctrine } from "../../domain/FormationGeometry";
 import { formationFootprint } from '../../domain/FormationContact';
@@ -514,7 +516,7 @@ export class TroopActors {
       contact?.opponents.push(opponentPoses.get(squad.id)!);
     }
     for(const squad of snapshot.squads){
-      const contact=this.contacts.get(squad.id);if(!contact || !squad.meleeStrike || snapshot.tick-squad.meleeStrike.tick>60)continue;
+      const contact=this.contacts.get(squad.id);if(!contact || !squad.meleeStrike || snapshot.tick-squad.meleeStrike.tick>3*TICKS_PER_SECOND)continue;
       for(const strike of squad.meleeStrike.contacts){
         const opponent=strike.targetId===undefined?undefined:opponentPoses.get(strike.targetId);
         const point=opponent?.center??{x:strike.toX/FIXED,y:strike.toY/FIXED};
@@ -1169,9 +1171,9 @@ export class TroopActors {
       const definition = UNIT.get(squad.definitionId ?? "");
       const cycle = definition && weaponCycle(definition);
       const timing = throwTiming(this.assets.get(`${name}:attack`)!.clip);
-      const reloadStart = (squad.weaponState?.ranged?.reloadStartedTick ?? squad.reloadStartedTick ?? Infinity)*50 + timing.duration-timing.release;
-      const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*50 - timing.release;
-      const reloading = cycle && this.assets.has(`${name}:reload`) && tick*50 >= reloadStart && tick*50 < reloadEnd;
+      const reloadStart = (squad.weaponState?.ranged?.reloadStartedTick ?? squad.reloadStartedTick ?? Infinity)*TICK_MS + timing.duration-timing.release;
+      const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*TICK_MS - timing.release;
+      const reloading = cycle && this.assets.has(`${name}:reload`) && tick*TICK_MS >= reloadStart && tick*TICK_MS < reloadEnd;
       const bayonet = !squad.meleeStrike && definition?.age === "Napoleonic" && definition.troopClass === "frontline" && squad.charge?.phase === "recovery" && this.assets.has(`${name}:charge-attack`);
       const contactMelee=!!(ranged && definition?.meleeAttack && engagement.engaged && soldier.front);
       const clip = strike ? meleeClipKey : bayonet ? "charge-attack" : reloading ? "reload" :
@@ -1188,9 +1190,9 @@ export class TroopActors {
                 )
               ? "attack"
               : "idle";
-      const time = strike ? strike.time : clip === "charge-attack" ? (tick-(squad.lastAttackTick ?? tick))*50 : clip === "reload" ? reloadClipTime(this.assets.get(`${name}:reload`)!.clip, tick*50-reloadStart, reloadEnd-reloadStart, definition?.age === "Napoleonic") :
+      const time = strike ? strike.time : clip === "charge-attack" ? (tick-(squad.lastAttackTick ?? tick))*TICK_MS : clip === "reload" ? reloadClipTime(this.assets.get(`${name}:reload`)!.clip, tick*TICK_MS-reloadStart, reloadEnd-reloadStart, definition?.age === "Napoleonic") :
         clip === "attack"
-          ? (throwTime ?? pose.elapsed * 50)
+          ? (throwTime ?? pose.elapsed * TICK_MS)
           : clip === "running"
             ? (((soldier.backstepping ? -1 : 1) *
                 ((continuousPose?.gaitDistance??soldier.gaitDistance) / stride) *

@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 import { claimBuildingFootprint } from "./BuildingFixtures";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
@@ -52,14 +53,14 @@ describe("shared forest ground", () => {
         structuredClone({ cover }),
       );
     expect([0, 1, 2].map((tile) => terrainSpeed(map, tile))).toEqual([
-      56, 45, 34,
+      140, 112, 84,
     ]);
     expect([0, 1, 2].map((tile) => terrainSpeed(worker, tile))).toEqual([
-      56, 45, 34,
+      140, 112, 84,
     ]);
     forestOf(map)!.occupy(map, 2, "city");
-    expect(terrainSpeed(map, 2)).toBe(56);
-    expect(terrainSpeed(worker, 2)).toBe(34);
+    expect(terrainSpeed(map, 2)).toBe(1120/TICKS_PER_SECOND);
+    expect(terrainSpeed(worker, 2)).toBe(84);
     expect(cover).toEqual(new Uint8Array([0, 128, 255]));
     expect(terrain).toEqual(new Uint8Array([133, 133, 133]));
     expect(() =>
@@ -97,7 +98,7 @@ describe("shared forest ground", () => {
       match.step();
       expect(
         Math.hypot(squad.x - start, squad.y - (20 * FIXED + FIXED / 2)),
-      ).toBeCloseTo(Math.floor((34 * SQUAD_RULES[kind].speedPercent) / 100), 0);
+      ).toBeCloseTo(Math.floor((84 * SQUAD_RULES[kind].speedPercent) / 100), 0);
     }
   });
 

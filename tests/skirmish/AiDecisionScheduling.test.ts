@@ -6,7 +6,7 @@ import { formationLoad } from "./fixtures/FormationLoad";
 describe("bounded local AI scheduling",()=>{
   it("continues identically across restore with 30-tick decisions and whole-attempt deadlines",()=>{
     const {game}=formationLoad("distributed",15),saved=game.checkpoint();
-    saved.options={...saved.options,runAi:true,autonomousDecisionInterval:30,autonomousRouteDeadlineTicks:40};
+    saved.options={...saved.options,runAi:true,autonomousDecisionInterval:12,autonomousRouteDeadlineTicks:16};
     const load=()=>{
       const terrain=new Uint8Array(500*250).fill(133);
       const match=new Skirmish(new GameMapImpl(500,250,terrain,terrain.length),saved.options);

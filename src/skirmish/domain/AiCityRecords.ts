@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, BuildingType } from "../Protocol";
 
@@ -274,7 +275,7 @@ export class AiCityRecords {
             since: tick,
           });
         const stable = this.proposals.get(id)!;
-        if (!previous || compare.samePrevious || tick - stable.since >= 100) {
+        if (!previous || compare.samePrevious || tick - stable.since >= secondsToTicks(5)) {
           record.stableSince = stable.since;
           record.revision =
             (previous?.revision ?? 0) + Number(!compare.samePrevious);
@@ -288,7 +289,7 @@ export class AiCityRecords {
         if (id === undefined) {
           this.recordKeys = scan.keys;
           this.scan = undefined;
-          this.nextScan = tick + 20;
+          this.nextScan = tick + secondsToTicks(1);
           break;
         }
         if (!scan.records.has(id)) {

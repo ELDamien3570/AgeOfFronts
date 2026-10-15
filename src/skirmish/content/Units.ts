@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { FIXED, TICKS_PER_SECOND, type SquadType } from "../Protocol";
 import { damageAmount } from "../domain/Combat";
 import { TRANSPORT_SPEED_PERCENT } from "../domain/NavalCombat";
@@ -63,7 +64,7 @@ const profile = (
   channel,
   damage,
   range: Math.round(range * FIXED),
-  reloadTicks: reload * TICKS_PER_SECOND,
+  reloadTicks: Math.ceil(reload * TICKS_PER_SECOND),
   movingReloadPercent: channel === "ranged" ? 500 : 100,
   bonuses,
   penetration: 0,
@@ -107,12 +108,12 @@ for (const [index, age] of AGES.entries()) {
     if (index >= 6 && field) {
       attack.bonuses = { infantry: 80, ranged: 100 };
       attack.range = 7 * FIXED;
-      attack.reloadTicks = 20;
+      attack.reloadTicks = TICKS_PER_SECOND;
     }
     if (!contact && !(index >= 6 && field))
       attack.projectile = {
         diameter: Math.round(FIXED * 0.25),
-        speed: FIXED,
+        speed: 20 * FIXED / TICKS_PER_SECOND,
         blastRadius: Math.round(FIXED * (field ? 1 : 1.5)),
       };
     const unit: UnitDefinition = {
@@ -132,7 +133,7 @@ for (const [index, age] of AGES.entries()) {
       attack,
       cost: { gold: 500 + index * 500, reserves: 1000 },
       canCapture: contact,
-      ...(contact ? { undefendedCaptureTicks: 4 } : {}),
+      ...(contact ? { undefendedCaptureTicks: secondsToTicks(0.2) } : {}),
       placeholder: index === 0,
     };
     const sourceEra =
@@ -349,7 +350,7 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
             damage: points(6),
             radius: Math.round(1.25 * FIXED),
             cooldownTicks: 20 * TICKS_PER_SECOND,
-            runupTicks: 10,
+            runupTicks: secondsToTicks(0.5),
             maximumDistance: 10 * FIXED,
             penetration: 2500,
           },
@@ -359,7 +360,7 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
   if (vehicle && (cls === "rangedCavalry" || cls === "heavyCavalry"))
     unit.attack.projectile = {
       diameter: FIXED / 4,
-      speed: FIXED * 2,
+      speed: 40 * FIXED / TICKS_PER_SECOND,
       blastRadius: 0,
     };
   const cycle = weaponCycle(unit);
@@ -385,8 +386,8 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
       speedPercent: 150,
       damage: points(4),
       radius: FIXED,
-      cooldownTicks: 400,
-      runupTicks: 6,
+      cooldownTicks: secondsToTicks(20),
+      runupTicks: secondsToTicks(0.3),
       maximumDistance: 6 * FIXED,
       penetration: 1000,
     };
@@ -394,7 +395,7 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
   if (rangedAttack && index < 5)
     unit.attack.projectile = {
       diameter: FIXED / 10,
-      speed: FIXED * 0.4,
+      speed: 8 * FIXED / TICKS_PER_SECOND,
       blastRadius: 0,
     };
   addEquipment(unit, index, vehicle ? "vehicle" : "troop");
@@ -480,8 +481,7 @@ for (const [index, age] of AGES.entries())
                 (index < 4 ? 2 : 3),
             )
           : Math.round((kind === "warship" ? 1000 : 600) * 1.3 ** index),
-      speed: kind === "transport" ? Math.round((55 + index * 6) * TRANSPORT_SPEED_PERCENT / 100)
-        : (kind === "warship" ? 55 : 70) + index * 6,
+      speed: ((kind === "transport" ? (1100 + index * 120) * TRANSPORT_SPEED_PERCENT / 100 : (kind === "warship" ? 1100 : 1400) + index * 120) / TICKS_PER_SECOND),
       capacity:
         kind === "transport"
           ? TRANSPORT_CAPACITIES[index]
@@ -502,7 +502,7 @@ for (const [index, age] of AGES.entries())
                 ? {
                     projectile: {
                       diameter: FIXED / 5,
-                      speed: FIXED * 2,
+                      speed: 40 * FIXED / TICKS_PER_SECOND,
                       blastRadius: FIXED,
                     },
                   }

@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import technologies from "../content/technologies.json";
 import { AGES, AGE_NAMES } from "../domain/Definitions";
 import {
@@ -36,7 +37,7 @@ export function readTechnologyPlan(value: unknown): TechnologyPlan {
                 ...node,
                 kind: "unlock",
                 gold: source?.gold ?? null,
-                researchSeconds: source ? Math.round(source.ticks / 20) : null,
+                researchSeconds: source ? Math.round(source.ticks / TICKS_PER_SECOND) : null,
               };
             },
           ),

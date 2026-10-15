@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { readyFraction } from './Manpower';
 import { buildingGroundBounds, buildingFootprint } from "../BuildingFootprint";
 import { buildingCost, buildingTechnology } from "../content/Buildings";
@@ -104,7 +105,7 @@ export class AiCoastPlanner {
   ): void {
     g.phase = phase;
     g.reason = reason;
-    g.nextThink = this.expansion.world.tick + 800;
+    g.nextThink = this.expansion.world.tick + secondsToTicks(40);
     this.economy.routes.release(g.id);
     this.economy.ledger.release(g.id);
     const { world } = this.expansion;
@@ -186,7 +187,7 @@ export class AiCoastPlanner {
         index: 0,
         members: [],
         created: world.tick,
-        deadline: world.tick + 6000,
+        deadline: world.tick + secondsToTicks(300),
         nextThink: world.tick,
         reason: "Looking for a reachable coast with actual market value",
       };
@@ -320,7 +321,7 @@ export class AiCoastPlanner {
           world.owners[candidate.tile] !== player.id;
         const count = Math.min(foreign ? 4 : 2, available.length - 2);
         if (count < (foreign ? 4 : 2)) {
-          g.nextThink = world.tick + 100;
+          g.nextThink = world.tick + secondsToTicks(5);
           g.reason =
             "Waiting for an acquisition force while retaining mobile reserves";
           break;
@@ -342,7 +343,7 @@ export class AiCoastPlanner {
           )
         ) {
           g.members = [];
-          g.nextThink = world.tick + 100;
+          g.nextThink = world.tick + secondsToTicks(5);
           break;
         }
         const rejection = world.applyCommand({
@@ -395,7 +396,7 @@ export class AiCoastPlanner {
           g.phase = "capture";
           g.reason = "Waiting for authoritative coastal occupation";
         }
-        g.nextThink = world.tick + 40;
+        g.nextThink = world.tick + secondsToTicks(2);
         break;
       } else if (g.phase === "fund") {
         if (!this.owned(player,g.tile!)) {
@@ -432,7 +433,7 @@ export class AiCoastPlanner {
           if (!technology || !state.completed.includes(technology)) {
             g.reason =
               "Waiting for researched goods production at the acquired coast";
-            g.nextThink = world.tick + 100;
+            g.nextThink = world.tick + secondsToTicks(5);
             break;
           }
           const tiles = world.ownedLandNearest(player.id, g.tile!, 8),
@@ -464,7 +465,7 @@ export class AiCoastPlanner {
           ) {
             g.reason =
               "Saving for the coast's real goods-production dependency";
-            g.nextThink = world.tick + 100;
+            g.nextThink = world.tick + secondsToTicks(5);
             break;
           }
           if (
@@ -493,7 +494,7 @@ export class AiCoastPlanner {
           this.economy.ledger.release(g.id);
           if (result) {
             g.reason = result;
-            g.nextThink = world.tick + 100;
+            g.nextThink = world.tick + secondsToTicks(5);
             break;
           }
           this.finish(
@@ -506,7 +507,7 @@ export class AiCoastPlanner {
         const technology = buildingTechnology("port", state.age);
         if (!technology || !state.completed.includes(technology)) {
           g.reason = "Waiting for normal port research";
-          g.nextThink = world.tick + 100;
+          g.nextThink = world.tick + secondsToTicks(5);
           break;
         }
         const rejection = world.buildingSite(
@@ -540,7 +541,7 @@ export class AiCoastPlanner {
         );
         if (!affordableAiCost(available, cost)) {
           g.reason = "Saving liquid funds for coastal infrastructure";
-          g.nextThink = world.tick + 100;
+          g.nextThink = world.tick + secondsToTicks(5);
           break;
         }
         if (
@@ -572,7 +573,7 @@ export class AiCoastPlanner {
         else {
           g.reason =
             "Port construction paid; completing the real goods dependency";
-          g.nextThink = world.tick + 100;
+          g.nextThink = world.tick + secondsToTicks(5);
         }
         break;
       } else break;

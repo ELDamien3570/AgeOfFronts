@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { FIXED } from "../../src/skirmish/Protocol";
 import { trenchLineScene } from "./fixtures/TrenchLine";
@@ -10,7 +11,7 @@ function ready() {
   game.updateSquad(s.id, {
     weaponState: {
       sharedReadyTick: 0,
-      ranged: { nextTick: 100, remainder: 0, shots: 0, reloadStartedTick: 0 },
+      ranged: { nextTick: secondsToTicks(5), remainder: 0, shots: 0, reloadStartedTick: 0 },
     },
   });
   game.applyCommand({
@@ -50,7 +51,7 @@ describe("Explicit reload skirmish", () => {
     game.updateSquad(s.id, {
       weaponState: {
         sharedReadyTick: 0,
-        ranged: { nextTick: 19, remainder: 0, shots: 0, reloadStartedTick: 0 },
+        ranged: { nextTick: secondsToTicks(1)-1, remainder: 0, shots: 0, reloadStartedTick: 0 },
       },
     });
     e.skirmish.step();
@@ -58,7 +59,7 @@ describe("Explicit reload skirmish", () => {
     game.updateSquad(s.id, {
       weaponState: {
         sharedReadyTick: 0,
-        ranged: { nextTick: 100, remainder: 0, shots: 0, reloadStartedTick: 0 },
+        ranged: { nextTick: secondsToTicks(5), remainder: 0, shots: 0, reloadStartedTick: 0 },
       },
     });
     game.applyCommand({
@@ -99,7 +100,7 @@ describe("Explicit reload skirmish", () => {
     const copy = trenchLineScene(true).game;
     copy.restore(game.checkpoint());
     expect(copy.checkpoint()).toEqual(game.checkpoint());
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < secondsToTicks(1.25); i++) {
       game.step();
       copy.step();
     }
@@ -108,7 +109,7 @@ describe("Explicit reload skirmish", () => {
   it("finishes a loose withdrawal at reload completion", () => {
     const { game, s, e } = ready();
     e.skirmish.step();
-    game.tick = 100;
+    game.tick = secondsToTicks(5);
     e.skirmish.step();
     expect(e.skirmish.active(s.id)).toBe(false);
     expect(game.squad(s.id)!.order.type).toBe("hold");

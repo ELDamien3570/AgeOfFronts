@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import { STARTING_TECHNOLOGIES, TECHNOLOGIES, TECHNOLOGY } from "../content/Technology";
 import { AGES, TREES, type Age, type Tree } from "../domain/Definitions";
 import type { EmpireViewModel } from "./EmpireViewModel";
@@ -39,7 +40,7 @@ export class TechnologyViewModel {
               ? "Starting grant"
               : "Completed"
             : n.researching
-              ? `${Math.ceil(job!.remainingTicks / 20)}s remaining`
+              ? `${Math.ceil(job!.remainingTicks / TICKS_PER_SECOND)}s remaining`
               : (n.reason ?? "Available"),
           // Reserved optional slots do not create gaps in the visible catalogue.
           row: n.optional ? optionalStart + optionalNodes.indexOf(n) : slotRow(n.slot),
@@ -51,7 +52,7 @@ export class TechnologyViewModel {
         job: job
           ? {
               name: TECHNOLOGY.get(job.technologyId)!.name,
-              remaining: Math.ceil(job.remainingTicks / 20),
+              remaining: Math.ceil(job.remainingTicks / TICKS_PER_SECOND),
               age: TECHNOLOGY.get(job.technologyId)!.age,
             }
           : undefined,

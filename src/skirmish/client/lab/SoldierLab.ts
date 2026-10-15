@@ -1,3 +1,4 @@
+import {TICK_MS} from '../../Protocol';
 import type { ProjectilePresentationState } from "../../content/ProjectileScale";
 import {
   CAVALRY_SCALE,
@@ -662,7 +663,7 @@ function naval(canvas: HTMLCanvasElement, id: string, time: number) {
   const phase = seconds % cycle;
   const y = height / 2;
   for (const [index, x] of [width * 0.22, width * 0.78].entries()) {
-    const frame = era.get(id, phase < 0.8 ? "attack" : "idle", time / 50);
+    const frame = era.get(id, phase < 0.8 ? "attack" : "idle", time / TICK_MS);
     if (!frame) {
       ctx.fillStyle = "#d3ddcd";
       ctx.fillText("Loading hull…", x - 38, y);

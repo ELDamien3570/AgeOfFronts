@@ -1,3 +1,5 @@
+import {TICK_MS} from '../Protocol';
+import {TICKS_PER_SECOND} from '../Protocol';
 import type { Projectile } from "../domain/Definitions";
 import { ARTWORK_CATALOG } from "./ArtworkCatalog";
 export interface ImpactVisual {
@@ -37,7 +39,7 @@ export class ImpactPresentation {
       return tick;
     }
     this.terminal ??= { tick, now };
-    return this.terminal.tick + Math.max(0, now - this.terminal.now) / 50;
+    return this.terminal.tick + Math.max(0, now - this.terminal.now) / TICK_MS;
   }
   update(projectiles: readonly Projectile[], tick: number): void {
     for (const p of projectiles) {
@@ -54,7 +56,7 @@ export class ImpactPresentation {
         clip = ARTWORK_CATALOG[artworkId]?.clips?.[clipName];
       if (!clip) continue;
       const start = p.impactAt ?? tick,
-        end = start + Math.ceil((clip.frames * 20) / clip.fps);
+        end = start + Math.ceil((clip.frames * TICKS_PER_SECOND) / clip.fps);
       if (tick < end)
         this.active.set(p.id, {
           id: p.id,

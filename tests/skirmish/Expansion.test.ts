@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { claimBuildingFootprint } from "./BuildingFixtures";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
@@ -89,7 +90,7 @@ describe("queued orders", () => {
       ).toBeNull(),
     );
     const visited: number[] = [];
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < secondsToTicks(10); i++) {
       m.step();
       const t = m.tileOf(s);
       if (tiles.includes(t) && !visited.includes(t)) visited.push(t);
@@ -269,9 +270,9 @@ describe("construction, recruitment, and economy", () => {
     place(m, s, 15, 25);
     const enemy = m.squads[1];
     place(m, enemy, 30, 25);
-    step(m, 30);
+    step(m, secondsToTicks(1.5));
     expect(b.playerId).toBe(2);
-    expect(b.remainingTicks).toBe(BUILDING_RULES.stables.ticks - 30);
+    expect(b.remainingTicks).toBe(BUILDING_RULES.stables.ticks - secondsToTicks(1.5));
     step(m, b.remainingTicks);
     expect(
       m.applyCommand({ type: "recruit", playerId: 1, buildingId: b.id }),
@@ -289,7 +290,7 @@ describe("construction, recruitment, and economy", () => {
       factory = build(m, "factory", 38, 25);
     const baseReserves = m.players[0].reserves,
       baseGold = m.players[0].gold;
-    step(m, 20);
+    step(m, secondsToTicks(1));
     expect(m.players[0].reserves - baseReserves).toBe(
       40 + Math.floor(m.players[0].land / 20),
     );
@@ -300,7 +301,7 @@ describe("construction, recruitment, and economy", () => {
     m.updateBuilding((factory).id, { remainingTicks: 0 });
     const beforeReserves = m.players[0].reserves,
       beforeGold = m.players[0].gold;
-    step(m, 20);
+    step(m, secondsToTicks(1));
     expect(m.players[0].reserves - beforeReserves).toBe(
       40 + Math.floor(m.players[0].land / 20) + 40,
     );
@@ -324,17 +325,17 @@ describe("squad classes and replenishment", () => {
     });
     m.players[0].reserves = 0;
     own(m, m.players[0].base, 2);
-    m.tick = 19;
+    m.tick = secondsToTicks(1)-1;
     m.step();
     expect(s.troops).toBe(900);
     m.players[0].reserves = 10;
-    m.tick = 39;
+    m.tick = secondsToTicks(2)-1;
     m.step();
     expect(s.troops).toBe(910);
     expect(m.players[0].reserves).toBe(0);
     m.players[0].reserves = 1000;
     own(m, m.tileOf(s), 2);
-    m.tick = 59;
+    m.tick = secondsToTicks(3)-1;
     m.step();
     expect(s.troops).toBe(910);
   });
@@ -344,13 +345,13 @@ describe("squad classes and replenishment", () => {
       enemy = m.squads[1];
     m.updateSquad(archer.id, { kind: "archer" });
     place(m, enemy, 35, 25);
-    step(m, 20);
+    step(m, secondsToTicks(1));
     expect(enemy.troops).toBe(975);
     expect(archer.troops).toBe(1000);
     place(m, enemy, 31, 25);
     m.updateSquad(enemy.id, { kind: "archer" });
     m.updateSquad(enemy.id, { troops: 1000 });
-    step(m, 20);
+    step(m, secondsToTicks(1));
     expect(enemy.troops).toBe(990);
     expect(archer.troops).toBe(990);
     const before = m.movementSpeed(archer);
@@ -379,7 +380,7 @@ describe("squad classes and replenishment", () => {
     own(m, m.tileOf(s));
     m.updateSquad(s.id, { troops: 800 });
     m.players[0].losses += 200;
-    step(m, 20);
+    step(m, secondsToTicks(1));
     expect(s.troops).toBe(800);
     m.updateSquad(s.id, { lastCombatTick: m.tick });
     expect(
@@ -405,7 +406,7 @@ describe("squad classes and replenishment", () => {
       squadIds: [s.id],
       order: { type: "move", tile: m.map.ref(40, 25) },
     });
-    step(m, 20);
+    step(m, secondsToTicks(1));
     expect(s.troops).toBe(850);
     own(m, m.tileOf(s), 2);
     expect(
@@ -444,7 +445,7 @@ describe("squad classes and replenishment", () => {
       squadIds: [s.id],
       order: { type: "replenish" },
     });
-    step(m, 80);
+    step(m, secondsToTicks(4));
     expect(s.troops).toBe(700);
     expect(s.lastCombatTick).toBe(m.tick);
   });
@@ -481,14 +482,14 @@ describe("archer volleys and positioning", () => {
     );
     const stationaryShots = new Set<number>(),
       movingShots = new Set<number>();
-    for (let tick = 1; tick <= 100; tick++) {
+    for (let tick = 1; tick <= secondsToTicks(5); tick++) {
       stationary.step();
       moving.step();
       expect(still.moved).toBe(false);
       expect(walker.moved).toBe(true);
       for (const volley of stationary.volleys) stationaryShots.add(volley.id);
       for (const volley of moving.volleys) movingShots.add(volley.id);
-      if (tick === 19) {
+      if (tick === secondsToTicks(1)-1) {
         expect(stationary.squads[1].troops).toBe(1000);
         expect(stationary.volleys).toEqual([]);
       }
@@ -515,19 +516,19 @@ describe("archer volleys and positioning", () => {
         order: { type: "attack", targetId: enemy.id },
       }),
     ).toBeNull();
-    for (let tick = 0; tick < 300 && !archer.fighting; tick++) m.step();
+    for (let tick = 0; tick < secondsToTicks(15) && !archer.fighting; tick++) m.step();
     const distance = Math.hypot(archer.x - enemy.x, archer.y - enemy.y);
     expect(distance).toBeLessThanOrEqual(6 * FIXED);
     expect(distance).toBeGreaterThanOrEqual(6 * FIXED - 1);
     const position = [archer.x, archer.y];
-    step(m, 20);
+    step(m, secondsToTicks(1));
     expect([archer.x, archer.y]).toEqual(position);
     expect(archer.moved).toBe(false);
     place(m, enemy, 49, 25);
-    step(m, 20);
+    step(m, secondsToTicks(1));
     expect([archer.x, archer.y]).toEqual(position);
     place(m, enemy, 60, 25);
-    step(m, 100);
+    step(m, secondsToTicks(5));
     expect([archer.x, archer.y]).not.toEqual(position);
     expect(
       Math.hypot(archer.x - enemy.x, archer.y - enemy.y),
@@ -541,12 +542,12 @@ describe("archer volleys and positioning", () => {
       enemy = m.squads[1];
     m.updateSquad(archer.id, { kind: "archer" });
     place(m, enemy, 35, 25);
-    step(m, 19);
+    step(m, secondsToTicks(1)-1);
     expect(m.snapshot().volleys).toEqual([]);
     m.step();
     const shot = m.snapshot().volleys[0];
     expect(shot).toMatchObject({
-      tick: 20,
+      tick: secondsToTicks(1),
       squadId: archer.id,
       playerId: 1,
       fromX: archer.x,
@@ -557,7 +558,7 @@ describe("archer volleys and positioning", () => {
     shot.fromX = -1;
     expect(m.volleys[0].fromX).toBe(archer.x);
     place(m, enemy, 65, 35);
-    step(m, 13);
+    step(m, secondsToTicks(0.65));
     expect(m.volleys).toEqual([]);
     expect(archer.firingCharge).toBe(0);
   });

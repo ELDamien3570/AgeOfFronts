@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Diplomacy } from "../../src/skirmish/domain/Diplomacy";
@@ -10,14 +11,14 @@ describe("bounded and local AI diplomacy", () => {
     const d = new Diplomacy(), human = player(1, false), a = player(2), b = player(3), otherHuman = player(4, false);
     expect(d.action(a, human, "offer", 0)).toBeNull();
     expect(d.action(human, a, "reject", 1)).toBeNull();
-    expect(d.action(b, human, "offer", 2)).toContain("recipient");
+    expect(d.action(b, human, "offer", secondsToTicks(0.1))).toContain("recipient");
     const restored = new Diplomacy(); restored.restore(d.checkpoint());
-    expect(restored.aiOfferAvailable(1, 1199)).toBe(false);
-    expect(restored.action(otherHuman, human, "offer", 2)).toBeNull();
-    expect(restored.action(human, a, "offer", 3)).toBeNull();
-    expect(restored.action(a, human, "accept", 4)).toBeNull();
-    restored.step(1300, [human, a, b, otherHuman]);
-    expect(restored.aiOfferAvailable(1, 1300)).toBe(true);
+    expect(restored.aiOfferAvailable(1, secondsToTicks(60)-1)).toBe(false);
+    expect(restored.action(otherHuman, human, "offer", secondsToTicks(0.1))).toBeNull();
+    expect(restored.action(human, a, "offer", secondsToTicks(0.15))).toBeNull();
+    expect(restored.action(a, human, "accept", secondsToTicks(0.2))).toBeNull();
+    restored.step(secondsToTicks(65), [human, a, b, otherHuman]);
+    expect(restored.aiOfferAvailable(1, secondsToTicks(65))).toBe(true);
   });
   it("allows nearby connected land and genuine borders but excludes distant unrelated continents", () => {
     const cells = new Uint8Array(240 * 100).fill(133), map = new GameMapImpl(240, 100, cells, cells.length);

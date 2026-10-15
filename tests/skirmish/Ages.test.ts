@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
@@ -236,12 +237,12 @@ describe("supply conservation and deployment", () => {
     expect(inv.tin).toBe(0);
     const ticks = e.supply.jobs[b.id]!.remainingTicks;
     for (let i = 0; i < ticks; i++)
-      e.supply.step(i + 2, m.players, m.buildings, m.owners);
+      e.supply.step(secondsToTicks(((i)/20+0.1)), m.players, m.buildings, m.owners);
     expect(inv.bronze).toBe(10);
     expect(e.supply.jobs[b.id]).toBeUndefined();
     inv.copper = 8;
     inv.tin = 2;
-    e.supply.step(400, m.players, m.buildings, m.owners);
+    e.supply.step(secondsToTicks(20), m.players, m.buildings, m.owners);
     m.updateBuilding(b.id, { playerId: 2 });
     for (let i = 401; i < 700; i++)
       e.supply.step(i, m.players, m.buildings, m.owners);
@@ -316,7 +317,7 @@ describe("supply conservation and deployment", () => {
     ).toBeNull();
     expect(own[0].definitionId).toBe("stoneage-infantry");
     expect(own[0].xp).toBe(7000);
-    step(m, 200);
+    step(m, secondsToTicks(10));
     expect(own[0].definitionId).toBe("bronzeage-infantry");
     expect(own[0].troops).toBe(5);
     expect(own[0].xp).toBe(0);
@@ -336,13 +337,13 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     m.updateSquad(s.id, { moved: true });
     m.expansion!.battle.fight([]);
     expect(m.expansion!.battle.projectiles).toHaveLength(1);
-    expect(s.nextAttackTick).toBe(250);
+    expect(s.nextAttackTick).toBe(secondsToTicks(12.5));
     m.expansion!.battle.fight([]);
     expect(m.expansion!.battle.projectiles).toHaveLength(1);
     m.updateSquad(s.id, { moved: false });
-    m.tick = 250;
+    m.tick = secondsToTicks(12.5);
     m.expansion!.battle.fight([]);
-    expect(s.nextAttackTick).toBe(300);
+    expect(s.nextAttackTick).toBe(secondsToTicks(15));
   });
   it("sweeps fast shells and resolves damage and XP once", () => {
     const m = make(),
@@ -387,10 +388,10 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
       profile,
       24000,
       "mirv",
-      720,
+      secondsToTicks(36),
       8,
     );
-    m.tick = 360;
+    m.tick = secondsToTicks(18);
     e.battle.advanceProjectiles();
     expect(
       e.battle.projectiles.filter((p) => p.kind === "warhead"),
@@ -426,7 +427,7 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
       target: null,
       state: "outbound" as const,
       reloadTick: 0,
-      fuelTicks: 100,
+      fuelTicks: secondsToTicks(5),
     };
     m.expansion!.battle.fight([air]);
     expect(air.health).toBeLessThan(1000);
@@ -534,13 +535,13 @@ describe("allied protection and fortifications", () => {
     complete(m);
     const b = building(m, "city", m.players[0].base, 1, "Modern");
     m.updateSquad(m.squads[0].id, { xp: 3500 });
-    m.updateSquad(m.squads[0].id, { lastAttackTick: 77 });
+    m.updateSquad(m.squads[0].id, { lastAttackTick: secondsToTicks(3.85) });
     const encoder = new SnapshotEncoder(),
       packet = encoder.encode(m.snapshot());
     const decoded = new SnapshotDecoder().decode(packet);
     expect(decoded.expansion!.progression[1].age).toBe("Modern");
     expect(decoded.squads[0].xp).toBe(3500);
-    expect(decoded.squads[0].lastAttackTick).toBe(77);
+    expect(decoded.squads[0].lastAttackTick).toBe(secondsToTicks(3.85));
     expect(decoded.buildings.find((x) => x.id === b.id)!.health).toBe(2000);
   });
 });

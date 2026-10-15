@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { literalSquadFixture } from "./UnitFixtures";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -255,14 +256,14 @@ describe("remaining strategic plans", () => {
         distance: 80,
         foreign: true,
         allied: true,
-        travelTicks: 400,
+        travelTicks: secondsToTicks(20),
       },
       {
         marketId: 2,
         distance: 40,
         foreign: true,
         allied: false,
-        travelTicks: 200,
+        travelTicks: secondsToTicks(10),
       },
     ];
     const quote = tradeCycleQuote({
@@ -272,7 +273,7 @@ describe("remaining strategic plans", () => {
       valuePerGood: 100,
       supplyTicks: 0,
       legs,
-      returnTicks: 600,
+      returnTicks: secondsToTicks(30),
       observedRisk: 0,
     });
     expect(quote.guaranteedGold).toBe(
@@ -282,9 +283,9 @@ describe("remaining strategic plans", () => {
       quantity: 25,
       delivered: 25,
       returned: 0,
-      handlingTicks: 60,
-      travelTicks: 1000,
-      cycleTicks: 1060,
+      handlingTicks: secondsToTicks(3),
+      travelTicks: secondsToTicks(50),
+      cycleTicks: secondsToTicks(53),
     });
     expect(quote.riskAdjustedGoldPer1000Ticks).toBe(quote.goldPer1000Ticks);
     expect(
@@ -295,7 +296,7 @@ describe("remaining strategic plans", () => {
         valuePerGood: 100,
         supplyTicks: 0,
         legs,
-        returnTicks: 600,
+        returnTicks: secondsToTicks(30),
         observedRisk: 500,
       }).riskAdjustedGoldPer1000Ticks,
     ).toBeLessThan(quote.goldPer1000Ticks);
@@ -307,7 +308,7 @@ describe("remaining strategic plans", () => {
       capacity: 40,
       valuePerGood: 50,
       supplyTicks: 0,
-      returnTicks: 100,
+      returnTicks: secondsToTicks(5),
       observedRisk: 0,
       legs: [
         {
@@ -315,21 +316,21 @@ describe("remaining strategic plans", () => {
           distance: 40,
           foreign: false,
           allied: false,
-          travelTicks: 100,
+          travelTicks: secondsToTicks(5),
         },
         {
           marketId: 2,
           distance: 40,
           foreign: true,
           allied: false,
-          travelTicks: 100,
+          travelTicks: secondsToTicks(5),
         },
         {
           marketId: 2,
           distance: 40,
           foreign: true,
           allied: false,
-          travelTicks: 100,
+          travelTicks: secondsToTicks(5),
         },
       ],
     });
@@ -344,7 +345,7 @@ describe("remaining strategic plans", () => {
     f.game.owners[tile] = 0;
     f.building(1, "port", 80, 19);
     f.game.restore(f.game.checkpoint());
-    for (let n = 0; n < 100; n++) f.e.economy.navalFacts.step(f.game.tick, 32);
+    for (let n = 0; n < 100; n++) f.e.economy.navalFacts.step(f.game.tick, secondsToTicks(1.6));
     const controller = f.e.economy.coasts;
     controller.goals.set(f.player.id, {
       id: "coast-fixture",
@@ -363,7 +364,7 @@ describe("remaining strategic plans", () => {
       ],
       members: [],
       created: 0,
-      deadline: 6000,
+      deadline: secondsToTicks(300),
       nextThink: 0,
       reason: "fixture",
     });
@@ -375,7 +376,7 @@ describe("remaining strategic plans", () => {
     ) {
       f.game.tick++;
       f.game.routePlanner.step(f.game.tick);
-      expect(controller.step(4)).toBeLessThanOrEqual(4);
+      expect(controller.step(secondsToTicks(0.2))).toBeLessThanOrEqual(4);
     }
     expect(controller.goals.get(f.player.id)?.phase).toBe("move");
     expect(f.game.owners[tile]).toBe(0);
@@ -385,9 +386,9 @@ describe("remaining strategic plans", () => {
     expect(controller.checkpoint()).toEqual(restored);
     const goal = controller.goals.get(f.player.id)!;
     f.game.removeSquad(goal.members[0]);
-    f.game.tick = 100;
-    controller.step(4);
-    controller.step(4);
+    f.game.tick = secondsToTicks(5);
+    controller.step(secondsToTicks(0.2));
+    controller.step(secondsToTicks(0.2));
     expect(controller.goals.get(f.player.id)?.phase).toBe("abort");
     expect(f.player.gold).toBe(before);
   });
@@ -419,14 +420,14 @@ describe("remaining strategic plans", () => {
       members: [],
       tile,
       created: 0,
-      deadline: 6000,
+      deadline: secondsToTicks(300),
       nextThink: 0,
       reason: "fixture",
     });
     const expected = buildingCost("port", "StoneAge", 0).gold!,
       before = f.player.gold;
-    controller.step(8);
-    controller.step(8);
+    controller.step(secondsToTicks(0.4));
+    controller.step(secondsToTicks(0.4));
     expect(
       f.game
         .buildingsAt(tile)
@@ -434,9 +435,9 @@ describe("remaining strategic plans", () => {
     ).toBe(true);
     expect(f.player.gold).toBe(before - expected);
     expect(controller.goals.get(f.player.id)?.phase).toBe("fund");
-    f.game.tick = 100;
-    controller.step(8);
-    controller.step(8);
+    f.game.tick = secondsToTicks(5);
+    controller.step(secondsToTicks(0.4));
+    controller.step(secondsToTicks(0.4));
     expect(controller.goals.get(f.player.id)?.phase).toBe("complete");
   });
   it("bombards with real weapon cooldown", () => {
@@ -507,7 +508,7 @@ describe("remaining strategic plans", () => {
       first = f.ship(),
       second = f.ship(f.player.id, 61, 21);
     f.game.restore(f.game.checkpoint());
-    for (let n = 0; n < 100; n++) f.e.economy.navalFacts.step(f.game.tick, 32);
+    for (let n = 0; n < 100; n++) f.e.economy.navalFacts.step(f.game.tick, secondsToTicks(1.6));
     const m: AiFleetMission = {
       id: "bombard-fixture",
       playerId: f.player.id,
@@ -517,7 +518,7 @@ describe("remaining strategic plans", () => {
       state: "stage",
       reason: "fixture",
       createdTick: 0,
-      deadline: 2400,
+      deadline: secondsToTicks(120),
       nextAssessment: 0,
       port: undefined,
       anchor: f.map.ref(60, 20),
@@ -540,7 +541,7 @@ describe("remaining strategic plans", () => {
         controller: m.id,
         priority: "operation" as const,
         createdTick: 0,
-        expiresTick: 2400,
+        expiresTick: secondsToTicks(120),
       })),
     );
     for (let n = 0; n < 100 && m.bombard?.phase === "position"; n++) {
@@ -586,7 +587,7 @@ describe("supported land breach and recovery ownership", () => {
       phase: "breach" as const,
       created: 0,
       since: 0,
-      deadline: 3000,
+      deadline: secondsToTicks(150),
       nextThink: 0,
       cursor: 0,
       rosterIds: own.map((s) => s.id),
@@ -615,19 +616,19 @@ describe("supported land breach and recovery ownership", () => {
         controller: plan.id,
         priority: "operation" as const,
         createdTick: 0,
-        expiresTick: 3800,
+        expiresTick: secondsToTicks(190),
       })),
     );
     const find = vi.spyOn(f.game.paths, "find");
-    planner.step(8);
+    planner.step(secondsToTicks(0.4));
     for (let i = 0; i < 1000 && f.game.movementAdmission.preparationCount; i++)
-      f.game.movementAdmission.step(f.game.tick, 128);
+      f.game.movementAdmission.step(f.game.tick, secondsToTicks(6.4));
     expect(f.game.movementAdmission.preparationCount).toBe(0);
     expect(f.game.squad(own[2].id)!.structureTarget?.buildingId).toBe(tower.id);
     expect(find).not.toHaveBeenCalled();
     f.game.removeSquad(own[0].id);
-    f.game.tick = 40;
-    planner.step(8);
+    f.game.tick = secondsToTicks(2);
+    planner.step(secondsToTicks(0.4));
     expect(planner.missions.get(planner.byPlayer.get(f.player.id)![0])?.phase).toBe("recover");
     expect(f.game.building(tower.id)!.health).toBe(1000);
   });
@@ -643,7 +644,7 @@ describe("supported land breach and recovery ownership", () => {
       phase: "replenish" as const,
       created: 0,
       since: 0,
-      deadline: 3000,
+      deadline: secondsToTicks(150),
       nextThink: 0,
       cursor: 0,
       rosterIds: own.map((s) => s.id),
@@ -662,17 +663,17 @@ describe("supported land breach and recovery ownership", () => {
         controller: plan.id,
         priority: "recovery" as const,
         createdTick: 0,
-        expiresTick: 100,
+        expiresTick: secondsToTicks(5),
       })),
     );
     const gold = f.player.gold;
-    planner.step(8);
+    planner.step(secondsToTicks(0.4));
     expect(planner.missions.get(planner.byPlayer.get(f.player.id)![0])).toMatchObject({
       phase: "assemble",
       rejoined: 1,
     });
     f.e.economy.assets.expire(
-      101,
+      secondsToTicks(5.05),
       (id) => f.game.aiGeneration(id),
       () => true,
     );

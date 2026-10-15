@@ -47,9 +47,9 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
   const port = (coordinator.http.address() as { port: number }).port;
   type Client = { socket: WebSocket; token: string; messages: ServerMessage[] };
   const clients: Client[] = [];
-  const until = async (predicate: () => boolean) => {
+  const until = async (predicate: () => boolean | Promise<boolean>) => {
     const deadline = performance.now() + 15000;
-    while (!predicate()) {
+    while (!await predicate()) {
       if (performance.now() > deadline)
         throw new Error(
           "Timed out: " +
@@ -193,7 +193,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
         command: { type: "research", technologyId: "rus-stoneage-port-sea-trade" },
       }),
     );
-    now += 200;
+    now += 250;
     await until(() => lastState(a).tick >= 1);
     const beforeLeaving = lastState(a).tick;
     await close(a);
@@ -202,8 +202,8 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
         coordinator.rooms.snapshot().reservations[0].members[0].connected ===
         false,
     );
-    now += 200;
-    await until(() => lastState(b).tick > beforeLeaving);
+    now += 250;
+    await until(async () => (await decodeState<SnapshotPacket>(lastState(b).packet)).players[0].ai);
     const away = await decodeState<SnapshotPacket>(lastState(b).packet);
     expect(away.players[0].ai).toBe(true);
     const impersonator = await open();
@@ -230,7 +230,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
     const returning = await open(a.token);
     expect((await watch(returning)).playerId).toBe(1);
     const beforeLoad = lastState(b).tick;
-    now += 200;
+    now += 250;
     await until(() => lastState(b).tick > beforeLoad); // no pause during asset loading
     expect(await ready(returning)).toMatchObject({ type: "ack" });
     await until(() => !!lastState(returning)?.syncId);
@@ -258,7 +258,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
       ),
     ).toMatchObject({ type: "error" });
     const paused = lastState(b).tick;
-    now += 200;
+    now += 250;
     await new Promise((r) => setTimeout(r, 80));
     expect(lastState(b).tick).toBe(paused);
     expect(await ack(returning)).toMatchObject({ type: "ack" });
@@ -275,7 +275,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
       type: "error",
       message: expect.stringMatching(/already own/),
     });
-    now += 200;
+    now += 250;
     await until(() => lastState(b).tick > paused);
     // Two browsers load the same AI, but only one can reserve the frozen barrier.
     const rival = await open();

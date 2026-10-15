@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { TerritoryAbsorption } from "../../src/skirmish/domain/TerritoryAbsorption";
@@ -41,9 +42,9 @@ describe("isolated territory absorption", () => {
       const f = fixture(cells);
       for (const tile of f.tiles) f.owners[tile] = 0;
       f.ally();
-      expect(f.step(20)).toEqual([]);
-      expect(f.step(200)).toEqual([]);
-      expect(f.step(220)).toEqual([{ owner: 0, recipient: 1, tiles: f.tiles }]);
+      expect(f.step(secondsToTicks(1))).toEqual([]);
+      expect(f.step(secondsToTicks(10))).toEqual([]);
+      expect(f.step(secondsToTicks(11))).toEqual([{ owner: 0, recipient: 1, tiles: f.tiles }]);
     },
   );
 
@@ -67,8 +68,8 @@ describe("isolated territory absorption", () => {
         f.owners[0] = 0;
         f.policy.changed(0);
       }
-      f.step(20);
-      expect(f.step(220)).toEqual([]);
+      f.step(secondsToTicks(1));
+      expect(f.step(secondsToTicks(11))).toEqual([]);
     },
   );
 
@@ -76,21 +77,21 @@ describe("isolated territory absorption", () => {
     "absorbs a %i-cell pocket only after ten game seconds",
     (cells) => {
       const f = fixture(cells);
-      expect(f.step(20)).toEqual([]);
-      expect(f.step(200)).toEqual([]);
-      expect(f.step(220)).toEqual([{ owner: 2, recipient: 1, tiles: f.tiles }]);
+      expect(f.step(secondsToTicks(1))).toEqual([]);
+      expect(f.step(secondsToTicks(10))).toEqual([]);
+      expect(f.step(secondsToTicks(11))).toEqual([{ owner: 2, recipient: 1, tiles: f.tiles }]);
     },
   );
 
   it("protects the entire pocket with a building, including construction, and restarts after removal", () => {
     const f = fixture(2);
-    f.step(20);
+    f.step(secondsToTicks(1));
     f.buildings.add(f.tiles[1]);
-    expect(f.step(220)).toEqual([]);
+    expect(f.step(secondsToTicks(11))).toEqual([]);
     f.buildings.clear();
-    expect(f.step(240)).toEqual([]);
-    expect(f.step(420)).toEqual([]);
-    expect(f.step(440)).toHaveLength(1);
+    expect(f.step(secondsToTicks(12))).toEqual([]);
+    expect(f.step(secondsToTicks(21))).toEqual([]);
+    expect(f.step(secondsToTicks(22))).toHaveLength(1);
   });
 
   it.each(["large", "neutral", "water", "mixed", "edge", "allied"])(
@@ -107,22 +108,22 @@ describe("isolated territory absorption", () => {
         f.policy.changed(0);
       }
       if (reason === "allied") f.ally();
-      f.step(20);
-      expect(f.step(220)).toEqual([]);
+      f.step(secondsToTicks(1));
+      expect(f.step(secondsToTicks(11))).toEqual([]);
     },
   );
 
   it("resets the timer when the recipient changes and discovers pockets split off by capture", () => {
     const f = fixture(3);
-    f.step(20);
+    f.step(secondsToTicks(1));
     f.owners[f.tiles[2]] = 1;
     f.policy.changed(f.tiles[2]);
-    expect(f.step(40)).toEqual([]);
+    expect(f.step(secondsToTicks(2))).toEqual([]);
     f.owners.fill(3);
     f.owners[f.tiles[0]] = f.owners[f.tiles[1]] = 2;
     f.policy.changed(f.tiles[0]);
-    expect(f.step(240)).toEqual([]);
-    expect(f.step(440)[0].recipient).toBe(3);
+    expect(f.step(secondsToTicks(12))).toEqual([]);
+    expect(f.step(secondsToTicks(22))[0].recipient).toBe(3);
   });
 
   it.each([0, 2])(
@@ -141,7 +142,7 @@ describe("isolated territory absorption", () => {
       for (let y = 36; y <= 44; y++)
         for (let x = 46; x <= 54; x++) change(game.map.ref(x, y), 1);
       change(center, owner);
-      for (let i = 0; i < 219; i++) game.step();
+      for (let i = 0; i < secondsToTicks(11)-1; i++) game.step();
       expect(game.owners[center]).toBe(owner);
       const before = game.players.map((p) => p.land);
       game.step();

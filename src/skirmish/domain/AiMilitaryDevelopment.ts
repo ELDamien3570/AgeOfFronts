@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { recruitmentVariant } from '../content/FormationRecipes';
 import { scaledRecipeCost } from './Manpower';
 import { restoreMap } from "../StateTransfer";
@@ -142,7 +143,7 @@ export class AiModernization {
         !squad ||
         squad.definitionId === lease.targetId ||
         squad.embarkedOn !== null ||
-        (!squad.refit && tick - lease.startedTick > 600)
+        (!squad.refit && tick - lease.startedTick > secondsToTicks(30))
       )
         this.leases.delete(id);
     }

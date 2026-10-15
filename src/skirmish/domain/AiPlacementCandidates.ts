@@ -1,3 +1,4 @@
+import {secondsToTicks} from "../Protocol";
 import { recruitmentVariant } from '../content/FormationRecipes';
 import { scaledRecipeCost } from './Manpower';
 import { buildingFootprint } from "../BuildingFootprint";
@@ -145,7 +146,7 @@ export class AiPlacementCandidates {
         const recipe=[...PRODUCTION_RECIPES].reverse().find(r=>r.outputs[item] && snapshot.research.includes(r.technologyId));
         if(!recipe)return;
         const batches=Math.ceil(quantity/recipe.outputs[item]);
-        support.set(recipe.building,(support.get(recipe.building)??0)+batches*productionTicks(recipe,snapshot.research)/6000);
+        support.set(recipe.building,(support.get(recipe.building)??0)+batches*productionTicks(recipe,snapshot.research)/secondsToTicks(300));
         const next=new Set(chain);next.add(item);
         for(const [input,n] of Object.entries(recipe.inputs))capacity(input,batches*n,next);
       };

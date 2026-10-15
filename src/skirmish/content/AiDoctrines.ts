@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import type { AiPersonalityId } from "../domain/AiPersonality";
 import type { UnitDefinition } from "../domain/Definitions";
 import type { BuildingType } from "../Protocol";
@@ -15,8 +16,8 @@ export interface AiDoctrine {
 const balanced: AiDoctrine = {
   contract: "Mixed supported force with a mobile reserve",
   reservePercent: 25,
-  assemblyTicks: 160,
-  commitmentTicks: 1200,
+  assemblyTicks: secondsToTicks(8),
+  commitmentTicks: secondsToTicks(60),
   preferredRoles: ["frontline", "ranged", "mounted"],
   engagement: "attack",
   economy: { city: 100, factory: 100 },
@@ -34,29 +35,29 @@ export const AI_DOCTRINES: Readonly<Record<AiPersonalityId, AiDoctrine>> =
       contract:
         "Earlier concentrated offensives while retaining a small reserve",
       reservePercent: 15,
-      assemblyTicks: 80,
-      commitmentTicks: 1600,
+      assemblyTicks: secondsToTicks(4),
+      commitmentTicks: secondsToTicks(80),
       economy: { barracks: 125, depot: 125 },
     }),
     warden: doctrine({
       contract:
         "Staff connected defensive regions before measured counterattack",
       reservePercent: 45,
-      assemblyTicks: 240,
+      assemblyTicks: secondsToTicks(12),
       economy: { city: 125, trench: 150, tower: 150 },
     }),
     builder: doctrine({
       contract:
         "Protect infrastructure and expand productive capacity before commitment",
       reservePercent: 40,
-      assemblyTicks: 260,
+      assemblyTicks: secondsToTicks(13),
       economy: { city: 145, factory: 140, blacksmith: 125 },
     }),
     merchant: doctrine({
       contract:
         "Protect viable production and existing markets with reserve forces",
       reservePercent: 40,
-      assemblyTicks: 220,
+      assemblyTicks: secondsToTicks(11),
       economy: { factory: 155, port: 140 },
       navalWeight: 125,
     }),
@@ -64,14 +65,14 @@ export const AI_DOCTRINES: Readonly<Record<AiPersonalityId, AiDoctrine>> =
       contract:
         "Wait for a healthy supported force and use researched capabilities",
       reservePercent: 35,
-      assemblyTicks: 260,
+      assemblyTicks: secondsToTicks(13),
       minimumHealth: 850,
       economy: { city: 120, armory: 130 },
     }),
     rider: doctrine({
       contract: "Stage reachable mounted wings with infantry support",
       reservePercent: 20,
-      assemblyTicks: 100,
+      assemblyTicks: secondsToTicks(5),
       preferredRoles: ["mounted", "frontline", "ranged"],
       engagement: "flank-left",
       economy: { stables: 150 },
@@ -79,7 +80,7 @@ export const AI_DOCTRINES: Readonly<Record<AiPersonalityId, AiDoctrine>> =
     skirmisher: doctrine({
       contract: "Concentrate ranged squads and use authored fire-and-retreat",
       reservePercent: 30,
-      assemblyTicks: 120,
+      assemblyTicks: secondsToTicks(6),
       preferredRoles: ["ranged", "frontline", "mounted"],
       engagement: "fire-retreat",
       economy: { archery: 145 },
@@ -87,7 +88,7 @@ export const AI_DOCTRINES: Readonly<Record<AiPersonalityId, AiDoctrine>> =
     engineer: doctrine({
       contract: "Support siege and artillery through a viable equipment chain",
       reservePercent: 30,
-      assemblyTicks: 200,
+      assemblyTicks: secondsToTicks(10),
       preferredRoles: ["siege", "artillery", "frontline", "ranged"],
       economy: { "siege-workshop": 150, blacksmith: 140, factory: 130 },
     }),
@@ -95,7 +96,7 @@ export const AI_DOCTRINES: Readonly<Record<AiPersonalityId, AiDoctrine>> =
       contract:
         "Fund reachable seas; retain a normal land fallback when landlocked",
       reservePercent: 35,
-      assemblyTicks: 180,
+      assemblyTicks: secondsToTicks(9),
       economy: { port: 150 },
       navalWeight: 165,
     }),
@@ -103,7 +104,7 @@ export const AI_DOCTRINES: Readonly<Record<AiPersonalityId, AiDoctrine>> =
       contract:
         "Maintain a strong reserve and commit only to selected hostile objectives",
       reservePercent: 45,
-      assemblyTicks: 280,
+      assemblyTicks: secondsToTicks(14),
       economy: { city: 125, port: 110 },
       navalWeight: 100,
     }),

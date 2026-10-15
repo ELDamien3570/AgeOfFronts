@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import type { Squad } from "../Protocol";
 import type { Cost, RecruitmentJob, UnitDefinition } from "./Definitions";
 export const HEALTH_SCALE = 1000;
@@ -219,10 +220,10 @@ export function enlargementTerms(unit: UnitDefinition) {
     added:
       unit.formationRecipe!.enlargedCapacity - unit.formationRecipe!.capacity,
     ticks: Math.max(
-      20,
+      TICKS_PER_SECOND,
       Math.ceil(
         (unit.trainingSeconds ?? 10) *
-          20 *
+          TICKS_PER_SECOND *
           (unit.formationRecipe!.enlargedCapacity /
             unit.formationRecipe!.capacity -
             1),

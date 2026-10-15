@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { readyFraction } from './Manpower';
 import { researchRejection, advanceRejection, progressionRaceStarted } from "./Progression";
 import { TECHNOLOGY } from "../content/Technology";
@@ -223,7 +224,7 @@ export class AiEconomicDirector {
     this.diagnostics.backgroundWork =
       navalWork + boundaryWork + controllerWork + frontWork + armyWork + tradeQuoteWork + coastWork + cityWork;
     if (world.options.aiDefenses) { this.defenses.step(); this.modernFronts.step(32); }
-    if (world.tick % 3) return;
+    if (world.tick % secondsToTicks(.15)) return;
     for (let i = 0; i < world.players.length; i++) {
       const player = world.players[this.cursor % world.players.length];
       this.cursor = (this.cursor + 1) % world.players.length;
@@ -232,7 +233,7 @@ export class AiEconomicDirector {
         (this.nextDecision.get(player.id) ?? 0) > world.tick
       )
         continue;
-      this.nextDecision.set(player.id, world.tick + 60);
+      this.nextDecision.set(player.id, world.tick + secondsToTicks(3));
       this.decide(player);
       break;
     }
@@ -382,7 +383,7 @@ export class AiEconomicDirector {
       goal &&
       (goal.intent.generation !== generation ||
         world.tick >= goal.intent.expiresTick ||
-        world.tick - goal.lastProgress >= 1200 ||
+        world.tick - goal.lastProgress >= secondsToTicks(60) ||
         (goal.intent.command.type === "research" && (!!researchRejection(state, Number.MAX_SAFE_INTEGER, goal.intent.command.technologyId, progression.technologySpeed) || (!opportunity.progressionRace && !researchUtility(TECHNOLOGY.get(goal.intent.command.technologyId)!,snapshot,decisionDemand,opportunity).benefit))) ||
         (goal.intent.kind === "advance" && !!advanceRejection(state, Number.MAX_SAFE_INTEGER, progression.technologySpeed, progression.maximumAge)))
     ) {
@@ -483,7 +484,7 @@ export class AiEconomicDirector {
     const cities=world.buildingFacts().byOwner(player.id).filter(b=>b.type==="city" && !b.remainingTicks && (b.health??1)>0).sort((a,b)=>a.id-b.id);
     for (const city of cities) for (let slot=0;slot<2;slot++) {
       const squad=available.filter(s=>!selected.has(`squad:${s.id}`)).sort((a,b)=>world.map.euclideanDistSquared(world.tileOf(a),city.tile)-world.map.euclideanDistSquared(world.tileOf(b),city.tile) || a.id-b.id)
-        .find(s=>this.assets.acquire([{asset:`squad:${s.id}`,playerId:player.id,generation:world.aiGeneration(player.id),controller,priority:"city-defense",createdTick:world.tick,expiresTick:world.tick+100}]));
+        .find(s=>this.assets.acquire([{asset:`squad:${s.id}`,playerId:player.id,generation:world.aiGeneration(player.id),controller,priority:"city-defense",createdTick:world.tick,expiresTick:world.tick+secondsToTicks(5)}]));
       if (!squad) break;
       selected.add(`squad:${squad.id}`);
       if (world.map.euclideanDistSquared(world.tileOf(squad),city.tile)>6**2 && !(squad.order.type==="move" && world.map.euclideanDistSquared(squad.order.tile,city.tile)<=6**2)) {

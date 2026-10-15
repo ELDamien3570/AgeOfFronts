@@ -1,9 +1,10 @@
+import { TICKS_PER_SECOND, TICK_MS, secondsToTicks } from '../Protocol';
 import type { UnitDefinition } from "../domain/Definitions";
 
 /** Compiled squad-level weapon timing. Renderers observe this state; clips never
  * trigger damage. Reloads survive order changes and target loss. */
 export function weaponCycle(unit: Pick<UnitDefinition, "age" | "troopClass" | "rangedAttack">) {
-  if (unit.rangedAttack) return { interval:1200/unit.rangedAttack.rpm!, reload:Math.ceil(unit.rangedAttack.reloadMs!/50), rounds:unit.rangedAttack.shotsPerReload! };
+  if (unit.rangedAttack) return { interval:(60*TICKS_PER_SECOND)/unit.rangedAttack.rpm!, reload:Math.ceil(unit.rangedAttack.reloadMs!/TICK_MS), rounds:unit.rangedAttack.shotsPerReload! };
   const cls = unit.troopClass;
   const gun =
     unit.age === "Napoleonic" &&
@@ -11,12 +12,12 @@ export function weaponCycle(unit: Pick<UnitDefinition, "age" | "troopClass" | "r
   const rifle =
     ["EarlyModern", "Modern"].includes(unit.age) &&
     ["frontline", "rangedInfantry"].includes(cls ?? "");
-  if (rifle) return { interval: 20, reload: 60, rounds: 3 };
-  if (gun) return { interval: 120, reload: 120, rounds: 1 };
+  if (rifle) return { interval: secondsToTicks(1), reload: secondsToTicks(3), rounds: 3 };
+  if (gun) return { interval: secondsToTicks(6), reload: secondsToTicks(6), rounds: 1 };
   if (cls === "rangedInfantry" || cls === "rangedCavalry")
     return {
-      interval: unit.age === "LateMedieval" ? 80 : 50,
-      reload: unit.age === "LateMedieval" ? 80 : 50,
+      interval: unit.age === "LateMedieval" ? secondsToTicks(4) : secondsToTicks(2.5),
+      reload: unit.age === "LateMedieval" ? secondsToTicks(4) : secondsToTicks(2.5),
       rounds: 1,
     };
   return undefined;

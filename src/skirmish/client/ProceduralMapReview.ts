@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import type { BlackForestMap } from "../BlackForestMap";
 import { TerrainType } from "../../core/game/Game";
 import type { Deposit } from "../domain/Definitions";
@@ -129,7 +130,7 @@ async function generate() {
     }
     let woodland = 0,
       land = 0,
-      slowest = 56;
+      slowest = 1120/TICKS_PER_SECOND;
     for (let tile = 0; tile < next.terrain.length; tile++)
       if (next.map.isLand(tile)) {
         land++;
@@ -145,7 +146,7 @@ async function generate() {
         : next.layout.islands.length,
     );
     document.querySelector("#forest-speed")!.textContent =
-      `${Math.round((slowest / 56) * 100)}% of open ground`;
+      `${Math.round((slowest / (1120/TICKS_PER_SECOND)) * 100)}% of open ground`;
     document.querySelector("#pond-count")!.textContent =
       "ponds" in next
         ? `${next.ponds.length} / ${next.layout.clearings.length}`
@@ -321,7 +322,7 @@ canvas.addEventListener("pointermove", (event) => {
       : "Woodland pond"
     : loaded.map.isImpassable(tile)
       ? "Impassable mountain ridge"
-      : `${cover > 140 ? "Dense woodland" : cover > 30 ? "Forest edge" : "Open ground"} · ${Math.round((terrainSpeed(loaded.map, tile) / 56) * 100)}% movement speed`;
+      : `${cover > 140 ? "Dense woodland" : cover > 30 ? "Forest edge" : "Open ground"} · ${Math.round((terrainSpeed(loaded.map, tile) / (1120/TICKS_PER_SECOND)) * 100)}% movement speed`;
   if (theme !== "black-forest")
     hover.textContent += ` · ${Math.round(loaded.elevation!.values[tile])} m elevation`;
 });

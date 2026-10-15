@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import type { AiEconomicDirector } from "./AiEconomicDirector";
 import type { Expansion } from "./Expansion";
 
@@ -115,7 +116,7 @@ export class AiFrontRecords {
     return (
       !!chunk &&
       world.owners[record.anchor] === record.playerId &&
-      world.tick - record.observed <= 1800 &&
+      world.tick - record.observed <= secondsToTicks(90) &&
       [
         ...this.economy.boundaries!.hostileEdges(record.anchor, (a, b) =>
           world.hostile(a, b),
@@ -146,7 +147,7 @@ export class AiFrontRecords {
           this.release(player.id);
           continue;
         }
-        if (world.tick - next.value.changedTick < 100) continue;
+        if (world.tick - next.value.changedTick < secondsToTicks(5)) continue;
         const previous = this.records.get(next.value.id);
         if (
           previous?.revision === next.value.revision &&
@@ -180,7 +181,7 @@ export class AiFrontRecords {
       if (
         !chunk ||
         chunk.revision !== s.revision ||
-        world.tick - chunk.changedTick < 100
+        world.tick - chunk.changedTick < secondsToTicks(5)
       ) {
         this.scan = undefined;
         continue;

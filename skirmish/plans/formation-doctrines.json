@@ -14,7 +14,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "stoneage-archer": {
       "shapes": [
@@ -28,7 +28,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "stoneage-cavalry": {
       "shapes": [
@@ -42,7 +42,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -86,7 +86,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "bronzeage-anticavalry": {
       "shapes": [
@@ -101,7 +101,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "bronzeage-field-support": {
       "shapes": [
@@ -115,7 +115,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "bronzeage-siege": {
       "shapes": [
@@ -129,7 +129,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "bronzeage-archer": {
       "shapes": [
@@ -144,7 +144,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "bronzeage-cavalry": {
       "shapes": [
@@ -160,7 +160,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -205,7 +205,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "classicalage-anticavalry": {
       "shapes": [
@@ -220,7 +220,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "classicalage-field-support": {
       "shapes": [
@@ -234,7 +234,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "classicalage-rangedcavalry": {
       "shapes": [
@@ -249,7 +249,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -293,7 +293,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "classicalage-archer": {
       "shapes": [
@@ -308,7 +308,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "classicalage-cavalry": {
       "shapes": [
@@ -324,7 +324,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -369,7 +369,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymedieval-anticavalry": {
       "shapes": [
@@ -385,7 +385,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymedieval-field-support": {
       "shapes": [
@@ -399,7 +399,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymedieval-heavycavalry": {
       "shapes": [
@@ -415,7 +415,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -460,7 +460,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -504,7 +504,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymedieval-archer": {
       "shapes": [
@@ -519,7 +519,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymedieval-cavalry": {
       "shapes": [
@@ -535,7 +535,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -579,7 +579,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "latemedieval-anticavalry": {
       "shapes": [
@@ -595,7 +595,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "latemedieval-field-support": {
       "shapes": [
@@ -609,7 +609,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "latemedieval-heavycavalry": {
       "shapes": [
@@ -625,7 +625,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -670,7 +670,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -714,7 +714,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "latemedieval-archer": {
       "shapes": [
@@ -729,7 +729,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "latemedieval-cavalry": {
       "shapes": [
@@ -745,7 +745,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -790,7 +790,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymodern-anticavalry": {
       "shapes": [
@@ -806,7 +806,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymodern-heavycavalry": {
       "shapes": [
@@ -822,7 +822,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -867,7 +867,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -911,7 +911,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "napoleonic-siege": {
       "shapes": [
@@ -925,7 +925,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "napoleonic-archer": {
       "shapes": [
@@ -940,7 +940,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "napoleonic-cavalry": {
       "shapes": [
@@ -956,7 +956,7 @@
       "spacing": 320,
       "bodyWidth": 230,
       "bodyDepth": 320,
-      "transitionTicks": 30,
+      "transitionTicks": 12,
       "shapeProfiles": {
         "line": {
           "minRanks": 2,
@@ -1002,7 +1002,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymodern-field-support": {
       "shapes": [
@@ -1016,7 +1016,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymodern-siege": {
       "shapes": [
@@ -1030,7 +1030,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-anti-air": {
       "shapes": [
@@ -1044,7 +1044,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-anticavalry": {
       "shapes": [
@@ -1059,7 +1059,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-heavycavalry": {
       "shapes": [
@@ -1073,7 +1073,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-rangedcavalry": {
       "shapes": [
@@ -1087,7 +1087,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymodern-archer": {
       "shapes": [
@@ -1102,7 +1102,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymodern-cavalry": {
       "shapes": [
@@ -1116,7 +1116,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "earlymodern-infantry": {
       "shapes": [
@@ -1131,7 +1131,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-field-support": {
       "shapes": [
@@ -1145,7 +1145,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-launcher": {
       "shapes": [
@@ -1159,7 +1159,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-siege": {
       "shapes": [
@@ -1173,7 +1173,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "present-day-anticavalry": {
       "shapes": [
@@ -1188,7 +1188,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "present-day-heavycavalry": {
       "shapes": [
@@ -1202,7 +1202,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "present-day-rangedcavalry": {
       "shapes": [
@@ -1216,7 +1216,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-archer": {
       "shapes": [
@@ -1231,7 +1231,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-cavalry": {
       "shapes": [
@@ -1245,7 +1245,7 @@
       "spacing": 128,
       "bodyWidth": 512,
       "bodyDepth": 768,
-      "transitionTicks": 20
+      "transitionTicks": 8
     },
     "modern-infantry": {
       "shapes": [
@@ -1260,7 +1260,7 @@
       "spacing": 128,
       "bodyWidth": 128,
       "bodyDepth": 128,
-      "transitionTicks": 20
+      "transitionTicks": 8
     }
   },
   "shapeProfiles": {

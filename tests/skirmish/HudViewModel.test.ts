@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { unitOwner } from "./UnitFixtures";
 import { buildingOwner } from "./BuildingFixtures";
@@ -41,14 +42,14 @@ describe("snapshot-driven HUD selection", () => {
     expect(moving.card.status).toBe("Moving");
   });
   it("shows the replicated blocker reason, IDs and wait duration", () => {
-    const {selection,vm,own,squads,snapshot}=setup();snapshot.tick=100;
-    squads.update(own[0].id,{order:{type:"move",tile:20},moved:false,movementStatus:{reason:"crowd",since:40,blockerIds:[17,23]}});
+    const {selection,vm,own,squads,snapshot}=setup();snapshot.tick=secondsToTicks(5);
+    squads.update(own[0].id,{order:{type:"move",tile:20},moved:false,movementStatus:{reason:"crowd",since:secondsToTicks(2),blockerIds:[17,23]}});
     selection.selected.add(own[0].id);const selected=vm().selectionCard(null);
     if(selected.mode!=="detail")throw Error("Expected detail");
     expect(selected.card.status).toBe("Waiting for nearby squads");
     expect(selected.card.stats).toContainEqual({label:"Blocking squads",value:"#17, #23"});
     expect(selected.card.stats).toContainEqual({label:"Waiting",value:"3s"});
-    squads.update(own[0].id,{moved:true,movementStatus:{reason:"yielding",since:100,blockerIds:[]}});
+    squads.update(own[0].id,{moved:true,movementStatus:{reason:"yielding",since:secondsToTicks(5),blockerIds:[]}});
     const yielding=vm().selectionCard(null);if(yielding.mode!=="detail")throw Error("Expected detail");
     expect(yielding.card.status).toBe("Making room for nearby squads");
   });
@@ -188,15 +189,15 @@ describe("snapshot-driven HUD selection", () => {
     const { selection, vm, snapshot, buildings } = setup();
     const building = snapshot.buildings.find((b) => b.playerId === 2)!;
     buildings.update(building.id, { type: "city" });
-    buildings.update(building.id, { remainingTicks: 40 });
+    buildings.update(building.id, { remainingTicks: secondsToTicks(2) });
     selection.selectedBuilding = building.id;
     const result = vm().selectionCard(null);
     if (result.mode !== "detail") throw new Error("Expected detail");
     expect(result.card.subtitle).toBe("Enemy building");
     expect(result.card.meter).toEqual({
       label: "Construction",
-      value: 120,
-      max: 160,
+      value: secondsToTicks(6),
+      max: secondsToTicks(8),
     });
     expect(
       result.card.stats.find((s) => s.label === "Reserve income")?.value,

@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from './Protocol';
 export const LIMITED_ROUTE_ATTEMPTS = 3;
 export const ROUTE_CAPACITY_REASON =
   "Route planning capacity exhausted; replace with a shorter waypoint";
@@ -28,7 +29,7 @@ export function limitedRouteRetry(
   const next = attempts + 1;
   return {
     attempts: next,
-    retryAt: tick + 20 * Math.min(10, next),
+    retryAt: tick + TICKS_PER_SECOND * Math.min(10, next),
     exhausted: bounded && next >= LIMITED_ROUTE_ATTEMPTS,
   };
 }

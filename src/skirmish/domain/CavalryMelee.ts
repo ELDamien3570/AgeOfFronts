@@ -1,3 +1,4 @@
+import { secondsToTicks, TICKS_PER_SECOND } from '../Protocol';
 import type { MeleeStrike } from './MeleeStrike';
 import { validateMeleeStrike } from './MeleeStrike';
 import { formationDoctrine,formationSlots } from './FormationGeometry';
@@ -7,8 +8,8 @@ import { FIXED,type Squad } from '../Protocol';
  * Damage balance is deliberately deferred until the motion is approved. */
 export const CAVALRY_RANK_SPEED=1.5;
 export const CAVALRY_RANK_TURN_SPEED=1.5;
-export const CAVALRY_RANK_MOTION={cycle:Math.ceil(324/CAVALRY_RANK_SPEED),firstAdvance:32/CAVALRY_RANK_SPEED,
-  advance:40/CAVALRY_RANK_SPEED,brake:8/CAVALRY_RANK_SPEED,turn:60/(CAVALRY_RANK_SPEED*CAVALRY_RANK_TURN_SPEED),return:40/CAVALRY_RANK_SPEED} as const;
+export const CAVALRY_RANK_MOTION={cycle:secondsToTicks(16.2/CAVALRY_RANK_SPEED),firstAdvance:1.6*TICKS_PER_SECOND/CAVALRY_RANK_SPEED,
+  advance:2*TICKS_PER_SECOND/CAVALRY_RANK_SPEED,brake:.4*TICKS_PER_SECOND/CAVALRY_RANK_SPEED,turn:3*TICKS_PER_SECOND/(CAVALRY_RANK_SPEED*CAVALRY_RANK_TURN_SPEED),return:2*TICKS_PER_SECOND/CAVALRY_RANK_SPEED} as const;
 /** A cosmetic rank lunge bridges this body gap; a committed charge does not. */
 export function cavalryUsesRankWaves(source:Squad):boolean {
   if(source.kind!=='cavalry'||!source.formation||source.cavalryEngagement)return false;

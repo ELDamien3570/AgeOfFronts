@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import { quoteEnlargement } from '../domain/Enlargement';
 import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import {
@@ -82,7 +83,7 @@ export class EmpireViewModel {
       age: progression.age,
       ageName: AGE_NAMES[AGES.indexOf(progression.age)],
       advancementSeconds: progression.advancement
-        ? Math.ceil(progression.advancement.remainingTicks / 20)
+        ? Math.ceil(progression.advancement.remainingTicks / TICKS_PER_SECOND)
         : null,
     };
   }
@@ -344,13 +345,13 @@ export class EmpireViewModel {
     if (!producer) return productionText("unavailable");
     if (producer.building.remainingTicks)
       return productionText("construction", {
-        seconds: Math.ceil(producer.building.remainingTicks / 20),
+        seconds: Math.ceil(producer.building.remainingTicks / TICKS_PER_SECOND),
       });
     if (producer.job) {
       const recipe = PRODUCTION_RECIPES.find(
         (r) => r.id === producer.job!.recipeId,
       );
-      const seconds = Math.ceil(producer.job.remainingTicks / 20);
+      const seconds = Math.ceil(producer.job.remainingTicks / TICKS_PER_SECOND);
       if (producer.mode === "paused")
         return productionText("pausing", {
           recipe: recipe?.name ?? producer.job.recipeId,
@@ -428,7 +429,7 @@ export class EmpireViewModel {
           !t.longTerm &&
           (t.a === this.playerId || t.b === this.playerId) &&
           t.expiresTick > this.state.tick &&
-          t.expiresTick - this.state.tick <= 600,
+          t.expiresTick - this.state.tick <= 30*TICKS_PER_SECOND,
       )
       .flatMap((t) => {
         const otherId = t.a === this.playerId ? t.b : t.a;
@@ -441,7 +442,7 @@ export class EmpireViewModel {
                 key: t.id + ":" + t.expiresTick,
                 otherId,
                 name: other.name,
-                seconds: Math.ceil((t.expiresTick - this.state.tick) / 20),
+                seconds: Math.ceil((t.expiresTick - this.state.tick) / TICKS_PER_SECOND),
                 requested: t.renewal.includes(this.playerId),
               },
             ]
@@ -597,7 +598,7 @@ export class EmpireViewModel {
             s.fighting ||
             Boolean(s.refit) ||
             s.embarkedOn !== null ||
-            (s.deploymentTicks ?? 0) < 100
+            (s.deploymentTicks ?? 0) < 5*TICKS_PER_SECOND
               ? Infinity
               : (s.chargeReadyTick ?? 0),
         })),

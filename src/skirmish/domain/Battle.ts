@@ -1,3 +1,5 @@
+import { TICKS_PER_SECOND } from '../Protocol';
+import { secondsToTicks } from '../Protocol';
 import type { GameMap } from "../../core/game/GameMap";
 import { effectiveRange, maxEffectiveRange, elevationRangeAt, rangedElevation, highGroundDamageModifier } from "./ElevationAdvantage";
 import { radians,formationDoctrine,formationSlots } from "./FormationGeometry";
@@ -343,8 +345,8 @@ export class Battle {
     const unit = definitionId && UNIT.get(definitionId);
     if (unit && unit.attack.channel === "ranged" && ["StoneAge","BronzeAge","ClassicalAge","EarlyMedieval","LateMedieval"].includes(unit.age) && unit.troopClass) {
       const motion = (target as Squad).locomotion;
-      const velocity = motion ? {x:-Math.sin(motion.heading)*motion.speed*20/FIXED*64,y:Math.cos(motion.heading)*motion.speed*20/FIXED*64} : {x:0,y:0};
-      const aimed = predictiveAim({x:source.x/FIXED*64,y:source.y/FIXED*64},{x:target.x/FIXED*64,y:target.y/FIXED*64},velocity,(profile.projectile?.speed ?? FIXED)*20/FIXED*64,source.id*65537+this.world.tick,4);
+      const velocity = motion ? {x:-Math.sin(motion.heading)*motion.speed*TICKS_PER_SECOND/FIXED*64,y:Math.cos(motion.heading)*motion.speed*TICKS_PER_SECOND/FIXED*64} : {x:0,y:0};
+      const aimed = predictiveAim({x:source.x/FIXED*64,y:source.y/FIXED*64},{x:target.x/FIXED*64,y:target.y/FIXED*64},velocity,(profile.projectile?.speed ?? FIXED)*TICKS_PER_SECOND/FIXED*64,source.id*65537+this.world.tick,4);
       target = {x:Math.round(aimed.point.x/64*FIXED),y:Math.round(aimed.point.y/64*FIXED)};
     }
     if (kind === "mirv") this.reservedWarheads += warheads;
@@ -688,7 +690,7 @@ export class Battle {
         if (
           targets.length ||
           this.distance(squad, squad.charge) <= FIXED ** 2 ||
-          tick - squad.charge.committedTick > 80
+          tick - squad.charge.committedTick > secondsToTicks(4)
         ) {
           const strength=chargeStrength(squad.charge),shock=.25+.75*strength;
           const impact = definition.meleeAttack ? { ...definition.meleeAttack, damage: definition.meleeAttack.damage * (1+((definition.chargeMultiplier ?? 1)-1)*strength), penetration: charge.penetration*strength } : { ...profile, channel: "melee" as const, damage: profile.damage+(charge.damage-profile.damage)*strength, penetration: charge.penetration*strength };
@@ -904,7 +906,9 @@ export class Battle {
       // Keep the existing commitment until its complete visual cycle ends.
       if(profile.channel==='melee' && !squad.cavalryEngagement && squad.cavalryMelee &&
         tick<squad.cavalryMelee.current.tick+squad.cavalryMelee.current.interval)continue;
-      if (!this.commitShot(squad, profile)) continue;
+      // Multiple weapon events may fall within one fixed step; acquisition is shared.
+      const burstLimit=profile.perSoldier?Math.ceil(profile.rpm!/(60*TICKS_PER_SECOND))+1:1;
+      for(let shot=0;shot<burstLimit && this.commitShot(squad,profile);shot++){
       if (profile.projectile) {
         const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
         this.fire(
@@ -984,6 +988,7 @@ export class Battle {
           ...(previous?.completed===3?{previous}:{} )}});
       }
       this.world.updateSquad(squad.id, { firingCharge: 0 });
+      }
       } finally {
         // Publish the final state once; clearing and restoring the same target
         // every tick caused journal/index churn for every engaged squad.
@@ -1582,7 +1587,7 @@ export class Battle {
     for (let i = this.projectiles.length - 1; i >= 0; i--)
       if (
         this.projectiles[i].impacted &&
-        tick - (this.projectiles[i].impactAt ?? tick) > 10
+        tick - (this.projectiles[i].impactAt ?? tick) > secondsToTicks(0.5)
       )
         this.projectiles.splice(i, 1);
   }

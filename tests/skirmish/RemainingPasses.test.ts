@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { createManpower } from "../../src/skirmish/domain/Manpower";
 import { UNIT } from "../../src/skirmish/content/Units";
 import { describe, expect, it } from "vitest";
@@ -86,14 +87,14 @@ describe("remaining gameplay passes", () => {
         );
       e.progression.states[ai.id].completed.push("rus-stoneage-cargo-canoes");
       game.restore(game.checkpoint());
-      game.tick = 60;
+      game.tick = secondsToTicks(3);
       e.economy.recovery.step();
       expect(e.economy.recovery.diagnostics.evacuations).toBe(
         threatened ? 0 : 1,
       );
       const saved = e.economy.recovery.checkpoint();
       e.economy.recovery.restore(saved);
-      game.tick = 300;
+      game.tick = secondsToTicks(15);
       e.economy.recovery.step();
       expect(e.economy.recovery.diagnostics.evacuations).toBe(
         threatened ? 0 : 1,
@@ -107,11 +108,11 @@ describe("remaining gameplay passes", () => {
       order: { type: "move", tile: map.ref(30, 30) },
       movementStatus: { reason: "restricted", since: 0, blockerIds: [] },
     });
-    game.tick = 60;
+    game.tick = secondsToTicks(3);
     e.economy.recovery.step();
     const saved = e.economy.recovery.checkpoint();
     e.economy.recovery.restore(saved);
-    game.tick = 180;
+    game.tick = secondsToTicks(9);
     e.economy.recovery.step();
     expect(squad.order.type).toBe("hold");
     expect(e.economy.recovery.diagnostics.clearedRestricted).toBe(1);
@@ -224,7 +225,7 @@ describe("remaining gameplay passes", () => {
         fallbackOrder: { type: "move", tile },
       }),
     ).toBeNull();
-    for (let i = 0; i < 50; i++) game.step();
+    for (let i = 0; i < secondsToTicks(2.5); i++) game.step();
     expect(own.every((s) => !s.charge)).toBe(true);
     expect(own.some((s) => s.order.type === "move")).toBe(true);
     expect(
@@ -244,7 +245,7 @@ describe("remaining gameplay passes", () => {
       tile: 100,
       playerId: 2,
       type: "siege-workshop",
-      remainingTicks: 10,
+      remainingTicks: secondsToTicks(0.5),
     };
     expect(stoneExtractionAllowed([workshop])).toBe(false);
     expect(
@@ -289,11 +290,11 @@ describe("remaining gameplay passes", () => {
       revision: 1,
       territorialRevision: 0,
     });
-    game.tick = 2400;
+    game.tick = secondsToTicks(120);
     e.operations.step(new Map([[attacker.id, 12]]));
     expect(e.operations.state(attacker.id)?.phase).toBe("war");
     expect(e.operations.finishing(attacker.id, target.id)).toBe(true);
-    game.tick = 3601;
+    game.tick = secondsToTicks(180.05);
     e.operations.step(new Map([[attacker.id, 12]]));
     expect(e.operations.state(attacker.id)?.phase).toBe("recovery");
     expect(
@@ -333,7 +334,7 @@ describe("remaining gameplay passes", () => {
         order: { type: "move", tile: map.ref(30, 25) },
       }),
     ).toBeNull();
-    for (let i = 0; i < 400; i++) game.step();
+    for (let i = 0; i < secondsToTicks(20); i++) game.step();
     expect(own.some((s) => !!s.afloat)).toBe(true);
     expect(
       own.filter((s) => s.movementStatus?.reason === "restricted"),
@@ -370,10 +371,10 @@ describe("remaining gameplay passes", () => {
       tile: map.ref(15, 15),
       remainingTicks: 0,
     });
-    game.tick = 60;
+    game.tick = secondsToTicks(3);
     e.economy.recovery.step();
     expect(e.economy.recovery.diagnostics.rallied).toBeGreaterThan(0);
-    game.tick = 1201;
+    game.tick = secondsToTicks(60.05);
     expect(e.economy.recovery.canBuild(ai.id, "city", old.tile)).toBe(true);
   });
   it("distributes melee approaches and leaves Hold out of slot planning", () => {

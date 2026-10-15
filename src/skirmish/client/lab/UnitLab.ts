@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../../Protocol';
 import { CONTENT_HASH } from "../../content/Catalog";
 import { TECHNOLOGY } from "../../content/Technology";
 import { AGES, AGE_NAMES, type UnitDefinition } from "../../domain/Definitions";
@@ -286,7 +287,7 @@ export function installUnitLab(
         definition.speedPercent !== undefined
           ? `${definition.speedPercent}%`
           : definition.speed !== undefined
-            ? `${((definition.speed * 20) / 256).toFixed(2)} tiles/s`
+            ? `${((definition.speed * TICKS_PER_SECOND) / 256).toFixed(2)} tiles/s`
             : "—",
       );
       const profiles =
@@ -485,7 +486,7 @@ export function installUnitLab(
             key === "blastRadius"
               ? " (fixed units; 256 / tile)"
               : key.endsWith("Ticks") || key === "ticks"
-                ? " (ticks; 20 / second)"
+                ? ` (ticks; ${TICKS_PER_SECOND} / second)`
                 : key === "reloadMs"
                   ? " (ms)"
                   : key.toLowerCase().includes("armour") ||
@@ -506,11 +507,11 @@ export function installUnitLab(
             key === "speed"
               ? FIXED
               : key.endsWith("Ticks") || key === "ticks"
-                ? 20
+                ? TICKS_PER_SECOND
                 : key === "reloadMs"
                   ? 1000
                   : 1;
-          const factor = key === "speed" ? 20 / conversion : 1 / conversion;
+          const factor = key === "speed" ? TICKS_PER_SECOND / conversion : 1 / conversion;
           const unitSuffix =
             conversion === FIXED
               ? key === "speed"

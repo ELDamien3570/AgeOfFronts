@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 import { TerrainType } from "../../src/core/game/Game";
@@ -229,10 +231,10 @@ describe("calibrated heightmap terrain", () => {
       expect(loaded.map.terrainType(tile)).toBe(type);
       expect(terrainSpeed(loaded.map, tile)).toBe(
         type === TerrainType.Plains
-          ? 56
+          ? 1120/TICKS_PER_SECOND
           : type === TerrainType.Highland
-            ? 35
-            : 20,
+            ? Math.round(700/TICKS_PER_SECOND)
+            : 400/TICKS_PER_SECOND,
       );
     }
     expect(shades.some((value) => value < 0)).toBe(true);
@@ -260,7 +262,7 @@ describe("calibrated heightmap terrain", () => {
       }),
     ).toBeNull();
     const start = { x: squad.x, y: squad.y };
-    for (let tick = 0; tick < 40; tick++) match.step();
+    for (let tick = 0; tick < secondsToTicks(2); tick++) match.step();
     expect({ x: squad.x, y: squad.y }).not.toEqual(start);
   });
 

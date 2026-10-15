@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { FIXED, type Squad } from "../Protocol";
 import type { WorldPoint } from "../SpatialGrid";
 import { distanceSquared } from "../SquadGeometry";
@@ -25,7 +26,7 @@ export class PlayerAttackContinuation {
   }
   failed(squad:Squad,target:Squad,tick:number,tile:number):void {
     const state=this.pursuits.get(squad.id);if(!state)return;
-    state.failed.set(target.id,{until:tick+60,tile});state.nextScan=tick;
+    state.failed.set(target.id,{until:tick+secondsToTicks(3),tile});state.nextScan=tick;
     this.diagnostics.unreachable++;
   }
   blocked(squad:Squad,target:Squad,tick:number,tile:number):boolean {
@@ -39,7 +40,7 @@ export class PlayerAttackContinuation {
   stagnant(squad:Squad,tick:number):boolean {
     const state=this.pursuits.get(squad.id);if(!state)return false;
     if(!state.progress||distanceSquared(squad,state.progress)>(FIXED/4)**2)state.progress={x:squad.x,y:squad.y,tick};
-    return tick-state.progress.tick>=40;
+    return tick-state.progress.tick>=secondsToTicks(2);
   }
   choose(squad:Squad,tick:number,nearby:()=>readonly Squad[],eligible:(target:Squad)=>boolean,tileOf:(target:Squad)=>number,lost=true,targetLoad:(target:Squad)=>number=()=>0):Squad|undefined {
     let state=this.pursuits.get(squad.id);
@@ -47,7 +48,7 @@ export class PlayerAttackContinuation {
     if(lost)state.missingSince??=tick;
     if(tick<state.nextScan||this.scansThisTick>=32)return;
     this.scansThisTick++;
-    state.nextScan=tick+10;this.diagnostics.scans++;
+    state.nextScan=tick+secondsToTicks(0.5);this.diagnostics.scans++;
     for(const [id,failure] of state.failed)if(failure.until<=tick)state.failed.delete(id);
     let best:Squad|undefined,bestDistance=Infinity;
     for(const target of nearby()){
@@ -64,7 +65,7 @@ export class PlayerAttackContinuation {
   }
   expired(squad:Squad,tick:number):boolean {
     const since=this.pursuits.get(squad.id)?.missingSince;
-    return since!==undefined&&tick-since>=60;
+    return since!==undefined&&tick-since>=secondsToTicks(3);
   }
   forget(id:number):void{this.pursuits.delete(id);}
   checkpoint(){return structuredClone([...this.pursuits]);}

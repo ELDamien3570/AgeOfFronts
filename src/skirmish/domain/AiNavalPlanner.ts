@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from '../Protocol';
+import { secondsToTicks } from '../Protocol';
 import { portWaterTiles } from "../PortWaterAccess";
 import { coastalPatrol } from "./CoastalPatrol";
 import { stepBombardment, type Bombardment } from "./AiNavalBombardment";
@@ -155,7 +157,7 @@ export class AiNavalPlanner {
         else if(scan.phase==="ships")scan.phase="jobs";
         else{
           const theater=scan.seas[scan.index],evidence=this.funding.get(`${player.id}:${theater.sea}`);
-          theater.score=theater.ownedValue+theater.cargoValue+(this.economy.tradeQuotes.best(player.id,true)?.sea===theater.sea ? Math.min(5000,this.economy.tradeQuotes.best(player.id,true)!.quote.riskAdjustedGoldPer1000Ticks) : 0)+Math.min(10000,theater.enemyPower)*AI_DOCTRINES[personalityOf(player).id].navalWeight/100+Math.min(3000,theater.fleetPower+theater.futurePower)-Math.min(5000,evidence?.lostPower??0);
+          theater.score=theater.ownedValue+theater.cargoValue+(this.economy.tradeQuotes.best(player.id,true)?.sea===theater.sea ? Math.min(5000,this.economy.tradeQuotes.best(player.id,true)!.quote.riskAdjustedGoldPer1000Ticks*TICKS_PER_SECOND/20) : 0)+Math.min(10000,theater.enemyPower)*AI_DOCTRINES[personalityOf(player).id].navalWeight/100+Math.min(3000,theater.fleetPower+theater.futurePower)-Math.min(5000,evidence?.lostPower??0);
           if(++scan.index<scan.seas.length)scan.phase="buildings";
           else{const best=scan.seas.sort((a,b)=>b.score-a.score||a.sea-b.sea)[0];this.theaters.delete(player.id);return {work,sea:best.sea,pending:false};}
         }
@@ -257,7 +259,7 @@ export class AiNavalPlanner {
       for(const id of m.members)this.lanes.delete(id);
       this.economy.ledger.release(m.id);
       m.assessment = undefined;
-      m.nextAssessment = this.expansion.world.tick + 400;
+      m.nextAssessment = this.expansion.world.tick + secondsToTicks(20);
     }
   }
   step(budget = 32): number {
@@ -301,7 +303,7 @@ export class AiNavalPlanner {
         state: "assess",
         reason: "selecting an owned gathering port",
         createdTick: world.tick,
-        deadline: world.tick + 2400,
+        deadline: world.tick + secondsToTicks(120),
         nextAssessment: world.tick,
         assessment:{phase:"buildings",portDistance:Infinity,members:[],enemyPower:0,targetDistance:Infinity,futurePower:0},
         members: [],
@@ -489,7 +491,7 @@ export class AiNavalPlanner {
         } else {
           this.applyAssessment(player, m, a);
           m.assessment = undefined;
-          m.nextAssessment = world.tick + 100;
+          m.nextAssessment = world.tick + secondsToTicks(5);
         }
       }
     }
@@ -647,7 +649,7 @@ export class AiNavalPlanner {
         this.sail(m,ships,world.tileOf(victim));return;
       }
     }
-    if(!a.enemyPower && world.tick-m.createdTick>=300 && !recovering.length && ships.length>=2 && ships.some(s=>this.expansion.vessel(s).attack?.targets.includes("structure")) &&
+    if(!a.enemyPower && world.tick-m.createdTick>=secondsToTicks(15) && !recovering.length && ships.length>=2 && ships.some(s=>this.expansion.vessel(s).attack?.targets.includes("structure")) &&
       (!this.expansion.operations.enabled(player)||this.expansion.operations.offensiveTarget(player.id)!==undefined)){
       m.bombard={phase:"targets",scanned:0,candidate:0,start:world.tileOf(ships[0]),since:world.tick};
       m.reason="Selecting an actual legal coastal bombardment target";return;
@@ -865,24 +867,24 @@ export class AiNavalPlanner {
     if(!this.funding.has(key) && [...this.funding.keys()].filter(k=>k.startsWith(`${player.id}:`)).length>=16){this.transition(m,"recover","Theater evidence envelope reached");return;}
     const evidence = this.funding.get(key) ?? { purchases: 0, vesselPower: power, enemyPower, gold: 0 };
     const spending = evidence as typeof evidence & { windowStart?: number; windowSpent?: number; investmentCredit?: number; creditTick?: number; lossPauseUntil?: number; lostPower?: number };
-    if (spending.windowStart === undefined || world.tick-spending.windowStart >= 1200) {
+    if (spending.windowStart === undefined || world.tick-spending.windowStart >= secondsToTicks(60)) {
       spending.windowStart=world.tick;spending.windowSpent=0;spending.lostPower=0;
     }
     const costGold=definition.cost.gold ?? 0;
-    const tradeRate=(this.economy.tradeQuotes.best(player.id,true)?.quote.riskAdjustedGoldPer1000Ticks ?? 0)/50;
+    const tradeRate=(this.economy.tradeQuotes.best(player.id,true)?.quote.riskAdjustedGoldPer1000Ticks ?? 0)*TICKS_PER_SECOND/1000;
     const income=20+Math.floor(player.land/(40*(world.options?.territoryIncomeScale ?? 1)))+tradeRate;
     const allowance=Math.max(costGold*4,Math.floor(income*60*.35));
     // One initial four-vessel allowance; afterward only 35% of estimated
     // income replenishes credit. A new minute must not repeatedly grant four
     // ships and consume the treasury needed for research and advancement.
     spending.investmentCredit=Math.min(allowance,(spending.investmentCredit ?? costGold*4)+
-      Math.max(0,world.tick-(spending.creditTick ?? world.tick))/20*income*.35);
+      Math.max(0,world.tick-(spending.creditTick ?? world.tick))/TICKS_PER_SECOND*income*.35);
     spending.creditTick=world.tick;this.funding.set(key,spending);
     if ((spending.lossPauseUntil ?? 0)>world.tick || spending.investmentCredit<costGold) {
       this.transition(m,"recover","Protecting existing ships while the naval investment allowance replenishes");return;
     }
     if ((spending.lostPower ?? 0)>power*4) {
-      spending.lossPauseUntil=world.tick+400;spending.lostPower=Math.floor((spending.lostPower ?? 0)/2);
+      spending.lossPauseUntil=world.tick+secondsToTicks(20);spending.lostPower=Math.floor((spending.lostPower ?? 0)/2);
       this.funding.set(key,spending);this.transition(m,"recover","Recent naval losses require consolidation before reinvestment");return;
     }
     if (future >= Math.max(power,Math.min(required,cap*power))) return;

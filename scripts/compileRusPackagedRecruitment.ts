@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../src/skirmish/Protocol';
 import { readFileSync, writeFileSync, renameSync } from "node:fs";
 import baseline from "../src/skirmish/content/technologies.json";
 import { validatePlan } from "../src/skirmish/planning/TechnologyPlan";
@@ -58,7 +59,7 @@ const terms = (age: string, tree: string, slot: number) => {
   const multiplier = age === "Modern" ? 1.25 : 1;
   return {
     gold: Math.ceil(b.gold * multiplier),
-    ticks: Math.ceil((b.ticks * multiplier) / 20) * 20,
+    ticks: Math.ceil((b.ticks * multiplier) / TICKS_PER_SECOND) * TICKS_PER_SECOND,
   };
 };
 const implemented = new Set([
@@ -150,7 +151,7 @@ const technologies = civ.technologies.map((t) => {
     slot,
     prerequisites: t.prerequisites,
     gold: t.gold ?? quote.gold,
-    ticks: t.researchSeconds === null ? quote.ticks : t.researchSeconds * 20,
+    ticks: t.researchSeconds === null ? quote.ticks : t.researchSeconds * TICKS_PER_SECOND,
     capabilities: slug === "roads" ? ["roads", "land-traders"] : [slug],
     description: t.description,
   };

@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import type { Player } from "../Protocol";
 import type { AiPersonality, AiPersonalityId } from "../domain/AiPersonality";
 
@@ -8,7 +9,7 @@ const base: AiPersonality = {
     "Builds a mixed army, consolidates its homeland and commits measured raids.",
   recruitment: [1, 1, 1],
   raidSlots: 2,
-  raidAfterTicks: 1200,
+  raidAfterTicks: secondsToTicks(60),
   minimumRaidSquads: 8,
   homeRadiusPercent: 100,
   interceptRange: 20,
@@ -66,7 +67,7 @@ export const AI_PERSONALITIES: readonly AiPersonality[] = [
     {
       recruitment: [3, 2, 2],
       raidSlots: 3,
-      raidAfterTicks: 900,
+      raidAfterTicks: secondsToTicks(45),
       researchOrder: ["warfare", "economic", "naval"],
       buildingOrder: [
         "barracks",
@@ -103,7 +104,7 @@ export const AI_PERSONALITIES: readonly AiPersonality[] = [
       diplomacy: {
         maximumAllies: 2,
         minimumPartnerLandRatio: 0.65,
-        offerIntervalTicks: 2400,
+        offerIntervalTicks: secondsToTicks(120),
       },
     },
   ),
@@ -129,7 +130,7 @@ export const AI_PERSONALITIES: readonly AiPersonality[] = [
       diplomacy: {
         maximumAllies: 2,
         minimumPartnerLandRatio: 0.65,
-        offerIntervalTicks: 2400,
+        offerIntervalTicks: secondsToTicks(120),
       },
     },
   ),
@@ -154,7 +155,7 @@ export const AI_PERSONALITIES: readonly AiPersonality[] = [
       diplomacy: {
         maximumAllies: 3,
         minimumPartnerLandRatio: 0.5,
-        offerIntervalTicks: 1800,
+        offerIntervalTicks: secondsToTicks(90),
       },
     },
   ),
@@ -179,7 +180,7 @@ export const AI_PERSONALITIES: readonly AiPersonality[] = [
       diplomacy: {
         maximumAllies: 2,
         minimumPartnerLandRatio: 0.6,
-        offerIntervalTicks: 2400,
+        offerIntervalTicks: secondsToTicks(120),
       },
     },
   ),
@@ -190,7 +191,7 @@ export const AI_PERSONALITIES: readonly AiPersonality[] = [
     {
       recruitment: [2, 1, 3],
       raidSlots: 3,
-      raidAfterTicks: 1000,
+      raidAfterTicks: secondsToTicks(50),
       researchOrder: ["warfare", "economic", "naval"],
       buildingOrder: [
         "barracks",
@@ -226,7 +227,7 @@ export const AI_PERSONALITIES: readonly AiPersonality[] = [
       diplomacy: {
         maximumAllies: 2,
         minimumPartnerLandRatio: 0.7,
-        offerIntervalTicks: 2400,
+        offerIntervalTicks: secondsToTicks(120),
       },
     },
   ),
@@ -265,7 +266,7 @@ export const AI_PERSONALITIES: readonly AiPersonality[] = [
       diplomacy: {
         maximumAllies: 3,
         minimumPartnerLandRatio: 0.4,
-        offerIntervalTicks: 1200,
+        offerIntervalTicks: secondsToTicks(60),
       },
     },
   ),

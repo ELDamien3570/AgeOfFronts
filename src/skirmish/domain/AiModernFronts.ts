@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { effectiveRange } from "./ElevationAdvantage";
 import { readyFraction } from './Manpower';
 import { FIXED, type Player, type Squad } from "../Protocol";
@@ -212,7 +213,7 @@ export class AiModernFronts {
     section.assessment = undefined;
     section.phase = "withdrawn";
     section.reason = reason;
-    section.nextDecision = world.tick + 400;
+    section.nextDecision = world.tick + secondsToTicks(20);
     this.diagnostics.withdrawals++;
   }
   private suitable(squad: Squad, section: ModernSection): boolean {
@@ -298,7 +299,7 @@ export class AiModernFronts {
   private advance(section: ModernSection, player: Player): void {
     const { world } = this.expansion,
       scan = section.assessment!;
-    section.nextDecision = world.tick + 40;
+    section.nextDecision = world.tick + secondsToTicks(2);
     section.assessment = undefined;
     const current = section.members
       .map((id) => world.squad(id))
@@ -347,7 +348,7 @@ export class AiModernFronts {
           generation: section.generation,
           priority: "defense" as const,
           createdTick: world.tick,
-          expiresTick: world.tick + 400,
+          expiresTick: world.tick + secondsToTicks(20),
         })),
       )
     )
@@ -364,7 +365,7 @@ export class AiModernFronts {
       return;
     }
     const incomplete = quote.steps.length > 0;
-    if (incomplete && scan.nearest < quote.ticks + 100) {
+    if (incomplete && scan.nearest < quote.ticks + secondsToTicks(5)) {
       section.quietSince = world.tick;
       section.phase = "funding";
       section.reason = "No safe construction window";
@@ -374,7 +375,7 @@ export class AiModernFronts {
     if (quote.steps.length) {
       section.phase = "funding";
       if (
-        world.tick - section.quietSince < 100 ||
+        world.tick - section.quietSince < secondsToTicks(5) ||
         !affordableAiCost(
           this.economy.ledger.spendable(
             player.id,
@@ -396,7 +397,7 @@ export class AiModernFronts {
             amounts: quote.cost,
             createdTick: section.since,
             progressTick: world.tick,
-            expiresTick: world.tick + 400,
+            expiresTick: world.tick + secondsToTicks(20),
           },
           this.liquid(player),
         )
@@ -417,7 +418,7 @@ export class AiModernFronts {
         });
       this.economy.ledger.release(section.id);
       this.diagnostics.commands++;
-      this.nextBuild = world.tick + 20;
+      this.nextBuild = world.tick + secondsToTicks(1);
       if (rejection) {
         section.reason = rejection;
         return;
@@ -437,7 +438,7 @@ export class AiModernFronts {
             amounts: remaining.cost,
             createdTick: section.since,
             progressTick: world.tick,
-            expiresTick: world.tick + 400,
+            expiresTick: world.tick + secondsToTicks(20),
           },
           this.liquid(player),
         );
@@ -527,13 +528,13 @@ export class AiModernFronts {
           .flatMap(region => region.sectors
             .map(id => this.economy.fronts.records.get(id))
             .filter((front): front is AiFrontRecord => !!front &&
-              world.tick - front.stableSince >= 100 &&
+              world.tick - front.stableSince >= secondsToTicks(5) &&
               this.economy.fronts.valid(front))
             .sort((a, b) => Number(b.id === region.representative) -
               Number(a.id === region.representative) ||
               b.edges - a.edges || a.anchor - b.anchor)
             .map(front => ({front, regionId: region.id})));
-        this.retries.set(player.id, world.tick + 400);
+        this.retries.set(player.id, world.tick + secondsToTicks(20));
         for (const {front, regionId} of fronts.slice(0, 4)) {
           section = this.propose(player, front, regionId);
           if (section) break;

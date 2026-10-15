@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -41,7 +42,7 @@ function fixture() {
     maxHealth: 10000,
   });
   const think = () => {
-    game.tick = game.tick ? game.tick + 60 : (player.id % 20) * 3;
+    game.tick = game.tick ? game.tick + secondsToTicks(3) : (player.id * 3)%secondsToTicks(3);
     game.expansion!.beforeStep();
   };
   return { game, player, unit, target, think };

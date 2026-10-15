@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { readyFraction } from './Manpower';
 import type { Building, BuildingType } from "../Protocol";
 import { FIXED } from "../Protocol";
@@ -68,7 +69,7 @@ export class AiRecovery {
       return;
     this.blocked.set(
       `${building.owner}:${building.tile}:${building.type}`,
-      this.expansion.world.tick + 1200,
+      this.expansion.world.tick + secondsToTicks(60),
     );
     this.episodes.set(
       building.owner,
@@ -110,7 +111,7 @@ export class AiRecovery {
   }
   step(): void {
     const { world, economy } = this.expansion;
-    if (world.tick % 60) return;
+    if (world.tick % secondsToTicks(3)) return;
     if(world.wasteland.size || this.cleanup.size)this.clearFallout();
     const alive = new Set<number>();
     for (const squad of world.squads) {
@@ -139,7 +140,7 @@ export class AiRecovery {
       }
       // Permission failures cannot be repaired by repeatedly requesting the same path.
       // Normal cancellation releases boarding ownership; the mission/AI can reassess.
-      if (world.tick - old.since >= 120) {
+      if (world.tick - old.since >= secondsToTicks(6)) {
         world.applyCommand({
           type: "order",
           playerId: squad.playerId,
@@ -168,7 +169,7 @@ export class AiRecovery {
         continue;
       }
       if (world.tick < episode.nextThink) continue;
-      episode.nextThink = world.tick + 200;
+      episode.nextThink = world.tick + secondsToTicks(10);
       const own = world
         .squadFacts()
         .byOwner(id)
@@ -274,7 +275,7 @@ export class AiRecovery {
       if(own.length<5 || player.reserves<Math.ceil(29*FALLOUT_TROOP_LOSS_PER_CELL*12/1000) || economy.military.armyPlanner.invasion.active(player.id)) {release();continue;}
       const squad=(old && world.squad(old.squadId)) ?? own.find(s=>s.embarkedOn===null && !s.refit && !s.fighting && s.order.type==="hold" && this.expansion.unit(s).canCapture && !economy.assets.held(`squad:${s.id}`) && !this.expansion.armies.armyOf(s.id));
       if(!squad || squad.playerId!==player.id || squad.embarkedOn!==null || squad.refit || squad.fighting || world.nearbyArmyEnemies(squad,12*FIXED,player.id).length) {release();continue;}
-      if(!economy.assets.acquire([{asset:`squad:${squad.id}`,playerId:player.id,generation:world.aiGeneration(player.id),controller,priority:"patrol",createdTick:world.tick,expiresTick:world.tick+180}])){release();continue;}
+      if(!economy.assets.acquire([{asset:`squad:${squad.id}`,playerId:player.id,generation:world.aiGeneration(player.id),controller,priority:"patrol",createdTick:world.tick,expiresTick:world.tick+secondsToTicks(9)}])){release();continue;}
       this.cleanup.set(player.id,{squadId:squad.id,tile:old?.tile??world.tileOf(squad)});
       if(readyFraction(squad)<.8) {
         const tile=world.ownedLandNearest(player.id,world.tileOf(squad),32).find(t=>world.paths.walkable(t) && world.squadPaths(player.id).connected(world.tileOf(squad),t));

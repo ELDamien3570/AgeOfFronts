@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from '../Protocol';
+import { secondsToTicks } from '../Protocol';
 import type { AiEconomicDirector } from "./AiEconomicDirector";
 import type { Expansion } from "./Expansion";
 import type { TradeCycleQuote } from "./TradeQuote";
@@ -6,7 +8,7 @@ import type { TradeCycleQuote } from "./TradeQuote";
  * part of its cycle waiting for a full load, and current stock still confirms it. */
 export function tradeSupplyLimited(quote: TradeCycleQuote, source: {stock:number;capacity:number} | undefined): boolean {
   return !!source && quote.riskAdjustedGoldPer1000Ticks > 0 && quote.returned === 0 &&
-    quote.supplyTicks >= Math.max(20,quote.cycleTicks / 4) && source.stock < source.capacity;
+    quote.supplyTicks >= Math.max(TICKS_PER_SECOND,quote.cycleTicks / 4) && source.stock < source.capacity;
 }
 
 interface Evidence {
@@ -47,7 +49,7 @@ export class AiTradeOpportunities {
       { world, trade } = this.expansion;
     if (
       !row ||
-      world.tick - row.tick > 600 ||
+      world.tick - row.tick > secondsToTicks(30) ||
       row.generation !== world.aiGeneration(playerId)
     )
       return undefined;
@@ -79,7 +81,7 @@ export class AiTradeOpportunities {
         !player ||
         !this.economy.enabled(player) ||
         !quote ||
-        quote.completedTick === undefined || world.tick - quote.completedTick > 600 ||
+        quote.completedTick === undefined || world.tick - quote.completedTick > secondsToTicks(30) ||
         market === undefined ||
         actor.state === "prize"
       )
@@ -88,7 +90,7 @@ export class AiTradeOpportunities {
         previous = this.evidence.get(key);
       if (
         previous &&
-        world.tick - previous.tick < 600 &&
+        world.tick - previous.tick < secondsToTicks(30) &&
         previous.quote.goldPer1000Ticks > quote.goldPer1000Ticks
       )
         continue;

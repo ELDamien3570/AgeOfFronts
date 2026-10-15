@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED } from "../../src/skirmish/Protocol";
@@ -63,11 +64,11 @@ function fixture() {
 }
 describe("flight-time air operations", () => {
   it("uses fixed time by class/age and slower drones, with shared boundary quotes", () => {
-    expect(flightTicks("fighter", "EarlyModern")).toBe(3600);
-    expect(flightTicks("bomber", "EarlyModern")).toBe(2400);
-    expect(flightTicks("fighter", "Modern")).toBe(4800);
-    expect(flightTicks("bomber", "Modern")).toBe(3600);
-    const a = { x: 0, y: 0, fuelTicks: 10, definitionId: "drone" as const };
+    expect(flightTicks("fighter", "EarlyModern")).toBe(secondsToTicks(180));
+    expect(flightTicks("bomber", "EarlyModern")).toBe(secondsToTicks(120));
+    expect(flightTicks("fighter", "Modern")).toBe(secondsToTicks(240));
+    expect(flightTicks("bomber", "Modern")).toBe(secondsToTicks(180));
+    const a = { x: 0, y: 0, fuelTicks: secondsToTicks(0.5), definitionId: "drone" as const };
     expect(flightReachable(a, 900, 0)).toBe(true);
     expect(flightReachable(a, 901, 0)).toBe(false);
     expect(flightPercent(a, 900, 0)).toBe(100);
@@ -91,7 +92,7 @@ describe("flight-time air operations", () => {
         mission: "patrol",
         playerId: 1,
         aircraftIds: [a.id],
-        x: a.x + 181,
+        x: a.x + 451,
         y: a.y,
       }),
     ).not.toBeNull();
@@ -240,7 +241,7 @@ describe("flight-time air operations", () => {
     });
     game.tick++;
     e.afterMovement();
-    expect(game.ship(ship.id)?.airDefenseTick).toBe(game.tick + 40);
+    expect(game.ship(ship.id)?.airDefenseTick).toBe(game.tick + secondsToTicks(2));
     expect(e.battle.projectiles.some((p) => p.targetAircraftId === a.id)).toBe(
       true,
     );

@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { TrenchOccupancy } from "./TrenchOccupancy";
 import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import { SkirmishStance } from "./SkirmishStance";
@@ -637,7 +638,7 @@ export class Expansion {
       if(!count)return costRejection(player,this.supply.inventories[player.id],vesselRefitCost(target))??"No affordable vessel refit";
       spend(player,this.supply.inventories[player.id],vesselRefitCost(target,count));
       for(const s of eligible.slice(0,count)){
-        world.updateShip(s.id,{refit:{targetId:target.id,remainingTicks:200,totalTicks:200},destination:null,waypoints:[],path:[],nextPathIndex:0,attackTargetId:null});
+        world.updateShip(s.id,{refit:{targetId:target.id,remainingTicks:secondsToTicks(10),totalTicks:secondsToTicks(10)},destination:null,waypoints:[],path:[],nextPathIndex:0,attackTargetId:null});
       }
       return null;
     }
@@ -712,7 +713,7 @@ export class Expansion {
       if(!this.trenches.reserveChanges(eligible.slice(0,count).map(s=>({id:s.id,capacity:recipeCapacity(target,recruitmentVariant(target.id,this.progression.states[player.id].completed))}))))return "Exit the trench or free trench space first";
       spend(player,this.supply.inventories[player.id],unitRefitCost(target,count,recruitmentVariant(target.id,this.progression.states[player.id].completed)));
       for(const s of eligible.slice(0,count)){
-        world.updateSquad(s.id,{refit:{targetId:target.id,recipeVariant:recruitmentVariant(target.id,this.progression.states[player.id].completed),totalTicks:200,remainingTicks:200},order:{type:"hold"},queuedOrders:[],charge:null});
+        world.updateSquad(s.id,{refit:{targetId:target.id,recipeVariant:recruitmentVariant(target.id,this.progression.states[player.id].completed),totalTicks:secondsToTicks(10),remainingTicks:secondsToTicks(10)},order:{type:"hold"},queuedOrders:[],charge:null});
         world.installSquadPath(s.id,[]);
       }
       return null;
@@ -997,7 +998,7 @@ export class Expansion {
         s.order.type === "hold" &&
         !s.moved &&
         s.embarkedOn === null &&
-        (s.deploymentTicks ?? 0) >= 100,
+        (s.deploymentTicks ?? 0) >= secondsToTicks(5),
     );
     const launcher = building ?? unit;
     if (!launcher)
@@ -1166,7 +1167,7 @@ export class Expansion {
     }
     this.modernization.clean(world.squads, world.tick);
     this.economy.step();
-    if (world.tick % 3 === 0 && world.options?.runAi !== false)
+    if (world.options?.runAi !== false)
       this.thinkProgression();
   }
   afterMovement(): void {
@@ -1179,7 +1180,7 @@ export class Expansion {
           !s.moved &&
           !s.fighting &&
           s.order.type === "hold"
-            ? Math.min(100, (s.deploymentTicks ?? 0) + 1)
+            ? Math.min(secondsToTicks(5), (s.deploymentTicks ?? 0) + 1)
             : 0 });
     this.advanceAircraft();
     this.trade.step();
@@ -1205,8 +1206,8 @@ export class Expansion {
       targets.query(ship.x,ship.y,12*FIXED,this.nearbyAircraft);
       const target=this.nearbyAircraft.filter(a=>a.health>0&&this.diplomacy.hostile(ship.playerId,a.playerId)).sort((a,b)=>(a.x-ship.x)**2+(a.y-ship.y)**2-((b.x-ship.x)**2+(b.y-ship.y)**2)||a.id-b.id)[0];
       if(!target)continue;
-      if(this.battle.fire({...ship,domain:"ship"},target,NAVAL_AIR_ATTACK,200,"shell",10,0,"naval-air-defence",undefined,target.id)) {
-        this.world.updateShip(ship.id,{airDefenseTick:this.world.tick+40});
+      if(this.battle.fire({...ship,domain:"ship"},target,NAVAL_AIR_ATTACK,200,"shell",secondsToTicks(.5),0,"naval-air-defence",undefined,target.id)) {
+        this.world.updateShip(ship.id,{airDefenseTick:this.world.tick+secondsToTicks(2)});
       }
     }
     for(const b of this.world.buildings) {
@@ -1214,7 +1215,7 @@ export class Expansion {
       const point=this.battle.position(b);targets.query(point.x,point.y,NAVAL_AIR_ATTACK.range,this.nearbyAircraft);
       const target=this.nearbyAircraft.filter(a=>a.health>0&&this.diplomacy.hostile(b.playerId,a.playerId)).sort((a,c)=>(a.x-point.x)**2+(a.y-point.y)**2-((c.x-point.x)**2+(c.y-point.y)**2)||a.id-c.id)[0];
       if(!target)continue;
-      if(this.battle.fire({id:b.id,playerId:b.playerId,...point,domain:"building"},target,NAVAL_AIR_ATTACK,200,"shell",10,0,"naval-air-defence",undefined,target.id)) {
+      if(this.battle.fire({id:b.id,playerId:b.playerId,...point,domain:"building"},target,NAVAL_AIR_ATTACK,200,"shell",secondsToTicks(.5),0,"naval-air-defence",undefined,target.id)) {
         this.world.updateBuilding(b.id,{nextAttackTick:this.world.tick+NAVAL_AIR_ATTACK.reloadTicks});
         this.world.volleys.push({id:this.world.allocateId(),squadId:b.id,playerId:b.playerId,definitionId:"naval-air-defence",tick:this.world.tick,fromX:point.x,fromY:point.y,toX:target.x,toY:target.y});
       }
@@ -1250,7 +1251,7 @@ export class Expansion {
             damage.add(enemy.id, a.playerId, Math.min(200, health));
             this.world.recordMilitaryLosses([enemy], damage);
           }
-          a.reloadTick = this.world.tick + 40;
+          a.reloadTick = this.world.tick + secondsToTicks(2);
         }
       }
       if(a.state === "ready") {a.fuelTicks=flightTicks(a.definitionId,this.progression.has(a.playerId,"rus-modern-airfields") ? "Modern" : a.age??base.age??"EarlyModern");a.flightBudgetTicks=a.fuelTicks;continue;}
@@ -1296,7 +1297,7 @@ export class Expansion {
             a.mission === "atomic" ? ATOMIC_ATTACK : a.definitionId === "drone" ? DRONE_ATTACK : BOMBER_ATTACK,
             a.mission === "atomic" ? 24000 : a.definitionId === "drone" ? 10000 : BOMBER_ATTACK.damage,
             "bomb",
-            20,
+            TICKS_PER_SECOND,
             0,
             a.mission === "atomic" ? "atomic" : "bomb",
           );
@@ -1313,7 +1314,7 @@ export class Expansion {
       if (
         !player.ai ||
         player.eliminated ||
-        this.world.tick % 60 !== (player.id % 20) * 3
+        this.world.tick % secondsToTicks(3) !== (player.id * 3) % secondsToTicks(3)
       )
         continue;
       if (player.kind === "tribe") {
@@ -1453,7 +1454,7 @@ export class Expansion {
         for (const treaty of this.diplomacy.state.alliances.filter(
           (t) => t.a === player.id || t.b === player.id,
         ))
-          if (!treaty.longTerm && treaty.expiresTick - this.world.tick <= 600)
+          if (!treaty.longTerm && treaty.expiresTick - this.world.tick <= secondsToTicks(30))
             this.world.applyCommand({
               type: "alliance",
               playerId: player.id,
@@ -1466,9 +1467,9 @@ export class Expansion {
       if (
         this.victoryMode === "allied" &&
         interval &&
-        this.world.tick >= 1800 &&
-        Math.floor(this.world.tick / 60) % (interval / 60) ===
-          player.id % (interval / 60) &&
+        this.world.tick >= secondsToTicks(90) &&
+        Math.floor(this.world.tick / secondsToTicks(3)) % (interval / secondsToTicks(3)) ===
+          player.id % (interval / secondsToTicks(3)) &&
         !this.diplomacy.state.offers.some((o) => o.proposer === player.id)
       ) {
         const allies = this.diplomacy.state.alliances.filter(

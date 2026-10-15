@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import type { ArcherVolley, Snapshot } from "../Protocol";
 import { FIXED } from "../Protocol";
 import { UNIT } from "../content/Units";
@@ -26,14 +27,14 @@ export function squadArtworkPose(
   if (UNIT.get(squad.definitionId ?? "")?.attack.channel === "ranged" && clip) {
     // Start recovery at the release pose on the authoritative shot tick; show
     // the wind-up before the next ready shot. Art never delays domain damage.
-    const release = (Math.min(5, clip.frames - 1) * 20) / clip.fps;
-    const recovery = (clip.frames * 20) / clip.fps - release;
+    const release = (Math.min(5, clip.frames - 1) * TICKS_PER_SECOND) / clip.fps;
+    const recovery = (clip.frames * TICKS_PER_SECOND) / clip.fps - release;
     if (since >= 0 && since < recovery)
       return { clip: "attack", elapsed: release + since };
     const until = (squad.nextAttackTick ?? Infinity) - tick;
     if (squad.fighting && until > 0 && until <= release)
       return { clip: "attack", elapsed: release - until };
-  } else if (since >= 0 && since < 20)
+  } else if (since >= 0 && since < TICKS_PER_SECOND)
     return { clip: "attack", elapsed: since };
   return { clip: squad.moved ? "running" : "idle", elapsed: tick };
 }
@@ -122,9 +123,9 @@ export function volleyVisual(
   size: number,
 ) {
   const style = weaponVisual(volley.definitionId),
-    duration = style === "bullet" ? 4 : style === "rocket" ? 8 : 12;
+    duration = (style === "bullet" ? .2 : style === "rocket" ? .4 : .6)*TICKS_PER_SECOND;
   const progress = (tick - volley.tick) / duration;
-  if (progress < 0 || progress >= 1) return null;
+  if (progress < 0 || progress >= 1-1e-9) return null;
   const angle = Math.atan2(to.y - from.y, to.x - from.x) - Math.PI / 2;
   const emitters = weaponEmitters(
     from,

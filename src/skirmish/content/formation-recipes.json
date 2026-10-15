@@ -462,7 +462,7 @@
         "rus-stoneage-mobile"
       ],
       "gold": 500,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "formation-capacity"
       ],
@@ -480,7 +480,7 @@
         "rus-bronzeage-mobile"
       ],
       "gold": 5000,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "formation-capacity"
       ],
@@ -498,7 +498,7 @@
         "rus-classicalage-mobile"
       ],
       "gold": 8334,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "formation-capacity"
       ],
@@ -516,7 +516,7 @@
         "rus-earlymedieval-mobile"
       ],
       "gold": 13334,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "formation-capacity"
       ],
@@ -534,7 +534,7 @@
         "rus-latemedieval-mobile"
       ],
       "gold": 20000,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "formation-capacity"
       ],
@@ -552,7 +552,7 @@
         "rus-napoleonic-mobile"
       ],
       "gold": 29168,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "formation-capacity"
       ],
@@ -570,7 +570,7 @@
         "rus-earlymodern-mobile"
       ],
       "gold": 41668,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "formation-capacity"
       ],
@@ -588,7 +588,7 @@
         "rus-modern-mobile"
       ],
       "gold": 52085,
-      "ticks": 1425,
+      "ticks": 570,
       "capabilities": [
         "formation-capacity"
       ],

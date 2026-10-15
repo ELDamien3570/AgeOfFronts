@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { portWaterTiles } from "../PortWaterAccess";
 import type { GameMap } from "../../core/game/GameMap";
 import type { WaterPaths } from "../Pathfinding";
@@ -327,7 +328,7 @@ export class AiNavalFacts {
         if (this.phase === 6) {
           this.active = false;
           this.ready = true;
-          this.nextScan = tick + 20;
+          this.nextScan = tick + secondsToTicks(1);
           this.diagnostics.passes++;
         } else
           this.remaining = (this.phase === 4 ? this.ships : this.jobs).size;

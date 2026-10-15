@@ -15,13 +15,16 @@ import type {
 } from "./domain/Definitions";
 
 export const FIXED = 256;
-export const TICKS_PER_SECOND = 20;
+export const TICKS_PER_SECOND = 8;
+/** Canonical fixed step; render and wall-clock schedules are independent. */
+export const TICK_MS = 1000 / TICKS_PER_SECOND;
+export const secondsToTicks = (seconds: number): number => Math.ceil(seconds * TICKS_PER_SECOND);
 export const SQUAD_TROOPS = 1_000;
 export const MAX_SQUADS = 200;
 /** Regular factions (humans + AI) a match may hold; tribes are counted separately. */
 export const MAX_FACTIONS = 41;
 export const CAPTURE_RADIUS = 3;
-export const CAPTURE_TICKS = 30;
+export const CAPTURE_TICKS = secondsToTicks(1.5);
 export const MELEE_RANGE = 384;
 export const MAX_QUEUED_ORDERS = 32;
 
@@ -444,10 +447,10 @@ export interface MatchOptions {
   aiEconomy?: boolean;
   /** Bounded transactional route admission. Explicit false preserves legacy replay. */
   deferredPlanning?: boolean;
-  /** Local autonomous search deadline; omitted preserves exhaustive old replays. */
-  autonomousRouteDeadlineTicks?: 40;
-  /** Local bounded autonomous decision cadence; omission preserves 15-tick replays. */
-  autonomousDecisionInterval?: 30;
+  /** Optional two-second deadline for local autonomous searches. */
+  autonomousRouteDeadlineTicks?: 16;
+  /** Optional 1.5-second cadence for local autonomous decisions. */
+  autonomousDecisionInterval?: 12;
   /** City defense trials require the shared opt-in economy coordinator. */
   aiDefenses?: boolean;
   /** Fleet mission trials require economy and deferred route admission. */

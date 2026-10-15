@@ -1,3 +1,4 @@
+import {secondsToTicks} from './Protocol';
 import type { GameMap } from "../core/game/GameMap";
 import type { MovementAdmissionEvent } from "./MovementAdmission";
 import type { WaterPaths } from "./Pathfinding";
@@ -377,7 +378,7 @@ export class ShipMovementAdmission {
       // A committed waypoint survives its terminal capacity result. It is now
       // paused intent, with no live planner work; replacement/cancel releases it.
       admission.paused=true;
-      admission.retryAt=tick+100;
+      admission.retryAt=tick+secondsToTicks(5);
       for(const member of admission.members) {
         this.ports.cancel(admission.id,member.id);member.requested=false;
         const ship=this.ports.ship(member.id);if(ship)this.ports.paused?.(ship,true);

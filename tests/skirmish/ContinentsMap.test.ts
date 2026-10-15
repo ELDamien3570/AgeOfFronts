@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { CONTINENTS_THEME } from "../../src/skirmish/content/Continents";
 import { generateContinents } from "../../src/skirmish/ContinentsMap";
@@ -84,7 +85,7 @@ describe("Continents layout", () => {
         impassable = new Map<number, number>();
       for (let tile = 0; tile < m.terrain.length; tile++)
         if (m.map.isImpassable(tile)) {
-          expect(terrainSpeed(m.map, tile)).toBe(20);
+          expect(terrainSpeed(m.map, tile)).toBe(400/TICKS_PER_SECOND);
           const id = m.layout.regions[tile];
           impassable.set(id, (impassable.get(id) ?? 0) + 1);
         }

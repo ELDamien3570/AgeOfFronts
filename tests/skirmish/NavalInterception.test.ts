@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { DamageLedger } from "../../src/skirmish/Conquest";
@@ -143,7 +144,7 @@ describe("naval interception", () => {
       expect(g.expansion!.battle.projectiles).toHaveLength(6);
     }
     expect(cold.checkpoint()).toEqual(f.game.checkpoint());
-    for (let tick = 0; tick < 80; tick++) {
+    for (let tick = 0; tick < secondsToTicks(4); tick++) {
       f.game.step();
       cold.step();
     }
@@ -181,7 +182,7 @@ describe("naval interception", () => {
         id: f.game.allocateId(),
         playerId: 2,
         x: 51.5 * FIXED,
-        nextAttackTick: 1000,
+        nextAttackTick: secondsToTicks(50),
       });
       expect(
         f.game.applyCommand({
@@ -236,7 +237,7 @@ describe("naval interception", () => {
       path: Array.from({ length: 19 }, (_, n) => f.game.map.ref(62 + n, 40)),
       nextPathIndex: 1,
     });
-    f.game.tick = (10 - (s.id % 10)) % 10;
+    f.game.tick = (secondsToTicks(.5) - (s.id % secondsToTicks(.5))) % secondsToTicks(.5);
     f.harness.movementLand();
     expect(f.harness.autonomousNavalPursuit(s)).toBe(true);
     expect(s.navalTargetKind).toBe("transport");
@@ -465,7 +466,7 @@ describe("naval interception", () => {
       });
       for (
         let tick = 0;
-        tick < 400 && f.cargo.some((s) => f.game.squad(s.id));
+        tick < secondsToTicks(20) && f.cargo.some((s) => f.game.squad(s.id));
         tick++
       )
         f.game.step();

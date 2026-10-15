@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
@@ -184,7 +185,7 @@ describe("match technology speed", () => {
       (t) => t.age === "StoneAge" && t.tree !== "naval",
     ).map((t) => t.id);
     p.gold = Math.ceil(ADVANCES[0].gold / 3);
-    m.tick = 66;
+    m.tick = 6 + secondsToTicks(3);
     m.expansion!.beforeStep();
     expect(state.advancement?.target).toBe("BronzeAge");
     expect(p.gold).toBe(0);

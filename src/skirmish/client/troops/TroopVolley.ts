@@ -1,3 +1,5 @@
+import { TICKS_PER_SECOND } from "../../Protocol";
+import {TICK_MS} from '../../Protocol';
 import { FIXED, type ArcherVolley, type Snapshot } from "../../Protocol";
 import type { WorldSoldier } from "../FormationSoldierMotion";
 import type { ActorClip } from "./TroopFormationModel";
@@ -38,14 +40,14 @@ export function javelinThrowTime(
   clip: ActorClip,
 ): number | undefined {
   const timing = throwTiming(clip);
-  const since = (tick - (squad.lastAttackTick ?? -Infinity)) * 50;
+  const since = (tick - (squad.lastAttackTick ?? -Infinity)) * TICK_MS;
   if (since >= 0 && since < timing.duration - timing.release)
     return timing.release + since;
   const releaseTick =
     (squad.lastAttackTick ?? -Infinity) > tick
       ? squad.lastAttackTick!
       : (squad.nextAttackTick ?? Infinity);
-  const until = (releaseTick - tick) * 50;
+  const until = (releaseTick - tick) * TICK_MS;
   if (squad.fighting && until > 0 && until <= timing.release)
     return timing.release - until;
   return undefined;
@@ -91,7 +93,7 @@ export class TroopVolley {
     ],
     facingOffset = 0,
     ballistic = true,
-    flightTicks = 12,
+    flightTicks = 0.6*TICKS_PER_SECOND,
     targetOffsets: readonly {x:number;y:number}[] = [],
     targets: readonly { id: number; x: number; y: number }[] = [],
   ): FlyingJavelin[] {

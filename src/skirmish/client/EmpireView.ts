@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import type { BuildingType, Command, ShipType, SquadType } from "../Protocol";
 
 import { AGES, AGE_NAMES, type Age, type Tree } from "../domain/Definitions";
@@ -274,7 +275,7 @@ export class EmpireView {
     const key=JSON.stringify({refit,enlargement,pending});
     if(actions.dataset.key!==key){actions.dataset.key=key;
       const upgrade=refit?`<button ${refit.reason||!refit.target?'disabled':''} title="${escape(refit.reason??refit.target!.name)}">Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>Ctrl U</kbd></button>`:'';
-      const detail=enlargement?enlargement.reason??`+${enlargement.terms.added} soldiers per squad · ${fmt(enlargement.cost.gold??0)} gold · ${enlargement.cost.reserves??0} reserves · ${Math.ceil(enlargement.terms.ticks/20)}s · existing casualties retained`:'';
+      const detail=enlargement?enlargement.reason??`+${enlargement.terms.added} soldiers per squad · ${fmt(enlargement.cost.gold??0)} gold · ${enlargement.cost.reserves??0} reserves · ${Math.ceil(enlargement.terms.ticks/TICKS_PER_SECOND)}s · existing casualties retained`:'';
       const enlarge=enlargement?`<button data-enlarge ${enlargement.reason?'disabled':''} title="${escape(detail)}">Enlarge ${enlargement.selected.length}/${enlargement.totalCount}</button>`:'';
       actions.innerHTML=upgrade+enlarge+(pending.length?'<button data-cancel-enlarge>Cancel enlargement</button>':'');
     }
@@ -554,7 +555,7 @@ export class EmpireView {
 
     const footer =
       this.panel === "technology"
-        ? `<div class="technology-progress"><b>${escape(vm.summary)}</b><p>${vm.progression.advancement ? `Advancing: ${Math.ceil(vm.progression.advancement.remainingTicks / 20)} sec` : (vm.advance.reason ?? "Two trees complete · ready to advance")}</p></div>${vm.advance.cost ? `<button data-advance="yes" ${vm.advance.reason ? "disabled" : ""}>Advance age · ${fmt(vm.advance.cost.gold)} gold · ${vm.advance.cost.ticks / 20}s</button>` : "<b>Final age</b>"}`
+        ? `<div class="technology-progress"><b>${escape(vm.summary)}</b><p>${vm.progression.advancement ? `Advancing: ${Math.ceil(vm.progression.advancement.remainingTicks / TICKS_PER_SECOND)} sec` : (vm.advance.reason ?? "Two trees complete · ready to advance")}</p></div>${vm.advance.cost ? `<button data-advance="yes" ${vm.advance.reason ? "disabled" : ""}>Advance age · ${fmt(vm.advance.cost.gold)} gold · ${vm.advance.cost.ticks / TICKS_PER_SECOND}s</button>` : "<b>Final age</b>"}`
         : "";
 
     if (!force && html + footer === this.fingerprint) return;
@@ -715,7 +716,7 @@ export class EmpireView {
             outputs = Object.entries(recipe.outputs)
               .map(([id, amount]) => `${amount} ${vm.itemName(id)}`)
               .join(", ");
-          return `<button data-production-type="${group.type}" data-priority-recipe="${recipe.id}" aria-pressed="${recipe.prioritized}" ${recipe.reason ? "disabled" : ""} title="${escape(recipe.reason ?? productionText("priority_title"))}">${escape(recipe.name)}<small>${escape(inputs)} → ${escape(outputs)} · ${recipe.cycleTicks / 20}s</small>${recipe.reason ? `<small>${escape(recipe.reason)}</small>` : ""}</button>`;
+          return `<button data-production-type="${group.type}" data-priority-recipe="${recipe.id}" aria-pressed="${recipe.prioritized}" ${recipe.reason ? "disabled" : ""} title="${escape(recipe.reason ?? productionText("priority_title"))}">${escape(recipe.name)}<small>${escape(inputs)} → ${escape(outputs)} · ${recipe.cycleTicks / TICKS_PER_SECOND}s</small>${recipe.reason ? `<small>${escape(recipe.reason)}</small>` : ""}</button>`;
         })
         .join("");
     const running = group.running
@@ -751,13 +752,13 @@ export class EmpireView {
 
     const outgoing = vm.expansion.diplomacy.offers.find(o => o.proposer === this.playerId && o.recipient === p.id && o.kind!=="peace"),
       atWar = (vm.expansion.diplomacy.wars ?? []).some(w => (w.a === this.playerId && w.b === p.id) || (w.b === this.playerId && w.a === p.id)),
-      seconds = treaty ? Math.max(0, Math.ceil((treaty.expiresTick - vm.state.tick) / 20)) : 0,
+      seconds = treaty ? Math.max(0, Math.ceil((treaty.expiresTick - vm.state.tick) / TICKS_PER_SECOND)) : 0,
       status = treaty?.longTerm ? (treaty.ending ? `Alliance ends in ${seconds}s` : "Long Term Alliance · renews automatically") : treaty ? `Allied · ${seconds}s remaining` : atWar ? "At war" : "Independent faction";
     let buttons = "";
     const raids=vm.expansion.diplomacyRules==="raids-v1",dip=vm.expansion.diplomacy;
     const protection=dip.peaceProtection?.find(r=>(r.a===this.playerId&&r.b===p.id||r.b===this.playerId&&r.a===p.id)&&r.untilTick>vm.state.tick);
-    const raid=dip.embargoes?.some(r=>(r.initiator===this.playerId&&r.victim===p.id||r.victim===this.playerId&&r.initiator===p.id)&&r.lastTheftTick+1200>vm.state.tick);
-    const relation=protection?`Protected peace · ${Math.ceil((protection.untilTick-vm.state.tick)/20)}s remaining`:raid&&!atWar?"Raid · military combat permitted; no territorial capture":raids&&!treaty&&!atWar?"Neutral":status;
+    const raid=dip.embargoes?.some(r=>(r.initiator===this.playerId&&r.victim===p.id||r.victim===this.playerId&&r.initiator===p.id)&&r.lastTheftTick+60*TICKS_PER_SECOND>vm.state.tick);
+    const relation=protection?`Protected peace · ${Math.ceil((protection.untilTick-vm.state.tick)/TICKS_PER_SECOND)}s remaining`:raid&&!atWar?"Raid · military combat permitted; no territorial capture":raids&&!treaty&&!atWar?"Neutral":status;
     if(raids&&!p.eliminated&&p.id!==this.playerId){
       const excluded=dip.dontEmbargo?.some(e=>e.playerId===this.playerId&&e.otherId===p.id),peace=vm.incoming.find(o=>o.proposer===p.id&&o.kind==="peace");
       buttons+=`<button data-diplomacy="${excluded?'allow-embargo':'dont-embargo'}" data-other="${p.id}" aria-pressed="${!!excluded}">${excluded?'Allow peacetime interception':"Don't embargo"}</button>`;

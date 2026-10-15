@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from "../../src/skirmish/Protocol";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import footLayout from "../../Art/Cultures/Russians/FormationLayouts/Clubman.json";
@@ -203,7 +204,7 @@ describe("complete Russian asset integration", () => {
       if (!planned) continue;
       expect(node.name).toBe(planned.name);
       expect(node.gold).toBe(planned.gold);
-      expect(node.ticks).toBe(planned.researchSeconds * 20);
+      expect(node.ticks).toBe(planned.researchSeconds * TICKS_PER_SECOND);
       if (!gaps.retainedRuntimePrerequisites.includes(node.id))
         expect(node.prerequisites).toEqual(planned.prerequisites);
     }

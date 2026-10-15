@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { FIXED } from "../Protocol";
 import type { AttackProfile } from "../domain/Definitions";
 
@@ -8,7 +9,7 @@ export const GUN_NEST_ATTACK: AttackProfile = {
   // A Modern emplacement must penetrate contemporary point armour.
   damage: 1500,
   range: 7 * FIXED,
-  reloadTicks: 20,
+  reloadTicks: secondsToTicks(1),
   movingReloadPercent: 100,
   bonuses: { infantry: 80 },
   penetration: 0,

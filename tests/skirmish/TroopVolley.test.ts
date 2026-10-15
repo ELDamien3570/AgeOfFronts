@@ -1,3 +1,4 @@
+import {TICK_MS,TICKS_PER_SECOND} from "../../src/skirmish/Protocol";
 import { describe, expect, it } from "vitest";
 import manifest from "../../Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/animations.json";
 import {
@@ -54,8 +55,8 @@ describe("individual javelin volleys", () => {
     expect(timing.release).toBe(580);
     expect(clipFrame(clip, javelinThrowTime(source, 19.99, clip)!)).toBe(2);
     expect(clipFrame(clip, javelinThrowTime(source, 20, clip)!)).toBe(3);
-    expect(clipFrame(clip, javelinThrowTime(source, 20+(timing.duration-timing.release-1)/50, clip)!)).toBe(clip.frames.length-1);
-    expect(javelinThrowTime(source, 20+(timing.duration-timing.release)/50, clip)).toBeUndefined();
+    expect(clipFrame(clip, javelinThrowTime(source, 20+(timing.duration-timing.release-1)/TICK_MS, clip)!)).toBe(clip.frames.length-1);
+    expect(javelinThrowTime(source, 20+(timing.duration-timing.release)/TICK_MS, clip)).toBeUndefined();
   });
   it("releases one javelin at each actual throwing hand in every rank, excluding walkers", () => {
     const presentation = new TroopVolley();
@@ -82,18 +83,19 @@ describe("individual javelin volleys", () => {
       moving = new TroopVolley();
     for (const presentation of [baseline, moving])
       presentation.sample(volley, 20, [soldier(0)], clip, 2);
-    const expected = baseline.sample(volley, 26, [soldier(0)], clip, 2);
+    const expected = baseline.sample(volley, 20+0.3*TICKS_PER_SECOND, [soldier(0)], clip, 2);
+    expect(expected).toHaveLength(1);
     expect(
       moving.sample(
         volley,
-        26,
+        20+0.3*TICKS_PER_SECOND,
         [soldier(0, { x: 80, y: 90, angle: Math.PI })],
         clip,
         2,
       ),
     ).toEqual(expected);
-    expect(moving.sample(volley, 26, [], clip, 2)).toEqual(expected);
-    expect(moving.sample(volley, 32, [], clip, 2)).toEqual([]);
+    expect(moving.sample(volley, 20+0.3*TICKS_PER_SECOND, [], clip, 2)).toEqual(expected);
+    expect(moving.sample(volley, 20+0.6*TICKS_PER_SECOND, [], clip, 2)).toEqual([]);
     moving.prune([]);
     moving.clear();
     expect(moving.sample(volley, 20, [], clip, 2)).toEqual([]);

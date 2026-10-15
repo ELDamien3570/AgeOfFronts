@@ -1,3 +1,6 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
+const presentationTicks=(seconds:number)=>seconds*TICKS_PER_SECOND;
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe,expect,it } from 'vitest';
 import { cavalryImpactScene,cavalryBattleScene } from './fixtures/CavalryImpact';
 import { chargeDisrupted,validateChargeImpact,CHARGE_IMPACT } from '../../src/skirmish/domain/ChargeImpact';
@@ -26,7 +29,7 @@ describe('bounded cavalry impact prototype',()=>{
     const {game,rider,defender}=cavalryImpactScene();
     game.updateSquad(rider.id,{charge:null,troops:1,y:26*256,manpower:{...rider.manpower!,hp:1000000},formation:{...rider.formation!,transition:undefined}});
     expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:defender.id}})).toBeNull();
-    for(let i=0;i<100;i++)game.step();
+    for(let i=0;i<presentationTicks(5);i++)game.step();
     expect(rider.troops).toBe(1);expect(rider.cavalryMelee).toBeUndefined();
     expect(formationContact(rider,defender,game.tick).gap).toBeLessThanOrEqual(CONTACT.release);
     expect(rider.meleeStrike).toBeDefined();
@@ -42,7 +45,7 @@ describe('bounded cavalry impact prototype',()=>{
     game.expansion!.battle.fight([]);expect(rider.cavalryMelee).toBeUndefined();
   });
   it('hands approach momentum to the first rank immediately and launches the next during withdrawal',()=>{
-    const c={tick:10,interval:324,completed:0,troops:3,definitionId:'bronzeage-cavalry',approachSpeed:6,orderRevision:0,
+    const c={tick:presentationTicks(0.5),interval:presentationTicks(16.2),completed:0,troops:3,definitionId:'bronzeage-cavalry',approachSpeed:6,orderRevision:0,
       contacts:[{targetId:10,budget:1000,lunge:512,strikeDepth:64,laneWidth:16,bearing:Math.PI/2,fromX:0,fromY:0,toX:0,toY:128}]};
     const members=[0,-.3,-.6].map((y,id)=>({id,x:0,y,scale:.2})),cohort=cavalryCohort(c,members),cache=new Map([[c.tick,cohort]]);
     const clip={id:'attack',file:'attack.png',frames:[],frameCount:8,fps:10};
@@ -51,7 +54,7 @@ describe('bounded cavalry impact prototype',()=>{
     expect(cavalryWaves({current:c},c.tick+1,clip,members,cache).get(0)!.y).toBeGreaterThan(0);
     const nextStart=waveTick(c,1)-rankTiming.advance;
     expect(Math.abs(nextStart-waveTick(c,0)-rankTiming.brake-rankTiming.turn)).toBeLessThan(1);
-    const handoff=cavalryWaves({current:c},nextStart+1,clip,members,cache);
+    const handoff=cavalryWaves({current:c},(((nextStart)/20+0.05))*20,clip,members,cache);
     expect(handoff.get(0)?.moving).toBe(true);expect(handoff.get(1)?.moving).toBe(true);
   });
   it('prevents infantry hitting a parked cavalry body across the gap and wakes retaliation only for exposed ranks',()=>{
@@ -82,12 +85,12 @@ describe('bounded cavalry impact prototype',()=>{
     expect(gap).toBeGreaterThan(32);
     expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:defender.id}})).toBeNull();
     const strikes=new Set<number>();
-    for(let i=0;i<150;i++){game.step();for(const v of game.volleys)if(v.squadId===rider.id&&v.melee)strikes.add(v.id);}
+    for(let i=0;i<presentationTicks(7.5);i++){game.step();for(const v of game.volleys)if(v.squadId===rider.id&&v.melee)strikes.add(v.id);}
     expect(formationContact(rider,defender,game.tick).gap).toBeGreaterThan(gap-10);
     expect(formationContact(rider,defender,game.tick).gap).toBeLessThanOrEqual(gap+2);
     expect(rider.cavalryEngagement).toBeUndefined();expect(rider.cavalryMelee).toBeDefined();
     expect(rider.cavalryMelee!.current.approachSpeed).toBeGreaterThan(0);
-    for(let i=0;i<200;i++){game.step();for(const v of game.volleys)if(v.squadId===rider.id&&v.melee)strikes.add(v.id);}
+    for(let i=0;i<presentationTicks(10);i++){game.step();for(const v of game.volleys)if(v.squadId===rider.id&&v.melee)strikes.add(v.id);}
     expect(strikes.size).toBeGreaterThanOrEqual(3);
     game.updateSquad(rider.id,{charge:{phase:'committed',x:defender.x,y:defender.y,startTick:game.tick,committedTick:game.tick,targetId:defender.id}});
     expect(cavalryAttackGap(rider,defender)).toBe(4);
@@ -95,7 +98,7 @@ describe('bounded cavalry impact prototype',()=>{
   it('physically enters after impact, stays in contact, and withdraws on a human order',()=>{
     const {game,rider,defender}=cavalryImpactScene();game.step();const start={x:rider.x,y:rider.y},impact=rider.chargeImpact!.tick;
     expect(rider.cavalryEngagement?.phase).toBe('penetrating');
-    for(let i=0;i<50;i++)game.step();
+    for(let i=0;i<presentationTicks(2.5);i++)game.step();
     expect(Math.hypot(rider.x-start.x,rider.y-start.y)).toBeGreaterThan(30);
     expect(rider.cavalryEngagement?.phase).toBe('engaged');
     expect(formationContact(rider,defender,game.tick).gap).toBeLessThanOrEqual(4);
@@ -103,7 +106,7 @@ describe('bounded cavalry impact prototype',()=>{
     const entered={x:rider.x,y:rider.y},tile=game.map.ref(32,24);
     expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'move',tile}})).toBeNull();
     expect(rider.order.type).toBe('move');expect(rider.cavalryEngagement?.phase).toBe('withdrawing');
-    for(let i=0;i<240;i++)game.step();
+    for(let i=0;i<presentationTicks(12);i++)game.step();
     expect(rider.y).toBeLessThan(entered.y-256);expect(rider.cavalryEngagement).toBeUndefined();
   });
   it('bounds overlap permission to the contacted enemy and forward corridor; rejects malformed entry',()=>{
@@ -116,14 +119,17 @@ describe('bounded cavalry impact prototype',()=>{
     expect(spears.rider.cavalryEngagement!.goalY).toBe(spears.rider.y);
   });
   it('keeps walls and newly encountered formations authoritative during entry',()=>{
-    const blocked=cavalryImpactScene();blocked.game.step();const e=blocked.rider.cavalryEngagement!;
+    const blocked=cavalryImpactScene();
+    blocked.game.step();const e=blocked.rider.cavalryEngagement!;
+    const tower=blocked.game.buildings[0];
+    for(const [id,x] of [[800,27],[801,36]]) blocked.game.addBuilding({...tower,id,playerId:2,type:'tower',tile:blocked.game.map.ref(x,31),health:2000,remainingTicks:0});
     blocked.game.expansion!.fortifications.addBarrier({id:900,playerId:2,age:'BronzeAge',a:800,b:801,
-      tiles:Array.from({length:10},(_,i)=>blocked.game.map.ref(27+i,32)),health:2000,maxHealth:2000,remainingTicks:0});
-    for(let i=0;i<45;i++)blocked.game.step();
+      tiles:Array.from({length:10},(_,i)=>blocked.game.map.ref(27+i,31)),health:2000,maxHealth:2000,remainingTicks:0});
+    for(let i=0;i<presentationTicks(2.25);i++)blocked.game.step();
     expect(blocked.rider.y).toBeLessThan(e.goalY);
     const crowded=cavalryImpactScene();crowded.game.step();
     const blocker=crowded.game.addSquad({...structuredClone(crowded.defender),id:crowded.game.allocateId(),chargeImpact:undefined});
-    for(let i=0;i<10;i++)crowded.game.step();
+    for(let i=0;i<presentationTicks(0.5);i++)crowded.game.step();
     expect(crowded.rider.y).toBeLessThan(crowded.rider.cavalryEngagement!.goalY);
     expect(crowded.rider.cavalryEngagement!.targetIds).not.toContain(blocker.id);
     expect(polygonsOverlap(formationFootprint(crowded.rider,crowded.game.tick),formationFootprint(blocker,crowded.game.tick))).toBe(false);
@@ -132,14 +138,14 @@ describe('bounded cavalry impact prototype',()=>{
     const f=cavalryImpactScene();f.game.step();const saved=f.game.checkpoint(),restored=cavalryImpactScene().game;
     restored.restore(saved);
     expect(restored.squad(f.rider.id)!.cavalryEngagement).toEqual(f.rider.cavalryEngagement);
-    for(let i=0;i<35;i++){f.game.step();restored.step();}
+    for(let i=0;i<presentationTicks(1.75);i++){f.game.step();restored.step();}
     expect(restored.checkpoint()).toEqual(f.game.checkpoint());
   });
   it('pays exactly one attack budget across three timed waves and restores the pending commitment',()=>{
     const {game,rider,defender}=cavalryImpactScene();
     game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
     game.updateSquad(rider.id,formationApproach(rider,defender,0,0,-Math.PI/2));
-    game.updateSquad(defender.id,{weaponState:{sharedReadyTick:10000}});
+    game.updateSquad(defender.id,{weaponState:{sharedReadyTick:presentationTicks(500)}});
     game.expansion!.battle.fight([]);const c=structuredClone(rider.cavalryMelee!.current);
     expect(c.completed).toBe(0);expect(game.volleys.filter(v=>v.squadId===rider.id)).toHaveLength(0);
     const encoder=new SnapshotEncoder(),decoder=new SnapshotDecoder();
@@ -172,7 +178,7 @@ describe('bounded cavalry impact prototype',()=>{
     expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:next.id}})).toBeNull();
     game.expansion!.battle.fight([]);
     expect(rider.cavalryMelee).toBeUndefined();expect(rider.combatTargetId).toBeNull();
-    game.tick=100; // The original weapon commitment still has its cooldown.
+    game.tick=presentationTicks(5); // The original weapon commitment still has its cooldown.
     game.updateSquad(rider.id,formationApproach(rider,next,game.tick,cavalryAttackGap(rider,next),-Math.PI/2));
     game.expansion!.battle.fight([]);
     expect(rider.cavalryMelee!.current.contacts[0].targetId).toBe(next.id);
@@ -195,18 +201,18 @@ describe('bounded cavalry impact prototype',()=>{
     expect(activeRanks.has(0)).toBe(true);expect(activeRanks.has(2)).toBe(true);
   });
   it('builds momentum and caches tightly bounded lanes through preceding-rank gaps',()=>{
-    expect(rankMotion(2.4,-9,10,20,19)!.forward).toBeCloseTo(rankMotion(1.6,-9,10,20,19)!.forward,12);
-    expect(rankMotion(.8,-8,10,20,19)!.forward).toBeCloseTo(4*rankMotion(.8,-9,10,20,19)!.forward,12);
-    expect(rankMotion(.8,-10,10,20,19)!.forward).toBe(0);expect(rankMotion(.8,39,10,20,19)).toBeUndefined();
+    expect(rankMotion(2.4,presentationTicks(-0.45),presentationTicks(0.5),presentationTicks(1),presentationTicks(0.95))!.forward).toBeCloseTo(rankMotion(1.6,presentationTicks(-0.45),presentationTicks(0.5),presentationTicks(1),presentationTicks(0.95))!.forward,12);
+    expect(rankMotion(.8,presentationTicks(-0.4),presentationTicks(0.5),presentationTicks(1),presentationTicks(0.95))!.forward).toBeCloseTo(4*rankMotion(.8,presentationTicks(-0.45),presentationTicks(0.5),presentationTicks(1),presentationTicks(0.95))!.forward,12);
+    expect(rankMotion(.8,presentationTicks(-0.5),presentationTicks(0.5),presentationTicks(1),presentationTicks(0.95))!.forward).toBeCloseTo(0,12);expect(rankMotion(.8,presentationTicks(1.95),presentationTicks(0.5),presentationTicks(1),presentationTicks(0.95))).toBeUndefined();
     const members=[{id:0,x:0,y:0,scale:.2},{id:1,x:.4,y:0,scale:.2},{id:2,x:0,y:-.3,scale:.2}];
-    const c={tick:0,interval:324,completed:0,troops:3,definitionId:'bronzeage-cavalry',orderRevision:0,
+    const c={tick:0,interval:presentationTicks(16.2),completed:0,troops:3,definitionId:'bronzeage-cavalry',orderRevision:0,
       contacts:[{targetId:10,budget:1000,lunge:256,laneWidth:64,bearing:Math.PI/2,fromX:0,fromY:0,toX:0,toY:0}]};
     const cohort=cavalryCohort(c,members);
     expect(cohort.get(2)!.lane).toBeCloseTo(-.0625,12);expect(cohort.get(0)!.lane).toBe(0);
     const clip={id:'attack',file:'attack.png',frames:[],frameCount:8,fps:10},cache=new Map([[0,cohort]]);
     const startTick=waveTick(c,1)-rankTiming.advance;
     const start=cavalryWaves({current:c},startTick,clip,members,cache).get(2)!;
-    expect(start.x).toBe(0);expect(start.y).toBe(-.3);
+    expect(start.x).toBeCloseTo(0,12);expect(start.y).toBe(-.3);
     const passing=cavalryWaves({current:c},startTick+5,clip,members,cache).get(2)!;
     expect(passing.x).toBeGreaterThan(0);expect(passing.x).toBeLessThanOrEqual(.25);
     expect(cavalryWaves({current:c},startTick+5,clip,[...members].reverse(),cache)).toEqual(cavalryWaves({current:c},startTick+5,clip,members,cache));
@@ -214,16 +220,16 @@ describe('bounded cavalry impact prototype',()=>{
   });
   it('takes each rank from its actual inset position into the target at the strike, then rides home',()=>{
     const members=[-.1,-.3,-.5].map((y,id)=>({id,x:0,y,scale:.2}));
-    const c={tick:0,interval:240,completed:3,troops:3,definitionId:'bronzeage-cavalry',orderRevision:0,
+    const c={tick:0,interval:presentationTicks(12),completed:3,troops:3,definitionId:'bronzeage-cavalry',orderRevision:0,
       contacts:[{targetId:10,budget:1000,lunge:512,strikeDepth:64,laneWidth:16,bearing:Math.PI/2,fromX:0,fromY:0,toX:0,toY:192}]};
     const cohort=cavalryCohort(c,members),cache=new Map([[0,cohort]]),clip={id:'attack',file:'attack.png',frames:[],frameCount:8,fps:10};
     for(const member of members){
       const hit=waveTick(c,cohort.get(member.id)!.rank);
       const strike=cavalryWaves({current:c},hit,clip,members,cache).get(member.id)!;
       expect(strike.y).toBeCloseTo(1,10);expect(strike.attacking).toBe(true);
-      const returning=cavalryWaves({current:c},hit+rankTiming.brake+rankTiming.turn+rankTiming.return/2,clip,members,cache).get(member.id)!;
+      const returning=cavalryWaves({current:c},(((((hit)/20+(rankTiming.brake)/20)+(rankTiming.turn)/20)+(rankTiming.return/2)/20))*20,clip,members,cache).get(member.id)!;
       expect(Math.abs(returning.angle)).toBeCloseTo(Math.PI,10);
-      const home=cavalryWaves({current:c},hit+rankTiming.brake+rankTiming.turn+rankTiming.return+1,clip,members,cache).get(member.id)!;
+      const home=cavalryWaves({current:c},((((((hit)/20+(rankTiming.brake)/20)+(rankTiming.turn)/20)+(rankTiming.return)/20)+0.05))*20,clip,members,cache).get(member.id)!;
       expect(home.y).toBeCloseTo(member.y,10);
     }
     expect(()=>validateCavalryMelee({current:{...c,contacts:[{...c.contacts[0],strikeDepth:129}]}})).toThrow();
@@ -250,17 +256,17 @@ describe('bounded cavalry impact prototype',()=>{
   });
   it('lets a returning survivor finish before its promotion to a new front rank',()=>{
     const members=[{id:8,x:0,y:0,scale:.2}],clip={id:'attack',file:'attack.png',frames:[],frameCount:8,fps:10};
-    const previous={tick:0,interval:72,completed:3,troops:8,definitionId:'bronzeage-cavalry',orderRevision:0,
+    const previous={tick:0,interval:presentationTicks(3.6),completed:3,troops:8,definitionId:'bronzeage-cavalry',orderRevision:0,
       contacts:[{targetId:10,budget:1000,lunge:256,laneWidth:64,bearing:Math.PI/2,fromX:0,fromY:0,toX:0,toY:0}]};
-    const current={...previous,tick:72,completed:0},old=cavalryCohort(previous,members),next=cavalryCohort(current,members);
+    const current={...previous,tick:presentationTicks(3.6),completed:0},old=cavalryCohort(previous,members),next=cavalryCohort(current,members);
     old.get(8)!.rank=2;next.get(8)!.rank=0;
     const cohorts=new Map([[0,old],[72,next]]);
-    expect(cavalryWaves({current,previous},80,clip,members,cohorts).get(8)).toEqual(cavalryWaves({current:previous},80,clip,members,cohorts).get(8));
-    expect(cavalryWaves({current,previous},240,clip,members,cohorts).has(8)).toBe(false);
+    expect(cavalryWaves({current,previous},presentationTicks(4),clip,members,cohorts).get(8)).toEqual(cavalryWaves({current:previous},presentationTicks(4),clip,members,cohorts).get(8));
+    expect(cavalryWaves({current,previous},presentationTicks(12),clip,members,cohorts).has(8)).toBe(false);
   });
   it('never spins idle or short-lunge riders, and bounds turning during curved returns',()=>{
     const clip={id:'attack',file:'attack.png',frames:[],frameCount:8,fps:10},members=[{id:0,x:0,y:0,scale:.2}];
-    const c={tick:0,interval:240,completed:3,troops:1,definitionId:'bronzeage-cavalry',orderRevision:0,
+    const c={tick:0,interval:presentationTicks(12),completed:3,troops:1,definitionId:'bronzeage-cavalry',orderRevision:0,
       contacts:[{targetId:10,budget:1000,lunge:256,laneWidth:64,bearing:Math.PI/2,fromX:0,fromY:0,toX:0,toY:256}]};
     const sample=(travel:number,tick:number)=>{
       const cohort=cavalryCohort(c,members);cohort.get(0)!.travel=travel;
@@ -271,19 +277,19 @@ describe('bounded cavalry impact prototype',()=>{
       const idle=sample(0,tick);expect(idle.angle).toBe(0);expect(idle.x).toBe(0);expect(idle.y).toBe(0);
       expect(sample(.04,tick).angle).toBe(0);
     }
-    expect(sample(1,hit+rankTiming.brake-.1).angle).toBe(0); // Brake before turning.
+    expect(sample(1,((((hit)/20+(rankTiming.brake)/20)-0.005))*20).angle).toBe(0); // Brake before turning.
     expect(sample(1,departure).angle).toBeCloseTo(Math.PI,12);
-    expect(sample(1,departure+rankTiming.return/2).angle).toBeCloseTo(Math.PI,12); // Ride home facing home.
+    expect(sample(1,(((departure)/20+(rankTiming.return/2)/20))*20).angle).toBeCloseTo(Math.PI,12); // Ride home facing home.
     for(let tick=hit+rankTiming.brake;tick<end-.1;tick+=.1){
       const before=sample(1,tick),after=sample(1,tick+.1);
-      expect(Math.abs(after.angle-before.angle)/.1).toBeLessThanOrEqual(Math.PI/40*CAVALRY_RANK_SPEED*CAVALRY_RANK_TURN_SPEED+.000001);
+      expect(Math.abs(after.angle-before.angle)/.1).toBeLessThanOrEqual(Math.PI/(2*TICKS_PER_SECOND)*CAVALRY_RANK_SPEED*CAVALRY_RANK_TURN_SPEED+.000001);
     }
-    expect(sample(1,end-.0001).angle).toBeCloseTo(0,8);
-    const settled=sample(1,arrival+1);expect(settled.x).toBeCloseTo(0,12);expect(settled.y).toBeCloseTo(0,12);
+    expect(sample(1,(((end)/20-0.000005))*20).angle).toBeCloseTo(0,8);
+    const settled=sample(1,(((arrival)/20+0.05))*20);expect(settled.x).toBeCloseTo(0,12);expect(settled.y).toBeCloseTo(0,12);
   });
   it('runs three real moving charge orders through run-up and impact against six infantry formations',()=>{
     const scene=cavalryBattleScene(),starts=scene.riders.map(r=>r.y),phases=new Set<string>();
-    for(let i=0;i<200;i++){scene.launch();scene.game.step();for(const rider of scene.riders)if(rider.charge)phases.add(rider.charge.phase);}
+    for(let i=0;i<presentationTicks(10);i++){scene.launch();scene.game.step();for(const rider of scene.riders)if(rider.charge)phases.add(rider.charge.phase);}
     expect(phases.has('preparing')).toBe(false);expect(phases.has('approach')).toBe(true);expect(phases.has('committed')).toBe(true);
     expect(scene.riders.every(r=>r.chargeImpact?.role==='rider')).toBe(true);
     // Larger original-scale bodies contact sooner, but each charge must have a real run-up.

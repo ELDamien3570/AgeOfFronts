@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from './Protocol';
 import type { GameMap } from "../core/game/GameMap";
 import { forestOf } from "./Forest";
 import { terrainSpeed } from "./Terrain";
@@ -57,8 +58,8 @@ export class PathTopology {
       return;
     }
     const speed = terrainSpeed(this.map, tile);
-    this.cardinal[tile] = Math.ceil(560 / speed);
-    this.diagonal[tile] = Math.ceil(792 / speed);
+    this.cardinal[tile] = Math.ceil(11200 / (speed*TICKS_PER_SECOND));
+    this.diagonal[tile] = Math.ceil(15840 / (speed*TICKS_PER_SECOND));
   }
   onCostsChanged(listener: (tiles: readonly number[]) => void): () => void {
     this.listeners.add(listener);

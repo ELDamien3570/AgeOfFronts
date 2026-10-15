@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED, type Ship } from "../../src/skirmish/Protocol";
@@ -53,7 +54,7 @@ function spawnWarship(
     fighting: false,
     patrolTile: match.map.ref(xTile, yTile),
     repairState: "patrolling",
-    patrolDwellTicks: 100,
+    patrolDwellTicks: secondsToTicks(5),
   });
 
   return ship;
@@ -79,10 +80,10 @@ describe("Warship patrol and dock repair logic", () => {
     const {match}=createMatch(true),ships=Array.from({length:4},()=>spawnWarship(match,25,25));
     const destination=match.map.ref(45,25);
     expect(match.applyCommand({type:"sail",playerId:1,shipIds:ships.map(s=>s.id),tile:destination})).toBeNull();
-    for(let i=0;i<240;i++)match.step();
+    for(let i=0;i<secondsToTicks(12);i++)match.step();
     expect(new Set(ships.map(s=>`${s.x},${s.y}`)).size).toBe(4);
     const saved=match.checkpoint(),cold=new Skirmish(match.map,match.options);cold.restore(saved);
-    for(let i=0;i<50;i++){match.step();cold.step();}
+    for(let i=0;i<secondsToTicks(2.5);i++){match.step();cold.step();}
     expect(cold.checkpoint()).toEqual(match.checkpoint());
   });
   it("plans recovery and return voyages without clearing repair ownership or searching synchronously", () => {
@@ -191,7 +192,7 @@ describe("Warship patrol and dock repair logic", () => {
     match.updateShip(ship2.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
 
     // Step simulation so ships evaluate dock capacity
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < secondsToTicks(0.75); i++) {
       match.step();
     }
 
@@ -244,7 +245,7 @@ describe("Warship patrol and dock repair logic", () => {
     match.updateShip(ship2.id, { health: 600 });
     match.updateShip(ship2.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < secondsToTicks(0.75); i++) {
       match.step();
     }
 
@@ -265,7 +266,7 @@ describe("Warship patrol and dock repair logic", () => {
     const hp1Before = ship1.health;
     const hp2Before = ship2.health;
     // Step 20 ticks (1 second)
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < secondsToTicks(1); i++) {
       match.step();
     }
     expect(ship1.health).toBeGreaterThan(hp1Before);
@@ -311,7 +312,7 @@ describe("Warship patrol and dock repair logic", () => {
     match.updateShip(ship.id, { health: 500 });
     match.updateShip(ship.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < secondsToTicks(0.75); i++) {
       match.step();
     }
     expect(ship.repairState).toBe("returning-to-dock");

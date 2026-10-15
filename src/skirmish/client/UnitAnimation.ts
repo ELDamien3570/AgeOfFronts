@@ -59,7 +59,7 @@ export function animationFrame(
   const definition = UNIT_ANIMATIONS[kind].animations[clip];
   const frame = Math.floor(
     (Math.max(0, elapsedTicks) * definition.suggestedFramesPerSecond) /
-      TICKS_PER_SECOND,
+      TICKS_PER_SECOND + 1e-9,
   );
   return definition.loop || repeat
     ? frame % definition.frameCount

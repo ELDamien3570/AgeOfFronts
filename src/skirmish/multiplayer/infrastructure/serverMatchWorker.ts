@@ -16,6 +16,7 @@ import {
 import { PublicationQueue } from "../application/PublicationQueue";
 import { RecoveryBaselineCache } from "../application/RecoveryBaselineCache";
 import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
+import { secondsToTicks } from "../../Protocol";
 import type { SnapshotPacket } from "../../Protocol";
 import { loadServerMap } from "./ServerMap";
 import { observeGarbageCollection } from "./WorkerRuntimeDiagnostics";
@@ -292,7 +293,7 @@ parentPort.on(
               const advanced = result as MatchAdvance;
               advanced.diagnostics = diagnosticSnapshot(request.commands.length, match.tick - previousTick, advanced.packet?.binary?.byteLength ?? advanced.packet?.payload.length ?? 0);
               if (match.tick >= nextDiagnosticTick) {
-                nextDiagnosticTick = match.tick + 600;
+                nextDiagnosticTick = match.tick + secondsToTicks(30);
                 console.info(JSON.stringify({ event: "match-runtime-diagnostics", threadId,
                   source: process.env.GIT_COMMIT ?? "unknown", ...advanced.diagnostics }));
               }

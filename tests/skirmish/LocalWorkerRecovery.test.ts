@@ -35,7 +35,7 @@ describe("local worker recovery boundaries", () => {
   it("publishes a complete reset at the same tick without changing paused state or speed", async () => {
     const f = await fixture();
     f.post({ type: "speed", speed: 4 });
-    await vi.advanceTimersByTimeAsync(50);
+    await vi.advanceTimersByTimeAsync(125);
     f.post({ type: "pause", paused: true });
     const before = last(f.states());
     expect(before.packet.reset).toBe(false);
@@ -51,7 +51,7 @@ describe("local worker recovery boundaries", () => {
     expect(order.type).toBe("hold");
     expect(order.type === "hold" && order.facing).toBeCloseTo(Math.PI, 6);
     f.post({ type: "pause", paused: false });
-    await vi.advanceTimersByTimeAsync(50);
+    await vi.advanceTimersByTimeAsync(125);
     const after = last(f.states());
     expect(after.packet.reset).toBe(false);
     expect(decoder.decodeLatest(after.packet).tick).toBe(before.packet.tick + 4);
@@ -64,7 +64,7 @@ describe("local worker recovery boundaries", () => {
     const runtime = await import("../../src/skirmish/Simulation");
     vi.spyOn(runtime.Skirmish.prototype, "step").mockImplementation(() => { throw new Error("fixture failure"); });
     vi.spyOn(console, "error").mockImplementation(() => {});
-    await vi.advanceTimersByTimeAsync(50);
+    await vi.advanceTimersByTimeAsync(125);
     const error = last(f.messages);
     expect(error).toEqual({ type: "error", message: `The match stopped at tick ${currentTick}: fixture failure` });
     const count = f.messages.length;

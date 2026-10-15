@@ -1,3 +1,4 @@
+import {secondsToTicks} from "../../src/skirmish/Protocol";
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -41,7 +42,7 @@ it("shows mutual long-term terms, the notice countdown, and immediate war's 120-
   button("declare")!.click(); update();
   expect(root.textContent).toContain("At war");
   expect(button("declare")).toBeNull();
-  expect(game.expansion!.diplomacy.state.betrayal[1]).toBe(game.tick + 2400);
+  expect(game.expansion!.diplomacy.state.betrayal[1]).toBe(game.tick + secondsToTicks(120));
   expect(command).toHaveBeenLastCalledWith({type: "alliance", playerId: 1, otherId: 2, action: "declare"});
 });
 it("counts afloat land squads, living warships only, and ready plus deployed planes",()=>{

@@ -1,3 +1,5 @@
+import { TICKS_PER_SECOND } from '../Protocol';
+import { secondsToTicks } from '../Protocol';
 import { FIXED } from "../Protocol";
 import type { AttackProfile } from "../domain/Definitions";
 
@@ -7,14 +9,14 @@ export const AIRCRAFT_RULES = {
   airfieldCapacity: 6,
   factionCapacity: 32,
   health: 1000,
-  fuelTicks: 1200,
-  speed: 180,
+  fuelTicks: secondsToTicks(60),
+  speed: 3600 / TICKS_PER_SECOND,
 } as const;
 export const BOMBER_ATTACK: AttackProfile = {
   channel: "ranged",
   damage: 2500,
   range: 0,
-  reloadTicks: 1,
+  reloadTicks: secondsToTicks(0.05),
   movingReloadPercent: 100,
   bonuses: { structure: 2000 },
   penetration: 2000,
@@ -28,9 +30,9 @@ export const BOMBER_ATTACK: AttackProfile = {
     "wall",
     "ship",
   ],
-  projectile: { diameter: FIXED / 3, speed: FIXED, blastRadius: 4 * FIXED },
+  projectile: { diameter: FIXED / 3, speed: 20 * FIXED / TICKS_PER_SECOND, blastRadius: 4 * FIXED },
 };
-export const STRATEGIC_RULES = { gold: 10000, reloadTicks: 1200 } as const;
+export const STRATEGIC_RULES = { gold: 10000, reloadTicks: secondsToTicks(60) } as const;
 export const STRATEGIC_PAYLOADS = {
   icbm: { damage: 24000, blastRadius: 5 * FIXED, warheads: 0 },
   hydrogen: { damage: 40000, blastRadius: 28 * FIXED, warheads: 0 },
@@ -39,4 +41,4 @@ export const STRATEGIC_PAYLOADS = {
 
 export const ATOMIC_ATTACK:AttackProfile={...BOMBER_ATTACK,damage:24000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:12*FIXED}};
 export const DRONE_ATTACK:AttackProfile={...BOMBER_ATTACK,damage:10000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:3*FIXED}};
-export const NAVAL_AIR_ATTACK:AttackProfile={...BOMBER_ATTACK,damage:200,range:12*FIXED,reloadTicks:40,targets:["aircraft"],projectile:{diameter:FIXED/5,speed:2*FIXED,blastRadius:0}};
+export const NAVAL_AIR_ATTACK:AttackProfile={...BOMBER_ATTACK,damage:200,range:12*FIXED,reloadTicks:secondsToTicks(2),targets:["aircraft"],projectile:{diameter:FIXED/5,speed:40*FIXED/TICKS_PER_SECOND,blastRadius:0}};

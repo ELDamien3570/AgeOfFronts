@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { TrenchPositioning,validateTrenchMission,type TrenchMissionState } from "./TrenchPositioning";
 import { HillPositioning, validateHillState, type HillState } from "./HillPositioning";
 import { effectiveRange, maxEffectiveRange, elevationRangeAt } from "./ElevationAdvantage";
@@ -113,7 +114,7 @@ export class AiArmyPlanner {
   acquireCoast(player:Player,tile:number):boolean {
     const {world}=this.expansion;
     if((this.byPlayer.get(player.id)?.length??0)>=this.missionCap(player)||!world.squadPaths(player.id).connected(player.base,tile))return false;
-    this.addMission({id:'land-coast:'+player.id+':'+(++this.serial),playerId:player.id,generation:world.aiGeneration(player.id),phase:'select',created:world.tick,since:world.tick,deadline:world.tick+3600,nextThink:world.tick,cursor:0,rosterIds:world.squadFacts().byOwner(player.id).map(s=>s.id),members:[],initialTroops:0,target:world.owners[tile]||undefined,targetTile:tile,purpose:'coast',reason:'Acquiring a useful reachable coast'});return true;
+    this.addMission({id:'land-coast:'+player.id+':'+(++this.serial),playerId:player.id,generation:world.aiGeneration(player.id),phase:'select',created:world.tick,since:world.tick,deadline:world.tick+secondsToTicks(180),nextThink:world.tick,cursor:0,rosterIds:world.squadFacts().byOwner(player.id).map(s=>s.id),members:[],initialTroops:0,target:world.owners[tile]||undefined,targetTile:tile,purpose:'coast',reason:'Acquiring a useful reachable coast'});return true;
   }
   private eligible(squad: Squad, plan: ArmyObjective): boolean {
     const { world } = this.expansion;
@@ -182,7 +183,7 @@ export class AiArmyPlanner {
       const desired=new Map(intents.map(t=>[t.id,t]));
       for(const id of this.byPlayer.get(player.id)??[]){const plan=this.missions.get(id)!;if(plan.purpose==='coast')continue;const intent=desired.get(plan.theatreId??'');if(!intent){plan.retire=true;continue;}plan.desiredSquads=plan.screenNeeded?Math.min(armies.capacity(player.id),Math.max(intent.desiredSquads,plan.members.length+plan.screenNeeded)):intent.desiredSquads;plan.target=intent.target;plan.targetTile=intent.tile;}
       for(const t of intents){if((this.byPlayer.get(player.id)?.length??0)>=cap)break;if(occupied.has(t.id)||!world.squadPaths(player.id).connected(player.base,t.tile))continue;
-        this.addMission({id:'land-army:'+player.id+':'+(++this.serial),theatreId:t.id,desiredSquads:t.desiredSquads,playerId:player.id,generation:world.aiGeneration(player.id),phase:'select',created:world.tick,since:world.tick,deadline:world.tick+3600,nextThink:world.tick,cursor:0,rosterIds:world.squadFacts().byOwner(player.id).map(s=>s.id),members:[],target:t.target,targetTile:t.tile,home:t.purpose==='offense'?player.base:t.tile,purpose:t.purpose==='offense'?'combat':t.purpose,initialTroops:0,reason:'Selecting a roster for '+t.purpose});
+        this.addMission({id:'land-army:'+player.id+':'+(++this.serial),theatreId:t.id,desiredSquads:t.desiredSquads,playerId:player.id,generation:world.aiGeneration(player.id),phase:'select',created:world.tick,since:world.tick,deadline:world.tick+secondsToTicks(180),nextThink:world.tick,cursor:0,rosterIds:world.squadFacts().byOwner(player.id).map(s=>s.id),members:[],target:t.target,targetTile:t.tile,home:t.purpose==='offense'?player.base:t.tile,purpose:t.purpose==='offense'?'combat':t.purpose,initialTroops:0,reason:'Selecting a roster for '+t.purpose});
       }
     }
     const runnable=[...this.missions.values()].filter(p=>!this.invasion.blocking(p.playerId)&&this.economy.enabled(world.players.find(a=>a.id===p.playerId)!));
@@ -227,7 +228,7 @@ export class AiArmyPlanner {
       ) {
         this.refreshRoster(plan);
         plan.members = [];
-        plan.nextThink = world.tick + 200;
+        plan.nextThink = world.tick + secondsToTicks(10);
         plan.reason = "Retaining mobile reserve while filling role shortfalls";
         return this.diagnostics.work;
       }
@@ -250,11 +251,11 @@ export class AiArmyPlanner {
             controller: plan!.id,
             priority: (plan!.purpose==="defense"?"defense":"operation") as "defense"|"operation",
             createdTick: world.tick,
-            expiresTick: plan!.deadline+800,
+            expiresTick: plan!.deadline+secondsToTicks(40),
           })),
         )
       ) {
-        plan.nextThink = world.tick + 60;
+        plan.nextThink = world.tick + secondsToTicks(3);
         plan.cursor = 0;
         plan.members = [];
         return this.diagnostics.work;
@@ -268,7 +269,7 @@ export class AiArmyPlanner {
       if (rejected) {
         this.economy.assets.release(plan.id);
         plan.reason = rejected;
-        plan.nextThink = world.tick + 200;
+        plan.nextThink = world.tick + secondsToTicks(10);
         plan.cursor = 0;
         plan.members = [];
         this.diagnostics.rejected++;
@@ -295,7 +296,7 @@ export class AiArmyPlanner {
         });
         this.economy.assets.release(plan.id);
         plan.phase = "complete";
-        plan.nextThink = world.tick + 200;
+        plan.nextThink = world.tick + secondsToTicks(10);
       }
       return this.diagnostics.work;
     }
@@ -314,7 +315,7 @@ export class AiArmyPlanner {
     }
     plan.members=members.map(s=>s.id);
     if(plan.retire&&!['recover','replenish','refit','complete'].includes(plan.phase)){
-      if(this.order(plan,{type:'regroup',tile:player.base})){plan.phase='recover';plan.home=player.base;plan.since=world.tick;plan.nextThink=world.tick+40;plan.reason='Theatre ended; returning roster before releasing leases';}return this.diagnostics.work;
+      if(this.order(plan,{type:'regroup',tile:player.base})){plan.phase='recover';plan.home=player.base;plan.since=world.tick;plan.nextThink=world.tick+secondsToTicks(2);plan.reason='Theatre ended; returning roster before releasing leases';}return this.diagnostics.work;
     }
     const desired=Math.min(plan.desiredSquads??members.length,armies.capacity(player.id));
     if(army&&['rally','assemble','advance','engage'].includes(plan.phase)&&!members.some(s=>s.fighting||s.charge||s.cavalryEngagement)&&members.length!==desired){
@@ -323,26 +324,26 @@ export class AiArmyPlanner {
         this.diagnostics.work++;if(!world.applyCommand({type:'army-members',playerId:player.id,armyId:army.id,squadIds:[remove.id],action:'remove'})){
           plan.initialTroops=Math.max(0,plan.initialTroops-manpowerCount(this.expansion.unit(remove),remove.manpower?.model,remove.troops));
           plan.members=plan.members.filter(id=>id!==remove.id);this.economy.assets.retain(plan.id,new Set(plan.members.map(id=>`squad:${id}` as const)));
-          world.applyCommand({type:'order',playerId:player.id,squadIds:[remove.id],order:{type:'move',tile:player.base}});plan.nextThink=world.tick+40;
+          world.applyCommand({type:'order',playerId:player.id,squadIds:[remove.id],order:{type:'move',tile:player.base}});plan.nextThink=world.tick+secondsToTicks(2);
         }return this.diagnostics.work;
       }
       while(this.diagnostics.work<budget){
         const cursor=plan.resizeCursor??0;
         if(cursor>=plan.rosterIds.length){this.refreshRoster(plan);break;}
         plan.resizeCursor=cursor+1;this.diagnostics.work++;const recruit=world.squad(plan.rosterIds[cursor]);if(!recruit||!this.eligible(recruit,plan)||(plan.screenNeeded??0)>0&&this.expansion.unit(recruit).role!=="frontline")continue;
-        if(this.economy.assets.acquire([{asset:`squad:${recruit.id}`,playerId:player.id,generation:plan.generation,controller:plan.id,priority:plan.purpose==='defense'?'defense':'operation',createdTick:world.tick,expiresTick:plan.deadline+800}])){
+        if(this.economy.assets.acquire([{asset:`squad:${recruit.id}`,playerId:player.id,generation:plan.generation,controller:plan.id,priority:plan.purpose==='defense'?'defense':'operation',createdTick:world.tick,expiresTick:plan.deadline+secondsToTicks(40)}])){
           if(!world.applyCommand({type:'army-members',playerId:player.id,armyId:army.id,squadIds:[recruit.id],action:'add'})){plan.members.push(recruit.id);if((plan.screenNeeded??0)>0)plan.screenNeeded!--;plan.initialTroops+=manpowerCount(this.expansion.unit(recruit),recruit.manpower?.model,recruit.troops);}
           else this.economy.assets.retain(plan.id,new Set(plan.members.map(id=>`squad:${id}` as const)));
-          plan.nextThink=world.tick+40;return this.diagnostics.work;
+          plan.nextThink=world.tick+secondsToTicks(2);return this.diagnostics.work;
         }
       }
     }
     if(plan.hill&&(!["advance","engage"].includes(plan.phase)||plan.retire))this.hillPositions.release(plan,army);
     const target = world.players.find((p) => p.id === plan!.target),
       troops = members.reduce((n, s) => n + manpowerCount(this.expansion.unit(s),s.manpower?.model,s.troops), 0);
-    if(operations.finishing(player.id,plan.target ?? 0) && plan.deadline < world.tick+200) {
-      plan.deadline=world.tick+200;
-      this.economy.assets.acquire(members.map(s=>({...this.economy.assets.leases.get(`squad:${s.id}`)!,expiresTick:plan!.deadline+800})));
+    if(operations.finishing(player.id,plan.target ?? 0) && plan.deadline < world.tick+secondsToTicks(10)) {
+      plan.deadline=world.tick+secondsToTicks(10);
+      this.economy.assets.acquire(members.map(s=>({...this.economy.assets.leases.get(`squad:${s.id}`)!,expiresTick:plan!.deadline+secondsToTicks(40)})));
     }
     if (
       !["recover","replenish","refit"].includes(plan.phase) &&
@@ -365,9 +366,9 @@ export class AiArmyPlanner {
       }
     }
     if(plan.trench&&(!["advance","engage"].includes(plan.phase)||plan.retire))this.trenchPositions.release(plan,members);
-    if(army&&["advance","engage"].includes(plan.phase)&&this.trenchPositions.step(plan,player,army,members)){plan.nextThink=world.tick+40;return Math.max(1,this.diagnostics.work);}
+    if(army&&["advance","engage"].includes(plan.phase)&&this.trenchPositions.step(plan,player,army,members)){plan.nextThink=world.tick+secondsToTicks(2);return Math.max(1,this.diagnostics.work);}
     if(army&&["advance","engage"].includes(plan.phase)&&this.hillPositions.step(plan,player,army,members,personalityOf(player).id,o=>this.order(plan,o))){
-      plan.nextThink=world.tick+40;return Math.max(1,this.diagnostics.work);
+      plan.nextThink=world.tick+secondsToTicks(2);return Math.max(1,this.diagnostics.work);
     }
     if (
       plan.phase === "rally" &&
@@ -422,7 +423,7 @@ export class AiArmyPlanner {
       } else {
         const shooters=b.shooters.map(id=>world.squad(id)).filter((s):s is Squad=>!!s&&s.playerId===player!.id&&readyFraction(s)>=.5);
         const tiles=wall?.tiles??[building!.tile],range=Math.min(...shooters.map(s=>maxEffectiveRange(this.expansion.unit(s).attack)));
-        if(!shooters.length || members.filter(s=>this.expansion.unit(s).role==="frontline"&&readyFraction(s)>=.5).length<2 || world.tick-b.since>600){
+        if(!shooters.length || members.filter(s=>this.expansion.unit(s).role==="frontline"&&readyFraction(s)>=.5).length<2 || world.tick-b.since>secondsToTicks(30)){
           this.order(plan,{type:"regroup",tile:plan.home??player.base});plan.phase="recover";plan.since=world.tick;plan.reason="Breach support lost; protecting survivors";
         } else if(b.tile===undefined){
           const tile=approachCandidate(world.map,tiles[0],range,b.cursor);this.diagnostics.work++;
@@ -513,7 +514,7 @@ export class AiArmyPlanner {
           ) <
           12 ** 2,
       ) ||
-        world.tick - plan.since >= 800)
+        world.tick - plan.since >= secondsToTicks(40))
     ) {
       this.economy.assets.release(plan.id);
       world.applyCommand({
@@ -524,13 +525,13 @@ export class AiArmyPlanner {
       const wounded=members.filter(s=>world.owners[world.tileOf(s)]===player!.id && readyFraction(s)<.9 && !s.fighting);
       if(wounded.length && player.reserves>0 && !(plan.rejoined??0)){
         this.economy.assets.acquire(members.map(s=>({asset:`squad:${s.id}` as const,playerId:player!.id,generation:plan!.generation,controller:plan!.id,
-          priority:"recovery" as const,createdTick:world.tick,expiresTick:world.tick+1000})));
+          priority:"recovery" as const,createdTick:world.tick,expiresTick:world.tick+secondsToTicks(50)})));
         world.applyCommand({type:"order",playerId:player.id,squadIds:wounded.map(s=>s.id),order:{type:"replenish"}});
         plan.phase="replenish";plan.since=world.tick;plan.reason="Replenishing survivors using actual reserves";
-      } else {plan.phase="complete";plan.nextThink=world.tick+400;plan.reason="Survivors returned and objective leases released";this.diagnostics.completed++;}
+      } else {plan.phase="complete";plan.nextThink=world.tick+secondsToTicks(20);plan.reason="Survivors returned and objective leases released";this.diagnostics.completed++;}
     } else if(plan.phase==="replenish" || plan.phase==="refit"){
-      if(members.some(s=>s.refit) || (members.some(s=>readyFraction(s)<.9)&&player.reserves>0&&world.tick-plan.since<600)){
-        plan.nextThink=world.tick+40;return this.diagnostics.work;
+      if(members.some(s=>s.refit) || (members.some(s=>readyFraction(s)<.9)&&player.reserves>0&&world.tick-plan.since<secondsToTicks(30))){
+        plan.nextThink=world.tick+secondsToTicks(2);return this.diagnostics.work;
       }
       const replacement=members.find(s=>!s.refit&&!s.fighting&&world.owners[world.tileOf(s)]===player!.id &&
         UNITS.some(u=>u.line===this.expansion.unit(s).line&&u.role===this.expansion.unit(s).role&&
@@ -548,12 +549,12 @@ export class AiArmyPlanner {
         members.length>=2&&members.every(s=>readyFraction(s)>=.8)){
         world.applyCommand({type:"order",playerId:player.id,squadIds:members.map(s=>s.id),order:{type:"hold"}});
         const rejection=world.applyCommand({type:"create-army",playerId:player.id,squadIds:members.map(s=>s.id)});
-        if(!rejection){this.economy.assets.acquire(members.map(s=>({asset:`squad:${s.id}` as const,playerId:player!.id,generation:plan!.generation,controller:plan!.id,priority:"operation" as const,createdTick:world.tick,expiresTick:plan!.deadline+800})));plan.armyId=armies.armyOf(members[0].id)!.id;plan.phase="assemble";plan.since=world.tick;plan.initialTroops=troops;plan.rejoined=1;plan.reason="Recovered supported roster rejoining once";
+        if(!rejection){this.economy.assets.acquire(members.map(s=>({asset:`squad:${s.id}` as const,playerId:player!.id,generation:plan!.generation,controller:plan!.id,priority:"operation" as const,createdTick:world.tick,expiresTick:plan!.deadline+secondsToTicks(40)})));plan.armyId=armies.armyOf(members[0].id)!.id;plan.phase="assemble";plan.since=world.tick;plan.initialTroops=troops;plan.rejoined=1;plan.reason="Recovered supported roster rejoining once";
           world.applyCommand({type:"army-auto",playerId:player.id,armyId:plan.armyId,enabled:false});return this.diagnostics.work;}
       }
-      this.economy.assets.release(plan.id);plan.phase="complete";plan.nextThink=world.tick+400;plan.reason="Paid recovery finished; objective closed";this.diagnostics.completed++;
+      this.economy.assets.release(plan.id);plan.phase="complete";plan.nextThink=world.tick+secondsToTicks(20);plan.reason="Paid recovery finished; objective closed";this.diagnostics.completed++;
     }
-    if (plan.phase !== "complete") plan.nextThink = world.tick + 40;
+    if (plan.phase !== "complete") plan.nextThink = world.tick + secondsToTicks(2);
     return this.diagnostics.work;
   }
 }

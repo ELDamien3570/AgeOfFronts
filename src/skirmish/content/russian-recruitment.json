@@ -390,7 +390,7 @@
       "slot": 1,
       "prerequisites": [],
       "gold": 300,
-      "ticks": 400,
+      "ticks": 160,
       "capabilities": [
         "cargo-canoes"
       ],
@@ -406,7 +406,7 @@
         "rus-stoneage-cargo-canoes"
       ],
       "gold": 200,
-      "ticks": 360,
+      "ticks": 144,
       "capabilities": [
         "port-sea-trade"
       ],
@@ -422,7 +422,7 @@
         "rus-stoneage-port-sea-trade"
       ],
       "gold": 300,
-      "ticks": 400,
+      "ticks": 160,
       "capabilities": [
         "warships"
       ],
@@ -439,7 +439,7 @@
         "rus-stoneage-warships"
       ],
       "gold": 450,
-      "ticks": 500,
+      "ticks": 200,
       "capabilities": [
         "coastal-navigation"
       ],
@@ -469,7 +469,7 @@
         "rus-stoneage-cities"
       ],
       "gold": 600,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "roads",
         "land-traders"
@@ -486,7 +486,7 @@
         "rus-stoneage-cities"
       ],
       "gold": 300,
-      "ticks": 400,
+      "ticks": 160,
       "capabilities": [
         "factories-mines"
       ],
@@ -503,7 +503,7 @@
         "rus-stoneage-factories-mines"
       ],
       "gold": 450,
-      "ticks": 500,
+      "ticks": 200,
       "capabilities": [
         "fortifications"
       ],
@@ -533,7 +533,7 @@
         "rus-stoneage-barracks-equipment"
       ],
       "gold": 300,
-      "ticks": 400,
+      "ticks": 160,
       "capabilities": [
         "ranged"
       ],
@@ -549,7 +549,7 @@
         "rus-stoneage-barracks-equipment"
       ],
       "gold": 250,
-      "ticks": 300,
+      "ticks": 120,
       "capabilities": [
         "mobile"
       ],
@@ -566,7 +566,7 @@
         "rus-stoneage-mobile"
       ],
       "gold": 450,
-      "ticks": 900,
+      "ticks": 360,
       "capabilities": [
         "siege"
       ],
@@ -582,7 +582,7 @@
         "rus-stoneage-coastal-navigation"
       ],
       "gold": 4000,
-      "ticks": 400,
+      "ticks": 160,
       "capabilities": [
         "ports"
       ],
@@ -598,7 +598,7 @@
         "rus-bronzeage-ports"
       ],
       "gold": 2334,
-      "ticks": 440,
+      "ticks": 176,
       "capabilities": [
         "warships"
       ],
@@ -614,7 +614,7 @@
         "rus-bronzeage-ports"
       ],
       "gold": 2334,
-      "ticks": 440,
+      "ticks": 176,
       "capabilities": [
         "sea-traders"
       ],
@@ -631,7 +631,7 @@
         "rus-bronzeage-sea-traders"
       ],
       "gold": 3334,
-      "ticks": 900,
+      "ticks": 360,
       "capabilities": [
         "ship-improvements"
       ],
@@ -647,7 +647,7 @@
         "rus-stoneage-fortifications"
       ],
       "gold": 3334,
-      "ticks": 900,
+      "ticks": 360,
       "capabilities": [
         "cities"
       ],
@@ -663,7 +663,7 @@
         "rus-bronzeage-cities"
       ],
       "gold": 4668,
-      "ticks": 880,
+      "ticks": 352,
       "capabilities": [
         "roads",
         "land-traders"
@@ -680,7 +680,7 @@
         "rus-bronzeage-cities"
       ],
       "gold": 2000,
-      "ticks": 400,
+      "ticks": 160,
       "capabilities": [
         "factories-mines"
       ],
@@ -697,7 +697,7 @@
         "rus-bronzeage-factories-mines"
       ],
       "gold": 6667,
-      "ticks": 500,
+      "ticks": 200,
       "capabilities": [
         "fortifications"
       ],
@@ -713,7 +713,7 @@
         "rus-stoneage-siege"
       ],
       "gold": 4000,
-      "ticks": 400,
+      "ticks": 160,
       "capabilities": [
         "barracks-equipment"
       ],
@@ -729,7 +729,7 @@
         "rus-bronzeage-barracks-equipment"
       ],
       "gold": 4667,
-      "ticks": 440,
+      "ticks": 176,
       "capabilities": [
         "ranged"
       ],
@@ -745,7 +745,7 @@
         "rus-bronzeage-barracks-equipment"
       ],
       "gold": 4667,
-      "ticks": 440,
+      "ticks": 176,
       "capabilities": [
         "mobile"
       ],
@@ -762,7 +762,7 @@
         "rus-bronzeage-mobile"
       ],
       "gold": 6667,
-      "ticks": 900,
+      "ticks": 360,
       "capabilities": [
         "siege"
       ],
@@ -778,7 +778,7 @@
         "rus-bronzeage-ship-improvements"
       ],
       "gold": 6667,
-      "ticks": 500,
+      "ticks": 200,
       "capabilities": [
         "ports"
       ],
@@ -794,7 +794,7 @@
         "rus-classicalage-ports"
       ],
       "gold": 4000,
-      "ticks": 560,
+      "ticks": 224,
       "capabilities": [
         "warships"
       ],
@@ -810,7 +810,7 @@
         "rus-classicalage-ports"
       ],
       "gold": 4000,
-      "ticks": 560,
+      "ticks": 224,
       "capabilities": [
         "sea-traders"
       ],
@@ -827,7 +827,7 @@
         "rus-classicalage-sea-traders"
       ],
       "gold": 5334,
-      "ticks": 1100,
+      "ticks": 440,
       "capabilities": [
         "ship-improvements"
       ],
@@ -843,7 +843,7 @@
         "rus-bronzeage-fortifications"
       ],
       "gold": 5334,
-      "ticks": 1100,
+      "ticks": 440,
       "capabilities": [
         "cities"
       ],
@@ -859,7 +859,7 @@
         "rus-classicalage-cities"
       ],
       "gold": 8000,
-      "ticks": 1120,
+      "ticks": 448,
       "capabilities": [
         "roads",
         "land-traders"
@@ -876,7 +876,7 @@
         "rus-classicalage-cities"
       ],
       "gold": 3334,
-      "ticks": 500,
+      "ticks": 200,
       "capabilities": [
         "factories-mines"
       ],
@@ -893,7 +893,7 @@
         "rus-classicalage-factories-mines"
       ],
       "gold": 10667,
-      "ticks": 700,
+      "ticks": 280,
       "capabilities": [
         "fortifications"
       ],
@@ -909,7 +909,7 @@
         "rus-bronzeage-siege"
       ],
       "gold": 6667,
-      "ticks": 500,
+      "ticks": 200,
       "capabilities": [
         "barracks-equipment"
       ],
@@ -925,7 +925,7 @@
         "rus-classicalage-barracks-equipment"
       ],
       "gold": 8000,
-      "ticks": 560,
+      "ticks": 224,
       "capabilities": [
         "ranged"
       ],
@@ -941,7 +941,7 @@
         "rus-classicalage-barracks-equipment"
       ],
       "gold": 8000,
-      "ticks": 560,
+      "ticks": 224,
       "capabilities": [
         "mobile"
       ],
@@ -958,7 +958,7 @@
         "rus-classicalage-mobile"
       ],
       "gold": 10667,
-      "ticks": 1100,
+      "ticks": 440,
       "capabilities": [
         "siege"
       ],
@@ -974,7 +974,7 @@
         "rus-classicalage-ranged"
       ],
       "gold": 8000,
-      "ticks": 560,
+      "ticks": 224,
       "capabilities": [
         "ranged-mobile"
       ],
@@ -990,7 +990,7 @@
         "rus-classicalage-ship-improvements"
       ],
       "gold": 10667,
-      "ticks": 600,
+      "ticks": 240,
       "capabilities": [
         "ports"
       ],
@@ -1006,7 +1006,7 @@
         "rus-earlymedieval-ports"
       ],
       "gold": 6000,
-      "ticks": 660,
+      "ticks": 264,
       "capabilities": [
         "warships"
       ],
@@ -1022,7 +1022,7 @@
         "rus-earlymedieval-ports"
       ],
       "gold": 6000,
-      "ticks": 660,
+      "ticks": 264,
       "capabilities": [
         "sea-traders"
       ],
@@ -1039,7 +1039,7 @@
         "rus-earlymedieval-sea-traders"
       ],
       "gold": 8667,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "ship-improvements"
       ],
@@ -1055,7 +1055,7 @@
         "rus-classicalage-fortifications"
       ],
       "gold": 8667,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "cities"
       ],
@@ -1071,7 +1071,7 @@
         "rus-earlymedieval-cities"
       ],
       "gold": 12000,
-      "ticks": 1320,
+      "ticks": 528,
       "capabilities": [
         "roads",
         "land-traders"
@@ -1088,7 +1088,7 @@
         "rus-earlymedieval-cities"
       ],
       "gold": 5334,
-      "ticks": 600,
+      "ticks": 240,
       "capabilities": [
         "factories-mines"
       ],
@@ -1105,7 +1105,7 @@
         "rus-earlymedieval-factories-mines"
       ],
       "gold": 17334,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "fortifications"
       ],
@@ -1121,7 +1121,7 @@
         "rus-classicalage-siege"
       ],
       "gold": 10667,
-      "ticks": 600,
+      "ticks": 240,
       "capabilities": [
         "barracks-equipment"
       ],
@@ -1137,7 +1137,7 @@
         "rus-earlymedieval-barracks-equipment"
       ],
       "gold": 12000,
-      "ticks": 660,
+      "ticks": 264,
       "capabilities": [
         "ranged"
       ],
@@ -1153,7 +1153,7 @@
         "rus-earlymedieval-barracks-equipment"
       ],
       "gold": 12000,
-      "ticks": 660,
+      "ticks": 264,
       "capabilities": [
         "mobile"
       ],
@@ -1170,7 +1170,7 @@
         "rus-earlymedieval-mobile"
       ],
       "gold": 17334,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "siege"
       ],
@@ -1186,7 +1186,7 @@
         "rus-earlymedieval-ranged"
       ],
       "gold": 12000,
-      "ticks": 660,
+      "ticks": 264,
       "capabilities": [
         "ranged-mobile"
       ],
@@ -1202,7 +1202,7 @@
         "rus-earlymedieval-mobile"
       ],
       "gold": 12000,
-      "ticks": 660,
+      "ticks": 264,
       "capabilities": [
         "heavy-mobile"
       ],
@@ -1218,7 +1218,7 @@
         "rus-earlymedieval-ship-improvements"
       ],
       "gold": 16000,
-      "ticks": 700,
+      "ticks": 280,
       "capabilities": [
         "ports"
       ],
@@ -1234,7 +1234,7 @@
         "rus-latemedieval-ports"
       ],
       "gold": 9334,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "warships"
       ],
@@ -1250,7 +1250,7 @@
         "rus-latemedieval-ports"
       ],
       "gold": 9334,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "sea-traders"
       ],
@@ -1267,7 +1267,7 @@
         "rus-latemedieval-sea-traders"
       ],
       "gold": 13334,
-      "ticks": 1300,
+      "ticks": 520,
       "capabilities": [
         "ship-improvements"
       ],
@@ -1283,7 +1283,7 @@
         "rus-earlymedieval-fortifications"
       ],
       "gold": 13334,
-      "ticks": 1300,
+      "ticks": 520,
       "capabilities": [
         "cities"
       ],
@@ -1299,7 +1299,7 @@
         "rus-latemedieval-cities"
       ],
       "gold": 18668,
-      "ticks": 1600,
+      "ticks": 640,
       "capabilities": [
         "roads",
         "land-traders"
@@ -1316,7 +1316,7 @@
         "rus-latemedieval-cities"
       ],
       "gold": 8000,
-      "ticks": 700,
+      "ticks": 280,
       "capabilities": [
         "factories-mines"
       ],
@@ -1333,7 +1333,7 @@
         "rus-latemedieval-factories-mines"
       ],
       "gold": 26667,
-      "ticks": 900,
+      "ticks": 360,
       "capabilities": [
         "fortifications"
       ],
@@ -1349,7 +1349,7 @@
         "rus-earlymedieval-siege"
       ],
       "gold": 16000,
-      "ticks": 700,
+      "ticks": 280,
       "capabilities": [
         "barracks-equipment"
       ],
@@ -1365,7 +1365,7 @@
         "rus-latemedieval-barracks-equipment"
       ],
       "gold": 18667,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "ranged"
       ],
@@ -1381,7 +1381,7 @@
         "rus-latemedieval-barracks-equipment"
       ],
       "gold": 18667,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "mobile"
       ],
@@ -1398,7 +1398,7 @@
         "rus-latemedieval-mobile"
       ],
       "gold": 26667,
-      "ticks": 1300,
+      "ticks": 520,
       "capabilities": [
         "siege"
       ],
@@ -1414,7 +1414,7 @@
         "rus-latemedieval-ranged"
       ],
       "gold": 18667,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "ranged-mobile"
       ],
@@ -1430,7 +1430,7 @@
         "rus-latemedieval-mobile"
       ],
       "gold": 18667,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "heavy-mobile"
       ],
@@ -1446,7 +1446,7 @@
         "rus-latemedieval-ship-improvements"
       ],
       "gold": 23334,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "ports"
       ],
@@ -1462,7 +1462,7 @@
         "rus-napoleonic-ports"
       ],
       "gold": 13334,
-      "ticks": 880,
+      "ticks": 352,
       "capabilities": [
         "warships"
       ],
@@ -1478,7 +1478,7 @@
         "rus-napoleonic-ports"
       ],
       "gold": 13334,
-      "ticks": 880,
+      "ticks": 352,
       "capabilities": [
         "sea-traders"
       ],
@@ -1495,7 +1495,7 @@
         "rus-napoleonic-sea-traders"
       ],
       "gold": 18334,
-      "ticks": 1400,
+      "ticks": 560,
       "capabilities": [
         "ship-improvements"
       ],
@@ -1511,7 +1511,7 @@
         "rus-latemedieval-fortifications"
       ],
       "gold": 18334,
-      "ticks": 1400,
+      "ticks": 560,
       "capabilities": [
         "cities"
       ],
@@ -1527,7 +1527,7 @@
         "rus-napoleonic-cities"
       ],
       "gold": 26668,
-      "ticks": 1760,
+      "ticks": 704,
       "capabilities": [
         "roads",
         "land-traders"
@@ -1544,7 +1544,7 @@
         "rus-napoleonic-cities"
       ],
       "gold": 11667,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "factories-mines"
       ],
@@ -1561,7 +1561,7 @@
         "rus-napoleonic-factories-mines"
       ],
       "gold": 36667,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "fortifications"
       ],
@@ -1577,7 +1577,7 @@
         "rus-latemedieval-siege"
       ],
       "gold": 23334,
-      "ticks": 800,
+      "ticks": 320,
       "capabilities": [
         "barracks-equipment"
       ],
@@ -1593,7 +1593,7 @@
         "rus-napoleonic-barracks-equipment"
       ],
       "gold": 26667,
-      "ticks": 880,
+      "ticks": 352,
       "capabilities": [
         "ranged"
       ],
@@ -1609,7 +1609,7 @@
         "rus-napoleonic-barracks-equipment"
       ],
       "gold": 26667,
-      "ticks": 880,
+      "ticks": 352,
       "capabilities": [
         "mobile"
       ],
@@ -1626,7 +1626,7 @@
         "rus-napoleonic-mobile"
       ],
       "gold": 36667,
-      "ticks": 1400,
+      "ticks": 560,
       "capabilities": [
         "siege"
       ],
@@ -1642,7 +1642,7 @@
         "rus-napoleonic-ranged"
       ],
       "gold": 26667,
-      "ticks": 880,
+      "ticks": 352,
       "capabilities": [
         "ranged-mobile"
       ],
@@ -1658,7 +1658,7 @@
         "rus-napoleonic-mobile"
       ],
       "gold": 26667,
-      "ticks": 880,
+      "ticks": 352,
       "capabilities": [
         "heavy-mobile"
       ],
@@ -1674,7 +1674,7 @@
         "rus-napoleonic-ship-improvements"
       ],
       "gold": 33334,
-      "ticks": 900,
+      "ticks": 360,
       "capabilities": [
         "ports"
       ],
@@ -1690,7 +1690,7 @@
         "rus-earlymodern-ports"
       ],
       "gold": 20000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "warships"
       ],
@@ -1706,7 +1706,7 @@
         "rus-earlymodern-ports"
       ],
       "gold": 20000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "sea-traders"
       ],
@@ -1723,7 +1723,7 @@
         "rus-earlymodern-sea-traders"
       ],
       "gold": 30000,
-      "ticks": 1600,
+      "ticks": 640,
       "capabilities": [
         "ship-improvements"
       ],
@@ -1739,7 +1739,7 @@
         "rus-earlymodern-warships"
       ],
       "gold": 20000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "submarines"
       ],
@@ -1755,7 +1755,7 @@
         "rus-napoleonic-fortifications"
       ],
       "gold": 30000,
-      "ticks": 1600,
+      "ticks": 640,
       "capabilities": [
         "cities"
       ],
@@ -1771,7 +1771,7 @@
         "rus-earlymodern-cities"
       ],
       "gold": 40000,
-      "ticks": 2000,
+      "ticks": 800,
       "capabilities": [
         "roads",
         "land-traders"
@@ -1788,7 +1788,7 @@
         "rus-earlymodern-cities"
       ],
       "gold": 16667,
-      "ticks": 900,
+      "ticks": 360,
       "capabilities": [
         "factories-mines"
       ],
@@ -1805,7 +1805,7 @@
         "rus-earlymodern-factories-mines"
       ],
       "gold": 60000,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "fortifications"
       ],
@@ -1821,7 +1821,7 @@
         "rus-earlymodern-factories-mines"
       ],
       "gold": 20000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "oil-extraction"
       ],
@@ -1837,7 +1837,7 @@
         "rus-napoleonic-siege"
       ],
       "gold": 33334,
-      "ticks": 900,
+      "ticks": 360,
       "capabilities": [
         "barracks-equipment"
       ],
@@ -1853,7 +1853,7 @@
         "rus-earlymodern-barracks-equipment"
       ],
       "gold": 40000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "ranged"
       ],
@@ -1869,7 +1869,7 @@
         "rus-earlymodern-barracks-equipment"
       ],
       "gold": 40000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "mobile"
       ],
@@ -1886,7 +1886,7 @@
         "rus-earlymodern-mobile"
       ],
       "gold": 60000,
-      "ticks": 1600,
+      "ticks": 640,
       "capabilities": [
         "siege"
       ],
@@ -1902,7 +1902,7 @@
         "rus-earlymodern-mobile"
       ],
       "gold": 40000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "ranged-mobile"
       ],
@@ -1918,7 +1918,7 @@
         "rus-earlymodern-mobile"
       ],
       "gold": 40000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "heavy-mobile"
       ],
@@ -1934,7 +1934,7 @@
         "rus-earlymodern-barracks-equipment"
       ],
       "gold": 40000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "airfields"
       ],
@@ -1950,7 +1950,7 @@
         "rus-earlymodern-airfields"
       ],
       "gold": 40000,
-      "ticks": 1000,
+      "ticks": 400,
       "capabilities": [
         "bombers"
       ],
@@ -1967,7 +1967,7 @@
         "rus-earlymodern-airfields"
       ],
       "gold": 60000,
-      "ticks": 1200,
+      "ticks": 480,
       "capabilities": [
         "nuclear-weapons"
       ],
@@ -1983,7 +1983,7 @@
         "rus-earlymodern-ship-improvements"
       ],
       "gold": 41668,
-      "ticks": 1140,
+      "ticks": 456,
       "capabilities": [
         "ports"
       ],
@@ -1999,7 +1999,7 @@
         "rus-modern-ports"
       ],
       "gold": 25000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "warships"
       ],
@@ -2015,7 +2015,7 @@
         "rus-modern-ports"
       ],
       "gold": 25000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "sea-traders"
       ],
@@ -2032,7 +2032,7 @@
         "rus-modern-sea-traders"
       ],
       "gold": 37500,
-      "ticks": 1500,
+      "ticks": 600,
       "capabilities": [
         "ship-improvements"
       ],
@@ -2048,7 +2048,7 @@
         "rus-modern-warships"
       ],
       "gold": 37500,
-      "ticks": 1500,
+      "ticks": 600,
       "capabilities": [
         "naval-missiles-air-defence"
       ],
@@ -2069,7 +2069,7 @@
         "rus-earlymodern-submarines"
       ],
       "gold": 25000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "submarines"
       ],
@@ -2085,7 +2085,7 @@
         "rus-earlymodern-fortifications"
       ],
       "gold": 37500,
-      "ticks": 1500,
+      "ticks": 600,
       "capabilities": [
         "cities"
       ],
@@ -2101,7 +2101,7 @@
         "rus-modern-cities"
       ],
       "gold": 50000,
-      "ticks": 2520,
+      "ticks": 1008,
       "capabilities": [
         "roads",
         "land-traders"
@@ -2118,7 +2118,7 @@
         "rus-modern-cities"
       ],
       "gold": 20834,
-      "ticks": 1140,
+      "ticks": 456,
       "capabilities": [
         "factories-mines"
       ],
@@ -2135,7 +2135,7 @@
         "rus-modern-factories-mines"
       ],
       "gold": 75000,
-      "ticks": 1500,
+      "ticks": 600,
       "capabilities": [
         "fortifications"
       ],
@@ -2151,7 +2151,7 @@
         "rus-earlymodern-nuclear-weapons"
       ],
       "gold": 41668,
-      "ticks": 1140,
+      "ticks": 456,
       "capabilities": [
         "barracks-equipment"
       ],
@@ -2167,7 +2167,7 @@
         "rus-modern-barracks-equipment"
       ],
       "gold": 50000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "ranged"
       ],
@@ -2183,7 +2183,7 @@
         "rus-modern-barracks-equipment"
       ],
       "gold": 50000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "mobile"
       ],
@@ -2200,7 +2200,7 @@
         "rus-modern-mobile"
       ],
       "gold": 75000,
-      "ticks": 1500,
+      "ticks": 600,
       "capabilities": [
         "siege"
       ],
@@ -2216,7 +2216,7 @@
         "rus-modern-mobile"
       ],
       "gold": 50000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "ranged-mobile"
       ],
@@ -2232,7 +2232,7 @@
         "rus-modern-mobile"
       ],
       "gold": 50000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "heavy-mobile"
       ],
@@ -2248,7 +2248,7 @@
         "rus-modern-barracks-equipment"
       ],
       "gold": 50000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "airfields"
       ],
@@ -2264,7 +2264,7 @@
         "rus-modern-airfields"
       ],
       "gold": 50000,
-      "ticks": 1260,
+      "ticks": 504,
       "capabilities": [
         "bombers"
       ],
@@ -2282,7 +2282,7 @@
         "rus-modern-airfields"
       ],
       "gold": 75000,
-      "ticks": 1500,
+      "ticks": 600,
       "capabilities": [
         "missile-infrastructure"
       ],
@@ -2298,7 +2298,7 @@
         "rus-modern-missile-infrastructure"
       ],
       "gold": 75000,
-      "ticks": 1500,
+      "ticks": 600,
       "capabilities": [
         "mirvs-drones"
       ],

@@ -1,3 +1,4 @@
+import { secondsToTicks } from './Protocol';
 import { validateOccupancy } from "./domain/TrenchOccupancy";
 import {stepDiplomaticWithdrawal,validateAiWithdrawal} from './domain/AiDiplomaticWithdrawal';
 import { validateStance } from "./domain/SkirmishStance";
@@ -189,7 +190,7 @@ const PATH_WARM_TREES = 4;
 // still floats; it uses the first age's hull.
 const FALLBACK_TRANSPORT = VESSELS.find(v => v.kind === "transport")!;
 export const WARSHIP_PATROL_RADIUS = 2;
-export const WARSHIP_COMBAT_COOLDOWN = 60;
+export const WARSHIP_COMBAT_COOLDOWN = secondsToTicks(3);
 export const WARSHIP_REPAIR_FRACTION = 0.10;
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
@@ -598,7 +599,7 @@ export class Skirmish {
     // No faction-control callback interleaves this synchronous routing read
     // phase. Trade's committed view is likewise fixed for the current tick.
     this.routeClassificationEpoch++;
-    this.routeWork.drain(24, {
+    this.routeWork.drain(480/TICKS_PER_SECOND, {
       read: () => this.paths.work,
       limit: ROUTE_EFFORT_LIMIT,
     },task=>{
@@ -611,15 +612,15 @@ export class Skirmish {
     // Share the existing 128-unit allowance across both sides of the planner;
     // background admission and route budgets remain unchanged.
     const interactiveWork = this.options.deferredPlanning
-      ? this.movementAdmission.stepInteractive(this.tick, 128) : 0;
-    this.routePlanner.step(this.tick);
+      ? this.movementAdmission.stepInteractive(this.tick, 2560/TICKS_PER_SECOND) : 0;
+    this.routePlanner.step(this.tick,81920/TICKS_PER_SECOND);
     if(this.options.deferredPlanning) {
-      this.movementAdmission.stepInteractive(this.tick,128-interactiveWork);
-      const landWork = this.movementAdmission.step(this.tick, 32);
-      const shipWork = this.shipAdmission.step(this.tick, 16);
-      const armyWork = this.expansion?.armies.stepPlanning(16) ?? 0;
-      const tradeWork = this.expansion?.trade.stepPlanning(16) ?? 0;
-      const remaining = 128 - landWork - shipWork - armyWork - tradeWork;
+      this.movementAdmission.stepInteractive(this.tick,2560/TICKS_PER_SECOND-interactiveWork);
+      const landWork = this.movementAdmission.step(this.tick, 640/TICKS_PER_SECOND);
+      const shipWork = this.shipAdmission.step(this.tick, 320/TICKS_PER_SECOND);
+      const armyWork = this.expansion?.armies.stepPlanning(320/TICKS_PER_SECOND) ?? 0;
+      const tradeWork = this.expansion?.trade.stepPlanning(320/TICKS_PER_SECOND) ?? 0;
+      const remaining = 2560/TICKS_PER_SECOND - landWork - shipWork - armyWork - tradeWork;
       const used = this.movementAdmission.step(this.tick, remaining);
       this.shipAdmission.step(this.tick, remaining - used);
     }
@@ -739,9 +740,9 @@ export class Skirmish {
     readonly map: GameMap,
     readonly options: MatchOptions,
   ) {
-    if (options.autonomousRouteDeadlineTicks !== undefined && options.autonomousRouteDeadlineTicks !== 40)
+    if (options.autonomousRouteDeadlineTicks !== undefined && options.autonomousRouteDeadlineTicks !== secondsToTicks(2))
       throw new Error("Invalid autonomous routing deadline");
-    if(options.autonomousDecisionInterval!==undefined && options.autonomousDecisionInterval!==30)
+    if(options.autonomousDecisionInterval!==undefined && options.autonomousDecisionInterval!==secondsToTicks(1.5))
       throw new Error("Invalid autonomous decision cadence");
     this.territoryAbsorption = new TerritoryAbsorption(map);
     this.coastalTerritory = new CoastalTerritory(map);
@@ -792,7 +793,7 @@ export class Skirmish {
     {
       const ticks = (paths?: { hierarchyPortals: number }) => Math.ceil((paths?.hierarchyPortals ?? 0) / PATH_WARM_TREES) + 1;
       const land = ticks(this.paths), water = land + ticks(this.waterPaths);
-      this.corridorTicks = { land, water, amphibious: options.autonomousRouteDeadlineTicks===40 ? water+ticks(this.amphibiousPaths) : Infinity };
+      this.corridorTicks = { land, water, amphibious: options.autonomousRouteDeadlineTicks===secondsToTicks(2) ? water+ticks(this.amphibiousPaths) : Infinity };
     }
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
       classificationRevision: () => this.routeClassificationEpoch,
@@ -808,7 +809,7 @@ export class Skirmish {
       // (sea lanes, caravans heading home across a continent) otherwise exceed
       // the bounded arena, fail as "limited" and strand couriers in backoff.
       corridorReady: request => (this.interactiveRoute(request.context) || request.context.kind === "domain" && request.context.owner === "trade" ||
-        this.options.autonomousRouteDeadlineTicks===40 && this.map.euclideanDistSquared(request.start,request.goal)>=128**2) &&
+        this.options.autonomousRouteDeadlineTicks===secondsToTicks(2) && this.map.euclideanDistSquared(request.start,request.goal)>=128**2) &&
         this.tick >= (request.water ? this.corridorTicks.water : request.amphibious ? this.corridorTicks.amphibious : this.corridorTicks.land),
       priority: request => this.interactiveRoute(request.context),
       committed: request => request.context.kind === "domain" && request.context.owner === "trade" &&
@@ -882,7 +883,7 @@ export class Skirmish {
           const cached = this.moveContinuations.get(squad.id);
           if (cached && cached.revision === request.context.revision) {
             if (outcome === "complete") cached.path = path;
-            cached.retryAt = this.tick + 20;
+            cached.retryAt = this.tick + secondsToTicks(1);
           }
           return;
         }
@@ -1198,7 +1199,7 @@ export class Skirmish {
         const source=formationSlots(previous,this.tick),destination=formationSlots({...next,formation:{...formation,transition:undefined}},this.tick);
         const fromSlots=destination.map((slot,i)=>source[i]??{x:0,y:0,row:0});
         const distance=Math.max(...destination.map((slot,i)=>Math.hypot(slot.x-fromSlots[i].x,slot.y-fromSlots[i].y)));
-        const duration=Math.min(200,Math.max(formationDoctrine(previous.definitionId).transitionTicks,Math.ceil(distance*20/(FIXED*2.5))));
+        const duration=Math.min(secondsToTicks(10),Math.max(formationDoctrine(previous.definitionId).transitionTicks,Math.ceil(distance*TICKS_PER_SECOND/(FIXED*2.5))));
         changes={...changes,formation:{...formation,layoutTroops:destination.length,revision:previous.formation.revision+1,transition:{from:before.shape,fromFacing:facingOf(before.angle),fromSlots,startTick:this.tick,duration}}};
       }
     }
@@ -1319,7 +1320,7 @@ export class Skirmish {
         const source=formationSlots(s,this.tick),destination=formationSlots({...s,formation:{...old,shape:command.shape,frontage,transition:undefined}},this.tick);
         const fromAngle=radians(old.facing),toAngle=radians(facing);
         const distance=Math.max(...source.map((slot,i)=>Math.hypot(slot.x*Math.cos(fromAngle)-slot.y*Math.sin(fromAngle)-destination[i].x*Math.cos(toAngle)+destination[i].y*Math.sin(toAngle),slot.x*Math.sin(fromAngle)+slot.y*Math.cos(fromAngle)-destination[i].x*Math.sin(toAngle)-destination[i].y*Math.cos(toAngle))));
-        const duration=Math.min(200,Math.max(formationDoctrine(s.definitionId).transitionTicks,Math.ceil(distance*20/(FIXED*2.5))));
+        const duration=Math.min(secondsToTicks(10),Math.max(formationDoctrine(s.definitionId).transitionTicks,Math.ceil(distance*TICKS_PER_SECOND/(FIXED*2.5))));
         reforms.push({id:s.id,formation:{shape:command.shape,frontage,preferredFrontage:frontage,shapeLock,autoFrontage:false,facing,mode:command.shape==='column'?'travel':'deployed',automatic:false,deployedShape:command.shape==='column'?deployedShape(s):command.shape,lastDeployTick:this.tick,revision:old.revision+1,layoutTroops:s.troops,transition:{from:old.shape,fromFrontage:old.frontage,fromAutomatic:old.automatic,fromAutoFrontage:old.autoFrontage,fromFacing:old.facing,startTick:this.tick,duration,fromSlots:source}}});
         const proposed={...s,formation:reforms[reforms.length-1].formation};
         if(!this.certifyFormationPolygon(proposed,transitionFootprint(proposed,this.tick,this.tick+duration)))return "There is no room to deploy this formation across blocked ground";
@@ -2196,7 +2197,7 @@ export class Skirmish {
       const fromSlots=next.map((p,i)=>current[i]??{x:0,y:0,row:0});
       const angle=formationEnvelope(s,this.tick).angle;
       const distance=Math.max(...next.map((p,i)=>Math.hypot(p.x-fromSlots[i].x,p.y-fromSlots[i].y)));
-      const duration=n<previous && old.transition?Math.max(1,old.transition.startTick+old.transition.duration-this.tick):Math.min(200,Math.max(20,Math.ceil(distance*20/(FIXED*2.5))));
+      const duration=n<previous && old.transition?Math.max(1,old.transition.startTick+old.transition.duration-this.tick):Math.min(secondsToTicks(10),Math.max(TICKS_PER_SECOND,Math.ceil(distance*TICKS_PER_SECOND/(FIXED*2.5))));
       this.squadEntities.updateOwned(s.id,{formation:{...nextState,layoutTroops:n,revision:old.revision+1,transition:{from:old.shape,fromFacing:facingOf(angle),fromSlots,startTick:this.tick,duration}}});
     }
   }
@@ -2325,7 +2326,7 @@ export class Skirmish {
         this.squadEntities.updateOwned(s.id,{formation:{...old,...(decision==='deploy'?{autoFrontage:false,automatic:false,frontage,preferredFrontage:frontage,deployedShape:shape,deploymentFacing:undefined,lastDeployTick:this.tick}:{}),retryTick:this.tick+COLUMN_TRAVEL.retryTicks,revision:old.revision+1}});
         continue;
       }
-      const duration=Math.min(200,Math.max(formationDoctrine(s.definitionId).transitionTicks,Math.ceil(distance*20/(FIXED*2.5))));
+      const duration=Math.min(secondsToTicks(10),Math.max(formationDoctrine(s.definitionId).transitionTicks,Math.ceil(distance*TICKS_PER_SECOND/(FIXED*2.5))));
       const formation={...old,shape,frontage,facing,autoFrontage:decision==='fold' && shape!=='column',preferredFrontage:decision==='fold'?(old.autoFrontage||old.automatic?old.preferredFrontage:old.frontage):frontage,mode:shape==='column'?'travel' as const:'deployed' as const,
         deployedShape:decision==='fold'?(old.autoFrontage||old.automatic?old.deployedShape:old.shape):shape,deploymentFacing:decision==='fold'?old.deploymentFacing:undefined,automatic:decision==='fold' && shape==='column',trail:undefined,
         blocked:false,blockedSince:undefined,settledSince:undefined,retryTick:undefined,lastDeployTick:decision==='deploy'?this.tick:old.lastDeployTick,revision:old.revision+1,
@@ -2596,7 +2597,7 @@ export class Skirmish {
         ? {
             patrolTile: tile,
             repairState: "patrolling" as const,
-            patrolDwellTicks: 100,
+            patrolDwellTicks: secondsToTicks(5),
           }
         : {}),
     });
@@ -2663,7 +2664,7 @@ export class Skirmish {
       this.shipEntities.updateOwned(ship.id, { patrolTile: tile });
       this.shipEntities.updateOwned(ship.id, { repairPortId: null });
       this.shipEntities.updateOwned(ship.id, { repairState: "patrolling" });
-      this.shipEntities.updateOwned(ship.id, { patrolDwellTicks: 100 });
+      this.shipEntities.updateOwned(ship.id, { patrolDwellTicks: secondsToTicks(5) });
     }
   }
 
@@ -2671,7 +2672,7 @@ export class Skirmish {
     // Stagger five seconds of ordinary patrol with five seconds on station.
     // Contacts and missions bypass this duty cycle; no four-tick position jumps
     // are introduced into capture or combat geometry.
-    return (this.tick + ship.id * 37) % 200 < 100 ||
+    return (this.tick + ship.id * 37) % secondsToTicks(10) < secondsToTicks(5) ||
       ship.fighting || ship.navalTargetId !== undefined ||
       this.tick - (ship.lastCombatTick ?? -60) < WARSHIP_COMBAT_COOLDOWN ||
       this.hasNavalOpponents(ship.playerId);
@@ -2838,7 +2839,7 @@ export class Skirmish {
           range = rules.range;
         const legalShot="tile" in explicit ? !!structureAim(ship,[explicit.tile],range,ship.playerId,this.map.width(),this.expansion.fortifications) : this.expansion.fortifications.clear(ship,p,ship.playerId);
         if (this.distanceSquared(ship, p) > range ** 2 || !legalShot) {
-          if (this.tick - (ship.lastPlanTick ?? -60) >= 60) {
+          if (this.tick - (ship.lastPlanTick ?? -60) >= secondsToTicks(3)) {
             this.shipEntities.setOwned(ship.id, "lastPlanTick", this.tick);
             const tile = this.tileOf(p),
               extent = Math.ceil((range / FIXED) * 0.85);
@@ -3139,7 +3140,7 @@ export class Skirmish {
   private autonomousNavalPursuit(ship: Ship): boolean {
     if (!this.expansion || this.shipAdmission.replacement(ship.id) !== undefined || ship.attackTargetId || ship.waypoints.length ||
         (ship.destination !== null && !ship.autonomousVoyage)) return false;
-    if ((this.tick+ship.id)%10!==0) return ship.navalTargetId!==undefined;
+    if ((this.tick+ship.id)%secondsToTicks(.5)!==0) return ship.navalTargetId!==undefined;
     if (!this.hasNavalOpponents(ship.playerId)) return false;
     const anchor = ship.patrolTile ?? this.tileOf(ship), sea = this.waterPaths.component[this.tileOf(ship)];
     const legal = (target:{x:number;y:number;playerId:number}) => this.hostile(ship.playerId,target.playerId) &&
@@ -3156,9 +3157,9 @@ export class Skirmish {
     if (!target || kind !== desiredKind) {
       const facts = this.spatialFacts("combat");
       facts.ships.sample(ship.x,ship.y,16*FIXED,this.navalShipCandidates,
-        s=>s.id!==ship.id && s.health>0 && legal(s),32,256,(Math.floor(this.tick/10)+ship.id)*256);
+        s=>s.id!==ship.id && s.health>0 && legal(s),32,256,(Math.floor(this.tick/secondsToTicks(.5))+ship.id)*256);
       facts.ground.sample(ship.x,ship.y,16*FIXED,this.navalSquadCandidates,
-        s=>!!s.afloat && navalHealth(s)>0 && legal(s),32,256,(Math.floor(this.tick/10)+ship.id)*256);
+        s=>!!s.afloat && navalHealth(s)>0 && legal(s),32,256,(Math.floor(this.tick/secondsToTicks(.5))+ship.id)*256);
       const candidates: NavalTarget[] = [...this.navalShipCandidates, ...this.navalSquadCandidates];
       if (target && !("cargo" in target) && !candidates.some(s=>s.id===target!.id)) candidates.push(target);
       candidates.sort((a,b)=>navalRank(a,priority)-navalRank(b,priority) || this.distanceSquared(ship,a)-this.distanceSquared(ship,b) || a.id-b.id);
@@ -3315,7 +3316,7 @@ export class Skirmish {
         !ship.attackTargetId &&
         this.tick - (ship.lastCombatTick ?? -WARSHIP_COMBAT_COOLDOWN) >= WARSHIP_COMBAT_COOLDOWN;
 
-      if (isDamaged && outOfCombat && (this.tick + ship.id) % 10 === 0) {
+      if (isDamaged && outOfCombat && (this.tick + ship.id) % secondsToTicks(.5) === 0) {
         const dock = this.findNearestDockWithCapacity(ship, occupiedPorts);
         if (dock) {
           this.shipEntities.updateOwned(ship.id, { repairPortId: dock.port.id });
@@ -3387,7 +3388,7 @@ export class Skirmish {
       }
     }
     if (!this.pathsWarm) {
-      if(this.options.autonomousRouteDeadlineTicks===40) {
+      if(this.options.autonomousRouteDeadlineTicks===secondsToTicks(2)) {
         const paths=this.warmGraph==="land"?this.paths:this.warmGraph==="water"?this.waterPaths:this.amphibiousPaths;
         if(paths?.warm(PATH_WARM_TREES) ?? true)this.warmGraph=this.warmGraph==="land"?"water":this.warmGraph==="water"?"amphibious":"done";
         this.pathsWarm=this.warmGraph==="done";
@@ -4005,7 +4006,7 @@ export class Skirmish {
       progress.y = squad.y;
       progress.tick = this.tick;
     }
-    if (this.tick - progress.tick < 20 || this.tick - progress.recovery < 20)
+    if (this.tick - progress.tick < secondsToTicks(1) || this.tick - progress.recovery < secondsToTicks(1))
       return;
     progress.recovery = this.tick;
     if (this.options.deferredPlanning && squad.order.type === "move" &&
@@ -4240,7 +4241,7 @@ export class Skirmish {
         };
       const targetTile = this.tileOf(target);
       if (
-        this.tick - squad.lastPlanTick >= 10 &&
+        this.tick - squad.lastPlanTick >= secondsToTicks(0.5) &&
         (targetTile !== squad.plannedTile ||
           squad.nextPathIndex >= squad.path.length)
       ) {
@@ -4276,7 +4277,7 @@ export class Skirmish {
     // Recover its terrain corridor at a bounded rate instead of steering into a wall.
     if (
       squad.order.type !== "attack" &&
-      this.tick - squad.lastPlanTick >= 10 &&
+      this.tick - squad.lastPlanTick >= secondsToTicks(0.5) &&
       !traversable(
         this.map,
         squad,
@@ -4857,7 +4858,7 @@ export class Skirmish {
   }
 
   private thinkAi(): void {
-    const decisionInterval=this.options.autonomousDecisionInterval ?? 15;
+    const decisionInterval=this.options.autonomousDecisionInterval ?? secondsToTicks(.75);
     const armies = new Map<number, Squad[]>();
     for (const squad of this.squads) {
       if (squad.embarkedOn !== null) continue;
@@ -4870,7 +4871,7 @@ export class Skirmish {
     for (const player of this.players) {
       if (!player.ai || player.eliminated) continue;
       const personality = personalityOf(player);
-      const develop = this.tick % 60 === player.id % 60;
+      const develop = this.tick % secondsToTicks(3) === player.id % secondsToTicks(3);
       if (develop) {
         if (player.kind === "regular") this.developAi(player);
         else if (player.kind === "tribe" && !this.expansion) this.developTribeAi(player);
@@ -4930,7 +4931,7 @@ export class Skirmish {
       }
       // No offensive candidate/formation work while this operation sleeps.
       const policy = this.expansion?.operations.enabled(player);
-      if(!develop && (policy || decisionInterval===30 && (this.tick+player.id)%60!==0) &&
+      if(!develop && (policy || decisionInterval===secondsToTicks(1.5) && (this.tick+player.id)%secondsToTicks(3)!==0) &&
         !own.some(s=>(this.tick+s.id)%decisionInterval===1))continue;
       const recovering = policy && this.expansion!.operations.state(player.id)?.phase === "recovery";
       const target = policy ? this.expansion!.operations.offensiveTarget(player.id) : undefined;
@@ -4968,7 +4969,7 @@ export class Skirmish {
         );
       const raids = new Map<number, Squad[]>();
       const marches=new Map<string,Squad[]>();
-      if(!recovering && (this.tick+player.id)%60===0)this.expandAcrossRiver(player,own);
+      if(!recovering && (this.tick+player.id)%secondsToTicks(3)===0)this.expandAcrossRiver(player,own);
       for (let i = 0; i < own.length; i++) {
         const squad = own[i];
         if(controllerOf({armyOf:id=>this.expansion?.armies.armyOf(id),directArmyAction:id=>this.expansion?.armies.directArmyAction(id)??false},squad)!=="none")continue;
@@ -4984,7 +4985,7 @@ export class Skirmish {
             UNIT.get(squad.definitionId)?.role === "launcher")
         )
           continue;
-        if(squad.planningPaused && this.options.autonomousRouteDeadlineTicks===40)
+        if(squad.planningPaused && this.options.autonomousRouteDeadlineTicks===secondsToTicks(2))
           this.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"hold"}});
         const current = this.tileOf(squad);
         if (policy && ((squad.order.type === "attack" && (!this.squad(squad.order.targetId) || !this.aiCanPursue(player.id, this.squad(squad.order.targetId)!.playerId, this.tileOf(this.squad(squad.order.targetId)!)))) ||
@@ -5053,7 +5054,7 @@ export class Skirmish {
             continue;
           }
           const hostileRange=this.expansion?effectiveRange(this,acrossWater,this.expansion.unit(acrossWater).attack,squad):SQUAD_RULES.archer.range;
-          if(this.tick-squad.lastCombatTick<=100 && this.distanceSquared(squad,acrossWater)<=hostileRange**2) {
+          if(this.tick-squad.lastCombatTick<=secondsToTicks(5) && this.distanceSquared(squad,acrossWater)<=hostileRange**2) {
             // Without embarkation, leave the firing envelope instead of issuing
             // the same impossible attack indefinitely. Normal admission validates travel.
             let escape=current,best=this.distanceSquared(squad,acrossWater);
@@ -5206,7 +5207,7 @@ export class Skirmish {
     if(!members.length)return false;
     // A crossing is an ordinary amphibious move; squads take to the water.
     const result=this.applyCommand({type:"order",playerId:player.id,squadIds:members.map(s=>s.id),order:{type:"move",tile:destination}});
-    this.homeTerritory.crossed(player.id,this.tick,result===null?(defense?100:600):200);
+    this.homeTerritory.crossed(player.id,this.tick,result===null?(defense?secondsToTicks(5):secondsToTicks(30)):secondsToTicks(10));
     if(result!==null)this.homeTerritory.failed(player.id,destination,this.tick);
     return result===null;
   }

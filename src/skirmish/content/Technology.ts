@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import {
   AGES,
   TREES,
@@ -29,13 +30,13 @@ export const STARTING_TECHNOLOGIES = [
 export const ADVANCES = [
   // Post-Stone prices follow capped market throughput, not the former unlimited
   // unload economy. Research catalogue prices use the same one-third rebalance.
-  { gold: 3_000, ticks: 1000 },
-  { gold: 18_750, ticks: 1100 },
-  { gold: 27_500, ticks: 1200 },
-  { gold: 40_000, ticks: 1300 },
-  { gold: 57_500, ticks: 1400 },
-  { gold: 82_500, ticks: 1500 },
-  { gold: 120_000, ticks: 1700 },
+  { gold: 3_000, ticks: secondsToTicks(50) },
+  { gold: 18_750, ticks: secondsToTicks(55) },
+  { gold: 27_500, ticks: secondsToTicks(60) },
+  { gold: 40_000, ticks: secondsToTicks(65) },
+  { gold: 57_500, ticks: secondsToTicks(70) },
+  { gold: 82_500, ticks: secondsToTicks(75) },
+  { gold: 120_000, ticks: secondsToTicks(85) },
 ] as const;
 export function treeWorkload(age: Age, tree: Tree): number {
   return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree && !t.optional).length;

@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { minimumTravelAssignment } from '../../src/skirmish/domain/FormationSlotAssignment';
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -145,7 +146,7 @@ describe("authoritative column travel", () => {
       const f = scene(count, "gate-1");
       move(f);
       let column = false;
-      for (let tick = 0; tick < 2000; tick++) {
+      for (let tick = 0; tick < secondsToTicks(100); tick++) {
         const before = { x: f.s.x, y: f.s.y },
           members = memberPositions(f);
         f.game.step();
@@ -181,7 +182,7 @@ describe("authoritative column travel", () => {
     const f = scene(144, "bend", true);
     move(f);
     let bent = false;
-    for (let tick = 0; tick < 2400; tick++) {
+    for (let tick = 0; tick < secondsToTicks(120); tick++) {
       f.game.step();
       expect(
         legal(f),
@@ -203,9 +204,9 @@ describe("authoritative column travel", () => {
     const f = scene(72, "gate-1");
     f.game.updateSquad(f.s.id, { x: 80.5 * FIXED });
     move(f);
-    for (let i = 0; i < 25; i++) f.game.step();
+    for (let i = 0; i < secondsToTicks(1.25); i++) f.game.step();
     let sawTravel = false;
-    for (let round = 0; round < 2; round++) {
+    for (let round = 0; round < secondsToTicks(0.1); round++) {
       const restored = new Skirmish(
         new GameMapImpl(
           f.size,
@@ -221,7 +222,7 @@ describe("authoritative column travel", () => {
         new SnapshotDecoder().decode(packet).squads.find((s) => s.id === f.s.id)
           ?.formation,
       ).toEqual(f.s.formation);
-      for (let i = 0; i < 220; i++) {
+      for (let i = 0; i < secondsToTicks(11); i++) {
         f.game.step();
         restored.step();
         expect(restored.squads).toEqual(f.game.squads);
@@ -237,7 +238,7 @@ describe("authoritative column travel", () => {
   it("retains manual column intent, queues deployed shape changes, and forbids a charge in travel", () => {
     const f = scene(72, "gate-1");
     move(f);
-    for (let i = 0; i < 230; i++) f.game.step();
+    for (let i = 0; i < secondsToTicks(11.5); i++) f.game.step();
     expect(f.s.formation?.automatic).toBe(true);
     expect(
       f.game.applyCommand({
@@ -266,7 +267,7 @@ describe("authoritative column travel", () => {
         order: { type: "hold" },
       }),
     ).toBeNull();
-    for (let i = 0; i < 100; i++) f.game.step();
+    for (let i = 0; i < secondsToTicks(5); i++) f.game.step();
     expect(f.s.formation?.shape).toBe("column");
     expect(
       f.game.applyCommand({
@@ -296,17 +297,17 @@ describe("authoritative column travel", () => {
       },
     });
     const weaponState = {
-      sharedReadyTick: 900,
-      ranged: { nextTick: 900, shots: 7, remainder: 0, reloadStartedTick: 1 },
+      sharedReadyTick: secondsToTicks(45),
+      ranged: { nextTick: secondsToTicks(45), shots: 7, remainder: 0, reloadStartedTick: 1 },
     };
     f.game.updateSquad(f.s.id, { weaponState });
-    for (let i = 0; i < 25; i++) f.game.step();
+    for (let i = 0; i < secondsToTicks(1.25); i++) f.game.step();
     expect(f.s.formation?.blocked).toBe(true);
     expect(f.s.formation?.shape).toBe("column");
     expect(f.s.weaponState).toEqual(weaponState);
     expect(legal(f)).toBe(true);
     f.game.updateSquad(f.s.id, { x: 145.5 * FIXED });
-    for (let i = 0; i < 250; i++) f.game.step();
+    for (let i = 0; i < secondsToTicks(12.5); i++) f.game.step();
     expect(f.s.formation?.shape).toBe("line");
     expect(f.s.formation?.blocked).toBe(false);
     expect(legal(f)).toBe(true);
@@ -391,7 +392,7 @@ describe("authoritative column travel", () => {
         order: { type: "move", tile: f.map.ref(148, 72) },
       }),
     ).toBeNull();
-    for (let i = 0; i < 2200; i++) {
+    for (let i = 0; i < secondsToTicks(110); i++) {
       f.game.step();
       expect(legal(f)).toBe(true);
       if (
@@ -422,7 +423,7 @@ describe("authoritative column travel", () => {
       },
     });
     move(f);
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < secondsToTicks(100); i++) {
       f.game.step();
       expect(legal(f)).toBe(true);
       if (
@@ -467,7 +468,7 @@ describe("authoritative column travel", () => {
       }),
     ).toBeNull();
     expect(player.reserves).toBe(before - 24);
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < secondsToTicks(25); i++) {
       f.game.step();
       expect(legal(f)).toBe(true);
     }
@@ -489,19 +490,19 @@ describe("authoritative column travel", () => {
           fromFacing: f.s.formation!.facing,
           fromSlots: source,
           startTick: 0,
-          duration: 200,
+          duration: secondsToTicks(10),
         },
       },
     });
     const sweep = transitionFootprint(f.s, 0, 200);
-    for (let tick = 0; tick <= 200; tick += 4)
+    for (let tick = 0; tick <= secondsToTicks(10); tick += secondsToTicks(0.2))
       for (const p of formationFootprint(f.s, tick))
         expect(polygonContact([p], sweep).gap).toBe(0);
   });
   it("invalidates a carrier-trail certificate when a physical wall is added", () => {
     const f = scene();
     move(f);
-    for (let i = 0; i < 230; i++) f.game.step();
+    for (let i = 0; i < secondsToTicks(11.5); i++) f.game.step();
     const end = { x: f.s.x + 16, y: f.s.y };
     expect((f.game as any).formationMoveClear(f.s, end)).toBe(true);
     const occupied=memberPositions(f)[0];
@@ -524,9 +525,9 @@ describe("authoritative column travel", () => {
   it("preserves orders and weapon state when deployment is interrupted by a move and casualties", () => {
     const f = scene(),
       weaponState = {
-        sharedReadyTick: 9999,
+        sharedReadyTick: secondsToTicks(499.95),
         ranged: {
-          nextTick: 9999,
+          nextTick: secondsToTicks(499.95),
           shots: 7,
           remainder: 0,
           reloadStartedTick: 1,
@@ -542,7 +543,7 @@ describe("authoritative column travel", () => {
         deployedShape: "line",
       },
     });
-    for(let i=0;i<12;i++)f.game.step();
+    for(let i=0;i<secondsToTicks(0.6);i++)f.game.step();
     expect(f.s.formation?.transition?.from).toBe("column");
     expect(
       f.game.applyCommand({
@@ -553,7 +554,7 @@ describe("authoritative column travel", () => {
       }),
     ).toBeNull();
     f.game.updateSquad(f.s.id, { troops: 60 });
-    for (let i = 0; i < 1400; i++) {
+    for (let i = 0; i < secondsToTicks(70); i++) {
       f.game.step();
       expect(legal(f)).toBe(true);
       expect(f.s.weaponState).toEqual(weaponState);
@@ -758,7 +759,7 @@ describe("authoritative column travel", () => {
           fromFacing: f.s.formation!.facing,
           fromSlots: source,
           startTick: 0,
-          duration: 200,
+          duration: secondsToTicks(10),
         },
       },
     });

@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { MatchMetricsViewModel } from "../../src/skirmish/client/MatchMetricsViewModel";
@@ -54,7 +55,7 @@ function shipment() {
   building(m, "city", 11, 2);
   e.progression.states[1].completed.push("rus-stoneage-land-traders");
   e.supply.goods.set(factory.id, 25);
-  tradeStep(m, 22);
+  tradeStep(m, secondsToTicks(1.1));
   const actor = e.trade.actors[0];
   expect(actor.cargo).toBe(25);
   return { m, e, factory, actor };
@@ -139,7 +140,7 @@ describe("authoritative match metrics", () => {
     expect(e.trade.capturedValue[2]).toBe(500);
     expect(e.trade.lostValue[1]).toBe(500);
     expect(m.players[1].gold).toBe(gold);
-    tradeStep(m, 10);
+    tradeStep(m, secondsToTicks(0.5));
     expect(e.trade.capturedValue[2]).toBe(500);
     m.updateSquad(captor.id, { x: 85 * FIXED });
     const recaptor = m.squads.find((s) => s.playerId === 1)!;
@@ -153,7 +154,7 @@ describe("authoritative match metrics", () => {
   it("records discarded cargo once and preserves shipment conservation", () => {
     const { m, e, actor } = shipment();
     m.players[0].eliminated = true;
-    tradeStep(m, 2);
+    tradeStep(m, secondsToTicks(0.1));
     expect(e.trade.lostValue[1]).toBe(500);
     expect(actor.cargo).toBe(0);
     expect(actor.loaded).toBe(actor.delivered + actor.returned + actor.lost);
@@ -169,7 +170,7 @@ describe("authoritative match metrics", () => {
     expect(actor.returned).toBe(25);
     expect(e.trade.lostValue[1] ?? 0).toBe(0);
     e.supply.goods.set(factory.id, 25);
-    tradeStep(m, 22);
+    tradeStep(m, secondsToTicks(1.1));
     for (let i = 0; i < 1000 && !actor.delivered; i++) tradeStep(m);
     expect(actor.delivered).toBeGreaterThan(0);
     expect(e.trade.lostValue[1] ?? 0).toBe(0);

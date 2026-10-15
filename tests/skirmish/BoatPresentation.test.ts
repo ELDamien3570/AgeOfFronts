@@ -1,3 +1,6 @@
+import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
+const presentationTicks=(seconds:number)=>seconds*TICKS_PER_SECOND;
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { BoatPresentation } from "../../src/skirmish/client/BoatPresentation";
 import { FIXED, type Snapshot } from "../../src/skirmish/Protocol";
@@ -30,7 +33,7 @@ describe("boat-only presentation", () => {
     "interpolates local/online %i ms samples without overshoot",
     (interval) => {
       const f = fixture();
-      f.update(interval / 50, interval, 100);
+      f.update(presentationTicks((interval / 50)/20), interval, 100);
       expect(f.pose(interval).x).toBe(0);
       expect(f.pose(interval * 1.5).x).toBeCloseTo(50);
       expect(f.pose(interval * 2).x).toBe(100);
@@ -47,7 +50,7 @@ describe("boat-only presentation", () => {
         const now = (frame * 1000) / hz;
         if (Math.floor((now + 0.001) / 200) > f.snapshot.tick / 4)
           f.update(
-            Math.floor((now + 0.001) / 200) * 4,
+            presentationTicks((Math.floor((now + 0.001) / 200)*0.2)),
             now,
             Math.floor((now + 0.001) / 200) * 100,
           );
@@ -61,20 +64,20 @@ describe("boat-only presentation", () => {
 
   it("does not rewind or restart on duplicate packets", () => {
     const f = fixture();
-    f.update(4, 200, 100);
+    f.update(presentationTicks(0.2), 200, 100);
     expect(f.pose(300).x).toBe(50);
-    f.update(4, 300, 100);
+    f.update(presentationTicks(0.2), 300, 100);
     expect(f.pose(300).x).toBe(50);
     expect(f.pose(400).x).toBe(100);
-    f.update(8, 400, 200);
+    f.update(presentationTicks(0.4), 400, 200);
     expect(f.pose(500).x).toBeCloseTo(150);
   });
 
   it("retargets early packets from the displayed pose without a jump", () => {
     const f = fixture();
-    f.update(4, 200, 100);
+    f.update(presentationTicks(0.2), 200, 100);
     const before = f.pose(350);
-    f.update(8, 350, 200);
+    f.update(presentationTicks(0.4), 350, 200);
     expect(f.pose(350)).toEqual(before);
     expect(f.pose(400).x).toBeGreaterThan(before.x);
     expect(f.pose(600).x).toBe(200);
@@ -82,40 +85,40 @@ describe("boat-only presentation", () => {
 
   it("takes the short arc across the angle wrap and retains stopped heading", () => {
     const f = fixture();
-    f.update(4, 200, -100, 1);
+    f.update(presentationTicks(0.2), 200, -100, 1);
     const first = f.pose(400).angle;
-    f.update(8, 400, -200, -1);
+    f.update(presentationTicks(0.4), 400, -200, -1);
     const second = f.pose(600).angle;
     expect(Math.abs(second - first)).toBeLessThan(0.04);
-    f.update(12, 600, -200, -1);
+    f.update(presentationTicks(0.6), 600, -200, -1);
     expect(f.pose(800).angle).toBeCloseTo(second);
     expect(f.pose(800).moving).toBe(false);
   });
 
   it("settles on pause without rewinding on a quick resume", () => {
     const f = fixture();
-    f.update(4, 200, 100);
+    f.update(presentationTicks(0.2), 200, 100);
     expect(f.pose(250).x).toBe(25);
     expect(f.pose(260, 1, true).x).toBe(100);
     expect(f.pose(270).x).toBe(100);
-    f.update(8, 400, 200);
+    f.update(presentationTicks(0.4), 400, 200);
     expect(f.pose(500).x).toBeCloseTo(150);
   });
 
   it("snaps discontinuities and same-tick position corrections", () => {
     const f = fixture();
-    f.update(4, 200, 100);
-    f.update(8, 400, 20 * FIXED);
+    f.update(presentationTicks(0.2), 200, 100);
+    f.update(presentationTicks(0.4), 400, 20 * FIXED);
     expect(f.pose(400).x).toBe(20 * FIXED);
-    f.update(8, 410, 21 * FIXED);
+    f.update(presentationTicks(0.4), 410, 21 * FIXED);
     expect(f.pose(410).x).toBe(21 * FIXED);
-    f.update(40, 5000, 22 * FIXED);
+    f.update(presentationTicks(2), 5000, 22 * FIXED);
     expect(f.pose(5000).x).toBe(22 * FIXED);
   });
 
   it("cleans up deaths, spawns, reused IDs and backwards-tick/new-game resets", () => {
     const f = fixture();
-    f.update(4, 200, 100);
+    f.update(presentationTicks(0.2), 200, 100);
     f.snapshot.ships = [];
     f.snapshot.expansion!.traders = [];
     f.presentation.update(f.snapshot, 250);
@@ -133,7 +136,7 @@ describe("boat-only presentation", () => {
   it("keeps ship/trader IDs separate and ignores land traders", () => {
     const f = fixture();
     f.trader.x = 500;
-    f.snapshot.tick = 4;
+    f.snapshot.tick = presentationTicks(0.2);
     f.presentation.update(f.snapshot, 200);
     f.presentation.frame(400, 1, false);
     expect(f.presentation.shipPose(1)?.x).toBe(0);
@@ -148,28 +151,28 @@ describe("boat-only presentation", () => {
     (speed) => {
       const f = fixture();
       f.presentation.frame(0, speed, false);
-      expect(f.presentation.frame(150, speed, false)).toBeCloseTo(3 * speed);
-      f.update(4 * speed, 200, 100 * speed);
-      expect(f.presentation.frame(350, speed, false)).toBeCloseTo(7 * speed);
+      expect(f.presentation.frame(150, speed, false)).toBeCloseTo(1.2 * speed);
+      f.update(presentationTicks((4 * speed)/20), 200, 100 * speed);
+      expect(f.presentation.frame(350, speed, false)).toBeCloseTo(2.8 * speed);
     },
   );
 
   it("stops loops on stall, pause and suspended-tab return", () => {
     const f = fixture();
-    expect(f.presentation.frame(300, 1, false)).toBe(6);
-    expect(f.presentation.frame(5000, 1, false)).toBe(6);
-    f.update(100, 10000, 100);
-    expect(f.presentation.frame(10000, 1, false)).toBe(6);
-    expect(f.presentation.frame(10050, 1, false)).toBe(7);
-    expect(f.presentation.frame(10100, 1, true)).toBe(7);
-    expect(f.presentation.frame(10150, 1, true)).toBe(7);
+    expect(f.presentation.frame(300, 1, false)).toBe(2.4);
+    expect(f.presentation.frame(5000, 1, false)).toBe(2.4);
+    f.update(presentationTicks(5), 10000, 100);
+    expect(f.presentation.frame(10000, 1, false)).toBe(2.4);
+    expect(f.presentation.frame(10050, 1, false)).toBe(2.8);
+    expect(f.presentation.frame(10100, 1, true)).toBe(2.8);
+    expect(f.presentation.frame(10150, 1, true)).toBe(2.8);
     f.presentation.frame(10200, 1, false);
-    expect(f.presentation.frame(10250, 1, false)).toBe(8);
+    expect(f.presentation.frame(10250, 1, false)).toBeCloseTo(3.2);
   });
 
   it("does not mutate snapshots and reuses pose objects", () => {
     const f = fixture();
-    f.snapshot.tick = 4;
+    f.snapshot.tick = presentationTicks(0.2);
     f.ship.x = 100;
     const before = JSON.stringify(f.snapshot);
     f.presentation.update(f.snapshot, 200);

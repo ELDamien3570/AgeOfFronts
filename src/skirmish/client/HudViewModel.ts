@@ -230,13 +230,13 @@ function unitCard(unit: UnitDefinition, xp = 0, capacity=unit.formationRecipe!.c
     stat("Targets", a.targets.join(", ")),
     stat(
       unit.meleeAttack ? "Shot cadence" : "Reload Time",
-      `${a.reloadTicks / 20}s · ${(a.reloadTicks * a.movingReloadPercent) / 2000}s moving`,
+      `${a.reloadTicks / TICKS_PER_SECOND}s · ${(a.reloadTicks * a.movingReloadPercent) / (100*TICKS_PER_SECOND)}s moving`,
     ),
     stat("Speed", `${unit.speedPercent}% · terrain applies`),
     stat(
       "Occupation",
       unit.undefendedCaptureTicks
-        ? `${unit.undefendedCaptureTicks / 20}s undefended · nearby enemies prevent fast capture`
+        ? `${unit.undefendedCaptureTicks / TICKS_PER_SECOND}s undefended · nearby enemies prevent fast capture`
         : unit.canCapture
           ? "Normal local capture"
           : "Cannot capture land",
@@ -269,7 +269,7 @@ function unitCard(unit: UnitDefinition, xp = 0, capacity=unit.formationRecipe!.c
       ? [
           stat("Charge Speed", `${unit.charge.speedPercent}%`),
           stat("Charge Damage", unit.meleeAttack ? `${unit.chargeMultiplier}× per-soldier melee` : String(unit.charge.damage)),
-          stat("Charge Reload Time", `${unit.charge.cooldownTicks / 20}s`),
+          stat("Charge Reload Time", `${unit.charge.cooldownTicks / TICKS_PER_SECOND}s`),
         ]
       : []),
   ];
@@ -340,7 +340,7 @@ function vesselCard(
       stat("Capacity", `${v.capacity} whole squads`),
       stat("Range", `${(v.attack?.range ?? 0) / FIXED} cells`),
       stat("Attack", String(attack?.damage ?? 0)),
-      stat("Reload", `${(v.attack?.reloadTicks ?? 0) / 20}s`),
+      stat("Reload", `${(v.attack?.reloadTicks ?? 0) / TICKS_PER_SECOND}s`),
     ],
   };
 }
@@ -597,11 +597,11 @@ export class HudViewModel {
         "planningPaused" in s && s.planningPaused === true
           ? "Route paused - choose a shorter waypoint"
           : s.manpower?.enlargement
-            ? `Enlarging · ${Math.ceil(s.manpower.enlargement.remainingTicks/20)}s`
+            ? `Enlarging · ${Math.ceil(s.manpower.enlargement.remainingTicks/TICKS_PER_SECOND)}s`
             : s.refit
             ? s.fighting || s.moved || s.afloat || s.embarkedOn!==null || state.owners[Math.floor(s.y/FIXED)*state.width+Math.floor(s.x/FIXED)]!==s.playerId
               ? 'Refit paused · needs stationary owned land outside combat'
-              : `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)}s`
+              : `Refitting · ${Math.ceil(s.refit.remainingTicks / TICKS_PER_SECOND)}s`
             : s.charge
               ? `Charge · ${s.charge.phase}`
               : s.afloat
@@ -644,7 +644,7 @@ export class HudViewModel {
         stat("Queued orders", String(s.queuedOrders.length)),
         ...(s.combatFact?[stat('Last committed attack',`${s.combatFact.channel} · ${s.combatFact.arc}${s.combatFact.charge?' charge':''} · ${fmt(s.combatFact.damage)} HP${s.combatFact.modifiers.length?' · '+s.combatFact.modifiers.join(', '):''}`)]:[]),
         ...(s.movementStatus ? [stat("Movement", s.movementStatus.reason),
-          stat("Waiting", `${Math.max(0,Math.floor((state.tick-s.movementStatus.since)/20))}s`),
+          stat("Waiting", `${Math.max(0,Math.floor((state.tick-s.movementStatus.since)/TICKS_PER_SECOND))}s`),
           ...(s.movementStatus.blockerIds.length ? [stat("Blocking squads",s.movementStatus.blockerIds.map(id=>`#${id}`).join(", "))] : [])] : []),
         ...(s.definitionId
           ? [
@@ -698,7 +698,7 @@ export class HudViewModel {
           "planningPaused" in s && s.planningPaused === true
             ? "Route paused - choose a shorter waypoint"
             : s.refit
-              ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)} sec`
+              ? `Refitting · ${Math.ceil(s.refit.remainingTicks / TICKS_PER_SECOND)} sec`
               : s.fighting
                 ? "In combat"
                 : s.destination !== null
@@ -893,7 +893,7 @@ export class HudViewModel {
         status: a.state,
         meter: { label: "Aircraft health", value: a.health, max: 1000 },
         stats: [
-          stat("Flight time", a.state === "returning" ? "Returning · free flight" : `${Math.ceil(a.fuelTicks / 20)}s`),
+          stat("Flight time", a.state === "returning" ? "Returning · free flight" : `${Math.ceil(a.fuelTicks / TICKS_PER_SECOND)}s`),
           stat("Airfield", `#${a.airfieldId}`),
           stat(
             "Role",
@@ -1015,7 +1015,7 @@ export class HudViewModel {
           ),
           stat(
             "Cycle",
-            `${(producer.job?.totalTicks ?? choice.cycleTicks) / 20}s · repeats while supplied`,
+            `${(producer.job?.totalTicks ?? choice.cycleTicks) / TICKS_PER_SECOND}s · repeats while supplied`,
           ),
         );
       }
@@ -1045,7 +1045,7 @@ export class HudViewModel {
         stat("Targets", "Hostile ground troops"),
         stat("Ranged Attack", String(GUN_NEST_ATTACK.damage)),
         stat("Range", `${GUN_NEST_ATTACK.range / FIXED} cells`),
-        stat("Reload", `${GUN_NEST_ATTACK.reloadTicks / 20}s`),
+        stat("Reload", `${GUN_NEST_ATTACK.reloadTicks / TICKS_PER_SECOND}s`),
         stat("Infantry bonus", String(GUN_NEST_ATTACK.bonuses.infantry)),
       );
     if (b.type === "trench")
@@ -1073,7 +1073,7 @@ export class HudViewModel {
           b.remainingTicks
             ? "Under construction"
             : (b.launchReadyTick ?? 0) > empire.state.tick
-              ? `Reloading ${Math.ceil(((b.launchReadyTick ?? 0) - empire.state.tick) / 20)}s`
+              ? `Reloading ${Math.ceil(((b.launchReadyTick ?? 0) - empire.state.tick) / TICKS_PER_SECOND)}s`
               : "Ready · payload and gold required",
         ),
       );

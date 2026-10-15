@@ -1,3 +1,4 @@
+import { secondsToTicks } from '../Protocol';
 import { FIXED, type Player, type Ship } from "../Protocol";
 import { tilePoint } from "../SquadGeometry";
 import type { AiEconomicDirector } from "./AiEconomicDirector";
@@ -58,7 +59,7 @@ export function stepBombardment(
     ships.length < 2 ||
     !shooters.length ||
     (m.lostPower ?? 0) > 0 ||
-    world.tick - b.since >= 1000
+    world.tick - b.since >= secondsToTicks(50)
   )
     return end("recover", "Bombardment lost its escort or commitment window");
   const target = b.target === undefined ? undefined : world.building(b.target);

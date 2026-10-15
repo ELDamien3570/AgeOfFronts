@@ -1,3 +1,4 @@
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 
 // Preserve coverage of fortification mechanics for when placement is re-enabled.
@@ -63,11 +64,11 @@ function fixture() {
       game.updateSquad(s.id, { y: (50.5 + i * 2) * FIXED });
     });
   game.restore(game.checkpoint());
-  for (let tick = 0; tick < 10000; tick++) {
+  for (let tick = 0; tick < secondsToTicks(500); tick++) {
     economy.cities.step(tick);
     if (!economy.cities.diagnostics.pending) break;
   }
-  game.tick = 300;
+  game.tick = secondsToTicks(15);
   defenses.step();
   const saved = defenses.checkpoint();
   saved.allowances.forEach(([, a]) => (a.amount = 100000));
@@ -88,7 +89,7 @@ describe("persistent funded city defenses", () => {
     const change = (tile: number) => (game as unknown as {changeOwner(t:number,id:number):void}).changeOwner(tile, 0);
     for (let y = 20; y <= 22; y++) for (let x = 19; x <= 21; x++) change(map.ref(x,y));
     let restored = false;
-    for (let tick = 600; tick < 6000 && !defenses.projects.has(player.id); tick += 3) {
+    for (let tick = 600; tick < secondsToTicks(300) && !defenses.projects.has(player.id); tick += secondsToTicks(0.15)) {
       game.tick = tick; defenses.step();
       expect(defenses.diagnostics.outlineWork).toBeLessThanOrEqual(32);
       if (!restored && defenses.checkpoint().outlines.length) {
@@ -109,8 +110,8 @@ describe("persistent funded city defenses", () => {
 
   it("completes an actual circuit before marking it defended and preserves a paid repair on takeover", () => {
     const { game, player, defenses } = fixture();
-    game.tick = 420;
-    for (let ticks = 0; ticks < 5000; ticks++) {
+    game.tick = secondsToTicks(21);
+    for (let ticks = 0; ticks < secondsToTicks(250); ticks++) {
       game.step();
       defenses.step();
       const project = defenses.projects.get(player.id)!;
@@ -127,7 +128,7 @@ describe("persistent funded city defenses", () => {
     ).toBe(true);
     const tower = game.buildings.find((b) => b.id === project.paid[0])!;
     game.updateBuilding((tower).id, { health: tower.maxHealth! - 40 });
-    game.tick = project.nextDecision + 3 - (project.nextDecision % 3);
+    game.tick = project.nextDecision + secondsToTicks(.15) - (project.nextDecision % secondsToTicks(.15));
     const gold = player.gold;
     defenses.step();
     expect(player.gold).toBe(gold - 8);
@@ -138,7 +139,7 @@ describe("persistent funded city defenses", () => {
     expect(game.expansion!.fortifications.repairing("building", tower.id)).toBe(
       true,
     );
-    for (let tick = 0; tick < 30; tick++) game.step();
+    for (let tick = 0; tick < secondsToTicks(1.5); tick++) game.step();
     expect(tower.health).toBe(tower.maxHealth);
   });
   it("funds the useful opening phase, pays one real tower and preserves only its unpaid remainder", () => {
@@ -146,7 +147,7 @@ describe("persistent funded city defenses", () => {
       project = defenses.projects.get(player.id)!;
     expect(project).toBeDefined();
     expect(project.next).toBe(0);
-    game.tick = 420;
+    game.tick = secondsToTicks(21);
     const gold = player.gold;
     defenses.step();
     const after = defenses.projects.get(player.id)!;
@@ -161,7 +162,7 @@ describe("persistent funded city defenses", () => {
     const paid = game.buildings.find((b) => b.id === after.paid[0])!;
     expect(paid.type).toBe("tower");
     expect(paid.remainingTicks).toBeGreaterThan(0);
-    game.tick = 441;
+    game.tick = secondsToTicks(22)+2;
     defenses.step();
     expect(after.next).toBe(1);
     expect(economy.assets.leases.size).toBe(2);
@@ -175,13 +176,13 @@ describe("persistent funded city defenses", () => {
   });
   it("abandons future spending when its hub is lost while retaining already paid construction", () => {
     const { game, player, economy, defenses, map } = fixture();
-    game.tick = 420;
+    game.tick = secondsToTicks(21);
     defenses.step();
     const project = defenses.projects.get(player.id)!,
       paid = game.buildings.find((b) => b.id === project.paid[0])!;
     const gold = player.gold;
     game.owners[map.ref(12, 25)] = 1;
-    game.tick = 441;
+    game.tick = secondsToTicks(22)+2;
     defenses.step();
     expect(project.phase).toBe("abandoned");
     expect(economy.ledger.reservations.size).toBe(0);

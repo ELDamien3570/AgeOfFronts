@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from './Protocol';
 import { MOTION } from "./content/TacticalRules";
 import type { GameMap } from "../core/game/GameMap";
 import { CrowdRecovery } from "./CrowdRecovery";
@@ -59,7 +60,7 @@ interface MotionScratch {
   blockers: number[];
 }
 const ZERO: Velocity = { x: 0, y: 0 };
-const HORIZON = 6;
+const HORIZON = .3 * TICKS_PER_SECOND;
 // Prefer passing on the right. The small turn steps also give stable headings.
 const TURNS = [0, 1, -1, 2, -2, 3, -3, 4, -4, 6, -6, 8].map((turn) => ({
   cos: Math.cos((turn * Math.PI) / 8),

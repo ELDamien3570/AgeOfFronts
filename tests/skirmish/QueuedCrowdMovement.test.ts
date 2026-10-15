@@ -1,3 +1,5 @@
+import {TICKS_PER_SECOND} from "../../src/skirmish/Protocol";
+import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED, type Order } from "../../src/skirmish/Protocol";
@@ -59,12 +61,12 @@ describe("continuous queued crowd movement", () => {
       const { game, squad, order, issue } = fixture(deferred);
       issue(order(16, 12));
       // Let initial group admission settle before appending deliberate Shift legs.
-      for (let i = 0; i < 8; i++) game.step();
+      for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
       issue(order(24, 12), true);
       issue(order(24, 20), true);
       let handoffs = 0;
       const speeds: number[] = [];
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < secondsToTicks(50); i++) {
         const previousTile =
           squad.order.type === "move" ? squad.order.tile : -1;
         game.step();
@@ -76,7 +78,7 @@ describe("continuous queued crowd movement", () => {
           handoffs++;
           speeds.push(squad.locomotion!.speed);
           expect(squad.locomotion!.speed).toBeGreaterThan(5);
-          for (let j = 0; j < 4; j++) {
+          for (let j = 0; j < secondsToTicks(0.2); j++) {
             game.step();
             expect(squad.locomotion!.speed).toBeGreaterThan(3);
           }
@@ -104,13 +106,13 @@ describe("continuous queued crowd movement", () => {
         [26, 20],
       ];
       issue(order(...(points[0] as [number, number])));
-      for (let i = 0; i < 8; i++) game.step();
+      for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
       for (const point of points.slice(1))
         issue(order(...(point as [number, number])), true);
       let handoffs = 0;
       let awayTicks = 0;
       let maximumAwayTicks = 0;
-      for (let i = 0; i < 1600; i++) {
+      for (let i = 0; i < secondsToTicks(80); i++) {
         const previousOrder = squad.order;
         const before = { x: squad.x, y: squad.y };
         game.step();
@@ -146,10 +148,10 @@ describe("continuous queued crowd movement", () => {
   it("reaches a reversal waypoint before braking into the return leg", () => {
     const { game, squad, order, issue } = fixture();
     issue(order(16, 12));
-    for (let i = 0; i < 8; i++) game.step();
+    for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
     issue(order(10, 12), true);
     let handedOff = false;
-    for (let i = 0; i < 800; i++) {
+    for (let i = 0; i < secondsToTicks(40); i++) {
       const before = squad.order.type === "move" ? squad.order.tile : -1;
       game.step();
       if (
@@ -162,7 +164,7 @@ describe("continuous queued crowd movement", () => {
           x: 16.5 * FIXED,
           y: 12.5 * FIXED,
         });
-        expect(squad.locomotion!.speed).toBeLessThanOrEqual(10);
+        expect(squad.locomotion!.speed).toBeLessThanOrEqual(500/TICKS_PER_SECOND);
       }
     }
     expect(handedOff).toBe(true);
@@ -175,13 +177,13 @@ describe("continuous queued crowd movement", () => {
   it("checkpoints pending lookahead and retains deterministic handoffs", () => {
     const { game, squad, order, issue } = fixture();
     issue(order(16, 12));
-    for (let i = 0; i < 8; i++) game.step();
+    for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
     issue(order(24, 12), true);
     game.step();
     expect(game.checkpoint().moveContinuations.size).toBe(1);
     const restored = fixture().game;
     restored.restore(game.checkpoint());
-    for (let i = 0; i < 600; i++) {
+    for (let i = 0; i < secondsToTicks(30); i++) {
       game.step();
       restored.step();
     }
@@ -191,12 +193,12 @@ describe("continuous queued crowd movement", () => {
   it("invalidates speculative legs when an order is replaced and when the squad is removed", () => {
     const { game, squad, order, issue } = fixture();
     issue(order(16, 12));
-    for (let i = 0; i < 8; i++) game.step();
+    for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
     issue(order(24, 12), true);
-    for (let i = 0; i < 4; i++) game.step();
+    for (let i = 0; i < secondsToTicks(0.2); i++) game.step();
     expect(game.checkpoint().moveContinuations.size).toBe(1);
     issue(order(12, 20));
-    for (let i = 0; i < 600; i++) game.step();
+    for (let i = 0; i < secondsToTicks(30); i++) game.step();
     expect(squad.queuedOrders).toHaveLength(0);
     expect({ x: squad.x, y: squad.y }).toEqual({
       x: 12.5 * FIXED,
@@ -204,7 +206,7 @@ describe("continuous queued crowd movement", () => {
     });
     expect(game.checkpoint().moveContinuations.size).toBe(0);
     issue(order(16, 20));
-    for (let i = 0; i < 8; i++) game.step();
+    for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
     issue(order(24, 20), true);
     game.step();
     game.removeSquad(squad.id);
@@ -213,9 +215,9 @@ describe("continuous queued crowd movement", () => {
   it("uses the admitted route around blocked terrain rather than cutting a queued corner", () => {
     const { game, squad, order, issue } = fixture(true, true);
     issue(order(16, 12));
-    for (let i = 0; i < 8; i++) game.step();
+    for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
     issue(order(26, 12), true);
-    for (let i = 0; i < 1800; i++) {
+    for (let i = 0; i < secondsToTicks(90); i++) {
       const before = { x: squad.x, y: squad.y };
       game.step();
       expect(
@@ -243,9 +245,9 @@ describe("continuous queued crowd movement", () => {
       }),
     ).toBeNull();
     const facing = squad.order.type === "move" ? squad.order.facing : undefined;
-    for (let i = 0; i < 8; i++) game.step();
+    for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
     issue(order(24, 12), true);
-    for (let i = 0; i < 600; i++) game.step();
+    for (let i = 0; i < secondsToTicks(30); i++) game.step();
     expect({ x: squad.x, y: squad.y }).toEqual({
       x: 24.5 * FIXED,
       y: 12.5 * FIXED,
@@ -265,10 +267,10 @@ describe("continuous queued crowd movement", () => {
       return request(job);
     });
     issue(order(16, 12));
-    for (let i = 0; i < 8; i++) game.step();
+    for (let i = 0; i < secondsToTicks(0.4); i++) game.step();
     issue(order(24, 12), true);
     let handedOff = false;
-    for (let i = 0; i < 600; i++) {
+    for (let i = 0; i < secondsToTicks(30); i++) {
       const before = squad.order.type === "move" ? squad.order.tile : -1;
       game.step();
       if (
@@ -281,7 +283,7 @@ describe("continuous queued crowd movement", () => {
           x: 16.5 * FIXED,
           y: 12.5 * FIXED,
         });
-        expect(squad.locomotion!.speed).toBeLessThanOrEqual(10);
+        expect(squad.locomotion!.speed).toBeLessThanOrEqual(500/TICKS_PER_SECOND);
       }
     }
     expect(handedOff).toBe(true);

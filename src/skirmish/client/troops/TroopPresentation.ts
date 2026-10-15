@@ -1,3 +1,4 @@
+import {TICK_MS} from '../../Protocol';
 import { eligibleShape } from "../../domain/FormationProfiles";
 import { formationDoctrine } from "../../domain/FormationGeometry";
 import type { Command } from "../../Protocol";
@@ -80,7 +81,7 @@ export function installTroopPresentation(
     },
     update(snapshot) {
       latest = snapshot;
-      time = Math.max(time, snapshot.tick * 50);
+      time = Math.max(time, snapshot.tick * TICK_MS);
       actors.setDetailed(renderer.pixelsPerCell >= TROOP_DETAIL_CUTOFF);
       actors.prune(snapshot);
 
@@ -88,7 +89,7 @@ export function installTroopPresentation(
     beginFrame(now, speed, paused) {
       if (latest && !paused && previousFrame !== undefined)
         time = Math.min(
-          (latest.tick + 1) * 50,
+          (latest.tick + 1) * TICK_MS,
           time + Math.min(100, now - previousFrame) * speed,
         );
       previousFrame = now;

@@ -1,3 +1,4 @@
+import {TICKS_PER_SECOND} from '../Protocol';
 import { flightPercent, missionKind, FLIGHT_RULES, type AirMission } from "../content/FlightOperations";
 import type { BuildingType, ShipType, SquadType } from "../Protocol";
 import { BUILDING_RULES } from "../Rules";
@@ -364,7 +365,7 @@ export class EmpireHudView {
             .map(([id, n]) => `${n} ${vm.itemName(id)}`)
             .join(
               " · ",
-            )}\n${u.attack.damage} ${u.attack.channel} damage${u.attack.perSoldier ? " per soldier" : ""} · ${u.attack.range / 256} cells range · ${u.attack.perSoldier ? `${u.attack.rpm} RPM · ${u.attack.shotsPerReload} shots · ${(u.attack.reloadMs ?? 0)/1000}s reload` : `${u.attack.reloadTicks / 20}s reload`}`,
+            )}\n${u.attack.damage} ${u.attack.channel} damage${u.attack.perSoldier ? " per soldier" : ""} · ${u.attack.range / 256} cells range · ${u.attack.perSoldier ? `${u.attack.rpm} RPM · ${u.attack.shotsPerReload} shots · ${(u.attack.reloadMs ?? 0)/1000}s reload` : `${u.attack.reloadTicks / TICKS_PER_SECOND}s reload`}`,
           u.id,
         );
       })
@@ -497,7 +498,7 @@ export class EmpireHudView {
             : `${name(event.actorId)} ${{ offer: "offered an alliance to", "offer-long-term": "offered a long-term alliance to", accept: "formed an alliance with", reject: "declined an alliance with", renew: "requested alliance renewal with", break: "broke the alliance with", "end-long-term": "gave three minutes' alliance notice to", expire: "ended its alliance with", declare: "declared war on", withdraw: "ended its offensive against", raid: "started a raid against", "raid-expire": "ended its raid against", peace: "made peace with", "offer-peace": "offered peace to", "accept-peace": "made peace with", "reject-peace": "declined peace with", "dont-embargo": "stopped peacetime trade interception against", "allow-embargo": "resumed peacetime trade interception against" }[event.action!]} ${name(event.otherId)}`;
       const item = document.createElement("div");
       item.className = "feed-event";
-      item.innerHTML = `<time>${Math.floor(event.tick / 1200)}:${String(Math.floor(event.tick / 20) % 60).padStart(2, "0")}</time><span>${esc(message)}</span>${event.kind === "diplomacy" ? `<button data-feed-player="${other}">Open</button>` : ""}`;
+      item.innerHTML = `<time>${Math.floor(event.tick / (60*TICKS_PER_SECOND))}:${String(Math.floor(event.tick / TICKS_PER_SECOND) % 60).padStart(2, "0")}</time><span>${esc(message)}</span>${event.kind === "diplomacy" ? `<button data-feed-player="${other}">Open</button>` : ""}`;
       const atBottom =
         this.log.scrollHeight - this.log.scrollTop - this.log.clientHeight < 20;
       this.log.append(item);
