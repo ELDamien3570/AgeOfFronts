@@ -1,3 +1,4 @@
+import {validateAiWithdrawal} from "./domain/AiDiplomaticWithdrawal";
 import { FormationSlotEncoder, FormationSlotDecoder, resolveFormationSlots, type FormationSlotChanges, type FormationSlotRead } from "./FormationSlotStream";
 import type { FormationState } from "./domain/FormationGeometry";
 import { validateOccupancy } from "./domain/TrenchOccupancy";
@@ -93,6 +94,7 @@ const SQUAD_DETAIL_KEYS = [
   "chargeImpact",
   "cavalryEngagement",
   "cavalryMelee",
+  "aiWithdrawal",
 ];
 const SQUAD_DETAIL_PREFIXES = SQUAD_DETAIL_KEYS.map((key) => `"${key}":`);
 export class SquadDetailCache {
@@ -120,6 +122,7 @@ export class SquadDetailCache {
   encode(s: Snapshot["squads"][number]): string | undefined {
     if (
       !(
+        s.aiWithdrawal ||
         s.stance ||
         s.occupancy ||
         s.manpower ||
@@ -145,6 +148,7 @@ export class SquadDetailCache {
       s.chargeImpact,
       s.cavalryEngagement,
       s.cavalryMelee,
+      s.aiWithdrawal,
     ];
     const old = this.rows.get(s.id);
     if (old && inputs.every((value, i) => Object.is(value, old.inputs[i]))) {
@@ -497,7 +501,7 @@ export function validateSnapshotDetails(
     const payload=JSON.parse(data.strings[index]) as ParsedSquadPayload;
     if (slots) resolveFormationSlots(payload.formation, slots);
     payloads.set(at,payload);
-    validateOccupancy(payload.occupancy);validateStance(payload.stance,payload.lastWithdrawTick);validateChargeStrength(payload.chargeStrength);validateManpower(payload.manpower,context?.troops?.get(data.squads[at]));validateWeaponState(payload.weaponState);validateFormation(payload.formation,data.strings[data.squads[at+1]],context?.troops?.get(data.squads[at]),slots?.validated);validateMeleeStrike(payload.meleeStrike,context?.tick);validateCombatFact(payload.combatFact,context?.tick);validateChargeImpact(payload.chargeImpact,context?.tick);validateCavalryEngagement(payload.cavalryEngagement,context?.tick);validateCavalryMelee(payload.cavalryMelee,context?.tick);
+    validateAiWithdrawal(payload.aiWithdrawal,context?.tick);validateOccupancy(payload.occupancy);validateStance(payload.stance,payload.lastWithdrawTick);validateChargeStrength(payload.chargeStrength);validateManpower(payload.manpower,context?.troops?.get(data.squads[at]));validateWeaponState(payload.weaponState);validateFormation(payload.formation,data.strings[data.squads[at+1]],context?.troops?.get(data.squads[at]),slots?.validated);validateMeleeStrike(payload.meleeStrike,context?.tick);validateCombatFact(payload.combatFact,context?.tick);validateChargeImpact(payload.chargeImpact,context?.tick);validateCavalryEngagement(payload.cavalryEngagement,context?.tick);validateCavalryMelee(payload.cavalryMelee,context?.tick);
     if(payload.refitVariant!==undefined&&!['base','enlarged'].includes(payload.refitVariant))throw new Error('Invalid refit recipe variant');
   }
   if (data.squads)
@@ -600,7 +604,7 @@ export function unpackSnapshotDetails(
       if(charge && payload?.chargeStrength!==undefined)charge.strength=payload.chargeStrength;
       const landRefit=refit(b,at+11);
       squadDetails!.push({
-        ...(payload?{stance:payload.stance,lastWithdrawTick:payload.lastWithdrawTick,occupancy:payload.occupancy,manpower:payload.manpower,weaponState:payload.weaponState,formation:payload.formation,meleeStrike:payload.meleeStrike,combatFact:payload.combatFact,chargeImpact:payload.chargeImpact,cavalryEngagement:payload.cavalryEngagement,cavalryMelee:payload.cavalryMelee}:{}),
+        ...(payload?{aiWithdrawal:payload.aiWithdrawal,stance:payload.stance,lastWithdrawTick:payload.lastWithdrawTick,occupancy:payload.occupancy,manpower:payload.manpower,weaponState:payload.weaponState,formation:payload.formation,meleeStrike:payload.meleeStrike,combatFact:payload.combatFact,chargeImpact:payload.chargeImpact,cavalryEngagement:payload.cavalryEngagement,cavalryMelee:payload.cavalryMelee}:{}),
       id: b[at],
         definitionId: string(b[at + 1]),
         xp: optional(b[at + 2]),

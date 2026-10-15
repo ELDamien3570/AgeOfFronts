@@ -226,6 +226,7 @@ export interface MovementStatus {
 }
 
 export interface Squad {
+  readonly aiWithdrawal?: Readonly<{owner:number;since:number;deadline:number;phase:"withdrawing"|"recovery"}>;
   readonly stance?: "default"|"skirmish";
   readonly lastWithdrawTick?: number;
   readonly occupancy?: import("./domain/TrenchOccupancy").OccupancyView;
@@ -548,6 +549,7 @@ export interface SnapshotPacket {
     reloadStartedTick?: number;
     planningPaused?: boolean;
     movementStatus?: MovementStatus;
+    aiWithdrawal?: Squad['aiWithdrawal'];
     refit?: RefitJob | null;
     charge?: ChargeState | null;
     chargeReadyTick?: number;

@@ -301,6 +301,8 @@ export class RoutePlanner<T> {
     const job = this.jobs.get(key);
     return !!job && (!job.discard || !!job.replacement);
   }
+  /** Actual bounded queue occupancy; never derived from timing telemetry. */
+  get pendingCount():number{return this.jobs.size;}
   private cohort(request: ExactRouteRequest<T>): PlannerCohort {
     if (this.ports.classificationRevision) {
       const old = this.cohortReads.get(request);

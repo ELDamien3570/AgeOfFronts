@@ -592,6 +592,7 @@ export class HudViewModel {
         ? { label: "Hull health", value: s.afloat.hull, max: s.afloat.maxHull }
         : { label: s.manpower ? s.manpower.model==='hull'?'Hull health':'Formation health' : 'Troop strength', value:remainingHealth(s)/(s.manpower?HEALTH_SCALE:1),max:maximumHealth(s)/(s.manpower?HEALTH_SCALE:1) },
       status:
+        s.aiWithdrawal ? s.aiWithdrawal.phase==="recovery" ? "Withdrawal blocked · awaiting access" : `Withdrawing · ${Math.max(0,Math.ceil((s.aiWithdrawal.deadline-state.tick)/TICKS_PER_SECOND))}s grace` :
         s.occupancy ? `Trench ${s.occupancy.phase} · ${s.occupancy.reservedCapacity} soldier slots reserved` :
         "planningPaused" in s && s.planningPaused === true
           ? "Route paused - choose a shorter waypoint"

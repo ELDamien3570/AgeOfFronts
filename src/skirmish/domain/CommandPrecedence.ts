@@ -10,6 +10,7 @@ export interface ControlWorld {
 /** Manual army attacks are army orders; external direct actions suspend coordination. */
 export function controllerOf(world: ControlWorld, squad: Squad): Controller {
   if (
+    squad.aiWithdrawal ||
     squad.occupancy && squad.occupancy.phase!=="leaving" ||
     squad.troops <= 0 ||
     squad.embarkedOn !== null ||

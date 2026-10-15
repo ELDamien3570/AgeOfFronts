@@ -25,6 +25,7 @@ export class LocalDetours {
     squad: Squad,
     goal: WorldPoint,
     holding: (other: Squad) => boolean,
+    clearLeg?: (from: WorldPoint, to: WorldPoint) => boolean,
   ): WorldPoint[] | null {
     if (distanceSquared(squad, goal) > (8 * FIXED) ** 2) return null;
     const obstacles: Squad[] = [];
@@ -39,6 +40,7 @@ export class LocalDetours {
     );
     const radius = squadRadius(squad.kind), amphibious = this.amphibious(squad.playerId);
     const clear = (a: WorldPoint, b: WorldPoint) => {
+      if (clearLeg && !clearLeg(a,b)) return false;
       if (!traversable(this.map, a, b, radius, amphibious)) return false;
       const dx = b.x - a.x,
         dy = b.y - a.y,

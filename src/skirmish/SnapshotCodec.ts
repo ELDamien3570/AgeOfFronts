@@ -1,3 +1,4 @@
+import {validateAiWithdrawal} from "./domain/AiDiplomaticWithdrawal";
 import { FormationSlotDecoder } from "./FormationSlotStream";
 import {validateRaidDiplomacy} from './domain/DiplomacyValidation';
 import { TraderEncoder, TraderDecoder } from "./TraderStream";
@@ -480,7 +481,7 @@ export class SnapshotDecoder {
     // Packed v4 validation consumed these same payload objects with the packet's
     // authoritative count/tick context. Legacy object packets keep their guards.
     if ((packet.details?.version ?? 0) < 4) {
-      for(const detail of records.squadDetails??[]){validateOccupancy(detail.occupancy);validateStance(detail.stance,detail.lastWithdrawTick);validateMeleeStrike(detail.meleeStrike,packet.tick);validateCombatFact(detail.combatFact,packet.tick);validateChargeImpact(detail.chargeImpact,packet.tick);validateCavalryEngagement(detail.cavalryEngagement,packet.tick);validateCavalryMelee(detail.cavalryMelee,packet.tick);}
+      for(const detail of records.squadDetails??[]){validateAiWithdrawal(detail.aiWithdrawal,packet.tick);validateOccupancy(detail.occupancy);validateStance(detail.stance,detail.lastWithdrawTick);validateMeleeStrike(detail.meleeStrike,packet.tick);validateCombatFact(detail.combatFact,packet.tick);validateChargeImpact(detail.chargeImpact,packet.tick);validateCavalryEngagement(detail.cavalryEngagement,packet.tick);validateCavalryMelee(detail.cavalryMelee,packet.tick);}
       if(packet.expansion){const details=new Map((records.squadDetails??[]).map(s=>[s.id,s]));for(let at=0;at<packet.squads.length;at+=SQUAD_STRIDE){validateManpower(details.get(packet.squads[at])?.manpower,packet.squads[at+4]);validateWeaponState(details.get(packet.squads[at])?.weaponState);validateFormation(details.get(packet.squads[at])?.formation,details.get(packet.squads[at])?.definitionId,packet.squads[at+4]);validateMeleeStrike(details.get(packet.squads[at])?.meleeStrike,packet.tick);}}
     }
     const full = packet.reset || packet.entityMode !== "delta";
