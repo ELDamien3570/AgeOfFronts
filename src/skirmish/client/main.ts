@@ -12,7 +12,7 @@ import type { WorldPoint } from "../SpatialGrid";
 import { localSkirmishProfile } from "./LocalSkirmishProfile";
 const localProfile = localSkirmishProfile();
 import { hasInfiniteGold } from "../domain/Gold";
-import { applyDragSelection, limitSquadSelection } from "./SquadSelectionViewModel";
+import { applyControlGroupRecall, applyDragSelection, limitSquadSelection } from "./SquadSelectionViewModel";
 import { BrowserLobbyPreviewStore } from "./lobby/LobbyPreviewStore";
 import { validFactionColor } from "../lobby/FactionPalette";
 import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
@@ -1147,9 +1147,7 @@ function controlGroup(digit: number, mode: "add" | "replace" | "recall"): void {
 
     cancelPlacement();
 
-    renderer.selected = members.selected;
-
-    renderer.selectedShips = members.selectedShips;
+    applyControlGroupRecall(renderer, members);
 
     renderer.selectedBuilding = null;
 

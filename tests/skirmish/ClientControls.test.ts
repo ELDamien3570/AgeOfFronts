@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { updateSnapshotBuilding } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ControlGroups } from "../../src/skirmish/client/ControlGroups";
+import { applyControlGroupRecall } from "../../src/skirmish/client/SquadSelectionViewModel";
 import { hotkeyAction, shipMoveCommand } from "../../src/skirmish/client/Controls";
 import {
   SkirmishViewModel,
@@ -297,6 +298,19 @@ describe("automatic recruitment and selective replenishment", () => {
 });
 
 describe("control group selection", () => {
+  it("recall replaces the selection and leaves no aircraft selected", () => {
+    const m = match(),
+      groups = new ControlGroups(),
+      s = { ...selection(), selectedAircraft: new Set([77, 78]) },
+      [one] = m.squads.filter((unit) => unit.playerId === 1);
+    s.selected.add(one.id);
+    groups.bind(1, s, m.snapshot(), false);
+    s.selected = new Set();
+    expect(s.selectedAircraft.size).toBe(2);
+    applyControlGroupRecall(s, groups.recall(1, m.snapshot()));
+    expect(s.selected).toEqual(new Set([one.id]));
+    expect(s.selectedAircraft.size).toBe(0);
+  });
   it("adds and deduplicates squads and ships; recall returns independent sets and replacement can clear", () => {
     const m = match(),
       s = selection(),
