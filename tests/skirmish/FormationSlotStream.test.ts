@@ -112,5 +112,5 @@ describe("local formation slot stream", () => {
       expect(JSON.stringify(decoder.decodeLatest(delivered))).toBe(JSON.stringify(expected));
       game.step();
     }
-  }, 15000);
+  });
 });

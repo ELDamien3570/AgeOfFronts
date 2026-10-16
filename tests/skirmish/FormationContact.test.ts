@@ -344,7 +344,7 @@ describe("legal reform and casualty geometry", () => {
     expect(losses).toBeGreaterThan(2);
     expect(damageSteps).toBeGreaterThan(2);
     expect(longestApart).toBeLessThan(25);
-  },20000);
+  });
   it("bounds geometry work by purchased capacity even in oversized combat fixtures", () => {
     const f = match();
     expect(formationSlots({ ...f.a, troops: 100000 }, 0)).toHaveLength(

@@ -1,3 +1,4 @@
+import { SLOW_MAP_TIMEOUT } from "./fixtures/TestTimeouts";
 import { expect, it } from "vitest";
 import { generateMigration } from "../../src/skirmish/MigrationMap";
 import { WaterPaths } from "../../src/skirmish/Pathfinding";
@@ -35,7 +36,7 @@ it("regional landforms preserve connected water and viable starts on islands and
       expect(starts).toHaveLength(24);
       expect(new Set(starts).size).toBe(24);
     }
-}, 60000);
+}, SLOW_MAP_TIMEOUT);
 it("retains the medium-map maximum roster", () => {
   for (const seed of [0, 3, 42]) {
     const map = generateMigration(500, seed).map,
@@ -50,7 +51,7 @@ it("retains the medium-map maximum roster", () => {
     expect(starts).toHaveLength(64);
     expect(new Set(starts).size).toBe(64);
   }
-}, 30000);
+}, SLOW_MAP_TIMEOUT);
 it("regional generation remains canonical and deterministic", async () => {
   const a = generateMigration(250, 3),
     b = generateMigration(250, 3),
@@ -90,4 +91,4 @@ it("keeps the supported small-map boundary rosters viable", () => {
       expect(starts).toHaveLength(regular + tribes);
       expect(new Set(starts).size).toBe(regular + tribes);
     }
-}, 60000);
+}, SLOW_MAP_TIMEOUT);

@@ -1,3 +1,4 @@
+import { SLOW_MAP_TIMEOUT } from "./fixtures/TestTimeouts";
 import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
@@ -41,7 +42,7 @@ describe("authored Black Forest", () => {
       expect(solo.map.width()).toBe(size);
       expect(solo.map.height()).toBe(size);
       expect(server.territoryIncomeScale).toBe(solo.territoryIncomeScale);
-    }, 30_000);
+    }, SLOW_MAP_TIMEOUT);
   }
 
   it.each([0, 1, 42, 104729, 0x7fffffff])("seed %i preserves dense woodland, buildable clearings, water-free passages and traversability", (seed) => {
@@ -81,7 +82,7 @@ describe("authored Black Forest", () => {
       const forest = cover.findIndex((value) => value > 230);
       expect(terrainSpeed(loaded.map, forest)).toBeLessThanOrEqual(720/TICKS_PER_SECOND);
       expect(loaded.environment!.familyAt(forest)).toBe("boreal-conifer");
-  }, 15000);
+  }, SLOW_MAP_TIMEOUT);
 
   it("can place the full 64-faction roster without dropping seats", () => {
     for (const seed of [1, 3, 42, 2026]) {
@@ -97,7 +98,7 @@ describe("authored Black Forest", () => {
       expect(bases).toHaveLength(64);
       expect(new Set(bases).size).toBe(64);
     }
-  }, 30_000);
+  }, SLOW_MAP_TIMEOUT);
 
   it("starts a real ages match, supplies Bronze inputs, and reproduces checkpoint state", () => {
     const options = {
@@ -128,7 +129,7 @@ describe("authored Black Forest", () => {
     }
     expect(a.tick).toBe(secondsToTicks(5));
     expect(a.checkpoint()).toEqual(b.checkpoint());
-  }, 30_000);
+  }, SLOW_MAP_TIMEOUT);
 
   it("rejects invalid generator inputs and authored biome IDs", () => {
     for (const [size, seed] of [
@@ -186,9 +187,9 @@ describe("authored Black Forest", () => {
       expect(loaded.terrain.filter((value) => value === 1).length).toBe(
         loaded.ponds.reduce((sum, pond) => sum + pond.tiles.length, 0),
       );
-  }, 30_000);
+  }, SLOW_MAP_TIMEOUT);
   it("varies between all three pond coverage patterns", () => {
     const modes = new Set([0, 1, 3, 42].map(seed => generateBlackForest(250, seed).generation.pondMode));
     expect([...modes].sort()).toEqual(["dry", "half", "near-all"]);
-  }, 15000);
+  }, SLOW_MAP_TIMEOUT);
 });

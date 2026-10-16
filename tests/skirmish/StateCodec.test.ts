@@ -251,5 +251,5 @@ describe("portable recovery transport", () => {
       second.step();
     }
     expect(second.checkpoint()).toEqual(first.checkpoint());
-  }, 15_000);
+  });
 });

@@ -132,7 +132,7 @@ describe('formation performance contracts', () => {
         expect(digest(cached)).toBe(digest(reference));
       }
     }
-  },15000);
+  });
   it('creates 2000 legal squads within faction limits and with populated combat', () => {
     const {game} = formationLoad('crowded');
     expect(game.squads).toHaveLength(2000);

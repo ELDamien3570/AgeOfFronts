@@ -47,7 +47,7 @@ describe("complete simulation recovery", () => {
       original.step(); restored.step();
       if (tick % 20 === 0) expect(restored.checkpoint()).toEqual(original.checkpoint());
     }
-  }, 20_000);
+  });
 
   it("rejects mismatched map dimensions and rules", () => {
     const terrain = new Uint8Array(64 * 40).fill(133);

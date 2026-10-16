@@ -21,5 +21,5 @@ describe('large formation battle preview',()=>{
     }
     expect(melee).toBeGreaterThan(0);expect(impacts).toBeGreaterThan(0);
     expect(scene.game.squads.reduce((n,s)=>n+s.troops,0)).toBeLessThan(starting);
-  },20000);
+  });
 });
