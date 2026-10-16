@@ -313,6 +313,7 @@ export class Skirmish {
     bus.on("controller", playerId => this.expansion?.economy.release(playerId));
     bus.on("controller", playerId => this.expansion?.operations.release(playerId));
     bus.on("controller", playerId => this.commandApplications.release(playerId, this.tick));
+    bus.on("controller", (playerId, ai) => this.expansion?.economy.military.armyPlanner.controllerChanged(playerId, ai, this.tick));
     // L1: an eliminated faction's AI planning state has no owner left to release it.
     bus.on("factionEliminated", playerId => this.expansion?.economy.release(playerId));
     bus.on("factionEliminated", playerId => this.expansion?.operations.release(playerId));
