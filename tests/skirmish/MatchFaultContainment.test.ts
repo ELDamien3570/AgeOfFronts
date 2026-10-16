@@ -113,7 +113,7 @@ describe("match fault containment", () => {
       (game as unknown as { changeOwner(tile: number, id: number): void }).changeOwner(tile, 1);
     }],
     ["a research queue", (game) => {
-      game.expansion!.progression.states[1].research.Military = { technologyId: "x", remainingTicks: 10, totalTicks: 10 } as never;
+      game.expansion!.progression.states[1].research.warfare = { technologyId: "x", remainingTicks: 10, totalTicks: 10 } as never;
     }],
   ])("faults a command that throws after writing %s", (_label, write) => {
     const { game, runner } = setup();
