@@ -203,7 +203,10 @@ describe("heartbeat tolerance (P18)", () => {
     let pings = 0;
     // Misses two pings, then answers every later one.
     late.ws.on("ping", () => { if (++pings >= 3) late.ws.pong(); });
-    await new Promise((resolve) => setTimeout(resolve, 40 * 10));
+    // Wait for the pings themselves, not a fixed wall-clock span: under
+    // full-suite load the 40 ms heartbeat timer can fire far less often.
+    const deadline = Date.now() + 20_000;
+    while (pings < 5 && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 10));
     expect(pings).toBeGreaterThanOrEqual(5);
     expect(responsive.ws.readyState).toBe(WebSocket.OPEN);
     expect(late.ws.readyState).toBe(WebSocket.OPEN);
