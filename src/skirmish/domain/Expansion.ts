@@ -90,7 +90,7 @@ import {
   advanceRejection,
   researchRejection,
 } from "./Progression";
-import { affordableRefitPrefix, sumCosts, vesselRefitCost } from "./RefitQuote";
+import { affordableRefitPrefix, sumCosts, VESSEL_REFIT_PORT_MESSAGE, vesselRefitCost, vesselRefitPortReady } from "./RefitQuote";
 import { unitRefitCost } from "./Refitting";
 import { vesselEffects } from "./ResearchEffects";
 import { rescaledHullHealth } from "./NavalCombat";
@@ -702,6 +702,7 @@ export class Expansion {
         return "Research a military vessel refit first";
       const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible fleet out of combat with no active refit";
+      if(!vesselRefitPortReady(world.buildingFacts().byType(player.id,"port"),target))return VESSEL_REFIT_PORT_MESSAGE;
       const costs=eligible.map(s=>vesselRefitCost(target,this.vessel(s)));
       const count=affordableRefitPrefix(costs,availableGold(player),this.supply.inventories[player.id]);
       if(!count)return costRejection(player,this.supply.inventories[player.id],costs[0])??"No affordable vessel refit";

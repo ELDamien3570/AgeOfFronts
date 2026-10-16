@@ -445,6 +445,9 @@ describe("Warship patrol and dock repair logic", () => {
     player.gold = 1e6;
     const ship = spawnWarship(match, 35, 25);
     match.updateShip(ship.id, { definitionId: "stoneage-warship", health: 500 });
+    // 05 rec 5: a vessel refit needs an owned port of the target's age.
+    match.addBuilding({ id: match.allocateId(), playerId: 1, type: "port", tile: match.map.ref(18, 25),
+      remainingTicks: 0, health: 1000, maxHealth: 1000, age: "BronzeAge" });
     expect(match.applyCommand({ type: "refit-ships", playerId: 1, shipIds: [ship.id], definitionId: target.id })).toBeNull();
     for (let i = 0; i < secondsToTicks(11) && ship.refit; i++) match.step();
     expect(ship.definitionId).toBe(target.id);

@@ -4,6 +4,7 @@ import type { Player, Ship, Squad } from "../Protocol";
 import { defaultUnit, UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
 import {
   AGES,
+  type Age,
   type Cost,
   type Inventory,
   type UnitDefinition,
@@ -52,6 +53,13 @@ export function sumCosts(costs: readonly Cost[]): Cost {
     for (const [id, n] of Object.entries(cost.items ?? {})) items[id] = (items[id] ?? 0) + n;
   }
   return { gold, items };
+}
+/** 05 rec 5 (owner decision, the notes' default): a vessel refit needs an
+ * owned, completed port of at least the target vessel's age. */
+export const VESSEL_REFIT_PORT_MESSAGE = "Build or upgrade a port to this vessel's age first";
+export function vesselRefitPortReady(ports: readonly { age?: Age; remainingTicks?: number; health?: number }[], target: { age: Age }): boolean {
+  return ports.some((port) => !port.remainingTicks && (port.health ?? 1) > 0 &&
+    AGES.indexOf(port.age ?? "StoneAge") >= AGES.indexOf(target.age));
 }
 export function vesselRefitCost(target: VesselDefinition, source: VesselDefinition | null, count = 1): Cost {
   const base = Math.max(

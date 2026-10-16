@@ -1,6 +1,8 @@
 // Balance row "Refits" (05 issue 8 / rec 5; 20 N10): a refit costs at least
 // REFIT_FLOOR_PERCENT of the recruit-gold gap between source and target.
 import { describe, expect, it } from "vitest";
+import english from "../../resources/lang/en.json";
+import { serverText } from "../../src/skirmish/client/ServerText";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { UNIT, VESSEL } from "../../src/skirmish/content/Units";
@@ -9,6 +11,7 @@ import {
   affordableRefitPrefix,
   quoteShipRefits,
   sumCosts,
+  VESSEL_REFIT_PORT_MESSAGE,
   vesselRefitCost,
 } from "../../src/skirmish/domain/RefitQuote";
 import { REFIT_FLOOR_PERCENT, refitFloorGold, unitRefitCost } from "../../src/skirmish/domain/Refitting";
@@ -69,7 +72,10 @@ function fleet() {
   });
   const target = vessel("modern-warship");
   m.expansion!.supply.inventories[1] = { ...vesselRefitCost(target, null, 4).items };
-  return { m, add, target, player: m.players[0] };
+  // 05 rec 5: a vessel refit needs an owned port of the target's age.
+  const port = m.addBuilding({ id: m.allocateId(), playerId: 1, type: "port", tile: m.map.ref(10, 19),
+    remainingTicks: 0, health: 1000, maxHealth: 1000, age: "Modern" });
+  return { m, add, target, player: m.players[0], port };
 }
 
 describe("refit-ships command charges each hull from its own tier", () => {
@@ -107,5 +113,27 @@ describe("refit-ships command charges each hull from its own tier", () => {
     })!;
     expect(quote.target?.id).toBe(target.id);
     expect(quote.cost?.gold).toBe(2940);
+  });
+});
+
+describe("vessel refits need a port of the target's age (05 rec 5)", () => {
+  it("rejects a refit without such a port, with no side effects, and accepts it once the port is upgraded", () => {
+    const { m, add, target, player, port } = fleet();
+    const stone = add(10, "stoneage-warship");
+    player.gold = 10_000;
+    m.updateBuilding(port.id, { age: "Napoleonic" });
+    const items = { ...m.expansion!.supply.inventories[1] };
+    expect(m.applyCommand({ type: "refit-ships", playerId: 1, shipIds: [stone.id], definitionId: target.id })).toBe(VESSEL_REFIT_PORT_MESSAGE);
+    expect(player.gold).toBe(10_000);
+    expect(m.expansion!.supply.inventories[1]).toEqual(items);
+    expect(stone.refit ?? null).toBeNull();
+    m.updateBuilding(port.id, { remainingTicks: 5, age: "Modern" });
+    expect(m.applyCommand({ type: "refit-ships", playerId: 1, shipIds: [stone.id], definitionId: target.id })).toBe(VESSEL_REFIT_PORT_MESSAGE);
+    m.updateBuilding(port.id, { remainingTicks: 0 });
+    expect(m.applyCommand({ type: "refit-ships", playerId: 1, shipIds: [stone.id], definitionId: target.id })).toBeNull();
+    expect(stone.refit?.targetId).toBe(target.id);
+  });
+  it("shows the rejection translated", () => {
+    expect(serverText(VESSEL_REFIT_PORT_MESSAGE)).toBe(english.skirmish_server.vessel_refit_port);
   });
 });

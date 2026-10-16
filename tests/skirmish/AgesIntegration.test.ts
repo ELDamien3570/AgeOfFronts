@@ -39,6 +39,11 @@ function match(water = false, ai = false) {
   }
   return m;
 }
+/** 05 rec 5: a vessel refit needs an owned port of the target's age. */
+function modernPort(m: Skirmish, playerId = 1) {
+  m.addBuilding({ id: m.allocateId(), playerId, type: "port", tile: m.map.ref(5, 19),
+    remainingTicks: 0, health: 1000, maxHealth: 1000, age: "Modern" });
+}
 function complete(m: Skirmish) {
   for (const p of m.players) {
     const state = m.expansion!.progression.states[p.id];
@@ -271,6 +276,7 @@ describe("integrated shipments and military progression", () => {
   it.each([0, 1, 2])("quotes and refits a moving ship in territory owned by %s, but rejects combat and active refits", (owner) => {
     const m = match(true);
     complete(m);
+    modernPort(m);
     const s = ship(m, 10), target = VESSEL.get("bronzeage-warship")!;
     m.owners.fill(owner);
     m.expansion!.supply.inventories[1] = { ...vesselRefitCost(target, null).items };
@@ -302,6 +308,7 @@ describe("integrated shipments and military progression", () => {
   it("refits a fleet atomically, preserves its health share, resets XP and rejects movement during refit", () => {
     const m = match(true);
     complete(m);
+    modernPort(m);
     const s = ship(m, 10),
       t = ship(m, 11);
     m.updateShip(s.id, { health: 400 });
