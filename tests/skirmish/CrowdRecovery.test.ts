@@ -188,7 +188,7 @@ describe("cooperative crowd recovery", () => {
     f.goals.set(1, { x: f.squads[1].x, y: f.squads[1].y });
     f.goals.set(2, { x: f.squads[0].x, y: f.squads[0].y });
     for (let tick = 1; tick <= 60; tick++) f.step(tick);
-    expect(f.solver.checkpoint().recovery.leases).toHaveLength(0);
+    expect(f.solver.checkpoint()).not.toHaveProperty("recovery");
   });
   it("retires legacy friendly yield leases and remains deterministic across reversed storage", () => {
     const a = scenario(),
@@ -205,7 +205,7 @@ describe("cooperative crowd recovery", () => {
       a.step(tick);
       b.step(tick, true);
     }
-    expect(a.solver.checkpoint().recovery.leases).toHaveLength(0);
+    expect(a.solver.checkpoint()).not.toHaveProperty("recovery");
     b.solver.restore(a.solver.checkpoint());
     for (let tick = 25; tick <= 130; tick++) {
       a.step(tick);
@@ -230,11 +230,8 @@ describe("cooperative crowd recovery", () => {
       moved: false,
     });
     expect(f.squads[0].movementStatus).toBeUndefined();
-    expect(
-      f.solver
-        .checkpoint()
-        .recovery.leases.every((l) => l.members.every((m) => m.id !== held.id)),
-    ).toBe(true);
+    // The solver keeps no yield leases (L15): nothing can hold the held squad.
+    expect(f.solver.checkpoint()).not.toHaveProperty("recovery");
   });
   it("rotates right of way by waiting age and caps coordinated work", () => {
     const f = scenario(),

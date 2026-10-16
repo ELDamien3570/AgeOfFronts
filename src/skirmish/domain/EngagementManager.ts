@@ -623,6 +623,8 @@ export class EngagementManager {
       j.armyCursor++;
       j.memberIds = [];
       j.enemyIds = [];
+      // The validator pairs projections with enemyIds (R2-M12).
+      j.projections = [];
       if (j.armyCursor >= j.armyIds.length) return this.finishJob(e);
       return false;
     }

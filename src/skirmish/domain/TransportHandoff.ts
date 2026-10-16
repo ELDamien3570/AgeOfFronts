@@ -64,7 +64,9 @@ export function transportHandoff(
     facing,
     layoutTroops: s.troops,
     revision: old.revision + 1,
-    deployedShape: intent==="column"?old.deployedShape:intent,
+    // The width above is sized for the deployed shape; store that shape so the
+    // validator (deployedShape ?? shape) reads the same one (R2-M11).
+    deployedShape: intent==="column"?old.deployedShape??formationDoctrine(s.definitionId).defaultShape:intent,
     lastDeployTick: 0,
   };
   const candidate = { ...s, ...end, afloat: null, formation: preferred };

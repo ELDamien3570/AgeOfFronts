@@ -360,6 +360,25 @@ describe("server-authoritative live match", () => {
     expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
   });
 
+  it("rebases every seat onto the packet of a rolled-back advance, never a delta (P4)", async () => {
+    const f = await fixture();
+    let rolledBack = true;
+    f.executor.request = async <T extends ExecutorResult>(request: ExecutorRequest): Promise<T> => {
+      expect(request.type).toBe("advance");
+      return { tick: 1, winner: null, packet, rejectedCommands: [], ...(rolledBack ? { rolledBack } : {}) } as MatchAdvance as T;
+    };
+    f.setTime(10_125); await f.match.advance();
+    const states = f.messages.filter(item => item.message.type === "match-state").map(item => item.message);
+    expect(states).toHaveLength(2);
+    for (const message of states) expect(message).toMatchObject({ type: "match-state", tick: 1, rebase: true });
+    expect(f.match.progress().state).toBe("running");
+    // The next ordinary publication is a delta again.
+    rolledBack = false; f.messages.length = 0;
+    f.setTime(10_500); await f.match.advance();
+    const next = f.messages.filter(item => item.message.type === "match-state").map(item => item.message);
+    expect(next).toHaveLength(2);
+    for (const message of next) expect((message as { rebase?: boolean }).rebase).toBeFalsy();
+  });
   it("ends a faulted simulation with the fixed message and stops advancing", async () => {
     const f = await fixture();
     let advances = 0;

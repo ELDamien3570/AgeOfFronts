@@ -1,7 +1,6 @@
 import {TICKS_PER_SECOND} from './Protocol';
 import { MOTION } from "./content/TacticalRules";
 import type { GameMap } from "../core/game/GameMap";
-import { CrowdRecovery } from "./CrowdRecovery";
 import { CrowdVelocity } from "./CrowdVelocity";
 import {
   FIXED,
@@ -111,25 +110,21 @@ function crossing(
 // explicit yield-only intent from the army domain; manual Hold never supplies it.
 export class LocalAvoidance {
   checkpoint() {
-    return structuredClone({
-      previous: this.previous,
-      recovery: this.recovery.checkpoint(),
-    });
+    return structuredClone({ previous: this.previous });
   }
-  restore(saved: ReturnType<LocalAvoidance["checkpoint"]>): void {
-    const state = structuredClone(saved);
-    restoreMap(this.previous, state.previous);
+  /** Older checkpoints also carry `recovery` (friendly yield leases); it no
+   * longer constrains the overlap policy and is ignored (L15). */
+  restore(saved: ReturnType<LocalAvoidance["checkpoint"]> & { recovery?: unknown }): void {
+    const state = structuredClone(saved.previous);
+    restoreMap(this.previous, state);
     // Older checkpoints can share ZERO/desired objects between several IDs.
     for (const [id, velocity] of this.previous)
       this.previous.set(id, { x: velocity.x, y: velocity.y });
-    // Historical friendly yield leases no longer constrain the overlap policy.
-    this.recovery.restore();
   }
 
   private readonly previous = new Map<number, Velocity>();
   private readonly obstacles: Obstacle[] = [];
   private readonly crowd = new CrowdVelocity();
-  private readonly recovery = new CrowdRecovery();
   private readonly active: Squad[] = [];
   private readonly motion = new Map<number, MotionScratch>();
   private motionPass = 0;

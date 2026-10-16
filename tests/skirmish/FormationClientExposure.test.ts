@@ -1,101 +1,118 @@
 import { describe, expect, it } from "vitest";
-import { GameMapImpl } from "../../src/core/game/GameMap";
 import { CanonicalStateStream } from "../../src/skirmish/client/CanonicalStateStream";
 import { LocalSnapshotStream } from "../../src/skirmish/client/LocalSnapshotStream";
 import { formationDoctrine, validateFormation } from "../../src/skirmish/domain/FormationGeometry";
 import { frontageLayout } from "../../src/skirmish/domain/FormationProfiles";
+import { createManpower } from "../../src/skirmish/domain/Manpower";
+import { UNIT } from "../../src/skirmish/content/Units";
 import { decodeState, encodeState } from "../../src/skirmish/multiplayer/StateCodec";
 import { SNAPSHOT_STATE_LIMITS } from "../../src/skirmish/multiplayer/StateLimits";
 import type { SnapshotPacket } from "../../src/skirmish/Protocol";
-import { Skirmish } from "../../src/skirmish/Simulation";
+import type { Skirmish } from "../../src/skirmish/Simulation";
 import { SnapshotEncoder } from "../../src/skirmish/SnapshotCodec";
+import { invalidFormations, stepValidated } from "./fixtures/FormationCheck";
+import { transportScene } from "./fixtures/TacticalScenes";
 
 /**
- * B-3 client-exposure check for R2-M11 (review-notes/00-summary.md, B-3).
+ * B-3 client exposure of R2-M11 (review-notes/00-summary.md, B-3;
+ * docs/B3ClientExposureCheck.md).
  *
- * R2-M11: transport landing and refits can leave a live squad formation with
- * `preferredFrontage` sized for the doctrine's deployed shape while
- * `deployedShape` is undefined and `shape` is "column". The same
- * `validateFormation` that rejects it on restore also runs on every decoded
- * squad detail on the client.
+ * Before the fix, a transport landing of a manual column and a refit could
+ * leave `preferredFrontage` sized for a deployed shape while the validator read
+ * `deployedShape ?? shape` as a different shape. Every online client's
+ * canonical decode (SnapshotDecoder.validate -> validateSnapshotDetails ->
+ * validateFormation) threw and the client left the match; the local client
+ * failed on its resync baseline too.
  *
- * Outcome recorded here (see docs/B3ClientExposureCheck.md):
- * - The server does not notice: `SnapshotEncoder.encode` and the wire
- *   `encodeState` accept the state, and the simulation keeps running.
- * - The client throws. `CanonicalStateStream.apply` (run inside
- *   multiplayerStateWorker) reaches SnapshotDecoder.validate ->
- *   validateSnapshotDetails -> validateFormation and throws
- *   "Invalid formation frontage". The worker posts `{error}`, the
- *   OnlineMatchSession decode promise rejects, and the receive chain calls
- *   `fail(message)`: the client leaves the match. It does not request a
- *   baseline, and it does not ignore the squad.
- * - Every client gets the same publication, and a rejoin baseline carries the
- *   same detail, so all online clients drop until the formation changes.
- * - The local (single-player) client, LocalSnapshotStream, rejects the delta
- *   and requests one complete baseline (main.ts posts "resync"); that
- *   baseline carries the same detail and throws, so the local match fails too.
- *
- * This test builds that state synthetically through the real server encode
- * path and the real client decode path. The decoder rejecting such a detail is
- * correct; the defect is the simulation producing it, which the B-3 fix
- * (TransportHandoff.ts / Simulation refit branch) addresses.
+ * These tests drive the real landing and refit through the simulation and
+ * check that the server publication passes the real client decode paths. The
+ * last test keeps the codec guard: the decoder still rejects an invalid detail.
  */
-function landedColumnMatch() {
-  const W = 64, H = 48, terrain = new Uint8Array(W * H).fill(133);
-  const game = new Skirmish(new GameMapImpl(W, H, terrain, terrain.length), {
-    seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1",
-  });
-  const squad = game.squads.find((s) => s.playerId === 1 && s.formation &&
-    formationDoctrine(s.definitionId).shapes.includes("column"))!;
-  expect(squad).toBeDefined();
-  const doctrine = formationDoctrine(squad.definitionId);
-  const width = frontageLayout(squad.troops, doctrine, doctrine.defaultShape)!.width;
-  // The landed manual column of R2-M11: frontage for the deployed shape, no deployedShape.
-  const landed = {
-    ...squad.formation!, shape: "column" as const, mode: "travel" as const, automatic: false,
-    deployedShape: undefined, preferredFrontage: width, frontage: undefined,
-    revision: squad.formation!.revision + 1,
-  };
-  expect(() => validateFormation(landed, squad.definitionId, squad.troops)).toThrow("Invalid formation frontage");
-  return { game, W, H, cells: W * H, corrupt: () => game.updateSquad(squad.id, { formation: landed }) };
-}
-describe("B-3: client exposure of the R2-M11 formation state", () => {
-  it("a publication carrying the state is accepted by the server encoder and rejected by the client canonical decode", async () => {
-    const { game, W, H, corrupt } = landedColumnMatch();
-    // The server worker's encoder settings (serverMatchWorker.ts networkEncoding).
-    const encoder = new SnapshotEncoder(true, { compactFormationSlots: true, compactTraders: true });
-    const stream = new CanonicalStateStream(W * H, 65_536, { width: W, height: H });
-    const encode = async () => encodeState(
+function clientPaths(game: Skirmish, size: number) {
+  // The server worker's encoder settings (serverMatchWorker.ts networkEncoding).
+  const encoder = new SnapshotEncoder(true, { compactFormationSlots: true, compactTraders: true });
+  const stream = new CanonicalStateStream(size * size, 65_536, { width: size, height: size });
+  const localEncoder = new SnapshotEncoder(true);
+  const localErrors: unknown[] = [];
+  const local = new LocalSnapshotStream((error) => localErrors.push(error));
+  const publish = async () => {
+    const wire = await encodeState(
       encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts()),
       undefined, SNAPSHOT_STATE_LIMITS, true);
     // The client worker: wire decode, then canonical application.
-    const receive = async (wire: Awaited<ReturnType<typeof encode>>) =>
-      stream.apply(await decodeState<SnapshotPacket>(wire, SNAPSHOT_STATE_LIMITS));
-
-    await receive(await encode());
-    expect(() => stream.presentationPacket()).not.toThrow();
-    corrupt();
-
-    // Server side: encoding the publication succeeds and the match keeps stepping.
-    const wire = await encode();
-    expect(() => game.step()).not.toThrow();
-    // Client side: the canonical decode rejects the publication.
-    await expect(receive(wire)).rejects.toThrow("Invalid formation frontage");
+    await stream.apply(await decodeState<SnapshotPacket>(wire, SNAPSHOT_STATE_LIMITS));
+    expect(local.decode(localEncoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts()))).toBeDefined();
+    expect(localErrors).toEqual([]);
+  };
+  return { publish, encoder, stream };
+}
+function manualColumnScene() {
+  const f = transportScene();
+  const formation = {
+    ...f.s.formation!, shape: "column" as const, mode: "travel" as const, automatic: false,
+    deployedShape: undefined, preferredFrontage: undefined, frontage: undefined, trail: undefined,
+    revision: f.s.formation!.revision + 1,
+  };
+  validateFormation(formation, f.s.definitionId, f.s.troops);
+  f.game.updateSquad(f.s.id, { formation });
+  return f;
+}
+describe("B-3: R2-M11 formation states reach clients valid", () => {
+  it("a manual column landing from water passes the validator and both client decode paths", async () => {
+    const f = manualColumnScene();
+    const { publish } = clientPaths(f.game, f.size);
+    await publish();
+    expect(f.game.applyCommand({ type: "order", playerId: 1, squadIds: [f.s.id], order: { type: "move", tile: f.map.ref(128, 64) } })).toBeNull();
+    let boarded = false, landed = false;
+    for (let tick = 0; tick < 1200 && !landed; tick++) {
+      expect(stepValidated(f.game, 1)).toEqual([]);
+      const s = f.game.squad(f.s.id)!;
+      boarded ||= !!s.afloat;
+      landed = boarded && !s.afloat;
+      if (tick % 10 === 0 || landed) await publish();
+    }
+    expect(landed).toBe(true);
+    const s = f.game.squad(f.s.id)!;
+    expect(s.formation?.preferredFrontage).toBeDefined();
+    expect(() => validateFormation(s.formation, s.definitionId, s.troops)).not.toThrow();
+    await publish();
+  }, 60_000);
+  it("a refit of a column that remembers a shape the new doctrine lacks passes both client decode paths", async () => {
+    const f = transportScene();
+    const from = "bronzeage-anticavalry", to = "earlymodern-anticavalry";
+    expect(formationDoctrine(from).shapes).toContain("shield-wall");
+    expect(formationDoctrine(to).shapes).not.toContain("shield-wall");
+    const u = UNIT.get(from)!, troops = u.formationRecipe!.capacity, d = formationDoctrine(from);
+    f.game.updateSquad(f.s.id, {
+      definitionId: from, kind: u.line, troops, manpower: createManpower(u, "base"),
+      formation: {
+        ...f.s.formation!, shape: "column", mode: "travel", automatic: false, deployedShape: "shield-wall",
+        preferredFrontage: frontageLayout(troops, d, "shield-wall")!.width, frontage: undefined, trail: undefined, layoutTroops: undefined,
+      },
+    });
+    expect(invalidFormations(f.game)).toEqual([]);
+    const { publish } = clientPaths(f.game, f.size);
+    await publish();
+    // The simulation's definition-change branch (refit / enlargement).
+    f.game.updateSquad(f.s.id, { definitionId: to, manpower: createManpower(UNIT.get(to)!, "base") });
+    expect(invalidFormations(f.game)).toEqual([]);
+    await publish();
+    expect(stepValidated(f.game, 20)).toEqual([]);
+    await publish();
   });
-  it("the local client requests one baseline, and that baseline throws too", () => {
-    const { game, corrupt } = landedColumnMatch();
-    const encoder = new SnapshotEncoder(true);
-    const requests: unknown[] = [];
-    const local = new LocalSnapshotStream((error) => requests.push(error));
-    expect(local.decode(encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts()))).toBeDefined();
-    corrupt();
-    const delta = encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts());
-    expect(delta.reset).toBeFalsy();
-    expect(local.decode(delta)).toBeUndefined();
-    expect(requests).toHaveLength(1);
-    expect((requests[0] as Error).message).toBe("Invalid formation frontage");
-    const baseline = new SnapshotEncoder(true).encode(game.replicationSource(), game.tileChanges, game.replicationFacts());
-    expect(baseline.reset).toBe(true);
-    expect(() => local.decode(baseline)).toThrow("Invalid formation frontage");
+  it("the client decoder still rejects an invalid formation detail (codec guard)", async () => {
+    const f = transportScene();
+    const { publish } = clientPaths(f.game, f.size);
+    await publish();
+    const d = formationDoctrine(f.s.definitionId);
+    // The pre-fix R2-M11 state: a width for the deployed shape, validated against the column.
+    const corrupt = {
+      ...f.s.formation!, shape: "column" as const, mode: "travel" as const, automatic: false,
+      deployedShape: undefined, preferredFrontage: frontageLayout(f.s.troops, d, d.defaultShape)!.width,
+      frontage: undefined, revision: f.s.formation!.revision + 1,
+    };
+    expect(() => validateFormation(corrupt, f.s.definitionId, f.s.troops)).toThrow("Invalid formation frontage");
+    f.game.updateSquad(f.s.id, { formation: corrupt });
+    await expect(publish()).rejects.toThrow("Invalid formation frontage");
   });
 });

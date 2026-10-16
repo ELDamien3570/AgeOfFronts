@@ -771,7 +771,16 @@ export class LiveMatch {
     this.cadence.record(this.tick, this.now());
     if (result.diagnostics) this.latestDiagnostics = result.diagnostics;
     if (result.seats) this.runtimeSeats = result.seats;
-    if (result.packet) {
+    if (result.packet && result.rolledBack) {
+      // A rollback replaced the world: every seat rebases onto the complete
+      // packet. A plain delta would apply to state that no longer exists.
+      this.publicationSequence++;
+      const message = { ...this.state(result.packet), rebase: true };
+      this.diagnostics.measure("fanout", () => {
+        for (const seat of this.seats.values())
+          if (seat.connected && this.loaded.has(seat.guestId)) this.sendState(seat.guestId, message, true);
+      });
+    } else if (result.packet) {
       this.publicationSequence++;
       this.broadcast(this.state(result.packet));
     }

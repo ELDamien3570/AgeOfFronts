@@ -90,7 +90,10 @@ export class Diplomacy {
   aiOfferAvailable(recipient: number, tick: number): boolean {
     return (this.recipientCooldowns[recipient] ?? 0) <= tick && !this.state.offers.some(o => o.recipient === recipient && o.expiresTick > tick);
   }
-  checkpoint() { return structuredClone({state:this.state, nextId:this.nextId, recipientCooldowns:this.recipientCooldowns,proposerNext:this.proposerNext,pairNext:this.pairNext,aiProposers:[...this.aiProposers],...(this.raids?{tick:this.tick,peacePairNext:this.peacePairNext,peaceRecipientNext:this.peaceRecipientNext,peaceContexts:this.peaceContexts}: {})}); }
+  checkpoint() { return structuredClone({state:this.state, nextId:this.nextId, recipientCooldowns:this.recipientCooldowns,proposerNext:this.proposerNext,pairNext:this.pairNext,aiProposers:[...this.aiProposers],...(this.raids?{tick:this.tick,peacePairNext:this.peacePairNext,peaceRecipientNext:this.peaceRecipientNext,peaceContexts:this.peaceContexts,
+    // Route revisions embed the permission signature, so a restored match must
+    // reproduce it; otherwise every saved route looks stale after a rollback.
+    permissionGeneration:this.permissionGeneration,ownerPermissions:[...this.ownerPermissions]}: {})}); }
   restore(saved: ReturnType<Diplomacy["checkpoint"]>): void {
     if(this.raids)validateRaidDiplomacy(saved.state);
     const state=structuredClone(saved);
@@ -101,7 +104,14 @@ export class Diplomacy {
     this.aiProposers.clear();for(const id of state.aiProposers??[])this.aiProposers.add(id);
     if(this.raids){this.state.embargoes??=[];this.state.peaceProtection??=[];this.state.dontEmbargo??=[];}
     restoreRecord(this.peacePairNext,state.peacePairNext??{});restoreRecord(this.peaceRecipientNext,state.peaceRecipientNext??{});restoreRecord(this.peaceContexts,state.peaceContexts??{});
-    this.ownerPermissions.clear();this.permissionGeneration++;this.permissionRevision++;
+    this.ownerPermissions.clear();this.permissionRevision++;
+    if(state.permissionGeneration===undefined)this.permissionGeneration++;
+    else {
+      if(!Number.isSafeInteger(state.permissionGeneration)||state.permissionGeneration<0||!Array.isArray(state.ownerPermissions)||
+        state.ownerPermissions.some(([id,n])=>!Number.isSafeInteger(id)||!Number.isSafeInteger(n)||n<0))throw new Error("Invalid diplomacy permission checkpoint");
+      this.permissionGeneration=state.permissionGeneration;
+      for(const [id,n] of state.ownerPermissions)this.ownerPermissions.set(id,n);
+    }
     this.tick=state.tick??0;
 
   }

@@ -61,6 +61,10 @@ interface ArmyObjective {
   maneuver?: { enemy: number; targetTile: number; start: number; cursor: number; tile?: number; since: number };
   breach?: { scan: number; start: number; barrier?: number; building?: number; cursor: number; tile?: number; shooters: number[]; since: number };
 }
+/** M3 (owner decision OD-5, provisional): after a human-to-AI handover, the
+ * human's armies have no AI mission and the AI never selects their members.
+ * The planner disbands them after this grace; a reconnect within it cancels. */
+export const ORPHAN_ARMY_GRACE_TICKS = secondsToTicks(10);
 export class AiArmyPlanner {
   readonly invasion: AiInvasionResponse;
   readonly hillPositions:HillPositioning;
@@ -68,6 +72,8 @@ export class AiArmyPlanner {
   readonly missions = new Map<string, ArmyObjective>();
   readonly byPlayer = new Map<number,string[]>();
   private missionCursor=0;
+  /** Handover tick per faction whose orphaned armies await disbanding (M3). */
+  private readonly orphanSince = new Map<number, number>();
   private cursor = 0;
   private serial = 0;
   readonly diagnostics = { work: 0, commands: 0, rejected: 0, completed: 0 };
@@ -81,7 +87,25 @@ export class AiArmyPlanner {
       cursor: this.cursor,
       serial: this.serial,
       invasion: this.invasion.checkpoint(),
+      orphans: [...this.orphanSince],
     });
+  }
+  /** Lifecycle subscriber: control of `playerId` moved to the AI or back. */
+  controllerChanged(playerId: number, ai: boolean, tick: number): void {
+    if (ai) this.orphanSince.set(playerId, tick);
+    else this.orphanSince.delete(playerId);
+  }
+  private disbandOrphans(): void {
+    const { world, armies } = this.expansion;
+    for (const [playerId, since] of [...this.orphanSince]) {
+      if (world.tick < since + ORPHAN_ARMY_GRACE_TICKS) continue;
+      this.orphanSince.delete(playerId);
+      const player = world.players.find(p => p.id === playerId);
+      if (!player?.ai || player.eliminated) continue;
+      const missionArmies = new Set((this.byPlayer.get(playerId) ?? []).map(id => this.missions.get(id)?.armyId));
+      for (const army of armies.armies.filter(a => a.playerId === playerId && !missionArmies.has(a.id)))
+        world.applyCommand({ type: "disband-army", playerId, armyId: army.id });
+    }
   }
   restore(saved?: ReturnType<AiArmyPlanner["checkpoint"]>): void {
     this.invasion.restore(saved?.invasion);
@@ -89,6 +113,12 @@ export class AiArmyPlanner {
     this.missions.clear();this.byPlayer.clear();this.missionCursor=saved?.missionCursor??0;
     this.cursor = saved?.cursor ?? 0;
     this.serial = saved?.serial ?? 0;
+    this.orphanSince.clear();
+    for (const [playerId, since] of saved?.orphans ?? []) {
+      if (!Number.isSafeInteger(playerId) || playerId < 1 || !Number.isSafeInteger(since) || since < 0 || this.orphanSince.has(playerId))
+        throw Error("Invalid orphaned army checkpoint");
+      this.orphanSince.set(playerId, since);
+    }
     for (const [id, plan] of structuredClone(saved?.missions ?? []))
       {validateTrenchMission(plan.trench);validateHillState(plan.hill,plan.kind);if(id!==plan.id||!Number.isSafeInteger(plan.playerId)||plan.playerId<1||!Number.isSafeInteger(plan.cursor)||plan.cursor<0||plan.cursor>plan.rosterIds.length||plan.members.length>60||new Set(plan.members).size!==plan.members.length||!["select","rally","assemble","advance","engage","recover","flank","breach","replenish","refit","complete"].includes(plan.phase))throw Error("Invalid army mission");this.missions.set(id,plan);}
     for(const [id,rows] of structuredClone(saved?.byPlayer??[])){if(rows.length>4||new Set(rows).size!==rows.length||rows.some(key=>this.missions.get(key)?.playerId!==id))throw Error("Invalid army mission index");this.byPlayer.set(id,rows);}
@@ -110,7 +140,7 @@ export class AiArmyPlanner {
     if(army)this.expansion.world.applyCommand({type:'disband-army',playerId:plan.playerId,armyId:army.id});
     this.missions.delete(plan.id);this.byPlayer.set(plan.playerId,(this.byPlayer.get(plan.playerId)??[]).filter(id=>id!==plan.id));
   }
-  release(playerId:number):void {this.invasion.release(playerId);for(const id of [...(this.byPlayer.get(playerId)??[])]){const plan=this.missions.get(id);if(plan)this.releaseMission(plan);}this.byPlayer.delete(playerId);}
+  release(playerId:number):void {this.orphanSince.delete(playerId);this.invasion.release(playerId);for(const id of [...(this.byPlayer.get(playerId)??[])]){const plan=this.missions.get(id);if(plan)this.releaseMission(plan);}this.byPlayer.delete(playerId);}
   acquireCoast(player:Player,tile:number):boolean {
     const {world}=this.expansion;
     if((this.byPlayer.get(player.id)?.length??0)>=this.missionCap(player)||!world.squadPaths(player.id).connected(player.base,tile))return false;
@@ -160,6 +190,7 @@ export class AiArmyPlanner {
   }
   step(budget:number=BUDGETS.armyMissions):number {
     this.hillPositions.beginTick();
+    if (this.orphanSince.size) this.disbandOrphans();
     budget=Math.min(budget,BUDGETS.armyMissions);
     const {world,armies,operations}=this.expansion;this.diagnostics.work=0;
     if(budget<=0||!world.options?.deferredPlanning||!world.players.length)return 0;

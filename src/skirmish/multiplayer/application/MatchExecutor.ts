@@ -51,6 +51,9 @@ export interface MatchAdvance {
   packet?: EncodedState;
   rejectedCommands: { id: string; playerId: number; message: string }[];
   commandOutcomes?: CommandOutcome[];
+  /** The advance faulted and the executor rolled back to its last checkpoint.
+   * `packet` is then a complete baseline that every seat must rebase onto. */
+  rolledBack?: boolean;
 }
 export interface MatchPublication { tick: number; packet: EncodedState }
 export interface ClientBaseline {tick:number;winner:number|null;baseline:EncodedState;}

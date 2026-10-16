@@ -199,6 +199,8 @@ export class HierarchicalPaths {
   }
   restoreShared(saved?: SharedPreparationCheckpoint): void {
     this.sharedTrees.clear(); this.sharedPins.clear(); this.sharedBackbones.clear(); this.backboneNodes = 0;
+    // Start trees are keyed on cluster revisions the restore replaces (R2-L15).
+    this.startTrees.clear();
     if (!saved) return;
     if (saved.version !== 1 || !(saved.clusterRevisions instanceof Uint32Array) ||
       saved.clusterRevisions.length !== this.clusters.length || saved.entries.length > SHARED_TREE_LIMIT)
