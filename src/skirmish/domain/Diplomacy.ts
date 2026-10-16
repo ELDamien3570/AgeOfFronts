@@ -28,8 +28,39 @@ export class Diplomacy {
     return this.raids?`${this.permissionGeneration}:${this.ownerPermissions.get(owner)??0}`:String(this.revision);
   }
   nonAllied(a:number,b:number):boolean{return !!a&&!!b&&!this.allied(a,b);}
+  /** Either faction start-protected, or a pairwise peace row (13 R1.1). */
   protected(a:number,b:number,tick=this.tick):boolean {
+    return this.startProtectedPair(a,b,tick)||this.peaceProtected(a,b,tick);
+  }
+  private peaceProtected(a:number,b:number,tick:number):boolean {
     return !!this.state.peaceProtection?.some(p=>this.pair(p.a,p.b)===this.pair(a,b)&&p.untilTick>tick);
+  }
+  /** O(1) per-seat lookup, rebuilt from state on restore. */
+  private readonly startUntil=new Map<number,number>();
+  /** Start protection never concerns neutral land (owner 0) or oneself. */
+  private startProtectedPair(a:number,b:number,tick:number):boolean {
+    return !!this.startUntil.size&&!!a&&!!b&&a!==b&&(this.startProtected(a,tick)||this.startProtected(b,tick));
+  }
+  startProtected(playerId:number,tick=this.tick):boolean{return (this.startUntil.get(playerId)??0)>tick;}
+  /** True while any start-protection row remains (until step() expires it). */
+  get startProtectionActive():boolean{return this.startUntil.size>0;}
+  /** Protect the given seats from tick 0 until `untilTick` (raids rules only). */
+  protectStart(playerIds:readonly number[],untilTick:number):void {
+    if(!this.raids||untilTick<=0||!playerIds.length)return;
+    this.state.startProtection=playerIds.map(playerId=>({playerId,untilTick}));
+    this.rebuildStartProtection();this.startProtectionChanged();
+  }
+  private rebuildStartProtection():void {
+    this.startUntil.clear();if(!this.raids)return;
+    for(const row of this.state.startProtection??[])this.startUntil.set(row.playerId,row.untilTick);
+  }
+  /** Start protection affects every pair of the seat, so all owner permissions refresh. */
+  private startProtectionChanged():void{this.permissionGeneration++;this.permissionRevision++;this.revision++;}
+  private endStartProtection(keep:(row:{playerId:number;untilTick:number})=>boolean):void {
+    const rows=this.state.startProtection;if(!rows?.length)return;
+    const kept=rows.filter(keep);if(kept.length===rows.length)return;
+    if(kept.length)this.state.startProtection=kept;else delete this.state.startProtection;
+    this.rebuildStartProtection();this.startProtectionChanged();
   }
   embargo(a:number,b:number,tick=this.tick):boolean {
     return !!this.state.embargoes?.some(r=>this.pair(r.initiator,r.victim)===this.pair(a,b)&&r.lastTheftTick+60*TICKS_PER_SECOND>tick);
@@ -100,6 +131,7 @@ export class Diplomacy {
     restoreRecord(this.proposerNext,state.proposerNext??{});restoreRecord(this.pairNext,state.pairNext??{});
     this.aiProposers.clear();for(const id of state.aiProposers??[])this.aiProposers.add(id);
     if(this.raids){this.state.embargoes??=[];this.state.peaceProtection??=[];this.state.dontEmbargo??=[];}
+    this.rebuildStartProtection();
     restoreRecord(this.peacePairNext,state.peacePairNext??{});restoreRecord(this.peaceRecipientNext,state.peaceRecipientNext??{});restoreRecord(this.peaceContexts,state.peaceContexts??{});
     this.ownerPermissions.clear();this.permissionGeneration++;this.permissionRevision++;
     this.tick=state.tick??0;
@@ -186,7 +218,10 @@ export class Diplomacy {
         o.expiresTick > tick && o.kind!=="peace",
     );
     if (action === "declare") {
-      if(this.raids&&this.protected(player.id,other.id,tick))return "Peace protection is still active";
+      // A start-protected seat may break its own protection by declaring; an
+      // AI-controlled seat (e.g. a disconnected human) keeps it (13 R1.1, OD15).
+      if(this.raids&&(this.peaceProtected(player.id,other.id,tick)||this.startProtected(other.id,tick)||player.ai&&this.startProtected(player.id,tick)))return "Peace protection is still active";
+      if(this.raids&&this.startProtected(player.id,tick))this.endStartProtection(row=>row.playerId!==player.id);
       if (this.declaredWar(player.id, other.id)) return "Already at war";
       if (treaty) {
         this.state.alliances = this.state.alliances.filter(t => t !== treaty);
@@ -298,6 +333,7 @@ export class Diplomacy {
       const protections=(this.state.peaceProtection??[]).filter(p=>p.untilTick<=tick||!live.has(p.a)||!live.has(p.b));
       this.state.peaceProtection=(this.state.peaceProtection??[]).filter(p=>!protections.includes(p));
       for(const p of protections)this.permissionsChanged(p.a,p.b);
+      this.endStartProtection(row=>row.untilTick>tick&&live.has(row.playerId));
       this.state.dontEmbargo=(this.state.dontEmbargo??[]).filter(e=>live.has(e.playerId)&&live.has(e.otherId));
       const offers = this.state.offers;
       this.state.offers = offers.filter(o => o.kind !== "peace" || this.hostile(o.proposer, o.recipient));

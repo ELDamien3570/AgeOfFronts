@@ -241,7 +241,7 @@ export class Skirmish {
       // Diplomacy: every relation list a command can append to or remove from.
       const d = expansion.diplomacy, state = d.state;
       parts.push(d.revision, state.offers.length, state.alliances.length, state.wars?.length ?? 0,
-        state.embargoes?.length ?? 0, state.peaceProtection?.length ?? 0, state.dontEmbargo?.length ?? 0,
+        state.embargoes?.length ?? 0, state.peaceProtection?.length ?? 0, state.dontEmbargo?.length ?? 0, state.startProtection?.length ?? 0,
         Object.keys(state.cooldowns).length);
       // Armies: membership, orders, queues and posture. Army commands write
       // these without touching the squad change journal.
@@ -557,7 +557,7 @@ export class Skirmish {
   private obstacleTest(playerId: number,squad?:Squad): ((tile: number) => boolean) | undefined {
     const forts = this.expansion?.fortifications;
     const policy = this.expansion?.operations.enabled(this.player(playerId));
-    const diplomacy=this.expansion?.diplomacy,protectedBorders=diplomacy?.raids&&diplomacy.state.peaceProtection?.some(p=>p.a===playerId||p.b===playerId);
+    const diplomacy=this.expansion?.diplomacy,protectedBorders=diplomacy?.raids&&(diplomacy.startProtectionActive||diplomacy.state.peaceProtection?.some(p=>p.a===playerId||p.b===playerId));
     return forts?.hasObstacles || policy || protectedBorders
       ? (tile) => !!forts?.blocked(tile, playerId) ||
         !!protectedBorders&&diplomacy!.protected(playerId,this.owners[tile])&&(!squad||this.owners[tile]!==this.owners[this.tileOf(squad)]) ||
@@ -1079,6 +1079,10 @@ export class Skirmish {
       );
     this.expansion?.features.setChokes(this.passageTraffic.staticFeatures());
     this.createPlayers();
+    // 13 R1.1: human seats (by identity, OD1) start protected under raids rules.
+    this.expansion?.diplomacy.protectStart(
+      this.players.filter(p => isHumanSeat(this.options, p.id)).map(p => p.id),
+      startProtectionUntil(this.options));
     this.expansion?.supply.ensureStartingResources(
       this.players, this.owners, this.paths, this.buildings,
     );
