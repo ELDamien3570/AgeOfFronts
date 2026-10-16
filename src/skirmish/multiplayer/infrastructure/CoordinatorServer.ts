@@ -66,6 +66,8 @@ interface Session {
   bytes: number;
   windowAt: number;
   overLimit: boolean;
+  /** The frame gate already sent its notice in this window. */
+  frameNotice?: boolean;
   strikes: number;
   binarySnapshots: boolean;
 }
@@ -336,6 +338,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           // A quiet window between violations resets the streak.
           admitted.strikes = admitted.overLimit && now() - admitted.windowAt <= 2000 ? admitted.strikes + 1 : 0;
           admitted.overLimit = false;
+          admitted.frameNotice = false;
           admitted.windowAt = now();
           admitted.count = 0;
           admitted.frames = 0;
@@ -344,8 +347,12 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         admitted.bytes += bytes;
         if (++admitted.frames > SESSION_FRAMES_PER_SECOND ||
           (bytes > BUDGETED_FRAME_BYTES && admitted.bytes > SESSION_BYTES_PER_SECOND)) {
-          if (!violate(admitted))
+          // One notice per window: a flooder must not turn every dropped
+          // frame into an outgoing reply.
+          if (!violate(admitted) && !admitted.frameNotice) {
+            admitted.frameNotice = true;
             send(client, { type: "error", message: "Request rate exceeded. This action was not accepted; retry after one second." });
+          }
           return;
         }
       }

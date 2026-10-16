@@ -124,6 +124,20 @@ describe("frame admission before parsing (M5)", () => {
     expect(parse.mock.calls.filter(([text]) => typeof text === "string" && text.length > 100_000).length).toBeLessThan(8);
     expect(peer.ws.readyState).toBe(WebSocket.OPEN);
   });
+  it("sends one frame-rate notice per window, not one reply per dropped frame", async () => {
+    const { url, socket } = await start({ now: () => 7_000 });
+    const peer = await client(socket, (await guest(url)).token);
+    for (let i = 0; i < 600; i++)
+      peer.ws.send(JSON.stringify({ type: "match-command", requestId: `f-${i}`, matchId: "missing", command: { type: "recruit" } }));
+    // A marker after the flood: the socket stays open (one violation) and is
+    // still answered by the request gate, so every earlier reply has arrived.
+    await peer.next((m) => m.type === "error" && m.requestId === "f-199");
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const notices = peer.messages.filter((m) => m.type === "error" && m.requestId === undefined &&
+      m.message.startsWith("Request rate exceeded"));
+    expect(notices).toHaveLength(1);
+    expect(peer.ws.readyState).toBe(WebSocket.OPEN);
+  });
   it("closes a socket that exceeds the request rate in three consecutive windows, not after one burst", async () => {
     let clock = 10_000;
     const { url, socket } = await start({ now: () => clock });
