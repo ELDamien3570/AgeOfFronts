@@ -46,24 +46,24 @@ export function militaryDemand(
         : 0;
   const total = Math.min(
     snapshot.cap,
-    snapshot.isolated && snapshot.threatTroops === 0 && !posture.wealthy ? Math.max(personality.minimumRaidSquads,12) : Infinity,
+    snapshot.isolated && !snapshot.invasion && snapshot.threatTroops === 0 && !posture.wealthy ? Math.max(personality.minimumRaidSquads,12) : Infinity,
     Math.max(
       personality.minimumRaidSquads,
+      snapshot.invasion?.squads ?? 0,
       posture.target-antiAir-personality.siegeCopies*2,
       Object.values(snapshot.force.core).reduce((n, v) => n + v, 0) +
         Math.min(8, snapshot.headroom) +
         Math.min(8, replacements),
     ),
   );
-  const weights = personality.recruitment.reduce((a, b) => a + b, 0);
-  for (const [role, weight] of [
+  const availableRoles = ([
     ["frontline", personality.recruitment[0]],
     ["ranged", personality.recruitment[1]],
     ["mounted", personality.recruitment[2]],
     ["siege", personality.siegeCopies],
     ["artillery", personality.siegeCopies],
     ["anti-air", antiAir],
-  ] as const) {
+  ] as const).flatMap(([role, weight]) => {
     const unit = [...UNITS]
       .reverse()
       .find(
@@ -81,9 +81,16 @@ export function militaryDemand(
             dependencies.available(id, n),
           ),
       );
-    if (!unit || !weight) continue;
+    return unit && weight ? [{ role, weight, unit }] : [];
+  });
+  // A planned army must still be buildable when cavalry or archery is locked.
+  // Redistribute its core demand across the available personality-weighted roles.
+  const weights = snapshot.invasion
+    ? availableRoles.reduce((sum, r) => sum + (["frontline", "ranged", "mounted"].includes(r.role) ? r.weight : 0), 0)
+    : personality.recruitment.reduce((sum, weight) => sum + weight, 0);
+  for (const { role, weight, unit } of availableRoles) {
     const desired = ["frontline", "ranged", "mounted"].includes(role)
-      ? Math.ceil((total * weight) / weights)
+      ? Math.ceil((total * weight) / Math.max(1, weights))
       : weight;
     result.units[role] = desired;
     const missing = Math.max(0, desired - snapshot.force.role(role));

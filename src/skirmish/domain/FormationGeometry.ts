@@ -176,12 +176,7 @@ function shapeOf(
   s: Pick<Squad, "formation" | "definitionId" | "charge">,
 ): FormationShape {
   const d = formationDoctrine(s.definitionId);
-  return d.mounted && s.charge &&
-    s.formation?.shape !== "column" &&
-    s.charge.phase !== "recovery" &&
-    d.shapes.includes("wedge")
-    ? "wedge"
-    : (s.formation?.shape ?? d.defaultShape);
+  return s.formation?.shape ?? d.defaultShape;
 }
 /** Compact travel dimensions shared by templates, trail retention and certificates. */
 export function columnLayout(d: FormationDoctrine) {

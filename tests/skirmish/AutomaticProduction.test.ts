@@ -82,7 +82,7 @@ function setup() {
 }
 
 describe("shared automatic production allocation", () => {
-  it("maintains 100 human troop kits, counts paid output, and replenishes after a recruitment burst", () => {
+  it("maintains the same 100-kit minimum for humans and AI, including paid output and recruitment bursts", () => {
     const buildings = [building(1, "blacksmith"), building(2, "blacksmith")];
     const item = equipmentItem("LateMedieval");
     const inventory: Record<string, number> = { ...goods, [item]: 12 };
@@ -95,7 +95,7 @@ describe("shared automatic production allocation", () => {
     inventory[item] -= 60;
     expect(plan({ buildings, inventory }).size).toBe(2);
     inventory[item] = 12;
-    expect(plan({ buildings, inventory, ai: true }).size).toBe(0);
+    expect(plan({ buildings, inventory, ai: true }).size).toBe(2);
   });
   it("uses each specialty's newest researched pattern", () => {
     expect([...plan().values()]).toEqual([
@@ -189,10 +189,10 @@ describe("shared automatic production allocation", () => {
     );
     expect(
       values.filter((v) => v === "make-modern-siege-equipment"),
-    ).toHaveLength(4);
+    ).toHaveLength(40);
     expect(
       values.filter((v) => v === "make-modern-vehicle-equipment"),
-    ).toHaveLength(2);
+    ).toHaveLength(24);
     expect(
       plan({
         incoming: {
@@ -417,6 +417,73 @@ describe("automatic paid-batch lifecycle", () => {
 });
 
 describe("persistent building-type priorities", () => {
+  it("continues selected equipment above automatic reserves and stops again after reset", () => {
+    const inventory = { ...goods, [equipmentItem("Modern")]: 200,
+      [equipmentItem("Modern", "vehicle")]: 30, [equipmentItem("Modern", "siege")]: 50 };
+    expect(plan({inventory}).size).toBe(0);
+    expect([...plan({inventory, priorities: {
+      "arms-factory": ["make-modern-equipment"], depot: ["make-modern-vehicle-equipment"],
+      "siege-workshop": ["make-modern-siege-equipment"],
+    }}).values()]).toEqual(expect.arrayContaining([
+      "make-modern-equipment", "make-modern-vehicle-equipment", "make-modern-siege-equipment",
+    ]));
+    expect(plan({inventory, priorities: {"arms-factory": [], depot: [], "siege-workshop": []}}).size).toBe(0);
+  });
+
+  it("keeps AI reserves when its demand quote is empty and respects larger plans and protected inputs", () => {
+    const buildings = [building(1, "arms-factory")];
+    const empty = {equipment: {}, materials: {}, units: {}};
+    expect(plan({buildings, ai: true, aiDemand: empty}).get(1)).toBe("make-modern-equipment");
+    const inventory = {...goods, [equipmentItem("Modern")]: 100,
+      "payload:icbm": 2, "payload:hydrogen": 2, "payload:mirv": 2};
+    expect(plan({buildings, inventory, ai: true, aiDemand: empty}).size).toBe(0);
+    expect(plan({buildings, inventory, ai: true, aiDemand: {
+      ...empty, equipment: {[equipmentItem("Modern")]: 110},
+    }}).get(1)).toBe("make-modern-equipment");
+    expect(plan({buildings, inventory: {...inventory, [equipmentItem("Modern")]: 110}, ai: true, aiDemand: {
+      ...empty, equipment: {[equipmentItem("Modern")]: 110},
+    }}).size).toBe(0);
+    expect(plan({buildings, ai: true, aiDemand: empty, protectedInputs: {steel: goods.steel}}).size).toBe(0);
+  });
+
+  it("scales automatic reserves with army and producer counts but counts paid output toward the bound", () => {
+    const buildings = [building(1, "depot"), building(2, "depot"), building(3, "depot")];
+    const inventory = {...goods, [equipmentItem("Modern", "vehicle")]: 5};
+    expect(plan({buildings, inventory}).size).toBe(1);
+    expect(plan({buildings, inventory, incoming: {[equipmentItem("Modern", "vehicle")]: 1}}).size).toBe(0);
+    expect(plan({buildings: [buildings[0]], inventory, squadCount: 120}).size).toBe(1);
+    expect(plan({buildings: Array.from({length: 220}, (_, i) => building(i, "arms-factory")),
+      inventory: {...goods, [equipmentItem("Modern")]: 599},
+      incoming: {[equipmentItem("Modern")]: 1, "payload:icbm": 2, "payload:hydrogen": 2, "payload:mirv": 2},
+    }).size).toBe(0);
+  });
+
+  it("feeds multiple continuous workshops beyond the old 120-material buffer", () => {
+    const result = plan({
+      buildings: [...Array.from({length: 20}, (_, i) => building(i, "factory")),
+        ...Array.from({length: 10}, (_, i) => building(30 + i, "arms-factory"))],
+      inventory: {...goods, steel: 120, [equipmentItem("Modern")]: 200},
+      priorities: {"arms-factory": ["make-modern-equipment"]},
+    });
+    expect([...result.values()].filter(r => r === "make-modern-equipment")).toHaveLength(10);
+    expect([...result.values()].filter(r => r === "refine-steel").length).toBeGreaterThan(0);
+  });
+
+  it("keeps smelting steel past its buffer through repeated paid iron and steel batches", () => {
+    const {e, p, stock, add, step} = setup();
+    const factory = add("factory");
+    Object.assign(stock, {steel: 1000, iron: 0, ironOre: 1000, carbon: 1000});
+    expect(e.supply.setPriorities(p, [factory], "factory", ["refine-steel"])).toBeNull();
+    for (let tick = 0; tick <= secondsToTicks(180); tick++) step(tick);
+    expect(stock.steel).toBeGreaterThan(1030);
+    expect(stock.ironOre).toBeLessThan(1000);
+    const before = stock.steel;
+    expect(e.supply.setPriorities(p, [factory], "factory", null)).toBeNull();
+    for (let tick = secondsToTicks(180) + 1; tick <= secondsToTicks(240); tick++) step(tick);
+    expect(stock.steel).toBeLessThanOrEqual(before + 10);
+    expect(e.supply.jobs[factory.id]).toBeUndefined();
+  });
+
   it("keeps selected payloads running beyond two and balances stock plus paid output", () => {
     const buildings = Array.from({ length: 6 }, (_, i) =>
       building(i + 1, "arms-factory"),
@@ -442,7 +509,7 @@ describe("persistent building-type priorities", () => {
   it("keeps automatic AI payloads bounded and skips unaffordable continuous orders", () => {
     expect(plan({
       buildings: [building(1, "arms-factory")], ai: true,
-      inventory: { ...goods, [equipmentItem("Modern")]: 12,
+      inventory: { ...goods, [equipmentItem("Modern")]: 100,
         "payload:icbm": 2, "payload:hydrogen": 2, "payload:mirv": 2 },
     }).size).toBe(0);
     const result = plan({

@@ -1,0 +1,30 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "purpose": "Ground-only backgrounds for six individually selectable aircraft; existing authored originals preserved.",
+  "runtimeBuild": "python scripts/prepareRussianArtwork.py --building-only modern-airstrip --building-only earlymodern-airstrip",
+  "runtimeSize": [128, 128],
+  "assets": [
+    {
+      "age": "Modern",
+      "source": "Modern/Military Airstrip/Icon-Operational-Apron-v1.png",
+      "editTarget": "Art/Runtime/Russians/building-modern-airstrip.png (original before this change)",
+      "prompt": "Use case: precise-object-edit. Edit target: attached modern military airfield game sprite. Create a clean usable ground-only airfield background for individually rendered aircraft. Preserve strict vertical overhead orthographic camera, square footprint, north-south runway on the RIGHT occupying x=72%-90%, three hangars along TOP LEFT in x=10%-66%, original colors, tiny red accent strips, realistic strategy game sprite shading, tight framing and transparent outer margin. REMOVE ALL airplanes, parked aircraft silhouettes, vehicles, and the two ancillary buildings on the LOWER LEFT. Replace the entire lower-left area x=10%-68%, y=48%-94% with a continuous empty concrete tarmac apron. Six unobtrusive parking guide centres at image normalized coordinates (0.18,0.60),(0.37,0.60),(0.56,0.60),(0.18,0.80),(0.37,0.80),(0.56,0.80), each slot pointing east toward the runway; keep guides subtle, no aircraft depicted. Keep taxi access clear between apron and runway. No text, no symbols that resemble aircraft. Transparent background outside square airfield. Deliver one standalone sprite."
+    },
+    {
+      "age": "EarlyModern",
+      "source": "EarlyModern/Military Airstrip/Icon-Operational-Apron-v1.png",
+      "editTarget": "Art/Runtime/Russians/building-earlymodern-airstrip.png (original before this change)",
+      "prompt": "Use case: precise-object-edit. Edit target: attached WWII military airfield game sprite. Create a clean usable ground-only airfield background for individually rendered aircraft. Preserve strict vertical overhead orthographic camera, square footprint, north-south sand/concrete runway on the RIGHT occupying x=72%-90%, WWII camouflaged hangars relocated together along TOP LEFT in x=10%-66% y=10%-43%, original earth/olive colors, tiny red star on a hangar roof, realistic strategy game sprite shading, tight framing and transparent outer margin. REMOVE ALL airplanes, parked aircraft silhouettes, vehicles and all ancillary buildings in LOWER LEFT. Replace the entire lower-left area x=10%-68%, y=48%-94% with a continuous empty weathered concrete tarmac apron. Six unobtrusive parking guide centres at normalized image coordinates (0.18,0.60),(0.37,0.60),(0.56,0.60),(0.18,0.80),(0.37,0.80),(0.56,0.80), each slot pointing east toward runway; guides subtle, no aircraft depicted. Clear taxi access between apron and runway. No text, no symbols resembling aircraft. Transparent background outside square airfield. Deliver one standalone sprite."
+    }
+  ],
+  "validation": {
+    "presentationMicrobenchmark": {
+      "scope": "Ground presentation update plus pose lookup; excludes sprite drawing and whole-game frame cost",
+      "aircraft": 256,
+      "airfields": 48,
+      "iterations": 1000,
+      "medianMs": 0.0998,
+      "p95Ms": 0.2015
+    }
+  }
+}

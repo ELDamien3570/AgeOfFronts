@@ -90,7 +90,7 @@ export function economicCandidates(
       priority:
         snapshot.threatTroops > snapshot.readyTroops / 2 && kind === "recruit"
           ? "emergency"
-          : kind === "research" || kind === "advance" ? "committed" : "growth",
+          : kind === "research" || kind === "advance" || kind === "recruit" && !!snapshot.invasion ? "committed" : "growth",
       score: Math.floor((benefit * secondsToTicks(120)) / Math.max(secondsToTicks(120), delay+(kind==="construct" && ["blacksmith","armory","arms-factory"].includes((command as {buildingType?:string}).buildingType??"") ? Math.min(secondsToTicks(120),demand.timeToOutput??0)/4:0))) - opportunity,
       reason,
       earliestTick: snapshot.tick,
@@ -272,8 +272,8 @@ export function economicCandidates(
         definitionId: unit.id,
       },
       scaledRecipeCost(unit,recruitmentVariant(unit.id,snapshot.research)),
-      snapshot.threatTroops > 0 ? 10000 : 4000,
-      `force-deficit:${role}`,
+      snapshot.threatTroops > 0 ? 10000 : snapshot.invasion ? 7000 : 4000,
+      snapshot.invasion ? `invasion-force:${snapshot.invasion.target}:${role}` : `force-deficit:${role}`,
       400,
     );
   }

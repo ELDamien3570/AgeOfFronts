@@ -114,6 +114,20 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
+  it("surfaces a server runtime failure after the match is already playable",async()=>{
+    await initialize();
+    const decoder=DecoderWorker.instances[0];
+    connection().message(state(0));
+    await vi.waitFor(()=>expect(decoder.postMessage).toHaveBeenCalledTimes(1));
+    decoder.deliver(packet(0),{tick:0,winner:null} as Snapshot,1);
+    await vi.waitFor(()=>expect(session.commandsAvailable).toBe(true));
+    connection().message({type:"match-ended",matchId:manifest.id,completed:false,message:"Match stopped: trade publication failed"});
+    expect(errors).toHaveBeenCalledWith({message:"Match stopped: trade publication failed. Return to the lobby to play again."});
+    expect(session.commandsAvailable).toBe(false);
+    expect(connection().stop).toHaveBeenCalledTimes(1);
+    expect(decoder.terminate).toHaveBeenCalledTimes(1);
+  });
+
   it("applies sparse entity views only at presentation and keeps map changes fenced behind a stalled renderer", async () => {
     await initialize(); const decoder = DecoderWorker.instances[0];
     const view = (tick: number, owner: number): PresentationState => ({ reset: tick === 0,

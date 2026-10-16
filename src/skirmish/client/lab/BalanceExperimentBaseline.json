@@ -1,0 +1,275 @@
+{
+  "stoneage-archer": {
+    "rangedArmour": 1,
+    "speedPercent": 90,
+    "melee": {
+      "rpm": 30
+    }
+  },
+  "stoneage-cavalry": {
+    "meleeArmour": 3,
+    "rangedArmour": 1,
+    "speedPercent": 160,
+    "melee": {
+      "damage": 29.8,
+      "rpm": 36,
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "stoneage-infantry": {
+    "meleeArmour": 2,
+    "rangedArmour": 1,
+    "speedPercent": 100,
+    "melee": {
+      "damage": 30,
+      "rpm": 24,
+      "bonuses": {
+        "infantry": 24,
+        "ranged": 100
+      }
+    }
+  },
+  "bronzeage-anticavalry": {
+    "meleeArmour": 6,
+    "rangedArmour": 10,
+    "speedPercent": 80,
+    "melee": {
+      "damage": 21,
+      "rpm": 51,
+      "bonuses": {
+        "mounted": 20
+      }
+    }
+  },
+  "bronzeage-archer": {
+    "speedPercent": 90
+  },
+  "bronzeage-cavalry": {
+    "meleeArmour": 3,
+    "speedPercent": 160,
+    "melee": {
+      "damage": 29.33,
+      "rpm": 36,
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "bronzeage-infantry": {
+    "speedPercent": 100,
+    "melee": {
+      "damage": 30,
+      "rpm": 24,
+      "bonuses": {
+        "infantry": 24,
+        "ranged": 100
+      }
+    }
+  },
+  "classicalage-anticavalry": {
+    "meleeArmour": 6,
+    "rangedArmour": 10,
+    "speedPercent": 80,
+    "melee": {
+      "damage": 21,
+      "rpm": 51,
+      "bonuses": {
+        "mounted": 26
+      }
+    }
+  },
+  "classicalage-rangedcavalry": {
+    "speedPercent": 150,
+    "ranged": {
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "classicalage-archer": {
+    "speedPercent": 90
+  },
+  "classicalage-cavalry": {
+    "speedPercent": 160,
+    "melee": {
+      "damage": 29.33,
+      "rpm": 36,
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "classicalage-infantry": {
+    "meleeArmour": 6,
+    "rangedArmour": 1,
+    "speedPercent": 100,
+    "melee": {
+      "damage": 30,
+      "rpm": 24,
+      "bonuses": {
+        "infantry": 24,
+        "ranged": 100
+      }
+    }
+  },
+  "earlymedieval-anticavalry": {
+    "rangedArmour": 10,
+    "speedPercent": 80,
+    "melee": {
+      "damage": 21,
+      "rpm": 51,
+      "bonuses": {
+        "mounted": 34
+      }
+    }
+  },
+  "earlymedieval-heavycavalry": {
+    "speedPercent": 140,
+    "melee": {
+      "damage": 45.1,
+      "rpm": 24,
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "earlymedieval-rangedcavalry": {
+    "speedPercent": 150,
+    "ranged": {
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "earlymedieval-archer": {
+    "speedPercent": 90
+  },
+  "earlymedieval-cavalry": {
+    "meleeArmour": 3,
+    "speedPercent": 160,
+    "melee": {
+      "damage": 29.33,
+      "rpm": 36,
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "earlymedieval-infantry": {
+    "meleeArmour": 16,
+    "rangedArmour": 1,
+    "speedPercent": 100,
+    "melee": {
+      "damage": 30,
+      "rpm": 24,
+      "bonuses": {
+        "infantry": 24,
+        "ranged": 100
+      }
+    }
+  },
+  "latemedieval-anticavalry": {
+    "meleeArmour": 6,
+    "rangedArmour": 10,
+    "speedPercent": 80,
+    "melee": {
+      "damage": 21,
+      "rpm": 51,
+      "bonuses": {
+        "mounted": 55
+      }
+    }
+  },
+  "latemedieval-heavycavalry": {
+    "speedPercent": 130,
+    "melee": {
+      "damage": 58,
+      "rpm": 24,
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "latemedieval-rangedcavalry": {
+    "speedPercent": 150,
+    "ranged": {
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "latemedieval-archer": {
+    "speedPercent": 90
+  },
+  "latemedieval-cavalry": {
+    "meleeArmour": 3,
+    "speedPercent": 160,
+    "melee": {
+      "damage": 29.33,
+      "rpm": 36,
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "latemedieval-infantry": {
+    "rangedArmour": 1,
+    "speedPercent": 100,
+    "melee": {
+      "damage": 30,
+      "rpm": 24,
+      "bonuses": {
+        "infantry": 24,
+        "ranged": 100
+      }
+    }
+  },
+  "earlymodern-heavycavalry": {
+    "speedPercent": 130,
+    "melee": {
+      "damage": 62.1,
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "earlymodern-rangedcavalry": {
+    "speedPercent": 150,
+    "ranged": {
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "napoleonic-cavalry": {
+    "speedPercent": 160,
+    "melee": {
+      "bonuses": {
+        "mounted": 0
+      }
+    }
+  },
+  "napoleonic-infantry": {
+    "speedPercent": 85
+  },
+  "modern-anticavalry": {
+    "speedPercent": 85
+  },
+  "earlymodern-archer": {
+    "speedPercent": 90
+  },
+  "earlymodern-infantry": {
+    "speedPercent": 100
+  },
+  "present-day-anticavalry": {
+    "speedPercent": 70
+  },
+  "modern-archer": {
+    "speedPercent": 80
+  },
+  "modern-infantry": {
+    "speedPercent": 100
+  }
+}

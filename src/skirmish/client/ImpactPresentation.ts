@@ -14,6 +14,7 @@ export interface ImpactVisual {
   angle: number;
 }
 function impactArtwork(p: Projectile): string {
+  if(p.definitionId==='fpv-drone')return 'impact-fpv-drone';
   if (p.kind === "mirv") return "mirv";
   if (p.kind === "warhead") return "impact-mirv";
   if (p.kind === "icbm")

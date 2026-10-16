@@ -11,6 +11,20 @@ import type { Expansion } from "./Expansion";
 
 export interface ArmyTheatre {id:string;purpose:'offense'|'defense'|'screen';tile:number;target?:number;priority:number;desiredSquads:number}
 export type OperationPhase = "peace" | "preparing" | "war" | "recovery";
+interface TribePreparation {
+  desiredSquads: number;
+  progressAt: number;
+  bestReady: number;
+  route: "pending" | "ready";
+}
+interface CampaignProgress {
+  goal: number;
+  land: number;
+  cities: number;
+  health: number;
+  distance: number;
+  progressAt: number;
+}
 export interface AiOperation {
   phase: OperationPhase;
   since: number;
@@ -27,6 +41,14 @@ export interface AiOperation {
   territorialRevision?:number;
   finishCount?: number;
   finishProgressAt?: number;
+  /** Historical high-water land growth: tiny neutral pockets do not veto war. */
+  frontier?: { land: number; usefulAt: number };
+  /** Campaigns involving tribes, either as invader or target. The persisted key
+   * also reads checkpoints from the earlier nation-only implementation. */
+  tribe?: TribePreparation;
+  campaign?: CampaignProgress;
+  retries?: { target: number; until: number }[];
+  reason?: string;
 }
 /** Decision policy only. Never replaces Diplomacy.hostile or legal damage. */
 export class AiOperations {
@@ -75,9 +97,65 @@ export class AiOperations {
   }
   constructor(private readonly expansion: Expansion) {}
   enabled(player: Player | undefined): boolean {
-    return !!this.expansion.world.options?.aiWarPolicy && !!player?.ai && player.kind === "regular" && !player.eliminated;
+    return !!this.expansion.world.options?.aiWarPolicy && !!player?.ai && !player.eliminated &&
+      (player.kind === "regular" || this.expansion.world.options.deferredPlanning === true);
   }
   state(playerId: number): Readonly<AiOperation> | undefined { return this.records.get(playerId); }
+  /** Paid recruitment demand, never a grant or a movement permission. */
+  recruitmentObjective(playerId: number): { target: number; squads: number } | undefined {
+    const r = this.records.get(playerId);
+    return r?.tribe?.route === "ready" && r.target !== undefined && ["preparing", "war"].includes(r.phase)
+      ? { target: r.target, squads: r.tribe.desiredSquads } : undefined;
+  }
+  invasionReserve(playerId: number, squads: number): number {
+    const player = this.expansion.world.players.find(p => p.id === playerId)!;
+    if (player.kind === "tribe") return Math.min(1, squads);
+    return Math.max(2, Math.ceil(squads * AI_DOCTRINES[personalityOf(player).id].reservePercent / 100));
+  }
+  /** Tribes develop peacefully first, then prioritize a promotion campaign. */
+  promotionPressure(playerId: number): boolean {
+    const player = this.expansion.world.players.find(p => p.id === playerId), r = this.records.get(playerId);
+    return player?.kind === "tribe" && !!r?.frontier &&
+      (!this.expansion.world.hasUnclaimedFrontier?.(playerId) || this.expansion.world.tick - r.frontier.usefulAt >= secondsToTicks(30));
+  }
+  private expansionBlocked(player: Player, r: AiOperation): boolean {
+    const tick = this.expansion.world.tick;
+    r.frontier ??= { land: player.land, usefulAt: tick };
+    if (player.land >= r.frontier.land + Math.max(16, Math.ceil(r.frontier.land / 200))) {
+      r.frontier = { land: player.land, usefulAt: tick };
+    }
+    return !this.expansion.world.hasUnclaimedFrontier?.(player.id) || tick - r.frontier.usefulAt >= secondsToTicks(30);
+  }
+  private retryLater(player: Player, r: AiOperation, reason: string): void {
+    if (r.target !== undefined) r.retries = [
+      ...(r.retries ?? []).filter(t => t.target !== r.target && t.until > this.expansion.world.tick).slice(-3),
+      { target: r.target, until: this.expansion.world.tick + secondsToTicks(60) },
+    ];
+    this.transition(player, r, "recovery");
+    r.reason = reason;
+  }
+  private updateCampaign(player: Player, target: Player, r: AiOperation): void {
+    const { world } = this.expansion;
+    const cities = conquestBuildings(world.buildingFacts().byOwner(target.id), target.ai);
+    const goal = cities[0]?.tile ?? target.base;
+    const health = world.squadFacts().aliveByOwner(target.id).reduce((n, s) => n + remainingHealth(s), 0) +
+      cities.reduce((n, b) => n + (b.health ?? b.maxHealth ?? 1200) * HEALTH_SCALE, 0);
+    const distance = Math.sqrt(world.squadFacts().aliveByOwner(player.id).reduce((n, s) =>
+      s.embarkedOn === null ? Math.min(n, world.map.euclideanDistSquared(world.tileOf(s), goal)) : n, Infinity));
+    const p = r.campaign ??= { goal, land: target.land, cities: cities.length, health, distance, progressAt: world.tick };
+    if (p.goal !== goal) { p.goal = goal; p.distance = distance; }
+    if (target.land < p.land || cities.length < p.cities || health < p.health || distance <= p.distance - 2) {
+      p.progressAt = world.tick;
+      p.land = Math.min(p.land, target.land); p.cities = Math.min(p.cities, cities.length);
+      p.health = Math.min(p.health, health); p.distance = Math.min(p.distance, distance);
+    }
+  }
+  /** Progress, unlike finishing conquest, also includes a supported advance. */
+  sustaining(playerId: number, rival: number): boolean {
+    const r = this.records.get(playerId);
+    return this.finishing(playerId, rival) || !!(r?.phase === "war" && r.target === rival && r.tribe && r.campaign &&
+      this.expansion.world.tick - r.campaign.progressAt < secondsToTicks(90));
+  }
   checkpoint() { return structuredClone({ records: [...this.records], revision: this.revision,territorialRevision:this.territorialRevision,theatres:[...this.theatreRecords] }); }
   restore(saved: Omit<ReturnType<AiOperations["checkpoint"]>,"theatres"> & Partial<Pick<ReturnType<AiOperations["checkpoint"]>,"theatres">>): void {
     this.theatreRecords.clear();for(const [id,rows] of saved.theatres??[])this.theatreRecords.set(id,structuredClone(rows));
@@ -85,7 +163,11 @@ export class AiOperations {
     this.permissionRevision++;
     this.revision = saved.revision;this.territorialRevision=saved.territorialRevision??0;
   }
-  release(playerId: number): void { if (this.records.delete(playerId)) this.revision++; }
+  release(playerId: number): void {
+    if (this.records.delete(playerId)) this.revision++;
+    this.theatreRecords.delete(playerId);
+    this.expansion.economy.routes.release(`invasion:${playerId}`);
+  }
   private record(playerId: number): AiOperation {
     let record = this.records.get(playerId);
     if (!record) {
@@ -206,6 +288,9 @@ export class AiOperations {
     const previous = record.phase, oldTarget = record.target, tick = this.expansion.world.tick;
     record.retreatFrom = phase === "recovery" && previous === "war" ? oldTarget : undefined;
     record.phase = phase; record.target = target; record.since = tick;
+    this.expansion.economy.routes.release(`invasion:${player.id}`);
+    if (phase !== "war") record.campaign = undefined;
+    if (phase !== "preparing" && phase !== "war") record.tribe = undefined;
     record.finishCount = undefined; record.finishProgressAt = undefined;
     record.nextThink = tick + (phase === "war" ? TICKS_PER_SECOND : secondsToTicks(3) + player.id % TICKS_PER_SECOND);
     record.cursor = 0; record.candidate = undefined; record.score = Infinity; this.revision++;
@@ -236,14 +321,18 @@ export class AiOperations {
       }
       if (tick < r.nextThink) continue;
       this.refreshTheatres(player,r);
-      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=12}:${diplomacyKey}:${diplomacy.raids?diplomacy.permissionSignature(player.id):""}:${r.territorialRevision??0}:${ageKey}`;
+      const blocked = this.expansionBlocked(player, r);
+      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=12}:${diplomacyKey}:${diplomacy.raids?diplomacy.permissionSignature(player.id):""}:${r.territorialRevision??0}:${ageKey}:${blocked}:${blocked ? Math.floor(tick / secondsToTicks(30)) : 0}`;
       if(r.phase==="peace" && !r.threats.length && r.sleepKey===sleepKey){r.nextThink=tick+secondsToTicks(10);continue;}
       r.readiness=forceReadiness(this.expansion,player,2);
       const invasionTroops=r.threats.reduce((sum,t)=>sum+world.squadFacts().aliveByOwner(t.rival)
         .filter(s=>s.embarkedOn===null && world.owners[world.tileOf(s)]===player.id &&
           world.map.euclideanDistSquared(world.tileOf(s),t.tile)<=16**2).reduce((n,s)=>n+s.troops,0),0);
-      const defending=invasionTroops>Math.max(24,r.readiness.troops/3);
+      const defending=player.kind === "tribe"
+        ? invasionTroops>=Math.max(12,r.readiness.troops/5)
+        : invasionTroops>Math.max(24,r.readiness.troops/3);
       if (r.phase === "war") {
+        if (r.tribe && target) this.updateCampaign(player, target, r);
         const buildings = target ? conquestBuildings(world.buildingFacts().byOwner(target.id), target.ai).length : Infinity;
         const enemies = target ? world.squadFacts().byOwner(target.id).filter(s => s.troops > 0).length : Infinity;
         if (canFinishConquest(buildings, enemies, strength)) {
@@ -251,7 +340,12 @@ export class AiOperations {
           if (r.finishCount === undefined || count < r.finishCount) r.finishProgressAt = tick;
           r.finishCount = count;
         } else { r.finishCount = undefined; r.finishProgressAt = undefined; }
-        if (strength < 2 || (!this.finishing(player.id, r.target!) &&
+        if (r.tribe) {
+          const depleted = strength < 2 || (target && strength < profile.minimumRaidSquads / 2 && combatAdvantage(composition(player.id), composition(target.id)) < .65);
+          if (player.kind === "tribe" && defending) this.retryLater(player, r, "Tribal home under invasion; defending promotion progress");
+          else if (depleted || !this.sustaining(player.id, r.target!)) this.retryLater(player, r, depleted ? "Invasion force depleted; rebuilding" : "Tribal campaign stalled; reassessing targets");
+          else { r.reason = "Tribal campaign making progress"; r.nextThink = tick + secondsToTicks(1); }
+        } else if (strength < 2 || (!this.finishing(player.id, r.target!) &&
           ((strength < Math.max(2, Math.floor(profile.minimumRaidSquads / 2)) && (!target || combatAdvantage(composition(player.id),composition(target.id)) < 1.1)) || tick - r.since >= secondsToTicks(120))))
           this.transition(player, r, "recovery");
         else r.nextThink = tick + secondsToTicks(1);
@@ -263,6 +357,37 @@ export class AiOperations {
         continue;
       }
       if (r.phase === "preparing") {
+        if (r.tribe && target) {
+          const ready = r.readiness.squads;
+          if (ready > r.tribe.bestReady) { r.tribe.bestReady = ready; r.tribe.progressAt = tick; }
+          const advantage = combatAdvantage(composition(player.id), composition(target.id));
+          const deployable = Math.max(0, ready - this.invasionReserve(player.id, ready));
+          const required = player.kind === "tribe" || profile.id === "conqueror" ? 1.1 : 1.25;
+          // Cohort advantage combines health and DPS, hence quadratic force scaling.
+          const projected = player.kind === "tribe"
+            ? Math.max(3, Math.ceil(Math.max(2, ready) * Math.sqrt(required / Math.max(.05, advantage))) + 1)
+            : Math.max(profile.minimumRaidSquads, Math.ceil(Math.max(2, ready) * Math.sqrt(required / Math.max(.05, advantage)) /
+              Math.max(.1, 1 - AI_DOCTRINES[profile.id].reservePercent / 100)));
+          r.tribe.desiredSquads = Math.min(world.squadCapacity(player), projected);
+          const goal = conquestBuildings(world.buildingFacts().byOwner(target.id), target.ai)[0]?.tile ?? target.base;
+          const route = this.expansion.economy.routes.request(`invasion:${player.id}`, player.id, player.base, goal, false, target.id);
+          if (!route.pending && !route.path?.length) {
+            this.retryLater(player, r, route.reason ?? "No certified invasion route"); continue;
+          }
+          r.tribe.route = route.path?.length ? "ready" : "pending";
+          const fieldAdvantage = advantage * (deployable / Math.max(1, ready)) ** 2;
+          r.reason = route.pending ? "Certifying invasion route" : defending ? "Defending home before invading" :
+            r.readiness.reason !== "ready" ? `Preparing invasion: ${r.readiness.reason}` :
+            fieldAdvantage < required ? `Building invasion force (${ready}/${r.tribe.desiredSquads} ready squads)` : "Assembling supported invasion";
+          if (route.path?.length && deployable >= 2 && r.readiness.reason === "ready" && !defending && fieldAdvantage >= required &&
+            tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks + secondsToTicks(4)) {
+            this.transition(player, r, "war", target.id);
+            if (this.offensiveTarget(player.id) === target.id) { this.updateCampaign(player, target, r); r.reason = "Launching supported tribal invasion"; }
+          } else if (tick - r.tribe.progressAt >= secondsToTicks(90) || tick - r.since >= secondsToTicks(360)) {
+            this.retryLater(player, r, "Invasion preparation stalled; reassessing targets");
+          } else r.nextThink = tick + secondsToTicks(3);
+          continue;
+        }
         if (tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks+secondsToTicks(4) && strength >= 2 && r.readiness.reason==="ready" && !defending && target && (combatAdvantage(composition(player.id),composition(target.id)) >= 1.1 || (strength >= profile.minimumRaidSquads && combatAdvantage(composition(player.id),composition(target.id)) >= .9))) {
           const goal=conquestBuildings(world.buildingFacts().byOwner(target.id),target.ai)[0]?.tile??target.base;
           const route=diplomacy.raids?this.expansion.economy.routes.request(`invasion:${player.id}`,player.id,player.base,goal,false,target.id):undefined;
@@ -274,31 +399,45 @@ export class AiOperations {
         else r.nextThink = tick + secondsToTicks(3);
         continue;
       }
-      if (defending || strength < 2 || r.readiness.reason!=="ready" || tick < profile.raidAfterTicks) {
+      if (defending || tick < (player.kind === "tribe" ? secondsToTicks(30) : profile.raidAfterTicks)) {
         r.nextThink = tick + secondsToTicks(3) + player.id % TICKS_PER_SECOND; continue;
       }
       const expanding=diplomacy.raids&&!r.threats.length&&world.hasUnclaimedFrontier?.(player.id);
       let slice = 0;
       while (r.cursor < world.players.length && this.work < 16 && slice++ < 4) {
         const rival = world.players[r.cursor++]; this.work++;
+        if (r.retries?.some(retry => retry.target === rival.id && retry.until > tick)) continue;
         if (rival.id === player.id || rival.eliminated || !(diplomacy.raids?diplomacy.nonAllied(player.id,rival.id)&&!diplomacy.protected(player.id,rival.id):diplomacy.hostile(player.id, rival.id)) ||
           !this.expansion.geography.eligible(player, rival)) continue;
         const commitments = [...this.records.values()].filter(other => other.target === rival.id && ["preparing", "war"].includes(other.phase)).length;
         const advantage = combatAdvantage(composition(player.id), composition(rival.id));
+        const tribalActor = player.kind === "tribe";
+        // A tribe's first promotion route is peaceful land growth. Once boxed
+        // in it may prepare against either a tribe or a vulnerable nation.
+        if (tribalActor && (!blocked || advantage * ((world.squadCapacity(player) - 1) / Math.max(1, r.readiness.squads)) ** 2 < 1.1)) continue;
+        const tribeExpansion = tribalActor || rival.kind === "tribe" && (blocked || advantage >= 1.5);
         const retaliating=diplomacy.raids&&(r.threats.some(t=>t.rival===rival.id)||
           diplomacy.state.wars?.some(w=>w.initiator===rival.id&&(w.a===player.id||w.b===player.id))||
           diplomacy.state.embargoes?.some(raid=>raid.initiator===rival.id&&raid.victim===player.id&&diplomacy.embargo(player.id,rival.id)));
-        if(expanding&&!retaliating&&advantage<(profile.id==="conqueror"?1.6:2.5))continue;
+        if(!tribeExpansion && (strength < 2 || r.readiness.reason !== "ready")) continue;
+        if(expanding&&!retaliating&&!tribeExpansion&&advantage<(profile.id==="conqueror"?1.6:2.5))continue;
         const required = ["warden","builder","diplomat"].includes(profile.id) ? 1.6 : profile.id === "conqueror" ? 1.1 : 1.25;
         // Healthy parity-sized forces still commit; small forces need a clear
         // equipment/strength advantage instead of waiting for eight squads.
-        if (advantage < required && !(advantage >= .9 && strength >= profile.minimumRaidSquads)) continue;
-        const opportunity = rival.kind === "tribe" && advantage>=2 ? 2 : 1;
+        if (!tribeExpansion && advantage < required && !(advantage >= .9 && strength >= profile.minimumRaidSquads)) continue;
+        const opportunity = tribalActor ? (rival.kind === "tribe" ? 3 : 2) : tribeExpansion ? 3 : 1;
         const score = Math.floor(world.map.euclideanDistSquared(player.base, rival.base) / (Math.max(.25,advantage)*opportunity*(retaliating?2:1))) + commitments * 4096;
         if (score < r.score || (score === r.score && rival.id < (r.candidate ?? Infinity))) { r.score = score; r.candidate = rival.id; }
       }
       if (r.cursor === world.players.length) {
-        if (r.candidate !== undefined) this.transition(player, r, "preparing", r.candidate);
+        if (r.candidate !== undefined) {
+          const candidate = world.players.find(p => p.id === r.candidate)!;
+          this.transition(player, r, "preparing", r.candidate);
+          if (world.options?.deferredPlanning && (player.kind === "tribe" || candidate.kind === "tribe")) {
+            r.tribe = { desiredSquads: player.kind === "tribe" ? 3 : profile.minimumRaidSquads, bestReady: r.readiness.squads, progressAt: tick, route: "pending" };
+            r.reason = player.kind === "tribe" ? "Preparing a promotion campaign" : "Preparing tribal expansion";
+          }
+        }
         else { r.cursor = 0; r.score = Infinity;r.sleepKey=sleepKey; r.nextThink = tick + secondsToTicks(3) + player.id % TICKS_PER_SECOND; }
       }
     }

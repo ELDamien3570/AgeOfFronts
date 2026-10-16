@@ -68,8 +68,8 @@ export function shipSpriteSize(
   scale: number,
   kind: ShipType | "transport" = "warship",
 ): number {
-  const cap = kind === "warship" ? 125 : 87.5;
-  return Math.min(cap, scale * 2.4);
+  const cap = kind === "carrier" ? 160 : kind === "warship" ? 125 : 87.5;
+  return Math.min(cap, scale * (kind === "carrier" ? 3.6 : 2.4));
 }
 
 export function shipViewRadius(scale: number, kind: ShipType): number {

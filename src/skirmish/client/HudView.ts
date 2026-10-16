@@ -228,13 +228,13 @@ export class HudView {
     this.el("delete-ship").addEventListener("click", () => {
       if (!this.vm || this.deletableShipId === null) return;
       const ship = this.vm.game.state.ships.find(s => s.id === this.deletableShipId);
-      if (ship?.playerId === this.playerId && ship.kind === "warship")
+      if (ship?.playerId === this.playerId && (ship.kind === "warship" || ship.kind === 'carrier'))
         this.command({type: "delete-ship", playerId: this.playerId, shipId: ship.id});
     });
     this.el("naval-priority").addEventListener("change", () => {
       const priority=(this.el("naval-priority") as HTMLSelectElement).value;
       if(!this.vm || (priority!=="transports" && priority!=="warships"))return;
-      const shipIds=this.vm.game.state.ships.filter(s=>s.playerId===this.playerId && this.vm!.game.selection.selectedShips.has(s.id)).map(s=>s.id);
+      const shipIds=this.vm.game.state.ships.filter(s=>s.playerId===this.playerId && s.kind==="warship" && this.vm!.game.selection.selectedShips.has(s.id)).map(s=>s.id);
       if(shipIds.length)this.command({type:"naval-priority",playerId:this.playerId,shipIds,priority});
     });
     root.querySelector(".dock-age")!.addEventListener("click", () => {
@@ -396,7 +396,7 @@ export class HudView {
   update(vm: HudViewModel) {
     this.playerId = vm.playerId;
     this.vm = vm;
-    const ships=vm.game.state.ships.filter(s=>s.playerId===this.playerId && vm.game.selection.selectedShips.has(s.id));
+    const ships=vm.game.state.ships.filter(s=>s.playerId===this.playerId && s.kind==="warship" && vm.game.selection.selectedShips.has(s.id));
     const priorities=new Set(ships.map(s=>s.navalPriority??"transports"));
     const priority=this.el("naval-priority") as HTMLSelectElement;
     priority.value=priorities.size>1?"mixed":[...priorities][0]??"transports";
@@ -461,7 +461,7 @@ export class HudView {
       ? Number(selection.card.ref.split(":")[1]) : null;
     this.el("delete-building").hidden = this.deletableId === null;
     this.deletableShipId = selection.mode === "detail" &&
-      selection.card.category === "ship" && selection.card.kind === "warship" &&
+      selection.card.category === "ship" && (selection.card.kind === "warship" || selection.card.kind === 'carrier') &&
       selection.card.playerId === this.playerId && !this.vm.game.player.ai
       ? Number(selection.card.ref.split(":")[1]) : null;
     this.el("delete-ship").hidden = this.deletableShipId === null;

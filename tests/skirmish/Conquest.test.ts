@@ -66,6 +66,32 @@ function emptyShip(
 }
 
 describe("complete conquest", () => {
+  it.each(["war", "raid", "uncredited"] as const)("resolves surviving blast-edge structures when a faction is defeated (%s)", mode=>{
+    const data=new Uint8Array(96*64).fill(133);
+    const game=new Skirmish(new GameMapImpl(96,64,data,data.length),{seed:42,aiCount:2,tribes:false,runAi:false,ruleset:"ages-v1",diplomacyRules:"raids-v1"});
+    const tile=game.map.ref(60,40), id=game.allocateId();
+    game.addBuilding({id,playerId:2,tile,type:"factory",age:"StoneAge",health:40,maxHealth:1200,remainingTicks:0});
+    game.owners[tile]=2;
+    const saved=game.checkpoint();
+    if(mode!=="uncredited")saved.conquest.credits.set(2,1);
+    game.restore(saved);
+    if(mode==="war")game.expansion!.diplomacy.establishWar(1,2,game.tick);
+    else if(mode==="raid")game.expansion!.diplomacy.recordTheft(1,2,game.tick);
+    game.nuclearBlast(60.5*FIXED,40.5*FIXED,FIXED);
+    const fallout=game.wasteland.snapshot();
+    for(const squad of [...game.squads])if(squad.playerId===2)game.removeSquad(squad.id);
+    for(const building of [...game.buildings])if(building.playerId===2&&building.type==="city")game.removeBuilding(building.id);
+    game.step();
+    expect(game.player(2)!.eliminated).toBe(true);
+    expect(game.building(id)).toMatchObject({playerId:mode==="war"?1:0,health:40});
+    expect(game.owners[tile]).toBe(0);
+    expect(game.wasteland.snapshot()).toEqual(fallout);
+    expect(game.buildings.some(b=>b.playerId===2)).toBe(false);
+    const checkpoint=game.checkpoint(), cold=new Skirmish(game.map,game.options);cold.restore(checkpoint);
+    expect(cold.building(id)).toEqual(game.building(id));
+    expect(()=>new SnapshotDecoder().decode(new SnapshotEncoder().encode(game.replicationSource(),game.tileChanges,game.replicationFacts()))).not.toThrow();
+  });
+
   it("deletes only an owned warship without changing territory or refunding gold", () => {
     const game = fixture("ages-v1");
     const own = game.addShip(emptyShip(game.allocateId(), 1, "warship", 1000));

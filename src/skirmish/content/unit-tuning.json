@@ -1,0 +1,435 @@
+{
+  "schemaVersion": 1,
+  "provenance": "unit-lab-drafts (2).json; October 2026 balance contract",
+  "units": {
+    "stoneage-infantry": {
+      "speedPercent": 80
+    },
+    "stoneage-siege": {
+      "speedPercent": 25,
+      "meleeArmour": 25,
+      "rangedArmour": 35,
+      "armourKind": "points",
+      "attack": {
+        "damage": 90,
+        "range": 384,
+        "bonuses": {
+          "structure": 350,
+          "wall": 500
+        },
+        "targets": [
+          "structure",
+          "wall"
+        ]
+      }
+    },
+    "stoneage-archer": {
+      "speedPercent": 75
+    },
+    "stoneage-cavalry": {
+      "speedPercent": 100
+    },
+    "bronzeage-archer": {
+      "speedPercent": 76
+    },
+    "bronzeage-field-support": {
+      "speedPercent": 25,
+      "meleeArmour": 25,
+      "rangedArmour": 35,
+      "armourKind": "points",
+      "attack": {
+        "damage": 105,
+        "range": 384,
+        "bonuses": {
+          "structure": 150,
+          "wall": 150
+        },
+        "targets": [
+          "structure",
+          "wall"
+        ]
+      }
+    },
+    "bronzeage-siege": {
+      "speedPercent": 25,
+      "meleeArmour": 25,
+      "rangedArmour": 35,
+      "armourKind": "points",
+      "attack": {
+        "damage": 135,
+        "range": 384,
+        "bonuses": {
+          "structure": 525,
+          "wall": 750
+        },
+        "targets": [
+          "structure",
+          "wall"
+        ]
+      }
+    },
+    "bronzeage-infantry": {
+      "speedPercent": 81
+    },
+    "bronzeage-anticavalry": {
+      "speedPercent": 71
+    },
+    "bronzeage-cavalry": {
+      "speedPercent": 110
+    },
+    "classicalage-anticavalry": {
+      "speedPercent": 72
+    },
+    "classicalage-rangedcavalry": {
+      "speedPercent": 115
+    },
+    "classicalage-cavalry": {
+      "speedPercent": 120
+    },
+    "classicalage-field-support": {
+      "speedPercent": 55,
+      "meleeArmour": 2,
+      "rangedArmour": 8,
+      "armourKind": "points",
+      "attack": {
+        "damage": 400,
+        "range": 2560,
+        "bonuses": {},
+        "targets": [
+          "infantry",
+          "ranged",
+          "mounted",
+          "vehicle",
+          "siege",
+          "structure",
+          "wall"
+        ]
+      },
+      "reloadSeconds": 5
+    },
+    "classicalage-siege": {
+      "speedPercent": 55,
+      "meleeArmour": 2,
+      "rangedArmour": 8,
+      "armourKind": "points",
+      "attack": {
+        "damage": 600,
+        "range": 2560,
+        "bonuses": {},
+        "targets": [
+          "infantry",
+          "ranged",
+          "mounted",
+          "vehicle",
+          "siege",
+          "structure",
+          "wall"
+        ]
+      },
+      "reloadSeconds": 5
+    },
+    "classicalage-archer": {
+      "speedPercent": 77
+    },
+    "classicalage-infantry": {
+      "speedPercent": 82
+    },
+    "earlymedieval-field-support": {
+      "speedPercent": 55,
+      "meleeArmour": 2,
+      "rangedArmour": 8,
+      "armourKind": "points",
+      "attack": {
+        "damage": 600,
+        "range": 2816,
+        "bonuses": {},
+        "targets": [
+          "infantry",
+          "ranged",
+          "mounted",
+          "vehicle",
+          "siege",
+          "structure",
+          "wall"
+        ]
+      },
+      "reloadSeconds": 5
+    },
+    "earlymedieval-heavycavalry": {
+      "speedPercent": 110
+    },
+    "earlymedieval-rangedcavalry": {
+      "speedPercent": 125
+    },
+    "earlymedieval-anticavalry": {
+      "speedPercent": 74
+    },
+    "earlymedieval-archer": {
+      "speedPercent": 79
+    },
+    "earlymedieval-cavalry": {
+      "speedPercent": 130
+    },
+    "earlymedieval-infantry": {
+      "speedPercent": 84
+    },
+    "earlymedieval-siege": {
+      "speedPercent": 55,
+      "meleeArmour": 2,
+      "rangedArmour": 8,
+      "armourKind": "points",
+      "attack": {
+        "damage": 800,
+        "range": 2816,
+        "bonuses": {},
+        "targets": [
+          "infantry",
+          "ranged",
+          "mounted",
+          "vehicle",
+          "siege",
+          "structure",
+          "wall"
+        ]
+      },
+      "reloadSeconds": 5
+    },
+    "latemedieval-siege": {
+      "speedPercent": 55,
+      "meleeArmour": 2,
+      "rangedArmour": 8,
+      "armourKind": "points",
+      "attack": {
+        "damage": 1000,
+        "range": 3072,
+        "bonuses": {},
+        "targets": [
+          "infantry",
+          "ranged",
+          "mounted",
+          "vehicle",
+          "siege",
+          "structure",
+          "wall"
+        ]
+      },
+      "reloadSeconds": 5
+    },
+    "latemedieval-heavycavalry": {
+      "speedPercent": 115
+    },
+    "latemedieval-infantry": {
+      "speedPercent": 85
+    },
+    "latemedieval-cavalry": {
+      "speedPercent": 130
+    },
+    "latemedieval-rangedcavalry": {
+      "speedPercent": 125
+    },
+    "latemedieval-field-support": {
+      "speedPercent": 55,
+      "meleeArmour": 2,
+      "rangedArmour": 8,
+      "armourKind": "points",
+      "attack": {
+        "damage": 700,
+        "range": 3072,
+        "bonuses": {},
+        "targets": [
+          "infantry",
+          "ranged",
+          "mounted",
+          "vehicle",
+          "siege",
+          "structure",
+          "wall"
+        ]
+      },
+      "reloadSeconds": 5
+    },
+    "latemedieval-anticavalry": {
+      "speedPercent": 75
+    },
+    "latemedieval-archer": {
+      "speedPercent": 80
+    },
+    "napoleonic-cavalry": {
+      "speedPercent": 130
+    },
+    "earlymodern-heavycavalry": {
+      "speedPercent": 120
+    },
+    "napoleonic-siege": {
+      "speedPercent": 55,
+      "meleeArmour": 2,
+      "rangedArmour": 8,
+      "armourKind": "points",
+      "attack": {
+        "damage": 900,
+        "range": 2560,
+        "bonuses": {},
+        "targets": [
+          "infantry",
+          "ranged",
+          "mounted",
+          "vehicle",
+          "siege",
+          "structure",
+          "wall"
+        ]
+      },
+      "reloadSeconds": 5
+    },
+    "napoleonic-field-support": {
+      "speedPercent": 55,
+      "meleeArmour": 2,
+      "rangedArmour": 8,
+      "armourKind": "points",
+      "attack": {
+        "damage": 450,
+        "range": 3584,
+        "bonuses": {},
+        "targets": [
+          "infantry",
+          "ranged",
+          "mounted",
+          "vehicle",
+          "siege",
+          "structure",
+          "wall"
+        ]
+      },
+      "reloadSeconds": 5
+    },
+    "napoleonic-infantry": {
+      "speedPercent": 80
+    },
+    "earlymodern-anticavalry": {
+      "speedPercent": 75
+    },
+    "napoleonic-archer": {
+      "speedPercent": 70
+    },
+    "earlymodern-rangedcavalry": {
+      "speedPercent": 125
+    },
+    "modern-anti-air": {
+      "speedPercent": 90,
+      "meleeArmour": 700,
+      "rangedArmour": 900,
+      "armourKind": "points"
+    },
+    "earlymodern-archer": {
+      "speedPercent": 82
+    },
+    "earlymodern-cavalry": {
+      "speedPercent": 120,
+      "meleeArmour": 190,
+      "rangedArmour": 190,
+      "armourKind": "points",
+      "attack": {
+        "range": 1536
+      }
+    },
+    "earlymodern-field-support": {
+      "speedPercent": 55,
+      "meleeArmour": 114,
+      "rangedArmour": 171,
+      "armourKind": "points",
+      "attack": {
+        "range": 2304
+      }
+    },
+    "earlymodern-siege": {
+      "speedPercent": 55,
+      "meleeArmour": 114,
+      "rangedArmour": 171,
+      "armourKind": "points",
+      "attack": {
+        "range": 3840
+      }
+    },
+    "earlymodern-infantry": {
+      "speedPercent": 87
+    },
+    "modern-anticavalry": {
+      "speedPercent": 77
+    },
+    "modern-rangedcavalry": {
+      "speedPercent": 120,
+      "meleeArmour": 0,
+      "rangedArmour": 0,
+      "armourKind": "points",
+      "attack": {
+        "range": 2048
+      }
+    },
+    "modern-heavycavalry": {
+      "speedPercent": 90,
+      "meleeArmour": 380,
+      "rangedArmour": 380,
+      "armourKind": "points",
+      "attack": {
+        "range": 1792
+      }
+    },
+    "present-day-rangedcavalry": {
+      "speedPercent": 120,
+      "meleeArmour": 0,
+      "rangedArmour": 0,
+      "armourKind": "points"
+    },
+    "modern-infantry": {
+      "speedPercent": 88
+    },
+    "present-day-anticavalry": {
+      "speedPercent": 78
+    },
+    "modern-field-support": {
+      "speedPercent": 55,
+      "meleeArmour": 171,
+      "rangedArmour": 256,
+      "armourKind": "points",
+      "attack": {
+        "range": 2304
+      }
+    },
+    "modern-launcher": {
+      "speedPercent": 90,
+      "meleeArmour": 700,
+      "rangedArmour": 900,
+      "armourKind": "points"
+    },
+    "modern-siege": {
+      "speedPercent": 55,
+      "meleeArmour": 171,
+      "rangedArmour": 256,
+      "armourKind": "points",
+      "attack": {
+        "range": 3840
+      }
+    },
+    "modern-archer": {
+      "speedPercent": 83
+    },
+    "present-day-heavycavalry": {
+      "speedPercent": 120,
+      "meleeArmour": 570,
+      "rangedArmour": 570,
+      "armourKind": "points",
+      "attack": {
+        "range": 3072
+      }
+    },
+    "modern-cavalry": {
+      "speedPercent": 120,
+      "meleeArmour": 285,
+      "rangedArmour": 285,
+      "armourKind": "points",
+      "attack": {
+        "range": 1792
+      }
+    }
+  }
+}

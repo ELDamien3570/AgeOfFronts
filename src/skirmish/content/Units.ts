@@ -25,6 +25,7 @@ import {
   TECHNOLOGY,
 } from "./Technology";
 import { applySoldierWeapons } from "./SoldierWeapons";
+import { applyUnitTuning } from "./UnitTuning";
 import { weaponCycle } from "./WeaponCycles";
 const ground: readonly TargetTag[] = [
   "infantry",
@@ -346,6 +347,7 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
     ...(mounted && !vehicle && cls !== "rangedCavalry"
       ? {
           charge: {
+            bonusDurationTicks: secondsToTicks(6),
             speedPercent: 250,
             damage: points(6),
             radius: Math.round(1.25 * FIXED),
@@ -407,6 +409,7 @@ for (const unit of UNITS) {
   const recipe=FORMATION_RECIPES[unit.id];
   if (!recipe) throw new Error(`Missing formation recipe ${unit.id}`);
   unit.formationRecipe=recipe;
+  applyUnitTuning(unit);
   if (recipe.model === "soldiers") applySoldierWeapons(unit);
   unit.cost={...unit.cost,reserves:recipe.reserveCost,items:{...unit.cost.items,...(unit.tags.includes('mounted')?{horses:recipe.capacity}:{})}};
 }
@@ -522,4 +525,5 @@ for (const age of ["EarlyModern", "Modern"] as const) {
     cost: { gold: (ship.cost.gold ?? 0) * 1.25 },
   });
 }
+VESSELS.push({id:'earlymodern-carrier',name:'Aircraft carrier',age:'EarlyModern',kind:'carrier',technologyId:'rus-earlymodern-aircraft-carriers',cost:{gold:12000},health:6500,speed:1300/TICKS_PER_SECOND,capacity:0});
 export const VESSEL = new Map(VESSELS.map((v) => [v.id, v]));

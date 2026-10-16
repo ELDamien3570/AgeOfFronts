@@ -1,6 +1,7 @@
+import { DRONE_SWARM } from './DroneSwarms';
 import { TRENCH, SKIRMISH } from "./TacticalRules";
 import formationDoctrines from "./formation-doctrines.json";
-import { ATOMIC_ATTACK,DRONE_ATTACK,NAVAL_AIR_ATTACK } from "./ModernWeapons";
+import { AIRCRAFT_RULES,ATOMIC_ATTACK,DRONE_ATTACK,NAVAL_AIR_ATTACK } from "./ModernWeapons";
 import { FLIGHT_RULES } from "./FlightOperations";
 import { buildingFootprint } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
@@ -107,14 +108,14 @@ export const CONTENT_HASH = hash({
     attack: PROMOTION_ATTACK,
     maxArmour: MAX_ARMOUR,
   },
-  combatRevision: 8,
+  combatRevision: 10,
   formationDoctrines,
   formationScale: { soldier: SOLDIER_SCALE, cavalryBody: CAVALRY_SCALE, cavalrySpacing: CAVALRY_SPACING, cavalryTravelPitch: CAVALRY_PITCH },
-  flights:{rules:FLIGHT_RULES,atomic:ATOMIC_ATTACK,drone:DRONE_ATTACK,navalAir:NAVAL_AIR_ATTACK},
+  flights:{swarm:DRONE_SWARM,aircraft:AIRCRAFT_RULES,basingRevision:2,rules:FLIGHT_RULES,atomic:ATOMIC_ATTACK,drone:DRONE_ATTACK,navalAir:NAVAL_AIR_ATTACK},
   nuclearLand:{reserveLossPerCell:NUCLEAR_RESERVE_LOSS_PER_CELL,troopLossPerCell:FALLOUT_TROOP_LOSS_PER_CELL},
   shoreTransportRevision: 1,
   navalAutonomyRevision: 3,
-  aiCombatPolicyRevision: 2,
+  aiCombatPolicyRevision: 4,
   armyCaps: ARMY_CAPS,
   defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH, skirmish:SKIRMISH, missile: {ranges:Array.from({length:10},(_,i)=>missileDefenseRange(i+1)),reloadTicks:MISSILE_DEFENSE_RELOAD_TICKS,speed:MISSILE_DEFENSE_SPEED} },
   factions: FACTIONS,

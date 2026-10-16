@@ -1,3 +1,4 @@
+import { airBases } from '../domain/AirBases';
 import type { Aircraft } from "../domain/Definitions";
 import { FIXED, type Snapshot } from "../Protocol";
 
@@ -12,6 +13,7 @@ interface AircraftState {
   angle: number;
   tick: number;
   fighter: boolean;
+  drone: boolean;
 }
 
 const PARKED_SIZE = 28;
@@ -27,17 +29,17 @@ export class AircraftPresentation {
   }
 
   update(snapshot: Snapshot): void {
-    const bases = new Map(snapshot.buildings.map((b) => [b.id, b]));
+    const bases = new Map(airBases(snapshot.buildings,snapshot.ships,snapshot.width).map(b=>[b.id,b]));
     const live = new Set<number>();
     for (const aircraft of snapshot.expansion?.aircraft ?? []) {
       live.add(aircraft.id);
       const old = this.aircraft.get(aircraft.id);
       const base = bases.get(aircraft.airfieldId);
       const baseX = base
-        ? ((base.tile % snapshot.width) + 0.5) * FIXED
+        ? base.x
         : (old?.baseX ?? aircraft.x);
       const baseY = base
-        ? (Math.floor(base.tile / snapshot.width) + 0.5) * FIXED
+        ? base.y
         : (old?.baseY ?? aircraft.y);
       const moved = old && (old.x !== aircraft.x || old.y !== aircraft.y);
       const goal = flightGoal(aircraft, baseX, baseY);
@@ -72,6 +74,7 @@ export class AircraftPresentation {
         angle,
         tick: snapshot.tick,
         fighter: aircraft.definitionId === "fighter",
+        drone: aircraft.definitionId === "drone",
       });
     }
     for (const id of this.aircraft.keys())
@@ -90,7 +93,7 @@ export class AircraftPresentation {
         aircraft.ascentDistance,
     );
     const ascent = height * height * (3 - 2 * height);
-    const size = PARKED_SIZE * (1 + ascent * 0.5) * (aircraft.fighter ? 0.8 : 1);
+    const size = PARKED_SIZE * (1 + ascent * 0.5) * (aircraft.drone ? .42 : aircraft.fighter ? 0.8 : 1);
     // Include rotated sprite corners in culling and click selection.
     const radius = size * Math.SQRT1_2 + 2;
     return { x, y, angle: aircraft.angle, size, radius };
@@ -100,7 +103,7 @@ export class AircraftPresentation {
 function flightGoal(aircraft: Aircraft, baseX: number, baseY: number) {
   return aircraft.state === "returning"
     ? { x: baseX, y: baseY }
-    : aircraft.state === "outbound"
+    : aircraft.state === "outbound" || aircraft.state === "transferring"
       ? aircraft.target
       : null;
 }

@@ -3,6 +3,7 @@ import { z } from "zod";
 import recruitment from "../src/skirmish/content/russian-recruitment.json";
 import { UNITS } from "../src/skirmish/content/Units";
 import { AGES } from "../src/skirmish/domain/Definitions";
+import { FORMATION_RULES_VERSION } from '../src/skirmish/domain/Manpower';
 const positive = z.number().int().positive();
 const recipe = z
   .object({
@@ -32,7 +33,7 @@ const technology = z
 const schema = z
   .object({
     schemaVersion: z.literal(1),
-    rulesVersion: z.literal(11),
+    rulesVersion: z.literal(FORMATION_RULES_VERSION),
     recipes: z.record(z.string(), recipe),
     technologies: z.array(technology).length(8),
   })

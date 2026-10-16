@@ -24,6 +24,14 @@ export function cavalryImpactScene(flank=false,spears=false){
   return {game,rider,defender};
 }
 
+/** Explicit legacy order, with the original spacing for rank-motion contracts. */
+export function cavalryRankScene(flank=false,spears=false){
+  const scene=cavalryImpactScene(flank,spears);
+  scene.game.updateSquad(scene.rider.id,{order:{type:'attack',targetId:scene.defender.id,cavalryMode:'ranks'}});
+  Object.assign(scene.game,{cavalryRankLaunchSpacing:()=>1});
+  return scene;
+}
+
 /** Three legal charge orders against two infantry lines; no precommitted charges. */
 export function cavalryBattleScene(flank=false,spears=false){
   const {game,rider:template}=cavalryImpactScene();

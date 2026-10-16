@@ -8,13 +8,13 @@ import {formationApproach} from '../../src/skirmish/domain/FormationContact';
 import {cavalryAttackGap} from '../../src/skirmish/domain/CavalryMelee';
 
 describe('responsive mounted rush',()=>{
-  it('moves while morphing instead of waiting for the wedge to finish',()=>{
+  it('charges in the selected mass formation without imposing a wedge reform',()=>{
     const {game,riders,defenders}=cavalryBattleScene(),s=riders[0],target=defenders[0],y=s.y;
     expect(game.applyCommand({type:'charge',playerId:1,squadIds:[s.id],x:target.x,y:target.y,targetId:target.id})).toBeNull();
-    expect(s.charge?.phase).toBe('approach');expect(s.formation?.transition).toBeDefined();
+    expect(s.charge?.phase).toBe('approach');expect(s.formation?.transition).toBeUndefined();
     for(let i=0;i<10;i++)game.step();
-    expect(s.y).toBeGreaterThan(y);expect(s.formation?.transition).toBeDefined();
-    expect(formationEnvelope(s,game.tick).shape).toBe('wedge');
+    expect(s.y).toBeGreaterThan(y);expect(s.formation?.transition).toBeUndefined();
+    expect(formationEnvelope(s,game.tick).shape).toBe('mass');
   });
   it('keeps infantry in its authored shape during a charge',()=>{
     const {rider}=cavalryImpactScene();
@@ -25,11 +25,11 @@ describe('responsive mounted rush',()=>{
   });
   it('unfolds a marching column into its rush while moving',()=>{
     const {game,riders,defenders}=cavalryBattleScene(),s=riders[0],target=defenders[0],y=s.y;
-    game.updateSquad(s.id,{formation:{...s.formation!,shape:'column',mode:'travel',deployedShape:'mass',transition:undefined}});
+    game.updateSquad(s.id,{formation:{...s.formation!,shape:'column',mode:'travel',deployedShape:'mass',automatic:true,transition:undefined}});
     expect(game.applyCommand({type:'charge',playerId:1,squadIds:[s.id],x:target.x,y:target.y,targetId:target.id})).toBeNull();
     expect(s.formation?.transition?.from).toBe('column');
     for(let i=0;i<10;i++)game.step();
-    expect(s.y).toBeGreaterThan(y);expect(formationEnvelope(s,game.tick).shape).toBe('wedge');
+    expect(s.y).toBeGreaterThan(y);expect(formationEnvelope(s,game.tick).shape).toBe('mass');
   });
   it('captures partial stamina and preserves it and run-up clocks on repeated commands',()=>{
     const {game,riders,defenders}=cavalryBattleScene(),s=riders[0],target=defenders[0];

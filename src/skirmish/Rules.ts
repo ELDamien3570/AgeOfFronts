@@ -242,6 +242,7 @@ export const SHIP_RULES: Record<
     damage: number;
   }
 > = {
+  carrier: {name:'Aircraft carrier',glyph:'C',cost:12000,health:6500,speed:1300/TICKS_PER_SECOND,capacity:0,range:0,damage:0},
   warship: {
     name: "Warship",
     glyph: "W",

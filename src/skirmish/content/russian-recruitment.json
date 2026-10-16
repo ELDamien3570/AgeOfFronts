@@ -1746,6 +1746,23 @@
       "description": "Unlock diesel submarines at ports."
     },
     {
+      "id": "rus-earlymodern-aircraft-carriers",
+      "name": "Aircraft Carriers",
+      "age": "EarlyModern",
+      "tree": "naval",
+      "slot": 6,
+      "prerequisites": [
+        "rus-earlymodern-ship-improvements",
+        "rus-earlymodern-bombers"
+      ],
+      "gold": 30000,
+      "ticks": 640,
+      "capabilities": [
+        "aircraft-carriers"
+      ],
+      "description": "Unlock aircraft carriers with six shared fighter and bomber berths, onboard recruitment, transfers and air missions."
+    },
+    {
       "id": "rus-earlymodern-cities",
       "name": "Pre-modern Cities",
       "age": "EarlyModern",

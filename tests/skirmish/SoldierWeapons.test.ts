@@ -208,6 +208,8 @@ describe("per-soldier weapons and exact cycles", () => {
   });
   it("commits firing-time soldier contribution to projectiles and restores it", () => {
     const f = match("stoneage-archer");
+    // Javelins now have the authored short range of four tiles.
+    f.game.updateSquad(f.target.id, { x: 8 * FIXED });
     f.battle.fight([]);
     const shot = f.battle.projectiles.find((p) => p.sourceId === f.source.id)!;
     expect(shot.perSoldier).toBe(true);

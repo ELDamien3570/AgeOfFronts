@@ -27,6 +27,13 @@ export const TRIBE_BUILDING_ORDER: readonly BuildingType[] = [
   "oil-well", "oil-rig", "gun-nest", "trench", "missile-defence", "airstrip",
   "missile-silo", "mirv-launcher",
 ];
+/** Campaign procurement stays within the same small tribe building limits. */
+export const TRIBE_MILITARY_BUILDING_ORDER: readonly BuildingType[] = [
+  "barracks", "blacksmith", "armory", "arms-factory", "archery", "stables",
+  "mine", "factory", "city", "siege-workshop", "depot", "port", "tower",
+  "oil-well", "oil-rig", "gun-nest", "trench", "missile-defence", "airstrip",
+  "missile-silo", "mirv-launcher",
+];
 
 /** Capability and copy limits are independent of affordability, technology
  * completion and placement, which remain ordinary command rules. */

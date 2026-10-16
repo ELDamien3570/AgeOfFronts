@@ -80,12 +80,12 @@ export class TroopChoreography {
   /** Authoritative headcount and template in one step. Casualties fall from the
    * front; survivors keep their place and are re-seated by minimum travel, so a
    * re-templated formation never shuffles or crosses its members. */
-  applyAuthoritative(slots:FormationSlot[],desired:number,now:number,casualtyPriority?:ReadonlySet<number>,preserveAssignment=false):void {
+  applyAuthoritative(slots:FormationSlot[],desired:number,now:number,casualtyPriority?:ReadonlySet<number>,preserveAssignment=false,casualtyScores?:ReadonlyMap<number,number>):void {
     this.corpses=this.corpses.filter(c=>now-c.started<2600);
     const old=this.slots,target=Math.min(desired,slots.length),before=this.members.length;
     if(this.members.length>target){
       const place=(m:Member)=>old[m.slot]??slots[m.slot];
-      const order=[...this.members].sort((a,b)=>Number(casualtyPriority?.has(b.id)??false)-Number(casualtyPriority?.has(a.id)??false)||place(b).y-place(a).y||Math.abs(place(a).x)-Math.abs(place(b).x)||a.id-b.id);
+      const order=[...this.members].sort((a,b)=>(casualtyScores?(casualtyScores.get(a.id)??Infinity)-(casualtyScores.get(b.id)??Infinity):Number(casualtyPriority?.has(b.id)??false)-Number(casualtyPriority?.has(a.id)??false))||place(b).y-place(a).y||Math.abs(place(a).x)-Math.abs(place(b).x)||a.id-b.id);
       const victims=new Set(order.slice(0,this.members.length-target));
       for(const m of victims)this.corpses.push({...this.pose(m,now),id:m.id,started:now});
       this.members=this.members.filter(m=>!victims.has(m));

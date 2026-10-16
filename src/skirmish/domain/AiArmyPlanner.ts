@@ -212,7 +212,7 @@ export class AiArmyPlanner {
       const available = plan.members
         .map((id) => world.squad(id)!)
         .filter((s) => s && this.eligible(s, plan!));
-      const reserve = Math.max(
+      const reserve = operations.recruitmentObjective(player.id) ? operations.invasionReserve(player.id, available.length) : Math.max(
           operations.offensiveTarget(player.id) !== undefined ? 0 : 2,
           operations.offensiveTarget(player.id) !== undefined && available.length < profile.minimumRaidSquads ? 0 : Math.ceil((available.length * doctrine.reservePercent) / 100),
         ),
@@ -341,13 +341,13 @@ export class AiArmyPlanner {
     if(plan.hill&&(!["advance","engage"].includes(plan.phase)||plan.retire))this.hillPositions.release(plan,army);
     const target = world.players.find((p) => p.id === plan!.target),
       troops = members.reduce((n, s) => n + manpowerCount(this.expansion.unit(s),s.manpower?.model,s.troops), 0);
-    if(operations.finishing(player.id,plan.target ?? 0) && plan.deadline < world.tick+secondsToTicks(10)) {
+    if(operations.sustaining(player.id,plan.target ?? 0) && plan.deadline < world.tick+secondsToTicks(10)) {
       plan.deadline=world.tick+secondsToTicks(10);
       this.economy.assets.acquire(members.map(s=>({...this.economy.assets.leases.get(`squad:${s.id}`)!,expiresTick:plan!.deadline+secondsToTicks(40)})));
     }
     if (
       !["recover","replenish","refit"].includes(plan.phase) &&
-      ((world.tick >= plan.deadline && !operations.finishing(player.id,plan.target ?? 0)) ||
+      ((world.tick >= plan.deadline && !operations.sustaining(player.id,plan.target ?? 0)) ||
         (plan.purpose !== "coast" && (!target || target.eliminated || !world.hostile(player.id, target.id) ||
           (operations.enabled(player) && !operations.canTarget(player.id,target.id)))) ||
         (plan.purpose === "coast" && plan.targetTile !== undefined &&
@@ -498,7 +498,7 @@ export class AiArmyPlanner {
       if (
         (plan.phase === "advance" || plan.phase === "engage") &&
         world.tick - plan.since >= doctrine.commitmentTicks &&
-        !operations.finishing(player.id, plan.target ?? 0) &&
+        !operations.sustaining(player.id, plan.target ?? 0) &&
         this.order(plan, { type: "regroup", tile: plan.home ?? player.base })
       ) {
         plan.phase = "recover";

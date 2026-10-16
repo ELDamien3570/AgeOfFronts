@@ -1,0 +1,7 @@
+{
+  "generator": "built-in image_gen",
+  "prompt": "Edit this approved strict overhead Russian aircraft carrier sprite for runtime use. Remove ONLY the five blue-gray parked aircraft from the flight deck and fill the areas they occupied with consistent weathered gray deck, continuing existing deck lines where needed. Preserve exactly the carrier outline, strict vertical orthographic camera, roof-only island, bow-up orientation, long deck proportions, markings, lighting, transparent background and island equipment. The deck must be empty of aircraft because the game will draw actual stationed aircraft dynamically. No new objects, no water, no shadow, no perspective change. Preserve full canvas size and position.",
+  "source": "Carrier_Russian_Modern_v2.png",
+  "output": "Carrier_Russian_EmptyDeck_v1.png",
+  "purpose": "Actual stationed aircraft are drawn from authoritative basing state; no permanent painted aircraft on the runtime deck."
+}

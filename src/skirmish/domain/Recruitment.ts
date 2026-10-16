@@ -1,6 +1,8 @@
 import { EntityCollection } from "../EntityCollection";
 import type { Building } from "../Protocol";
 import type { RecruitmentJob } from "./Definitions";
+/** Mobile producers are validated by ownership and hull health, without a territory tile. */
+export type CarrierRecruitmentProducer = Pick<Building,'id'|'playerId'|'remainingTicks'|'health'> & {kind:'carrier'};
 
 export const RECRUITMENT_SECONDS = Object.freeze({
   infantry: 5,
@@ -11,6 +13,7 @@ export const RECRUITMENT_SECONDS = Object.freeze({
   aircraft: 30,
   transport: 10,
   warship: 20,
+  carrier: 60,
 });
 type Job = Readonly<Omit<RecruitmentJob, "cost">> & {
   readonly cost: Readonly<RecruitmentJob["cost"]> & {
@@ -248,7 +251,7 @@ export class Recruitment {
     owners: Uint8Array,
     complete: (job: Job) => boolean,
     refund: (job: Job) => void,
-    lookup?: (id: number) => Building | undefined,
+    lookup?: (id: number) => Building | CarrierRecruitmentProducer | undefined,
   ): void {
     const producers =
       lookup ??
@@ -262,7 +265,7 @@ export class Recruitment {
       if (
         !producer ||
         producer.playerId !== job.playerId ||
-        owners[producer.tile] !== job.playerId ||
+        ('tile' in producer && owners[producer.tile] !== job.playerId) ||
         (producer.health ?? 1) <= 0
       ) {
         refund(job);

@@ -1,44 +1,32 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { z } from "zod";
-const bounded = z.number().int().min(0).max(100000);
+import { FORMATION_RULES_VERSION } from '../src/skirmish/domain/Manpower';
+const bounded = z.number().min(0).max(100000);
 const rpm = z.number().int().min(1).max(1200);
-const base = z.object({ damageHp: bounded.positive(), rpm }).strict();
+const tag = z.enum(['infantry','ranged','mounted','armoured','vehicle','siege','structure','wall','ship','aircraft']);
+const base = z.object({ damageHp: bounded.positive(), rpm, bonuses: z.partialRecord(tag, bounded) }).strict();
 const melee = base.extend({ ranks: z.number().int().min(1).max(8) }).strict();
 const ranged = base
   .extend({
     shotsPerReload: z.number().int().min(1).max(1000),
     reloadMs: z.number().int().min(0).max(600000),
+    rangeTiles: z.number().positive().max(1000).optional(),
+    accuracy: z.object({ near: z.number().min(0).max(100), far: z.number().min(0).max(100) }).strict().optional(),
   })
   .strict();
 const entry = z
   .object({
-    melee,
+    melee: melee.nullable(),
     ranged: ranged.nullable(),
     defence: z.object({ meleeHp: bounded, rangedHp: bounded }).strict(),
-    primaryBonus: z
-      .object({
-        target: z.enum([
-          "infantry",
-          "ranged",
-          "mounted",
-          "vehicle",
-          "siege",
-          "structure",
-          "wall",
-          "ship",
-          "aircraft",
-        ]),
-        damageHp: bounded,
-      })
-      .strict(),
     chargeMultiplier: z.number().min(1).max(10),
     chargeRecoveryTicks: z.number().int().min(1).max(1200).optional(),
   })
-  .strict();
+  .strict().refine(value => value.melee || value.ranged, 'Soldier requires at least one weapon');
 const data = z
   .object({
-    schemaVersion: z.literal(1),
-    rulesVersion: z.literal(11),
+    schemaVersion: z.literal(2),
+    rulesVersion: z.literal(FORMATION_RULES_VERSION),
     weapons: z.record(z.string(), entry),
   })
   .strict()

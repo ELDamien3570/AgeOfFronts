@@ -21,7 +21,7 @@ it("replicates live stack cargo and port receiving bars without changing simulat
   const port=add("port",10,19);
   const city=add("city",30,15);
   factories.forEach((b,i)=>e.supply.goods.set(b.id,100+i*50));
-  e.supply.goods.set(port.id,80);
+  e.supply.goods.set(port.id,20);
   e.trade.step();
   const before=game.checkpoint();
   const encoder=new SnapshotEncoder(),decoder=new SnapshotDecoder();
@@ -40,7 +40,8 @@ it("replicates live stack cargo and port receiving bars without changing simulat
     expect(bars()[0].getAttribute("aria-valuemax")).toBe("2000");
     show([port.id]);
     expect(bars()).toHaveLength(2);
-    expect(bars()[0].getAttribute("aria-valuenow")).toBe("80");
+    expect(bars()[0].getAttribute("aria-valuenow")).toBe("20");
+    expect(bars()[0].getAttribute("aria-valuemax")).toBe("20");
     expect(bars()[1].getAttribute("aria-valuenow")).toBe("10");
     expect(bars()[1].getAttribute("aria-valuemax")).toBe("50");
     expect(root.querySelector("#selection-stats")!.textContent).toContain("26 allied · 30 foreign");
@@ -50,7 +51,7 @@ it("replicates live stack cargo and port receiving bars without changing simulat
     show([port.id]);
     expect(bars()[0].getAttribute("aria-valuenow")).toBe("12");
     expect(bars()[1].getAttribute("aria-valuenow")).toBe("10");
-    expect(root.querySelector("#selection-trade-meters")!.textContent).toContain("12 / 1,000");
+    expect(root.querySelector("#selection-trade-meters")!.textContent).toContain("12 / 20");
     show([city.id]);
     expect(bars()).toHaveLength(1);
     expect(bars()[0].getAttribute("aria-valuenow")).toBe("10");

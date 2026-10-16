@@ -27,6 +27,7 @@ import { breedingPerSecond, throughputPercent } from "./ResearchEffects";
 import { startingResources } from "./StartingResources";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import { ResourceSiteIndex } from "./ResourceSiteIndex";
+import { tradeCargoCapacity, tradeCargoEffects } from "./TradeCargo";
 export function productionTicks(
   recipe: ProductionRecipe,
   research: readonly string[],
@@ -134,6 +135,12 @@ export class Supply {
     if (node) this.depositEntities.updateOwned(node.id, {owner});
   }
   readonly goods = new Map<number, number>();
+  /** Each port stores one unstacked shipload at its owner's current research. */
+  goodsCapacity(building: Building): number {
+    return building.type === "port"
+      ? tradeCargoCapacity(tradeCargoEffects(this.progression.states[building.playerId].completed), true)
+      : 1000;
+  }
   private readonly goodsOwners = new Map<number, number>();
   private readonly selectedRecipes = new Map<
     number,
@@ -343,7 +350,7 @@ export class Supply {
         this.goodsOwners.set(b.id, player.id);
         this.goods.set(
           b.id,
-          Math.min(1000, (this.goods.get(b.id) ?? 0) + tradeStockPerSecond(age)),
+          Math.min(this.goodsCapacity(b), (this.goods.get(b.id) ?? 0) + tradeStockPerSecond(age)),
         );
       }
       if (

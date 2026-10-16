@@ -24,6 +24,7 @@
         </div>
       </header>
       <nav class="lab-tabs" role="tablist" aria-label="Soldier lab views">
+        <a href="/skirmish/balance-preview.html">Balance Preview Page</a>
         <button
           id="presentation-tab"
           role="tab"
@@ -266,13 +267,21 @@
         </div>
       </div>
       <div id="unit-panel" role="tabpanel" aria-labelledby="unit-tab" hidden>
-        <p class="notice">
+        <p class="notice" id="catalog-scope">
           Local content drafts. Edits affect this inspector only; export them
           for review and later integration. Your drafts persist in this browser.
         </p>
         <section>
           <h2>Catalogue</h2>
           <div class="stat-grid">
+            <label
+              >Balance profile<select id="catalog-profile">
+                <option value="premodern-rebalance-v1">
+                  Approved balance
+                </option>
+                <option value="live">Live stats / existing drafts</option>
+              </select></label
+            >
             <label
               >Category
               <select id="catalog-category">
@@ -294,6 +303,24 @@
           <p id="catalog-status" role="status"></p>
         </section>
         <section id="catalog-filters">
+          <div class="sheet-toolbar">
+            <label
+              >View
+              <select id="catalog-view">
+                <option value="cards">Cards</option>
+                <option value="sheet">Spreadsheet</option>
+              </select></label
+            ><label
+              >Spreadsheet columns
+              <select id="sheet-columns">
+                <option value="all">All numeric stats</option>
+                <option value="core">Squad, defence &amp; movement</option>
+                <option value="melee">Melee weapons</option>
+                <option value="ranged">Ranged weapons</option>
+                <option value="bonuses">Target-class bonuses</option>
+              </select></label
+            >
+          </div>
           <div class="stat-grid">
             <label
               >Age
@@ -318,6 +345,28 @@
           <p id="catalog-count"></p>
         </section>
         <div id="catalog-cards" class="catalog-cards"></div>
+        <div id="catalog-sheet" hidden>
+          <p>
+            Edit cells directly. Tab moves across; Enter and ↑/↓ move between
+            rows. Paste tab-separated cells from a spreadsheet. Blank or
+            read-only cells cannot be overwritten. Click a group heading to
+            collapse or expand its columns. eDPS stays beside each unit name and
+            uses the shared comparison target, base recipe and default
+            formation.
+          </p>
+          <div
+            id="sheet-scroll"
+            tabindex="0"
+            role="region"
+            aria-label="Editable unit spreadsheet"
+          >
+            <table id="unit-sheet">
+              <caption>
+                Unit statistics spreadsheet
+              </caption>
+            </table>
+          </div>
+        </div>
         <div class="catalog-layout" id="catalog-editor" hidden>
           <section>
             <h2 id="catalog-title">Unit statistics</h2>

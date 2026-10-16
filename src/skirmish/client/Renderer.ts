@@ -3,8 +3,9 @@ import { effectiveRange, rangedElevation } from "../domain/ElevationAdvantage";
 import type { BattleLineDeployment } from "../domain/BattleLineLayout";
 import { facingOf, formationSlots, formationDoctrine } from "../domain/FormationGeometry";
 import { FormationAngleSamples } from "./FormationAngleSamples";
+import { CombatPresentationTimeline } from './CombatPresentationTimeline';
 import { formationRenderPose, formationPoseContains, strategicFormationBox, strategicFormationContains, type FormationRenderPose } from "./FormationRenderPose";
-import { formationEnvelope, geometryKey } from "../domain/FormationGeometry";
+import { formationEnvelope } from "../domain/FormationGeometry";
 import { strengthFraction, legacyWeaponStrength } from '../domain/Manpower';
 
 import type { GameMap } from "../../core/game/GameMap";
@@ -23,8 +24,10 @@ import { BUILDING_RULES, SHIP_RULES, SQUAD_RULES } from "../Rules";
 import { ownerUiAge } from "./AgeUiTheme";
 import { AircraftLayer } from "./AircraftLayer";
 import { AircraftPresentation } from "./AircraftPresentation";
+import { AircraftGroundPresentation } from "./AircraftGroundPresentation";
 import { AircraftView } from "./AircraftView";
 import { aircraftArtworkId, buildingArtworkId, buildingPreviewArtworkId } from "./ArtworkCatalog";
+import { CarrierAircraftPresentation } from './CarrierAircraftPresentation';
 import { BoatPresentation } from "./BoatPresentation";
 import { BuildingArtwork } from "./BuildingArtwork";
 import { BuildingFacts } from "./BuildingFacts";import { BuildingGunPresentation } from "./BuildingGunPresentation";
@@ -32,7 +35,7 @@ import { BuildingMarkers } from "./BuildingMarkers";
 import { BuildingSelectionViewModel } from "./BuildingSelectionViewModel";
 import { BuildingSpriteLayout, fittedBuildingSprite } from "./BuildingSpriteLayout";
 import { CampLossPresentation } from "./CampLossPresentation";
-import { chargeReadiness } from "./ChargeReadiness";
+import { chargeReadiness, chargeBonusLabel } from "./ChargeReadiness";
 import { CombatEffectsView } from "./CombatEffectsView";
 import {
   combatTargets,
@@ -150,6 +153,8 @@ export class Renderer {
   private readonly traderPresentation = new TraderPresentation();
   private readonly tradePayouts = new TradePayoutPresentation();
   private readonly aircraftPresentation = new AircraftPresentation();
+  private readonly aircraftGround = new AircraftGroundPresentation();
+    private readonly carrierAircraft = new CarrierAircraftPresentation();
   private readonly aircraftView = new AircraftView();
   private readonly aircraftLayer: AircraftLayer;
   private aircraftBlend = 1;
@@ -231,7 +236,7 @@ export class Renderer {
       distance = Infinity;
     for (const a of this.snapshot?.expansion?.aircraft ?? []) {
       if (!inspection &&a.playerId !== this.playerId) continue;
-      const pose = this.aircraftPresentation.pose(a.id, this.aircraftBlend);
+      const pose = this.aircraftPose(a.id, this.aircraftBlend);
       if (!pose) continue;
       const p = this.screen(pose.x / FIXED, pose.y / FIXED),
         d = (p.x - x) ** 2 + (p.y - y) ** 2;
@@ -243,6 +248,14 @@ export class Renderer {
     return best;
   }
   readonly buildingSelection = new BuildingSelectionViewModel();
+  private aircraftPose(id: number, blend: number) {
+    const flight = this.aircraftPresentation.pose(id, blend);
+    return flight && (this.carrierAircraft.pose(id,flight,this.scale,blend,id=>this.boats.shipPose(id)) ?? this.aircraftGround.pose(id, flight, this.scale, blend));
+  }
+  aircraftScreenPoint(id: number) {
+    const pose = this.aircraftPose(id, this.aircraftBlend);
+    return pose ? this.screen(pose.x / FIXED, pose.y / FIXED) : undefined;
+  }
   spawn?: SpawnSelectionViewModel;
   get selectedBuildings(): Set<number> {
     return this.buildingSelection.ids;
@@ -302,8 +315,10 @@ export class Renderer {
     this.resize();
   }
 
+  /** Presentation counterpart of a disposable balance arena's local stats. */
+  unitDefinition?: (squad:Snapshot["squads"][number]) => import('../domain/Definitions').UnitDefinition | undefined;
   highGround(squad:Snapshot["squads"][number],snapshot:Snapshot) {
-    const base=squad.definitionId?UNIT.get(squad.definitionId):undefined;
+    const base=this.unitDefinition?.(squad)??(squad.definitionId?UNIT.get(squad.definitionId):undefined);
     const profile=base&&snapshot.expansion?unitEffects(base,snapshot.expansion.progression[squad.playerId].completed).attack:undefined;
     const id=squad.order.type==="attack"?squad.order.targetId:squad.combatTargetId;
     if(this.rangeSnapshot!==snapshot){this.rangeSnapshot=snapshot;this.rangeTargets=new Map(snapshot.squads.map(s=>[s.id,s]));}
@@ -355,6 +370,8 @@ export class Renderer {
     this.walls.reset();
     this.trenches.reset();
     this.snapshot = undefined;
+    this.combatTimeline.clear();
+    this.presentedCombat=undefined;
     this.spawn = undefined;
     this.resources = undefined;
     this.receivedAt = 0;
@@ -370,6 +387,8 @@ export class Renderer {
     this.traderPresentation.reset();
     this.tradePayouts.reset();
     this.aircraftPresentation.reset();
+    this.aircraftGround.reset();
+    this.carrierAircraft.reset();
     this.aircraftBlend = 1;
     this.aircraftLayer.clear();
     this.campLoss.reset();
@@ -387,8 +406,14 @@ export class Renderer {
     this.home();
   }
 
+  private readonly combatTimeline=new CombatPresentationTimeline();
+  private presentedCombat?: import('./CombatPresentationTimeline').CombatPresentationFrame;
+  combatFrame(now:number,speed:number,paused:boolean) {
+    return this.presentedCombat=this.combatTimeline.sample(now,speed,paused);
+  }
   update(snapshot: Snapshot): void {
     if (!this.map) return;
+    this.combatTimeline.update(snapshot);
     assignFactionColors(snapshot.players);
     if (this.colorRevision !== factionColorRevision) {
       this.territory!.setColors(RGB);
@@ -447,6 +472,8 @@ export class Renderer {
     this.presentation.update(snapshot);
     this.traderPresentation.update(snapshot);
     this.aircraftPresentation.update(snapshot);
+    this.aircraftGround.update(snapshot);
+    this.carrierAircraft.update(snapshot);
     const arrived = performance.now();
     this.boats.update(snapshot, arrived);
     this.receivedAt = arrived;
@@ -617,7 +644,7 @@ export class Renderer {
       distance = Infinity;
     let soldierBest: Snapshot["squads"][number] | undefined, soldierDistance = Infinity;
     const world = this.world(x, y);
-    for (const squad of this.snapshot?.squads ?? []) {
+    for (const squad of (this.presentedCombat?.snapshot??this.snapshot)?.squads ?? []) {
       if (squad.embarkedOn !== null) continue;
       if (owner !== undefined && squad.playerId !== owner) continue;
       const hit = this.squadArtworkHitTest?.(squad, world, this.scale);
@@ -661,7 +688,8 @@ export class Renderer {
 
   private currentFormationPose(squad:Snapshot["squads"][number]):FormationRenderPose {
     const cached=this.formationPoses.get(squad.id);
-    return cached?.geometry.revision===geometryKey(squad)?cached:formationRenderPose(squad,this.snapshot?.tick??0);
+    // Interaction follows the last completed draw, including its living ranks.
+    return cached??formationRenderPose(squad,this.presentedCombat?.tick??this.snapshot?.tick??0);
   }
   private spriteSize(troops: number): number {
     return squadSpriteSize(this.scale, troops);
@@ -1090,7 +1118,8 @@ export class Renderer {
       this.strategic.flush();
       return true;
     }
-    const snapshot = this.snapshot!;
+    const combatFrame=this.combatFrame(now,speed,paused);
+    const snapshot = combatFrame?.snapshot??this.snapshot!;
     if (gpuGround)
       this.groundLayer.draw(this.scale, this.offsetX, this.offsetY, now);
     this.ground!.draw(
@@ -1258,7 +1287,7 @@ export class Renderer {
       this.selectedBuilding === null
         ? undefined
         : snapshot.buildings.find((b) => b.id === this.selectedBuilding);
-    const visualTick = this.animationClock.sample(
+    const visualTick = combatFrame?.tick??this.animationClock.sample(
       now,
       speed,
       paused || snapshot.winner !== null,
@@ -1414,10 +1443,9 @@ export class Renderer {
     const renderedSquads = snapshot.squads
       .filter((squad) => squad.embarkedOn === null)
       .map((squad) => {
-        const sample = this.squadSamples.get(squad.id)!;
         const p = this.screen(
-          (sample.previousX + (squad.x - sample.previousX) * blend) / FIXED,
-          (sample.previousY + (squad.y - sample.previousY) * blend) / FIXED,
+          squad.x / FIXED,
+          squad.y / FIXED,
         );
         const selected =
           this.selected.has(squad.id) || this.inspectedSquadId === squad.id;
@@ -1461,7 +1489,7 @@ export class Renderer {
           ? UNIT.get(squad.definitionId)
           : undefined;
         const image = symbol.artwork ? activeImage : undefined;
-        const formationPose=squad.formation && !squad.afloat ? formationRenderPose(squad,visualTick,this.world(p.x,p.y),this.formationAngles.angle(squad.id,blend)) : undefined;
+        const formationPose=squad.formation && !squad.afloat ? formationRenderPose(squad,visualTick,this.world(p.x,p.y)) : undefined;
         if(formationPose)this.formationPoses.set(squad.id,formationPose);
         return { squad, p, selected, symbol, image, definition, formationType, customArtwork, formationPose };
       })
@@ -1620,7 +1648,8 @@ export class Renderer {
       const spriteSize = squad.afloat ? shipSpriteSize(this.scale, "transport") : this.spriteSize(legacyWeaponStrength(squad));
       // Afloat, the bar is the hull: every hit lands there until it sinks.
       const strength = squad.afloat ? squad.afloat.hull / squad.afloat.maxHull : strengthFraction(squad);
-      // Recovered charge cooldown (full = ready); undefined hides the bar for
+      // During assault this counts down the bonus window; outside combat it
+      // shows recovered impact strength. Undefined hides the bar for
       // units without a charge attack, and while afloat.
       const charge = squad.afloat ? undefined : chargeReadiness(squad, snapshot.tick);
       const individualArtwork = deferredArtwork ? deferredArtwork.has(squad.id) : !squad.afloat && this.squadArtworkOverride?.(
@@ -1861,6 +1890,11 @@ export class Renderer {
       ctx.strokeText(String(squad.troops), labelPoint.x, labelY);
         ctx.fillStyle = "#f2f5ed";
       ctx.fillText(String(squad.troops), labelPoint.x, labelY);
+        const assault=squad.cavalryEngagement?.assault;
+        if(assault && squad.cavalryEngagement?.phase!=='withdrawing'){
+          const label=chargeBonusLabel(squad,visualTick)!;
+          ctx.strokeText(label,labelPoint.x,labelY+13);ctx.fillStyle='#f4cf88';ctx.fillText(label,labelPoint.x,labelY+13);
+        }
         if(squad.formation?.blocked){ctx.fillStyle="#ffc078";ctx.fillText("Deployment blocked",labelPoint.x,labelY+13);}
       }
     }
@@ -2419,7 +2453,7 @@ export class Renderer {
       aircraftCtx.restore();
       }
     for (const aircraft of snapshot.expansion?.aircraft ?? []) {
-      const pose = this.aircraftPresentation.pose(aircraft.id, blend);
+      const pose = this.aircraftPose(aircraft.id, blend);
       if (!pose) continue;
       const p = this.screen(pose.x / FIXED, pose.y / FIXED);
       if (!visibleInViewport(p, pose.radius, this.width, this.height)) continue;

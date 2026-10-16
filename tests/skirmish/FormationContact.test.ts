@@ -231,7 +231,7 @@ describe("formation boundary engagement", () => {
       ),
     ).toBeLessThanOrEqual(8);
   });
-  it("resolves a charge only at the current body's legal contact and keeps recovery state", () => {
+  it("resolves a cavalry charge only at legal contact and continues into sustained assault", () => {
     const f = match("earlymedieval-heavycavalry"),
       charge = {
         phase: "committed" as const,
@@ -254,14 +254,15 @@ describe("formation boundary engagement", () => {
     f.game.updateSquad(f.b.id,formationApproach(f.b,f.a,0,CONTACT.enter));
     f.game.expansion!.battle.fight([]);
     expect(remainingHealth(f.b)).toBeLessThan(before);
-    expect(f.a.charge!.phase).toBe("recovery");
+    expect(f.a.charge).toBeNull();
+    expect(f.a.cavalryEngagement?.assault).toBeDefined();
     expect(
       f.game.volleys.some(
         (v) => v.squadId === f.a.id && v.targetId === f.b.id && v.melee,
       ),
     ).toBe(true);
   });
-  it("does not grant an instant wedge or recovery footprint when charge state changes", () => {
+  it("preserves the selected footprint throughout charge and recovery", () => {
     const f = match("earlymedieval-heavycavalry"),
       before = formationFootprint(f.a, 0);
     f.game.updateSquad(f.a.id, {
@@ -275,14 +276,14 @@ describe("formation boundary engagement", () => {
       },
     });
     expect(formationFootprint(f.a, 0)).toEqual(before);
-    const duration = f.a.formation!.transition!.duration;
-    const wedge = formationFootprint(f.a, duration);
-    expect(wedge).not.toEqual(before);
+    expect(f.a.formation!.transition).toBeUndefined();
+    const duration = 8;
+    expect(formationFootprint(f.a, duration)).toEqual(before);
     f.game.tick = duration;
     f.game.updateSquad(f.a.id, {
       charge: { ...f.a.charge!, phase: "recovery" },
     });
-    expect(formationFootprint(f.a, duration)).toEqual(wedge);
+    expect(formationFootprint(f.a, duration)).toEqual(before);
   });
   it("sweeps projectiles into a wide body's edge while missing its empty wedge corner", () => {
     const f = match(),

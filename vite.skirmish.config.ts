@@ -130,6 +130,7 @@ export default defineConfig({
         continents: "skirmish/continents.html",
         troops: "skirmish/troops.html",
         soldierLab: "skirmish/soldier-lab.html",
+        balancePreview: "skirmish/balance-preview.html",
         technologyPlanner: "skirmish/technology-planner.html",
         troopTree: "skirmish/troop-tree.html",
       },

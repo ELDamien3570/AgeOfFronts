@@ -1,16 +1,17 @@
+import { airBases, baseAccepts } from '../domain/AirBases';
 import { flightReachable, missionKind, type AirMission } from "../content/FlightOperations";
 import type { BuildingType, Command, ShipType, Snapshot, SquadType } from "../Protocol";
 
 /** Selection and cursor quotes share the same ordered candidates. Authority validates the submitted IDs again. */
-export function airMissionCandidates(snapshot:Snapshot,playerId:number,x:number,y:number,selected:ReadonlySet<number>,mission:AirMission) {
- const fields=new Set(snapshot.buildings.filter(b=>b.playerId===playerId&&b.type===(mission==="drone"?"drone-facility":"airstrip")&&!b.remainingTicks&&(b.health??1)>0).map(b=>b.id));
+export function airMissionCandidates(snapshot:Snapshot,playerId:number,x:number,y:number,selected:ReadonlySet<number>,mission:AirMission,selectedBases?:ReadonlySet<number>) {
+ const fields=new Set(airBases(snapshot.buildings,snapshot.ships,snapshot.width).filter(b=>b.playerId===playerId&&baseAccepts(b,missionKind(mission))&&(!selectedBases?.size||selectedBases.has(b.id))).map(b=>b.id));
  return (snapshot.expansion?.aircraft??[]).filter(a=>a.playerId===playerId&&a.health>0&&a.state==="ready"&&fields.has(a.airfieldId)&&a.definitionId===missionKind(mission)&&(!selected.size||selected.has(a.id)))
   .sort((a,b)=>(a.x-x)**2+(a.y-y)**2-((b.x-x)**2+(b.y-y)**2)||a.airfieldId-b.airfieldId||a.id-b.id);
 }
-export function sortieCommand(snapshot:Snapshot,playerId:number,x:number,y:number,shift=false,selected:ReadonlySet<number>=new Set(),mission:AirMission="bombing"):Extract<Command,{type:"sortie"}>|null {
- const ready=airMissionCandidates(snapshot,playerId,x,y,selected,mission).slice(0,shift?5:1);
+export function sortieCommand(snapshot:Snapshot,playerId:number,x:number,y:number,shift=false,selected:ReadonlySet<number>=new Set(),mission:AirMission="bombing",selectedBases?:ReadonlySet<number>,target?:{buildingId?:number;unitId?:number}):Extract<Command,{type:"sortie"}>|null {
+ const ready=airMissionCandidates(snapshot,playerId,x,y,selected,mission,selectedBases).slice(0,shift?5:1);
  if(!ready.length||ready.some(a=>!flightReachable(a,x,y)))return null;
- return {type:"sortie",mission,playerId,aircraftIds:ready.map(a=>a.id),x,y};
+ return {type:"sortie",mission,playerId,aircraftIds:ready.map(a=>a.id),x,y,...(mission==="drone"?{targetBuildingId:target?.unitId===undefined?target?.buildingId:undefined,targetUnitId:target?.unitId}:{})};
 }
 
 /** Translate selection intent only; the match chooses and admits the landing coast. */

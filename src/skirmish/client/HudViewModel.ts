@@ -1,5 +1,6 @@
 import { TRENCH } from "../content/TacticalRules";
 import { soldierWeaponStats } from "./WeaponStats";
+import { chargeStatus } from "./ChargeReadiness";
 import { remainingHealth, maximumHealth, HEALTH_SCALE } from '../domain/Manpower';
 import { buildingPreviewArtworkId } from "./ArtworkCatalog";
 import { availableGold } from "../domain/Gold";
@@ -197,6 +198,7 @@ const squadCards: Record<SquadType, HudCard> = {
 };
 const shipCards: Record<ShipType, HudCard> = {
   warship: createShipCard("warship"),
+  carrier: createShipCard("carrier"),
 };
 const buildingCards = Object.fromEntries(
   (Object.keys(BUILDING_RULES) as BuildingType[]).map((type) => [
@@ -270,6 +272,7 @@ function unitCard(unit: UnitDefinition, xp = 0, capacity=unit.formationRecipe!.c
           stat("Charge Speed", `${unit.charge.speedPercent}%`),
           stat("Charge Damage", unit.meleeAttack ? `${unit.chargeMultiplier}× per-soldier melee` : String(unit.charge.damage)),
           stat("Charge Reload Time", `${unit.charge.cooldownTicks / TICKS_PER_SECOND}s`),
+          ...(unit.charge.bonusDurationTicks!==undefined?[stat("Charge bonus duration",`${unit.charge.bonusDurationTicks/TICKS_PER_SECOND}s`)]:[]),
         ]
       : []),
   ];
@@ -337,7 +340,7 @@ function vesselCard(
           .join(", ") || "None",
       ),
       stat("Hull health", String(v.health)),
-      stat("Capacity", `${v.capacity} whole squads`),
+      stat("Capacity", v.kind==="carrier"?"6 shared fighter/bomber berths":`${v.capacity} whole squads`),
       stat("Range", `${(v.attack?.range ?? 0) / FIXED} cells`),
       stat("Attack", String(attack?.damage ?? 0)),
       stat("Reload", `${(v.attack?.reloadTicks ?? 0) / TICKS_PER_SECOND}s`),
@@ -602,6 +605,8 @@ export class HudViewModel {
             ? s.fighting || s.moved || s.afloat || s.embarkedOn!==null || state.owners[Math.floor(s.y/FIXED)*state.width+Math.floor(s.x/FIXED)]!==s.playerId
               ? 'Refit paused · needs stationary owned land outside combat'
               : `Refitting · ${Math.ceil(s.refit.remainingTicks / TICKS_PER_SECOND)}s`
+            : s.cavalryEngagement?.phase==='withdrawing' || s.cavalryEngagement?.assault
+              ? chargeStatus(s,state.tick)!
             : s.charge
               ? `Charge · ${s.charge.phase}`
               : s.afloat
@@ -706,6 +711,7 @@ export class HudViewModel {
                     : "Holding",
         stats: [
           stat("Queued waypoints", String(s.waypoints.length)),
+          ...(s.kind==="carrier"?[stat("Stationed / assigned aircraft",String(state.expansion?.aircraft.filter(a=>a.airfieldId===s.id&&!a.transfer&&a.health>0).length??0)),stat("Orders","Recruit fighters/bombers · transfer by right-click · P bombing · O A-bomb · I dispatch")]:[]),
           stat("Target priority", (s.navalPriority??"transports")==="transports"?"Intercept transports":"Engage warships"),
           ...(s.definitionId
             ? [
@@ -775,7 +781,7 @@ export class HudViewModel {
           stack.length > 1
             ? `${BUILDING_RULES[b.type].name} ×${stack.length}`
             : `${BUILDING_RULES[b.type].name} #${b.id}`,
-        subtitle: `${b.playerId === this.playerId ? "Friendly" : "Enemy"} building${stack.length > 1 ? " stack" : ""}`,
+        subtitle: `${b.playerId === 0 ? "Neutral" : b.playerId === this.playerId ? "Friendly" : "Enemy"} building${stack.length > 1 ? " stack" : ""}`,
         stats:
           stack.length > 1
             ? [
@@ -891,20 +897,21 @@ export class HudViewModel {
         title: `${a.definitionId === "fighter" ? "Fighter" : a.definitionId === "drone" ? "Drone" : "Bomber"} #${a.id}`,
         subtitle: "1 aircraft selected",
         status: a.state,
-        meter: { label: "Aircraft health", value: a.health, max: 1000 },
+        meter: { label: "Aircraft health", value: a.health, max: a.drone?100:1000 },
         stats: [
           stat("Flight time", a.state === "returning" ? "Returning · free flight" : `${Math.ceil(a.fuelTicks / TICKS_PER_SECOND)}s`),
           stat("Airfield", `#${a.airfieldId}`),
+          ...(a.transfer ? [stat("Destination", `Airfield #${a.transfer.destinationId}`)] : []),
           stat(
             "Role",
             a.definitionId === "fighter"
               ? "Air-to-air · 200 damage / 2s · 8 cells"
               : a.definitionId === "drone" ? "Single-use strike · 10,000 base damage" : "Ground bomb · 2,500 base + 2,000 structure bonus",
           ),
-          stat("Orders", "I patrol · P bombing · O atomic · U drones"),
+          stat("Orders", a.definitionId === "drone" ? "U drone strike" : "Right-click owned airfield or carrier to transfer · I patrol · P bombing · O atomic"),
         ],
         description:
-          "Mission time covers travel and patrol; returning costs no flight time. Drones are consumed on impact and cannot be intercepted.",
+          "Mission time covers travel and patrol; returning costs no flight time. FPV drones are consumed on impact and can be intercepted.",
       }));
     const deposit =
       selection.selectedDeposit === null ||

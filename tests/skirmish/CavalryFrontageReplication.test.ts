@@ -6,7 +6,7 @@ import { formationApproach } from "../../src/skirmish/domain/FormationContact";
 import { SnapshotEncoder, SnapshotDecoder } from "../../src/skirmish/SnapshotCodec";
 
 describe("mounted impact formation replication", () => {
-  it("commits a legal wedge frontage when impact retains the charge body", () => {
+  it("preserves the deliberately chosen mass frontage through charge impact", () => {
     const { game, rider, defender } = cavalryImpactScene();
     const d = formationDoctrine(rider.definitionId);
     const width = frontageLayout(rider.troops, d, "mass", 32768)!.width;
@@ -17,8 +17,10 @@ describe("mounted impact formation replication", () => {
     const encoder = new SnapshotEncoder(), decoder = new SnapshotDecoder();
     decoder.decodeLatest(encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts()));
     game.expansion!.battle.fight([]);
-    expect(rider.charge!.phase).toBe("recovery");
-    expect(rider.formation!.shape).toBe("wedge");
+    expect(rider.charge).toBeNull();
+    expect(rider.cavalryEngagement?.assault).toBeDefined();
+    expect(rider.formation!.shape).toBe("mass");
+    expect(rider.formation!.frontage).toBe(width);
     expect(() => validateFormation(rider.formation, rider.definitionId, rider.troops)).not.toThrow();
     expect(() => decoder.decodeLatest(encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts()))).not.toThrow();
   });

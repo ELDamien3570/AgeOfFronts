@@ -351,8 +351,8 @@
   },
   "building-modern-airstrip": {
     "file": "building-modern-airstrip.png",
-    "source": "Art/Cultures/Russians/Buildings/Modern/Military Airstrip/Icon.png",
-    "hash": "4ca718952eb3ceb7bec771322c5ad27f1ab99bd20743ede59c5b17d012cbc6ae"
+    "source": "Art/Cultures/Russians/Buildings/Modern/Military Airstrip/Icon-Operational-Apron-v1.png",
+    "hash": "9312f16934fcdf78466f5c542b527ad28fc51e62d72958636a6eddd3df75ea52"
   },
   "building-modern-missile-silo": {
     "file": "building-modern-missile-silo.png",
@@ -367,10 +367,10 @@
   "building-modern-gun-nest": {
     "file": "building-modern-gun-nest-firing-n-portrait.png",
     "groundBounds": {
-      "x": 27.0,
+      "x": 27,
       "y": 30.6,
-      "width": 74.0,
-      "height": 67.0
+      "width": 74,
+      "height": 67
     },
     "source": "Modern/Gun Nest/Animations/N/animations.json"
   },
@@ -386,8 +386,8 @@
   },
   "building-earlymodern-airstrip": {
     "file": "building-earlymodern-airstrip.png",
-    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/Icon-WWII-v4.png",
-    "hash": "644718ea8876f78b73b62032c0b7ad7504018994db32ea7c7d2316369887d0a3"
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/Icon-Operational-Apron-v1.png",
+    "hash": "70ba9c92398ac548def9d21d65fe5fafd4c7a0560d9a8f56380b398c4e85771a"
   },
   "building-earlymodern-barracks": {
     "file": "building-earlymodern-barracks.png",
@@ -463,7 +463,7 @@
     "file": "building-earlymodern-anti-aircraft-firing-n-portrait.png",
     "groundBounds": {
       "x": 25.6,
-      "y": 30.0,
+      "y": 30,
       "width": 71.6,
       "height": 62.6
     },
@@ -502,7 +502,7 @@
   "building-modern-anti-aircraft": {
     "file": "building-modern-anti-aircraft-firing-n-portrait.png",
     "groundBounds": {
-      "x": 33.0,
+      "x": 33,
       "y": 40.6,
       "width": 63.8,
       "height": 57.8
@@ -2655,7 +2655,7 @@
         },
         "groundBounds": {
           "x": 25.6,
-          "y": 30.0,
+          "y": 30,
           "width": 71.6,
           "height": 62.6
         }
@@ -2670,7 +2670,7 @@
     "poster": "building-earlymodern-anti-aircraft-firing-n-portrait.png",
     "groundBounds": {
       "x": 25.6,
-      "y": 30.0,
+      "y": 30,
       "width": 71.6,
       "height": 62.6
     }
@@ -2691,7 +2691,7 @@
         },
         "groundBounds": {
           "x": 25.6,
-          "y": 30.0,
+          "y": 30,
           "width": 71.6,
           "height": 62.6
         }
@@ -2706,7 +2706,7 @@
     "poster": "building-earlymodern-anti-aircraft-firing-e-portrait.png",
     "groundBounds": {
       "x": 25.6,
-      "y": 30.0,
+      "y": 30,
       "width": 71.6,
       "height": 62.6
     }
@@ -2727,7 +2727,7 @@
         },
         "groundBounds": {
           "x": 25.6,
-          "y": 30.0,
+          "y": 30,
           "width": 71.6,
           "height": 62.6
         }
@@ -2742,7 +2742,7 @@
     "poster": "building-earlymodern-anti-aircraft-firing-s-portrait.png",
     "groundBounds": {
       "x": 25.6,
-      "y": 30.0,
+      "y": 30,
       "width": 71.6,
       "height": 62.6
     }
@@ -2763,7 +2763,7 @@
         },
         "groundBounds": {
           "x": 25.6,
-          "y": 30.0,
+          "y": 30,
           "width": 71.6,
           "height": 62.6
         }
@@ -2778,7 +2778,7 @@
     "poster": "building-earlymodern-anti-aircraft-firing-w-portrait.png",
     "groundBounds": {
       "x": 25.6,
-      "y": 30.0,
+      "y": 30,
       "width": 71.6,
       "height": 62.6
     }
@@ -2942,7 +2942,7 @@
           "height": 61
         },
         "groundBounds": {
-          "x": 33.0,
+          "x": 33,
           "y": 40.6,
           "width": 63.8,
           "height": 57.8
@@ -2957,7 +2957,7 @@
     },
     "poster": "building-modern-anti-aircraft-firing-n-portrait.png",
     "groundBounds": {
-      "x": 33.0,
+      "x": 33,
       "y": 40.6,
       "width": 63.8,
       "height": 57.8
@@ -2978,7 +2978,7 @@
           "height": 61
         },
         "groundBounds": {
-          "x": 33.0,
+          "x": 33,
           "y": 40.6,
           "width": 63.8,
           "height": 57.8
@@ -2993,7 +2993,7 @@
     },
     "poster": "building-modern-anti-aircraft-firing-e-portrait.png",
     "groundBounds": {
-      "x": 33.0,
+      "x": 33,
       "y": 40.6,
       "width": 63.8,
       "height": 57.8
@@ -3014,7 +3014,7 @@
           "height": 61
         },
         "groundBounds": {
-          "x": 33.0,
+          "x": 33,
           "y": 40.6,
           "width": 63.8,
           "height": 57.8
@@ -3029,7 +3029,7 @@
     },
     "poster": "building-modern-anti-aircraft-firing-s-portrait.png",
     "groundBounds": {
-      "x": 33.0,
+      "x": 33,
       "y": 40.6,
       "width": 63.8,
       "height": 57.8
@@ -3050,7 +3050,7 @@
           "height": 61
         },
         "groundBounds": {
-          "x": 33.0,
+          "x": 33,
           "y": 40.6,
           "width": 63.8,
           "height": 57.8
@@ -3065,7 +3065,7 @@
     },
     "poster": "building-modern-anti-aircraft-firing-w-portrait.png",
     "groundBounds": {
-      "x": 33.0,
+      "x": 33,
       "y": 40.6,
       "width": 63.8,
       "height": 57.8
@@ -3086,10 +3086,10 @@
           "height": 70
         },
         "groundBounds": {
-          "x": 27.0,
+          "x": 27,
           "y": 30.6,
-          "width": 74.0,
-          "height": 67.0
+          "width": 74,
+          "height": 67
         }
       }
     },
@@ -3101,10 +3101,10 @@
     },
     "poster": "building-modern-gun-nest-firing-n-portrait.png",
     "groundBounds": {
-      "x": 27.0,
+      "x": 27,
       "y": 30.6,
-      "width": 74.0,
-      "height": 67.0
+      "width": 74,
+      "height": 67
     }
   },
   "building-modern-gun-nest-firing-e": {
@@ -3122,10 +3122,10 @@
           "height": 58
         },
         "groundBounds": {
-          "x": 27.0,
+          "x": 27,
           "y": 30.6,
-          "width": 74.0,
-          "height": 67.0
+          "width": 74,
+          "height": 67
         }
       }
     },
@@ -3137,10 +3137,10 @@
     },
     "poster": "building-modern-gun-nest-firing-e-portrait.png",
     "groundBounds": {
-      "x": 27.0,
+      "x": 27,
       "y": 30.6,
-      "width": 74.0,
-      "height": 67.0
+      "width": 74,
+      "height": 67
     }
   },
   "building-modern-gun-nest-firing-s": {
@@ -3158,10 +3158,10 @@
           "height": 86
         },
         "groundBounds": {
-          "x": 27.0,
+          "x": 27,
           "y": 30.6,
-          "width": 74.0,
-          "height": 67.0
+          "width": 74,
+          "height": 67
         }
       }
     },
@@ -3173,10 +3173,10 @@
     },
     "poster": "building-modern-gun-nest-firing-s-portrait.png",
     "groundBounds": {
-      "x": 27.0,
+      "x": 27,
       "y": 30.6,
-      "width": 74.0,
-      "height": 67.0
+      "width": 74,
+      "height": 67
     }
   },
   "building-modern-gun-nest-firing-w": {
@@ -3194,10 +3194,10 @@
           "height": 64
         },
         "groundBounds": {
-          "x": 27.0,
+          "x": 27,
           "y": 30.6,
-          "width": 74.0,
-          "height": 67.0
+          "width": 74,
+          "height": 67
         }
       }
     },
@@ -3209,10 +3209,10 @@
     },
     "poster": "building-modern-gun-nest-firing-w-portrait.png",
     "groundBounds": {
-      "x": 27.0,
+      "x": 27,
       "y": 30.6,
-      "width": 74.0,
-      "height": 67.0
+      "width": 74,
+      "height": 67
     }
   },
   "unit-portrait-stoneage-infantry": {
@@ -3424,5 +3424,64 @@
     "file": "unit-portrait-present-day-rangedcavalry.png",
     "source": "Art/Cultures/Russians/Units/Modern/Tunguska/Idle-v3.png",
     "hash": "37084efa05e29168d63a7845a057e9139fafe67d91c5f70db12c01122be2749b"
+  },
+  "earlymodern-carrier": {
+    "poster": "earlymodern-carrier-portrait.png",
+    "facing": "screen-up",
+    "clips": {
+      "idle": {
+        "file": "earlymodern-carrier-idle.png",
+        "frames": 20,
+        "columns": 5,
+        "fps": 20,
+        "loop": true
+      },
+      "sailing": {
+        "file": "earlymodern-carrier-sailing.png",
+        "frames": 20,
+        "columns": 5,
+        "fps": 20,
+        "loop": true
+      }
+    }
+  },
+  "drone": {
+    "poster": "drone-portrait.png",
+    "facing": "screen-up",
+    "clips": {
+      "idle": {
+        "file": "drone-idle.png",
+        "frames": 20,
+        "columns": 5,
+        "fps": 20,
+        "loop": true
+      },
+      "hover": {
+        "file": "drone-hover.png",
+        "frames": 20,
+        "columns": 5,
+        "fps": 20,
+        "loop": true
+      },
+      "flight": {
+        "file": "drone-flight.png",
+        "frames": 20,
+        "columns": 5,
+        "fps": 20,
+        "loop": true
+      }
+    }
+  },
+  "impact-fpv-drone": {
+    "facing": "screen-up",
+    "clips": {
+      "detonate": {
+        "file": "impact-fpv-drone-detonate.png",
+        "frames": 36,
+        "columns": 8,
+        "fps": 24,
+        "loop": false
+      }
+    }
   }
 }

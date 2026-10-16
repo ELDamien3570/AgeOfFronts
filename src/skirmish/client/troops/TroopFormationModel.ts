@@ -39,14 +39,10 @@ export type FormationShape = ManualFormation;
 
 export function resolveFormation(
   selected: ManualFormation,
-  mounted: boolean,
-  charging: boolean,
+  _mounted: boolean,
+  _charging: boolean,
 ): FormationShape {
-  return charging
-    ? "wedge"
-    : mounted && selected !== "mass"
-      ? "line"
-      : selected;
+  return selected;
 }
 
 export function representativeCount(

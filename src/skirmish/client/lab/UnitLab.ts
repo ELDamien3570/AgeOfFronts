@@ -1,7 +1,12 @@
-import {TICKS_PER_SECOND} from '../../Protocol';
 import { CONTENT_HASH } from "../../content/Catalog";
 import { TECHNOLOGY } from "../../content/Technology";
-import { AGES, AGE_NAMES, type UnitDefinition } from "../../domain/Definitions";
+import {
+  AGES,
+  AGE_NAMES,
+  type AttackProfile,
+  type TargetTag,
+  type UnitDefinition,
+} from "../../domain/Definitions";
 import {
   FORMATION_SHAPES,
   createFormation,
@@ -9,9 +14,23 @@ import {
   formationSlots,
   type FormationShape,
 } from "../../domain/FormationGeometry";
-import { FIXED } from "../../Protocol";
+import { FIXED, TICKS_PER_SECOND } from "../../Protocol";
 import { EraArtwork, eraPortrait } from "../EraArtwork";
 import { RUSSIAN_TROOP_ACTORS } from "../troops/RussianTroopCatalogue";
+import {
+  EXPERIMENT_ID,
+  EXPERIMENT_LABEL,
+  EXPERIMENT_STORAGE_KEY,
+  PROFILE_STORAGE_KEY,
+  activeBalanceProfile,
+  editExperiment,
+  experimentDefinitions,
+  newExperiment,
+  numericStats,
+  readExperiment,
+  saveExperiment,
+  type BalanceProfile,
+} from "./BalanceExperiment";
 import {
   LAB_ENTITIES,
   draftRecruitmentCost,
@@ -21,11 +40,24 @@ import {
   type DpsTarget,
   type UnitDraft,
 } from "./UnitLabModel";
+import { installUnitLabSheet } from "./UnitLabSheet";
 
 const el = <T extends HTMLElement>(id: string) =>
   document.getElementById(id) as T;
 const select = (id: string) => el<HTMLSelectElement>(id);
-const storageKey = "ageoffronts-unit-lab-v1";
+const legacyStorageKey = "ageoffronts-unit-lab-v1";
+const BONUS_TARGET_LABELS: Record<TargetTag, string> = {
+  infantry: "Infantry",
+  ranged: "Ranged infantry",
+  mounted: "Cavalry",
+  armoured: "Armoured (secondary tag)",
+  vehicle: "Vehicles",
+  siege: "Siege",
+  ship: "Ships",
+  aircraft: "Aircraft",
+  structure: "Buildings",
+  wall: "Walls",
+};
 export function installUnitLab(
   load: (id: string) => Promise<void>,
   actor: (
@@ -40,6 +72,15 @@ export function installUnitLab(
   ) => void,
 ) {
   const drafts = new Map<string, UnitDraft>();
+  let profile = activeBalanceProfile(localStorage);
+  let experiment = newExperiment();
+  let sharedDefinitions = experimentDefinitions(experiment);
+  const observedNumeric = new Map<string, string>();
+  let staleCache = false;
+  const primaryStorageKey = () =>
+    profile === "live" ? legacyStorageKey : "ageoffronts-unit-lab-premodern-v1";
+  const storageKey = () =>
+    primaryStorageKey() + (staleCache ? `-${CONTENT_HASH}` : "");
   let current: UnitDraft;
   let revision = 0;
   let loading = false;
@@ -80,47 +121,90 @@ export function installUnitLab(
     rangedArmour: 0,
     healthPercent: 100,
     accuracy: 100,
+    distance: 6,
     cover: 0,
     soldiers: true,
   };
   const status = (message: string) => {
     el("catalog-status").textContent = message;
   };
-  try {
-    const saved = JSON.parse(localStorage.getItem(storageKey) ?? "null");
-    if (saved?.contentHash === CONTENT_HASH && Array.isArray(saved.drafts))
-      for (const row of saved.drafts) {
-        const entity = LAB_ENTITIES.find((e) => e.key === row.key);
-        if (!entity) continue;
-        validateDraft(row.definition);
-        if (
-          !Array.isArray(row.shapes) ||
-          row.shapes.some(
-            (s: string) => !FORMATION_SHAPES.includes(s as FormationShape),
-          )
-        )
-          continue;
-        const draft = makeDraft(entity);
-        draft.definition = row.definition;
-        draft.shapes = row.shapes;
-        draft.defaultShape = row.defaultShape;
-        drafts.set(entity.key, draft);
+  function loadDrafts() {
+    drafts.clear();
+    observedNumeric.clear();
+    staleCache = false;
+    select("catalog-profile").value = profile;
+    el("catalog-scope").textContent =
+      profile === "live"
+        ? "Local content drafts. Your existing drafts are separate from the approved experiment. Export them for review and integration."
+        : `${EXPERIMENT_LABEL}: land numeric edits are shared with the Balance Preview. Formation access and other entity types remain inspector previews. Existing drafts are kept separately.`;
+    if (profile !== "live") {
+      try {
+        experiment = readExperiment(localStorage);
+        sharedDefinitions = experimentDefinitions(experiment);
+      } catch (error) {
+        status(
+          `Shared experiment could not be loaded; saved data was kept. ${String(error)}`,
+        );
       }
-    else if (saved)
+    }
+    try {
+      let saved = JSON.parse(localStorage.getItem(storageKey()) ?? "null");
+      if (saved && saved.contentHash !== CONTENT_HASH) {
+        staleCache = true;
+        saved = JSON.parse(localStorage.getItem(storageKey()) ?? "null");
+        status(
+          "Older drafts were kept in their original storage. This game version uses a separate draft cache.",
+        );
+      }
+      if (saved?.contentHash === CONTENT_HASH && Array.isArray(saved.drafts))
+        for (const row of saved.drafts) {
+          const entity = LAB_ENTITIES.find((e) => e.key === row.key);
+          if (!entity) continue;
+          validateDraft(row.definition);
+          if (
+            !Array.isArray(row.shapes) ||
+            row.shapes.some(
+              (s: string) => !FORMATION_SHAPES.includes(s as FormationShape),
+            )
+          )
+            continue;
+          const draft = makeDraft(entity);
+          draft.definition =
+            profile !== "live" && entity.category === "unit"
+              ? (structuredClone(
+                  sharedDefinitions.get(entity.id)!,
+                ) as unknown as Record<string, unknown>)
+              : row.definition;
+          draft.shapes = row.shapes;
+          draft.defaultShape = row.defaultShape;
+          drafts.set(entity.key, draft);
+          if (profile !== "live" && entity.category === "unit")
+            observedNumeric.set(
+              entity.id,
+              JSON.stringify(
+                numericStats(draft.definition as unknown as UnitDefinition),
+              ),
+            );
+        }
+      else if (saved)
+        status(
+          "Saved drafts use older game content. They were not loaded; export or reset them before changing versions.",
+        );
+    } catch {
+      staleCache = true;
       status(
-        "Saved drafts use older game content. They were not loaded; export or reset them before changing versions.",
+        "Saved drafts could not be loaded and were kept. New edits use a separate cache.",
       );
-  } catch {
-    status(
-      "Saved drafts could not be loaded. The catalogue is using current definitions.",
-    );
+    }
   }
+  loadDrafts();
   function payload() {
     return {
       schemaVersion: 1,
       previewOnly: true,
       contentHash: CONTENT_HASH,
       target: { ...target },
+      ...(profile !== "live" ? { experiment } : {}),
       drafts: [...drafts.values()].map((d) => ({
         key: d.entity.key,
         category: d.entity.category,
@@ -132,7 +216,34 @@ export function installUnitLab(
   }
   function persist() {
     try {
-      localStorage.setItem(storageKey, JSON.stringify(payload()));
+      if (profile !== "live") {
+        const changed = [...drafts.values()].filter(
+          (draft) =>
+            draft.entity.category === "unit" &&
+            JSON.stringify(
+              numericStats(draft.definition as unknown as UnitDefinition),
+            ) !== observedNumeric.get(draft.entity.id),
+        );
+        if (changed.length) {
+          let next = readExperiment(localStorage);
+          for (const draft of changed)
+            next = editExperiment(
+              next,
+              draft.definition as unknown as UnitDefinition,
+            );
+          saveExperiment(localStorage, next);
+          experiment = next;
+          sharedDefinitions = experimentDefinitions(next);
+          for (const draft of changed)
+            observedNumeric.set(
+              draft.entity.id,
+              JSON.stringify(
+                numericStats(draft.definition as unknown as UnitDefinition),
+              ),
+            );
+        }
+      }
+      localStorage.setItem(storageKey(), JSON.stringify(payload()));
     } catch {
       status("Browser storage unavailable; export your drafts to keep them.");
     }
@@ -141,6 +252,17 @@ export function installUnitLab(
     let d = drafts.get(key);
     if (!d) {
       d = makeDraft(LAB_ENTITIES.find((e) => e.key === key)!);
+      if (profile !== "live" && d.entity.category === "unit") {
+        d.definition = structuredClone(
+          sharedDefinitions.get(d.entity.id)!,
+        ) as unknown as Record<string, unknown>;
+        observedNumeric.set(
+          d.entity.id,
+          JSON.stringify(
+            numericStats(d.definition as unknown as UnitDefinition),
+          ),
+        );
+      }
       drafts.set(key, d);
     }
     return d;
@@ -229,7 +351,7 @@ export function installUnitLab(
       el("catalog-cards").append(card);
     }
     el("catalog-count").textContent =
-      `${entities.length} entries · click a card to expand and edit · card eDPS uses the base recipe and its default formation`;
+      `${entities.length} entries · eDPS uses the base recipe and its default formation · cards and spreadsheet edit the same drafts`;
     refreshCards();
     if (entities.length) choose();
     else {
@@ -317,7 +439,39 @@ export function installUnitLab(
       action.textContent = "Expand to edit ▾";
       summary.append(action);
     }
+    renderSheet();
   }
+  const sheet = installUnitLabSheet({
+    target,
+    save: persist,
+    changed: () => {
+      if (current) update();
+    },
+    status,
+    open: (key) => {
+      select("catalog-view").value = "cards";
+      setView();
+      const card = cards.get(key);
+      if (card) {
+        card.open = true;
+        card.scrollIntoView({ block: "start" });
+      }
+    },
+  });
+  function renderSheet() {
+    if (select("catalog-view").value === "sheet")
+      sheet.render([...cards.keys()].map(getDraft));
+  }
+  function setView() {
+    const spreadsheet = select("catalog-view").value === "sheet";
+    el("catalog-cards").hidden = spreadsheet;
+    el("catalog-sheet").hidden = !spreadsheet;
+    el<HTMLButtonElement>("catalog-reset").disabled = spreadsheet;
+    editor.hidden = spreadsheet || !expandedKey;
+    renderSheet();
+  }
+  select("catalog-view").addEventListener("change", setView);
+  select("sheet-columns").addEventListener("change", renderSheet);
   function numeric(
     parent: HTMLElement,
     labelText: string,
@@ -406,6 +560,8 @@ export function installUnitLab(
       const unit = current.definition as unknown as UnitDefinition;
       const leaf = path.split(".").pop();
       if (leaf === "reloadMs") return "Reload duration";
+      if (path.endsWith("accuracy.near")) return "Accuracy at contact (%)";
+      if (path.endsWith("accuracy.far")) return "Accuracy at maximum range (%)";
       if (leaf === "shotsPerReload") return "Shots per reload";
       if (leaf === "movingReloadPercent")
         return path.startsWith("meleeAttack.")
@@ -458,6 +614,52 @@ export function installUnitLab(
         )
           continue;
         const path = prefix ? `${prefix}.${key}` : key;
+        if (
+          key === "bonuses" &&
+          (object.channel === "melee" || object.channel === "ranged")
+        ) {
+          const profile = object as unknown as AttackProfile;
+          const fieldset = document.createElement("fieldset");
+          fieldset.className = "editor-bonuses";
+          const legend = document.createElement("legend");
+          legend.textContent = "Damage bonuses by target class";
+          fieldset.append(legend);
+          const help = document.createElement("p");
+          help.textContent =
+            "Flat bonus damage, not a percentage. A bonus does not grant permission to attack that class. Soldier weapons use one primary class bonus; secondary armoured tags do not add another bonus.";
+          fieldset.append(help);
+          const grid = document.createElement("div");
+          grid.className = "editor-fields";
+          fieldset.append(grid);
+          for (const [tag, label] of Object.entries(BONUS_TARGET_LABELS) as [
+            TargetTag,
+            string,
+          ][]) {
+            const input = numeric(
+              grid,
+              `Bonus vs ${label}`,
+              profile.bonuses[tag] ?? 0,
+              (n, input) => {
+                const previous = profile.bonuses[tag];
+                profile.bonuses[tag] = n;
+                try {
+                  validateDraft(current.definition);
+                  persist();
+                  update();
+                } catch (error) {
+                  if (previous === undefined) delete profile.bonuses[tag];
+                  else profile.bonuses[tag] = previous;
+                  input.setCustomValidity(String(error));
+                  input.reportValidity();
+                  status(String(error));
+                }
+              },
+            );
+            input.dataset.statPath = `${path}.${tag}`;
+          }
+          group(groupFor(path)).fields.append(fieldset);
+          continue;
+        }
         const hasRecipe = !!(current.definition as unknown as UnitDefinition)
           .formationRecipe;
         if (
@@ -511,7 +713,8 @@ export function installUnitLab(
                 : key === "reloadMs"
                   ? 1000
                   : 1;
-          const factor = key === "speed" ? TICKS_PER_SECOND / conversion : 1 / conversion;
+          const factor =
+            key === "speed" ? TICKS_PER_SECOND / conversion : 1 / conversion;
           const unitSuffix =
             conversion === FIXED
               ? key === "speed"
@@ -861,6 +1064,7 @@ export function installUnitLab(
     ["meleeArmour", "Melee armour", 0],
     ["rangedArmour", "Ranged armour", 0],
     ["accuracy", "Estimated accuracy (%)", 100],
+    ["distance", "Target distance (tiles)", 6],
     ["cover", "Cover (basis points)", 0],
     ["healthPercent", "Target health modifier (%)", 100],
   ] as const)
@@ -897,10 +1101,26 @@ export function installUnitLab(
   for (const id of ["catalog-age", "catalog-type", "catalog-sort"])
     select(id).addEventListener("change", options);
   el("catalog-reset").addEventListener("click", () => {
+    if (profile !== "live" && current.entity.category === "unit") {
+      try {
+        const next = readExperiment(localStorage);
+        delete next.changes[current.entity.id];
+        saveExperiment(localStorage, next);
+        experiment = next;
+        sharedDefinitions = experimentDefinitions(next);
+      } catch (error) {
+        status(String(error));
+        return;
+      }
+    }
     drafts.delete(current.entity.key);
     persist();
     void choose();
-    status("Reset this draft to current game content.");
+    status(
+      profile === "live"
+        ? "Reset this draft to current game content."
+        : "Reset this draft to the approved experiment.",
+    );
   });
   el("catalog-apply").addEventListener("click", () => {
     try {
@@ -936,7 +1156,10 @@ export function installUnitLab(
     );
     const a = document.createElement("a");
     a.href = url;
-    a.download = "unit-lab-drafts.json";
+    a.download =
+      profile === "live"
+        ? "unit-lab-drafts.json"
+        : "unit-lab-premodern-drafts.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     status(
@@ -959,6 +1182,45 @@ export function installUnitLab(
       renderPreview();
     });
   window.addEventListener("resize", renderPreview);
+  function switchProfile(next: BalanceProfile, publish = true) {
+    profile = next;
+    if (publish)
+      try {
+        localStorage.setItem(PROFILE_STORAGE_KEY, profile);
+      } catch {
+        /* Session-only selection. */
+      }
+    loadDrafts();
+    options();
+    status(
+      profile === "live"
+        ? "Live stats / existing local drafts."
+        : `${EXPERIMENT_LABEL}. Land numeric edits also update the Balance Preview; older drafts remain separate.`,
+    );
+  }
+  select("catalog-profile").addEventListener("change", () =>
+    switchProfile(select("catalog-profile").value as BalanceProfile),
+  );
+  window.addEventListener("storage", (event) => {
+    if (event.key === PROFILE_STORAGE_KEY)
+      switchProfile(activeBalanceProfile(localStorage), false);
+    else if (
+      event.key === EXPERIMENT_STORAGE_KEY &&
+      profile === EXPERIMENT_ID
+    ) {
+      try {
+        experiment = readExperiment(localStorage);
+        sharedDefinitions = experimentDefinitions(experiment);
+        for (const [key, draft] of drafts)
+          if (draft.entity.category === "unit") drafts.delete(key);
+        observedNumeric.clear();
+        options();
+        status("Shared experiment updated from the Balance Preview.");
+      } catch (error) {
+        status(`Shared update rejected: ${String(error)}`);
+      }
+    }
+  });
   options();
   // Lazy era artwork loads asynchronously; only repaint this isolated preview
   // while the stats tab is visible. No geometry is changed in the live catalogue.

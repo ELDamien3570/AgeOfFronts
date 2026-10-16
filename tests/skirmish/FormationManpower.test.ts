@@ -76,7 +76,7 @@ describe("literal formation manpower conservation", () => {
     f.game.owners.fill(1);
     for (let i = 0; i < remaining; i++) f.expansion.beforeStep();
     expect(f.game.squad(f.id)!.definitionId).toBe(target.id);
-    expect(f.player.reserves).toBe(reserves + 28);
+    expect(f.player.reserves).toBe(reserves + f.unit.formationRecipe!.capacity - target.formationRecipe!.capacity);
   });
   it("keeps an injured single gunner alive until its health is exhausted", () => {
     const f = fixture("earlymodern-archer");
@@ -108,13 +108,13 @@ describe("literal formation manpower conservation", () => {
         definitionId: f.unit.id,
       }),
     ).toBeNull();
-    expect(f.player.reserves).toBe(reserves - 12);
+    expect(f.player.reserves).toBe(reserves - terms.added);
     for (let i = 0; i < terms.ticks; i++) f.expansion.beforeStep();
     const enlarged = f.game.squad(f.id)!;
-    expect(enlarged.troops).toBe(40);
-    expect(enlarged.manpower!.capacity).toBe(48);
+    expect(enlarged.troops).toBe(28 + terms.added);
+    expect(enlarged.manpower!.capacity).toBe(f.unit.formationRecipe!.enlargedCapacity);
     expect(enlarged.manpower!.wounds).toBe(25000);
-    expect(remainingHealth(enlarged) - before).toBe(12 * m.hp);
+    expect(remainingHealth(enlarged) - before).toBe(terms.added * m.hp);
   });
   it("refunds exact escrow on cancellation without adding soldiers or health", () => {
     const f = fixture(),

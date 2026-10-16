@@ -104,7 +104,7 @@ export class SkirmishViewModel {
       if (squad.embarkedOn === null && this.selection.selected.has(squad.id)) forces.push(squad);
     }
     for (const ship of this.state.ships) if (ship.playerId === playerId) {
-      if (ship.kind === 'warship') warshipCount++;
+      warshipCount++;
       if (this.selection.selectedShips.has(ship.id)) forces.push(ship);
     }
     const workloads = new Map<number, number>();
@@ -112,7 +112,7 @@ export class SkirmishViewModel {
       workloads.set(job.buildingId, (workloads.get(job.buildingId) ?? 0) + job.remainingTicks);
       if (job.playerId === playerId) {
         if (job.category === 'land') queuedLand++;
-        else if (job.category === 'ship' && job.kind === 'warship') queuedWarships++;
+        else if (job.category === 'ship') queuedWarships++;
       }
     }
     const origin = forces.length ? {
@@ -127,7 +127,7 @@ export class SkirmishViewModel {
   }
 
   private recruitmentFor(kind: SquadType | ShipType, facts: RecruitmentFacts) {
-    const naval = kind === "warship";
+    const naval = kind === "warship" || kind === "carrier";
     if (this.autoTier && this.state.expansion) {
       const candidates = (
         naval
@@ -178,7 +178,7 @@ export class SkirmishViewModel {
     facts: RecruitmentFacts,
     selectedOnly = false,
   ) {
-    const naval = kind === "warship";
+    const naval = kind === "warship" || kind === "carrier";
     const landDefinition =
       this.state.expansion && !naval ? UNIT.get(definitionId) : undefined;
     const vesselDefinition =

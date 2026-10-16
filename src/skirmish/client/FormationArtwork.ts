@@ -5,7 +5,7 @@ import rangedSymbol from "../../../Art/Formation Icons/svg/ranged.svg?raw";
 import cavalrySymbol from "../../../Art/Formation Icons/svg/cavalry.svg?raw";
 import siegeSymbol from "../../../Art/Formation Icons/svg/siege-catapult.svg?raw";
 
-/** "transport" draws a squad afloat; fleet vessels are warships. */
+/** "transport" draws a squad afloat; carrier silhouettes share the strategic fleet icon. */
 export type FormationType = SquadType | ShipType | "transport" | "siege";
 
 export function squadFormationType(squad: {
@@ -19,6 +19,7 @@ export function squadFormationType(squad: {
 const FRAME_SIZE = 128;
 const SYMBOLS = { infantry: meleeSymbol, archer: rangedSymbol, cavalry: cavalrySymbol, siege: siegeSymbol };
 const FILES: Record<FormationType, string> = {
+  carrier: new URL("../../../Art/Formation Icons/png/warship.png",import.meta.url).href,
   infantry: new URL(
     "../../../Art/Formation Icons/png/melee.png",
     import.meta.url,
@@ -163,7 +164,7 @@ export class FormationArtwork {
       this.tinted.set(key, canvas);
     }
     const bounds =
-      kind === "transport" || kind === "warship"
+      kind === "transport" || kind === "warship" || kind === "carrier"
         ? SHIP_BOUNDS
         : kind === "siege"
           ? SIEGE_BOUNDS

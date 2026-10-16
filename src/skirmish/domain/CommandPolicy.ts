@@ -25,8 +25,15 @@ export function commandRejection(command: Command): string | null {
       (command as { armyId: number }).armyId <= 0)
   )
     return "Invalid army identity";
+  if(command.type==='sortie') {
+    if(command.mission!==undefined && !['bombing','patrol','atomic','drone'].includes(command.mission))return 'Invalid air mission';
+    for(const id of [command.targetBuildingId,command.targetUnitId]) if(id!==undefined && (!Number.isSafeInteger(id)||id<=0))return 'Invalid drone target';
+    if(command.targetBuildingId!==undefined && command.targetUnitId!==undefined)return 'Choose one drone target';
+  }
   if(command.type==='occupy'&&command.frontageTiles!==undefined&&(!Array.isArray(command.frontageTiles)||!command.frontageTiles.length||command.frontageTiles.length>64||command.frontageTiles.some(t=>!Number.isSafeInteger(t)||t<0)||new Set(command.frontageTiles).size!==command.frontageTiles.length))return 'Invalid trench frontage';
   if(command.type==='stance'&&! ['default','skirmish'].includes(command.stance))return 'Invalid squad stance';
+  if (command.type === "transfer-aircraft" && (!Array.isArray(command.aircraftIds) ||
+    !Number.isSafeInteger(command.buildingId) || command.buildingId <= 0)) return "Select planes and a destination airfield";
   if(command.type==='army-posture'&&!['line','defend','skirmish'].includes(command.posture))return 'Invalid army posture';
   if(command.type==='naval-priority'&&!['transports','warships'].includes(command.priority))return 'Invalid naval priority';
   if (command.type === "upgrade-building" && (!Array.isArray(command.buildingIds) || command.buildingIds.length > 200))
@@ -96,6 +103,7 @@ export function commandRejection(command: Command): string | null {
     )
       return "Invalid order";
     if ((order.type==="hold" || order.type==="move") && order.facing !== undefined && (!Number.isFinite(order.facing) || Math.abs(order.facing)>Math.PI+1e-6)) return "Invalid formation facing";
+    if(order.type==='attack'&&order.cavalryMode!==undefined&&order.cavalryMode!=='ranks')return "Invalid cavalry attack mode";
     if (
       order.type === "move" &&
       (!Number.isSafeInteger(order.tile) || order.tile < 0)

@@ -77,6 +77,52 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
 }
 
 describe("bounded civilian trade", () => {
+  it("publishes and continues after defeat neutralizes trade sites at the end of a real tick",()=>{
+    const {game,trade,sources,step}=fleet(1,1,false,false,true);
+    for(const building of game.buildings)game.owners[building.tile]=building.playerId;
+    game.restore(game.checkpoint());
+    step(secondsToTicks(1));
+    for(const squad of [...game.squads])if(squad.playerId===1)game.removeSquad(squad.id);
+    for(const building of [...game.buildings])if(building.playerId===1&&building.type==="city")game.removeBuilding(building.id);
+    game.step();
+    expect(game.players.find(p=>p.id===1)!.eliminated).toBe(true);
+    for(const source of sources)expect(game.building(source.id)!.playerId).toBe(0);
+    const encoder=new SnapshotEncoder(),decoder=new SnapshotDecoder();
+    for(let i=0;i<secondsToTicks(2);i++){
+      const before=trade.checkpoint();
+      const snapshot=decoder.decode(encoder.encode(game.replicationSource(),game.tileChanges,game.replicationFacts()));
+      expect(snapshot.expansion!.tradeSites!.every(site=>site.playerId!==0)).toBe(true);
+      expect(trade.checkpoint()).toEqual(before);
+      game.step();
+    }
+  });
+
+  it.each(["factory", "port"] as const)("publishes current ownership after a cached %s becomes neutral", type => {
+    const {game,trade,sources,step}=fleet(1,1);
+    step(secondsToTicks(1));
+    const source=sources.find(b=>b.type===type)!;
+    expect(trade.siteSnapshot().some(row=>row.playerId===1&&row.tile===source.tile)).toBe(true);
+    game.updateBuilding(source.id,{playerId:0});
+    const before=trade.checkpoint();
+    const sites=trade.siteSnapshot();
+    expect(sites.some(row=>row.tile===source.tile&&row.naval===(type==="port"))).toBe(false);
+    const snapshot=new SnapshotDecoder().decode(new SnapshotEncoder().encode(game.replicationSource(),game.tileChanges,game.replicationFacts()));
+    expect(snapshot.expansion!.tradeSites).toEqual(sites);
+    expect(trade.checkpoint()).toEqual(before);
+  });
+  it("projects captured stacks without synchronizing authoritative trade during publication",()=>{
+    const {game,trade,sources,step}=fleet(1,0);
+    const source=sources[0];
+    const second=game.addBuilding({...source,id:game.allocateId()});
+    step(secondsToTicks(1));
+    game.updateBuilding(source.id,{playerId:2});
+    const before=trade.checkpoint();
+    const sites=trade.siteSnapshot().filter(row=>row.tile===source.tile);
+    expect(sites.map(row=>({owner:row.playerId,maxCargo:row.maxCargo})).sort((a,b)=>a.owner-b.owner)).toEqual([{owner:1,maxCargo:1000},{owner:2,maxCargo:1000}]);
+    expect(trade.checkpoint()).toEqual(before);
+    expect(game.building(second.id)!.playerId).toBe(1);
+  });
+
   it("publishes every owned detail mutation through movement, planning, loading, delivery and restore", () => {
     const { trade, step } = fleet(1, 1);
     const owned = new TraderEncoder(), reference = new TraderEncoder();

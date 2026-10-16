@@ -15,9 +15,11 @@ OUT = ROOT / "Art/Runtime/Russians"
 SIZE = 128
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--portrait-only", action="append", default=[], help="Update only troop portraits from this source folder")
+parser.add_argument("--building-only", action="append", default=[], help="Update only a building key, e.g. modern-airstrip")
 args = parser.parse_args()
 portrait_selection = set(args.portrait_only)
-manifest = json.loads((OUT / "manifest.json").read_text(encoding="utf-8")) if portrait_selection else {}
+building_selection = set(args.building_only)
+manifest = json.loads((OUT / "manifest.json").read_text(encoding="utf-8")) if portrait_selection or building_selection else {}
 OUT.mkdir(parents=True, exist_ok=True)
 
 
@@ -83,6 +85,19 @@ def animated(key, path, aliases=None):
     if 'poster' in locals():
         manifest[key]["poster"] = poster
 
+
+if building_selection:
+    if portrait_selection:
+        parser.error("Choose either --building-only or --portrait-only")
+    assets = json.loads((SOURCE / "Buildings/manifest.json").read_text(encoding="utf-8"))["assets"]
+    selected = {f"{a['age'].lower()}-{a['id']}": a for a in assets}
+    if building_selection - selected.keys():
+        parser.error(f"Unknown building keys: {sorted(building_selection - selected.keys())}")
+    for key in sorted(building_selection):
+        static(f"building-{key}", SOURCE / "Buildings" / selected[key]["file"])
+    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2)+"\n", encoding="utf-8")
+    print(f"Prepared {len(building_selection)} building assets")
+    raise SystemExit(0)
 
 if not portrait_selection:
     for asset in json.loads((SOURCE / "Buildings/manifest.json").read_text(encoding="utf-8"))["assets"]:

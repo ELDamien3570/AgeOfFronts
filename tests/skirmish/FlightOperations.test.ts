@@ -175,7 +175,7 @@ describe("flight-time air operations", () => {
         ?.blastRadius,
     ).toBe(12 * FIXED);
   });
-  it("keeps drones immune to fighter and naval defence and consumes them on impact", () => {
+  it("launches interceptable swarm members and allows fighter and naval defence to engage them", () => {
     const { game, e, planes } = fixture(),
       drone = planes("drone"),
       fighter = planes("fighter", 2);
@@ -208,18 +208,14 @@ describe("flight-time air operations", () => {
     });
     game.tick++;
     e.afterMovement();
-    expect(drone.health).toBe(1000);
-    expect(ship.airDefenseTick).toBeUndefined();
-    for (let i = 0; i < 6; i++) {
+    expect(drone.health).toBeLessThanOrEqual(0);
+    expect(game.ship(ship.id)?.airDefenseTick).toBeGreaterThan(game.tick);
+    expect(e.aircraft.filter(a=>a.drone?.swarmId===drone.id).length).toBeLessThan(20);
+    for (let i = 0; i < 12; i++) {
       game.tick++;
       e.afterMovement();
     }
     expect(e.aircraft.some((a) => a.id === drone.id)).toBe(false);
-    expect(
-      e.battle.projectiles.some(
-        (p) => p.sourceId === drone.id && p.damage === 10000,
-      ),
-    ).toBe(true);
   });
   it("fires naval rockets at hostile flying bombers and persists mission/AA state through snapshots", () => {
     const { game, e, planes } = fixture(),

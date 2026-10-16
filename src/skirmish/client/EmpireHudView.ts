@@ -80,15 +80,19 @@ export class EmpireHudView {
     this.actions.target((x,y,gesture) => {
       if (!this.vm) return;
       const command = sortieCommand(this.vm.state, this.playerId, x, y, shift || gesture?.shift,
-        this.vm.selection.selectedAircraft,mission);
+        this.vm.selection.selectedAircraft,mission,this.selectedAirBases(),gesture);
       if (command) this.actions.command(command);
       else this.actions.notify("No ready aircraft of this mission type can reach that target");
     }, `${mission === "patrol" ? "Dispatch fighters" : mission === "atomic" ? "A-Bomb Run" : mission === "drone" ? "Drone Strike" : "Bombing Run"} · Click a target · Shift launches up to 5 · Escape cancels`, (x,y,targetShift=false)=>{
       if(!this.vm)return "No ready aircraft";
-      const candidates=airMissionCandidates(this.vm.state,this.playerId,x,y,this.vm.selection.selectedAircraft ?? new Set(),mission);
+      const candidates=airMissionCandidates(this.vm.state,this.playerId,x,y,this.vm.selection.selectedAircraft ?? new Set(),mission,this.selectedAirBases());
       const values=candidates.slice(0,shift||targetShift?5:1).map(a=>flightPercent(a,x,y));
       return values.length ? `Travel: ${Math.ceil(Math.max(...values))}% flight time` : "No ready aircraft";
     });
+  }
+  private selectedAirBases():ReadonlySet<number> {
+    const vm=this.vm;if(!vm)return new Set();
+    return new Set([...(vm.selection.selectedBuildings??[]),...vm.state.ships.filter(s=>s.kind==='carrier'&&vm.selection.selectedShips.has(s.id)).map(s=>s.id)]);
   }
   constructor(
     private root: HTMLElement,
@@ -370,7 +374,8 @@ export class EmpireHudView {
         );
       })
       .join("");
-    const ready = vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="bomber"&&a.state==="ready");
+    const readyFor=(mission:AirMission)=>airMissionCandidates(vm.state,this.playerId,0,0,vm.selection.selectedAircraft??new Set(),mission,this.selectedAirBases()).length>0;
+    const ready=readyFor("bombing");
     const fighter = vm.aircraft("fighter");
     const bomber = vm.aircraft("bomber");
     const drone = vm.aircraft("drone");
@@ -387,7 +392,7 @@ export class EmpireHudView {
       `${FLIGHT_RULES.fighter.gold.toLocaleString()} gold · ${FLIGHT_RULES.fighter.preModernSeconds}s flight time (${FLIGHT_RULES.fighter.modernSeconds}s Modern) · 6 per launch site / 32 per faction`,
       aircraftArtworkId("fighter", fighter.building?.age ?? vm.progression.age),
     );
-    const btnDispatch = this.button("Dispatch","dispatch","",vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="fighter"&&a.state==="ready")?null:"No ready fighters","Patrol and engage hostile aircraft. Shortcut: I.");
+    const btnDispatch = this.button("Dispatch","dispatch","",readyFor("patrol")?null:"No ready fighters","Patrol and engage hostile aircraft. Shortcut: I.");
     const btnBomber = this.button(
       "Bomber",
       "aircraft",
@@ -404,14 +409,14 @@ export class EmpireHudView {
       "One ready bomber from the nearest airfield. Shift-click Sortie or its target for up to five. Shortcut: P.",
     );
     const btnDrone = this.button(
-      "Drone",
+      "Drone swarm",
       "aircraft",
       "drone",
       drone.reason,
       `${FLIGHT_RULES.drone.gold.toLocaleString()} gold · ${FLIGHT_RULES.drone.preModernSeconds}s flight time (${FLIGHT_RULES.drone.modernSeconds}s Modern) · 6 per launch site / 32 per faction`,
       aircraftArtworkId("drone", drone.building?.age ?? vm.progression.age),
     );
-    const btnDroneStrike = this.button("Drone Strike","drone-strike","",vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="drone"&&a.state==="ready")?null:"No ready drones","Single-use drone strike; bypasses defence. Shortcut: U.");
+    const btnDroneStrike = this.button("Drone Strike","drone-strike","",readyFor("drone")?null:"No ready drones","Launch 20 expendable FPV drones per swarm. Vulnerable to anti-air. Right-click a building or unit while targeting to track it. Shortcut: U.");
     const btnIcbm = this.button(
       "ICBM",
       "launch",
@@ -444,7 +449,9 @@ export class EmpireHudView {
     // Col 4: btnDrone          | btnDroneStrike
     // Col 5: btnIcbm           | btnMirv
     // Col 6: btnHbomb          | (empty)
-    const aviation = btnAtomic + btnFighter + btnDispatch + btnBomber + btnBombingRun + btnDrone + btnDroneStrike + btnIcbm + btnMirv + btnHbomb;
+    const carrierQuote=new SkirmishViewModel(vm.state,vm.selection,{carrier:"earlymodern-carrier"}).recruitment("carrier");
+    const carrierButton=this.button("Aircraft carrier","carrier","",carrierQuote.reason||null,"Six shared fighter/bomber berths. Recruit aboard or transfer planes by right-click. 12,000 gold.","earlymodern-carrier");
+    const aviation = carrierButton + btnAtomic + btnFighter + btnDispatch + btnBomber + btnBombingRun + btnDrone + btnDroneStrike + btnIcbm + btnMirv + btnHbomb;
     const values = {
       economy: buildings("economy"),
       production: buildings("production"),
@@ -524,6 +531,11 @@ export class EmpireHudView {
           autoRecruit: q.building.id !== vm.selection.selectedBuilding,
           definitionId: value!,
         });
+    }
+    if(action==='carrier') {
+      const quote=new SkirmishViewModel(vm.state,vm.selection,{carrier:'earlymodern-carrier'}).recruitment('carrier');
+      if(quote.building && !quote.reason)this.actions.command({type:'recruit-ship',playerId:this.playerId,buildingId:quote.building.id,shipType:'carrier',definitionId:quote.definitionId,buildingIds:quote.buildingIds});
+      return;
     }
     if (action === "aircraft") {
       const kind = value as "fighter" | "bomber" | "drone",

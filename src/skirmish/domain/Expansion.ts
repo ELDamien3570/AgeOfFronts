@@ -1,12 +1,15 @@
 import { secondsToTicks } from '../Protocol';
 import { TrenchOccupancy } from "./TrenchOccupancy";
+import { airfieldAircraftCount } from "./AirfieldCapacity";
 import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import { SkirmishStance } from "./SkirmishStance";
 import { tacticalTerrain, type TacticalTerrain } from "./TacticalTerrain";
 import { TacticalFeatureIndex } from "./TacticalFeatureIndex";
 import { effectiveRange, maxEffectiveRange, elevationRangeAt } from "./ElevationAdvantage";
 import { EngagementManager } from './EngagementManager';
-import { createManpower, recipeCapacity } from './Manpower';
+import { createManpower, recipeCapacity, scaledRecipeCost, maximumHealth, HEALTH_SCALE } from './Manpower';
+import { airBases, baseAccepts, type AirBase } from './AirBases';
+import { DRONE_SWARM, aircraftSlots, droneOffset, droneDamageShare } from '../content/DroneSwarms';
 import { recruitmentVariant } from '../content/FormationRecipes';
 import { quoteEnlargement } from './Enlargement';
 import { SpatialGrid } from "../SpatialGrid";
@@ -36,6 +39,7 @@ import type {
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
 import { recoveredChargeStrength } from './ChargeStrength';
+import { armCavalryBonus } from './CavalryAssault';
 import { isCavalryTroopClass } from './Definitions';
 import { formationDoctrine, formationEnvelope } from './FormationGeometry';
 import { formationContact, CONTACT_TOLERANCE } from './FormationContact';
@@ -51,7 +55,7 @@ import {
   productionBuildingType,
 } from "../content/Buildings";
 import { startingEconomy } from "../content/StartingEconomy";
-import { TRIBE_BUILDING_ORDER, tribeBuildingLimit, tribeAdvanceRejection } from "./TribeDevelopment";
+import { TRIBE_BUILDING_ORDER, TRIBE_MILITARY_BUILDING_ORDER, tribeBuildingLimit, tribeAdvanceRejection } from "./TribeDevelopment";
 import { resourceVisibleAtAge } from "../content/Resources";
 import { CONTENT_HASH } from "../content/Catalog";
 import { TECHNOLOGIES, technologyAt } from "../content/Technology";
@@ -97,6 +101,9 @@ import { squadRadius, standable, tilePoint } from "../SquadGeometry";
 import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
 import type { NuclearWasteland } from "./NuclearWasteland";
+const TRIBE_MILITARY_TECHNOLOGIES = [...TECHNOLOGIES].sort((a, b) => Number(!!a.optional) - Number(!!b.optional) ||
+  ["warfare", "economic", "naval"].indexOf(a.tree) - ["warfare", "economic", "naval"].indexOf(b.tree));
+
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   formationFits(s:Squad,point:{x:number;y:number},heading?:number):boolean;
   trenchBuildingRevision():number;
@@ -577,8 +584,37 @@ export class Expansion {
         command.autoRecruit === true,
         command.buildingIds,
       );
+    if (command.type === "transfer-aircraft") {
+      const bases=this.aviationBases();
+      const destination = bases.find(b=>b.id===command.buildingId && b.playerId===player.id && b.kind!=='drone-facility');
+      if (!destination) return "Choose an operational owned airfield or carrier";
+      const selected = [...new Set(command.aircraftIds)].map(id => this.aircraft.find(a => a.id === id));
+      const point = {x:destination.x,y:destination.y};
+      if (!selected.length || selected.some(a => !a || a.playerId !== player.id || a.health <= 0 ||
+        a.state !== "ready" || a.definitionId === "drone" || a.airfieldId === destination.id ||
+        !bases.some(b=>b.id===a.airfieldId && b.playerId===player.id && baseAccepts(b,a.definitionId)) ||
+        !flightReachable(a, point.x, point.y)))
+        return "Select ready owned planes within flight range of a different airfield";
+      if (airfieldAircraftCount(this.aircraft, destination.id) +
+        world.recruitment.count(player.id, "aircraft", destination.id) + selected.length > destination.capacity)
+        return "Destination airfield has insufficient parking space";
+      for (const a of selected as Aircraft[]) {
+        a.transfer = { destinationId: destination.id };
+        a.target = { ...point };
+        a.state = "transferring";
+        a.mission = undefined;
+        a.flightBudgetTicks ??= a.fuelTicks;
+      }
+      return null;
+    }
     if (command.type === "sortie") {
       const mission = command.mission ?? "bombing";
+      const bases=new Map(this.aviationBases(false).map(b=>[b.id,b]));
+      if(command.targetBuildingId!==undefined || command.targetUnitId!==undefined) {
+        if(mission!=='drone' || command.targetBuildingId!==undefined && command.targetUnitId!==undefined) return 'Choose one drone target';
+        const target=command.targetBuildingId!==undefined?world.building(command.targetBuildingId):(world.squad(command.targetUnitId!)??world.ship(command.targetUnitId!));
+        if(!target || ('tile' in target ? (target.health??0)<=0 || !this.diplomacy.canAttackStructure(player.id,target.playerId) : ('troops' in target?target.troops<=0:target.health<=0) || !this.diplomacy.hostile(player.id,target.playerId))) return 'Choose a hostile building or unit';
+      }
       const selected = [...new Set(command.aircraftIds)].map((id) =>
         this.aircraft.find((a) => a.id === id),
       );
@@ -586,11 +622,10 @@ export class Expansion {
         !selected.length ||
         selected.some(
           (a) => {
-            const field = a && world.building(a.airfieldId);
+            const field = a && bases.get(a.airfieldId);
             return !a || a.health <= 0 || a.playerId !== player.id || a.state !== "ready" ||
               a.definitionId !== missionKind(mission) || !flightReachable(a,command.x,command.y) ||
-              !field || field.playerId !== player.id || field.type !== (a.definitionId === "drone" ? "drone-facility" : "airstrip") ||
-              field.remainingTicks > 0 || (field.health ?? 1) <= 0;
+              !field || field.playerId !== player.id || !baseAccepts(field,a.definitionId);
           },
         ) ||
         !this.validPosition(command.x, command.y)
@@ -603,6 +638,8 @@ export class Expansion {
         stock["payload:atomic"]-=selected.length;
       }
       for (const a of selected as Aircraft[]) {
+        if(mission==='drone') {this.launchDroneSwarm(a,command);continue;}
+        if(bases.get(a.airfieldId)?.kind==='carrier')a.baseKind='carrier';
         a.mission=mission;
         a.atomicPayload=mission === "atomic";
         a.target = { x: command.x, y: command.y };
@@ -774,16 +811,17 @@ export class Expansion {
         const mounted=isCavalryTroopClass(this.unit(s!).troopClass);
         // A rush already lodged in this target is sustained melee. Reissuing it
         // must not duplicate the impact or revoke its authorized overlap.
-        if(mounted && command.targetId!==undefined && s!.cavalryEngagement?.phase!=='withdrawing' && s!.cavalryEngagement?.targetIds.includes(command.targetId)){
-          world.updateSquad(s!.id,{order:{type:'attack',targetId:command.targetId},cavalryMelee:undefined,queuedOrders:[]});
+        if(mounted && s!.cavalryEngagement && s!.cavalryEngagement.phase!=='withdrawing' &&
+          (command.targetId===undefined || s!.cavalryEngagement.targetIds.includes(command.targetId))){
+          const armed=armCavalryBonus(s!,this.unit(s!),world.tick);
+          world.updateSquad(s!.id,{order:{type:'attack',targetId:command.targetId??s!.cavalryEngagement.targetIds[0]},cavalryMelee:undefined,queuedOrders:[],...(armed?{cavalryEngagement:armed}:{})});
           return;
         }
         const continuing=mounted && s!.charge && s!.charge.phase!=='recovery';
         const strength=continuing?s!.charge!.strength??1:recoveredChargeStrength(s!.chargeReadyTick,world.tick,this.unit(s!).charge!.cooldownTicks);
         world.updateSquad(s!.id, {
           charge: { phase: continuing?s!.charge!.phase:mounted || !world.options?.formationLocomotion ? "approach" : "preparing", strength, x: command.x, y: command.y, startTick: continuing?s!.charge!.startTick:world.tick, committedTick: continuing?s!.charge!.committedTick:0, targetId: command.targetId },
-          ...(mounted?{cavalryMelee:undefined,meleeStrike:undefined,
-            cavalryEngagement:s!.cavalryEngagement?{...s!.cavalryEngagement,phase:'withdrawing' as const}:undefined}:{}),
+          ...(mounted?{cavalryMelee:undefined,meleeStrike:undefined,cavalryEngagement:undefined}:{}),
           order: { type: "move", tile,x:command.x,y:command.y }, nextPathIndex: 0, queuedOrders: [], structureTarget: null,
         });
         world.installSquadPath(s!.id, paths[i]!);
@@ -892,67 +930,70 @@ export class Expansion {
       y < this.world.map.height() * FIXED
     );
   }
-  private recruitAircraft(
-    player: Player,
-    id: number,
-    kind: "fighter" | "bomber" | "drone",
-    automatic = false,
-    buildingIds?: readonly number[],
-  ): string | null {
-    const producerType = kind === "drone" ? "drone-facility" : "airstrip";
-    let field = this.world.buildings.find(
-      (b) =>
-        b.id === id &&
-        b.type === producerType &&
-        b.playerId === player.id &&
-        !b.remainingTicks &&
-        this.world.owners[b.tile] === player.id && (b.health ?? 1) > 0,
-    );
-    const anchorTile = field?.tile ?? player.base;
-    if (automatic || buildingIds) field = this.world.recruitment.chooseProducer(this.world.buildings.filter(b => b.playerId === player.id
-      && (!buildingIds || buildingIds.includes(b.id))
-      && this.world.owners[b.tile] === player.id && b.type === producerType && !b.remainingTicks && (b.health ?? 1) > 0
-      && this.aircraft.filter(a => a.airfieldId === b.id).length + this.world.recruitment.count(player.id, "aircraft", b.id) < AIRCRAFT_RULES.airfieldCapacity),
-      tile => this.world.map.euclideanDistSquared(tile, anchorTile));
-    if (
-      !field ||
-      !["fighter", "bomber", "drone"].includes(kind) ||
-      !this.progression.has(player.id, aircraftTechnology(kind,field?.age ?? "EarlyModern"))
-    )
-      return "Needs researched aviation and a completed owned airstrip";
-    if (
-      this.aircraft.filter((a) => a.airfieldId === field.id).length + this.world.recruitment.count(player.id, "aircraft", field.id) >= AIRCRAFT_RULES.airfieldCapacity ||
-      this.aircraft.filter((a) => a.playerId === player.id).length + this.world.recruitment.count(player.id, "aircraft") >= AIRCRAFT_RULES.factionCapacity
-    )
-      return "Airfield or aircraft capacity reached";
-    const cost = aircraftRecruitmentCost(kind),
-      rejection = costRejection(
-        player,
-        this.supply.inventories[player.id],
-        cost,
-      );
-    if (rejection) return rejection;
-    spend(player, this.supply.inventories[player.id], cost);
-    this.world.recruitment.enqueue({ playerId: player.id, buildingId: field.id, category: "aircraft", kind,
-      definitionId: kind, cost: paidCost(player, cost), totalTicks: RECRUITMENT_SECONDS.aircraft * TICKS_PER_SECOND });
+  private aviationBases(owned=true): AirBase[] {
+    return airBases(this.world.buildings,this.world.ships,this.world.map.width(),owned?this.world.owners:undefined);
+  }
+  private launchDroneSwarm(seed:Aircraft,command:Extract<Command,{type:'sortie'}>):void {
+    const candidates:{id:number;kind:'building'|'squad'|'ship';x:number;y:number;maximum:number}[]=[];
+    const addBuilding=(b:Building)=>{const point=this.battle.position(b);candidates.push({id:b.id,kind:'building',...point,maximum:b.maxHealth??b.health??1200});};
+    const addSquad=(s:Squad)=>candidates.push({id:s.id,kind:'squad',x:s.x,y:s.y,maximum:s.manpower?maximumHealth(s)/HEALTH_SCALE:1000});
+    if(command.targetBuildingId!==undefined) addBuilding(this.world.building(command.targetBuildingId)!);
+    else if(command.targetUnitId!==undefined) {const squad=this.world.squad(command.targetUnitId);if(squad)addSquad(squad);else {const ship=this.world.ship(command.targetUnitId)!;candidates.push({id:ship.id,kind:'ship',x:ship.x,y:ship.y,maximum:this.vessel(ship).health});}}
+    else {
+      const inArea=(point:{x:number;y:number})=>(point.x-command.x)**2+(point.y-command.y)**2<=DRONE_SWARM.areaRadius**2;
+      for(const b of this.world.buildings) if((b.health??1)>0 && this.diplomacy.canAttackStructure(seed.playerId,b.playerId) && inArea(this.battle.position(b))) addBuilding(b);
+      for(const s of this.world.squads) if(s.troops>0 && s.embarkedOn===null && this.diplomacy.hostile(seed.playerId,s.playerId) && inArea(s)) addSquad(s);
+      for(const ship of this.world.ships)if(ship.health>0&&this.diplomacy.hostile(seed.playerId,ship.playerId)&&inArea(ship))candidates.push({id:ship.id,kind:'ship',x:ship.x,y:ship.y,maximum:this.vessel(ship).health});
+      candidates.sort((a,b)=>a.id-b.id);candidates.splice(32);
+    }
+    const original={...seed};
+    for(let index=0;index<DRONE_SWARM.size;index++) {
+      const offset=droneOffset(index), aim={x:command.x+offset.x,y:command.y+offset.y};
+      const target=candidates.length===1?candidates[0]:candidates.slice().sort((a,b)=>(a.x-aim.x)**2+(a.y-aim.y)**2-((b.x-aim.x)**2+(b.y-aim.y)**2)||a.id-b.id)[0];
+      // Soldier/hull manpower supports fixed-point wounds; legacy troop counts
+      // and building/ship integrity remain integers across replication.
+      const precision=target?.kind==='squad' && this.world.squad(target.id)?.manpower?HEALTH_SCALE:1;
+      const member:Aircraft={...original,id:index===0?original.id:this.world.allocateId(),health:DRONE_SWARM.health,state:'outbound',mission:'drone',
+        x:original.x,y:original.y,target:{x:command.x,y:command.y},atomicPayload:false,
+        drone:{swarmId:original.id,index,targetId:target?.id,targetKind:target?.kind,damage:target?droneDamageShare(Math.round(target.maximum*precision),index)/precision:0}};
+      if(index===0) Object.assign(seed,member);else this.aircraft.push(member);
+    }
+  }
+  private advanceDrone(a:Aircraft):void {
+    if(a.fuelTicks--<=0){a.health=0;return;}
+    const member=a.drone!,target=member.targetKind==='building'?this.world.building(member.targetId!):(this.world.squad(member.targetId!)??this.world.ship(member.targetId!));
+    const alive=target && ('tile' in target?(target.health??1)>0 && this.diplomacy.canAttackStructure(a.playerId,target.playerId):('troops' in target?target.troops>0:target.health>0) && this.diplomacy.hostile(a.playerId,target.playerId));
+    const center=alive?('tile' in target?this.battle.position(target):target):a.target!;
+    if(alive)a.target={x:center.x,y:center.y};
+    const offset=droneOffset(member.index);
+    const goal={x:Math.round(Math.max(1,Math.min(this.world.map.width()*FIXED-1,center.x+offset.x))),
+      y:Math.round(Math.max(1,Math.min(this.world.map.height()*FIXED-1,center.y+offset.y)))};
+    const dx=goal.x-a.x,dy=goal.y-a.y,d=Math.hypot(dx,dy),speed=flightSpeed('drone');
+    if(d>speed){a.x+=Math.round(dx*speed/d);a.y+=Math.round(dy*speed/d);return;}
+    a.x=goal.x;a.y=goal.y;
+    const payload={targetId:alive?member.targetId!:-1,kind:member.targetKind??'squad',damage:alive?member.damage:0};
+    if(this.battle.fire({...a,domain:'aircraft'},goal,DRONE_ATTACK,1,'bomb',1,0,'fpv-drone',undefined,undefined,undefined,payload)) a.health=0;
+  }
+  private recruitAircraft(player:Player,id:number,kind:Aircraft['definitionId'],automatic=false,buildingIds?:readonly number[]):string|null {
+    if(!['fighter','bomber','drone'].includes(kind))return 'Unknown aircraft type';
+    const bases=this.aviationBases().filter(b=>b.playerId===player.id && baseAccepts(b,kind));
+    const free=(b:AirBase)=>airfieldAircraftCount(this.aircraft,b.id)+this.world.recruitment.count(player.id,'aircraft',b.id)<b.capacity;
+    let field=bases.find(b=>b.id===id);
+    if(automatic||buildingIds) field=bases.filter(b=>(!buildingIds||buildingIds.includes(b.id))&&free(b))
+      .sort((a,b)=>this.world.recruitment.byProducer(a.id).reduce((n,j)=>n+j.remainingTicks,0)-this.world.recruitment.byProducer(b.id).reduce((n,j)=>n+j.remainingTicks,0)||a.id-b.id)[0];
+    if(!field || !this.progression.has(player.id,aircraftTechnology(kind,field.age))) return 'Needs researched aviation and an operational owned launch site';
+    if(!free(field)||aircraftSlots(this.aircraft,player.id)+this.world.recruitment.count(player.id,'aircraft')>=AIRCRAFT_RULES.factionCapacity) return 'Launch site or aircraft capacity reached';
+    const cost=aircraftRecruitmentCost(kind),rejection=costRejection(player,this.supply.inventories[player.id],cost);
+    if(rejection)return rejection;
+    spend(player,this.supply.inventories[player.id],cost);
+    this.world.recruitment.enqueue({playerId:player.id,buildingId:field.id,category:'aircraft',kind,definitionId:kind,cost:paidCost(player,cost),totalTicks:RECRUITMENT_SECONDS.aircraft*TICKS_PER_SECOND});
     return null;
   }
-  completeAircraft(job: RecruitmentJob): boolean {
-    const field = this.world.buildings.find(b => b.id === job.buildingId && b.playerId === job.playerId);
-    if (!field) return false;
-    this.aircraft.push({
-      id: this.world.allocateId(),
-      playerId: job.playerId,
-      definitionId: job.kind as Aircraft["definitionId"],
-      age: field.age,
-      airfieldId: job.buildingId,
-      ...this.battle.position(field),
-      health: AIRCRAFT_RULES.health,
-      target: null,
-      state: "ready",
-      reloadTick: 0,
-      fuelTicks: flightTicks(job.kind as Aircraft["definitionId"],field.age ?? "EarlyModern"),
-    });
+  completeAircraft(job:RecruitmentJob):boolean {
+    const field=this.aviationBases().find(b=>b.id===job.buildingId&&b.playerId===job.playerId&&baseAccepts(b,job.kind as Aircraft['definitionId']));
+    if(!field)return false;
+    this.aircraft.push({id:this.world.allocateId(),playerId:job.playerId,definitionId:job.kind as Aircraft['definitionId'],age:field.age,airfieldId:field.id,
+      x:field.x,y:field.y,...(field.kind==='carrier'?{baseKind:'carrier' as const}:{}),health:AIRCRAFT_RULES.health,target:null,state:'ready',reloadTick:0,fuelTicks:flightTicks(job.kind as Aircraft['definitionId'],field.age)});
     return true;
   }
   private launch(
@@ -1160,7 +1201,7 @@ export class Expansion {
       ) {
         world.updateSquad(s.id, {
           charge: { ...s.charge, phase: "committed", committedTick: world.tick,
-            ...(rushContact?{strength:(s.charge.strength??1)*Math.min(1,(world.tick-s.charge.startTick)/Math.max(1,this.unit(s).charge!.runupTicks))}:{}) },
+          },
           chargeReadyTick: world.tick + this.unit(s).charge!.cooldownTicks,
         });
       }
@@ -1199,7 +1240,8 @@ export class Expansion {
   }
   private advanceAircraft(): void {
     const targets=this.airTargets??=new SpatialGrid<Aircraft>(this.world.map.width()*FIXED,this.world.map.height()*FIXED,8*FIXED,a=>a.playerId);
-    targets.rebuild(this.aircraft.filter(a=>a.health>0&&a.state!=="ready"&&a.definitionId!=="drone"));
+    targets.rebuild(this.aircraft.filter(a=>a.health>0&&a.state!=="ready"));
+    const bases=new Map(this.aviationBases(false).map(b=>[b.id,b]));
     // Naval rockets use an independent AA reload and the ordinary authoritative projectile lifecycle.
     for(const ship of this.world.ships) {
       if(ship.health<=0 || ship.kind!=="warship" || !this.progression.has(ship.playerId,"rus-modern-naval-missiles-air-defence") || this.world.tick<(ship.airDefenseTick??0))continue;
@@ -1222,22 +1264,22 @@ export class Expansion {
     }
     for (const a of this.aircraft) {
       if (a.health <= 0) continue;
-      const base = this.world.buildings.find(
-        (b) =>
-          b.id === a.airfieldId &&
-          b.playerId === a.playerId &&
-          !b.remainingTicks,
-      );
-      if (!base) {
-        a.health = 0;
+      if(a.definitionId==="drone" && a.drone && a.state!=="ready"){this.advanceDrone(a);continue;}
+      if (a.state === "transferring" && a.transfer) {
+        this.advanceTransfer(a);
         continue;
+      }
+      const base=bases.get(a.airfieldId);
+      if(!base || base.playerId!==a.playerId || !baseAccepts(base,a.definitionId)) {
+        if(a.state==='ready' || a.definitionId==='drone' || a.baseKind!=='carrier'){a.health=0;continue;}
+        a.state='transferring';a.transfer={destinationId:-1};this.advanceTransfer(a);continue;
       }
       if (a.definitionId === "fighter" && a.state !== "ready") {
         targets.query(a.x,a.y,8*FIXED,this.nearbyAircraft);
         const enemy = this.nearbyAircraft
           .filter(
             (t) =>
-              t.id !== a.id && t.health > 0 && t.state !== "ready" && t.definitionId !== "drone" && this.diplomacy.hostile(a.playerId, t.playerId) &&
+              t.id !== a.id && t.health > 0 && t.state !== "ready" && this.diplomacy.hostile(a.playerId, t.playerId) &&
               (t.x - a.x) ** 2 + (t.y - a.y) ** 2 < (8 * FIXED) ** 2,
           )
           .sort((b, c) => Number(c.definitionId === "bomber") - Number(b.definitionId === "bomber") || b.id - c.id)[0];
@@ -1254,7 +1296,7 @@ export class Expansion {
           a.reloadTick = this.world.tick + secondsToTicks(2);
         }
       }
-      if(a.state === "ready") {a.fuelTicks=flightTicks(a.definitionId,this.progression.has(a.playerId,"rus-modern-airfields") ? "Modern" : a.age??base.age??"EarlyModern");a.flightBudgetTicks=a.fuelTicks;continue;}
+      if(a.state === "ready") {a.x=base.x;a.y=base.y;a.fuelTicks=flightTicks(a.definitionId,this.progression.has(a.playerId,"rus-modern-airfields") ? "Modern" : a.age??base.age??"EarlyModern");a.flightBudgetTicks=a.fuelTicks;continue;}
       if (!a.target) continue;
       if(a.state !== "returning") {if(a.fuelTicks<=0)a.state="returning";else a.fuelTicks--;}
       if(a.state === "patrolling") {
@@ -1272,7 +1314,7 @@ export class Expansion {
       }
       const speed=flightSpeed(a.definitionId);
       const goal =
-          a.state === "returning" ? this.battle.position(base) : a.target,
+          a.state === "returning" ? {x:base.x,y:base.y} : a.target,
         dx = goal.x - a.x,
         dy = goal.y - a.y,
         distance = Math.hypot(dx, dy);
@@ -1309,6 +1351,26 @@ export class Expansion {
       }
     }
   }
+  private advanceTransfer(a:Aircraft):void {
+    const transfer=a.transfer!,bases=this.aviationBases().filter(b=>b.playerId===a.playerId&&baseAccepts(b,a.definitionId));
+    let destination=bases.find(b=>b.id===transfer.destinationId);
+    if(!destination) {
+      destination=bases.filter(b=>airfieldAircraftCount(this.aircraft,b.id)+this.world.recruitment.count(a.playerId,'aircraft',b.id)<b.capacity)
+        .sort((b,c)=>(b.x-a.x)**2+(b.y-a.y)**2-((c.x-a.x)**2+(c.y-a.y)**2)||b.id-c.id)[0];
+      if(!destination){a.health=0;return;}
+      transfer.destinationId=destination.id;
+    }
+    a.fuelTicks=Math.max(0,a.fuelTicks-1);
+    a.target={x:destination.x,y:destination.y};
+    const dx=destination.x-a.x,dy=destination.y-a.y,distance=Math.hypot(dx,dy),speed=flightSpeed(a.definitionId);
+    if(distance>speed){a.x+=Math.round(dx*speed/distance);a.y+=Math.round(dy*speed/distance);return;}
+    a.x=destination.x;a.y=destination.y;a.airfieldId=destination.id;a.state='ready';a.target=null;delete a.transfer;
+    if(destination.kind==='carrier')a.baseKind='carrier';else delete a.baseKind;
+    a.fuelTicks=flightTicks(a.definitionId,this.progression.has(a.playerId,'rus-modern-airfields')?'Modern':a.age??destination.age);
+    a.flightBudgetTicks=a.fuelTicks;
+    if(a.atomicPayload){this.supply.inventories[a.playerId]['payload:atomic']=(this.supply.inventories[a.playerId]['payload:atomic']??0)+1;a.atomicPayload=false;}
+  }
+
   private thinkProgression(): void {
     for (const player of this.world.players) {
       if (
@@ -1508,16 +1570,26 @@ export class Expansion {
   }
   private thinkTribeDevelopment(player: Player): void {
     const state = this.progression.states[player.id];
+    const militarizing = this.operations.promotionPressure(player.id);
+    const objective = this.operations.recruitmentObjective(player.id);
+    const force = this.world.squadFacts().aliveByOwner(player.id).length + this.world.recruitment.byOwner(player.id).filter(j => j.category === "land").length;
+    const recruit = militarizing && force < (objective?.squads ?? this.world.squadCapacity(player))
+      ? this.recruitment({ ...player, gold: Number.MAX_SAFE_INTEGER }, "infantry") : undefined;
+    // Retain one actually producible recruit's gold. Missing equipment must not
+    // reserve funds away from the infrastructure needed to make that equipment.
+    const heldGold = recruit ? scaledRecipeCost(recruit.unit, recruitmentVariant(recruit.unit.id, state.completed)).gold ?? 0 : 0;
+    const developmentGold = () => Math.max(0, availableGold(player) - heldGold);
     if (!tribeAdvanceRejection(player, this.world.players, this.progression.states) &&
-        !advanceRejection(state, availableGold(player), this.progression.technologySpeed, this.progression.maximumAge))
+        !advanceRejection(state, developmentGold(), this.progression.technologySpeed, this.progression.maximumAge))
       this.world.applyCommand({ type: "advance-age", playerId: player.id });
-    const next = TECHNOLOGIES.find(t => t.age === state.age &&
-      !researchRejection(state, availableGold(player), t.id, this.progression.technologySpeed));
+    const technologies = militarizing ? TRIBE_MILITARY_TECHNOLOGIES : TECHNOLOGIES;
+    const next = technologies.find(t => t.age === state.age &&
+      !researchRejection(state, developmentGold(), t.id, this.progression.technologySpeed));
     if (next) this.world.applyCommand({ type: "research", playerId: player.id, technologyId: next.id });
     const own = this.world.buildingFacts().byOwner(player.id);
     // Coastal tribes fund one useful sea entrance before additional land capacity.
     const coastal = this.economy.placements.coasts(player.id);
-    if(coastal.length && !own.some(b=>b.type==="port") && state.completed.includes(buildingTechnology("port",state.age)!)) {
+    if(!militarizing && coastal.length && !own.some(b=>b.type==="port") && state.completed.includes(buildingTechnology("port",state.age)!)) {
       const site=coastal.slice(0,8).find(tile=>this.economy.recovery.canBuild(player.id,"port",tile) &&
         this.world.buildingSite(player.id,"port",tile,state.age)===null);
       if(site!==undefined && this.world.applyCommand({type:"build",playerId:player.id,buildingType:"port",tile:site,age:state.age})===null)return;
@@ -1525,14 +1597,15 @@ export class Expansion {
     const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {} };
     this.tribePlans.set(player.id, plan);
     // One type and at most sixteen legal site attempts per strategic pass.
-    for (let checked = 0; checked < TRIBE_BUILDING_ORDER.length; checked++) {
-      const type = TRIBE_BUILDING_ORDER[plan.nextType++ % TRIBE_BUILDING_ORDER.length];
-      plan.nextType %= TRIBE_BUILDING_ORDER.length;
+    const order = militarizing ? TRIBE_MILITARY_BUILDING_ORDER : TRIBE_BUILDING_ORDER;
+    for (let checked = 0; checked < order.length; checked++) {
+      const type = order[plan.nextType++ % order.length];
+      plan.nextType %= order.length;
       const count = own.filter(b => b.type === type).length;
       const technology = buildingTechnology(type, state.age);
       if (count >= tribeBuildingLimit(type, state.age) || !technology ||
           !state.completed.includes(technology) ||
-          costRejection(player, this.supply.inventories[player.id], buildingCost(type, state.age, count))) continue;
+          costRejection({ ...player, gold: developmentGold() }, this.supply.inventories[player.id], buildingCost(type, state.age, count))) continue;
       const extraction = type === "mine" || type === "oil-well" || type === "oil-rig";
       const candidates = type === "port" ? this.economy.placements.coasts(player.id) : extraction
         ? this.supply.deposits.filter(d => this.world.owners[d.tile] === player.id && resourceVisibleAtAge(d.resource, state.age) &&

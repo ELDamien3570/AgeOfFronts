@@ -1,4 +1,8 @@
+import { airBases, baseAccepts } from '../domain/AirBases';
+import { aircraftSlots } from '../content/DroneSwarms';
+import { aircraftRecruitmentCost } from '../content/FlightOperations';
 import {TICKS_PER_SECOND} from '../Protocol';
+import { airfieldAircraftCount } from "../domain/AirfieldCapacity";
 import { quoteEnlargement } from '../domain/Enlargement';
 import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import {
@@ -502,37 +506,12 @@ export class EmpireViewModel {
         job.buildingId,
         (workloads.get(job.buildingId) ?? 0) + job.remainingTicks,
       );
-    const building = this.state.buildings
-      .filter(
-        (b) =>
-          b.playerId === this.playerId &&
-          !b.remainingTicks &&
-          b.type === (kind === "drone" ? "drone-facility" : "airstrip") &&
-          (!this.selection.selectedBuildings?.size ||
-            this.selection.selectedBuildings.has(b.id)) &&
-          this.state.owners[b.tile] === this.playerId &&
-          (b.health ?? 1) > 0 &&
-          this.expansion.aircraft.filter((a) => a.airfieldId === b.id).length +
-            (this.expansion.recruitment ?? []).filter(
-              (j) =>
-                j.playerId === this.playerId &&
-                j.category === "aircraft" &&
-                j.buildingId === b.id,
-            ).length <
-            6,
-      )
-      .sort(
-        (a, b) =>
-          (this.selection.selectedBuildings?.size
-            ? (workloads.get(a.id) ?? 0) - (workloads.get(b.id) ?? 0)
-            : Number(b.id === this.selection.selectedBuilding) -
-              Number(a.id === this.selection.selectedBuilding)) ||
-          this.distance(a.tile) - this.distance(b.tile) ||
-          a.id - b.id,
-      )[0];
-    const cost = {
-      gold: FLIGHT_RULES[kind].gold,
-    };
+    const selectedBases=new Set([...(this.selection.selectedBuildings??[]),...this.state.ships.filter(s=>s.kind==='carrier'&&this.selection.selectedShips.has(s.id)).map(s=>s.id)]);
+    const building=airBases(this.state.buildings,this.state.ships,this.state.width,this.state.owners)
+      .filter(b=>b.playerId===this.playerId&&baseAccepts(b,kind)&&(!selectedBases.size||selectedBases.has(b.id))&&
+        airfieldAircraftCount(this.expansion.aircraft,b.id)+(this.expansion.recruitment??[]).filter(j=>j.category==='aircraft'&&j.buildingId===b.id).length<b.capacity)
+      .sort((a,b)=>(workloads.get(a.id)??0)-(workloads.get(b.id)??0)||this.distance(a.tile)-this.distance(b.tile)||a.id-b.id)[0];
+    const cost=aircraftRecruitmentCost(kind);
     const reason = !this.has(
       aircraftTechnology(
         kind,
@@ -541,9 +520,8 @@ export class EmpireViewModel {
     )
       ? `Research ${this.technologyName(aircraftTechnology(kind, building?.age ?? (kind === "drone" ? "Modern" : "EarlyModern")))}`
       : !building
-        ? "Needs an airstrip with a free slot"
-        : this.expansion.aircraft.filter((a) => a.playerId === this.playerId)
-              .length +
+        ? "Needs an operational launch site with a free slot"
+        : aircraftSlots(this.expansion.aircraft,this.playerId) +
               (this.expansion.recruitment ?? []).filter(
                 (j) =>
                   j.playerId === this.playerId && j.category === "aircraft",
@@ -555,9 +533,7 @@ export class EmpireViewModel {
       building,
       cost,
       reason,
-      buildingIds: this.selection.selectedBuildings?.size
-        ? [...this.selection.selectedBuildings]
-        : undefined,
+      buildingIds: selectedBases.size ? [...selectedBases] : undefined,
     };
   }
   launcher(payload: "icbm" | "hydrogen" | "mirv") {

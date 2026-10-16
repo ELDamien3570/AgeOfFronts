@@ -1,0 +1,246 @@
+{
+  "kind": "ageoffronts-balance-preview",
+  "schemaVersion": 2,
+  "previewOnly": true,
+  "contentHash": "747e3f8d",
+  "recipes": [
+    {
+      "definitionId": "bronzeage-infantry",
+      "name": "Bronze Axemen",
+      "baseContentHash": "747e3f8d",
+      "baseline": {
+        "hp": 100,
+        "meleeArmour": 4,
+        "rangedArmour": 1,
+        "speedPercent": 100,
+        "melee": {
+          "damage": 30,
+          "rpm": 24,
+          "rangeTiles": 0.5,
+          "bonuses": {
+            "infantry": 24,
+            "ranged": 100,
+            "mounted": 0,
+            "vehicle": 0,
+            "siege": 0,
+            "ship": 0,
+            "aircraft": 0,
+            "structure": 0,
+            "wall": 0,
+            "armoured": 0
+          }
+        }
+      },
+      "tuning": {
+        "hp": 100,
+        "meleeArmour": 4,
+        "rangedArmour": 1,
+        "speedPercent": 81,
+        "melee": {
+          "damage": 14,
+          "rpm": 60,
+          "rangeTiles": 0.5,
+          "bonuses": {
+            "infantry": 14,
+            "ranged": 26,
+            "mounted": 0,
+            "vehicle": 0,
+            "siege": 0,
+            "ship": 0,
+            "aircraft": 0,
+            "structure": 0,
+            "wall": 0,
+            "armoured": 0
+          }
+        }
+      }
+    },
+    {
+      "definitionId": "earlymedieval-heavycavalry",
+      "name": "Druzhina",
+      "baseContentHash": "747e3f8d",
+      "baseline": {
+        "hp": 300,
+        "meleeArmour": 40,
+        "rangedArmour": 45,
+        "speedPercent": 140,
+        "chargeMultiplier": 2,
+        "chargeBonusSeconds": 6,
+        "melee": {
+          "damage": 45.1,
+          "rpm": 24,
+          "rangeTiles": 0.75,
+          "bonuses": {
+            "infantry": 0,
+            "ranged": 0,
+            "mounted": 0,
+            "vehicle": 0,
+            "siege": 0,
+            "ship": 0,
+            "aircraft": 0,
+            "structure": 0,
+            "wall": 0,
+            "armoured": 0
+          }
+        }
+      },
+      "tuning": {
+        "hp": 300,
+        "meleeArmour": 40,
+        "rangedArmour": 45,
+        "speedPercent": 108,
+        "chargeMultiplier": 2,
+        "chargeBonusSeconds": 6,
+        "melee": {
+          "damage": 60,
+          "rpm": 60,
+          "rangeTiles": 0.75,
+          "bonuses": {
+            "infantry": 0,
+            "ranged": 0,
+            "mounted": 30,
+            "vehicle": 0,
+            "siege": 0,
+            "ship": 0,
+            "aircraft": 0,
+            "structure": 0,
+            "wall": 0,
+            "armoured": 0
+          }
+        }
+      }
+    },
+    {
+      "definitionId": "earlymodern-infantry",
+      "name": "Mosin Nagant Squad",
+      "baseContentHash": "747e3f8d",
+      "baseline": {
+        "hp": 100,
+        "meleeArmour": 5,
+        "rangedArmour": 15,
+        "speedPercent": 100,
+        "melee": {
+          "damage": 18,
+          "rpm": 30,
+          "rangeTiles": 0.5,
+          "bonuses": {
+            "infantry": 0,
+            "ranged": 4,
+            "mounted": 0,
+            "vehicle": 0,
+            "siege": 0,
+            "ship": 0,
+            "aircraft": 0,
+            "structure": 0,
+            "wall": 0,
+            "armoured": 0
+          }
+        },
+        "ranged": {
+          "damage": 8,
+          "rpm": 50,
+          "rangeTiles": 12,
+          "reloadSeconds": 3,
+          "accuracyNear": 100,
+          "accuracyFar": 100,
+          "bonuses": {
+            "infantry": 0,
+            "ranged": 4,
+            "mounted": 0,
+            "vehicle": 0,
+            "siege": 0,
+            "ship": 0,
+            "aircraft": 0,
+            "structure": 0,
+            "wall": 0,
+            "armoured": 0
+          }
+        }
+      },
+      "tuning": {
+        "hp": 100,
+        "meleeArmour": 5,
+        "rangedArmour": 15,
+        "speedPercent": 100,
+        "melee": {
+          "damage": 18,
+          "rpm": 30,
+          "rangeTiles": 0.5,
+          "bonuses": {
+            "infantry": 0,
+            "ranged": 4,
+            "mounted": 0,
+            "vehicle": 0,
+            "siege": 0,
+            "ship": 0,
+            "aircraft": 0,
+            "structure": 0,
+            "wall": 0,
+            "armoured": 0
+          }
+        },
+        "ranged": {
+          "damage": 8,
+          "rpm": 50,
+          "rangeTiles": 12,
+          "reloadSeconds": 3,
+          "accuracyNear": 100,
+          "accuracyFar": 100,
+          "bonuses": {
+            "infantry": 0,
+            "ranged": 4,
+            "mounted": 0,
+            "vehicle": 0,
+            "siege": 0,
+            "ship": 0,
+            "aircraft": 0,
+            "structure": 0,
+            "wall": 0,
+            "armoured": 0
+          }
+        }
+      }
+    }
+  ],
+  "scenario": {
+    "entries": [
+      {
+        "side": 1,
+        "definitionId": "bronzeage-infantry",
+        "formations": 1,
+        "soldiers": 1,
+        "variant": "base",
+        "shape": "mass"
+      },
+      {
+        "side": 2,
+        "definitionId": "earlymedieval-heavycavalry",
+        "formations": 1,
+        "soldiers": 1,
+        "variant": "base",
+        "shape": "mass"
+      },
+      {
+        "side": 1,
+        "definitionId": "earlymodern-infantry",
+        "formations": 1,
+        "soldiers": 1,
+        "variant": "base",
+        "shape": "mass"
+      }
+    ],
+    "separation": 8,
+    "rankLaunchSpacing": 0.25
+  },
+  "experiment": {
+    "schemaVersion": 1,
+    "profileId": "premodern-rebalance-v1",
+    "profileRevision": 2,
+    "contentHash": "747e3f8d",
+    "changes": {
+      "earlymedieval-heavycavalry": {
+        "speedPercent": 108
+      }
+    }
+  }
+}

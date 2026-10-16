@@ -198,11 +198,11 @@ export function automaticProduction(
   const continuous = new Set<ProductionRecipe>()
   const troopCapacity = automatic.filter((b) => ["blacksmith", "armory", "arms-factory"].includes(b.type),
   ).length;
-  // Keep several batches per workshop ready for a human recruitment/refit burst.
-  // AI demand below replaces these buffers with its exact economic quote.
-  const troopTarget = Math.min(180, Math.max(context.ai ? 12 : 100, troopCapacity * 3, Math.ceil(squadCount / 3)))
-  const vehicleTarget = Math.min(6, Math.max(2, Math.ceil(squadCount / 12)))
-  const siegeTarget = Math.min(4, Math.max(2, Math.ceil(squadCount / 16)))
+  // Shared ready reserves: placement grows capacity without another AI planner.
+  // Count busy producers too; paid output below already counts toward stock.
+  const troopTarget = Math.min(600, Math.max(100, troopCapacity * 3, Math.ceil(squadCount / 3)))
+  const vehicleTarget = Math.min(24, Math.max(2, automatic.filter(b => b.type === "depot").length * 2, Math.ceil(squadCount / 12)))
+  const siegeTarget = Math.min(16, Math.max(2, automatic.filter(b => b.type === "siege-workshop").length * 2, Math.ceil(squadCount / 16)))
   for (const kind of ["troop", "vehicle", "siege"] as const) {
     const candidates = automaticRecipes
       .filter((r) => equipmentKind(r) === kind)
@@ -226,8 +226,8 @@ export function automaticProduction(
           ? vehicleTarget
           : siegeTarget;
     for (const recipe of chosen) {
-      // Split the category buffer across explicit choices rather than giving
-      // every checked recipe a new unlimited claim on the shared stockpile.
+      // Retain category weights for allocation even when an explicit order
+      // continues beyond its reserve. These are stock ratios, not rate quotas.
       let target = Math.max(1, Math.ceil(baseTarget / chosen.length));
       if (kind === "siege")
         for (const [vehicle, count] of targets)
@@ -237,6 +237,7 @@ export function automaticProduction(
           )
             target += count;
       targets.set(recipe, target);
+      if (manual.includes(recipe)) continuous.add(recipe);
     }
     // Older automatic building types still honor their highlighted pattern,
     // but keep only a two-kit reserve instead of diluting the newest buffer.
@@ -252,7 +253,7 @@ export function automaticProduction(
       automatic.some(
         (b) =>
           (priorities[b.type]?.includes(r.id) ?? false) ||
-          (context.ai && priorities[b.type] === undefined && compatible(b, r)),
+          (context.ai && !context.aiDemand && priorities[b.type] === undefined && compatible(b, r)),
       )
     ) {
       const selected = automatic.some(
@@ -263,11 +264,9 @@ export function automaticProduction(
     }
 
   if (context.ai && context.aiDemand) {
-    targets.clear();
-    continuous.clear();
     for (const recipe of automaticRecipes) {
       const requested = context.aiDemand.equipment[Object.keys(recipe.outputs)[0]] ?? 0;
-      if (requested > 0) targets.set(recipe, requested);
+      if (requested > 0) targets.set(recipe, Math.max(targets.get(recipe) ?? 0, requested));
     }
   }
   const budget = { ...inventory }
@@ -353,17 +352,23 @@ export function automaticProduction(
     }
   }
 
-  const materialTargets: Inventory = context.ai && context.aiDemand ? { ...context.aiDemand.materials } : {}
-  // The demand quote already expanded aggregate equipment inputs once. Adding
-  // those deficits again would double the AI's refining/material claims.
-  if(!(context.ai && context.aiDemand))for (const [r, target] of targets) {
+  // A bounded two-batch pipeline per compatible producer, computed only in
+  // this existing planning pass. Continuous orders need it even above target.
+  const pipeline = new Map<ProductionRecipe, number>();
+  for (const r of [...targets.keys(), ...smelting])
+    pipeline.set(r, Math.max(2, Math.min(60, automatic.filter(b => compatible(b, r)).length * 2)));
+  const materialTargets: Inventory = {};
+  for (const [r, target] of targets) {
+    const batches = continuous.has(r) ? pipeline.get(r)! : Math.min(deficit(r, target), pipeline.get(r)!);
     for (const [id, n] of Object.entries(r.inputs))
       if (refiners.has(id))
-        materialTargets[id] = Math.min(
-          Math.max(120, n),
-          (materialTargets[id] ?? 0) + deficit(r, target) * n,
-        );
+        materialTargets[id] = (materialTargets[id] ?? 0) + batches * n;
   }
+  // Planned AI requirements and baseline requirements overlap; take the
+  // greater claim rather than charging the same equipment inputs twice.
+  if (context.ai && context.aiDemand)
+    for (const [id, n] of Object.entries(context.aiDemand.materials))
+      materialTargets[id] = Math.max(materialTargets[id] ?? 0, n);
   // A manual equipment order also drives its upstream factory automatically.
   for (const plan of plans.values()) {
     const r = available.find((r) => r.id === plan.recipeId);
@@ -372,18 +377,12 @@ export function automaticProduction(
         if (refiners.has(id))
           materialTargets[id] = Math.max(materialTargets[id] ?? 0, n * 2);
   }
-  const metalBuffer = context.ai
-    ? 60
-    : Math.max(
-        60,
-          Math.min(
-          3000, automatic.filter((b) => b.type === "factory").length * 60,
-        ),
-      );
+  const metalBuffer = Math.max(60, Math.min(3000,
+    automatic.filter((b) => b.type === "factory").length * 60));
   const newestMetal = smelting.find(
     (r) => held(Object.keys(r.outputs)[0]) >= metalBuffer || sustainable(r),
   )
-  if (newestMetal && !(context.ai && context.aiDemand))
+  if (newestMetal)
     materialTargets[output(newestMetal)] = Math.max(
       metalBuffer,
       materialTargets[output(newestMetal)] ?? 0,
@@ -392,7 +391,7 @@ export function automaticProduction(
   for (const r of smelting)
     if (priorities.factory?.includes(r.id))
       materialTargets[output(r)] = Math.max(
-        metalBuffer,
+        amount(r) + pipeline.get(r)! * r.outputs[output(r)],
         materialTargets[output(r)] ?? 0,
       );
 
@@ -407,7 +406,7 @@ export function automaticProduction(
       if (refiners.has(id))
         materialTargets[id] = Math.max(
           materialTargets[id] ?? 0,
-          Math.min(120, batches * n),
+          Math.min(pipeline.get(r)!, batches) * n,
         );
   }
   const blockedSmelting = new Set<ProductionRecipe>()

@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "kind": "export validation; browser visual review is separate",
+  "assets": [
+    {
+      "kind": "drone",
+      "clip": "Idle",
+      "frameCount": 20,
+      "transparentBorder": true,
+      "nonempty": true,
+      "hasMotion": false
+    },
+    {
+      "kind": "drone",
+      "clip": "Hover",
+      "frameCount": 20,
+      "transparentBorder": true,
+      "nonempty": true,
+      "hasMotion": true
+    },
+    {
+      "kind": "drone",
+      "clip": "Flight",
+      "frameCount": 20,
+      "transparentBorder": true,
+      "nonempty": true,
+      "hasMotion": true
+    },
+    {
+      "kind": "carrier",
+      "clip": "Idle",
+      "frameCount": 20,
+      "transparentBorder": true,
+      "nonempty": true,
+      "hasMotion": true
+    },
+    {
+      "kind": "carrier",
+      "clip": "Sailing",
+      "frameCount": 20,
+      "transparentBorder": true,
+      "nonempty": true,
+      "hasMotion": true
+    }
+  ],
+  "sources": {
+    "Ships/Modern/Carrier/SourceArt/Carrier_Russian_Modern_v2.png": "e52e825883fc451ca89304e981f96a56a17a460025cce655a37b23b2fc5b02ef",
+    "Aircraft/Modern/FPVDrone/SourceArt/FPVDrone_Russian_Modern_v1.png": "a7fea6c84b14127577f3e4615932f6b696f78ffbb0e6dab9eac32649c51c0dab",
+    "Aircraft/Modern/FPVDrone/SourceArt/FPVDrone_Body_v1.png": "276c9ead8d15688a75339f41646f85cce8560f3addf66608a614486f381b7149"
+  }
+}

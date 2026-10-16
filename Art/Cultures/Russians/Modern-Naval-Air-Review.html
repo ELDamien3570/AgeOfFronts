@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Russian carrier & FPV drone — Age of Fronts</title>
+<style>
+  :root {color-scheme:dark;font:15px system-ui;background:#171d1a;color:#e9e9df}
+  body {max-width:1240px;margin:auto;padding:28px}
+  h1 {font-size:28px;margin:8px 0} h2 {font-size:19px;margin:0}
+  p {color:#b2beb6;line-height:1.6} a {color:#d8bc84}
+  .eyebrow {font-size:11px;letter-spacing:2px;color:#d8bc84}
+  .toolbar,nav {display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:20px 0}
+  button,select,input {font:inherit;accent-color:#d8bc84}
+  button,select {padding:8px 12px;background:#2c3730;color:#eee9dc;border:1px solid #506053;border-radius:6px}
+  button {cursor:pointer} label {display:flex;gap:8px;align-items:center}
+  .grid {display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  article {background:#222b25;border:1px solid #425045;border-radius:12px;overflow:hidden}
+  article header,article footer {padding:16px}
+  article footer {font-size:13px;line-height:1.8}
+  .stage {display:flex;justify-content:center;background:#194c5d}
+  .stage.field {background:#424b38}
+  canvas {display:block;width:100%;height:auto;max-width:460px}
+  body[data-background="checker"] .stage,body[data-background="checker"] .samples {background-color:#3d4b43;background-image:conic-gradient(#526158 25%,transparent 0 50%,#526158 0 75%,transparent 0);background-size:24px 24px}
+  body[data-background="light"] .stage,body[data-background="light"] .samples {background:#e2e6df}
+  .samples {display:flex;align-items:end;justify-content:space-evenly;gap:16px;background:#194c5d;padding:24px;min-height:150px}
+  .sample {display:flex;flex-direction:column;align-items:center;gap:12px;font-size:12px;color:#d7dccc}
+  .sample canvas {width:auto;max-width:none}
+  .note {font-size:13px;border-left:2px solid #d8bc84;padding-left:16px}
+  #status {font-size:13px;color:#d8bc84}
+  @media(max-width:700px){body{padding:16px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+<body data-background="scene">
+<div class="eyebrow">AGE OF FRONTS · RUSSIAN FACTION · MODERN</div>
+<h1>Aircraft carrier & FPV drone</h1>
+<p>Directly overhead painted sprites · north-facing · transparent PNG animation sheets.<br>Art and motion drafts for review. Display sizes below are proposals; these assets are not registered in a match.</p>
+<nav><a href="../../Ship%20Icons/Ship_Animation_Preview.html?culture=russian#Modern">Russian fleet reference ↗</a><a href="../../Building%20Icons/Aviation-Review.html?civ=russians#Modern">Russian aircraft reference ↗</a><a href="Modern-Naval-Air-Generation.json">Prompts & provenance ↗</a><a href="Modern-Naval-Air-Validation.json">Export validation ↗</a></nav>
+<div class="toolbar">
+  <button id="play" type="button">Pause</button><button id="previous" aria-label="Previous frame">←</button><button id="next" aria-label="Next frame">→</button>
+  <label>Frame <input id="frame" type="range" min="0" max="19" value="0"><output id="frame-label">1 / 20</output></label>
+  <label>Speed <select id="speed"><option value="0.5">½ speed</option><option value="1" selected>Normal</option></select></label>
+  <label>Background <select id="background"><option value="scene">Ocean / field</option><option value="checker">Transparency grid</option><option value="light">Light</option></select></label>
+</div>
+<p id="status" role="status">Loading animation sheets…</p>
+<div class="grid">
+<article>
+  <header><h2>Modern Russian carrier</h2><p>Ski-jump deck · starboard island · naval-gray finish</p><label>Animation <select id="carrier-clip"><option>Idle</option><option selected>Sailing</option></select></label></header>
+  <div class="stage"><canvas width="512" height="512" data-kind="carrier" aria-label="Russian modern aircraft carrier animation" role="img"></canvas></div>
+  <footer><a href="Ships/Modern/Carrier/SourceArt/Carrier_Russian_Modern_v2.png">Full-size painted master · overhead v2</a> · <a href="Ships/Modern/Carrier/animations.json">Animation metadata</a> · <a id="carrier-sheet" href="Ships/Modern/Carrier/Sailing.png">PNG sheet</a><br>Rigid hull, subtle buoyancy and a separate visual wake. Parked aircraft remain attached to the deck.</footer>
+</article>
+<article>
+  <header><h2>Russian FPV quadcopter</h2><p>Graphite X-frame · olive battery · forward camera</p><label>Animation <select id="drone-clip"><option>Idle</option><option selected>Hover</option><option>Flight</option></select></label></header>
+  <div class="stage field"><canvas width="512" height="512" data-kind="drone" aria-label="Russian FPV drone animation" role="img"></canvas></div>
+  <footer><a href="Aircraft/Modern/FPVDrone/SourceArt/FPVDrone_Russian_Modern_v1.png">Full-size painted master</a> · <a href="Aircraft/Modern/FPVDrone/animations.json">Animation metadata</a> · <a id="drone-sheet" href="Aircraft/Modern/FPVDrone/Hover.png">PNG sheet</a><br>Stopped rotors in Idle; a separate painted body with procedural spinning propellers in Hover and Flight.</footer>
+</article>
+<article><header><h2>Carrier silhouette at small sizes</h2><p>Review sizes, not a committed gameplay scale.</p></header><div class="samples">
+<div class="sample"><canvas width="64" height="64" data-kind="carrier" role="img" aria-label="Carrier at 64 pixels"></canvas>64 px</div>
+<div class="sample"><canvas width="96" height="96" data-kind="carrier" role="img" aria-label="Carrier at 96 pixels"></canvas>96 px</div>
+<div class="sample"><canvas width="128" height="128" data-kind="carrier" role="img" aria-label="Carrier at 128 pixels"></canvas>128 px</div>
+</div></article>
+<article><header><h2>FPV readability at small sizes</h2><p>Choose visibility deliberately before match integration.</p></header><div class="samples" style="background-color:#424b38">
+<div class="sample"><canvas width="24" height="24" data-kind="drone" role="img" aria-label="FPV drone at 24 pixels"></canvas>24 px</div>
+<div class="sample"><canvas width="32" height="32" data-kind="drone" role="img" aria-label="FPV drone at 32 pixels"></canvas>32 px</div>
+<div class="sample"><canvas width="48" height="48" data-kind="drone" role="img" aria-label="FPV drone at 48 pixels"></canvas>48 px</div>
+</div></article>
+</div>
+<p class="note">Five looping clips · 20 frames per clip · 512 × 512 frames · 2560 × 2048 sheets · center pivot. Motion is authored in place; a future renderer supplies travel and heading. Carrier flight operations and drone attacks require a separate visual/gameplay contract.</p>
+<section id="fpv-explosion" style="margin-top:28px">
+<h2>FPV drone explosion</h2>
+<p>Compact overhead flash, fireball and fragments, then dispersing smoke. One-shot effect · 1.5 seconds · 36 frames at 24 FPS.</p>
+<div class="toolbar">
+  <button id="explosion-replay" type="button">Replay explosion</button>
+  <button id="explosion-play" type="button">Play</button>
+  <label>Explosion frame <input id="explosion-frame" type="range" min="0" max="35" value="0"><output id="explosion-frame-label">1 / 36</output></label>
+  <label><input id="explosion-repeat" type="checkbox">Repeat with pause</label>
+</div>
+<p id="explosion-status" role="status">Loading explosion…</p>
+<div class="grid">
+<article><header><h2>Detonation detail</h2><p>Transparent effect with a fixed center pivot.</p></header>
+<div class="stage field"><canvas width="314" height="314" data-fpv-explosion role="img" aria-label="FPV drone explosion animation"></canvas></div>
+<footer><a href="Aircraft/Modern/FPVDrone/Explosion/Detonate-Sheet_00.png">PNG sprite sheet</a> · <a href="Aircraft/Modern/FPVDrone/Explosion/Detonate-Preview.webp">Looping WebP preview</a> · <a href="Aircraft/Modern/FPVDrone/Explosion/Detonate-OneShot.webp">One-shot WebP</a><br><a href="Aircraft/Modern/FPVDrone/Explosion/animations.json">Metadata and frame files</a> · <a href="Aircraft/Modern/FPVDrone/Explosion/generation-prompts.json">Generation prompt</a> · <a href="Aircraft/Modern/FPVDrone/Explosion/Validation.json">Export checks</a></footer></article>
+<article><header><h2>Explosion at small sizes</h2><p>Display proposals for judging readability.</p></header><div class="samples" style="min-height:250px;background-color:#424b38">
+<div class="sample"><canvas width="32" height="32" data-fpv-explosion role="img" aria-label="FPV explosion at 32 pixels"></canvas>32 px</div>
+<div class="sample"><canvas width="48" height="48" data-fpv-explosion role="img" aria-label="FPV explosion at 48 pixels"></canvas>48 px</div>
+<div class="sample"><canvas width="64" height="64" data-fpv-explosion role="img" aria-label="FPV explosion at 64 pixels"></canvas>64 px</div>
+</div><footer>No permanent crater or lingering opaque rectangle. The final frame is fully transparent. Damage, blast radius and match integration are separate from this art draft.</footer></article>
+</div>
+</section>
+<script type="module" src="modern-naval-air-review.js"></script>
+<script type="module" src="fpv-explosion-review.js"></script>
+</body></html>

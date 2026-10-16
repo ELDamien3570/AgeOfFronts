@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "frameCount": 36,
+  "sourceKeyframeCount": 16,
+  "frameSize": 314,
+  "sheetSize": [
+    2512,
+    1570
+  ],
+  "transparentBorders": true,
+  "fullyTransparentTerminalFrame": true,
+  "ignitionNonempty": true,
+  "peakAlpha": 254,
+  "animatedPreviewFrames": 36,
+  "sourcePreserved": true
+}

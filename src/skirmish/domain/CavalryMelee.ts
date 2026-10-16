@@ -10,9 +10,24 @@ export const CAVALRY_RANK_SPEED=1.5;
 export const CAVALRY_RANK_TURN_SPEED=1.5;
 export const CAVALRY_RANK_MOTION={cycle:secondsToTicks(16.2/CAVALRY_RANK_SPEED),firstAdvance:1.6*TICKS_PER_SECOND/CAVALRY_RANK_SPEED,
   advance:2*TICKS_PER_SECOND/CAVALRY_RANK_SPEED,brake:.4*TICKS_PER_SECOND/CAVALRY_RANK_SPEED,turn:3*TICKS_PER_SECOND/(CAVALRY_RANK_SPEED*CAVALRY_RANK_TURN_SPEED),return:2*TICKS_PER_SECOND/CAVALRY_RANK_SPEED} as const;
+export function validateRankLaunchSpacing(spacing:number):void {
+  if(!Number.isFinite(spacing)||spacing<.1||spacing>1)throw Error('Rank launch spacing must be between 10% and 100%');
+}
+function rankWaveOffset(rank:number,spacing:number):number {
+  const m=CAVALRY_RANK_MOTION,stride=m.brake+m.turn+m.advance;
+  return Math.max(rank?Math.ceil(m.advance):0,Math.floor(m.firstAdvance+rank*stride*spacing));
+}
+/** Preview overlap changes launch gaps, never a rider's travel/turn durations.
+ * Wait for the final rank to return before casualties can reshuffle cohorts. */
+export function cavalryRankCycleTicks(spacing=1):number {
+  validateRankLaunchSpacing(spacing);
+  if(spacing===1)return CAVALRY_RANK_MOTION.cycle;
+  const m=CAVALRY_RANK_MOTION;
+  return Math.ceil(rankWaveOffset(2,spacing)+m.brake+m.turn*2+m.return);
+}
 /** A cosmetic rank lunge bridges this body gap; a committed charge does not. */
 export function cavalryUsesRankWaves(source:Squad):boolean {
-  if(source.kind!=='cavalry'||!source.formation||source.cavalryEngagement)return false;
+  if(source.kind!=='cavalry'||!source.formation||source.cavalryEngagement||source.order.type!=='attack'||source.order.cavalryMode!=='ranks')return false;
   const slots=formationSlots(source,source.formation.transition?.startTick??0);
   return slots.some(p=>p.row!==slots[0]?.row);
 }
@@ -24,6 +39,7 @@ export function cavalryAttackGap(source:Squad,target:Squad):number {
 /** One weapon commitment, paid in three waves. Previous is presentation only. */
 export interface CavalryCycle {
   tick:number; interval:number; completed:number; troops:number; orderRevision:number;
+  launchSpacing?:number;
   definitionId:string; approachSpeed?:number; rankAxis?:number;rankBand?:number;
   contacts:readonly (MeleeStrike['contacts'][number] & {targetId:number; budget:number; lunge:number;laneWidth?:number;strikeDepth?:number;targetBody?:readonly {x:number;y:number}[];reshape?:number;reachable?:number;rankCounts?:readonly number[]})[];
 }
@@ -42,8 +58,7 @@ export function cavalryRanks(members:readonly {id:number;x:number;y:number}[],ax
   return ranks;
 }
 export function waveTick(c:CavalryCycle,rank:number):number {
-  const stride=CAVALRY_RANK_MOTION.brake+CAVALRY_RANK_MOTION.turn+CAVALRY_RANK_MOTION.advance;
-  return c.tick+Math.min(c.interval-1,Math.floor(CAVALRY_RANK_MOTION.firstAdvance+rank*stride));
+  return c.tick+Math.min(c.interval-1,rankWaveOffset(rank,c.launchSpacing??1));
 }
 /** Contact belongs to advancing riders, not their parked squad body. */
 export function cavalryRankExposure(c:CavalryCycle|undefined,tick:number):number {
@@ -56,7 +71,7 @@ export function cavalryRankExposure(c:CavalryCycle|undefined,tick:number):number
   return mask;
 }
 export function exposedCavalryContact(s:Squad,targetId:number,tick:number):CavalryCycle['contacts'][number]|undefined {
-  if(s.cavalryEngagement)return undefined;
+  if(s.cavalryEngagement && s.cavalryEngagement.phase!=='withdrawing')return undefined;
   for(const cycle of [s.cavalryMelee?.current,s.cavalryMelee?.previous])
     if(cavalryRankExposure(cycle,tick)){const contact=cycle?.contacts.find(p=>p.targetId===targetId&&p.lunge>0);if(contact)return contact;}
   return undefined;
@@ -72,6 +87,10 @@ export function validateCavalryMelee(value:CavalryMelee|undefined,tick=Infinity)
   for(const c of [value.current,value.previous]){
     if(!c)continue;
     validateMeleeStrike(c,tick);
+    if(c.launchSpacing!==undefined){
+      validateRankLaunchSpacing(c.launchSpacing);
+      if(c.interval<cavalryRankCycleTicks(c.launchSpacing))throw Error('Cavalry rank cycle ends before its riders return');
+    }
     if(!Number.isSafeInteger(c.interval)||c.interval<1||c.interval>12000||
       !Number.isSafeInteger(c.completed)||c.completed<0||c.completed>3||
       !Number.isSafeInteger(c.troops)||c.troops<1||c.troops>10000||

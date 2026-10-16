@@ -2,7 +2,7 @@ import {TICKS_PER_SECOND} from '../Protocol';
 import type { Squad } from "../Protocol";
 import type { Cost, RecruitmentJob, UnitDefinition } from "./Definitions";
 export const HEALTH_SCALE = 1000;
-export const FORMATION_RULES_VERSION = 11;
+export const FORMATION_RULES_VERSION = 12;
 export type RecipeVariant = "base" | "enlarged";
 export interface FormationRecipe {
   model: "soldiers" | "hull";

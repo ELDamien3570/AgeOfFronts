@@ -109,6 +109,8 @@ export interface ProgressionState {
   } | null;
 }
 export interface AttackProfile {
+  /** Percent hit contribution at contact and at authored maximum range. */
+  accuracy?: { near: number; far: number };
   perSoldier?: boolean;
   ranks?: number;
   rpm?: number;
@@ -125,6 +127,8 @@ export interface AttackProfile {
   targets: readonly TargetTag[];
 }
 export interface ChargeProfile {
+  /** Mounted assault bonus window after first contact; independent of recovery. */
+  bonusDurationTicks?: number;
   speedPercent: number;
   damage: number;
   radius: number;
@@ -317,6 +321,7 @@ export interface Barrier {
 }
 export type CombatSourceKind = "squad" | "ship" | "building" | "aircraft";
 export interface Projectile {
+  droneImpact?: { targetId:number; kind:'building'|'squad'|'ship'; damage:number };
   /** Launch permissions survive later peace/alliance transitions. */
   launchUnitOwners?: number[];
   launchStructureOwners?: number[];
@@ -355,14 +360,20 @@ export interface Projectile {
   interception?: { defenseId: number; playerId: number; tick: number; impactTick: number; fromX: number; fromY: number; toX: number; toY: number };
 }
 export interface Aircraft {
+  /** Prepared swarms have no members until launch. Each launched member shares one capacity identity. */
+  drone?: {swarmId:number; index:number; targetId?:number; targetKind?:'building'|'squad'|'ship'; damage:number};
   id: number; playerId: number;
   definitionId: "fighter" | "bomber" | "drone";
   airfieldId: number;
+    /** Absent in older saves: a building base. Retained if a carrier disappears in flight. */
+    baseKind?: 'carrier';
   x: number;
   y: number;
   health: number;
   target: { x: number; y: number } | null;
-  state: "ready" | "outbound" | "patrolling" | "returning";
+  state: "ready" | "outbound" | "patrolling" | "returning" | "transferring";
+  /** Destination reservation; source remains airfieldId until landing. */
+  transfer?: { destinationId: number };
   atomicPayload?: boolean;
   mission?: "bombing" | "patrol" | "atomic" | "drone";
   age?: Age;

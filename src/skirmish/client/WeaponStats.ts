@@ -1,3 +1,4 @@
+import { TICKS_PER_SECOND } from "../Protocol";
 import { scaledAttack } from "../domain/Combat";
 import type { UnitDefinition } from "../domain/Definitions";
 /** The same authored profiles used by combat; all damage values are per soldier. */
@@ -17,9 +18,10 @@ export function soldierWeaponStats(
     ["Melee attacks per minute", String(melee?.rpm ?? 0)],
     ["Formation tactics", "Flank/rear raise melee damage; shield wall protects its front; square resists cavalry; loose reduces ranged hits"],
     ["Reload speed", ranged ? `${ranged.reloadMs! / 1000}s` : "—"],
+    ...(ranged?.accuracy ? [["Accuracy (contact / maximum range)", `${ranged.accuracy.near}% / ${ranged.accuracy.far}%`] as [string,string]] : []),
     [
       "Charge multiplier",
-      unit.charge ? `${unit.chargeMultiplier ?? 1}× melee at impact` : "1×",
+      unit.charge ? `${unit.chargeMultiplier ?? 1}× melee${unit.charge.bonusDurationTicks!==undefined?` for ${unit.charge.bonusDurationTicks / TICKS_PER_SECOND}s after contact`:" at impact"}` : "1×",
     ],
   ];
 }

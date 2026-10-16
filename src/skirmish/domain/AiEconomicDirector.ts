@@ -298,6 +298,7 @@ export class AiEconomicDirector {
     });
     // Planning may invest in an owned, researched deposit before its mine is
     // built. Execution still spends only liquid stock through normal commands.
+    snapshot.invasion = this.expansion.operations.recruitmentObjective(player.id);
     const attainable = new Set(
       supply.deposits
         .filter(
@@ -309,7 +310,7 @@ export class AiEconomicDirector {
     );
     const posture=militaryPosture(snapshot,personalityOf(player),progression.technologySpeed);
     this.guardCities(player);
-    const demandKey=JSON.stringify([generation,state.age,state.completed,posture.target,snapshot.buildings.map(b=>[b.id,b.type,b.age,!b.remainingTicks&&(b.health??1)>0]),this.ledger.protected(player.id).items]);
+    const demandKey=JSON.stringify([generation,state.age,state.completed,posture.target,snapshot.invasion,snapshot.buildings.map(b=>[b.id,b.type,b.age,!b.remainingTicks&&(b.health??1)>0]),this.ledger.protected(player.id).items]);
     const pending=this.demandPlanning.get(player.id);
     const demand = militaryDemand(
       snapshot,

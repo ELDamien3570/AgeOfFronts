@@ -42,7 +42,7 @@ export interface EmpireActions {
   build(type: BuildingType, age?: Age): void;
   notify(text: string): void;
   focusedRef(): string | null;
-  target(action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void, hint: string, preview?: (x:number,y:number,shift?:boolean)=>string): void;
+  target(action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number;unitId?:number}) => void, hint: string, preview?: (x:number,y:number,shift?:boolean)=>string): void;
 }
 
 export class EmpireView {

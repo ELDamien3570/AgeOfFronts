@@ -1,6 +1,8 @@
+import {CarrierAircraftPresentation} from '../../src/skirmish/client/CarrierAircraftPresentation';
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { AircraftPresentation } from "../../src/skirmish/client/AircraftPresentation";
+import { AircraftGroundPresentation } from "../../src/skirmish/client/AircraftGroundPresentation";
 import { AircraftView } from "../../src/skirmish/client/AircraftView";
 import { Renderer } from "../../src/skirmish/client/Renderer";
 import type { ArtworkFrame } from "../../src/skirmish/client/UnitArtwork";
@@ -154,6 +156,7 @@ describe("aircraft flight presentation", () => {
     const renderer = Object.assign(Object.create(Renderer.prototype), {
       snapshot,
       aircraftPresentation: presentation,
+      carrierAircraft:new CarrierAircraftPresentation(),aircraftGround: new AircraftGroundPresentation(),
       aircraftBlend: 1,
       scale: 1,
       offsetX: 0,

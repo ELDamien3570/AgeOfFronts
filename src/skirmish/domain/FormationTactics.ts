@@ -25,7 +25,15 @@ export function tacticalFacts(a:Squad,b:Squad,tick:number,channel:'melee'|'range
   if(!b.formation||b.afloat)return {arc:'front' as Arc,bp:10000,modifiers:[] as string[]};
   const from=channel==='melee'&&a.formation?formationContact(a,b,tick).source:a;
   const shape=formationEnvelope(b,tick).shape;
-  const facts=formationModifiers(shape,!b.formation.transition&&shape!=='column',channel,facingArc(b,from,tick),formationDoctrine(a.definitionId).mounted,charge);
+  let arc=facingArc(b,from,tick);
+  if(b.cavalryEngagement?.phase==='withdrawing' && b.locomotion){
+    // Extraction freezes the collision body to avoid creating fresh overlap.
+    // The riders still turn, so defensive exposure follows their travel facing.
+    const dx=from.x-b.x,dy=from.y-b.y,length=Math.hypot(dx,dy);
+    const c=length?(-Math.sin(b.locomotion.heading)*dx+Math.cos(b.locomotion.heading)*dy)/length:1;
+    arc=c>=FACING.frontCos?'front':c<=-FACING.frontCos?'rear':'flank';
+  }
+  const facts=formationModifiers(shape,!b.formation.transition&&shape!=='column',channel,arc,formationDoctrine(a.definitionId).mounted,charge);
   if(channel==='ranged'&&a.formation){
     const own=formationEnvelope(a,tick).shape;
     if(own==='column')facts.modifiers.push('column: two firing ranks');

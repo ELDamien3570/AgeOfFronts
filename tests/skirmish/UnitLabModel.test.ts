@@ -25,6 +25,16 @@ const target: DpsTarget = {
   soldiers: false,
 };
 describe("unit lab estimates and draft isolation", () => {
+  it("uses weapon accuracy at the selected distance and validates edited curves", () => {
+    const draft = makeDraft(LAB_ENTITIES.find(e => e.key === 'unit:napoleonic-archer')!);
+    const victim = { ...target, tag: 'infantry' as const, soldiers: true };
+    const near = estimatedDps(draft, { ...victim, distance: 0 }, 'base', 'line')[0];
+    const far = estimatedDps(draft, { ...victim, distance: 12 }, 'base', 'line')[0];
+    expect(near.dps / far.dps).toBeCloseTo(.9 / .35);
+    const unit = draft.definition as unknown as UnitDefinition;
+    unit.rangedAttack!.accuracy!.near = 101;
+    expect(() => validateDraft(draft.definition)).toThrow(/accuracy/i);
+  });
   it("derives mounted reserves and horses from both recipe sizes, including after JSON edits", () => {
     const draft = makeDraft(
       LAB_ENTITIES.find((e) => e.key === "unit:stoneage-cavalry")!,
@@ -51,7 +61,7 @@ describe("unit lab estimates and draft isolation", () => {
     definition.cost.items = { ...definition.cost.items, horses: 77 };
     validateDraft(foot.definition);
     expect(draftRecruitmentCost(foot, "base")!.items?.horses).toBeUndefined();
-    expect(UNIT.get("stoneage-cavalry")!.formationRecipe!.capacity).toBe(4);
+    expect(UNIT.get("stoneage-cavalry")!.formationRecipe!.capacity).toBe(9);
   });
   it("keeps aggregate naval damage normalized and applies hypothetical accuracy", () => {
     const draft = makeDraft(

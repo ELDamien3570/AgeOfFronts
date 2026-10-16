@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><title>Airfield transfer review</title>
+  <style>
+    body {
+      background: #14221d;
+      color: #e1e8df;
+      font: 16px system-ui;
+      margin: 30px;
+    }
+    canvas {
+      background: #586748;
+      border: 1px solid #71806b;
+      display: block;
+    }
+    button {
+      margin: 12px 8px 12px 0;
+      padding: 10px;
+    }
+    p {
+      max-width: 900px;
+    }
+  </style>
+  <h1>Airfield transfer review</h1>
+  <p>
+    Click a plane to select it. Shift-click selects more. Right-click the other
+    airfield to transfer. The view uses the game's aircraft presentation,
+    artwork, and simulation.
+  </p>
+  <button id="reset">Reset</button
+  ><button id="era">Switch era</button
+  ><button id="transfer">Transfer selected</button
+  ><span id="status"></span
+  ><canvas width="1050" height="550"></canvas>
+  <script type="module">
+    import { GameMapImpl } from "/src/core/game/GameMap.ts";
+    import { Skirmish } from "/src/skirmish/Simulation.ts";
+    import { FIXED } from "/src/skirmish/Protocol.ts";
+    import { AircraftPresentation } from "/src/skirmish/client/AircraftPresentation.ts";
+    import { AircraftGroundPresentation } from "/src/skirmish/client/AircraftGroundPresentation.ts";
+    import { AircraftView } from "/src/skirmish/client/AircraftView.ts";
+    import { EraArtwork } from "/src/skirmish/client/EraArtwork.ts";
+    const canvas = document.querySelector("canvas"),
+      ctx = canvas.getContext("2d"),
+      status = document.querySelector("#status");
+    const artwork = new EraArtwork(),
+      view = new AircraftView(),
+      flight = new AircraftPresentation(),
+      ground = new AircraftGroundPresentation();
+    const scale = 96,
+      selected = new Set();
+    let game,
+      source,
+      destination,
+      last = 0,
+      poses = [],
+      era = "Modern";
+    const screen = (p) => ({
+      x: (p.x / FIXED - 14) * scale + 80,
+      y: (p.y / FIXED - 19) * scale + 130,
+    });
+    function reset() {
+      const data = new Uint8Array(100 * 80).fill(133);
+      game = new Skirmish(new GameMapImpl(100, 80, data, data.length), {
+        seed: 47,
+        aiCount: 1,
+        tribes: false,
+        runAi: false,
+        ruleset: "ages-v1",
+      });
+      const field = (x) => {
+        const b = game.addBuilding({
+          id: game.allocateId(),
+          playerId: 1,
+          type: "airstrip",
+          age: "Modern",
+          tile: 20 * 100 + x,
+          health: 5000,
+          maxHealth: 5000,
+          remainingTicks: 0,
+        });
+        game.owners[b.tile] = 1;
+        return b;
+      };
+      source = field(15);
+      destination = field(22);
+      for (let i = 0; i < 6; i++)
+        game.expansion.aircraft.push({
+          id: game.allocateId(),
+          playerId: 1,
+          definitionId: i % 2 ? "fighter" : "bomber",
+          age: "Modern",
+          airfieldId: source.id,
+          ...game.expansion.battle.position(source),
+          health: 1000,
+          state: "ready",
+          target: null,
+          reloadTick: 0,
+          fuelTicks: 2400,
+        });
+      selected.clear();
+      flight.reset();
+      ground.reset();
+      update();
+    }
+    function update() {
+      const s = game.snapshot();
+      flight.update(s);
+      ground.update(s);
+    }
+    function transfer() {
+      const error = game.applyCommand({
+        type: "transfer-aircraft",
+        playerId: 1,
+        aircraftIds: [...selected],
+        buildingId: destination.id,
+      });
+      status.textContent = error ?? "Transfer accepted";
+      update();
+    }
+    document.querySelector("#reset").onclick = reset;
+    document.querySelector("#transfer").onclick = transfer;
+    document.querySelector("#era").onclick = () => {
+      era = era === "Modern" ? "EarlyModern" : "Modern";
+    };
+    canvas.onclick = (e) => {
+      const r = canvas.getBoundingClientRect(),
+        x = e.clientX - r.left,
+        y = e.clientY - r.top;
+      const hit = poses
+        .slice()
+        .sort(
+          (a, b) =>
+            Math.hypot(a.p.x - x, a.p.y - y) - Math.hypot(b.p.x - x, b.p.y - y),
+        )
+        .find((a) => Math.hypot(a.p.x - x, a.p.y - y) <= a.pose.radius);
+      if (!e.shiftKey) selected.clear();
+      if (hit) {
+        selected.add(hit.id);
+        status.textContent = `Selected #${hit.id}`;
+      }
+    };
+    canvas.oncontextmenu = (e) => {
+      e.preventDefault();
+      transfer();
+    };
+    function frame(t) {
+      if (t - last >= 50) {
+        game.step();
+        update();
+        last = t;
+      }
+      ctx.clearRect(0, 0, 1050, 550);
+      ctx.fillStyle = "#d8e4d3";
+      ctx.font = "16px system-ui";
+      poses = [];
+      for (const b of [source, destination]) {
+        const p = screen({
+            x: (b.tile % 100) * FIXED,
+            y: Math.floor(b.tile / 100) * FIXED,
+          }),
+          art = artwork.get("building-" + era.toLowerCase() + "-airstrip");
+        if (art)
+          ctx.drawImage(
+            art.source,
+            art.x,
+            art.y,
+            art.width,
+            art.height,
+            p.x,
+            p.y,
+            192,
+            192,
+          );
+        ctx.fillText(
+          b === source ? "Departure airfield" : "Destination airfield",
+          p.x,
+          p.y - 18,
+        );
+      }
+      for (const a of game.expansion.aircraft) {
+        const pose = ground.pose(a.id, flight.pose(a.id), scale, 1),
+          p = screen(pose);
+        poses.push({ id: a.id, p, pose });
+        view.draw(
+          ctx,
+          p,
+          pose,
+          artwork.get(
+            era.toLowerCase() + "-" + a.definitionId,
+            a.state === "ready" ? "idle" : "flight",
+            game.tick,
+          ),
+          "#72bcea",
+          selected.has(a.id),
+        );
+      }
+      requestAnimationFrame(frame);
+    }
+    reset();
+    requestAnimationFrame(frame);
+  </script>
+</html>

@@ -1,3 +1,4 @@
+import { DRONE_SWARM } from '../content/DroneSwarms';
 import { TRENCH } from "../content/TacticalRules";
 import { FIXED, TICKS_PER_SECOND, type BuildingType } from "../Protocol";
 import { BUILDING_RULES } from "../Rules";
@@ -208,7 +209,7 @@ export function technologyDetails(technology: Technology): string[] {
   if (role === "naval-missiles-air-defence") {
     lines.push("Modern warships: +15% base attack and +1 tile range");
     lines.push(
-      `Air defence: ${weapon(NAVAL_AIR_ATTACK)} · homing rockets against hostile aircraft; drones cannot be intercepted`,
+      `Air defence: ${weapon(NAVAL_AIR_ATTACK)} · homing rockets against hostile aircraft; includes FPV drones`,
     );
   }
   if (role === "fortifications" && ageIndex >= 6) {
@@ -218,7 +219,7 @@ export function technologyDetails(technology: Technology): string[] {
     );
     if (age === "Modern")
       lines.push(
-        `Ground air defence: ${weapon(NAVAL_AIR_ATTACK)} · drones cannot be intercepted`,
+        `Ground air defence: ${weapon(NAVAL_AIR_ATTACK)} · includes FPV drones`,
       );
   }
   if (["airfields", "bombers", "mirvs-drones"].includes(role)) {
@@ -230,7 +231,7 @@ export function technologyDetails(technology: Technology): string[] {
           : "drone";
     const rule = FLIGHT_RULES[kind];
     lines.push(
-      `${kind}: ${number(rule.gold)} gold · ${RECRUITMENT_SECONDS.aircraft}s recruitment · ${number(AIRCRAFT_RULES.health)} HP · ${number((rule.speed * TICKS_PER_SECOND) / FIXED)} tiles/s`,
+      `${kind}: ${number(rule.gold)} gold · ${RECRUITMENT_SECONDS.aircraft}s recruitment · ${number(kind==="drone"?DRONE_SWARM.health:AIRCRAFT_RULES.health)} HP${kind==="drone"?" per drone":""} · ${number((rule.speed * TICKS_PER_SECOND) / FIXED)} tiles/s`,
     );
     lines.push(
       `Aircraft capacity: ${AIRCRAFT_RULES.airfieldCapacity} per launch site · ${AIRCRAFT_RULES.factionCapacity} per faction · ${flightTicks(kind, age) / TICKS_PER_SECOND}s flight time`,
@@ -240,7 +241,7 @@ export function technologyDetails(technology: Technology): string[] {
     );
     if (kind === "fighter")
       lines.push(
-        "I Dispatch: patrol and intercept hostile fighters and bombers. Fighters do not bomb ground targets.",
+        "I Dispatch: patrol and intercept hostile aircraft and FPV drones. Fighters do not bomb ground targets.",
       );
     if (kind === "bomber")
       lines.push(`P Bombing Run: ${weapon(BOMBER_ATTACK)}`);
@@ -249,6 +250,7 @@ export function technologyDetails(technology: Technology): string[] {
         `U Drone Strike: ${weapon(DRONE_ATTACK)} · single use · no interception`,
       );
   }
+  if(role==='aircraft-carriers') lines.push('Carrier: 12,000 gold · six shared fighter/bomber berths · onboard recruitment and transfers · P bombing, O atomic and I dispatch. Stationed aircraft sink with the carrier; airborne planes divert to available friendly bases.');
   if (role === "nuclear-weapons")
     lines.push(
       `O A-Bomb Run: ${weapon(ATOMIC_ATTACK)} · one atomic payload per bomber · blast damages friendly and hostile targets`,

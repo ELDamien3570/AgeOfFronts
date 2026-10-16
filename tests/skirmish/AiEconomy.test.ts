@@ -460,6 +460,8 @@ describe("coordinated AI economy", () => {
     expect(
       automaticProduction({
         ...context,
+        // The shared ready reserve is 100; the paid final kit fills it.
+        inventory: { ...context.inventory, "equipment:bronzeage": 99 },
         incoming: { "equipment:bronzeage": 1 },
       }).size,
     ).toBe(0);

@@ -24,6 +24,7 @@ import { validateWeaponState } from "./domain/WeaponTiming";
 import { validateMeleeStrike } from "./domain/MeleeStrike";
 import { chargeDisrupted, validateChargeImpact } from './domain/ChargeImpact';
 import { cavalryOverlapAllowed,validateCavalryEngagement } from './domain/CavalryEngagement';
+import { cavalryWithdrawal } from './domain/CavalryAssault';
 import { movingCavalryRush,movingFormationReform,validateChargeStrength } from './domain/ChargeStrength';
 import { createManpower, damageManpower, HEALTH_SCALE, readyFraction, remainingHealth, maximumHealth, recipeCapacity, reserveConversion, scaledRecipeCost, validateRecipeManpower, validateRecruitmentRecipe, manpowerCount, type RecipeVariant } from './domain/Manpower';
 import { recruitmentVariant } from './content/FormationRecipes';
@@ -75,7 +76,7 @@ import {
 } from "./domain/AiPersonality";
 import { FactionRoster } from "./domain/FactionRoster";
 import { AiForceInventory } from "./domain/AiForceInventory";
-import { canPromoteTribe } from "./FactionRules";
+import { canPromoteTribe, MAX_PLAYER_ID } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
 import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
@@ -267,7 +268,11 @@ export class Skirmish {
       }
     }
     if (this.expansion) for(const squad of saved.squads) { validateRecipeManpower(UNIT.get(squad.definitionId??""),squad.manpower,squad.troops); validateWeaponState(squad.weaponState);validateOccupancy(squad.occupancy);validateStance(squad.stance,squad.lastWithdrawTick);validateFormation(squad.formation,squad.definitionId,squad.troops); if([squad.formation?.lastDeployTick,squad.formation?.blockedSince,squad.formation?.settledSince].some(clock=>(clock??0)>saved.tick))throw new Error("Invalid formation deployment clock"); }
-    for (const squad of saved.squads) {validateTransportDamage(squad.afloat);validateAiWithdrawal(squad.aiWithdrawal,saved.tick);}
+    for (const squad of saved.squads) {
+      validateTransportDamage(squad.afloat);validateAiWithdrawal(squad.aiWithdrawal,saved.tick);
+      for(const order of [squad.order,...squad.queuedOrders])
+        if(order.type==='attack'&&order.cavalryMode!==undefined&&order.cavalryMode!=='ranks')throw Error('Invalid cavalry attack mode');
+    }
     for(const progress of saved.navigationProgress.values())if(progress.policyWait){
       const wait=progress.policyWait;
       if(typeof wait.revision!=='string'||typeof wait.requested!=='boolean'||!Number.isSafeInteger(wait.capacity)||wait.capacity<0||
@@ -539,35 +544,38 @@ export class Skirmish {
   private footprintDiplomacyRevision = -1;
   private footprintThreatRevision = -1;
   /** Capture/contact radius, not only the unit centre, defines foreign entry. */
-  private aiFootprintAllowed(playerId: number, tile: number): boolean {
+  private aiFootprintAllowed(playerId: number, tile: number, prospectiveOwner?: number): boolean {
     const diplomacy=this.expansion?.diplomacy,owner=this.owners[tile];
     if(diplomacy?.raids){
       if(!this.player(playerId)?.ai)return true;
-      return this.expansion!.operations.canEnter(playerId,owner,tile);
+      return owner === prospectiveOwner || this.expansion!.operations.canEnter(playerId,owner,tile);
     }
     if (!this.options.aiWarPolicy || !this.expansion?.operations.enabled(this.player(playerId))) return true;
     // Own territory is always legal transit. Capture permission is checked per
     // tile, so neutral land inside capture range cannot fence an owned shore.
     if (this.owners[tile] === playerId) return true;
+    // Hypothetical invasion quotes have a separate, drain-local cache namespace.
+    // Their prospective permission must cover the footprint, not only its centre.
+    const cacheOwner = playerId + (prospectiveOwner ?? 0) * (MAX_PLAYER_ID + 1);
     const cache = this.routeFootprints;
     if (cache) {
       const operations = this.expansion.operations.revision, diplomacy = this.expansion.diplomacy.revision, threats = this.expansion.operations.permissionRevision;
       if (operations !== this.footprintOperationRevision || diplomacy !== this.footprintDiplomacyRevision || threats !== this.footprintThreatRevision) {
         cache.clear(); this.routeEntries?.clear(); this.footprintOperationRevision = operations; this.footprintDiplomacyRevision = diplomacy; this.footprintThreatRevision = threats;
       }
-      const known = cache.get(playerId)?.get(tile);
+      const known = cache.get(cacheOwner)?.get(tile);
       if (known !== undefined) return known;
     }
     let allowed = true;
-    let entries = this.routeEntries?.get(playerId);
-    if (this.routeEntries && !entries) this.routeEntries.set(playerId, entries = new Map());
+    let entries = this.routeEntries?.get(cacheOwner);
+    if (this.routeEntries && !entries) this.routeEntries.set(cacheOwner, entries = new Map());
     const component = this.paths.component[tile];
     this.eachInRadius(tile, CAPTURE_RADIUS, neighbor => {
       if (!allowed || this.paths.component[neighbor] !== component) return;
       // These two permissions are unconditional in AiOperations.canEnter;
       // avoid hashing the overwhelmingly common home/unclaimed tile reads.
       const owner = this.owners[neighbor];
-      if (!owner || owner === playerId) return;
+      if (!owner || owner === playerId || owner === prospectiveOwner) return;
       let entry = entries?.get(neighbor);
       if (entry === undefined) {
         entry = this.aiCanEnter(playerId, neighbor);
@@ -576,8 +584,8 @@ export class Skirmish {
       if (!entry) allowed = false;
     });
     if (cache) {
-      let tiles = cache.get(playerId);
-      if (!tiles) cache.set(playerId, tiles = new Map());
+      let tiles = cache.get(cacheOwner);
+      if (!tiles) cache.set(cacheOwner, tiles = new Map());
       tiles.set(tile, allowed);
     }
     return allowed;
@@ -863,7 +871,7 @@ export class Skirmish {
           if(task.owner==="trade")return this.expansion?.trade.routeBlocked(task);
           if(task.owner==="strategy"&&task.stage==="invasion-quote"&&task.prospectiveOwner!==undefined)
             return tile=>!!this.expansion?.fortifications.blocked(tile,task.playerId)||
-              (this.owners[tile]!==task.prospectiveOwner&&!this.aiFootprintAllowed(task.playerId,tile));
+              !this.aiFootprintAllowed(task.playerId,tile,task.prospectiveOwner);
           return this.obstacleTest(task.playerId);
         }
         if(request.context.kind==="ship-admission")return undefined;
@@ -1192,7 +1200,7 @@ export class Skirmish {
         trail:keep && old.shape==='column' && !doctrine.hull?old.trail:undefined}};
     }
     if(previous?.formation && changes.charge!==undefined && !changes.formation){
-      const unfolding=previous.formation.shape==='column' && movingCavalryRush({...previous,...changes});
+      const unfolding=previous.formation.shape==='column' && previous.formation.automatic===true && movingCavalryRush({...previous,...changes});
       const formation=unfolding?{...previous.formation,shape:deployedShape(previous),mode:'deployed' as const,automatic:false,trail:undefined}:previous.formation;
       const next={...previous,...changes,formation},before=formationEnvelope(previous,this.tick),after=formationEnvelope(next,this.tick);
       if(before.shape!==after.shape){
@@ -1252,8 +1260,8 @@ export class Skirmish {
       return "This player cannot issue orders";
     if (command.type === "delete-ship") {
       const ship = this.ship(command.shipId);
-      if (player.ai || !ship || ship.playerId !== player.id || ship.kind !== "warship")
-        return "Select one of your warships";
+      if (player.ai || !ship || ship.playerId !== player.id || (ship.kind !== "warship" && ship.kind !== 'carrier'))
+        return "Select one of your ships";
       this.removeShip(ship.id);
       return null;
     }
@@ -1443,6 +1451,11 @@ export class Skirmish {
       if(retained) return this.applyLineOrder(command,selected as Squad[],retained);
     }
     if (order.type === "attack") {
+      if(order.cavalryMode==='ranks' && selected.some(s=>{
+        const unit=this.expansion?.unit(s!);
+        return !unit?.charge || !unit.meleeAttack || unit.line!=='cavalry';
+      }))return "Rank attacks require melee cavalry";
+      if(order.cavalryMode==='ranks' && selected.some(s=>s!.cavalryEngagement && s!.cavalryEngagement.phase!=='withdrawing'))return "Withdraw before ordering rank attacks";
       const target = this.squad(order.targetId);
       if (
         !target ||
@@ -1699,12 +1712,12 @@ export class Skirmish {
     }
     this.squadEntities.updateOwned(squad.id, { order: structuredClone(order) });
     if(!continuingAttack){
-      if(squad.cavalryMelee)this.updateSquad(squad.id,{cavalryMelee:undefined,meleeStrike:undefined});
       const e=squad.cavalryEngagement;
-      if(e){
-        const withdrawing=order.type==='move'||order.type==='replenish'||order.type==='attack'&&!e.targetIds.includes(order.targetId);
-        this.updateSquad(squad.id,{cavalryEngagement:{...e,phase:withdrawing?'withdrawing':'engaged'},charge:null});
-      }
+      const withdrawing=order.type==='move'||order.type==='replenish'||order.type==='attack'&&!!e&&!e.targetIds.includes(order.targetId);
+      const withdrawal=withdrawing?cavalryWithdrawal(squad,this.tick):undefined;
+      if(squad.cavalryMelee)this.updateSquad(squad.id,{cavalryMelee:withdrawal?{...squad.cavalryMelee,current:{...squad.cavalryMelee.current,completed:3}}:undefined,meleeStrike:undefined});
+      const continueAssault=e && order.type==='attack' && order.cavalryMode!=='ranks' && e.targetIds.includes(order.targetId);
+      if(withdrawal || e)this.updateSquad(squad.id,{cavalryEngagement:withdrawal??(continueAssault?{...e!,phase:e!.phase==='withdrawing'?'engaged':e!.phase}:{...e!,phase:'engaged',assault:undefined}),charge:null});
     }
     if(!continuingAttack&&!this.player(squad.playerId)?.ai)this.playerAttacks.observe(squad,order.type==="attack"?this.squad(order.targetId):undefined);
     this.orderRevisions.set(squad.id, (this.orderRevisions.get(squad.id) ?? 0) + 1);
@@ -2479,7 +2492,11 @@ export class Skirmish {
       if (job.category === "ship")
         return this.recruitShip(player, job.buildingId, job.kind as ShipType, job.definitionId, true) === null;
       return this.expansion!.completeAircraft(job);
-    }, job => this.refundRecruitment(job), id => this.building(id));
+      }, job => this.refundRecruitment(job), id => {
+        const building=this.building(id);if(building)return building;
+        const carrier=this.ship(id);
+        return carrier?.kind==='carrier'?{kind:'carrier' as const,id:carrier.id,playerId:carrier.playerId,health:carrier.health,remainingTicks:carrier.refit?.remainingTicks??0}:undefined;
+      });
   }
 
   private refundRecruitment(job: RecruitmentJob): void {
@@ -2565,8 +2582,8 @@ export class Skirmish {
       : SHIP_RULES[kind];
     if (!completing && availableGold(player) < rules.cost) return "Not enough gold for this ship";
     const cap = shipCap(player, kind);
-    if (!completing && this.shipIndex.byOwner(player.id).filter(s => s.kind === kind).length +
-      this.recruitment.byOwner(player.id).filter(j => j.category === "ship" && j.kind === kind).length >= cap)
+    if (!completing && this.shipIndex.byOwner(player.id).length +
+      this.recruitment.byOwner(player.id).filter(j => j.category === "ship").length >= cap)
       return `This faction allows ${cap} ${kind === "warship" ? "warships" : "transports"}`;
     const tile = portWaterTiles(this.map, port.tile)
       .find((n) => this.waterPaths.walkable(n));
@@ -3591,9 +3608,13 @@ export class Skirmish {
         }
       }
     if(this.expansion?.diplomacy.raids)for(let at=0;at<land.length;at++){
-      const squad=land[at];if(squad.afloat||squad.embarkedOn!==null||this.player(squad.playerId)?.ai)continue;
-      const oldTile=pointTile(this.map,{x:this.previousPositions[at*2],y:this.previousPositions[at*2+1]}),tile=this.tileOf(squad),owner=this.owners[tile];
-      if(oldTile!==tile&&this.owners[oldTile]!==owner&&this.expansion.diplomacy.nonAllied(squad.playerId,owner))
+      const squad=land[at];if(squad.embarkedOn!==null||this.player(squad.playerId)?.ai)continue;
+      // Resolve actual movement after rollback, including transported squads.
+      // Moving inside an existing foreign tile is entry too; ownership changes
+      // beneath a stationary squad must not manufacture a declaration.
+      if(squad.x===this.previousPositions[at*2]&&squad.y===this.previousPositions[at*2+1])continue;
+      const owner=this.owners[this.tileOf(squad)];
+      if(this.expansion.diplomacy.nonAllied(squad.playerId,owner))
         this.expansion.diplomacy.establishWar(squad.playerId,owner,this.tick,"entry");
     }
     for (const squad of this.squads) {
@@ -3722,7 +3743,16 @@ export class Skirmish {
         const target=this.squad(id);return !!target && target.troops>0 && this.hostile(squad.playerId,target.playerId) &&
           (phase!=='withdrawing'||formationContact(squad,target,this.tick).gap<=CONTACT.release);
       });
-      if(phase==='withdrawing'&&!targetIds.length){this.updateSquad(squad.id,{cavalryEngagement:undefined});continue;}
+      // A human withdrawal stays a movement order until its destination. Close
+      // encounter acquisition must not repeatedly turn it back into an attack.
+      if(phase==='withdrawing'&&!targetIds.length&&this.tick>=(old.withdrawUntilTick??0)&&squad.order.type!=='move'){
+        this.updateSquad(squad.id,{cavalryEngagement:undefined,cavalryMelee:undefined});continue;
+      }
+      if(phase!=='withdrawing'&&!targetIds.length){this.updateSquad(squad.id,{cavalryEngagement:undefined,charge:null});continue;}
+      // Recovery requires time out of melee. No meter refills while an assault
+      // is fighting, including after its initial damage window has expired.
+      if((squad.chargeReadyTick??0)>this.tick && targetIds.some(id=>{const t=this.squad(id);return t&&formationContact(squad,t,this.tick).gap<=CONTACT.release;}))
+        this.updateSquad(squad.id,{chargeReadyTick:squad.chargeReadyTick!+1});
       if(phase!==old.phase||targetIds.length!==old.targetIds.length){
         this.updateSquad(squad.id,{cavalryEngagement:{...old,phase,targetIds},
           ...(phase==='engaged'&&squad.locomotion?{locomotion:{...squad.locomotion,speed:0}}:{})});
@@ -4127,7 +4157,9 @@ export class Skirmish {
     if(squad.occupancy?.phase==='occupying'&&squad.order.type!=='move')return null;
     const engagement=squad.cavalryEngagement;
     if(engagement?.phase==='penetrating')return {squad,goal:{x:engagement.goalX,y:engagement.goalY},speed:this.movementSpeed(squad),stopDistance:0};
-    if(engagement?.phase==='engaged')return null;
+    if(engagement?.phase==='engaged' && (!engagement.assault || engagement.targetIds.some(id=>{
+      const target=this.squad(id);return target&&formationContact(squad,target,this.tick).gap<=CONTACT.release;
+    })))return null;
     // Ordinary Move becomes combat at a legal close encounter. Distant ranged
     // acquisition does not discard a march, and explicit Shift legs survive.
     if(squad.order.type==='move' && squad.fighting && !squad.afloat && !squad.charge && !engagement &&
@@ -4174,7 +4206,7 @@ export class Skirmish {
           this.squadPaths(squad.playerId).connected(this.tileOf(squad),this.tileOf(enemy))&&
           (!this.expansion||this.expansion.unit(squad).attack.targets.some(tag=>this.expansion!.unit(enemy).tags.includes(tag))),enemy=>this.tileOf(enemy),true,enemy=>this.attackApproaches.load(squad.playerId,enemy.id));
         if(!target){if(this.playerAttacks.expired(squad,this.tick))this.finishOrder(squad);return null;}
-        this.activateOrder(squad,{type:"attack",targetId:target.id},[],true);
+        this.activateOrder(squad,{...squad.order,targetId:target.id},[],true);
       }
       const ranged = this.expansion
         ? this.expansion.unit(squad).attack.channel === "ranged"
@@ -4196,7 +4228,7 @@ export class Skirmish {
           this.squadPaths(squad.playerId).connected(this.tileOf(squad),this.tileOf(enemy))&&
           (!this.expansion||this.expansion.unit(squad).attack.targets.some(tag=>this.expansion!.unit(enemy).tags.includes(tag))),enemy=>this.tileOf(enemy),false,
           enemy=>this.attackApproaches.load(squad.playerId,enemy.id));
-        if(replacement){this.activateOrder(squad,{type:"attack",targetId:replacement.id},[],true);return null;}
+        if(replacement){this.activateOrder(squad,{...squad.order,targetId:replacement.id},[],true);return null;}
       }
       const engagementDistance=ranged?stopDistance:cavalryAttackGap(squad,target);
       // A rank-wave rider must finish braking against its admitted standoff
@@ -4936,6 +4968,9 @@ export class Skirmish {
       const recovering = policy && this.expansion!.operations.state(player.id)?.phase === "recovery";
       const target = policy ? this.expansion!.operations.offensiveTarget(player.id) : undefined;
       const finishing = target !== undefined && this.expansion!.operations.finishing(player.id, target);
+      const committedInvasion = target !== undefined && !!this.expansion!.operations.recruitmentObjective(player.id);
+      const pushing = finishing || committedInvasion;
+      const invasionReserve = committedInvasion ? this.expansion!.operations.invasionReserve(player.id, own.length) : 0;
       const enemyPlayers = policy
         ? this.players.filter(p => p.id === target && !p.eliminated)
         : this.players.filter(p => this.hostile(p.id, player.id) && !p.eliminated);
@@ -4991,7 +5026,8 @@ export class Skirmish {
         if (policy && ((squad.order.type === "attack" && (!this.squad(squad.order.targetId) || !this.aiCanPursue(player.id, this.squad(squad.order.targetId)!.playerId, this.tileOf(this.squad(squad.order.targetId)!)))) ||
           (squad.order.type === "move" && ((!this.aiFootprintAllowed(player.id, squad.order.tile)) || (recovering && squad.order.tile !== player.base)))))
           this.applyCommand({ type: "order", playerId: player.id, squadIds: [squad.id], order: { type: "hold" } });
-        if (player.kind === "tribe" && squad.order.type === "attack") {
+        if (player.kind === "tribe" && squad.order.type === "attack" &&
+          !(pushing && this.squad(squad.order.targetId)?.playerId === target)) {
           const target = this.squad(squad.order.targetId);
           if (
             !target ||
@@ -5019,7 +5055,7 @@ export class Skirmish {
           const enemyTile = this.tileOf(enemy);
           const d = this.distanceSquared(squad, enemy);
           if (
-            player.kind === "tribe" &&
+            player.kind === "tribe" && !(pushing && enemy.playerId === target) &&
             this.owners[enemyTile] !== player.id &&
             d >
               (Math.round(
@@ -5112,11 +5148,11 @@ export class Skirmish {
         let raidCenter: number | null = campLost ? player.base : null;
         if (campLost) goal = player.base;
         else if (
-          player.kind === "regular" &&
+          (player.kind === "regular" || committedInvasion) &&
           enemyPlayers.length &&
-          (finishing || (!homeNeedsLand && own.length >= (this.expansion?.operations.offensiveTarget(player.id)!==undefined ? 2 : personality.minimumRaidSquads))) &&
-          i % 8 < personality.raidSlots &&
-          this.tick > personality.raidAfterTicks
+          (pushing || (!homeNeedsLand && own.length >= (this.expansion?.operations.offensiveTarget(player.id)!==undefined ? 2 : personality.minimumRaidSquads))) &&
+          (committedInvasion ? i < own.length - invasionReserve : i % 8 < personality.raidSlots) &&
+          this.tick > (player.kind === "tribe" ? secondsToTicks(30) : personality.raidAfterTicks)
         ) {
           const enemy = enemyPlayers.reduce((a, b) =>
             this.map.euclideanDistSquared(current, a.base) <
@@ -5134,15 +5170,15 @@ export class Skirmish {
           const objective = remaining[0]?.tile ?? (lastSquad ? this.tileOf(lastSquad) : enemy.base);
           goal = this.formationTile(
             objective,
-            Math.floor(i / 8) * personality.raidSlots + i % 8,
-            Math.ceil(own.length / 8) * personality.raidSlots,
+            committedInvasion ? i : Math.floor(i / 8) * personality.raidSlots + i % 8,
+            committedInvasion ? own.length - invasionReserve : Math.ceil(own.length / 8) * personality.raidSlots,
           );
           raidCenter = objective;
           // Do not sit forever on captured enemy camps.
           if (this.owners[goal] === player.id) {
             nearest ??= this.spatial.nearest(squad.x, squad.y, (enemy) =>
               this.hostile(enemy.playerId, player.id) && this.aiCanPursue(player.id, enemy.playerId, this.tileOf(enemy)) &&
-              (!finishing || enemy.playerId === target) &&
+              (!pushing || enemy.playerId === target) &&
               this.aiCanEnter(player.id, this.tileOf(enemy)) && enemy.embarkedOn === null &&
               (!this.expansion || this.expansion.unit(squad).attack.targets.some(
                 tag => this.expansion!.unit(enemy).tags.includes(tag))),
@@ -5428,6 +5464,7 @@ export class Skirmish {
     const inheritors = new Map<number, number>();
     for (const player of defeated) {
       const beneficiary = this.conquest.beneficiary(player.id, eliminated);
+      const recipient = this.expansion?.diplomacy.raids && !this.expansion.diplomacy.canCapture(beneficiary,player.id) ? 0 : beneficiary;
       if (
         player.ai && player.kind === "regular" &&
         this.player(beneficiary)?.kind === "tribe" && this.expansion
@@ -5451,11 +5488,15 @@ export class Skirmish {
         (a, b) => a - b,
       )) {
         if (this.owners[tile] !== player.id) continue;
-        this.changeOwner(tile,this.expansion?.diplomacy.raids&&!this.expansion.diplomacy.canCapture(beneficiary,player.id)?0:beneficiary);
+        this.changeOwner(tile,recipient);
         this.progress[tile] = 0;
         this.claims[tile] = 0;
         this.activeClaims.delete(tile);
       }
+      // Fallout can neutralize land while surviving buildings keep their owner.
+      // Resolve those remaining structures without claiming or cleaning that land.
+      for (const building of [...this.buildingIndex.byOwner(player.id)])
+        this.updateBuilding(building.id, { playerId: recipient });
       // Dead vessels are cleaned after terminal ownership resolution.
       for (const ship of [...this.shipIndex.byOwner(player.id)].reverse()) this.removeShip(ship.id);
       if (this.expansion)

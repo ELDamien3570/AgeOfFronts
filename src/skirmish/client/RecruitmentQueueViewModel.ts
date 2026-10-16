@@ -40,7 +40,7 @@ export class RecruitmentQueueViewModel {
           job.category === "aircraft"
             ? job.kind === "fighter"
               ? "Fighter"
-              : "Bomber"
+              : job.kind === 'drone' ? 'Drone swarm' : "Bomber"
             : (UNIT.get(job.definitionId ?? "")?.name ??
               VESSEL.get(job.definitionId ?? "")?.name ??
               job.kind);

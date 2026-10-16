@@ -5,7 +5,7 @@ import type { GameMap } from "../../core/game/GameMap";
 import { tradeActorCap } from "../FactionRules";
 import { SpatialGrid } from "../SpatialGrid";
 import type { BuildingQueries } from "../BuildingIndex";
-import { LAND_TRADE_CAPACITIES, stackCargoPercent, TRADE_RULES } from "../content/Economy";
+import { TRADE_RULES } from "../content/Economy";
 import { technologyAt } from "../content/Technology";
 import { VESSELS } from "../content/Units";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
@@ -24,7 +24,8 @@ import type { Diplomacy } from "./Diplomacy";
 import type { DomainRoutePorts, DomainRouteTask } from "./DomainRoutePorts";
 import type { Fortifications } from "./Fortifications";
 import type { Progression } from "./Progression";
-import { cargoHandlingPercent, logisticsTier, landTraderTier, portCargoPercent, roadsUnlocked, vesselEffects } from "./ResearchEffects";
+import { logisticsTier, roadsUnlocked } from "./ResearchEffects";
+import { tradeCargoCapacity, tradeCargoEffects } from "./TradeCargo";
 import { TradeReceiving } from "./TradeReceiving";
 import type { Roads } from "./Roads";
 import type { Supply } from "./Supply";
@@ -341,55 +342,38 @@ export class Trade {
   private siteKey(owner: number, naval: boolean, tile: number): string {
     return `${owner}:${naval ? 1 : 0}:${tile}`;
   }
+  /** A current read view; publishing it must not change receiving or courier state. */
+  private currentMarkets(owner: number, facts: BuildingQueries | undefined, geometryChanged: boolean): OwnerMarkets {
+    const list = (type: Building["type"]) =>
+      facts?.completed(owner, type) ??
+      this.world.buildings.filter(b => b.playerId === owner && b.type === type && this.ready(b));
+    const factories = list("factory"), ports = list("port"), cities = list("city"),
+      previous = this.markets.get(owner);
+    if (!geometryChanged && previous && previous.factories === factories &&
+      previous.ports === ports && previous.cities === cities) return previous;
+    const groups = new Map<string, Building[]>();
+    for (const b of [...factories, ...ports]) {
+      const key = `${b.type}:${b.tile}`, group = groups.get(key) ?? [];
+      group.push(b); groups.set(key, group);
+    }
+    const sites: Site[] = [];
+    for (const buildings of groups.values()) {
+      buildings.sort((a,b) => a.id-b.id);
+      const source = buildings[0], naval = source.type === "port",
+        water = naval ? portWaterTiles(this.world.map, source.tile)
+          .find(t => this.world.waterPaths.walkable(t)) : undefined;
+      if (!naval || water !== undefined) sites.push({source, buildings, naval, water});
+    }
+    return {factories, ports, cities, sites, markets: [...cities, ...ports]};
+  }
   private refreshMarkets(): void {
     const facts = this.world.buildingFacts?.(),
-      geometryChanged =
-        !!facts && facts.geometryRevision !== this.marketGeometry;
+      geometryChanged = !!facts && facts.geometryRevision !== this.marketGeometry;
     let changed = false;
     for (const p of this.world.players) {
-      const list = (type: Building["type"]) =>
-        facts?.completed(p.id, type) ??
-        this.world.buildings.filter(
-          (b) => b.playerId === p.id && b.type === type && this.ready(b),
-        );
-      const factories = list("factory"),
-        ports = list("port"),
-        cities = list("city"),
-        previous = this.markets.get(p.id);
-      if (
-        !geometryChanged &&
-        previous &&
-        previous.factories === factories &&
-        previous.ports === ports &&
-        previous.cities === cities
-      )
-        continue;
-      const groups = new Map<string, Building[]>();
-      for (const b of [...factories, ...ports]) {
-        const key = `${b.type}:${b.tile}`,
-          group = groups.get(key) ?? [];
-        group.push(b);
-        groups.set(key, group);
-      }
-      const sites: Site[] = [];
-      for (const buildings of groups.values()) {
-        buildings.sort((a, b) => a.id - b.id);
-        const source = buildings[0],
-          naval = source.type === "port",
-          water = naval
-            ? portWaterTiles(this.world.map, source.tile)
-                .find((t) => this.world.waterPaths.walkable(t))
-            : undefined;
-        if (!naval || water !== undefined)
-          sites.push({ source, buildings, naval, water });
-      }
-      this.markets.set(p.id, {
-        factories,
-        ports,
-        cities,
-        sites,
-        markets: [...cities, ...ports],
-      });
+      const current = this.currentMarkets(p.id, facts, geometryChanged);
+      if (this.markets.get(p.id) === current) continue;
+      this.markets.set(p.id, current);
       changed = true;
     }
     this.marketGeometry = facts?.geometryRevision ?? -1;
@@ -909,18 +893,14 @@ export class Trade {
     const research = this.progression.states[owner].completed;
     const cached = this.cargoResearch.get(owner);
     if (cached && cached.tick === this.world.tick && cached.revision === this.progression.revision && cached.research === research && cached.count === research.length) return cached;
-    const tier = landTraderTier(research), vessel = VESSELS.filter(v => v.kind === "trade" && research.includes(v.technologyId)).slice(-1)[0];
     const value = { tick: this.world.tick, revision: this.progression.revision, research, count: research.length,
-      landCapacity: LAND_TRADE_CAPACITIES[tier], landDefinition: `${AGES[tier].toLowerCase()}-trader`,
-      seaCapacity: vessel ? vesselEffects(vessel, research).capacity! : LAND_TRADE_CAPACITIES[tier],
-      seaDefinition: vessel?.id ?? `${AGES[tier].toLowerCase()}-trader`, seaSpeed: vessel?.speed ?? 1400 / TICKS_PER_SECOND,
-      handling: cargoHandlingPercent(research) * portCargoPercent(research) };
+      ...tradeCargoEffects(research) };
     this.cargoResearch.set(owner, value); return value;
   }
   private capacity(site: Site): { value: number; definition: string } {
     const effects = this.cargoEffects(site.source.playerId);
     return {
-      value: Math.floor(((site.naval ? effects.seaCapacity : effects.landCapacity) * effects.handling * stackCargoPercent(site.buildings.length)) / 1000000),
+      value: tradeCargoCapacity(effects, site.naval, site.buildings.length),
       definition: site.naval ? effects.seaDefinition : effects.landDefinition,
     };
   }
@@ -1019,17 +999,22 @@ export class Trade {
       capacity: this.capacity(site).value };
   }
   siteSnapshot(): NonNullable<import("./Definitions").ExpansionSnapshot["tradeSites"]> {
-    return [...this.markets.values()].flatMap(m => [...m.sites.map(site => ({
+    const facts = this.world.buildingFacts?.(),
+      geometryChanged = !!facts && facts.geometryRevision !== this.marketGeometry;
+    return this.world.players.flatMap(player => {
+      const m = this.currentMarkets(player.id, facts, geometryChanged);
+      return [...m.sites.map(site => ({
       playerId: site.source.playerId, tile: site.source.tile, naval: site.naval,
       cargo: site.buildings.reduce((n,b) => n + (this.supply.goods.get(b.id) ?? 0), 0),
-      maxCargo: 1000 * site.buildings.length,
+      maxCargo: site.buildings.reduce((n,b) => n + this.supply.goodsCapacity(b), 0),
       shipmentCapacity: this.capacity(site).value,
       ...(site.naval ? { receiving: this.receiving.status(TradeReceiving.key(site.source.playerId, site.source.tile), this.world.tick) } : {}),
     })), ...m.cities.filter((b,i,all) => all.findIndex(other => other.tile === b.tile) === i).map(b => ({
       kind: "city" as const, playerId: b.playerId, tile: b.tile, naval: false,
       cargo: 0, maxCargo: 0, shipmentCapacity: 0,
       receiving: this.receiving.status(TradeReceiving.key(b.playerId,b.tile),this.world.tick),
-    }))]);
+    }))];
+    });
   }
   private spawn(): void {
     // Prizes are transferred couriers, not new actors. Their brief arrival

@@ -33,7 +33,7 @@ export type Order =
   | { type: "replenish" }
   // Formation coordinates are assigned by the domain, never trusted from commands.
   | { type: "move"; tile: number; x?: number; y?: number; facing?: number; formationIntent?: {shape:import("./domain/FormationGeometry").FormationShape;frontage?:number} }
-  | { type: "attack"; targetId: number };
+  | { type: "attack"; targetId: number; cavalryMode?: "ranks" };
 
 export type Command =
   | {type:"occupy";playerId:number;squadIds:number[];tile:number;frontageTiles?:number[];append?:boolean}
@@ -144,7 +144,15 @@ export type Command =
       definitionId: "fighter" | "bomber" | "drone";
     }
   | {
+      type: "transfer-aircraft";
+      playerId: number;
+      aircraftIds: number[];
+      buildingId: number;
+    }
+  | {
       type: "sortie";
+      targetBuildingId?: number;
+      targetUnitId?: number;
       mission?: "bombing" | "patrol" | "atomic" | "drone";
       playerId: number;
       aircraftIds: number[];
@@ -341,8 +349,8 @@ export type BuildingType =
   | "nuclear-facility"
   | "drone-facility"
   | "anti-air-emplacement";
-/** Squads cross water themselves (see Afloat); every fleet vessel is a warship. */
-export type ShipType = "warship";
+/** Squads cross water themselves (see Afloat); carriers are mobile aircraft bases. */
+export type ShipType = "warship" | "carrier";
 
 export interface Building {
   readonly id: number;
@@ -398,6 +406,8 @@ export interface Ship {
 // An actual released volley, retained briefly for presentation. Damage is
 // resolved by the simulation; arrow animation never determines casualties.
 export interface ArcherVolley {
+  /** Exact squad carriers at impact, including a squad removed by this hit. */
+  combatRoots?: {sourceX:number;sourceY:number;targetX:number;targetY:number};
   id: number;
   tick: number;
   squadId: number;

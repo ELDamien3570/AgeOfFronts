@@ -181,7 +181,7 @@ describe("mobile mass formation", () => {
                 (2 / 0.75),
             ).toBeGreaterThan(scale * (400 / 512) * (2 / 0.75));
       expect(resolveFormation("mass", mounted, false)).toBe("mass");
-      expect(resolveFormation("mass", mounted, true)).toBe("wedge");
+      expect(resolveFormation("mass", mounted, true)).toBe("mass");
     }
   });
   it("turns while beginning loose travel instead of waiting for every soldier to pivot", () => {

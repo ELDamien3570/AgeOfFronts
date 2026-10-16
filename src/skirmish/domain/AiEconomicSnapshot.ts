@@ -31,6 +31,7 @@ export interface AiEconomicSnapshot {
   readyTroops: number;
   threatTroops: number;
   isolated?: boolean;
+  invasion?: { target: number; squads: number };
   supplyLimitedSources?: readonly number[];
 }
 export function economicSnapshot(input: {

@@ -22,11 +22,13 @@ export function installTroopPresentation(
   let time = 0,
     previousFrame: number | undefined,
     latest: Snapshot | undefined;
+  let presentedSource:Snapshot|undefined;
 
   const actors = new TroopActors(() => time, {
     reformInPlace: true,
     infantryCrowdPress: reviewOptions?.infantryCrowdPress ?? (() => true),
     groundElevationAt: (x, y) => renderer.groundElevationAt(x, y),
+    unitDefinition: squad=>renderer.unitDefinition?.(squad)??UNIT.get(squad.definitionId??''),
     troops: [...RUSSIAN_TROOP_ACTORS.values()],
     byDefinitionId: RUSSIAN_TROOP_ACTORS,
     formationForSquad: (squad) => squad.formation?.shape ?? formationDoctrine(squad.definitionId).defaultShape,
@@ -78,26 +80,24 @@ export function installTroopPresentation(
       latest = undefined;
       time = 0;
       previousFrame = undefined;
+      presentedSource=undefined;
     },
     update(snapshot) {
       latest = snapshot;
-      time = Math.max(time, snapshot.tick * TICK_MS);
-      actors.setDetailed(renderer.pixelsPerCell >= TROOP_DETAIL_CUTOFF);
-      actors.prune(snapshot);
-
     },
     beginFrame(now, speed, paused) {
-      if (latest && !paused && previousFrame !== undefined)
+      const frame=renderer.combatFrame(now,speed,paused);
+      if(frame){latest=frame.snapshot;time=frame.tick*TICK_MS;}
+      else if (latest && !paused && previousFrame !== undefined)
         time = Math.min(
           (latest.tick + 1) * TICK_MS,
           time + Math.min(100, now - previousFrame) * speed,
         );
       previousFrame = now;
-      if (
-        actors.setDetailed(renderer.pixelsPerCell >= TROOP_DETAIL_CUTOFF) &&
-        latest
-      )
-        actors.prune(latest);
+      const detailChanged=actors.setDetailed(renderer.pixelsPerCell >= TROOP_DETAIL_CUTOFF);
+      if(latest && (detailChanged || (frame?.source??latest)!==presentedSource)){
+        actors.prune(latest);presentedSource=frame?.source??latest;
+      }
       actors.beginFrame();
     },
     endFrame(now) {

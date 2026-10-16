@@ -41,6 +41,7 @@ export interface PackedSnapshotDetails {
   shipNavalPriority?: Float64Array;
   squadTransportDamage?: Float64Array;
   volleys: Float64Array;
+  volleyRoots?: Float64Array;
   ids: Float64Array;
 }
 export const DETAIL_STRIDES = {
@@ -294,7 +295,7 @@ export function packSnapshotDetails(
       b = shipData;
     b[at] = s.id;
     b[at + 1] = s.playerId;
-    b[at + 2] = 0; // Hull class: warship is the only fleet vessel.
+    b[at + 2] = s.kind === 'carrier' ? 1 : 0;
     b[at + 3] = s.x;
     b[at + 4] = s.y;
     b[at + 5] = s.health;
@@ -368,6 +369,8 @@ export function packSnapshotDetails(
         }
       : {}),
     volleys: volleyData,
+    ...(volleys.some(v=>v.combatRoots)?{volleyRoots:new Float64Array(volleys.filter(v=>v.combatRoots).flatMap(v=>
+      [v.id,v.combatRoots!.sourceX,v.combatRoots!.sourceY,v.combatRoots!.targetX,v.combatRoots!.targetY]))}:{}),
     ids,
   };
 }
@@ -422,6 +425,14 @@ export function validateSnapshotDetails(
   if(data.shipNavalPriority)for(let at=0;at<data.shipNavalPriority.length;at+=2)
     if(![0,1].includes(data.shipNavalPriority[at+1]))throw new Error("Invalid naval priority");
   rows(data.squadTransportDamage,3,MAX_SQUADS*255);
+  rows(data.volleyRoots,5,MAX_SQUADS*255);
+  if(data.volleyRoots){
+    const volleyIds=new Set<number>();
+    for(let at=0;at<data.volleys.length;at+=data.version>=3?DETAIL_STRIDES.volley:9)volleyIds.add(data.volleys[at]);
+    for(let at=0;at<data.volleyRoots.length;at+=5){
+      if(!volleyIds.has(data.volleyRoots[at]) || Array.from(data.volleyRoots.subarray(at+1,at+5)).some(v=>!Number.isFinite(v)||Math.abs(v)>2147483647))throw Error('Invalid combat carrier roots');
+    }
+  }
   if(data.squadTransportDamage)for(let at=0;at<data.squadTransportDamage.length;at+=3)
     if(![data.squadTransportDamage[at+1],data.squadTransportDamage[at+2]].every(v=>Number.isFinite(v)&&v>=0))throw new Error("Invalid transport passenger damage");
   if(data.shipAirDefense)for(let at=0;at<data.shipAirDefense.length;at+=2)if(!Number.isSafeInteger(data.shipAirDefense[at+1])||data.shipAirDefense[at+1]<0)throw new Error("Invalid ship air defence tick");
@@ -537,7 +548,7 @@ export function validateSnapshotDetails(
     const b = data.ships;
     range(b[at + 7], b[at + 8], 100_000);
     finite(b, at + 1, 5);
-    enumeration(b[at + 2], 1, false);
+    enumeration(b[at + 2], 2, false);
     enumeration(b[at + 9], 2, false);
     string(b[at + 10]);
     string(b[at + 13], true);
@@ -704,7 +715,7 @@ export function unpackSnapshotDetails(
     ships.push({
       id: b[at],
       playerId: b[at + 1],
-      kind: "warship",
+      kind: b[at + 2] === 1 ? "carrier" : "warship",
       x: b[at + 3],
       y: b[at + 4],
       health: b[at + 5],
@@ -733,6 +744,9 @@ export function unpackSnapshotDetails(
     for(let i=0;i<ships.length;i++)if(priorities.has(ships[i].id))ships[i]={...ships[i],navalPriority:priorities.get(ships[i].id)};
   }
   const volleys: ArcherVolley[] = []
+  const roots=new Map<number,NonNullable<ArcherVolley['combatRoots']>>();
+  if(data.volleyRoots)for(let at=0;at<data.volleyRoots.length;at+=5)roots.set(data.volleyRoots[at],{
+    sourceX:data.volleyRoots[at+1],sourceY:data.volleyRoots[at+2],targetX:data.volleyRoots[at+3],targetY:data.volleyRoots[at+4]});
   for (
     let at = 0; at < data.volleys.length;
     at += data.version >= 3 ? DETAIL_STRIDES.volley : 9
@@ -748,6 +762,7 @@ export function unpackSnapshotDetails(
       fromY: b[at + 6],
       toX: b[at + 7],
       toY: b[at + 8],
+      ...(roots.has(b[at])?{combatRoots:roots.get(b[at])}:{}),
       ...(data.version >= 3 && b[at + 9] >= 0 ? { targetId: b[at + 9] } : {}),
       ...(data.version >= 3 && b[at + 10] > 0 ? { damage: b[at + 10] } : {}),
       ...(data.version >= 3 && b[at + 11] ? { melee: true } : {}),

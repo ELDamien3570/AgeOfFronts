@@ -77,7 +77,7 @@ export function validateBarrierChanges(packet: SnapshotPacket): void {
 function writeOrder(output: Int32Array, at: number, order: Order) {
   output[at] = ORDER_TYPES.indexOf(order.type);
   if (order.type === "move") output[at + 1] = order.tile;
-  if (order.type === "attack") output[at + 2] = order.targetId;
+  if (order.type === "attack") { output[at + 2] = order.targetId; output[at + 1] = order.cavalryMode === "ranks" ? 1 : 0; }
   if (order.type === "move" && order.x !== undefined) {
     output[at + 3] = order.x;
     output[at + 4] = order.y!;
@@ -91,7 +91,7 @@ function writeOrder(output: Int32Array, at: number, order: Order) {
 }
 function readOrder(input: Int32Array, at: number): Order {
   const type = ORDER_TYPES[input[at]];
-  if (type === "attack") return { type, targetId: input[at + 2] };
+  if (type === "attack") return { type, targetId: input[at + 2], ...(input[at + 1] ? { cavalryMode: "ranks" as const } : {}) };
   if (type === "move")
     return {
       type,
@@ -417,6 +417,7 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
       ...(details.shipAirDefense ? [details.shipAirDefense] : []),
       ...(details.shipNavalPriority ? [details.shipNavalPriority] : []),
       ...(details.squadTransportDamage ? [details.squadTransportDamage] : []),
+      ...(details.volleyRoots ? [details.volleyRoots] : []),
       ...(details.squads ? [details.squads] : []), ...(details.squadMotion ? [details.squadMotion] : []),
       ...(details.buildings ? [details.buildings] : []),
       ...(details.formationSlots ? [details.formationSlots.removed, ...details.formationSlots.upserts.map(row => row.coordinates)] : [])] : []),
@@ -454,6 +455,7 @@ export class SnapshotDecoder {
     const payloads = packet.details ? validateSnapshotDetails(packet.details,{ tick: packet.tick, troops, slots }) : undefined;
     if(packet.orders.length%ORDER_STRIDE)throw new Error("Invalid order stride");
     for(let at=0;at<packet.orders.length;at+=ORDER_STRIDE){const shape=packet.orders[at+6],width=packet.orders[at+7];
+      if(packet.orders[at]===3&&packet.orders[at+1]!==0&&packet.orders[at+1]!==1)throw new Error("Invalid cavalry attack mode");
       if(shape<0||shape>FORMATION_SHAPES.length||width<0||width>128*256||(!shape&&width)||shape&&packet.orders[at]!==2)throw new Error("Invalid order formation intent");
     }
     validateBarrierChanges(packet);

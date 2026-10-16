@@ -32,6 +32,15 @@ function setup() {
   return { snapshot, selection, vm, own, buildings, squads };
 }
 describe("snapshot-driven HUD selection", () => {
+  it("labels a neutral surviving building as neutral",()=>{
+    const {snapshot,selection,vm,buildings}=setup(),building=snapshot.buildings[0];
+    buildings.update(building.id,{playerId:0,health:40,remainingTicks:0});
+    selection.selectedBuilding=building.id;
+    const card=vm().selectionCard(null);
+    if(card.mode!=="detail")throw Error("Expected detail");
+    expect(card.card.subtitle).toBe("Neutral building");
+  });
+
   it("reports a stationary move order as waiting for clearance", () => {
     const {selection,vm,own,squads}=setup();
     squads.update(own[0].id,{order:{type:"move",tile:20},moved:false});selection.selected.add(own[0].id);

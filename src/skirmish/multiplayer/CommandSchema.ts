@@ -22,7 +22,7 @@ const order = z.discriminatedUnion("type", [
       y: point.y.optional(),
     })
     .strict(),
-  z.object({ type: z.literal("attack"), targetId: id }).strict(),
+  z.object({ type: z.literal("attack"), targetId: id, cavalryMode: z.literal("ranks").optional() }).strict(),
 ]);
 const command = <T extends string>(
   type: T,
@@ -98,7 +98,8 @@ export const commandSchema = z.discriminatedUnion("type", [
     autoRecruit: z.boolean().optional(),
     definitionId: z.enum(["fighter", "bomber", "drone"]),
   }),
-  command("sortie", { mission:z.enum(["bombing","patrol","atomic","drone"]).optional(), aircraftIds: ids, ...point }),
+  command("sortie", { mission:z.enum(["bombing","patrol","atomic","drone"]).optional(), aircraftIds: ids, targetBuildingId:id.optional(), targetUnitId:id.optional(), ...point }),
+  command("transfer-aircraft", { aircraftIds: ids, buildingId: id }),
   command("launch", {
     launcherId: id,
     payload: z.enum(["icbm", "hydrogen", "mirv"]),
@@ -130,7 +131,7 @@ export const commandSchema = z.discriminatedUnion("type", [
     buildingId: id,
     buildingIds: z.array(id).min(1).max(10_000).optional(),
     autoRecruit: z.boolean().optional(),
-    shipType: z.enum(["warship"]),
+    shipType: z.enum(["warship","carrier"]),
     definitionId: text.optional(),
   }),
   command("sail", { shipIds: ids, tile: id, append: z.boolean().optional() }),

@@ -224,11 +224,14 @@ element("wasd-mode").addEventListener("click", () => {
   hud.setWasdMode(cameraPan.enabled);
 });
 
+function recruitmentScope():Set<number> {
+  return new Set([...renderer.selectedBuildings,...(snapshot?.ships??[]).filter(s=>s.playerId===localPlayerId&&s.kind==='carrier'&&renderer.selectedShips.has(s.id)).map(s=>s.id)]);
+}
 const recruitmentFeed = new RecruitmentQueueView(element("recruitment-feed"), element("app"), entry => {
   command({
     type: "cancel-recruitment", playerId: localPlayerId,
     category: entry.category, definitionId: entry.definitionId, kind: entry.kind,
-    buildingIds: renderer.selectedBuildings.size ? [...renderer.selectedBuildings] : undefined,
+    buildingIds: recruitmentScope().size ? [...recruitmentScope()] : undefined,
   });
 });
 const empire = new EmpireView(element("app"), {
@@ -335,7 +338,7 @@ let lastPlacementAttempt = 0;
 
 let targetPreview: ((x:number,y:number,shift?:boolean)=>string) | undefined;
 const flightTip=document.createElement("div");flightTip.style.cssText="position:fixed;z-index:100;pointer-events:none;padding:6px 9px;background:#111e;color:white;border-radius:5px;font:13px system-ui";flightTip.hidden=true;document.body.append(flightTip);
-let targetedAction: ((x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void) | undefined;
+let targetedAction: ((x: number, y: number, gesture?: {shift:boolean; buildingId?:number;unitId?:number}) => void) | undefined;
 
 const orderGesture = new OrderGesture();
 
@@ -343,7 +346,7 @@ const empireModel = () =>
   snapshot?.expansion ? new EmpireViewModel(snapshot, renderer) : undefined;
 
 function beginTarget(
-  action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void,
+  action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number;unitId?:number}) => void,
   hint: string,
   preview?: (x:number,y:number,shift?:boolean)=>string,
 ): void {
@@ -889,8 +892,9 @@ function updateHud(): void {
   try {
 
   updateTerrainHover();
-  if (recruitmentProjection) recruitmentProjection.update(snapshot, localPlayerId, renderer.selectedBuildings);
-  else recruitmentProjection = new RecruitmentQueueViewModel(snapshot, localPlayerId, renderer.selectedBuildings);
+  const recruitmentSites=recruitmentScope();
+  if (recruitmentProjection) recruitmentProjection.update(snapshot, localPlayerId, recruitmentSites);
+  else recruitmentProjection = new RecruitmentQueueViewModel(snapshot, localPlayerId, recruitmentSites);
   recruitmentFeed.update(recruitmentProjection);
   recordSection("recruitment-feed");
 
@@ -1647,6 +1651,7 @@ canvas.addEventListener("pointerup", (event) => {
     action(Math.round(world.x * FIXED), Math.round(world.y * FIXED), {
       shift:start.shift,
       buildingId:start.button === 2 ? renderer.buildingAt(p.x,p.y) ?? undefined : undefined,
+      unitId:start.button === 2 ? renderer.squadAt(p.x,p.y)?.id ?? renderer.shipAt(p.x,p.y) ?? undefined : undefined,
     });
     return;
   }
@@ -1700,10 +1705,8 @@ canvas.addEventListener("pointerup", (event) => {
       const candidates = { squads: [] as number[], ships: [] as number[], aircraft: [] as number[] };
       for (const aircraft of snapshot.expansion?.aircraft ?? []) {
         if (aircraft.playerId !== localPlayerId) continue;
-        const position = renderer.screen(
-          aircraft.x / FIXED,
-          aircraft.y / FIXED,
-        );
+        const position = renderer.aircraftScreenPoint(aircraft.id);
+        if (!position) continue;
         if (
           position.x >= Math.min(p.x, start.x) &&
           position.x <= Math.max(p.x, start.x) &&
@@ -1826,6 +1829,15 @@ canvas.addEventListener("pointerup", (event) => {
       }
     }
     if (renderer.selectedAircraft.size) {
+      const carrier=snapshot.ships.find(s=>s.id===renderer.shipAt(p.x,p.y)&&s.kind==="carrier"&&s.playerId===localPlayerId);
+      if(carrier){command({type:"transfer-aircraft",playerId:localPlayerId,aircraftIds:[...renderer.selectedAircraft],buildingId:carrier.id});return;}
+      const destinationId = renderer.buildingAt(p.x, p.y);
+      const destination = snapshot.buildings.find(b => b.id === destinationId);
+      if (destination?.type === "airstrip" && destination.playerId === localPlayerId) {
+        command({ type: "transfer-aircraft", playerId: localPlayerId,
+          aircraftIds: [...renderer.selectedAircraft], buildingId: destination.id });
+        return;
+      }
       const position = renderer.world(p.x, p.y);
       const order = sortieCommand(snapshot, localPlayerId,
         Math.round(position.x * FIXED), Math.round(position.y * FIXED),

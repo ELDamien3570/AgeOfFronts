@@ -973,7 +973,7 @@
       "age": "Modern",
       "role": "Aircraft recruitment",
       "status": "draft",
-      "file": "Modern/Military Airstrip/Icon.png",
+      "file": "Modern/Military Airstrip/Icon-Operational-Apron-v1.png",
       "newFacility": true,
       "original": "../../../Building Icons/Military Airstrip/Top-Down-Correction/MilitaryAirstrip_Modern.png",
       "era": "Contemporary"
@@ -1043,11 +1043,11 @@
       "age": "EarlyModern",
       "role": "Aircraft recruitment",
       "status": "draft",
-      "file": "EarlyModern/Military Airstrip/Icon-WWII-v4.png",
+      "file": "EarlyModern/Military Airstrip/Icon-Operational-Apron-v1.png",
       "newFacility": true,
       "original": "../../../Building Icons/Military Airstrip/Top-Down-Correction/MilitaryAirstrip_Modern.png",
       "era": "WWII",
-      "selectedSource": "EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png"
+      "selectedSource": "EarlyModern/Military Airstrip/Icon-Operational-Apron-v1.png"
     },
     {
       "id": "barracks",

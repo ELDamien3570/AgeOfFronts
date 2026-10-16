@@ -24,16 +24,16 @@ import {
 } from "./browser/TroopPrototypeModel";
 
 describe("instanced troop presentation contracts", () => {
-  it("uses wedge only for charge and limits cavalry to line outside charge", () => {
+  it("preserves the deliberate formation choice for mounted and charging troops", () => {
     for (const selected of [
       "line",
       "shield-wall",
       "square",
     ] as ManualFormation[]) {
       expect(resolveFormation(selected, false, false)).toBe(selected);
-      expect(resolveFormation(selected, true, false)).toBe("line");
-      expect(resolveFormation(selected, false, true)).toBe("wedge");
-      expect(resolveFormation(selected, true, true)).toBe("wedge");
+      expect(resolveFormation(selected, true, false)).toBe(selected);
+      expect(resolveFormation(selected, false, true)).toBe(selected);
+      expect(resolveFormation(selected, true, true)).toBe(selected);
       expect(resolveFormation(selected, false, false)).toBe(selected);
     }
   });

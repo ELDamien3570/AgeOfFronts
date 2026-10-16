@@ -2,7 +2,7 @@ import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 const presentationTicks=(seconds:number)=>seconds*TICKS_PER_SECOND;
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe,expect,it } from 'vitest';
-import { cavalryImpactScene,cavalryBattleScene } from './fixtures/CavalryImpact';
+import { cavalryImpactScene,cavalryBattleScene,cavalryRankScene } from './fixtures/CavalryImpact';
 import { chargeDisrupted,validateChargeImpact,CHARGE_IMPACT } from '../../src/skirmish/domain/ChargeImpact';
 import { SnapshotDecoder,SnapshotEncoder } from '../../src/skirmish/SnapshotCodec';
 import { chargeReactions } from '../../src/skirmish/client/troops/ChargeImpactPresentation';
@@ -15,7 +15,7 @@ import { CONTACT } from '../../src/skirmish/content/TacticalRules';
 
 describe('bounded cavalry impact prototype',()=>{
   it('does not pay a committed wave whose stored paths no longer intersect the target',()=>{
-    const {game,rider,defender}=cavalryImpactScene();
+    const {game,rider,defender}=cavalryRankScene();
     game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
     game.updateSquad(rider.id,formationApproach(rider,defender,0,cavalryAttackGap(rider,defender),-Math.PI/2));
     game.expansion!.battle.fight([]);
@@ -26,16 +26,16 @@ describe('bounded cavalry impact prototype',()=>{
     expect(defender.chargeImpact).toBeUndefined();
   });
   it('keeps a last-rank attack physically within ordinary melee reach',()=>{
-    const {game,rider,defender}=cavalryImpactScene();
+    const {game,rider,defender}=cavalryRankScene();
     game.updateSquad(rider.id,{charge:null,troops:1,y:26*256,manpower:{...rider.manpower!,hp:1000000},formation:{...rider.formation!,transition:undefined}});
-    expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:defender.id}})).toBeNull();
+    expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:defender.id,cavalryMode:'ranks'}})).toBeNull();
     for(let i=0;i<presentationTicks(5);i++)game.step();
     expect(rider.troops).toBe(1);expect(rider.cavalryMelee).toBeUndefined();
     expect(formationContact(rider,defender,game.tick).gap).toBeLessThanOrEqual(CONTACT.release);
     expect(rider.meleeStrike).toBeDefined();
   });
   it('closes the stand-off gap and cancels rank waves when only one rank remains',()=>{
-    const {game,rider,defender}=cavalryImpactScene();
+    const {game,rider,defender}=cavalryRankScene();
     game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
     game.updateSquad(rider.id,formationApproach(rider,defender,0,cavalryAttackGap(rider,defender),-Math.PI/2));
     game.expansion!.battle.fight([]);expect(rider.cavalryMelee).toBeDefined();
@@ -58,7 +58,7 @@ describe('bounded cavalry impact prototype',()=>{
     expect(handoff.get(0)?.moving).toBe(true);expect(handoff.get(1)?.moving).toBe(true);
   });
   it('prevents infantry hitting a parked cavalry body across the gap and wakes retaliation only for exposed ranks',()=>{
-    const {game,rider,defender}=cavalryImpactScene();
+    const {game,rider,defender}=cavalryRankScene();
     game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
     game.updateSquad(rider.id,formationApproach(rider,defender,0,cavalryAttackGap(rider,defender),-Math.PI/2));
     game.expansion!.battle.fight([]);const c=structuredClone(rider.cavalryMelee!.current);
@@ -78,12 +78,16 @@ describe('bounded cavalry impact prototype',()=>{
     game.expansion!.battle.fight([]);
     expect(game.volleys.some(v=>v.squadId===defender.id&&v.tick===game.tick)).toBe(false);
   });
-  it('keeps an ordinary cavalry attack at its infantry-sized gap and still pays all three waves',()=>{
-    const {game,rider,defender}=cavalryImpactScene();
+  it('keeps an explicit rank attack at its infantry-sized gap and still pays all three waves',()=>{
+    const {game,rider,defender}=cavalryRankScene();
+    // This is a motion test: keep both footprints stable while all ranks cycle.
+    // Authored balance casualties are covered by PreModernBalance.test.ts.
+    game.updateSquad(rider.id,{manpower:{...rider.manpower!,hp:10000000}});
+    game.updateSquad(defender.id,{manpower:{...defender.manpower!,hp:10000000}});
     game.updateSquad(rider.id,{charge:null,y:26*256,formation:{...rider.formation!,transition:undefined}});
     const gap=cavalryAttackGap(rider,defender);
     expect(gap).toBeGreaterThan(32);
-    expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:defender.id}})).toBeNull();
+    expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:defender.id,cavalryMode:'ranks'}})).toBeNull();
     const strikes=new Set<number>();
     for(let i=0;i<presentationTicks(7.5);i++){game.step();for(const v of game.volleys)if(v.squadId===rider.id&&v.melee)strikes.add(v.id);}
     expect(formationContact(rider,defender,game.tick).gap).toBeGreaterThan(gap-10);
@@ -142,7 +146,7 @@ describe('bounded cavalry impact prototype',()=>{
     expect(restored.checkpoint()).toEqual(f.game.checkpoint());
   });
   it('pays exactly one attack budget across three timed waves and restores the pending commitment',()=>{
-    const {game,rider,defender}=cavalryImpactScene();
+    const {game,rider,defender}=cavalryRankScene();
     game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
     game.updateSquad(rider.id,formationApproach(rider,defender,0,0,-Math.PI/2));
     game.updateSquad(defender.id,{weaponState:{sharedReadyTick:presentationTicks(500)}});
@@ -160,7 +164,7 @@ describe('bounded cavalry impact prototype',()=>{
     expect(waveDamage(c,1001,2,c.troops/2)).toBeLessThanOrEqual(waveDamage(c,1001,2,c.troops)/2);
   });
   it('cancels unpaid waves immediately on a new player order',()=>{
-    const {game,rider,defender}=cavalryImpactScene();game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
+    const {game,rider,defender}=cavalryRankScene();game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
     game.updateSquad(rider.id,formationApproach(rider,defender,0,0,-Math.PI/2));game.expansion!.battle.fight([]);
     const c=rider.cavalryMelee!.current;
     game.updateSquad(rider.id,{meleeStrike:{tick:game.tick,contacts:c.contacts}});
@@ -171,11 +175,11 @@ describe('bounded cavalry impact prototype',()=>{
     expect(game.volleys.filter(v=>v.squadId===rider.id)).toHaveLength(0);
   });
   it('does not recreate the old attack while approaching an explicitly retargeted enemy',()=>{
-    const {game,rider,defender}=cavalryImpactScene();game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
+    const {game,rider,defender}=cavalryRankScene();game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
     game.updateSquad(rider.id,formationApproach(rider,defender,0,cavalryAttackGap(rider,defender),-Math.PI/2));
     game.expansion!.battle.fight([]);expect(rider.cavalryMelee).toBeDefined();
     const next=game.addSquad({...structuredClone(defender),id:game.allocateId(),y:defender.y+3*256,chargeImpact:undefined});
-    expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:next.id}})).toBeNull();
+    expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'attack',targetId:next.id,cavalryMode:'ranks'}})).toBeNull();
     game.expansion!.battle.fight([]);
     expect(rider.cavalryMelee).toBeUndefined();expect(rider.combatTargetId).toBeNull();
     game.tick=presentationTicks(5); // The original weapon commitment still has its cooldown.
@@ -184,7 +188,7 @@ describe('bounded cavalry impact prototype',()=>{
     expect(rider.cavalryMelee!.current.contacts[0].targetId).toBe(next.id);
   });
   it('keeps wave ranks stable across casualties and overlaps retreat with the following rank',()=>{
-    const {game,rider,defender}=cavalryImpactScene();game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
+    const {game,rider,defender}=cavalryRankScene();game.updateSquad(rider.id,{charge:null,formation:{...rider.formation!,transition:undefined}});
     game.updateSquad(rider.id,formationApproach(rider,defender,0,0,-Math.PI/2));game.expansion!.battle.fight([]);
     // Synthetic origin-centered riders exercise timing/identity independently
     // of the real scene's target hull in world coordinates.

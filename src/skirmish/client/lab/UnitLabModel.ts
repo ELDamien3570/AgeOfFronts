@@ -23,6 +23,7 @@ import {
 } from "../../domain/FormationGeometry";
 import { createManpower, scaledRecipeCost } from "../../domain/Manpower";
 import { sustainedInterval } from "../../domain/WeaponTiming";
+import { weaponAccuracy } from "../../domain/WeaponAccuracy";
 import { FIXED, TICKS_PER_SECOND } from "../../Protocol";
 import { BUILDING_RULES } from "../../Rules";
 import { aircraftArtworkId } from "../ArtworkCatalog";
@@ -166,6 +167,7 @@ export interface DpsTarget {
   rangedArmour: number;
   healthPercent: number;
   accuracy: number;
+  distance?: number;
   cover: number;
   soldiers: boolean;
 }
@@ -235,7 +237,7 @@ export function estimatedDps(
         profile.perSoldier ? capacity : 1000,
         profile.perSoldier ? contributors : contributors / 1000,
       ) *
-        target.accuracy) /
+        target.accuracy * weaponAccuracy(profile, (target.distance ?? profile.range / FIXED) * FIXED)) /
       100;
     const cycleSeconds = draft.entity.mission
       ? Number(definition.estimatedSortieSeconds)
@@ -296,6 +298,8 @@ export function validateDraft(definition: Record<string, unknown>) {
   for (const p of [unit.attack, unit.meleeAttack, unit.rangedAttack].filter(
     (p): p is AttackProfile => !!p,
   )) {
+    if (p.accuracy && [p.accuracy.near, p.accuracy.far].some(n => !Number.isFinite(n) || n < 0 || n > 100))
+      throw new Error("Weapon accuracy must be between 0 and 100 percent.");
     if (
       !Array.isArray(p.targets) ||
       !p.bonuses ||
