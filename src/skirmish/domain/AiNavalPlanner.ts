@@ -10,6 +10,7 @@ import { FIXED, type Player, type Ship } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
 import { VESSEL, VESSELS } from "../content/Units";
 import { affordableAiCost } from "./AiBudgetLedger";
+import { aiVesselPreference } from "./AiVesselChoice";
 import type { AiEconomicDirector } from "./AiEconomicDirector";
 import { AGES, type VesselDefinition } from "./Definitions";
 import type { Expansion } from "./Expansion";
@@ -842,8 +843,7 @@ export class AiNavalPlanner {
     const committed = world.shipFacts().byOwner(player.id).filter(s => s.kind === "warship").length +
       world.recruitment.byOwner(player.id).filter(j => j.category === "ship" && j.kind === "warship").length;
     if (committed >= cap) return;
-    const definition = VESSELS.slice()
-      .reverse()
+    const definition = aiVesselPreference(VESSELS)
       .find(
         (v) =>
           v.kind === "warship" &&

@@ -6,6 +6,7 @@ import { Skirmish } from "../../src/skirmish/Simulation";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { VESSEL } from "../../src/skirmish/content/Units";
 import { navalPower } from "../../src/skirmish/domain/AiNavalPlanner";
+import { aiVesselPreference } from "../../src/skirmish/domain/AiVesselChoice";
 import { NavalFactSequence } from "../../src/skirmish/domain/NavalFactSequence";
 
 function fixture(split = false, compact = false, island = false) {
@@ -212,6 +213,19 @@ describe("persistent concentrated port defense", () => {
     f.game.tick=secondsToTicks(25);f.assess();
     expect(f.game.recruitment.jobs).toHaveLength(4);expect(f.player.gold).toBe(gold);
     expect(f.planner.checkpoint().funding[0][1].windowSpent).toBe(spending.windowSpent);
+  });
+  it("buys the same-age warship over its identical, dearer submarine copy (I7)",()=>{
+    expect(aiVesselPreference([VESSEL.get("modern-submarine")!,VESSEL.get("modern-warship")!,VESSEL.get("earlymodern-warship")!]).map(v=>v.id))
+      .toEqual(["modern-warship","modern-submarine","earlymodern-warship"]);
+    const f=fixture();
+    f.expansion.progression.states[f.player.id].completed=TECHNOLOGIES.map(t=>t.id);
+    f.game.building(f.port.id)!.age="Modern";
+    for(let i=0;i<8;i++)f.addShip(1,25+i);f.refresh();
+    const apply=vi.spyOn(f.game,"applyCommand");
+    f.assess();
+    const bought=apply.mock.calls.map(([c])=>c).filter(c=>c.type==="recruit-ship") as {definitionId?:string}[];
+    expect(bought.length).toBeGreaterThan(0);
+    expect(bought.every(c=>c.definitionId==="modern-warship")).toBe(true);
   });
   it.each([["regular",32],["tribe",24]] as const)("respects the %s warship cap across disconnected seas before requesting funds",(kind,cap)=>{
     const f=fixture(true);

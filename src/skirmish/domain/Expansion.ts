@@ -1,6 +1,7 @@
 import { secondsToTicks } from '../Protocol';
 import { TrenchOccupancy } from "./TrenchOccupancy";
 import { chargeFallbackOrder } from "./CommandPolicy";
+import { aiVesselPreference } from "./AiVesselChoice";
 import { airfieldAircraftCount } from "./AirfieldCapacity";
 import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import { SkirmishStance } from "./SkirmishStance";
@@ -1787,12 +1788,10 @@ export class Expansion {
         )
       )
         continue;
-      for (const v of VESSELS.filter(
+      for (const v of aiVesselPreference(VESSELS.filter(
         (v) =>
           v.kind === kind && this.progression.has(player.id, v.technologyId),
-      )
-        .slice()
-        .reverse()) {
+      ))) {
         const port = own.find(
           (b) =>
             b.type === "port" &&
