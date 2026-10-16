@@ -20,7 +20,7 @@ import { restoreArray } from "../StateTransfer";
 import { DamageLedger } from "../Conquest";
 import { CombatGeometry } from './CombatGeometry';
 import { CombatActivity } from './CombatActivity';
-import { CHARGE_IMPACT, chargeDisrupted, resolveChargeImpact,commitChargeShot } from './ChargeImpact';
+import { CHARGE_IMPACT, chargeDisrupted, resolveChargeImpact,commitChargeShot, type ChargeImpact } from './ChargeImpact';
 import { tacticalDefence, tacticalFacts, formationModifiers } from './FormationTactics';
 import { facingArc } from './FormationFacing';
 import { TACTICAL_CHARGE } from '../content/TacticalRules';
@@ -652,7 +652,8 @@ export class Battle {
     this.rebuild("combat");
     const { tick, squads } = this.world,
       damage = new DamageLedger(),
-      contributions: Contributions = new Map();
+      contributions: Contributions = new Map(),
+      disruptions = new Map<number,ChargeImpact>();
     this.acquisitionWork.searches=this.acquisitionWork.reused=this.acquisitionWork.noOpponentSkips=0;
     // Permissions, not nearby motion, determine whether acquisition is possible.
     // Keep charge/cycle progression and already-launched projectile resolution.
@@ -777,9 +778,13 @@ export class Battle {
               let dx=Math.round(contact.normal.x*offset),dy=Math.round(contact.normal.y*offset);
               if(!this.world.chargePresentationClear?.(target,dx,dy)){dx=dy=0;}
               const disruption=Math.floor((braced?2:flank?CHARGE_IMPACT.disruption:CHARGE_IMPACT.disruption*.75)*strength);
-              this.world.updateSquad(target.id,{chargeImpact:{tick,role:'defender',sourceId:squad.id,
-                disruptedUntilTick:Math.max(tick+disruption,target.chargeImpact?.disruptedUntilTick??tick),
-                x:contact.target.x,y:contact.target.y,dx,dy}});
+              // Staged: applying the disruption in place would skip a
+              // higher-id defender's strike this tick but not a lower-id
+              // one's, so creation order decided the duel (R2-L1, C2).
+              const staged=disruptions.get(target.id);
+              disruptions.set(target.id,{tick,role:'defender',sourceId:squad.id,
+                disruptedUntilTick:Math.max(tick+disruption,staged?.disruptedUntilTick??tick),
+                x:contact.target.x,y:contact.target.y,dx,dy});
               if(squad.chargeImpact?.tick!==tick){
                 const followThrough=Math.min(CHARGE_IMPACT.maxRiderOffset,contact.gap+offset);
                 let rx=Math.round(contact.normal.x*followThrough),ry=Math.round(contact.normal.y*followThrough);
@@ -805,7 +810,7 @@ export class Battle {
                 pressure:resistance.get(receiving.id)!.pressure,resistance:resistance.get(receiving.id)!.resistance},
               originX:squad.x,originY:squad.y,goalX:squad.x+dx,goalY:squad.y+dy}});
           }
-          this.world.updateSquad(squad.id, { charge: receiving&&isCavalryTroopClass(definition.troopClass)?null:{ ...squad.charge, phase: "recovery" } });
+          this.world.updateSquad(squad.id,{charge:receiving&&isCavalryTroopClass(definition.troopClass)?null:{ ...squad.charge, phase: "recovery" }});
           this.world.updateSquad(squad.id, { chargeReadyTick: tick + charge.cooldownTicks });
           if (impact.perSoldier) {
             const recovery=definition.chargeRecoveryTicks??TACTICAL_CHARGE.recoveryTicks;
@@ -1133,6 +1138,13 @@ export class Battle {
           this.world.updateBuilding(b.id, { nextAttackTick: tick + GUN_NEST_ATTACK.reloadTicks });
         }
       }
+    // Charge disruption lands after every squad has struck this tick, in id order.
+    for(const id of [...disruptions.keys()].sort((a,b)=>a-b)){
+      const target=this.world.squad(id),impact=disruptions.get(id)!;
+      if(!target)continue;
+      this.world.updateSquad(id,{chargeImpact:{...impact,
+        disruptedUntilTick:Math.max(impact.disruptedUntilTick,target.chargeImpact?.disruptedUntilTick??tick)}});
+    }
     this.meleeDamage.resolve(({source,target,charge},hit)=>{
       damage.add(target.id,source.playerId,hit);this.volley(source,target,hit,true,charge);
       this.contribution(contributions,target.id,source.id,hit);
@@ -1600,10 +1612,40 @@ export class Battle {
         blastVictim(s.playerId) &&
         ("formation" in s && (s as Squad).formation && !(s as Squad).afloat ? formationPointContact(s as Squad,p,tick).gap : Math.sqrt(this.distance(s,p))) <= radius &&
         (p.kind !== "shell" || this.forts.clear(p, s, p.playerId));
-      for (const target of this.nearby
-        .filter(eligible)
-        .sort((a, b) => a.id - b.id)
-        .slice(0, targetLimit)) {
+      // The shared budget goes to the bodies nearest the impact first, then
+      // by id; choosing victims by id alone could starve the centre body or a
+      // directly hit warship (L8, C2). Each kind keeps its own 64-victim cap.
+      const byImpact = <T extends Position & { id: number }>(a: T, b: T) =>
+        this.distance(a, p) - this.distance(b, p) || a.id - b.id;
+      const victims: ({ ship: false; target: Squad } | { ship: true; target: Ship })[] = [
+        ...this.nearby.filter(eligible).sort(byImpact).slice(0, targetLimit).map((target) => ({ ship: false as const, target })),
+        ...this.nearbyShips.filter(eligible).sort(byImpact).slice(0, targetLimit).map((target) => ({ ship: true as const, target })),
+      ].sort((a, b) => byImpact(a.target, b.target));
+      for (const victim of victims) {
+        if (victim.ship) {
+          const target = victim.target;
+          const hit = Math.min(
+            budget,
+            hitDamage(scaled(target), {
+              tags: ["ship"],
+              meleeArmour: 1000,
+              rangedArmour: 2000,
+              bonusResistance: {},
+            }),
+          );
+          if (hit <= 0) continue;
+          naval.add(target.id, p.playerId, hit);
+          this.contribution(
+            contributions,
+            target.id,
+            p.sourceId,
+            hit,
+            p.sourceKind,
+          );
+          budget -= hit;
+          continue;
+        }
+        const target = victim.target;
         const hit = Math.min(
           budget,
           hitDamage(
@@ -1614,30 +1656,6 @@ export class Battle {
         if (hit <= 0) continue;
         impacts.add(target.id, p.playerId, hit);
         this.explainProjectile(p,target,hit,tick);
-        this.contribution(
-          contributions,
-          target.id,
-          p.sourceId,
-          hit,
-          p.sourceKind,
-        );
-        budget -= hit;
-      }
-      for (const target of this.nearbyShips
-        .filter(eligible)
-        .sort((a, b) => a.id - b.id)
-        .slice(0, targetLimit)) {
-        const hit = Math.min(
-          budget,
-          hitDamage(scaled(target), {
-            tags: ["ship"],
-            meleeArmour: 1000,
-            rangedArmour: 2000,
-            bonusResistance: {},
-          }),
-        );
-        if (hit <= 0) continue;
-        naval.add(target.id, p.playerId, hit);
         this.contribution(
           contributions,
           target.id,

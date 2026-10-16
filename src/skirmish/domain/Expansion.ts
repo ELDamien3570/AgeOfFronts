@@ -1286,6 +1286,10 @@ export class Expansion {
         this.world.volleys.push({id:this.world.allocateId(),squadId:b.id,playerId:b.playerId,definitionId:"naval-air-defence",tick:this.world.tick,fromX:point.x,fromY:point.y,toX:target.x,toY:target.y});
       }
     }
+    // Fighter guns target start-of-tick health and land together after every
+    // aircraft has acted, so creation order never decides a mirrored duel (R2-L8, C2).
+    const startHealth=new Map(this.aircraft.map(a=>[a.id,a.health]));
+    const gunHits=new Map<number,{target:Aircraft;hits:{playerId:number;damage:number}[]}>();
     for (const a of this.aircraft) {
       if (a.health <= 0) continue;
       if(a.definitionId==="drone" && a.drone && a.state!=="ready"){this.advanceDrone(a);continue;}
@@ -1303,20 +1307,16 @@ export class Expansion {
         const enemy = this.nearbyAircraft
           .filter(
             (t) =>
-              t.id !== a.id && t.health > 0 && t.state !== "ready" && this.diplomacy.hostile(a.playerId, t.playerId) &&
+              t.id !== a.id && (startHealth.get(t.id) ?? t.health) > 0 && t.state !== "ready" && this.diplomacy.hostile(a.playerId, t.playerId) &&
               (t.x - a.x) ** 2 + (t.y - a.y) ** 2 < (8 * FIXED) ** 2,
           )
           .sort((b, c) => Number(c.definitionId === "bomber") - Number(b.definitionId === "bomber") || b.id - c.id)[0];
         if (enemy && this.world.tick >= a.reloadTick) {
-          if (enemy.health <= 0) continue;
-          const health = enemy.health;
-          enemy.health -= 200;
-          if (this.world.volleys.length < 4096) this.world.volleys.push({id:this.world.allocateId(),tick:this.world.tick,squadId:a.id,playerId:a.playerId,definitionId:"fighter-guns",fromX:a.x,fromY:a.y,toX:enemy.x,toY:enemy.y,sourceKind:"aircraft",targetKind:"aircraft",targetId:enemy.id,damage:Math.min(200,health)});
-          if (health > 0 && enemy.health <= 0) {
-            const damage = new DamageLedger();
-            damage.add(enemy.id, a.playerId, Math.min(200, health));
-            this.world.recordMilitaryLosses([enemy], damage);
-          }
+          const staged = gunHits.get(enemy.id) ?? { target: enemy, hits: [] };
+          const health = (startHealth.get(enemy.id) ?? enemy.health) - staged.hits.reduce((n, h) => n + h.damage, 0);
+          staged.hits.push({ playerId: a.playerId, damage: 200 });
+          gunHits.set(enemy.id, staged);
+          if (this.world.volleys.length < 4096) this.world.volleys.push({id:this.world.allocateId(),tick:this.world.tick,squadId:a.id,playerId:a.playerId,definitionId:"fighter-guns",fromX:a.x,fromY:a.y,toX:enemy.x,toY:enemy.y,sourceKind:"aircraft",targetKind:"aircraft",targetId:enemy.id,damage:Math.max(0,Math.min(200,health))});
           a.reloadTick = this.world.tick + secondsToTicks(2);
         }
       }
@@ -1373,6 +1373,17 @@ export class Expansion {
         if(a.definitionId === "drone") {a.health=0;continue;}
         a.state = "returning";
       }
+    }
+    for (const id of [...gunHits.keys()].sort((a, b) => a - b)) {
+      const { target, hits } = gunHits.get(id)!;
+      if (target.health <= 0) continue;
+      const health = target.health, damage = new DamageLedger();
+      for (const hit of hits) {
+        const dealt = Math.min(hit.damage, Math.max(0, target.health));
+        target.health -= hit.damage;
+        if (dealt > 0) damage.add(target.id, hit.playerId, dealt);
+      }
+      if (health > 0 && target.health <= 0) this.world.recordMilitaryLosses([target], damage);
     }
   }
   private advanceTransfer(a:Aircraft):void {
