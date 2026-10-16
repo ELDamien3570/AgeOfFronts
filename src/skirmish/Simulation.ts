@@ -1124,6 +1124,12 @@ export class Skirmish {
       request:(id,playerId,squadId,start,goal)=>this.routePlanner.request({key:`admission:${id}:${squadId}`,start,goal,water:false,amphibious:this.amphibious(playerId),createdTick:this.tick,
         obstacleRevision:this.routingObstacleRevision(playerId),context:{kind:"admission",admissionId:id,playerId,squadId}}),
       cancel:(id,squadId)=>this.routePlanner.cancel(`admission:${id}:${squadId}`),
+      connector:(playerId,squadId,start,goal,limit)=>{
+        // Same graph and obstacle mask as this squad's planner admission job.
+        const paths=this.squadPaths(playerId),squad=this.squad(squadId),before=paths.work;
+        const route=paths.findExact(start,goal,squad?this.obstacleTest(squad.playerId,squad):this.obstacleTest(playerId),limit);
+        return {path:route&&[start,...route],work:paths.work-before};
+      },
       queue:(squad,order)=>{
         if (squad.order.type === "hold" && order.type === "move") {
           this.movementAdmission.startQueued(squad,order,this.tick);

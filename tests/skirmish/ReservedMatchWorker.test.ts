@@ -134,17 +134,13 @@ describe("reserved authoritative worker", () => {
           })),
         }),
       ).rejects.toThrow("batch exceeds");
+      // D2 commits a two-squad move within its first tick, so the replacement
+      // arrives in the same batch to supersede the original while it is
+      // still deferred (both apply before the tick).
       let update = await worker.request<MatchAdvance>({
         ...advance(1, false),
-        commands: [{ id: "original", command }],
-      });
-      expect(update.tick).toBe(1);
-      expect(update.commandOutcomes).toContainEqual(
-        expect.objectContaining({ id: "original", status: "deferred" }),
-      );
-      update = await worker.request<MatchAdvance>({
-        ...advance(1, false),
         commands: [
+          { id: "original", command },
           {
             id: "replacement",
             command: {
@@ -154,9 +150,11 @@ describe("reserved authoritative worker", () => {
           },
         ],
       });
+      expect(update.tick).toBe(1);
       expect(update.commandOutcomes).toContainEqual(
         expect.objectContaining({ id: "original", status: "superseded" }),
       );
+      expect(update.commandOutcomes?.find((o) => o.id === "replacement")?.status).toMatch(/^(deferred|executed)$/);
       let executed = update.commandOutcomes?.find(
         (o) => o.id === "replacement" && o.status === "executed",
       );

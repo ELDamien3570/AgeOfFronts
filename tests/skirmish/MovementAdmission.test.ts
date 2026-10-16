@@ -17,6 +17,13 @@ function fixture() {
   const own = match.squads.filter((s) => s.playerId === 1);
   return { match, map, own };
 }
+/** These tests exercise the transactional protocol while an admission is
+ * still planning. D2's synchronous cohort connectors (tested in
+ * MovementAdmissionCohortConnectors.test.ts) commit such moves at once, so
+ * they use per-member planner jobs, the pre-D2 path a failed search takes. */
+function plannerOnly(match: Skirmish): void {
+  (match.movementAdmission as unknown as { ports: { connector?: unknown } }).ports.connector = undefined;
+}
 function status(match: Skirmish) {
   const events = match.movementAdmission.events;
   return events[events.length - 1]?.status;
@@ -67,7 +74,10 @@ describe("transactional replacement movement", () => {
     for(let i=0;i<secondsToTicks(8);i++){match.step();clone.step();}
     expect(clone.checkpoint()).toEqual(match.checkpoint());
     expect(match.movementAdmission.events.slice(-1)[0]?.status).toBe("executed");
-    expect(match.routePlanner.diagnosticCohorts(match.tick).find(c=>c.caller==="admission")?.complete).toBeGreaterThan(own.length);
+    // D2: one planner job for the corridor lead; every other member's entry
+    // and exit connectors are planned synchronously (not one job each).
+    expect(match.routePlanner.diagnosticCohorts(match.tick).find(c=>c.caller==="admission")?.complete).toBeGreaterThanOrEqual(1);
+    expect(match.movementAdmission.connectorDiagnostics.synchronous).toBeGreaterThanOrEqual(own.length - 1);
   });
   it("recovers an occupied final destination without dropping later player orders", () => {
     const {match,map,own}=fixture(), mover=own[0], blocker=own[1];
@@ -370,6 +380,7 @@ describe("transactional replacement movement", () => {
   it("a newer stop supersedes the whole pending selection without activating any route", () => {
     const { match, map, own } = fixture(),
       ids = own.map((s) => s.id);
+    plannerOnly(match);
     match.applyCommand({
       type: "order",
       playerId: 1,
@@ -393,6 +404,7 @@ describe("transactional replacement movement", () => {
   it("keeps moving along an active order while its replacement is deferred", () => {
     const { match, map, own } = fixture(),
       ids = own.map((s) => s.id);
+    plannerOnly(match);
     match.applyCommand({
       type: "order",
       playerId: 1,

@@ -27,6 +27,8 @@ interface Member {
   queued: Order[];
   shared?: { stage: "entry" | "exit"; entry?: number[]; spine: number[] };
   independent?: boolean;
+  /** D2: the bounded synchronous search failed; use planner jobs. */
+  plannerOnly?: boolean;
   structureTarget?: Squad["structureTarget"];
 }
 interface Admission {
@@ -94,6 +96,11 @@ export interface MovementAdmissionPorts {
     goal: number,
   ): boolean;
   cancel(id: number, squadId: number): void;
+  /** D2: a bounded synchronous exact search for a member's short entry or
+   * exit connector onto a cohort spine, on the member's own route graph and
+   * obstacle mask. `path` starts at `start` (null when no route was found
+   * within `limit` expansions); `work` is the expansions spent. */
+  connector?(playerId: number, squadId: number, start: number, goal: number, limit: number): { path: number[] | null; work: number };
   queue(squad: Squad, order: Order): void;
   clear(squad: Squad, end: WorldPoint): boolean;
   destinationValid(
@@ -113,6 +120,17 @@ export interface MovementAdmissionPorts {
 }
 
 const CONNECTOR_REPLANS = 3;
+/** Work an interactive admission pass may spend on human Shift intents. */
+const INTERACTIVE_INTENT_BUDGET = 32;
+/** D2 (R2-P3, notes 16 rec 2): one planner job per cohort. A member that
+ * shares a cohort spine plans its short entry and exit connectors here, by a
+ * bounded synchronous search, instead of filing two planner jobs; a member
+ * whose whole move is within `directTiles` plans it the same way. A search
+ * that hits `expansionLimit` falls back to planner jobs as before. The
+ * per-tick budget bounds the synchronous work; when it is spent, members wait
+ * for the next tick rather than queue planner jobs. Admission work is charged
+ * one unit per `expansionsPerUnit` expansions. Not a balance value. */
+export const COHORT_CONNECTORS = { expansionLimit: 1024, tickBudget: 4096, expansionsPerUnit: 64, directTiles: 32 } as const;
 /** Owner decision D3 (P20): back-off after the route planner refuses an
  * admission's request because it is full: 2, 4, 8, then 16 ticks. */
 export const ADMISSION_REFUSAL_BACKOFF = { firstTicks: 2, maximumTicks: 16 } as const;
@@ -131,6 +149,12 @@ export class MovementAdmission {
   onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
   private handoffDeadline?: number;
+  /** Synchronous connector expansions spent in `connectorTick` (derived
+   * per-tick scratch: it restarts every tick, so it is not checkpointed). */
+  private connectorTick = -1;
+  private connectorWork = 0;
+  /** D2 diagnostics: connectors planned synchronously, and fallbacks. */
+  readonly connectorDiagnostics = { synchronous: 0, fallbacks: 0, deferred: 0, work: 0 };
   private readonly corridors = new Map<number, { path: number[]; kind: Squad["kind"]; revision: string }>();
   /** An order onto land keeps its formation ashore; squads become afloat
    * only on the way or when ordered onto water itself. */
@@ -599,15 +623,53 @@ export class MovementAdmission {
     }
     return work;
   }
+  /** D2: plans a spine member's entry and exit connectors synchronously.
+   * `done` when the member now has its full path or waits for next tick's
+   * connector budget; otherwise the bounded search failed and the member
+   * files planner jobs as before. `units` is the admission work spent. */
+  private synchronousConnectors(admission: Admission, member: Member, tick: number): { units: number; done: boolean } {
+    if (this.connectorTick !== tick) { this.connectorTick = tick; this.connectorWork = 0; }
+    if (this.connectorWork >= COHORT_CONNECTORS.tickBudget) {
+      this.connectorDiagnostics.deferred++;
+      member.retryAt = tick + 1;
+      return { units: 1, done: true };
+    }
+    const limit = COHORT_CONNECTORS.expansionLimit, goal = pointTile(this.map, member.destination!);
+    const spine = member.shared?.spine;
+    const entry = this.ports.connector!(admission.playerId, member.id, member.start!, spine ? spine[0] : goal, limit);
+    let work = entry.work;
+    const exit = !spine ? { path: [goal], work: 0 } : entry.path && this.ports.connector!(admission.playerId, member.id, spine[spine.length - 1], goal, limit);
+    work += exit?.work ?? 0;
+    this.connectorWork += work;
+    this.connectorDiagnostics.work += work;
+    const units = 1 + Math.floor(work / COHORT_CONNECTORS.expansionsPerUnit);
+    // The search work is charged; the planner request that follows adds its own unit.
+    if (!entry.path || !exit?.path) { this.connectorDiagnostics.fallbacks++; return { units: units - 1, done: false }; }
+    this.connectorDiagnostics.synchronous++;
+    member.path = spine ? [...entry.path, ...spine.slice(1), ...exit.path.slice(1)] : entry.path;
+    // A corridor lead publishes its route for the other cohorts, as completed() does.
+    if (!spine && admission.corridorId === admission.id && member === admission.members[0])
+      this.corridors.set(admission.id, { path: entry.path, kind: this.ports.squad(member.id)!.kind, revision: admission.revision });
+    member.shared = undefined;
+    member.cursor = 0;
+    member.connector = undefined;
+    member.limitedAttempts = 0;
+    member.retryAt = undefined;
+    member.refusals = undefined;
+    return { units, done: true };
+  }
   private waitingIntent(admissionId: number): boolean {
     return !!this.intentsByAdmission.get(admissionId)?.size;
   }
-  private stepIntents(tick: number, budget: number): number {
+  private stepIntents(tick: number, budget: number, priorityOnly = false): number {
     let used = 0;
     // A single FIFO preserves the order of Shift commands across overlapping
     // replacement cohorts. One formation owns all slots of each Shift selection.
     while (this.intents.size && used < budget) {
       const [id, intent] = this.intents.entries().next().value!;
+      // The interactive pass serves the FIFO only while a human's intent is
+      // at its head; order across players is unchanged.
+      if (priorityOnly && !this.ports.priority?.(intent.playerId)) break;
       if (
         intent.generation !== this.ports.generation(intent.playerId) ||
         intent.members.some((m) => {
@@ -796,7 +858,12 @@ export class MovementAdmission {
     let waiting = false;
     for (const p of this.pending.values()) if (this.ports.priority?.(p.playerId)) { waiting = true; break; }
     if(!waiting)return 0;
-    return this.stepAdmissions(tick,budget,true);
+    // A human move with Shift legs commits only after its queued intents are
+    // attached; serving them only from the background step left such moves
+    // waiting most of their admission time (Next #1). The interactive pass
+    // now also advances human intents at the head of the FIFO.
+    const used = this.stepIntents(tick, Math.min(INTERACTIVE_INTENT_BUDGET, budget), true);
+    return used + this.stepAdmissions(tick,budget-used,true);
   }
   /** Diagnostics hook: observes each admission a step visits, before rotation. */
   onVisit?: (id: number, priority: boolean) => void;
@@ -913,6 +980,7 @@ export class MovementAdmission {
           member.path = undefined;
           member.shared = undefined;
           member.independent = undefined;
+          member.plannerOnly = undefined;
         }
         admission.formation = new FormationPlanning(
           this.map,
@@ -960,7 +1028,10 @@ export class MovementAdmission {
         idle = 0;
       } else if (admission.phase === "queued") {
         used++;
-        if (this.waitingIntent(admission.id)) {
+        // Pending Shift intents gate only the commit (connectors phase): the
+        // members' routes are planned meanwhile, so a move with queued legs
+        // no longer waits for them before routing starts.
+        if (this.waitingIntent(admission.id) && admission.members.every((m) => !!m.path)) {
           if (++idle >= this.pending.size) break;
         } else {
           admission.phase = "routes";
@@ -993,6 +1064,17 @@ export class MovementAdmission {
             this.map.euclideanDistSquared(member.start!, spine[0]) <= 32 ** 2 &&
             this.map.euclideanDistSquared(pointTile(this.map, member.destination!), spine[spine.length - 1]) <= 32 ** 2)
             member.shared = { stage: "entry", spine };
+          if (this.ports.connector && !member.independent && !member.plannerOnly && (member.shared?.stage === "entry" || !member.shared &&
+            this.map.euclideanDistSquared(member.start!, pointTile(this.map, member.destination!)) <= COHORT_CONNECTORS.directTiles ** 2)) {
+            const synchronous = this.synchronousConnectors(admission, member, tick);
+            // Charged within this call's allowance: callers rely on step()
+            // never returning more than its budget. The connector tick budget
+            // bounds the search work itself.
+            used = Math.min(budget, used + synchronous.units);
+            if (synchronous.done) { idle = 0; continue; }
+            member.plannerOnly = true;
+            if (used >= budget) continue;
+          }
           const start = member.shared?.stage === "exit" ? member.shared.spine[member.shared.spine.length - 1] : member.start!,
             goal = member.shared?.stage === "entry" ? member.shared.spine[0] : pointTile(this.map, member.destination!);
           member.requested = this.ports.request(
@@ -1090,7 +1172,7 @@ export class MovementAdmission {
                 admission.members.map(m => { const squad = this.ports.squad(m.id)!; return { squad, origin: squad }; }),
                 () => this.ports.squads(), Infinity, preferred).state;
               this.destination(admission.formation);
-              for (const m of admission.members) { m.path = undefined; m.start = undefined; m.shared = undefined; m.independent = undefined; m.cursor = 0; }
+              for (const m of admission.members) { m.path = undefined; m.start = undefined; m.shared = undefined; m.independent = undefined; m.plannerOnly = undefined; m.cursor = 0; }
               admission.phase = "formation"; admission.member = 0;
             } else this.finish(admission, tick, "rejected", "Formation destination remains occupied");
             continue;

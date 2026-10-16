@@ -12,10 +12,13 @@ export const IDLE_TICK_FIXTURE_TICKS = 400;
 /** Digests after IDLE_TICK_FIXTURE_TICKS ticks. Re-recorded at the Next batch
  * integration with I-2, I-3 and I-4 reverted (the merged lanes change AI,
  * balance and checkpoint content); the full tree gives the same digests.
- * I-2 and I-3 must leave both unchanged. */
+ * I-2 and I-3 must leave both unchanged. Re-recorded for D2 (Next #1
+ * remediation: AI cohorts plan short moves and spine connectors
+ * synchronously); with the connector port removed the fixture still gives
+ * the previous 58442984... / 5a6c5153.... */
 export const IDLE_TICK_GOLDEN = Object.freeze({
-  squads: "58442984abf5aa59f4dacb4d3ef0625c986d1952b5f74d987ab06f2fd0842398",
-  checkpoint: "5a6c5153b6abd41fe97ed9d32bda22038dc03f03431190bcee68ef31b37f68c6",
+  squads: "d6b6d993daa2a8aa8d14af71621e8ab2c44817f0c34d27191e6c6ca618693eb9",
+  checkpoint: "dcf33c01e62c33875d6b00c7dac149b618893a0d8f765e67405355eead8d2a40",
 });
 
 export function idleTickFixture(): Skirmish {

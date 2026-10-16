@@ -12,6 +12,13 @@ function fixture(water?: (x: number, y: number) => boolean) {
   const match = new Skirmish(map, { seed: 42, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1", deferredPlanning: true });
   return { match, map };
 }
+/** These tests exercise the transactional protocol while an admission is
+ * still planning. D2's synchronous cohort connectors (tested in
+ * MovementAdmissionCohortConnectors.test.ts) commit such moves at once, so
+ * they use per-member planner jobs, the pre-D2 path a failed search takes. */
+function plannerOnly(match: Skirmish): void {
+  (match.movementAdmission as unknown as { ports: { connector?: unknown } }).ports.connector = undefined;
+}
 function humanSquads(match: Skirmish, count: number, x0: number, y0: number) {
   const template = match.squads.find(s => s.playerId === 1)!;
   return retainSquads(match, [...match.squads.filter(s => s.playerId !== 1), ...Array.from({ length: count }, (_, i) => ({
@@ -28,6 +35,7 @@ describe("human movement admission latency", () => {
   it("keeps finished routes when an unrelated wall changes the obstacle revision", () => {
     const run = (wall: boolean) => {
       const { match, map } = fixture(), squads = humanSquads(match, 10, 10.5, 10.5);
+      plannerOnly(match);
       const requests = admissionRequests(match);
       expect(match.applyCommand({ type: "order", playerId: 1, squadIds: squads.map(s => s.id), order: { type: "move", tile: map.ref(85, 60) } })).toBeNull();
       let tick = 0;
