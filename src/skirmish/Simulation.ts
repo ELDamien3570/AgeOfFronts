@@ -123,6 +123,7 @@ import type {
   Command,
   DefenseZone,
   MatchOptions,
+  MatchEndReason,
   Order,
   Player,
   Ship,
@@ -177,6 +178,7 @@ import { TRIBE_CITY_BASE_RADIUS } from "./FactionRules";
 import { firingPosition } from "./TacticalRoutes";
 import { terrainSpeed } from "./Terrain";
 import { validatePlaytestOptions, isHumanSeat, timeLimitTick, startProtectionUntil } from "./domain/PlaytestRules";
+import { victoryOutcome, type VictoryCandidate } from "./domain/Victory";
 
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
@@ -287,7 +289,7 @@ export class Skirmish {
     if(ai)this.expansion?.armies.handOverToAi(playerId);
     this.commandApplications.release(playerId, this.tick);
   }
-  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,endReason:this.endReason,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     this.assertAvailable();
     this.captureContributions.clear();
@@ -330,6 +332,8 @@ export class Skirmish {
       throw new Error("Invalid naval priority");
     if(this.expansion)for(const job of saved.recruitment.jobs)if(job.category==="land")validateRecruitmentRecipe(UNIT.get(job.definitionId??""),job);
     for(const player of saved.players) if(!Number.isSafeInteger(player.reserves)||player.reserves<0||!Number.isSafeInteger(player.reserveRemainder??0)||(player.reserveRemainder??0)<0||(player.reserveRemainder??0)>=1000) throw new Error('Invalid checkpoint reserves');
+    if (saved.endReason != null && !["conquest", "coalition", "time-limit", "extinction"].includes(saved.endReason))
+      throw new Error("Invalid checkpoint end reason");
     if (saved.forest && !forestOf(this.map)) throw new Error("Missing forest field");
     try { this.installCheckpoint(saved); }
     catch (error) {
@@ -372,6 +376,8 @@ export class Skirmish {
     this.tick=state.tick;
     this.commandApplications.restore(state.commandApplications ?? {pending: [], recent: []});
     this.winner=state.winner;
+    // Checkpoints before 13 R2 carry no reason; their only end was conquest.
+    this.endReason=state.winner===null?null:state.endReason??"conquest";
     this.combatTicks=state.combatTicks;
     this.producedTroops=state.producedTroops;
     this.nextId=state.nextId;
@@ -493,6 +499,8 @@ export class Skirmish {
   }
   tick = 0;
   winner: number | null = null;
+  /** Why `winner` was set; null while the match runs (13 R2). */
+  endReason: MatchEndReason | null = null;
   combatTicks = 0;
   producedTroops = 0;
   private nextId = 1;
@@ -5576,6 +5584,16 @@ export class Skirmish {
       defender.troopClass === "antiCavalry" && formationContact(target, squad, this.tick).facing >= .25) return false;
     return this.applyCommand({ type: "charge", playerId, squadIds: [squad.id], x: target.x, y: target.y, targetId: target.id }) === null;
   }
+  /** Score inputs are gathered only when the time limit is being scored. */
+  private victoryCandidate(p: Player, scoring: boolean): VictoryCandidate {
+    const progress = scoring ? this.expansion?.progression.states[p.id] : undefined;
+    return {
+      id: p.id, kind: p.kind, eliminated: p.eliminated, land: p.land, kills: p.kills,
+      cities: scoring ? conquestBuildings(this.buildingIndex.byType(p.id, "city"), false).length : 0,
+      ageIndex: progress ? AGES.indexOf(progress.age) : 0,
+      technologies: progress?.completed.length ?? 0,
+    };
+  }
   private checkWinner(): void {
     // Survival is identical for humans and AI: living ground squads (including
     // embarked squads) or a completed city. Fleets and other buildings do not count.
@@ -5655,13 +5673,16 @@ export class Skirmish {
       });
     }
     this.promoteTribes();
-    const survivors = this.players.filter((p) => !p.eliminated);
-    if (survivors.length === 1) this.winner = survivors[0].id;
-    else if (survivors.length === 0) this.winner = 0;
+    // 13 R2.1/R2.6: tribes neither win by conquest nor block one, and an
+    // optional time limit awards the match to the best living regular score.
+    const limit = timeLimitTick(this.options), scoring = limit !== undefined && this.tick >= limit;
+    const outcome = victoryOutcome(this.players.map(p => this.victoryCandidate(p, scoring)), this.tick, limit);
+    if (outcome) { this.winner = outcome.winner; this.endReason = outcome.reason; }
     const coalition = this.expansion?.coalition();
     if (coalition?.length) {
       this.expansion!.winners.push(...coalition);
       this.winner = -1;
+      this.endReason = "coalition";
     } else if (
       this.expansion &&
       this.winner !== null &&

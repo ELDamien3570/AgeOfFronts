@@ -1959,11 +1959,12 @@ export class Expansion {
   }
   coalition(): number[] | null {
     if (this.victoryMode !== "allied") return null;
-    const live = this.world.players.filter((p) => !p.eliminated);
+    // Tribes neither join nor block a coalition (13 R2.1).
+    const live = this.world.players.filter((p) => !p.eliminated && p.kind === "regular");
     // Pairwise alliance is insufficient at match opening: conquest must first
-    // remove at least one regular faction, and every surviving tribe must fall.
+    // remove at least one regular faction.
     if (
-      live.some((p) => p.kind === "tribe") ||
+      !live.length ||
       !this.world.players.some((p) => p.kind === "regular" && p.eliminated) ||
       live.some((a) => live.some((b) => !this.diplomacy.allied(a.id, b.id)))
     )
