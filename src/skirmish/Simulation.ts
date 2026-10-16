@@ -390,6 +390,8 @@ export class Skirmish {
     const state=structuredClone(saved);
     // Keyed on research count, not identity: an equal-size set can differ (L18).
     this.amphibiousFactions.clear();
+    // Memoized routing revisions; a restored permission signature can repeat.
+    this.routingKeys.clear(); this.routingOwnerAlliances.clear();
     for (const player of state.players) player.colorKind ??= FACTIONS.find(faction => faction.id === player.factionId)?.kind ?? player.kind;
     restoreArray(this.players,state.players);
     for(const squad of state.squads){

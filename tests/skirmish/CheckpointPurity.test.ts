@@ -8,6 +8,7 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { DEFAULT_AI_POLICIES } from "../../src/skirmish/content/AiPolicies";
+import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
 const TICKS = 2000, CHECK = 50, ELIMINATE_EVERY = 200, W = 192, H = 128;
@@ -24,17 +25,21 @@ function mulberry32(seed: number) {
 type Internals = { changeOwner(tile: number, id: number): void };
 
 describe("checkpoint purity under lifecycle churn", () => {
-  it(`restores to an identical checkpoint every ${CHECK} ticks over ${TICKS} ticks`, () => {
+  // raids-v1 is the live server's diplomacy: its route revisions embed the
+  // permission signature, which a restore must reproduce.
+  it.each(["default", "raids-v1"])(`restores to an identical checkpoint every ${CHECK} ticks over ${TICKS} ticks (%s diplomacy)`, (diplomacy) => {
     const rnd = mulberry32(10), int = (n: number) => Math.floor(rnd() * n);
     const terrain = new Uint8Array(W * H).fill(133);
     const map = () => new GameMapImpl(W, H, terrain, terrain.length);
     const options = {
       ...DEFAULT_AI_POLICIES, seed: 10, humanNames: ["H1", "H2", "H3", "H4", "H5", "H6"], aiCount: 14,
-      tribes: false, ruleset: "ages-v1", runAi: true,
+      tribes: false, ruleset: "ages-v1", runAi: true, ...(diplomacy === "raids-v1" ? { diplomacyRules: "raids-v1" } : {}),
     } as ConstructorParameters<typeof Skirmish>[1];
     const game = new Skirmish(map(), options);
     expect(game.players).toHaveLength(20);
     const humans = game.players.filter((p) => !p.ai).map((p) => p.id);
+    // Human seats can form armies from the first tick.
+    for (const id of humans) game.expansion!.progression.states[id].completed = TECHNOLOGIES.map((t) => t.id);
     const eliminated: number[] = [];
     let checks = 0, flips = 0, splits = 0, handovers = 0;
     for (let tick = 1; tick <= TICKS; tick++) {
