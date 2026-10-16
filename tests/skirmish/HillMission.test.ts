@@ -4,6 +4,7 @@ import {
   validateHillState,
 } from "../../src/skirmish/domain/HillPositioning";
 import { Skirmish } from "../../src/skirmish/Simulation";
+import { FIXED } from "../../src/skirmish/Protocol";
 import { hillDefenceScene } from "./fixtures/HillDefence";
 const step = (scene: ReturnType<typeof hillDefenceScene>, ticks: number) => {
   for (let i = 0; i < ticks; i++) {
@@ -131,5 +132,18 @@ describe("screened hill missions", () => {
     const state = structuredClone(scene.mission!.hill!);
     state.cursor = 7;
     expect(() => validateHillState(state, "hold-position")).toThrow();
+  });
+  it("an offensive combat mission takes a hill worth about 3% (T-d gate 1.1 -> 1.03)", () => {
+    const scene = hillDefenceScene();
+    (scene.mission as { purpose: string }).purpose = "combat";
+    // Bring the enemy inside the 24-tile threat radius: the crest is worth ~1.03x here.
+    for (const r of scene.riders) scene.game.updateSquad(r.id, { y: r.y - 4 * FIXED });
+    let took = false;
+    for (let i = 0; i < 200 && !took; i++) {
+      scene.launch();
+      scene.game.step();
+      took = scene.mission!.kind === "hold-position" && !!scene.mission!.hill;
+    }
+    expect(took).toBe(true);
   });
 });

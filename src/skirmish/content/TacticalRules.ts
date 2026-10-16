@@ -63,6 +63,8 @@ export const SKIRMISH=Object.freeze({minRemainingTicks:secondsToTicks(1),dangerT
 export const ELEVATION=Object.freeze({minDeltaDm:60,saturateDm:400,maxRangeBp:1000,maxDamageBp:1000});
 export const POSITIONS=Object.freeze({cell:8,ringTiles:10,minProminenceDm:80,maxObjectiveTiles:24,
   maxCandidates:6,minCommitTicks:secondsToTicks(30),reevaluateTicks:secondsToTicks(5),
+  // T-d (owner default): an offensive army takes a hill only for this estimated gain (was 1.1).
+  offensiveHillGain:1.03,
   weights:{prominence:2,coverage:100,facing:50,objectiveDistance:12,routeLength:4,territory:100}});
 /** Phase 7 calibration values, in basis points unless otherwise stated. */
 export const FACING={frontCos:.5,columnCos:.9,participantCos:.25,fullRanksCos:.5,

@@ -321,7 +321,7 @@ export class HillPositioning {
           combatCohorts(this.e, enemies),
           meanHeightContext(this.e, shifted, enemies),
         );
-        if (elevated.advantage < current.advantage * 1.1) continue;
+        if (elevated.advantage < current.advantage * POSITIONS.offensiveHillGain) continue;
       }
       const weighted = Math.round(
         value *
