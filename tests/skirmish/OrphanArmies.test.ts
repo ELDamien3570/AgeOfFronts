@@ -3,7 +3,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import { DEFAULT_AI_POLICIES } from "../../src/skirmish/content/AiPolicies";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { ORPHAN_ARMY_GRACE_TICKS } from "../../src/skirmish/domain/AiArmyPlanner";
-import { FIXED } from "../../src/skirmish/Protocol";
+import { FIXED, secondsToTicks } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
 /** M3: a human's armies are orphaned when the AI takes the seat over, because
@@ -70,4 +70,25 @@ describe("orphaned armies after a handover (M3)", () => {
     for (let i = 0; i < 40 && game.expansion!.armies.armies.some((a) => a.id === army.id); i++) game.step();
     expect(game.expansion!.armies.armies.some((a) => a.id === army.id)).toBe(false);
   });
+  it("hands the disbanded squads to the AI, which reuses them in its own missions (M3, I8)", () => {
+    const { game, ids } = handoverMatch();
+    // A larger army, so the AI has a roster worth a mission.
+    const template = game.squad(ids[0])!;
+    for (let i = 3; i < 6; i++) {
+      const id = game.addSquad({ ...structuredClone(template), id: game.allocateId(), x: template.x + i * 3 * FIXED, path: [], order: { type: "hold" }, queuedOrders: [] }).id;
+      expect(game.applyCommand({ type: "army-members", playerId: 1, armyId: game.expansion!.armies.armyOf(ids[0])!.id, action: "add", squadIds: [id] })).toBeNull();
+      ids.push(id);
+    }
+    game.setAiController(1, true);
+    const planner = (game.expansion as unknown as { economy: { military: { armyPlanner: { checkpoint(): { missions: [string, { members?: number[] }][] } } } } })
+      .economy.military.armyPlanner;
+    let reused = 0, ordered = false;
+    for (let t = 0; t < ORPHAN_ARMY_GRACE_TICKS + secondsToTicks(120) && reused < 3; t++) {
+      game.step();
+      ordered ||= ids.some((id) => game.squad(id) && game.squad(id)!.order.type !== "hold");
+      reused = new Set(planner.checkpoint().missions.flatMap(([, m]) => m.members ?? []).filter((id) => ids.includes(id))).size;
+    }
+    expect(ordered).toBe(true);
+    expect(reused).toBeGreaterThanOrEqual(3);
+  }, 60_000);
 });
