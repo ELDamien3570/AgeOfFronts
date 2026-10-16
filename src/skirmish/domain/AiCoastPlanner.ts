@@ -43,6 +43,10 @@ interface CoastGoal {
 }
 /** Coast topology is indexed once. Candidates, market evidence and exact routes
  * are resumed under one allowance. Only occupation may grant ownership. */
+/** Coast candidates kept for quoting (P3). */
+export const COAST_SHORTLIST = 8;
+/** P3: quote an incomplete shortlist this long before the 300 s goal deadline. */
+export const COAST_QUOTE_LEAD_TICKS = secondsToTicks(60);
 export class AiCoastPlanner {
   readonly goals = new Map<number, CoastGoal>();
   private readonly edges: readonly { landTile: number; waterTile: number }[];
@@ -155,7 +159,10 @@ export class AiCoastPlanner {
       !world.players.length
     )
       return 0;
-    const player = world.players[this.cursor++ % world.players.length];
+    // P3: a non-enabled faction does not spend the coast turn.
+    let player = world.players[this.cursor++ % world.players.length];
+    for (let n = 1; n < world.players.length && !this.economy.enabled(player); n++)
+      player = world.players[this.cursor++ % world.players.length];
     if (!this.economy.enabled(player)) return 0;
     let g = this.goals.get(player.id);
     if (g && g.generation !== world.aiGeneration(player.id)) {
@@ -203,6 +210,14 @@ export class AiCoastPlanner {
     while (used < budget) {
       used++;
       if (g.phase === "scan") {
+        // P3: a full shortlist, or any shortlist near the deadline, is quoted now
+        // rather than after every remaining edge of the map has been scanned.
+        if (g.shortlist.length >= COAST_SHORTLIST ||
+          (g.shortlist.length && world.tick >= g.deadline - COAST_QUOTE_LEAD_TICKS)) {
+          g.phase = "quote";
+          g.index = 0;
+          continue;
+        }
         const edge = this.edges[g.cursor++];
         if (!edge) {
           g.phase = "quote";
@@ -237,7 +252,7 @@ export class AiCoastPlanner {
           // port exists. The normal quote, occupation and payment gates apply.
           g.shortlist.push(g.pending);
           g.shortlist.sort((a, b) => b.score - a.score || a.tile - b.tile);
-          g.shortlist.length = Math.min(8, g.shortlist.length);
+          g.shortlist.length = Math.min(COAST_SHORTLIST, g.shortlist.length);
           g.phase = "scan";
           continue;
         }
@@ -268,7 +283,7 @@ export class AiCoastPlanner {
           )
             g.shortlist.push(g.pending!);
           g.shortlist.sort((a, b) => b.score - a.score || a.tile - b.tile);
-          g.shortlist.length = Math.min(8, g.shortlist.length);
+          g.shortlist.length = Math.min(COAST_SHORTLIST, g.shortlist.length);
           g.phase = "scan";
         } else if (read.next === null) g.phase = "scan";
       } else if (g.phase === "quote") {

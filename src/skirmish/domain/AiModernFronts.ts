@@ -240,10 +240,12 @@ export class AiModernFronts {
   }
   private assessment(section: ModernSection, budget: number): number {
     const { world } = this.expansion;
-    if (
-      !section.assessment ||
-      section.assessment.length !== world.squads.length
-    )
+    // P4: the scan is not restarted whenever any faction recruits or loses a
+    // squad (with dozens of factions the roster length changes nearly every
+    // tick, so it never finished). It runs to the live end of the roster; an
+    // index shift from a removal can skip or repeat one entry, which this
+    // heuristic count tolerates.
+    if (!section.assessment)
       section.assessment = {
         cursor: 0,
         length: world.squads.length,
@@ -546,7 +548,7 @@ export class AiModernFronts {
         section,
         Math.max(0, budget - this.diagnostics.work),
       );
-      if (section.assessment!.cursor === world.squads.length)
+      if (section.assessment!.cursor >= world.squads.length)
         this.advance(section, player);
       break;
     }

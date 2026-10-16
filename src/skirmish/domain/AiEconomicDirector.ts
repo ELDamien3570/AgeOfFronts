@@ -38,6 +38,11 @@ interface Saving {
   funded: number;
 }
 /** Application coordinator. Quotes remain pure; domain commands own payment. */
+/** P23 (owner default): background allowance units per this many AI-economy factions. */
+export const AI_FACTIONS_PER_ALLOWANCE = 8;
+export function aiBackgroundScale(factions: number): number {
+  return Math.max(1, Math.ceil(factions / AI_FACTIONS_PER_ALLOWANCE));
+}
 export class AiEconomicDirector {
   readonly ledger = new AiBudgetLedger();
   readonly assets = new AiAssetLeases();
@@ -201,24 +206,34 @@ export class AiEconomicDirector {
     this.expireOwnership();
     this.recovery.step();
     // Read models and naval assessment share one allowance. Preserve at least
-    // sixteen units for city work even during simultaneous cold boundary and
-    // naval passes; more becomes available when another consumer is idle.
-    const boundaryWork = this.boundaries?.step(world.tick, 32) ?? 0;
-    const frontWork = world.options.aiDefenses ? this.fronts.step(16) : 0;
+    // sixteen units (per scale unit) for city work even during simultaneous cold
+    // boundary and naval passes; more becomes available when another consumer is idle.
+    // P2/P23: allowances scale with the number of AI-economy factions, so a
+    // 45-faction match does not starve each faction to 1/45 of an 8-faction rate.
+    // Per-faction controllers (naval, coasts, army) take one turn per scale unit.
+    let factions = 0;
+    for (const p of world.players) if (this.enabled(p)) factions++;
+    const scale = aiBackgroundScale(factions);
+    const boundaryWork = this.boundaries?.step(world.tick, 32 * scale) ?? 0;
+    const frontWork = world.options.aiDefenses ? this.fronts.step(16 * scale) : 0;
     const navalWork =
       world.options.deferredPlanning
-        ? this.navalFacts.step(world.tick, 48 - frontWork)
+        ? this.navalFacts.step(world.tick, 48 * scale - frontWork)
         : 0;
-    const controllerWork =
-      world.options.aiNaval && world.options.deferredPlanning
-        ? this.naval.step(16)
-        : 0;
-    const armyWork=this.military.step(Math.max(0,Math.min(24,112-navalWork-boundaryWork-controllerWork-frontWork)));
-    const tradeQuoteWork = this.tradeQuotes.step(Math.min(8, Math.max(0, 112-navalWork-boundaryWork-controllerWork-frontWork-armyWork)));
-    const coastWork = this.coasts.step(Math.min(8,Math.max(0,112-navalWork-boundaryWork-controllerWork-frontWork-armyWork-tradeQuoteWork)));
+    let controllerWork = 0;
+    if (world.options.aiNaval && world.options.deferredPlanning)
+      for (let n = 0; n < scale; n++) controllerWork += this.naval.step(16);
+    const shared = 112 * scale, total = 128 * scale;
+    let armyWork = 0;
+    for (let n = 0; n < scale; n++)
+      armyWork += this.military.step(Math.max(0,Math.min(24,shared-navalWork-boundaryWork-controllerWork-frontWork-armyWork)));
+    const tradeQuoteWork = this.tradeQuotes.step(Math.min(8 * scale, Math.max(0, shared-navalWork-boundaryWork-controllerWork-frontWork-armyWork)));
+    let coastWork = 0;
+    for (let n = 0; n < scale; n++)
+      coastWork += this.coasts.step(Math.min(8,Math.max(0,shared-navalWork-boundaryWork-controllerWork-frontWork-armyWork-tradeQuoteWork-coastWork)));
     const cityWork = this.cities.step(
       world.tick,
-      128 - navalWork - boundaryWork - controllerWork - frontWork - armyWork - tradeQuoteWork - coastWork,
+      total - navalWork - boundaryWork - controllerWork - frontWork - armyWork - tradeQuoteWork - coastWork,
       8,
     );
     this.diagnostics.backgroundWork =
