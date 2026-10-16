@@ -1,12 +1,11 @@
-import { FORMATION_MOVEMENT } from "../../content/FormationMovement";
-import { DEFAULT_AI_POLICIES } from "../../content/AiPolicies";
+import { lobbyMatchOptions } from "./LobbyMatchOptions";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
 import {ClientStateFlow} from "./ClientStateFlow";
-import { MATCH_STOPPED_MESSAGE, publicStopMessage } from "./TerminalMessages";
+import { MATCH_STOPPED_MESSAGE, NO_LIVING_HUMAN_MESSAGE, publicStopMessage } from "./TerminalMessages";
 import type {ClientBaseline} from "./MatchExecutor";
 import type { EmpireProfile } from "../../lobby/EmpireProfile";
-import type { Command } from "../../Protocol";
+import type { Command, MatchOptions } from "../../Protocol";
 import { TICKS_PER_SECOND } from "../../Protocol";
 import { commandSchema } from "../CommandSchema";
 import type { MatchReservation } from "../domain/RoomCoordinator";
@@ -34,6 +33,9 @@ import {
 export const MAX_RECENT_COMMANDS = 2048;
 export const MAX_QUEUED_COMMANDS = MAX_COMMAND_BATCH;
 export const EMPTY_MATCH_GRACE_MS = 120_000;
+/** A match whose every human seat is eliminated ends after this delay, while
+ * observers stay connected (13 R2.1, OD9). The simulation keeps running. */
+export const NO_LIVING_HUMAN_END_MS = 60_000;
 /** Minimum spacing between full recovery baselines for one guest. Each costs a
  * synchronous capture on the simulation thread, so a later request is deferred
  * (never refused: the flow is already recovering and must receive a baseline). */
@@ -124,12 +126,13 @@ export class LiveMatch {
   private nextSyncAt = 0;
   private pauses: { at: number; ms: number }[] = [];
   private emptyDeadline?: number;
+  private humanlessDeadline?: number;
   private readonly flows=new Map<string,ClientStateFlow>();
   private readonly recoveryQueue:string[]=[];
   private recoveringClient=false;
   private readonly recoveredAt=new Map<string,number>();
   private readonly deferredRecoveries=new Map<string,ReturnType<typeof setTimeout>>();
-  readonly options;
+  readonly options: MatchOptions;
   constructor(
     readonly reservation: MatchReservation,
     readonly executor: MatchExecutor,
@@ -159,27 +162,11 @@ export class LiveMatch {
         connected: member.connected,
       }),
     );
-    this.options = {
-      ...DEFAULT_AI_POLICIES,
-      diplomacyRules: "raids-v1" as const,
-      armyTravel: "corridors-v1" as const,
-      ...FORMATION_MOVEMENT,
-      seed: Math.floor(Math.random() * 0x7fffffff),
-      humanNames: reservation.members.map((member) => member.profile.name),
-      ...(reservation.members.some(member => typeof member.profile.colorIndex === "number")
-        ? { humanColors: reservation.members.map(member => member.profile.colorIndex ?? null) } : {}),
-      aiCount: settings.aiCount,
-      tribes: settings.tribeCount > 0,
-      tribeCount: settings.tribeCount,
-      ruleset: "ages-v1" as const,
-      victoryMode: settings.victory,
-      technologySpeed: settings.technologySpeed,
-      startingAge: settings.startingAge,
-      resourceDensity: settings.resourceDensity,
-      resourceOutput: settings.resourceOutput,
-      infiniteGoldForPlayers: settings.infiniteGoldForPlayers,
-      alliances: settings.alliances,
-    };
+    this.options = lobbyMatchOptions(
+      settings,
+      reservation.members.map((member) => member.profile),
+      Math.floor(Math.random() * 0x7fffffff),
+    );
   }
   async initialize(): Promise<void> {
     const prepared = await this.executor.request<PreparedMatch>({
@@ -348,7 +335,7 @@ export class LiveMatch {
         seat.connected = true;
         this.disconnected.delete(seat.playerId);
         this.admissions.delete(guest);
-        this.emptyDeadline = undefined;
+        this.reviewLiveness();
         // No world exists yet: resume spawn selection with a fresh short window.
         if (this.spawnDeadline !== undefined)
           this.spawnDeadline = Math.max(
@@ -455,7 +442,7 @@ export class LiveMatch {
     this.loaded.add(guest);
     this.loadingDeadlines.delete(guest);
     this.admissions.delete(guest);
-    this.emptyDeadline = undefined;
+    this.reviewLiveness();
     this.send(guest, {
       type: "match-sync-complete",
       matchId: this.reservation.id,
@@ -610,17 +597,30 @@ export class LiveMatch {
       this.loadingDeadlines.delete(guest);
       this.departed?.(guest);
     }
-    if (
-      ![...this.seats.values()].some((s) => s.connected) &&
-      this.emptyDeadline === undefined
-    )
-      this.emptyDeadline =
-        this.now() + (this.config.graceMs ?? EMPTY_MATCH_GRACE_MS);
+    this.reviewLiveness();
     if (this.sync?.admission.guest === guest)
       await this.cancelSync(
         this.sync,
         "Join canceled because the connection closed",
       );
+  }
+  /** Unknown seats (before the first advance reports them) count as alive. */
+  private livingHuman(playerId: number): boolean {
+    return this.runtimeSeats.find(seat => seat.playerId === playerId)?.eliminated !== true;
+  }
+  /** Only a connected seat whose faction still lives keeps the match running;
+   * an eliminated observer does not (G4). With no living human seat left the
+   * match ends after NO_LIVING_HUMAN_END_MS instead of pausing. */
+  private reviewLiveness(): void {
+    const living = [...this.seats.values()].filter(seat => this.livingHuman(seat.playerId));
+    if (!living.length) {
+      this.emptyDeadline = undefined;
+      this.humanlessDeadline ??= this.now() + NO_LIVING_HUMAN_END_MS;
+      return;
+    }
+    this.humanlessDeadline = undefined;
+    if (living.some(seat => seat.connected)) this.emptyDeadline = undefined;
+    else this.emptyDeadline ??= this.now() + (this.config.graceMs ?? EMPTY_MATCH_GRACE_MS);
   }
   private emptyExpired():boolean {
     if(this.emptyDeadline===undefined||this.now()<this.emptyDeadline)return false;
@@ -640,6 +640,10 @@ export class LiveMatch {
     }
     if (this.emptyExpired()) {
       await this.end("No players returned before the reconnect grace expired");
+      return;
+    }
+    if (this.humanlessDeadline !== undefined && this.now() >= this.humanlessDeadline) {
+      await this.end(NO_LIVING_HUMAN_MESSAGE);
       return;
     }
     if (this.sync && this.now() >= this.sync.expiresAt) {
@@ -779,7 +783,10 @@ export class LiveMatch {
     this.tick = result.tick;
     this.cadence.record(this.tick, this.now());
     if (result.diagnostics) this.latestDiagnostics = result.diagnostics;
-    if (result.seats) this.runtimeSeats = result.seats;
+    if (result.seats) {
+      this.runtimeSeats = result.seats;
+      this.reviewLiveness();
+    }
     if (result.commandVisible && this.pendingCommandTick === undefined) this.pendingCommandTick = result.tick;
     if (publish && this.pendingCommandTick !== undefined) {
       const wait = Math.max(0, result.tick - this.pendingCommandTick);

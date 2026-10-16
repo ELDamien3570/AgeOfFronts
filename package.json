@@ -11,6 +11,7 @@
     "test:skirmish": "vitest run --config vite.skirmish.config.ts",
     "check": "tsc --noEmit && npm run test:skirmish",
     "compile:content": "tsx scripts/compileContent.ts",
+    "probe:playtest": "tsx scripts/playtestProbe.ts",
     "start:multiplayer": "tsx src/skirmish/multiplayer/server.ts",
     "source:skirmish": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/packageSkirmishSource.ps1",
     "build-dev": "concurrently \"tsc --noEmit\" \"vite build --mode development\"",

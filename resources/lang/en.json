@@ -2,6 +2,24 @@
   "skirmish_match": {
     "simulation_fault": "The match stopped because of an internal simulation error. Return to the lobby to play again."
   },
+  "skirmish_defeat": {
+    "eyebrow": "EMPIRE FALLEN",
+    "title": "Your empire has fallen",
+    "description": "The match continues. Observe the remaining empires or return to the lobby.",
+    "observe": "Observe",
+    "leave": "Leave"
+  },
+  "skirmish_lobby_rules": {
+    "start_protection": "Start protection",
+    "time_limit": "Time limit",
+    "ai_difficulty": "AI difficulty",
+    "minutes": "{minutes} min",
+    "protection_none": "None",
+    "difficulty_relaxed": "Relaxed",
+    "difficulty_standard": "Standard",
+    "difficulty_hard": "Hard",
+    "hint": "Protected human empires cannot be raided or invaded and cannot invade until protection ends or they declare war. At the time limit the highest score wins."
+  },
   "skirmish_server": {
     "match_stopped": "Match stopped unexpectedly",
     "match_initialization_failed": "The match could not be started. You are back in your room",
@@ -9,7 +27,9 @@
     "setup_no_viable_land": "No viable land for starting camps",
     "rate_limited": "Too many messages were sent to the lobby server. Reconnecting…",
     "command_validation_failure": "This command could not be processed",
-    "mixed_army_selection": "Move a whole army, or only squads outside armies, in one order"
+    "mixed_army_selection": "Move a whole army, or only squads outside armies, in one order",
+    "no_living_human": "Every human empire has been defeated",
+    "playtest_rules_invalid": "Choose supported start protection, time limit and AI difficulty."
   },
   "skirmish_controls": {
     "double_right_click": "Double right click",

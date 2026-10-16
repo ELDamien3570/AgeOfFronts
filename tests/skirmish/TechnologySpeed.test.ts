@@ -1,3 +1,4 @@
+import { progressionStagger } from "../../src/skirmish/domain/Expansion";
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -177,7 +178,7 @@ describe("match technology speed", () => {
     const node = technologyAt("StoneAge", "economic", 2);
     p.gold = Math.ceil(node.gold / 3);
     expect(researchRejection(state, p.gold, node.id)).toMatch(/gold/);
-    m.tick = 6;
+    m.tick = progressionStagger(p.id);
     m.expansion!.beforeStep();
     expect(state.research.economic?.technologyId).toBe(node.id);
     state.research = {};
@@ -185,7 +186,7 @@ describe("match technology speed", () => {
       (t) => t.age === "StoneAge" && t.tree !== "naval",
     ).map((t) => t.id);
     p.gold = Math.ceil(ADVANCES[0].gold / 3);
-    m.tick = 6 + secondsToTicks(3);
+    m.tick = progressionStagger(p.id) + secondsToTicks(3);
     m.expansion!.beforeStep();
     expect(state.advancement?.target).toBe("BronzeAge");
     expect(p.gold).toBe(0);

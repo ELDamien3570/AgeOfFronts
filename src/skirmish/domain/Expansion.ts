@@ -1,6 +1,7 @@
 import { secondsToTicks } from '../Protocol';
 import { TrenchOccupancy } from "./TrenchOccupancy";
 import { chargeFallbackOrder } from "./CommandPolicy";
+import { aiVesselPreference } from "./AiVesselChoice";
 import { airfieldAircraftCount } from "./AirfieldCapacity";
 import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import { SkirmishStance } from "./SkirmishStance";
@@ -38,6 +39,7 @@ import type {
   Squad,
 } from "../Protocol";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
+import type { AiDifficulty } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
 import { recoveredChargeStrength } from './ChargeStrength';
 import { armCavalryBonus } from './CavalryAssault';
@@ -111,7 +113,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   wasteland: NuclearWasteland;
   spatialFacts(phase: import("../PhaseSpatialViews").SpatialPhase): import("../PhaseSpatialViews").PhaseSpatialFacts;
   recruitment: Recruitment;
-  options?: { runAi?: boolean; formationLocomotion?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; diplomacyRules?:"raids-v1"; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge; maximumAge?: Age };
+  options?: { runAi?: boolean; formationLocomotion?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; diplomacyRules?:"raids-v1"; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge; maximumAge?: Age; humanNames?: readonly string[]; startProtectionMinutes?: number; timeLimitMinutes?: number; aiDifficulty?: AiDifficulty; tribeOpening?: "playtest-v1" };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
@@ -147,6 +149,10 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
+/** P26: AI progression phase within its 3 s cycle. (id * 3) only used every third tick. */
+export function progressionStagger(playerId: number): number {
+  return playerId % secondsToTicks(3);
+}
 export class Expansion {
   checkpoint() { return structuredClone({trenches:this.trenches.checkpoint(),skirmish:this.skirmish.checkpoint(),features:this.features.checkpoint(),progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),engagements:this.engagements.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint(),relations:this.relations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
@@ -1400,7 +1406,7 @@ export class Expansion {
       if (
         !player.ai ||
         player.eliminated ||
-        this.world.tick % secondsToTicks(3) !== (player.id * 3) % secondsToTicks(3)
+        this.world.tick % secondsToTicks(3) !== progressionStagger(player.id)
       )
         continue;
       if (player.kind === "tribe") {
@@ -1787,12 +1793,10 @@ export class Expansion {
         )
       )
         continue;
-      for (const v of VESSELS.filter(
+      for (const v of aiVesselPreference(VESSELS.filter(
         (v) =>
           v.kind === kind && this.progression.has(player.id, v.technologyId),
-      )
-        .slice()
-        .reverse()) {
+      ))) {
         const port = own.find(
           (b) =>
             b.type === "port" &&
@@ -1955,11 +1959,12 @@ export class Expansion {
   }
   coalition(): number[] | null {
     if (this.victoryMode !== "allied") return null;
-    const live = this.world.players.filter((p) => !p.eliminated);
+    // Tribes neither join nor block a coalition (13 R2.1).
+    const live = this.world.players.filter((p) => !p.eliminated && p.kind === "regular");
     // Pairwise alliance is insufficient at match opening: conquest must first
-    // remove at least one regular faction, and every surviving tribe must fall.
+    // remove at least one regular faction.
     if (
-      live.some((p) => p.kind === "tribe") ||
+      !live.length ||
       !this.world.players.some((p) => p.kind === "regular" && p.eliminated) ||
       live.some((a) => live.some((b) => !this.diplomacy.allied(a.id, b.id)))
     )

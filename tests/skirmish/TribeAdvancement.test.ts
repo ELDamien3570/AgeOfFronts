@@ -1,3 +1,4 @@
+import { progressionStagger } from "../../src/skirmish/domain/Expansion";
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -40,7 +41,7 @@ describe("tribe catch-up progression", () => {
     tribe.gold = 100_000;
     state.completed = TECHNOLOGIES.filter(t => t.age === "StoneAge").map(t => t.id);
     game.options.runAi = true;
-    game.tick = (tribe.id * 3)%secondsToTicks(3);
+    game.tick = progressionStagger(tribe.id);
     game.expansion!.beforeStep();
     expect(state.advancement).toBeNull();
     for (const player of game.players.filter(p => p.kind !== "tribe")) progression.states[player.id].age = "BronzeAge";

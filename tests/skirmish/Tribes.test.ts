@@ -253,10 +253,12 @@ describe("minor tribes", () => {
     // Isolate frontier growth: ordinary moves now intentionally stop to fight.
     // Nearby hostile armies must not turn this exploration test into a battle.
     for(const player of game.players)if(player.id!==tribes[0].id)game.setAiController(player.id,false);
-    const distant=game.squads.find(s=>s.playerId===2)!;
-    for(const squad of [...game.squads])if(squad.playerId!==tribes[0].id && squad.id!==distant.id)game.removeSquad(squad.id);
-    game.updateSquad(distant.id,{x:(game.map.x(tribes[0].base)<game.map.width()/2?game.map.width()-2:2)*256,
-      y:(game.map.y(tribes[0].base)<game.map.height()/2?game.map.height()-2:2)*256});
+    // One distant squad per regular faction keeps both alive: tribes no longer
+    // block a conquest win (13 R2.1), so a lone regular would end the match.
+    const distant=[1,2].map(id=>game.squads.find(s=>s.playerId===id)!);
+    for(const squad of [...game.squads])if(squad.playerId!==tribes[0].id && !distant.includes(squad))game.removeSquad(squad.id);
+    distant.forEach((squad,index)=>game.updateSquad(squad.id,{x:(game.map.x(tribes[0].base)<game.map.width()/2?game.map.width()-2-index*4:2+index*4)*256,
+      y:(game.map.y(tribes[0].base)<game.map.height()/2?game.map.height()-2:2)*256}));
     for (let tick = 0; tick < secondsToTicks(60); tick++) game.step();
     expect(
       tribes.some((tribe) =>

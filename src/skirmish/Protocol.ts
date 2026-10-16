@@ -481,7 +481,22 @@ export interface MatchOptions {
   startingAge?: StartingAge;
   /** Optional scenario ceiling; omitted in normal matches. */
   maximumAge?: Age;
+  /** Playtest rules (13 R2). Whole minutes after which the highest score wins.
+   * Omission preserves historical saves/replays: no time limit. */
+  timeLimitMinutes?: number;
+  /** Playtest rules (13 R1). Whole minutes of start protection for each human
+   * seat (ids 1..humanNames.length). Omission preserves history: none. */
+  startProtectionMinutes?: number;
+  /** Playtest rules (13 R4). Omission preserves history: "hard" (today's AI). */
+  aiDifficulty?: AiDifficulty;
+  /** Playtest rules (13 R1.2) for tribe openings. Omission keeps the
+   * historical tribe squad cap, starting squads, reserves and raid timing. */
+  tribeOpening?: "playtest-v1";
 }
+export const AI_DIFFICULTIES = ["relaxed", "standard", "hard"] as const;
+export type AiDifficulty = (typeof AI_DIFFICULTIES)[number];
+/** Ends of a match the simulation decides; "conquest" is the historical end. */
+export type MatchEndReason = "conquest" | "coalition" | "time-limit" | "extinction";
 
 export interface Snapshot {
   /** Presentation context supplied by the session adapter, never by the simulation. */

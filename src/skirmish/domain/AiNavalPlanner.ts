@@ -10,8 +10,9 @@ import { FIXED, type Player, type Ship } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
 import { VESSEL, VESSELS } from "../content/Units";
 import { affordableAiCost } from "./AiBudgetLedger";
+import { aiVesselPreference } from "./AiVesselChoice";
 import type { AiEconomicDirector } from "./AiEconomicDirector";
-import { AGES, type VesselDefinition } from "./Definitions";
+import { AGES, type Age, type VesselDefinition } from "./Definitions";
 import type { Expansion } from "./Expansion";
 import { vesselEffects } from "./ResearchEffects";
 
@@ -43,6 +44,8 @@ interface Assessment {
   recoveringPower?: number;
 }
 interface PatrolGroup {members:number[];anchor:number;route:number[];leg:number;goal?:number;}
+/** Fleet mission watchdog: abort only after this long without a completed assessment (M1). */
+export const FLEET_WATCHDOG_TICKS = secondsToTicks(120);
 export interface AiFleetMission {
   id: string;
   playerId: number;
@@ -303,7 +306,7 @@ export class AiNavalPlanner {
         state: "assess",
         reason: "selecting an owned gathering port",
         createdTick: world.tick,
-        deadline: world.tick + secondsToTicks(120),
+        deadline: world.tick + FLEET_WATCHDOG_TICKS,
         nextAssessment: world.tick,
         assessment:{phase:"buildings",portDistance:Infinity,members:[],enemyPower:0,targetDistance:Infinity,futurePower:0},
         members: [],
@@ -526,6 +529,9 @@ export class AiNavalPlanner {
       );
       return;
     }
+    // M1: the deadline is a watchdog, not a lifetime. Each completed, legal
+    // assessment proves progress and pushes it out again.
+    m.deadline = Math.max(m.deadline, world.tick + FLEET_WATCHDOG_TICKS);
     const ships = a.members
       .map((id) => world.ship(id))
       .filter(
@@ -570,9 +576,16 @@ export class AiNavalPlanner {
       const age=world.tick-(m.phaseSince??m.createdTick);
       const survivors=[...new Set([...m.members,...(m.recovering??[])])].map(id=>world.ship(id)).filter((s):s is Ship=>!!s&&s.playerId===player.id&&s.health>0);
       const repairPending=survivors.some(s=>this.recovering(s,m.sea));
-      if(!a.enemyPower && !repairPending && age>=400){this.transition(m,"complete","Fleet recovered and port threat cleared");return;}
-      if(age>=800 && !enough){this.transition(m,"abort","Recovery deadline reached; paid repairs remain physical tasks");return;}
-      if(!enough || repairPending || age<200){if(ships.length)this.sail(m,ships,a.anchor);m.reason=repairPending?"Waiting for paid repair subtasks":"Consolidating surviving fleet power";return;}
+      // L2: these windows were raw 20 Hz tick literals (400/800/200).
+      if(!a.enemyPower && !repairPending && age>=secondsToTicks(20)){this.transition(m,"complete","Fleet recovered and port threat cleared");return;}
+      if(age>=secondsToTicks(40) && !enough){this.transition(m,"abort","Recovery deadline reached; paid repairs remain physical tasks");return;}
+      // L3: a recovery parked only for credit resumes funding once credit covers the next hull.
+      const pending=a.futurePower+(a.recoveringPower ?? 0);
+      if(!enough && !repairPending && readyPower+pending<Math.max(1,required) && this.creditCovers(player,m,port.age)){
+        this.fund(player,m,port.id,required,readyPower+pending,a.enemyPower);
+        if(m.state!=="recover")return;
+      }
+      if(!enough || repairPending || age<secondsToTicks(10)){if(ships.length)this.sail(m,ships,a.anchor);m.reason=repairPending?"Waiting for paid repair subtasks":"Consolidating surviving fleet power";return;}
       this.transition(m,"stage","Recovered fleet can safely rejoin its intended sea");
     }
     const future = a.futurePower + (a.recoveringPower ?? 0);
@@ -828,6 +841,33 @@ export class AiNavalPlanner {
       this.portSea(port.tile) === sea
     );
   }
+  private fleetVessel(player: Player, portAge: Age | undefined) {
+    return aiVesselPreference(VESSELS).find(
+      (v) =>
+        v.kind === "warship" &&
+        this.expansion.progression.has(player.id, v.technologyId) &&
+        AGES.indexOf(v.age) <= AGES.indexOf(portAge ?? "StoneAge"),
+    );
+  }
+  /** One initial four-vessel allowance; afterward only 35% of estimated
+   * income replenishes credit. A new minute must not repeatedly grant four
+   * ships and consume the treasury needed for research and advancement. */
+  private projectedCredit(player: Player, spending: { investmentCredit?: number; creditTick?: number }, costGold: number): number {
+    const { world } = this.expansion;
+    const tradeRate=(this.economy.tradeQuotes.best(player.id,true)?.quote.riskAdjustedGoldPer1000Ticks ?? 0)*TICKS_PER_SECOND/1000;
+    const income=20+Math.floor(player.land/(40*(world.options?.territoryIncomeScale ?? 1)))+tradeRate;
+    const allowance=Math.max(costGold*4,Math.floor(income*60*.35));
+    return Math.min(allowance,(spending.investmentCredit ?? costGold*4)+
+      Math.max(0,world.tick-(spending.creditTick ?? world.tick))/TICKS_PER_SECOND*income*.35);
+  }
+  private creditCovers(player: Player, m: AiFleetMission, portAge: Age | undefined): boolean {
+    const definition = this.fleetVessel(player, portAge);
+    if (!definition) return false;
+    const spending = this.funding.get(`${player.id}:${m.sea}`) as { investmentCredit?: number; creditTick?: number; lossPauseUntil?: number } | undefined;
+    if (!spending) return true;
+    if ((spending.lossPauseUntil ?? 0) > this.expansion.world.tick) return false;
+    return this.projectedCredit(player, spending, definition.cost.gold ?? 0) >= (definition.cost.gold ?? 0);
+  }
   private fund(
     player: Player,
     m: AiFleetMission,
@@ -842,14 +882,7 @@ export class AiNavalPlanner {
     const committed = world.shipFacts().byOwner(player.id).filter(s => s.kind === "warship").length +
       world.recruitment.byOwner(player.id).filter(j => j.category === "ship" && j.kind === "warship").length;
     if (committed >= cap) return;
-    const definition = VESSELS.slice()
-      .reverse()
-      .find(
-        (v) =>
-          v.kind === "warship" &&
-          progression.has(player.id, v.technologyId) &&
-          AGES.indexOf(v.age) <= AGES.indexOf(port.age ?? "StoneAge"),
-      );
+    const definition = this.fleetVessel(player, port.age);
     if (!definition) {
       this.transition(
         m,
@@ -871,14 +904,7 @@ export class AiNavalPlanner {
       spending.windowStart=world.tick;spending.windowSpent=0;spending.lostPower=0;
     }
     const costGold=definition.cost.gold ?? 0;
-    const tradeRate=(this.economy.tradeQuotes.best(player.id,true)?.quote.riskAdjustedGoldPer1000Ticks ?? 0)*TICKS_PER_SECOND/1000;
-    const income=20+Math.floor(player.land/(40*(world.options?.territoryIncomeScale ?? 1)))+tradeRate;
-    const allowance=Math.max(costGold*4,Math.floor(income*60*.35));
-    // One initial four-vessel allowance; afterward only 35% of estimated
-    // income replenishes credit. A new minute must not repeatedly grant four
-    // ships and consume the treasury needed for research and advancement.
-    spending.investmentCredit=Math.min(allowance,(spending.investmentCredit ?? costGold*4)+
-      Math.max(0,world.tick-(spending.creditTick ?? world.tick))/TICKS_PER_SECOND*income*.35);
+    spending.investmentCredit=this.projectedCredit(player,spending,costGold);
     spending.creditTick=world.tick;this.funding.set(key,spending);
     if ((spending.lossPauseUntil ?? 0)>world.tick || spending.investmentCredit<costGold) {
       this.transition(m,"recover","Protecting existing ships while the naval investment allowance replenishes");return;

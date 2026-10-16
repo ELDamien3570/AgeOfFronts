@@ -10,6 +10,8 @@
 
 /** Every unexpected stop of a running match (tick fault, worker death, clock failure). */
 export const MATCH_STOPPED_MESSAGE = "Match stopped unexpectedly";
+/** Every human seat has been eliminated (13 R2.1); the match ends shortly after. */
+export const NO_LIVING_HUMAN_MESSAGE = "Every human empire has been defeated";
 /** The match worker could not prepare the battlefield; members return to their room. */
 export const MATCH_INITIALIZATION_FAILED_MESSAGE =
   "The match could not be started. You are back in your room";

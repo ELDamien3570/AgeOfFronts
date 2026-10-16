@@ -2,7 +2,7 @@ import { secondsToTicks } from '../Protocol';
 import { TrenchPositioning,validateTrenchMission,type TrenchMissionState } from "./TrenchPositioning";
 import { HillPositioning, validateHillState, type HillState } from "./HillPositioning";
 import { effectiveRange, maxEffectiveRange, elevationRangeAt } from "./ElevationAdvantage";
-import { BUDGETS,ENGAGEMENT } from '../content/TacticalRules';
+import { AI_BATTLE,BUDGETS,ENGAGEMENT } from '../content/TacticalRules';
 import { preferredShape } from './TacticalEstimate';
 import { formationDoctrine } from './FormationGeometry';
 import { readyFraction, strengthFraction, manpowerCount } from './Manpower';
@@ -14,6 +14,7 @@ import { UNITS } from "../content/Units";
 import { AGES } from "./Definitions";
 import { unitRefitCost } from "./Refitting";
 import { conquestBuildings } from "./AiConquestObjective";
+import { ARMY_ROUTE_BLOCKED } from "./Armies";
 import { affordableAiCost } from "./AiBudgetLedger";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
@@ -35,7 +36,6 @@ interface ArmyObjective {
     | "advance"
     | "engage"
     | "recover"
-    | "flank"
     | "breach"
     | "replenish"
     | "refit"
@@ -58,6 +58,16 @@ interface ArmyObjective {
   shapeTicks?:[number,number][];
   desiredSquads?:number;retire?:boolean;resizeCursor?:number;
   rejoined?: number;
+  /** T-b: tick of the last standoff press order. */
+  pressTick?: number;
+  /** T-b: last tick at which at least AI_BATTLE.engagedShare of the members were fighting. */
+  engagedTick?: number;
+  /** I3: tick of a synchronous no-corridor rejection (the army itself is left untouched). */
+  routeBlockedTick?: number;
+  /** I4: building or squad objective tile, kept apart from the theatre's targetTile. */
+  objectiveTile?: number;
+  /** I4: no objective re-send before this tick after a rejected route. */
+  objectiveRetryTick?: number;
   maneuver?: { enemy: number; targetTile: number; start: number; cursor: number; tile?: number; since: number };
   breach?: { scan: number; start: number; barrier?: number; building?: number; cursor: number; tile?: number; shooters: number[]; since: number };
 }
@@ -120,7 +130,9 @@ export class AiArmyPlanner {
       this.orphanSince.set(playerId, since);
     }
     for (const [id, plan] of structuredClone(saved?.missions ?? []))
-      {validateTrenchMission(plan.trench);validateHillState(plan.hill,plan.kind);if(id!==plan.id||!Number.isSafeInteger(plan.playerId)||plan.playerId<1||!Number.isSafeInteger(plan.cursor)||plan.cursor<0||plan.cursor>plan.rosterIds.length||plan.members.length>60||new Set(plan.members).size!==plan.members.length||!["select","rally","assemble","advance","engage","recover","flank","breach","replenish","refit","complete"].includes(plan.phase))throw Error("Invalid army mission");this.missions.set(id,plan);}
+      {// The unreachable "flank" phase was removed (R2-L11); older saves resume as engage.
+      if((plan.phase as string)==="flank")plan.phase="engage";
+      validateTrenchMission(plan.trench);validateHillState(plan.hill,plan.kind);if(id!==plan.id||!Number.isSafeInteger(plan.playerId)||plan.playerId<1||!Number.isSafeInteger(plan.cursor)||plan.cursor<0||plan.cursor>plan.rosterIds.length||plan.members.length>60||new Set(plan.members).size!==plan.members.length||!["select","rally","assemble","advance","engage","recover","breach","replenish","refit","complete"].includes(plan.phase))throw Error("Invalid army mission");this.missions.set(id,plan);}
     for(const [id,rows] of structuredClone(saved?.byPlayer??[])){if(rows.length>4||new Set(rows).size!==rows.length||rows.some(key=>this.missions.get(key)?.playerId!==id))throw Error("Invalid army mission index");this.byPlayer.set(id,rows);}
     if([...this.missions.values()].some(p=>!(this.byPlayer.get(p.playerId)??[]).includes(p.id)))throw Error("Missing army mission index");
   }
@@ -184,8 +196,10 @@ export class AiArmyPlanner {
     if (rejected) {
       this.diagnostics.rejected++;
       plan.reason = rejected;
+      if (rejected === ARMY_ROUTE_BLOCKED) plan.routeBlockedTick = this.expansion.world.tick;
       return false;
     }
+    plan.routeBlockedTick = undefined;
     return true;
   }
   step(budget:number=BUDGETS.armyMissions):number {
@@ -341,7 +355,8 @@ export class AiArmyPlanner {
       !members.length || (!army && plan.phase !== "replenish" && plan.phase !== "refit") ||
       members.some((s) => !this.economy.assets.owns(`squad:${s.id}`, plan!.id))
     ) {
-      this.release(player.id);
+      // Only the failing mission is torn down; sibling armies keep their leases.
+      this.releaseMission(plan);
       return this.diagnostics.work;
     }
     plan.members=members.map(s=>s.id);
@@ -384,7 +399,11 @@ export class AiArmyPlanner {
         (plan.purpose === "coast" && plan.targetTile !== undefined &&
           world.owners[plan.targetTile] !== player.id && operations.enabled(player) &&
           !operations.canEnter(player.id,world.owners[plan.targetTile],plan.targetTile)) ||
-        troops < plan.initialTroops * 0.55)
+        troops < plan.initialTroops * 0.55 &&
+          // T-b: do not regroup while ahead in a live engagement, nor turn a line in
+          // melee contact into a rout unless it is clearly losing.
+          !(army && (this.expansion.engagements.advantageFor(army.id) ?? 0) >=
+            (members.some(s=>s.fighting) ? ENGAGEMENT.withdrawBelow : AI_BATTLE.pressOnAdvantage)))
     ) {
       if (
         this.order(plan, { type: "regroup", tile: plan.home ?? player.base })
@@ -397,7 +416,7 @@ export class AiArmyPlanner {
       }
     }
     if(plan.trench&&(!["advance","engage"].includes(plan.phase)||plan.retire))this.trenchPositions.release(plan,members);
-    if(army&&["advance","engage"].includes(plan.phase)&&this.trenchPositions.step(plan,player,army,members)){plan.nextThink=world.tick+secondsToTicks(2);return Math.max(1,this.diagnostics.work);}
+    if(army&&["advance","engage"].includes(plan.phase)&&this.trenchPositions.step(plan,player,army,members,o=>this.order(plan,o))){plan.nextThink=world.tick+secondsToTicks(2);return Math.max(1,this.diagnostics.work);}
     if(army&&["advance","engage"].includes(plan.phase)&&this.hillPositions.step(plan,player,army,members,personalityOf(player).id,o=>this.order(plan,o))){
       plan.nextThink=world.tick+secondsToTicks(2);return Math.max(1,this.diagnostics.work);
     }
@@ -428,15 +447,24 @@ export class AiArmyPlanner {
         plan.since = world.tick;
         plan.reason = "Supported Army advancing on its committed region";
       }
-    } else if (plan.phase === "flank") {
-      const left=this.expansion.engagements.wingFor(army!.id,'left'),right=this.expansion.engagements.wingFor(army!.id,'right');
-      if(left?.phase==='strike'||right?.phase==='strike'){plan.phase='engage';plan.since=world.tick;plan.reason='Supported wing reached its strike opportunity';}
-      else if((left?.failures??2)>=2&&(right?.failures??2)>=2){plan.phase='engage';plan.reason='Wings holding; front line remains engaged';}
     } else if(plan.phase==="breach"){
       const b=plan.breach!,forts=this.expansion.fortifications;
       const wall=b.barrier===undefined?undefined:forts.barrier(b.barrier),building=b.building===undefined?undefined:world.building(b.building);
       if(b.barrier===undefined && b.building===undefined){
-        while(b.scan<81 && this.diagnostics.work<Math.min(budget,8)){
+        // I3: a corridor can be refused far from the wall (the army stops where it stood).
+        // Then the nearest hostile wall guarding the objective is the breach target.
+        if(b.scan===0&&plan.targetTile!==undefined){
+          const goal=plan.targetTile;let best:{id:number;d:number}|undefined;
+          for(const w of forts.barriers){
+            if(w.kind==="trench"||w.health<=0||!w.tiles.length||!world.hostile(player.id,w.playerId)||operations.enabled(player)&&!operations.canTarget(player.id,w.playerId))continue;
+            if(world.map.euclideanDistSquared(w.tiles[0],goal)>AI_BATTLE.breachObjectiveTiles**2)continue;
+            const d=world.map.euclideanDistSquared(w.tiles[0],b.start);
+            if(!best||d<best.d||d===best.d&&w.id<best.id)best={id:w.id,d};
+          }
+          this.diagnostics.work+=Math.ceil(forts.barriers.length/32);
+          if(best){b.barrier=best.id;b.since=world.tick;}
+        }
+        while(b.barrier===undefined&&b.scan<81 && this.diagnostics.work<Math.min(budget,8)){
           const x=world.map.x(b.start)+(b.scan%9)-4,y=world.map.y(b.start)+Math.floor(b.scan/9)-4;b.scan++;this.diagnostics.work++;
           if(x<0||y<0||x>=world.map.width()||y>=world.map.height())continue;
           const tile=world.map.ref(x,y),barrier=forts.barriersAt(tile).find(w=>w.kind!=="trench"&&w.health>0&&world.hostile(player.id,w.playerId)&&
@@ -457,15 +485,24 @@ export class AiArmyPlanner {
         if(!shooters.length || members.filter(s=>this.expansion.unit(s).role==="frontline"&&readyFraction(s)>=.5).length<2 || world.tick-b.since>secondsToTicks(30)){
           this.order(plan,{type:"regroup",tile:plan.home??player.base});plan.phase="recover";plan.since=world.tick;plan.reason="Breach support lost; protecting survivors";
         } else if(b.tile===undefined){
-          const tile=approachCandidate(world.map,tiles[0],range,b.cursor);this.diagnostics.work++;
-          if(tile===undefined || forts.blocked(tile,player.id) || !world.paths.walkable(tile) ||
-            !structureAim(tilePoint(world.map,tile),tiles,range,player.id,world.map.width(),forts)){b.cursor++;}
-          else {
+          // Several cheap candidate checks per think; one exact route request at a time.
+          for(let tries=0;tries<AI_BATTLE.breachCandidatesPerThink&&b.tile===undefined&&b.cursor<24;tries++){
+            const tile=approachCandidate(world.map,tiles[0],range,b.cursor);this.diagnostics.work++;
+            if(tile===undefined || forts.blocked(tile,player.id) || !world.paths.walkable(tile) ||
+              !structureAim(tilePoint(world.map,tile),tiles,range,player.id,world.map.width(),forts)){b.cursor++;continue;}
             const route=this.economy.routes.request(plan.id,player.id,b.start,tile);
-            if(!route.pending){if(route.path&&this.order(plan,{type:"move",tile})){b.tile=tile;plan.reason="Bringing siege and escort to a legal firing approach";}else b.cursor++;}
+            if(route.pending)break;
+            if(route.path&&this.order(plan,{type:"move",tile})){b.tile=tile;b.since=world.tick;plan.reason="Bringing siege and escort to a legal firing approach";}else b.cursor++;
           }
           if(b.cursor>=24){this.order(plan,{type:"regroup",tile:plan.home??player.base});plan.phase="recover";plan.since=world.tick;plan.reason="No certified protected siege approach";}
         } else {
+          // Siege actively firing on the structure, or the escort still marching to its
+          // firing approach, is progress rather than a stalled breach.
+          if(army&&army.order.type==="move"&&army.order.tile===b.tile&&["assembling","marching"].includes(army.state))b.since=world.tick;
+          // An approach march refused after admission leaves the army holding short: try the next approach.
+          else if(army&&army.order.type!=="move"&&!this.expansion.armies.admissionPending(army.id)&&
+            members.filter(s=>this.expansion.unit(s).role==="frontline").some(s=>world.map.euclideanDistSquared(world.tileOf(s),b.tile!)>6**2)){b.tile=undefined;b.cursor++;}
+          if(shooters.some(s=>s.structureTarget&&(s.structureTarget.barrierId===wall?.id&&wall||s.structureTarget.buildingId===building?.id&&building)))b.since=world.tick;
           const ready=shooters.filter(s=>!s.structureTarget&&structureAim(s,tiles,elevationRangeAt(world,s,this.expansion.unit(s).attack),player.id,world.map.width(),forts));
           if(ready.length && members.filter(s=>this.expansion.unit(s).role==="frontline").every(s=>world.map.euclideanDistSquared(world.tileOf(s),b.tile!)<=6**2)){
             world.applyCommand({type:"attack-structure",playerId:player.id,squadIds:ready.map(s=>s.id),barrierId:wall?.id,buildingId:building?.id});
@@ -476,14 +513,17 @@ export class AiArmyPlanner {
     } else if (plan.phase === "advance" || plan.phase === "engage") {
       if(plan.purpose==="coast" && plan.targetTile!==undefined && world.owners[plan.targetTile]===player.id){
         this.order(plan,{type:"regroup",tile:plan.home??player.base});plan.phase="recover";plan.since=world.tick;plan.reason="Coastal objective physically captured";
-      } else if(army?.state==="blocked"){
+      } else if(army?.state==="blocked"||plan.routeBlockedTick!==undefined){
+        plan.routeBlockedTick=undefined;
         const siege=members.filter(s=>["siege","artillery"].includes(this.expansion.unit(s).role)&&
           this.expansion.progression.has(player!.id,this.expansion.unit(s).technologyId)&&
           this.expansion.unit(s).attack.targets.some(t=>t==="wall"||t==="structure"));
         if(siege.length&&members.filter(s=>this.expansion.unit(s).role==="frontline").length>=2){
-          this.order(plan,{type:"hold"});plan.phase="breach";plan.breach={scan:0,start:world.tileOf(army),cursor:0,shooters:siege.map(s=>s.id),since:world.tick};
+          this.order(plan,{type:"hold"});plan.phase="breach";plan.breach={scan:0,start:world.tileOf(army??members[0]),cursor:0,shooters:siege.map(s=>s.id),since:world.tick};
         } else {this.order(plan,{type:"regroup",tile:plan.home??player.base});plan.phase="recover";plan.since=world.tick;plan.reason="Intact fortification requires researched siege and escort";}
       }
+      // A breach or recovery chosen above owns the army until the next think.
+      if((plan.phase as string)!=="advance"&&(plan.phase as string)!=="engage"){plan.nextThink=world.tick+secondsToTicks(2);return this.diagnostics.work;}
 
       const enemies=world.nearbyArmyEnemies(army??members[0],12*FIXED,player.id).filter(s=>!operations.enabled(player)||operations.canTarget(player.id,s.playerId));
       const enemy=enemies.length?{x:enemies.reduce((n,s)=>n+s.x,0)/enemies.length,y:enemies.reduce((n,s)=>n+s.y,0)/enemies.length}:undefined;
@@ -503,7 +543,7 @@ export class AiArmyPlanner {
         if(this.order(plan,{type:'deploy',tile:pointTile(world.map,centre),facing:Math.atan2(enemy.y-centre.y,enemy.x-centre.x)})){
           plan.phase='engage';plan.since=world.tick;plan.reason='Persistent battle line with independently supported wings';
           const shapeTicks=new Map(plan.shapeTicks??[]),near=world.nearbyArmyEnemies(army!,14*FIXED,player.id),count=Math.max(1,near.length);
-          for(const s of members){if(world.tick-(shapeTicks.get(s.id)??-ENGAGEMENT.shapeCooldownTicks)<ENGAGEMENT.shapeCooldownTicks||s.formation?.shapeLock)continue;
+          for(const s of members){if(world.tick-(shapeTicks.get(s.id)??-ENGAGEMENT.shapeCooldownTicks)<ENGAGEMENT.shapeCooldownTicks||s.formation?.shapeLock||s.fighting)continue;
             const unit=this.expansion.unit(s),shape=preferredShape(unit,formationDoctrine(s.definitionId),{mountedShare:near.filter(t=>this.expansion.unit(t).tags.includes('mounted')).length/count,rangedShare:near.filter(t=>this.expansion.unit(t).attack.channel==='ranged').length/count,distanceTiles:Math.hypot(enemy.x-s.x,enemy.y-s.y)/FIXED},unit.role==='frontline'?'frontline':unit.role==='ranged'?'ranged':unit.tags.includes('mounted')?'mounted':'support');
             if(world.applyArmyCommand&&!world.applyArmyCommand({type:'formation',playerId:player.id,squadIds:[s.id],shape}))shapeTicks.set(s.id,world.tick);
           }plan.shapeTicks=[...shapeTicks];
@@ -520,15 +560,53 @@ export class AiArmyPlanner {
               world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),world.tileOf(b)) || a.id-b.id)[0]
           : undefined;
         const objective = remaining[0] ?? (lastSquad ? {tile:world.tileOf(lastSquad)} : undefined);
-        if (objective && (plan.targetTile !== objective.tile || members.every(s => s.order.type === "hold"))) {
+        // I4: one order per objective change. The theatre pass rewrites targetTile,
+        // so the objective lives in its own field; identical or pending orders are skipped.
+        const settled = !!army && (this.expansion.armies.admissionPending(army.id) ||
+          (army.order.type === "move" && army.order.tile === objective?.tile && army.state !== "holding"));
+        if (objective && !settled && world.tick >= (plan.objectiveRetryTick ?? 0) &&
+          (plan.objectiveTile !== objective.tile || army?.state === "holding" && members.every(s => s.order.type === "hold"))) {
           if (this.order(plan, {type:"move",tile:objective.tile})) {
-            plan.targetTile = objective.tile; plan.phase = "advance"; plan.reason = "Securing remaining cities and ground squads";
-          }
+            plan.targetTile = objective.tile; plan.objectiveTile = objective.tile; plan.phase = "advance"; plan.reason = "Securing remaining cities and ground squads";
+          } else plan.objectiveRetryTick = world.tick + AI_BATTLE.objectiveRetryTicks;
+        }
+      }
+      // T-b: commitment counts from the last real engagement, not from deployment. One
+      // member trading shots at range is not an engagement and must not freeze the army.
+      const anyFighting=members.filter(s=>s.fighting).length>=Math.max(1,Math.ceil(members.length*AI_BATTLE.engagedShare));
+      if(anyFighting)plan.engagedTick=world.tick;
+      const lastContact=Math.max(plan.since,plan.engagedTick??0);
+      const moving=!!army&&["marching","assembling","regrouping"].includes(army.state);
+      // Hill and trench positioning own the army while they hold a plan.
+      if((plan.phase==="engage"||plan.phase==="advance"&&!moving)&&!plan.hill&&!plan.trench&&army&&army.state!=="blocked"&&!anyFighting&&world.tick-lastContact>=AI_BATTLE.standoffTicks&&
+        world.tick-(plan.pressTick??-AI_BATTLE.standoffTicks)>=AI_BATTLE.standoffTicks&&this.expansion.engagements.planFor(army.id)?.posture!=="withdraw"){
+        const legalFoe=(s:Squad)=>!operations.enabled(player)||operations.canTarget(player.id,s.playerId);
+        const foes=world.nearbyArmyEnemies(army,AI_BATTLE.standoffSearchTiles*FIXED,player.id).filter(legalFoe);
+        const here=pointTile(world.map,centre);
+        // T-b pursuit: a routed target army is followed rather than left to recover.
+        const quarry=foes.length||plan.purpose==="coast"||!target?undefined:world.squadFacts().aliveByOwner(target.id)
+          .filter(s=>s.embarkedOn===null&&!s.afloat&&legalFoe(s)&&world.map.euclideanDistSquared(world.tileOf(s),here)<=AI_BATTLE.pursuitTiles**2&&
+            world.squadPaths(player.id).connected(here,world.tileOf(s))&&(!operations.enabled(player)||operations.canEnter(player.id,target.id,world.tileOf(s))))
+          .sort((a,b)=>world.map.euclideanDistSquared(world.tileOf(a),here)-world.map.euclideanDistSquared(world.tileOf(b),here)||a.id-b.id)[0];
+        if(foes.length){
+          const goal={x:foes.reduce((n,s)=>n+s.x,0)/foes.length,y:foes.reduce((n,s)=>n+s.y,0)/foes.length};
+          const length=Math.hypot(goal.x-centre.x,goal.y-centre.y),stop=Math.max(0,length-AI_BATTLE.pressStopTiles*FIXED);
+          const point={x:Math.round(centre.x+(length?(goal.x-centre.x)/length*stop:0)),y:Math.round(centre.y+(length?(goal.y-centre.y)/length*stop:0))};
+          plan.pressTick=world.tick;
+          if(this.order(plan,{type:"deploy",tile:pointTile(world.map,point),facing:Math.atan2(goal.y-centre.y,goal.x-centre.x)})){plan.phase="engage";plan.reason="Closing a standoff with the battle line";}
+        } else if(quarry){
+          plan.pressTick=world.tick;
+          if(this.order(plan,{type:"move",tile:world.tileOf(quarry)})){plan.phase="advance";plan.reason="Pursuing the routed enemy army";}
+        } else if(plan.targetTile!==undefined&&plan.purpose!=="coast"&&!(army.order.type==="move"&&army.order.tile===plan.targetTile)&&
+          world.map.euclideanDistSquared(here,plan.targetTile)>6**2&&(!operations.enabled(player)||plan.target===undefined||operations.canEnter(player.id,plan.target,plan.targetTile))){
+          plan.pressTick=world.tick;
+          if(this.order(plan,{type:"move",tile:plan.targetTile})){plan.phase="advance";plan.reason="No enemy in reach; resuming the advance on the objective";}
         }
       }
       if (
         (plan.phase === "advance" || plan.phase === "engage") &&
-        world.tick - plan.since >= doctrine.commitmentTicks &&
+        (world.tick - lastContact >= doctrine.commitmentTicks ||
+          !anyFighting && world.tick - plan.since >= doctrine.commitmentTicks * AI_BATTLE.commitmentCapFactor) &&
         !operations.sustaining(player.id, plan.target ?? 0) &&
         this.order(plan, { type: "regroup", tile: plan.home ?? player.base })
       ) {
@@ -537,7 +615,8 @@ export class AiArmyPlanner {
       }
     } else if (
       plan.phase === "recover" &&
-      (members.every(
+      // Disbanding mid-melee strands the members without orders; finish the retreat first.
+      (!members.some((s) => s.fighting) && members.every(
         (s) =>
           world.map.euclideanDistSquared(
             world.tileOf(s),

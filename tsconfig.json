@@ -32,6 +32,7 @@
     "src/scripts",
     "scripts/content/**/*",
     "scripts/compileContent.ts",
+    "scripts/playtestProbe.ts",
     "scripts/compileFormationRecipes.ts",
     "scripts/compileSoldierWeapons.ts",
     "scripts/compileFormationDoctrines.ts",

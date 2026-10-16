@@ -1,6 +1,6 @@
 import type { Player, ShipType } from "./Protocol";
 import { MAX_SHIPS } from "./Rules";
-import { MAX_SQUADS } from "./Protocol";
+import { MAX_SQUADS, secondsToTicks } from "./Protocol";
 import { AGES, type Age } from "./domain/Definitions";
 import { TRADE_RULES } from "./content/Economy";
 
@@ -52,6 +52,27 @@ export const TRIBE_STARTING_RESERVES = 1500;
 export const TRIBE_STARTING_GOLD = 150;
 export const TRIBE_SQUAD_CAP = 10;
 export const TRIBE_SQUADS_PER_AGE = 5;
+/** 13 R1.2-R1.3 playtest tribe opening (MatchOptions.tribeOpening
+ * "playtest-v1"); without the option the constants above apply unchanged. */
+export const PLAYTEST_TRIBE_OPENING = Object.freeze({
+  startingSquads: 3,
+  squadCap: 6,
+  squadsPerAge: 4,
+  /** Tribe reserve points per second = this x baseReserveIncome(age). */
+  reserveIncomeMultiple: 2,
+  /** A tribe may not campaign against a regular faction before this age... */
+  campaignAge: "BronzeAge" as Age,
+  /** ...nor before this many seconds, whichever is later. */
+  campaignAfterSeconds: 8 * 60,
+});
+export type TribeOpening = "playtest-v1" | undefined;
+export const tribeStartingSquads = (opening: TribeOpening): number =>
+  opening ? PLAYTEST_TRIBE_OPENING.startingSquads : TRIBE_STARTING_SQUADS;
+/** Whether a tribe of `age` may campaign against a regular faction at `tick`. */
+export function tribeMayCampaignAgainstRegular(opening: TribeOpening, age: Age, tick: number): boolean {
+  return !opening || AGES.indexOf(age) >= AGES.indexOf(PLAYTEST_TRIBE_OPENING.campaignAge) &&
+    tick >= secondsToTicks(PLAYTEST_TRIBE_OPENING.campaignAfterSeconds);
+}
 export const TRIBE_TRADER_CAP = 16;
 export const TRIBE_TRADERS_PER_AGE = 2;
 
@@ -92,10 +113,12 @@ export function matchTribeCount(
   return options.tribeCount ?? tribeCountFor(width, height);
 }
 
-export function squadCap(player: Pick<Player, "kind">, age?: Age): number {
+export function squadCap(player: Pick<Player, "kind">, age?: Age, opening?: TribeOpening): number {
   // The legacy sandbox has no progression; its diagnostic ceiling remains 200.
   return player.kind === "tribe"
-    ? TRIBE_SQUAD_CAP + TRIBE_SQUADS_PER_AGE * (age ? AGES.indexOf(age) : 0)
+    ? opening
+      ? PLAYTEST_TRIBE_OPENING.squadCap + PLAYTEST_TRIBE_OPENING.squadsPerAge * (age ? AGES.indexOf(age) : 0)
+      : TRIBE_SQUAD_CAP + TRIBE_SQUADS_PER_AGE * (age ? AGES.indexOf(age) : 0)
     : age
       ? AGE_SQUAD_CAPS[age]
       : MAX_SQUADS;

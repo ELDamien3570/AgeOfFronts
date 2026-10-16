@@ -6,6 +6,7 @@ import {
   MAX_TRIBES,
 } from "../FactionRules";
 import type { MatchOptions, SpawnState } from "../Protocol";
+import { AI_DIFFICULTIES } from "../Protocol";
 import type { LobbySettings } from "../lobby/LobbyDirectory";
 import { LOBBY_MAP_IDS } from "../lobby/LobbyRules";
 import { STARTING_AGES } from "../domain/Definitions";
@@ -72,6 +73,10 @@ const settings = z
     victory: z.enum(["solo", "allied"]),
     publicAiTakeover: z.boolean().optional(),
     infiniteGoldForPlayers: z.boolean().optional(),
+    // Playtest rules; optional so older clients and saved lobbies still parse.
+    startProtectionMinutes: z.union([z.literal(0), z.literal(5), z.literal(8), z.literal(12)]).optional(),
+    timeLimitMinutes: z.union([z.literal(60), z.literal(90), z.literal(120)]).optional(),
+    aiDifficulty: z.enum(AI_DIFFICULTIES).optional(),
   })
   .strict();
 const requestId = z.string().regex(/^[a-zA-Z0-9-]{1,80}$/u);

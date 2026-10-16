@@ -272,6 +272,8 @@ export interface DiplomacyState {
   wars?: { a: number; b: number; initiator?: number; cause?: "declaration" | "entry" | "invasion"; startedTick?: number }[];
   embargoes?: { initiator: number; victim: number; lastTheftTick: number }[];
   peaceProtection?: { a: number; b: number; untilTick: number }[];
+  /** Per-seat start protection (13 R1.1); absent once every row has expired. */
+  startProtection?: { playerId: number; untilTick: number }[];
   dontEmbargo?: { playerId: number; otherId: number }[];
 }
 export interface TradeActor {

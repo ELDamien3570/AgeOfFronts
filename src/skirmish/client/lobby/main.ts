@@ -175,6 +175,9 @@ const view = new LobbyView(
         victory: String(data.get("victory")),
         publicAiTakeover: data.has("publicAiTakeover"),
         infiniteGoldForPlayers: data.has("infiniteGoldForPlayers"),
+        startProtectionMinutes: Number(data.get("startProtectionMinutes")),
+        timeLimitMinutes: Number(data.get("timeLimitMinutes")),
+        aiDifficulty: String(data.get("aiDifficulty")),
       } as LobbySettings & { publicAiTakeover: boolean };
       if (connection) {
         void connection

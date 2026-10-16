@@ -27,6 +27,7 @@ tmp/formation-baseline/
 tmp/formation-baseline.zip
 tmp/black-forest-baseline/
 tmp/russian-art-build/
+tmp/playtest-probe/
 .antigravity/
 
 # Debug / Log Outputs

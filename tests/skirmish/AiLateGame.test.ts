@@ -1,3 +1,4 @@
+import { progressionStagger } from "../../src/skirmish/domain/Expansion";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -149,7 +150,7 @@ describe("late-game AI development",()=>{
       x:30.5*FIXED,y:50.5*FIXED,health:1000,target:null,state:"ready",reloadTick:0,fuelTicks:1200});
     f.expansion.supply.inventories[f.player.id]["payload:hydrogen"]=2;
     const commands=vi.spyOn(f.game,"applyCommand"),think=f.expansion as unknown as {thinkProgression():void};
-    f.game.tick=(f.player.id%20)*3;
+    f.game.tick=progressionStagger(f.player.id);
     think.thinkProgression();
     expect(commands.mock.calls.some(([c])=>c.type==="recruit-aircraft")).toBe(true);
     expect(commands.mock.calls.some(([c])=>c.type==="launch" || c.type==="sortie")).toBe(false);
@@ -164,7 +165,7 @@ describe("late-game AI development",()=>{
     for(const s of f.game.squadFacts().aliveByOwner(1))f.game.removeSquad(s.id);
     Object.assign(f.expansion.supply.inventories[f.player.id],{"payload:hydrogen":2,"payload:icbm":1});
     f.expansion.diplomacy.state.wars=[{a:f.player.id,b:1}];
-    const commands=vi.spyOn(f.game,"applyCommand");f.game.tick=(f.player.id%20)*3;
+    const commands=vi.spyOn(f.game,"applyCommand");f.game.tick=progressionStagger(f.player.id);
     (f.expansion as unknown as {thinkProgression():void}).thinkProgression();
     expect(commands.mock.calls.some(([c])=>c.type==="launch" && c.payload==="icbm")).toBe(true);
     expect(commands.mock.calls.some(([c])=>c.type==="launch" && c.payload==="hydrogen")).toBe(false);
@@ -184,7 +185,7 @@ describe("late-game AI development",()=>{
     Object.assign(f.expansion.supply.inventories[player.id],{"payload:icbm":1});
     f.expansion.diplomacy.state.wars=[{a:player.id,b:1}];
     f.expansion.diplomacy.state.alliances.push({id:999,a:player.id,b:third.id,expiresTick:100000,renewal:[]});
-    const commands=vi.spyOn(f.game,"applyCommand");f.game.tick=(player.id%20)*3;
+    const commands=vi.spyOn(f.game,"applyCommand");f.game.tick=progressionStagger(player.id);
     (f.expansion as unknown as {thinkProgression():void}).thinkProgression();
     const launches=commands.mock.calls.flatMap(([c])=>c.type==="launch"?[c]:[]);
     expect(launches.map(c=>c.buildingId)).toEqual([open.id]);

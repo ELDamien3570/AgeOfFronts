@@ -97,7 +97,8 @@ import {
   TRIBE_BASE_RADIUS,
   TRIBE_INTERCEPT_RANGE,
   TRIBE_PURSUIT_RANGE,
-  TRIBE_STARTING_SQUADS,
+  tribeStartingSquads,
+  PLAYTEST_TRIBE_OPENING,
   TRIBE_STARTING_RESERVES,
   TRIBE_STARTING_GOLD,
   matchTribeCount,
@@ -124,6 +125,7 @@ import type {
   Command,
   DefenseZone,
   MatchOptions,
+  MatchEndReason,
   Order,
   Player,
   Ship,
@@ -177,6 +179,9 @@ import { startingCamp } from "./domain/StartingCamp";
 import { TRIBE_CITY_BASE_RADIUS } from "./FactionRules";
 import { firingPosition } from "./TacticalRoutes";
 import { terrainSpeed } from "./Terrain";
+import { validatePlaytestOptions, isHumanSeat, timeLimitTick, startProtectionUntil, aiDifficultyOf } from "./domain/PlaytestRules";
+import { victoryOutcome, type VictoryCandidate } from "./domain/Victory";
+import { AI_DIFFICULTY, aiRaidAfterTicks } from "./content/AiDifficulty";
 
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
@@ -249,7 +254,7 @@ export class Skirmish {
       // Diplomacy: every relation list a command can append to or remove from.
       const d = expansion.diplomacy, state = d.state;
       parts.push(d.revision, state.offers.length, state.alliances.length, state.wars?.length ?? 0,
-        state.embargoes?.length ?? 0, state.peaceProtection?.length ?? 0, state.dontEmbargo?.length ?? 0,
+        state.embargoes?.length ?? 0, state.peaceProtection?.length ?? 0, state.dontEmbargo?.length ?? 0, state.startProtection?.length ?? 0,
         Object.keys(state.cooldowns).length);
       // Armies: membership, orders, queues and posture. Army commands write
       // these without touching the squad change journal.
@@ -317,13 +322,17 @@ export class Skirmish {
     });
     bus.on("controller", playerId => this.expansion?.economy.release(playerId));
     bus.on("controller", playerId => this.expansion?.operations.release(playerId));
+    // M3 (Next #5 I8): human armies stay intact for a reconnect and fight under
+    // automatic tactics with no stale queue; the army planner's orphan grace
+    // (Next #10) then disbands those the AI has no mission for.
+    bus.on("controller", (playerId, ai) => { if (ai) this.expansion?.armies.handOverToAi(playerId); });
     bus.on("controller", playerId => this.commandApplications.release(playerId, this.tick));
     bus.on("controller", (playerId, ai) => this.expansion?.economy.military.armyPlanner.controllerChanged(playerId, ai, this.tick));
     // L1: an eliminated faction's AI planning state has no owner left to release it.
     bus.on("factionEliminated", playerId => this.expansion?.economy.release(playerId));
     bus.on("factionEliminated", playerId => this.expansion?.operations.release(playerId));
   }
-  checkpoint() { this.assertAvailable(); return this.normalizePolicyWaits(structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,reorientRetry:this.reorientRetry,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()})); }
+  checkpoint() { this.assertAvailable(); return this.normalizePolicyWaits(structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,reorientRetry:this.reorientRetry,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,endReason:this.endReason,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()})); }
   /** A policy wait's revision embeds derived generations that a restore does
    * not reproduce. Save a wait that is current as POLICY_WAIT_CURRENT, which a
    * restore rebases; a stale wait keeps its string, so it stays stale and the
@@ -381,6 +390,8 @@ export class Skirmish {
       throw new Error("Invalid naval priority");
     if(this.expansion)for(const job of saved.recruitment.jobs)if(job.category==="land")validateRecruitmentRecipe(UNIT.get(job.definitionId??""),job);
     for(const player of saved.players) if(!Number.isSafeInteger(player.reserves)||player.reserves<0||!Number.isSafeInteger(player.reserveRemainder??0)||(player.reserveRemainder??0)<0||(player.reserveRemainder??0)>=1000) throw new Error('Invalid checkpoint reserves');
+    if (saved.endReason != null && !["conquest", "coalition", "time-limit", "extinction"].includes(saved.endReason))
+      throw new Error("Invalid checkpoint end reason");
     if (saved.forest && !forestOf(this.map)) throw new Error("Missing forest field");
     try { this.installCheckpoint(saved); }
     catch (error) {
@@ -428,6 +439,8 @@ export class Skirmish {
     this.tick=state.tick;
     this.commandApplications.restore(state.commandApplications ?? {pending: [], recent: []});
     this.winner=state.winner;
+    // Checkpoints before 13 R2 carry no reason; their only end was conquest.
+    this.endReason=state.winner===null?null:state.endReason??"conquest";
     this.combatTicks=state.combatTicks;
     this.producedTroops=state.producedTroops;
     this.nextId=state.nextId;
@@ -554,6 +567,8 @@ export class Skirmish {
   }
   tick = 0;
   winner: number | null = null;
+  /** Why `winner` was set; null while the match runs (13 R2). */
+  endReason: MatchEndReason | null = null;
   combatTicks = 0;
   producedTroops = 0;
   private nextId = 1;
@@ -643,7 +658,7 @@ export class Skirmish {
   private obstacleTest(playerId: number,squad?:Squad): ((tile: number) => boolean) | undefined {
     const forts = this.expansion?.fortifications;
     const policy = this.expansion?.operations.enabled(this.player(playerId));
-    const diplomacy=this.expansion?.diplomacy,protectedBorders=diplomacy?.raids&&diplomacy.state.peaceProtection?.some(p=>p.a===playerId||p.b===playerId);
+    const diplomacy=this.expansion?.diplomacy,protectedBorders=diplomacy?.raids&&(diplomacy.startProtectionActive||diplomacy.state.peaceProtection?.some(p=>p.a===playerId||p.b===playerId));
     return forts?.hasObstacles || policy || protectedBorders
       ? (tile) => !!forts?.blocked(tile, playerId) ||
         !!protectedBorders&&diplomacy!.protected(playerId,this.owners[tile])&&(!squad||this.owners[tile]!==this.owners[this.tileOf(squad)]) ||
@@ -925,6 +940,7 @@ export class Skirmish {
     )
       throw new Error(`Choose between 0 and ${MAX_TRIBES} tribes`);
     if (!Number.isInteger(options.seed)) throw new Error("Invalid match seed");
+    validatePlaytestOptions(options);
     if (
       options.territoryIncomeScale !== undefined &&
       (!Number.isFinite(options.territoryIncomeScale) ||
@@ -1168,6 +1184,10 @@ export class Skirmish {
       );
     this.expansion?.features.setChokes(this.passageTraffic.staticFeatures());
     this.createPlayers();
+    // 13 R1.1: human seats (by identity, OD1) start protected under raids rules.
+    this.expansion?.diplomacy.protectStart(
+      this.players.filter(p => isHumanSeat(this.options, p.id)).map(p => p.id),
+      startProtectionUntil(this.options));
     this.expansion?.supply.ensureStartingResources(
       this.players, this.owners, this.paths, this.buildings,
     );
@@ -1262,7 +1282,7 @@ export class Skirmish {
       const city=this.addBuilding({id:this.nextId++,playerId:player.id,type:"city",tile:camp.city,remainingTicks:0,
         age:cityAge,maxHealth:buildingIntegrity("city",cityAge),health:buildingIntegrity("city",cityAge)});
       forestOf(this.map)?.occupy(this.map,city.tile,"city");
-      this.deployStartingSquads(player, kind === "tribe" ? TRIBE_STARTING_SQUADS : 3, this.expansion.startingAge);
+      this.deployStartingSquads(player, kind === "tribe" ? tribeStartingSquads(this.options.tribeOpening) : 3, this.expansion.startingAge);
       return;
     }
     const barracksTile = this.ownedLandNearest(player.id, base, 256).find(tile =>
@@ -1272,7 +1292,7 @@ export class Skirmish {
       id: this.nextId++, playerId: player.id, type: "barracks", tile: barracksTile, remainingTicks: 0,
     });
     forestOf(this.map)?.occupy(this.map, barracks.tile, "barracks");
-    for (let i = 0; i < (kind === "tribe" ? TRIBE_STARTING_SQUADS : 4); i++)
+    for (let i = 0; i < (kind === "tribe" ? tribeStartingSquads(this.options.tribeOpening) : 4); i++)
       this.recruit(player, barracks.id, undefined, kind === "tribe" ? "complete" : "instant");
     if (kind === "tribe") {
       player.reserves = this.expansion ? reserveConversion(TRIBE_STARTING_RESERVES) : TRIBE_STARTING_RESERVES;
@@ -1323,7 +1343,7 @@ export class Skirmish {
     return this.players.find((p) => p.id === id);
   }
   squadCapacity(player: Player): number {
-    return squadCap(player, this.expansion?.progression.states[player.id]?.age);
+    return squadCap(player, this.expansion?.progression.states[player.id]?.age, this.options.tribeOpening);
   }
   squad(id: number): Squad | undefined { return this.squadEntities.get(id); }
   ship(id: number): Ship | undefined { return this.shipEntities.get(id); }
@@ -3918,7 +3938,11 @@ export class Skirmish {
         const cities = this.buildingIndex.byType(player.id, "city").filter(b => !b.remainingTicks);
         const amount = Math.max(
           0,
-          (player.kind === "tribe" ? 40 : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
+          (player.kind === "tribe"
+            ? this.options.tribeOpening
+              ? PLAYTEST_TRIBE_OPENING.reserveIncomeMultiple * baseReserveIncome(this.expansion.progression.states[player.id].age)
+              : 40
+            : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
             cities.reduce(
               (n, b) => n + cityReserveIncome(b.age ?? "StoneAge",this.expansion!.progression.states[player.id].completed),
               0,
@@ -5361,6 +5385,9 @@ export class Skirmish {
         }
         // Meet nearby invaders with actual squads, using the same attack order.
         if (nearest && distance < (personality.interceptRange * FIXED) ** 2) {
+          // T-c: a charge-capable loose squad charges an invader inside charge range
+          // (the charge command falls back to the same attack order when refused).
+          if (this.aiLooseCharge(player.id, squad, nearest)) continue;
           if (
             squad.order.type !== "attack" ||
             squad.order.targetId !== nearest.id
@@ -5390,7 +5417,7 @@ export class Skirmish {
           enemyPlayers.length &&
           (pushing || (!homeNeedsLand && own.length >= (this.expansion?.operations.offensiveTarget(player.id)!==undefined ? 2 : personality.minimumRaidSquads))) &&
           (committedInvasion ? i < own.length - invasionReserve : i % 8 < personality.raidSlots) &&
-          this.tick > (player.kind === "tribe" ? secondsToTicks(30) : personality.raidAfterTicks)
+          this.tick > (player.kind === "tribe" ? secondsToTicks(30) : aiRaidAfterTicks(personality.raidAfterTicks, AI_DIFFICULTY[aiDifficultyOf(this.options)]))
         ) {
           const enemy = enemyPlayers.reduce((a, b) =>
             this.map.euclideanDistSquared(current, a.base) <
@@ -5686,6 +5713,26 @@ export class Skirmish {
     }
   }
 
+  private aiLooseCharge(playerId: number, squad: Squad, target: Squad): boolean {
+    const unit = this.expansion?.unit(squad), charge = unit?.charge;
+    if (!unit || !charge || !unit.tags.includes("mounted") || squad.charge || squad.cavalryEngagement ||
+      (squad.chargeReadyTick ?? 0) > this.tick || target.afloat || target.embarkedOn !== null ||
+      Math.hypot(target.x - squad.x, target.y - squad.y) > charge.maximumDistance) return false;
+    const defender = this.expansion!.unit(target);
+    if (formationEnvelope(target, this.tick).shape === "square" ||
+      defender.troopClass === "antiCavalry" && formationContact(target, squad, this.tick).facing >= .25) return false;
+    return this.applyCommand({ type: "charge", playerId, squadIds: [squad.id], x: target.x, y: target.y, targetId: target.id }) === null;
+  }
+  /** Score inputs are gathered only when the time limit is being scored. */
+  private victoryCandidate(p: Player, scoring: boolean): VictoryCandidate {
+    const progress = scoring ? this.expansion?.progression.states[p.id] : undefined;
+    return {
+      id: p.id, kind: p.kind, eliminated: p.eliminated, land: p.land, kills: p.kills,
+      cities: scoring ? conquestBuildings(this.buildingIndex.byType(p.id, "city"), false).length : 0,
+      ageIndex: progress ? AGES.indexOf(progress.age) : 0,
+      technologies: progress?.completed.length ?? 0,
+    };
+  }
   private checkWinner(): void {
     // Survival is identical for humans and AI: living ground squads (including
     // embarked squads) or a completed city. Fleets and other buildings do not count.
@@ -5697,6 +5744,14 @@ export class Skirmish {
     // Mark the whole terminal batch before resolving credit, so simultaneous
     // defeats cannot award territory to another newly eliminated faction.
     for (const player of defeated) player.eliminated = true;
+    // L1: an eliminated faction keeps no AI missions, leases or reservations.
+    // Released before the transfer (Next #5) and again by the lifecycle
+    // factionEliminated subscribers after it (Next #10), which also drop rows
+    // the transfer's territory callbacks re-create. Release is idempotent.
+    for (const player of defeated) {
+      this.expansion?.economy.release(player.id);
+      this.expansion?.operations.release(player.id);
+    }
     const eliminated = new Set(
       this.players.filter((p) => p.eliminated).map((p) => p.id),
     );
@@ -5761,13 +5816,16 @@ export class Skirmish {
       });
     }
     this.promoteTribes();
-    const survivors = this.players.filter((p) => !p.eliminated);
-    if (survivors.length === 1) this.winner = survivors[0].id;
-    else if (survivors.length === 0) this.winner = 0;
+    // 13 R2.1/R2.6: tribes neither win by conquest nor block one, and an
+    // optional time limit awards the match to the best living regular score.
+    const limit = timeLimitTick(this.options), scoring = limit !== undefined && this.tick >= limit;
+    const outcome = victoryOutcome(this.players.map(p => this.victoryCandidate(p, scoring)), this.tick, limit);
+    if (outcome) { this.winner = outcome.winner; this.endReason = outcome.reason; }
     const coalition = this.expansion?.coalition();
     if (coalition?.length) {
       this.expansion!.winners.push(...coalition);
       this.winner = -1;
+      this.endReason = "coalition";
     } else if (
       this.expansion &&
       this.winner !== null &&

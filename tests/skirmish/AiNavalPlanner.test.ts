@@ -6,6 +6,7 @@ import { Skirmish } from "../../src/skirmish/Simulation";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { VESSEL } from "../../src/skirmish/content/Units";
 import { navalPower } from "../../src/skirmish/domain/AiNavalPlanner";
+import { aiVesselPreference } from "../../src/skirmish/domain/AiVesselChoice";
 import { NavalFactSequence } from "../../src/skirmish/domain/NavalFactSequence";
 
 function fixture(split = false, compact = false, island = false) {
@@ -167,14 +168,36 @@ describe("persistent concentrated port defense", () => {
     const f=fixture(),ship=f.addShip();
     f.refresh();
     let mission=f.assess();
+    const id=mission.id;
     expect(f.map.euclideanDistSquared(mission.anchor!,mission.patrolGoal!)).toBeGreaterThanOrEqual(24**2);
-    for(let i=0;i<10;i++) {
+    // I5 (M1): 300 s of patrol, well past the old fixed 120 s mission deadline.
+    for(let i=0;i<60;i++) {
       const goal=mission.patrolGoal!;
       f.game.updateShip(ship.id,{x:(f.map.x(goal)+.5)*FIXED,y:(f.map.y(goal)+.5)*FIXED,destination:null});
       f.game.tick+=secondsToTicks(5);f.refresh();mission=f.assess();
       expect(mission.state).toBe("stage");
+      expect(mission.id).toBe(id);
       expect(f.planner.allowsLocalPursuit(f.game.ship(ship.id)!)).toBe(true);
     }
+    expect(f.game.tick).toBeGreaterThanOrEqual(secondsToTicks(300));
+    expect(f.planner.checkpoint().history.some((h:{state:string})=>h.state==="abort")).toBe(false);
+  });
+  it("returns a credit-parked recovery to funding once credit covers the next hull (I5 L3)",()=>{
+    const f=fixture();f.addShip();for(let i=0;i<8;i++)f.addShip(1,25+i);f.refresh();
+    let mission=f.assess();
+    const planner=f.planner as unknown as {transition(m:unknown,s:string,r:string):void;funding:Map<string,{investmentCredit?:number;creditTick?:number}>};
+    planner.transition(mission,"recover","Protecting existing ships while the naval investment allowance replenishes");
+    const key=`${f.player.id}:${mission.sea}`;
+    planner.funding.set(key,{...(planner.funding.get(key)??{}),investmentCredit:0,creditTick:f.game.tick});
+    f.game.tick+=secondsToTicks(15);f.refresh();
+    mission=f.assess();
+    expect(mission.state).toBe("recover");
+    planner.funding.set(key,{...planner.funding.get(key)!,investmentCredit:VESSEL.get("stoneage-warship")!.cost.gold!,creditTick:f.game.tick});
+    const apply=vi.spyOn(f.game,"applyCommand");
+    f.game.tick=Math.max(f.game.tick+1,mission.nextAssessment);f.refresh();
+    mission=f.assess();
+    expect(mission.state).not.toBe("recover");
+    expect(apply.mock.calls.some(([c])=>c.type==="recruit-ship")).toBe(true);
   });
   it("uses a shorter patrol leg when the sea cannot fit an offshore leg", () => {
     const f=fixture(false,true);f.addShip();f.refresh();
@@ -212,6 +235,19 @@ describe("persistent concentrated port defense", () => {
     f.game.tick=secondsToTicks(25);f.assess();
     expect(f.game.recruitment.jobs).toHaveLength(4);expect(f.player.gold).toBe(gold);
     expect(f.planner.checkpoint().funding[0][1].windowSpent).toBe(spending.windowSpent);
+  });
+  it("buys the same-age warship over its identical, dearer submarine copy (I7)",()=>{
+    expect(aiVesselPreference([VESSEL.get("modern-submarine")!,VESSEL.get("modern-warship")!,VESSEL.get("earlymodern-warship")!]).map(v=>v.id))
+      .toEqual(["modern-warship","modern-submarine","earlymodern-warship"]);
+    const f=fixture();
+    f.expansion.progression.states[f.player.id].completed=TECHNOLOGIES.map(t=>t.id);
+    (f.game.building(f.port.id) as {age?:string}).age="Modern";
+    for(let i=0;i<8;i++)f.addShip(1,25+i);f.refresh();
+    const apply=vi.spyOn(f.game,"applyCommand");
+    f.assess();
+    const bought=apply.mock.calls.map(([c])=>c).filter(c=>c.type==="recruit-ship") as {definitionId?:string}[];
+    expect(bought.length).toBeGreaterThan(0);
+    expect(bought.every(c=>c.definitionId==="modern-warship")).toBe(true);
   });
   it.each([["regular",32],["tribe",24]] as const)("respects the %s warship cap across disconnected seas before requesting funds",(kind,cap)=>{
     const f=fixture(true);

@@ -1,6 +1,6 @@
 import { type Player, type Squad } from "../Protocol";
 import { BUDGETS, POSITIONS } from "../content/TacticalRules";
-import type { Army } from "./Definitions";
+import type { Army, ArmyOrder } from "./Definitions";
 import type { Expansion } from "./Expansion";
 export interface TrenchMissionState {
   segments: string[];
@@ -17,6 +17,8 @@ export interface TrenchMission {
   targetTile?: number;
   reason: string;
   phase: string;
+  home?: number;
+  since?: number;
 }
 export function validateTrenchMission(
   value: TrenchMissionState | undefined,
@@ -51,6 +53,7 @@ export class TrenchPositioning {
     player: Player,
     army: Army,
     members: Squad[],
+    order?: (o: ArmyOrder) => boolean,
   ): boolean {
     const e = this.e,
       w = e.world;
@@ -69,7 +72,10 @@ export class TrenchPositioning {
         )
       ) {
         this.release(plan, members);
+        // Like every other recover transition: regroup home and restart the clock.
+        order?.({ type: "regroup", tile: plan.home ?? player.base });
         plan.phase = "recover";
+        plan.since = w.tick;
         plan.reason = "Trench lost; regrouping survivors";
         return false;
       }
