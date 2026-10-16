@@ -11,6 +11,7 @@
 // two epochs). Before Now #5 the rejected oracle fails on seed 1: a rejected
 // fire-retreat army order flips posture (#148, R2-L14) and a rejected queued
 // replenish suppresses stance rows (#201, R2-M10).
+import { MIXED_ARMY_SELECTION_MESSAGE } from "../../src/skirmish/domain/CommandPolicy";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import type { CommandValidationFailure } from "../../src/skirmish/CommandApplications";
@@ -59,7 +60,7 @@ function run() {
   const BT = Object.keys(BUILDING_RULES);
   const counters = {
     applyThrows: [] as Json[], stepThrows: [] as Json[], validationFailures: [] as CommandValidationFailure[],
-    schemaRejected: 0, accepted: 0, rejected: 0, deferred: 0, rejectedMutated: {} as Record<string, number>, rejectedSamples: [] as string[], foreignRows: [] as string[],
+    schemaRejected: 0, accepted: 0, rejected: 0, deferred: 0, mixedArmyRejected: 0, rejectedMutated: {} as Record<string, number>, rejectedSamples: [] as string[], foreignRows: [] as string[],
     foreignMutated: {} as Record<string, number>, restoreFailures: [] as string[], invariantViolations: {} as Record<string, number>,
   };
   const seen = { squads: new Set<number>(), ships: new Set<number>(), buildings: new Set<number>(), aircraft: new Set<number>(), armies: new Set<number>() };
@@ -423,6 +424,7 @@ function run() {
       counters.applyThrows.push({ type: command.type, command, tick: game.tick, message: (error as Error).message, stack: String((error as Error).stack).split("\n").slice(0, 8).join("\n") });
       break;
     }
+    if (reason === MIXED_ARMY_SELECTION_MESSAGE) counters.mixedArmyRejected++;
     if (status === "rejected") counters.rejected++; else if (status === "deferred") counters.deferred++; else counters.accepted++;
     if (before) {
       const after = digest(), changed = Object.keys(before).filter(k => before[k] !== after[k]);
@@ -465,6 +467,7 @@ describe("command fuzzing (bounded)", () => {
     // Restore failures are recorded, not asserted: see the header.
     console.info(JSON.stringify({ event: "command-fuzz", seed: SEED, commands: processed, epochs, seconds, tick,
       accepted: counters.accepted, deferred: counters.deferred, rejected: counters.rejected, schemaRejected: counters.schemaRejected,
+      mixedArmyRejected: counters.mixedArmyRejected,
       validationFailures: counters.validationFailures.map(f => `${f.type}: ${f.message}`),
       rejectedMutated: counters.rejectedMutated, foreignMutated: counters.foreignMutated,
       restoreFailures: counters.restoreFailures, invariantViolations: counters.invariantViolations }));
@@ -478,5 +481,7 @@ describe("command fuzzing (bounded)", () => {
     expect(processed).toBe(COMMANDS);
     expect(asserted.slice(0, 10)).toEqual([]);
     expect(counters.accepted + counters.deferred).toBeGreaterThan(100);
+    // The R2-P2 rejection is exercised and covered by the rejected oracle above.
+    expect(counters.mixedArmyRejected).toBeGreaterThan(0);
   }, 120_000);
 });

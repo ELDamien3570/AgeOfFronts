@@ -106,6 +106,17 @@ export interface RoutePlannerPorts<T> {
  * prepared goals; plain routes keep searching under the live mask and are
  * revalidated against it on completion.
  */
+/** Owner decision D1 (R2-P3), scheduling version 5: planner slot partition
+ * for the default 128-job queue. Humans hold at most 16 jobs per seat and 64
+ * in total; background keeps a guaranteed 64 (16 of them for committed
+ * trade) and may borrow idle interactive slots up to the version 4 limits.
+ * Version 4 checkpoints keep uncapped interactive work. */
+export const PLANNER_PARTITION = {
+  interactivePerPlayer: 16,
+  interactiveTotal: 64,
+  committedReserve: 16,
+  minimumJobLimit: 128,
+} as const;
 export class RoutePlanner<T> {
   private readonly jobs = new Map<string, Job<T>>();
   private readonly cohorts = new Map<string, PlannerCohort>();
@@ -138,7 +149,8 @@ export class RoutePlanner<T> {
   // repeatedly walks its deleted prefix even though only live slots are charged.
   private readonly reclamation = new WeakMap<Map<number, number>, MapIterator<[number, number]>>();
   // Version 1 restores historical FIFO checkpoints without changing their outcomes.
-  private schedulingVersion = 4;
+  // Version 5 adds the interactive/background slot partition (R2-P3).
+  private schedulingVersion = 5;
   private exclusiveKey?: string;
   private retiredJobs = 0;
   private lastPlayer = -1;
@@ -218,7 +230,7 @@ export class RoutePlanner<T> {
     const scheduling = saved.scheduling;
     if (
       scheduling &&
-      (![1, 2, 3, 4].includes(scheduling.version) ||
+      (![1, 2, 3, 4, 5].includes(scheduling.version) ||
         (scheduling.backgroundTurn !== undefined && (!Number.isSafeInteger(scheduling.backgroundTurn) || scheduling.backgroundTurn < 0)) ||
         (scheduling.priorityTurn !== undefined && (!Number.isSafeInteger(scheduling.priorityTurn) || scheduling.priorityTurn < 0)) ||
         !Number.isInteger(scheduling.lastPlayer) ||
@@ -250,7 +262,7 @@ export class RoutePlanner<T> {
         new PlanningWorkspace(this.workspace.capacity).checkpoint(),
     );
     this.schedulingVersion = saved.scheduling?.version ?? 1;
-    if (![1, 2, 3, 4].includes(this.schedulingVersion))
+    if (![1, 2, 3, 4, 5].includes(this.schedulingVersion))
       throw new Error("Unknown planner scheduling version");
     this.exclusiveKey = saved.scheduling?.exclusiveKey;
     this.retiredJobs = saved.scheduling?.retired ?? 0;
@@ -500,6 +512,41 @@ export class RoutePlanner<T> {
     if(job.corridor)job.corridor.validated=0;
     return true;
   }
+  /** The cohort's player without creating a diagnostics cohort row. */
+  private playerOf(request: ExactRouteRequest<T>): number {
+    const read = this.cohortReads.get(request);
+    if (read) return read.playerId;
+    const id = this.ports.identity?.(request)?.playerId;
+    return id !== undefined && Number.isInteger(id) && id >= 0 && id < 256 ? id : 0;
+  }
+  /** Scheduling v5 slot partition (R2-P3) on the full-size queue. */
+  private get partitioned(): boolean {
+    return this.schedulingVersion >= 5 && !!this.ports.priority && this.jobLimit >= PLANNER_PARTITION.minimumJobLimit;
+  }
+  /** Interactive (human) jobs take at most 16 slots per player and 64 in
+   * total, so background work always keeps the other half (48 for ordinary
+   * background, 16 more for committed trade). Background work may still grow
+   * up to the version 4 thresholds (104 uncommitted, 120 total) when humans
+   * leave their share idle, so a match without busy humans schedules exactly
+   * as version 4 did. Counts scan the bounded queue under the current
+   * classification epoch, so no per-job flag can go stale when a seat changes
+   * control. Same-key replacements return before this check. */
+  private partitionRefuses(request: ExactRouteRequest<T>): boolean {
+    const priority = this.priorityOf(request), playerId = priority ? this.playerOf(request) : -1;
+    let interactive = 0, player = 0, background = 0;
+    for (const job of this.jobs.values()) {
+      if (this.priorityOf(job)) {
+        interactive++;
+        if (priority && this.playerOf(job) === playerId) player++;
+      } else background++;
+    }
+    if (priority)
+      return interactive >= PLANNER_PARTITION.interactiveTotal || player >= PLANNER_PARTITION.interactivePerPlayer;
+    const share = this.jobLimit - PLANNER_PARTITION.interactiveTotal, size = this.jobs.size;
+    if (background >= share && size >= this.jobLimit - 8) return true;
+    return !!this.ports.committed && !this.committedOf(request) &&
+      background >= share - PLANNER_PARTITION.committedReserve && size >= this.jobLimit - 24;
+  }
   cancel(key: string): void {
     const job = this.jobs.get(key);
     if (job) {
@@ -522,12 +569,16 @@ export class RoutePlanner<T> {
       this.diagnostics.admissionDeferred++;
       return false;
     }
-    if (this.ports.priority && !this.priorityOf(request) && this.jobLimit >= 16 && this.jobs.size >= this.jobLimit - 8) {
-      this.diagnostics.admissionDeferred++; return false;
-    }
-    if (this.schedulingVersion >= 4 && this.ports.committed && !this.priorityOf(request) &&
-      !this.committedOf(request) && this.jobLimit >= 32 && this.jobs.size >= this.jobLimit - 24) {
-      this.diagnostics.admissionDeferred++; return false;
+    if (this.partitioned) {
+      if (this.partitionRefuses(request)) { this.diagnostics.admissionDeferred++; return false; }
+    } else {
+      if (this.ports.priority && !this.priorityOf(request) && this.jobLimit >= 16 && this.jobs.size >= this.jobLimit - 8) {
+        this.diagnostics.admissionDeferred++; return false;
+      }
+      if (this.schedulingVersion >= 4 && this.ports.committed && !this.priorityOf(request) &&
+        !this.committedOf(request) && this.jobLimit >= 32 && this.jobs.size >= this.jobLimit - 24) {
+        this.diagnostics.admissionDeferred++; return false;
+      }
     }
     const paths = this.pathsFor(request);
     const search = paths.beginPlanning(
@@ -549,6 +600,7 @@ export class RoutePlanner<T> {
     this.diagnostics.pending = this.jobs.size;
     return true;
   }
+  private readonly pinFamilies = new Map<object, number[]>();
   step(tick: number, budget = 4096, quantum = 64): number {
     this.currentTick = tick;
     if (
@@ -585,15 +637,24 @@ export class RoutePlanner<T> {
       this.ports.completed(request, "limited", []);
     }
     let used = 0;
-    if (this.schedulingVersion >= 4) for (const paths of [this.land, this.water, this.amphibious]) {
-      if (!paths) continue;
-      paths.pinSharedPreparation([...this.jobs.values()].filter(job => this.pathsFor(job) === paths)
-        .flatMap(job => job.corridor?.local ? [job.corridor.local.origin] : []));
+    if (this.schedulingVersion >= 4) {
+      // P36: one pass over the table instead of a spread, filter and flatMap
+      // per path family. Each family still receives its origins in job order.
+      const families = this.pinFamilies;
+      families.clear();
+      for (const paths of [this.land, this.water, this.amphibious]) if (paths && !families.has(paths)) families.set(paths, []);
+      for (const job of this.jobs.values()) {
+        const origin = job.corridor?.local?.origin;
+        if (origin !== undefined) families.get(this.pathsFor(job))?.push(origin);
+      }
+      for (const paths of [this.land, this.water, this.amphibious]) if (paths) paths.pinSharedPreparation(families.get(paths)!);
+      families.clear();
     }
-    const humanWaiting=this.ports.lendIdlePreparation && this.ports.priority && [...this.jobs.values()].some(job=>{
+    let humanWaiting = false;
+    if (this.ports.lendIdlePreparation && this.ports.priority) for (const job of this.jobs.values()) {
       const live=job.discard?job.replacement:job.retired?undefined:job;
-      return live && this.priorityOf(live);
-    });
+      if (live && this.priorityOf(live)) { humanWaiting = true; break; }
+    }
     let preparationBudget = Math.min(Math.ceil(budget/16), budget),
       // At most 16,384 local dequeues, with 12,288 reserved for human work.
       corridorPreparationBudget = Math.min(32, budget),

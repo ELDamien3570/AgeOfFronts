@@ -81,7 +81,7 @@ import { canPromoteTribe, MAX_PLAYER_ID } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
 import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
-import { chargeFallbackOrder, commandRejection } from "./domain/CommandPolicy";
+import { chargeFallbackOrder, commandRejection, MIXED_ARMY_SELECTION_MESSAGE } from "./domain/CommandPolicy";
 import { SimulationFault, type TickFault } from "./SimulationFault";
 import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
@@ -157,7 +157,7 @@ import {
   SQUAD_RULES,
   STARTING_GOLD,
 } from "./Rules";
-import { SpatialGrid, type WorldPoint } from "./SpatialGrid";
+import { IncrementalSpatialGrid, SpatialGrid, type WorldPoint } from "./SpatialGrid";
 import {
   ARRIVAL_TOLERANCE,
   distanceSquared,
@@ -188,7 +188,12 @@ const RADIAL_SPANS = Array.from({ length: BASE_RADIUS + 1 }, (_, radius) =>
 );
 const ROUTE_EFFORT_LIMIT = 20_000;
 // Crossing trees built per tick until every portal has one (land, then water).
-const PATH_WARM_TREES = 4;
+// Owner decision D5: 120 trees per simulated second (15 a tick at 8 Hz), so
+// the corridor gates open about 3.75x sooner than the former 4 a tick.
+export const PATH_WARM_TREES = Math.ceil(120 / TICKS_PER_SECOND);
+/** Owner decision D8 (R2-P10): back-off after a failed reorientation, and
+ * the heading change (30 degrees) that retries immediately. */
+const REORIENT_RETRY = { ticks: COLUMN_TRAVEL.retryTicks, facing: Math.round(65536 * 30 / 360) } as const;
 // A squad on water without researched transports (e.g. a legacy placement)
 // still floats; it uses the first age's hull.
 const FALLBACK_TRANSPORT = VESSELS.find(v => v.kind === "transport")!;
@@ -283,7 +288,7 @@ export class Skirmish {
     this.expansion?.operations.release(playerId);
     this.commandApplications.release(playerId, this.tick);
   }
-  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,reorientRetry:this.reorientRetry,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     this.assertAvailable();
     this.captureContributions.clear();
@@ -360,6 +365,7 @@ export class Skirmish {
     restoreMap(this.navigationProgress,state.navigationProgress);
     this.navigationCleanupNeeded = true;
     restoreMap(this.orderRevisions,state.orderRevisions);
+    restoreMap(this.reorientRetry,state.reorientRetry ?? new Map());
     restoreMap(this.queuedLegs,state.queuedLegs ?? new Map());
     restoreMap(this.moveContinuations,state.moveContinuations ?? new Map());
     restoreMap(this.routeApproaches,state.routeApproaches ?? new Map());
@@ -388,7 +394,7 @@ export class Skirmish {
     // Permission generations are derived restore fences. Rebase saved waits
     // against the restored world instead of inventing another route attempt.
     for(const [id,progress] of this.navigationProgress)if(progress.policyWait){progress.policyWait.revision=this.navigationObstacleRevision(this.squad(id));progress.policyWait.start??=this.squad(id)?this.tileOf(this.squad(id)!):0;}
-    this.spatial.rebuild(this.squads.filter(s=>s.embarkedOn===null)); this.navalSpatial.rebuild(this.ships);
+    this.spatial.rebuild(this.squads.filter(s=>s.embarkedOn===null)); this.movementGridLand = -1; this.movementPoseChanges.clear(); this.navalSpatial.rebuild(this.ships);
   }
 
   readonly recruitment = new Recruitment();
@@ -418,11 +424,11 @@ export class Skirmish {
   private readonly buildingChanges = new EntityChangeJournal();
   private readonly squadEntities = new EntityCollection<Squad>({
     added: squad => { this.squadIndex.add(squad); this.squadChanges.record(squad.id, "add"); this.landingSpatial?.observe(squad); },
-    changed: (squad,fields) => { const spatialChanged=this.squadIndex.changed(squad,fields); this.squadChanges.record(squad.id, "change"); if(spatialChanged)this.landingSpatial?.observe(squad); },
+    changed: (squad,fields) => { const spatialChanged=this.squadIndex.changed(squad,fields); this.squadChanges.record(squad.id, "change"); if(spatialChanged){this.landingSpatial?.observe(squad);this.movementPoseChanges?.add(squad.id);} },
     removed: id => {
       this.squadIndex.remove(id); this.squadChanges.record(id, "remove"); this.landingSpatial?.remove(id);
       this.navigationProgress.delete(id); this.detours.delete(id);
-      this.orderRevisions.delete(id); this.queuedLegs.delete(id);
+      this.orderRevisions.delete(id); this.queuedLegs.delete(id); this.reorientRetry.delete(id);
       this.moveContinuations.delete(id); this.routeApproaches.delete(id); this.routePlanner.cancel(`continuation:${id}`);
       this.routeWork.cancel(`navigation:${id}`); this.routePlanner.cancel(`navigation:${id}`);
     },
@@ -472,7 +478,8 @@ export class Skirmish {
    * schedule keeps corridor use identical across restores. The amphibious
    * hierarchy is never warmed: open-sea clusters are portal-dense (~460us a
    * tree, thousands of trees), and bounded exact search already answers
-   * crossings within a few ticks, so it never serves the corridor. */
+   * crossings within a few ticks, so it never serves the corridor. It is
+   * not even built until a long amphibious search first needs it (R2-P25). */
   private corridorTicks = { land: 0, water: 0, amphibious: 0 };
   /** Human-commanded route work, which takes the planner's interactive share. */
   private interactiveRoute(task: { playerId?: number; kind: string; owner?: string }): boolean {
@@ -505,7 +512,7 @@ export class Skirmish {
   private readonly avoidance: LocalAvoidance;
   private readonly passageTraffic: PassageTraffic;
   private readonly collisionHostile = (a: number, b: number): boolean => this.hostile(a,b);
-  private readonly spatial: SpatialGrid<Squad>;
+  private readonly spatial: IncrementalSpatialGrid<Squad>;
   private readonly navalSpatial: SpatialGrid<Ship>;
   private readonly heldSpatial: SpatialGrid<Squad>;
   private readonly landScratch: Squad[] = [];
@@ -520,6 +527,21 @@ export class Skirmish {
     candidates:{x:number;y:number;allowed:boolean}[];
   }>();
   private readonly approachRevisions = new Map<number, string>();
+  /** Non-authoritative work counters for the idle-tick probe and its tests
+   * (roadmap Next #2, I-2/I-3). Never read by the simulation, checkpointed
+   * or replicated. */
+  private readonly idleTickWork = {
+    groundProposals: 0, movementRebuilds: 0, movementRebuildRows: 0, heldRebuilds: 0, heldRows: 0,
+    clearanceCalls: 0, clearanceReuses: 0, clearanceRevisionResets: 0,
+    movementUpdates: 0, movementUpdateRows: 0,
+  };
+  // Ids whose spatial facts changed (UnitIndex.changed) since the movement grid
+  // was last synchronised. Derived, never checkpointed.
+  private readonly movementPoseChanges = new Set<number>();
+  private readonly movementPoseScratch: Squad[] = [];
+  private landVersion = 0;
+  /** landVersion the movement grid was fully rebuilt from; -1 forces a rebuild. */
+  private movementGridLand = -1;
   private movementLand(): Squad[] {
     if (this.landMembership !== this.squadIndex.membershipRevision ||
         this.landCargo !== this.squadIndex.cargoRevision) {
@@ -529,9 +551,27 @@ export class Skirmish {
       this.landScratch.sort((a, b) => a.id - b.id);
       this.landMembership = this.squadIndex.membershipRevision;
       this.landCargo = this.squadIndex.cargoRevision;
+      this.landVersion++;
     }
     if (this.movementSpatialRevision !== this.squadIndex.spatialRevision) {
-      this.spatial.rebuild(this.landScratch);
+      if (this.movementGridLand !== this.landVersion) {
+        this.spatial.rebuild(this.landScratch);
+        this.movementGridLand = this.landVersion;
+        this.idleTickWork.movementRebuilds++;
+        this.idleTickWork.movementRebuildRows += this.landScratch.length;
+      } else {
+        // Same membership: re-index only squads whose position, owner or
+        // geometry changed, plus transitioning squads, whose envelope (the
+        // grid extent) depends on the tick. Equal to a full rebuild (I-3).
+        const changed = this.movementPoseScratch;
+        changed.length = 0;
+        for (const squad of this.landScratch)
+          if (this.movementPoseChanges.has(squad.id) || squad.formation?.transition) changed.push(squad);
+        this.spatial.update(changed);
+        this.idleTickWork.movementUpdates++;
+        this.idleTickWork.movementUpdateRows += changed.length;
+      }
+      this.movementPoseChanges.clear();
       this.movementSpatialRevision = this.squadIndex.spatialRevision;
     }
     return this.landScratch;
@@ -766,6 +806,9 @@ export class Skirmish {
     return this.movementAdmission.startStructure(playerId, squads, tiles[0], this.tick, state);
   }
   private readonly orderRevisions = new Map<number, number>();
+  /** Failed reorientation attempts (R2-P10): squad id -> earliest retry tick
+   * and the heading that failed. Checkpointed; never replicated. */
+  private readonly reorientRetry = new Map<number, { tick: number; facing: number }>();
   /** Stable incoming segment for the current steering point, retained across overshoot. */
   private readonly routeApproaches = new Map<number, { goalX: number; goalY: number; heading: number }>();
   /** At most one speculative leg per squad; scheduler work and replay state stay bounded. */
@@ -1033,7 +1076,7 @@ export class Skirmish {
     this.shipAdmission.onEvent = event => {this.commandApplications.observe("water", event);};
     this.avoidance = new LocalAvoidance(map, this.collisionHostile, id => this.amphibious(id));
     this.passageTraffic = new PassageTraffic(map, this.paths);
-    this.spatial = new SpatialGrid(
+    this.spatial = new IncrementalSpatialGrid(
       map.width() * FIXED,
       map.height() * FIXED,
       2 * FIXED,
@@ -1602,6 +1645,12 @@ export class Skirmish {
       if(armyOrder===null && !append)this.movementAdmission.cancel(command.squadIds,this.tick);
       return armyOrder;
     }
+    // Deferred planning admits every non-army move above; what reaches here
+    // with an army member would run cold synchronous HPA* (R2-P2). Rejected
+    // before any write, so the rejection is side-effect free (R2-M10).
+    if (this.options.deferredPlanning && !append && order.type === "move" &&
+      selected.some(s => this.expansion?.armies.armyOf(s!.id)))
+      return MIXED_ARMY_SELECTION_MESSAGE;
     const orders: { squad: Squad; order: Order; path: number[] }[] = [];
     let destinations: Map<number, WorldPoint> | null = null;
     let groupPaths: (number[] | null)[] = [];
@@ -2105,6 +2154,9 @@ export class Skirmish {
     if(!this.map.isValidCoord(Math.floor(end.x/FIXED),Math.floor(end.y/FIXED)))return undefined;
     const tile=this.tileOf(end);if(!this.map.isValidRef(tile))return undefined;
     if(s.cavalryEngagement && !this.map.isLand(tile))return undefined;
+    // A land body stepping onto land is exactly transportHandoff's "ground"
+    // result; skip the vessel lookup and landing closure on that hot path.
+    if(s.embarkedOn===null && !s.afloat && this.map.isLand(tile)){this.idleTickWork.groundProposals++;return {kind:"ground" as const};}
     return transportHandoff(s,end,!this.map.isLand(tile),this.transportVessel(s.playerId),candidate=>{
       if(!this.emptyFormationTerrain(candidate,this.tick) && !formationFootprints(candidate,this.tick).every(p=>this.certifyFormationPolygon(candidate,p,"deploy")))return false;
       // Landing reserves carrier space, rather than requiring an entire empty
@@ -2159,7 +2211,7 @@ export class Skirmish {
     // Include the same adjacent-pose padding used by transitionFootprint and
     // its final settled pose. This certifies the entire reform, not just a root.
     const from=this.facingGeometry.envelope(s,start),to=this.facingGeometry.envelope(s,end),
-      completed=this.facingGeometry.envelope({...s,formation:{...s.formation,transition:undefined}},end),
+      completed=this.facingGeometry.settledEnvelope(s,end),
       angle=Math.abs(Math.atan2(Math.sin(to.angle-from.angle),Math.cos(to.angle-from.angle)))/Math.max(1,end-start),
       skin=Math.ceil(from.broadRadius*(1-Math.cos(angle/2))+from.broadRadius*angle*angle/4)+2,
       radius=Math.max(from.broadRadius,to.broadRadius,completed.broadRadius)+2*skin+2+
@@ -2177,7 +2229,7 @@ export class Skirmish {
       radius = Math.max(radius,future.broadRadius) + 2*skin;
       halfX=Math.max(halfX,future.halfX);halfY=Math.max(halfY,future.halfY);padding+=skin;
       if(this.tick+1>=transition.startTick+transition.duration) {
-        const complete=this.facingGeometry.envelope({...s,formation:{...s.formation,transition:undefined}},this.tick+1);
+        const complete=this.facingGeometry.settledEnvelope(s,this.tick+1);
         halfX=Math.max(halfX,complete.halfX);halfY=Math.max(halfY,complete.halfY);
       }
     }
@@ -2363,8 +2415,15 @@ export class Skirmish {
           // Ignore small route-bearing noise until a meaningful heading change;
           // explicit facing orders remain exact.
           if(Math.abs(delta)<65536/12 && !(s.order.type==='hold' && s.order.facing!==undefined))continue;
+          // R2-P10: a reorientation that failed certification waits
+          // REORIENT_RETRY.ticks before trying the same heading again; a
+          // heading change beyond REORIENT_RETRY.facing retries at once.
+          const retry=this.reorientRetry.get(s.id);
+          if(retry && this.tick<retry.tick && Math.abs(((facing-retry.facing+32768)%65536+65536)%65536-32768)<=REORIENT_RETRY.facing)continue;
           const formation=reorientedFormation(s,this.tick,facing),candidate={...s,formation};
-          if(this.emptyTransitionTerrain(candidate,this.tick,this.tick+formation.transition!.duration) || this.certifyFormationPolygon(candidate,transitionFootprint(candidate,this.tick,this.tick+formation.transition!.duration),'deploy'))this.squadEntities.updateOwned(s.id,{formation});
+          if(this.emptyTransitionTerrain(candidate,this.tick,this.tick+formation.transition!.duration) || this.certifyFormationPolygon(candidate,transitionFootprint(candidate,this.tick,this.tick+formation.transition!.duration),'deploy')){
+            this.squadEntities.updateOwned(s.id,{formation});this.reorientRetry.delete(s.id);
+          }else this.reorientRetry.set(s.id,{tick:this.tick+REORIENT_RETRY.ticks,facing});
           continue;
         }
         const step=Math.max(-MOTION.turnPerTick[old.shape],Math.min(MOTION.turnPerTick[old.shape],delta));
@@ -3566,6 +3625,8 @@ export class Skirmish {
     this.heldScratch.length = 0;
     for (const squad of land) if (this.holding(squad)) this.heldScratch.push(squad);
     this.heldSpatial.rebuild(this.heldScratch);
+    this.idleTickWork.heldRebuilds++;
+    this.idleTickWork.heldRows += this.heldScratch.length;
     const intents: MovementIntent[] = [];
     const approachEnemies:Squad[]=[];
     this.approachRevisions.clear();
@@ -3666,9 +3727,12 @@ export class Skirmish {
         const revision=this.squadIndex.spatialRevision;
         let proof=this.movementClearance.get(squad.id);
         if(!proof){proof={tick:this.tick,x:end.x,y:end.y,allowed:false,spatialRevision:revision,candidates:[]};this.movementClearance.set(squad.id,proof);}
+        this.idleTickWork.clearanceCalls++;
+        if(proof.tick===this.tick && proof.spatialRevision!==revision && proof.candidates.length)this.idleTickWork.clearanceRevisionResets++;
         if(proof.tick!==this.tick || proof.spatialRevision!==revision)proof.candidates.length=0;
         const previous=proof.candidates.find(point=>point.x===end.x && point.y===end.y);
         let allowed=previous?.allowed;
+        if(allowed!==undefined)this.idleTickWork.clearanceReuses++;
         if(allowed===undefined){
           const bodyAllowed=this.movementPolicyClear(squad,end)&&this.transportStepClear(squad,end);
           allowed=bodyAllowed && (!this.expansion || this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)));
@@ -5115,6 +5179,12 @@ export class Skirmish {
         );
       const raids = new Map<number, Squad[]>();
       const marches=new Map<string,Squad[]>();
+      // P6: enemies with no raidable squad this think. The predicate below
+      // does not read the origin, and nothing in this loop changes an enemy
+      // squad's troops, embarkation or this player's pursue/enter policy (it
+      // only orders this player's own squads), so a miss holds for every
+      // later raider; a miss would otherwise rescan the whole spatial grid.
+      const raidMisses = new Set<number>();
       if(!recovering && (this.tick+player.id)%secondsToTicks(3)===0)this.expandAcrossRiver(player,own);
       for (let i = 0; i < own.length; i++) {
         const squad = own[i];
@@ -5274,10 +5344,11 @@ export class Skirmish {
           const remaining = conquestBuildings(this.buildingIndex.byOwner(enemy.id), enemy.ai)
             .filter(b => this.aiFootprintAllowed(player.id, b.tile))
             .sort((a,b) => this.map.euclideanDistSquared(current,a.tile) - this.map.euclideanDistSquared(current,b.tile) || a.id - b.id);
-          const lastSquad = !remaining.length ? this.spatial.nearest(squad.x, squad.y, candidate =>
+          const lastSquad = !remaining.length && !raidMisses.has(enemy.id) ? this.spatial.nearest(squad.x, squad.y, candidate =>
             candidate.troops > 0 && candidate.playerId === enemy.id && candidate.embarkedOn === null &&
             this.aiCanPursue(player.id, enemy.id, this.tileOf(candidate)) &&
             this.aiCanEnter(player.id,this.tileOf(candidate))) : undefined;
+          if (!remaining.length && !lastSquad) raidMisses.add(enemy.id);
           const objective = remaining[0]?.tile ?? (lastSquad ? this.tileOf(lastSquad) : enemy.base);
           goal = this.formationTile(
             objective,
