@@ -1,6 +1,5 @@
 /** Browser draw measure for the U4/U5 Chrome gates (Next #4); ported from the
  * client-unread review harness. See DrawMeasure.html for the run recipe. */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GameMapImpl } from "../../../src/core/game/GameMap";
 import { Skirmish } from "../../../src/skirmish/Simulation";
 import { DEFAULT_AI_POLICIES } from "../../../src/skirmish/content/AiPolicies";
@@ -46,7 +45,7 @@ async function run() {
     for (let n = 0; n < snaps; n++) {
       game.step(); if (n % 3 !== 2) game.step();
       const snapshot = game.snapshot(); snapshot.localPlayerId = human;
-      const { owners: _o, claims: _c, progress: _p, ...entities } = snapshot;
+      const entities: Partial<typeof snapshot> = { ...snapshot }; delete entities.owners; delete entities.claims; delete entities.progress;
       let t = performance.now(); structuredClone(entities); rec("clone(ser+deser)", performance.now() - t);
       t = performance.now(); renderer.update(snapshot); rec("renderer.update", performance.now() - t);
       presentation.update(snapshot);
@@ -54,7 +53,7 @@ async function run() {
         if (mode === "strategic") renderer.home();
         else { const scale = Number(mode.slice(7)); (renderer as any).scale = scale; const fighters = game.squads.filter((s: any) => s.fighting); const dense = (q: any) => game.squads.filter((o: any) => Math.abs(o.x - q.x) < 25 * FIXED && Math.abs(o.y - q.y) < 15 * FIXED).length; const c = (fighters.length ? fighters : own).reduce((a: any, b: any) => dense(b) > dense(a) ? b : a); (renderer as any).offsetX = 800 - c.x / FIXED * scale; (renderer as any).offsetY = 450 - c.y / FIXED * scale; (renderer as any).nextFrame = 0; }
         // let sprite sheets load before sampling
-        const warmStart = performance.now(); for (let k = 0; k < 400; k++) { if (k > 40 && (mode === "strategic" || game.squads.filter((q: any) => (renderer as any).formationPoses?.has(q.id)).every((q: any) => !q.definitionId || renderer.squadArtworkDetailed?.(q as never, renderer.pixelsPerCell) !== false))) break; now = Math.max(now + 1000 / 60, performance.now()); presentation.beginFrame(now, 1, false); renderer.draw(now, 1, false); presentation.endFrame(now, 0); await wait(50); }
+        for (let k = 0; k < 400; k++) { if (k > 40 && (mode === "strategic" || game.squads.filter((q: any) => (renderer as any).formationPoses?.has(q.id)).every((q: any) => !q.definitionId || renderer.squadArtworkDetailed?.(q as never, renderer.pixelsPerCell) !== false))) break; now = Math.max(now + 1000 / 60, performance.now()); presentation.beginFrame(now, 1, false); renderer.draw(now, 1, false); presentation.endFrame(now, 0); await wait(50); }
       }
       for (let f = 0; f < 12; f++) {
         now = Math.max(now + 1000 / 60, performance.now());
@@ -64,7 +63,7 @@ async function run() {
         await wait(0);
       }
     }
-    const visible = (renderer as any).formationPoses?.size; const actors = document.querySelectorAll("canvas").length;
+    const visible = (renderer as any).formationPoses?.size;
     results[mode] = { scale: renderer.pixelsPerCell, posesThisFrame: visible, squads: game.squads.length, fighting: game.squads.filter((s: any) => s.fighting).length,
       heapMB: +((performance as any).memory.usedJSHeapSize / 1048576).toFixed(1), ...Object.fromEntries(Object.entries(R).map(([k, v]) => [k, stat(v.slice(3))])) };
     results[mode].loadedDetail = game.squads.filter((q: any) => (renderer as any).formationPoses?.has(q.id) && renderer.squadArtworkDetailed?.(q as never, renderer.pixelsPerCell) === true).length; log(mode + " " + JSON.stringify(results[mode]));
