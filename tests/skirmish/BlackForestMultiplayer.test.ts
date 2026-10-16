@@ -36,6 +36,8 @@ describe("procedural Black Forest in the authoritative worker", () => {
         options,
       });
       expect(prepared.mapHash).toBe(await mapIdentity(loaded.map));
+      // A seed that generates cleanly is never replaced by a retry seed.
+      expect(prepared.options.seed).toBe(2026);
       const initial = await worker.request<MatchAdvance>({ type: "start" });
       const decoder = new SnapshotDecoder(),
         snapshot = decoder.decode(

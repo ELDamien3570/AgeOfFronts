@@ -244,6 +244,45 @@ describe("server-authoritative live match", () => {
     });
   });
 
+  it("announces the seed the prepare step settled on, so clients regenerate the retried map (R2-L7)", async () => {
+    let finish!: (result: ExecutorResult) => void;
+    const messages: { guest: string; message: ServerMessage }[] = [];
+    const match = new LiveMatch(
+      {
+        id: "retried",
+        roomId: "room",
+        createdAt: 0,
+        settings: defaultLobbySettings("black-forest", 250),
+        members: ["a", "b"].map((guestId) => ({
+          guestId,
+          profile: { name: guestId, flagCode: null },
+          joinedAt: 0,
+          connected: true,
+        })),
+      },
+      {
+        request: <T extends ExecutorResult>() =>
+          new Promise<ExecutorResult>((resolve) => {
+            finish = resolve;
+          }) as Promise<T>,
+        close: async () => {},
+      },
+      "version",
+      (guest, message) => messages.push({ guest, message }),
+      () => {},
+      () => 0,
+    );
+    const drawn = match.options.seed;
+    const preparing = match.initialize();
+    finish({ mapHash: "retried-map", options: { ...match.options, seed: (drawn + 1) & 0x7fffffff } });
+    await preparing;
+    expect(match.options.seed).toBe((drawn + 1) & 0x7fffffff);
+    const manifests = messages.filter((m) => m.message.type === "match");
+    expect(manifests.length).toBeGreaterThan(0);
+    for (const { message } of manifests)
+      expect(message).toMatchObject({ manifest: { options: { seed: (drawn + 1) & 0x7fffffff } } });
+  });
+
   it("ticks at 8 Hz, retains the independent publication cadence, and bounds catch-up",async()=>{
     const f=await fixture();f.setTime(10_125);await f.match.advance();
     expect(f.requests[0]).toMatchObject({type:"advance",ticks:1,publish:false});

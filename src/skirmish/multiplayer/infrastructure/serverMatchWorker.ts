@@ -15,6 +15,7 @@ import {
   type RuntimeMap,
 } from "../application/MatchExecutor";
 import { PublicationQueue } from "../application/PublicationQueue";
+import { preparePlan } from "../application/PreparePlan";
 import { MatchAdvanceRunner, MatchFaultError } from "../application/MatchAdvanceRunner";
 import { RecoveryBaselineCache } from "../application/RecoveryBaselineCache";
 import {
@@ -144,22 +145,30 @@ parentPort.on(
           if (match || setup) throw new Error("Executor already initialized");
           streamPublications = request.streamPublications === true;
           diagnosticContext = request.diagnosticContext ?? diagnosticContext;
-          const loaded = request.map
-            ? {
-                map: request.map,
-                territoryIncomeScale: request.options.territoryIncomeScale,
-              }
-            : await loadServerMap(request.settings, undefined, request.options.seed);
-          const options = {
-            ...request.options,
-            territoryIncomeScale: loaded.territoryIncomeScale,
-          };
           if (request.type === "prepare") {
-            preparedMap = loaded.map;
-            setup = new SpawnSelection(makeMap(loaded.map), options);
-            setup.resolve();
-            result = { mapHash: await mapIdentity(loaded.map), options };
+            // A generator invariant failure retries with a derived seed; the
+            // seed that worked is in plan.prepared.options (R2-L7).
+            const plan = await preparePlan(request, {
+              load: (settings, seed) => loadServerMap(settings, undefined, seed),
+              identity: mapIdentity,
+              makeMap,
+              now: () => performance.now(),
+              log: (level, event) => console[level === "warn" ? "warn" : "info"](JSON.stringify(event)),
+            });
+            preparedMap = plan.map;
+            setup = plan.setup;
+            result = plan.prepared;
           } else {
+            const loaded = request.map
+              ? {
+                  map: request.map,
+                  territoryIncomeScale: request.options.territoryIncomeScale,
+                }
+              : await loadServerMap(request.settings, undefined, request.options.seed);
+            const options = {
+              ...request.options,
+              territoryIncomeScale: loaded.territoryIncomeScale,
+            };
             match = new Skirmish(makeMap(loaded.map), options);
             match.commandApplications.onOutcome = collectOutcome;
             match.commandApplications.onProgress = collectProgress;

@@ -12,9 +12,10 @@ import {
   SPAWN_STREAM_SALT,
 } from "../../src/skirmish/SeedStreams";
 import { Skirmish } from "../../src/skirmish/Simulation";
+import type { LoadedMap } from "../../src/skirmish/Protocol";
 import type { RuntimeMap } from "../../src/skirmish/multiplayer/application/MatchExecutor";
 
-const identity = (map: ReturnType<typeof generateMigration>): Promise<string> =>
+const identity = (map: LoadedMap): Promise<string> =>
   mapIdentity({
     width: map.map.width(),
     height: map.map.height(),
