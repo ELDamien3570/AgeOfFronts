@@ -25,7 +25,7 @@ import { cancelRangedPreparation } from "./domain/RangedPreparation";
 import { validateMeleeStrike } from "./domain/MeleeStrike";
 import { chargeDisrupted, validateChargeImpact } from './domain/ChargeImpact';
 import { cavalryOverlapAllowed,validateCavalryEngagement } from './domain/CavalryEngagement';
-import { cavalryWithdrawal } from './domain/CavalryAssault';
+import { cavalryWithdrawal, CAVALRY_ENGAGEMENT_REACH } from './domain/CavalryAssault';
 import { movingCavalryRush,movingFormationReform,validateChargeStrength } from './domain/ChargeStrength';
 import { createManpower, damageManpower, HEALTH_SCALE, readyFraction, remainingHealth, maximumHealth, recipeCapacity, reserveConversion, scaledRecipeCost, validateRecipeManpower, validateRecruitmentRecipe, manpowerCount, type RecipeVariant } from './domain/Manpower';
 import { recruitmentVariant } from './content/FormationRecipes';
@@ -1806,10 +1806,11 @@ export class Skirmish {
     if(!continuingAttack){
       const e=squad.cavalryEngagement;
       const withdrawing=order.type==='move'||order.type==='replenish'||order.type==='attack'&&!!e&&!e.targetIds.includes(order.targetId);
-      const withdrawal=withdrawing?cavalryWithdrawal(squad,this.tick):undefined;
+      const withdrawal=withdrawing?cavalryWithdrawal(squad,this.tick,id=>this.cavalryEngagementContact(squad,id)):undefined;
       if(squad.cavalryMelee)this.updateSquad(squad.id,{cavalryMelee:withdrawal?{...squad.cavalryMelee,current:{...squad.cavalryMelee.current,completed:3}}:undefined,meleeStrike:undefined});
       const continueAssault=e && order.type==='attack' && order.cavalryMode!=='ranks' && e.targetIds.includes(order.targetId);
-      if(withdrawal || e)this.updateSquad(squad.id,{cavalryEngagement:withdrawal??(continueAssault?{...e!,phase:e!.phase==='withdrawing'?'engaged':e!.phase}:{...e!,phase:'engaged',assault:undefined}),charge:null});
+      // Leaving without anything in contact ends the engagement outright (C1).
+      if(withdrawal || e)this.updateSquad(squad.id,{cavalryEngagement:withdrawal??(continueAssault?{...e!,phase:e!.phase==='withdrawing'?'engaged':e!.phase}:withdrawing?undefined:{...e!,phase:'engaged',assault:undefined}),charge:null});
     }
     if(!continuingAttack&&!this.player(squad.playerId)?.ai)this.playerAttacks.observe(squad,order.type==="attack"?this.squad(order.targetId):undefined);
     this.orderRevisions.set(squad.id, (this.orderRevisions.get(squad.id) ?? 0) + 1);
@@ -3834,6 +3835,11 @@ export class Skirmish {
     const ordinary = this.ordinarySpeed(squad);
     return this.expansion?.armies.speed(squad, ordinary) ?? ordinary;
   }
+  private cavalryEngagementContact(squad:Squad,targetId:number):boolean {
+    const target=this.squad(targetId);
+    return !!target && target.troops>0 && this.hostile(squad.playerId,target.playerId) &&
+      formationContact(squad,target,this.tick).gap<=CAVALRY_ENGAGEMENT_REACH;
+  }
   private advanceCavalryEngagements(land:readonly Squad[]):void {
     for(const squad of land){
       const old=squad.cavalryEngagement;if(!old)continue;
@@ -3841,13 +3847,13 @@ export class Skirmish {
       if(squad.order.type==='move'||squad.order.type==='replenish'||squad.order.type==='attack'&&!old.targetIds.includes(squad.order.targetId))phase='withdrawing';
       else if(squad.order.type==='hold'&&phase==='penetrating')phase='engaged';
       if(phase==='penetrating'&&(this.tick>=old.untilTick||Math.hypot(squad.x-old.goalX,squad.y-old.goalY)<=4))phase='engaged';
-      const targetIds=old.targetIds.filter(id=>{
-        const target=this.squad(id);return !!target && target.troops>0 && this.hostile(squad.playerId,target.playerId) &&
-          (phase!=='withdrawing'||formationContact(squad,target,this.tick).gap<=CONTACT.release);
-      });
-      // A human withdrawal stays a movement order until its destination. Close
-      // encounter acquisition must not repeatedly turn it back into an attack.
-      if(phase==='withdrawing'&&!targetIds.length&&this.tick>=(old.withdrawUntilTick??0)&&squad.order.type!=='move'){
+      // Every phase keeps a target only while in contact; an attacker that
+      // walks away alive no longer leaves a permanent engagement (R2-H3, C1).
+      const targetIds=old.targetIds.filter(id=>this.cavalryEngagementContact(squad,id));
+      // A withdrawal is immune to re-acquisition only for its guard (and any
+      // exposed rank's return). After that a Move is an ordinary march again:
+      // a body-blocked rider meets the close-encounter rule and fights back.
+      if(phase==='withdrawing'&&this.tick>=(old.withdrawUntilTick??0)&&(!targetIds.length||squad.order.type==='move')){
         this.updateSquad(squad.id,{cavalryEngagement:undefined,cavalryMelee:undefined});continue;
       }
       if(phase!=='withdrawing'&&!targetIds.length){this.updateSquad(squad.id,{cavalryEngagement:undefined,charge:null});continue;}

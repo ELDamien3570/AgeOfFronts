@@ -11,7 +11,7 @@ import { FORMATION_MOVEMENT } from '../../../src/skirmish/content/FormationMovem
  * loop visits squads in id order, so any effect applied in place during the
  * loop shows up as a difference between the two orders (R2-L1, C2).
  */
-export function cavalryDuel(riderId:string,footId:string,opts:{defenderFirst?:boolean;mode?:'charge'|'assault';gap?:number}={}){
+export function cavalryDuel(riderId:string,footId:string,opts:{defenderFirst?:boolean;mode?:'charge'|'assault'|'held';gap?:number;x?:number}={}){
   const terrain=new Uint8Array(96*96).fill(133);
   const game=new Skirmish(new GameMapImpl(96,96,terrain,terrain.length),{seed:42,aiCount:1,tribes:false,runAi:false,ruleset:'ages-v1',...FORMATION_MOVEMENT});
   const template=structuredClone(game.squads[0]);
@@ -27,13 +27,16 @@ export function cavalryDuel(riderId:string,footId:string,opts:{defenderFirst?:bo
     // Durable foot keeps the duel going for the whole window.
     return game.addSquad({...template,id:owner===1?ids.rider:ids.foot,playerId:owner,definitionId:id,kind:unit.line,troops:n,
       manpower:owner===2?{...m,hp:m.hp*1000}:m,formation:{...createFormation(id),shape:'mass',facing,layoutTroops:n},
-      x:48*FIXED,y:y*FIXED,order:{type:'hold'},path:[],queuedOrders:[],charge:null,refit:null,combatTargetId:null,xp:0});
+      x:(opts.x??48)*FIXED,y:y*FIXED,order:{type:'hold'},path:[],queuedOrders:[],charge:null,refit:null,combatTargetId:null,xp:0});
   };
   const gap=opts.gap??10;
   let rider,foot;
   if(opts.defenderFirst){foot=add(footId,2,48,TURN/2);rider=add(riderId,1,48-gap,0);}
   else {rider=add(riderId,1,48-gap,0);foot=add(footId,2,48,TURN/2);}
-  const command=opts.mode==='assault'
+  // 'held': the rider holds and the foot attacks it.
+  const command=opts.mode==='held'
+    ?{type:'order' as const,playerId:2,squadIds:[foot.id],order:{type:'attack' as const,targetId:rider.id}}
+    :opts.mode==='assault'
     ?{type:'order' as const,playerId:1,squadIds:[rider.id],order:{type:'attack' as const,targetId:foot.id}}
     :{type:'charge' as const,playerId:1,squadIds:[rider.id],targetId:foot.id,x:foot.x,y:foot.y};
   const error=game.applyCommand(command);if(error)throw Error(error);

@@ -40,7 +40,7 @@ import type {
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
 import { recoveredChargeStrength } from './ChargeStrength';
-import { armCavalryBonus } from './CavalryAssault';
+import { armCavalryBonus, CAVALRY_ENGAGEMENT_REACH } from './CavalryAssault';
 import { isCavalryTroopClass } from './Definitions';
 import { formationDoctrine, formationEnvelope } from './FormationGeometry';
 import { formationContact, CONTACT_TOLERANCE } from './FormationContact';
@@ -810,10 +810,14 @@ export class Expansion {
         const mounted=isCavalryTroopClass(this.unit(s!).troopClass);
         // A rush already lodged in this target is sustained melee. Reissuing it
         // must not duplicate the impact or revoke its authorized overlap.
-        if(mounted && s!.cavalryEngagement && s!.cavalryEngagement.phase!=='withdrawing' &&
-          (command.targetId===undefined || s!.cavalryEngagement.targetIds.includes(command.targetId))){
+        // Only a target actually in contact is "lodged"; a charge to a point
+        // must never become an attack on a far, stale engagement target (C1).
+        const lodged=mounted && s!.cavalryEngagement && s!.cavalryEngagement.phase!=='withdrawing'
+          ? s!.cavalryEngagement.targetIds.find(id=>(command.targetId===undefined || id===command.targetId) && this.lodgedTarget(s!,id))
+          : undefined;
+        if(lodged!==undefined){
           const armed=armCavalryBonus(s!,this.unit(s!),world.tick);
-          world.updateSquad(s!.id,{order:{type:'attack',targetId:command.targetId??s!.cavalryEngagement.targetIds[0]},cavalryMelee:undefined,queuedOrders:[],...(armed?{cavalryEngagement:armed}:{})});
+          world.updateSquad(s!.id,{order:{type:'attack',targetId:lodged},cavalryMelee:undefined,queuedOrders:[],...(armed?{cavalryEngagement:armed}:{})});
           return;
         }
         const continuing=mounted && s!.charge && s!.charge.phase!=='recovery';
@@ -1385,6 +1389,11 @@ export class Expansion {
       }
       if (health > 0 && target.health <= 0) this.world.recordMilitaryLosses([target], damage);
     }
+  }
+  private lodgedTarget(s:Squad,targetId:number):boolean {
+    const target=this.world.squad(targetId);
+    return !!target && target.troops>0 && this.diplomacy.hostile(s.playerId,target.playerId) &&
+      formationContact(s,target,this.world.tick).gap<=CAVALRY_ENGAGEMENT_REACH;
   }
   private advanceTransfer(a:Aircraft):void {
     const transfer=a.transfer!,bases=this.aviationBases().filter(b=>b.playerId===a.playerId&&baseAccepts(b,a.definitionId));

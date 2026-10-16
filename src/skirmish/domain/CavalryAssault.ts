@@ -1,4 +1,4 @@
-import type { Squad } from '../Protocol';
+import { FIXED, secondsToTicks, type Squad } from '../Protocol';
 import { damageAmount, defenceOf } from './Combat';
 import type { AttackProfile, UnitDefinition } from './Definitions';
 import { isCavalryTroopClass } from './Definitions';
@@ -122,15 +122,23 @@ export function assaultWeapon(profile: AttackProfile, unit: UnitDefinition, stre
   return strength > 0 ? { ...profile, damage: profile.damage * (1 + ((unit.chargeMultiplier ?? 1) - 1) * strength) } : profile;
 }
 
+/** A withdrawal ignores re-acquisition for this long, then ordinary close
+ * encounters apply again so a body-blocked rider can fight back (R2-H3, C1). */
+export const CAVALRY_WITHDRAW_GUARD_TICKS = secondsToTicks(2);
+/** An engagement keeps a target only while the bodies are this close. */
+export const CAVALRY_ENGAGEMENT_REACH = CONTACT.release + FIXED;
+
 /** Rank riders remain exposed while coming home; cancelling their attack does
- * not erase them or allow the Move order to be reacquired as another attack. */
-export function cavalryWithdrawal(s: Squad, tick: number): CavalryEngagement | undefined {
+ * not erase them or allow the Move order to be reacquired as another attack
+ * during the guard. A rider with nothing in contact and no exposed rank has
+ * nothing to withdraw from. */
+export function cavalryWithdrawal(s: Squad, tick: number, inContact: (targetId: number) => boolean): CavalryEngagement | undefined {
   const old = s.cavalryEngagement;
   const cycles = [s.cavalryMelee?.current, s.cavalryMelee?.previous].filter(c => !!c);
   const exposed = cycles.filter(c => cavalryRankExposure(c, tick));
-  if (!old && !exposed.length) return undefined;
+  if (!exposed.length && !old?.targetIds.some(inContact)) return undefined;
   const targetIds = [...new Set([...(old?.targetIds ?? []), ...exposed.flatMap(c => c!.contacts.map(p => p.targetId))])].slice(0, 8);
-  const withdrawUntilTick = Math.ceil(Math.max(tick, ...exposed.flatMap(c => [0, 1, 2].filter(rank => cavalryRankExposure(c, tick) & (1 << rank)).map(rank =>
+  const withdrawUntilTick = Math.ceil(Math.max(old?.withdrawUntilTick ?? 0, tick + CAVALRY_WITHDRAW_GUARD_TICKS, ...exposed.flatMap(c => [0, 1, 2].filter(rank => cavalryRankExposure(c, tick) & (1 << rank)).map(rank =>
     waveTick(c!, rank) + CAVALRY_RANK_MOTION.brake + CAVALRY_RANK_MOTION.turn * 2 + CAVALRY_RANK_MOTION.return))));
   return { ...(old ?? { tick, untilTick: tick, originX: s.x, originY: s.y, goalX: s.x, goalY: s.y }),
     phase: 'withdrawing', targetIds, withdrawUntilTick,
