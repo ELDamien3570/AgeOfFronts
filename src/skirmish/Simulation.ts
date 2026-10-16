@@ -1702,8 +1702,12 @@ export class Skirmish {
     return destination.x===center.x && destination.y===center.y ? {type:"move",tile} : {type:"move",tile,...destination};
   }
   private activateOrder(squad: Squad, order: Order, path: number[] = [], continuingAttack=false): void {
-    if (!continuingAttack && squad.weaponState?.rangedAction)
-      this.updateSquad(squad.id, {weaponState: cancelRangedPreparation(squad.weaponState)});
+    // Re-issuing the attack the squad is already making keeps its aim, as the
+    // updateSquad order guard does; otherwise repeated clicks never fire (C9).
+    const live=this.squad(squad.id)??squad;
+    const sameAttack=order.type==="attack"&&live.order.type==="attack"&&live.order.targetId===order.targetId;
+    if (!continuingAttack && !sameAttack && live.weaponState?.rangedAction)
+      this.updateSquad(squad.id, {weaponState: cancelRangedPreparation(live.weaponState)});
     this.routePlanner.cancel(`navigation:${squad.id}`);
     this.routePlanner.cancel(`continuation:${squad.id}`);
     this.moveContinuations.delete(squad.id);

@@ -434,3 +434,73 @@ describe("authoritative ranged preparation", () => {
     expect(frozen.tick).toBe(frames[frames.length - 1].tick);
   });
 });
+
+// Review C9 / A5 / C10 (R3-ranged-delta): order churn and target churn must
+// not restart a ranged aim that is still valid, or the squad never fires.
+describe("ranged preparation survives order and target churn", () => {
+  const attack = (f: ReturnType<typeof scene>) =>
+    f.game.applyCommand({
+      type: "order",
+      playerId: 1,
+      squadIds: [f.source.id],
+      order: { type: "attack", targetId: f.target.id },
+    });
+  /** Firing ticks over `ticks` ticks, re-issuing the same attack every `every` ticks (0 = never). */
+  function reissued(id: string, every: number, ticks = 120) {
+    const f = scene(id);
+    let firing = 0;
+    for (let t = 0; t < ticks; t++) {
+      f.game.tick = t;
+      // Napoleonic volleys destroy the target inside the window (C3 lethality).
+      if (every && t % every === 0 && f.game.squad(f.target.id))
+        expect(attack(f)).toBeNull();
+      const before = f.game.squad(f.source.id)!.lastAttackTick;
+      f.battle.fight([]);
+      if (f.game.squad(f.source.id)!.lastAttackTick !== before) firing++;
+    }
+    return firing;
+  }
+  it.each(["modern-infantry", "napoleonic-infantry", "earlymodern-rangedcavalry"])(
+    "%s fires as often when the same attack is re-issued every tick or every 6 ticks",
+    (id) => {
+      const never = reissued(id, 0);
+      expect(never).toBeGreaterThan(0);
+      expect(reissued(id, 1)).toBe(never);
+      expect(reissued(id, 6)).toBe(never);
+    },
+  );
+  it("keeps the aim's start tick while the same attack is re-issued during the wind-up", () => {
+    const f = scene("modern-infantry");
+    expect(attack(f)).toBeNull();
+    f.at(0);
+    const first = f.game.squad(f.source.id)!.weaponState!.rangedAction!;
+    expect(first.startTick).toBe(0);
+    for (let t = 1; t < first.releaseTick; t++) {
+      f.game.tick = t;
+      expect(attack(f)).toBeNull();
+      expect(f.game.squad(f.source.id)!.weaponState!.rangedAction!.startTick).toBe(0);
+      f.battle.fight([]);
+      expect(f.game.squad(f.source.id)!.weaponState!.rangedAction!.startTick).toBe(0);
+    }
+    f.game.tick = first.releaseTick;
+    expect(attack(f)).toBeNull();
+    f.battle.fight([]);
+    expect(f.game.squad(f.source.id)!.lastAttackTick).toBe(first.releaseTick);
+  });
+  it("still restarts the aim when a different order replaces the attack", () => {
+    const f = scene("modern-infantry");
+    expect(attack(f)).toBeNull();
+    f.at(0);
+    expect(f.game.squad(f.source.id)!.weaponState!.rangedAction).toBeDefined();
+    f.game.tick = 1;
+    expect(
+      f.game.applyCommand({
+        type: "order",
+        playerId: 1,
+        squadIds: [f.source.id],
+        order: { type: "move", tile: 15 * 64 + 3 },
+      }),
+    ).toBeNull();
+    expect(f.game.squad(f.source.id)!.weaponState?.rangedAction).toBeUndefined();
+  });
+});
