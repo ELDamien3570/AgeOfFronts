@@ -136,10 +136,13 @@ Recorded results (integration run, PublicationDump + PublicationClientBench):
 | Med 500 | 5.00 | 370.3 (gate 330: fail) | 31.21 ms (44.7) (gate 20: fail) | 38.97 ms | 9.01 ms | lazy row view |
 | Mig 500 | 5.00 | 112.8 | 17.26 ms (27.1) | 41.76 ms | 4.78 ms | lazy row view |
 
-Med raw publications are 627 KB of which 406 KB is metadata (65%); P13
-(metadata revisions for armies, inventories, production, recruitment, trade
-sites, aircraft, projectiles and a players change list) is the open lever and
-was not implemented. The forwarding probe ran below saturation
+Med raw publications are 627 KB of which 406 KB is metadata (65%). P13 is
+done for the recruitment queue only (`RecruitmentReplication.ts`: per-faction
+deltas, counting jobs by endTick): on the Med 500 warm fixture its share of
+a publication fell from 47,371 to 2,196 raw bytes (1,755 to 231 gzip). The
+other P13 rows (armies, inventories, production, trade sites, aircraft,
+projectiles and a players change list) remain open, and the Med gates were
+not re-measured. The forwarding probe ran below saturation
 (simSecPerWallSec 0.999, AI-only seats): delay mean 7.71 ms, p99 13.86; the
 "while saturated" condition still needs an 8-human real-worker run.
 
