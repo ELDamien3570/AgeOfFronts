@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
+import english from "../../resources/lang/en.json";
+import { hudMarkup } from "../../src/skirmish/client/HudView";
 import { OrderGesture } from "../../src/skirmish/client/OrderGesture";
 describe("charge gesture dispatch", () => {
   it("sends the ordinary order at once and upgrades a double click to one charge", () => {
@@ -36,5 +38,13 @@ describe("charge gesture dispatch", () => {
     gesture.cancel();
     gesture.submit({ time: 950, x: 20, y: 0, context: "1:6", single }, charge);
     expect(charge).not.toHaveBeenCalled();
+  });
+});
+describe("charge gesture discoverability", () => {
+  it("lists the double right click charge in the controls popover, text from en.json", () => {
+    const popover = hudMarkup().match(/<section id="controls-popover"[\s\S]*?<\/section>/)![0];
+    const { double_right_click, charge } = english.skirmish_controls;
+    expect(popover).toContain(`<dt>${double_right_click}</dt><dd>${charge}</dd>`);
+    expect(popover.indexOf("Move / attack / board")).toBeLessThan(popover.indexOf(double_right_click));
   });
 });
