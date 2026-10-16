@@ -77,7 +77,7 @@ import {
 } from "./domain/AiPersonality";
 import { FactionRoster } from "./domain/FactionRoster";
 import { AiForceInventory } from "./domain/AiForceInventory";
-import { canPromoteTribe, MAX_PLAYER_ID } from "./FactionRules";
+import { canPromoteTribe, MAX_PLAYER_ID, tribeReserveIncome } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
 import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalStrengthPermille, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
@@ -3839,7 +3839,7 @@ export class Skirmish {
         const cities = this.buildingIndex.byType(player.id, "city").filter(b => !b.remainingTicks);
         const amount = Math.max(
           0,
-          (player.kind === "tribe" ? 40 : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
+          (player.kind === "tribe" ? tribeReserveIncome(this.expansion.progression.states[player.id].age) : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
             cities.reduce(
               (n, b) => n + cityReserveIncome(b.age ?? "StoneAge",this.expansion!.progression.states[player.id].completed),
               0,

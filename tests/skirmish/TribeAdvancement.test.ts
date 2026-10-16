@@ -84,7 +84,7 @@ describe("tribe catch-up progression", () => {
   });
 
   it("scales tribe caps and preserves regular caps", () => {
-    expect(AGES.map(age => squadCap({ kind: "tribe" }, age))).toEqual([10, 15, 20, 25, 30, 35, 40, 45]);
+    expect(AGES.map(age => squadCap({ kind: "tribe" }, age))).toEqual([6, 10, 14, 18, 22, 26, 30, 34]);
     expect(AGES.map(age => tradeActorCap({ kind: "tribe" }, age))).toEqual([16, 18, 20, 22, 24, 26, 28, 30]);
     expect(AGES.map(age => tradeActorCap({ kind: "regular" }, age))).toEqual(AGES.map(() => 48));
     expect(squadCap({ kind: "regular" }, "Modern")).toBe(200);

@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { GameMapImpl } from '../../src/core/game/GameMap';
 import { Skirmish } from '../../src/skirmish/Simulation';
-import { FIXED, secondsToTicks } from '../../src/skirmish/Protocol';
+import { FIXED, secondsToTicks, TICKS_PER_SECOND } from '../../src/skirmish/Protocol';
+import { TRIBE_NATION_CAMPAIGN_MIN_AGE, TRIBE_NATION_CAMPAIGN_TICKS, tribeMayCampaignAgainstNation } from '../../src/skirmish/FactionRules';
 import { UNIT } from '../../src/skirmish/content/Units';
 import { personalityOf } from '../../src/skirmish/content/AiPersonalities';
 import { createManpower } from '../../src/skirmish/domain/Manpower';
@@ -51,6 +52,13 @@ function fixture(own = 3, enemy = 8, raids = false) {
   return { game, map, nation, tribe, expansion, ops, frontier, route, add, think, restoreWar };
 }
 
+/** Moves player 2 (the acting tribe) past the tribe-on-nation campaign gate;
+ * returns the seconds offset at which the gate is open. */
+function openNationCampaigns(f: ReturnType<typeof fixture>): number {
+  f.expansion.progression.states[2].age = TRIBE_NATION_CAMPAIGN_MIN_AGE;
+  return TRIBE_NATION_CAMPAIGN_TICKS / TICKS_PER_SECOND;
+}
+
 describe('tribal expansion preparation and commitment', () => {
   it('lets a tribe expand peacefully before pursuing a promotion campaign', () => {
     const f = fixture(6, 2, true); f.nation.kind = 'tribe'; f.frontier.mockReturnValue(true);
@@ -63,7 +71,9 @@ describe('tribal expansion preparation and commitment', () => {
   });
   it.each(['tribe', 'regular'] as const)('lets a boxed-in tribe invade a vulnerable nearby %s', kind => {
     const f = fixture(6, 2, true); f.nation.kind = 'tribe'; f.tribe.kind = kind;
-    f.think(30); f.think(34); f.think(50);
+    // A campaign against a nation waits for minute 8 and Bronze Age (OD-9).
+    const t0 = kind === 'regular' ? openNationCampaigns(f) : 0;
+    f.think(t0 + 30); f.think(t0 + 34); f.think(t0 + 50);
     expect(f.ops.state(2)).toMatchObject({ phase: 'war', target: 1 });
     expect(f.expansion.diplomacy.declaredWar(2, 1)).toBe(true);
     expect(f.ops.canEnter(2, 1, f.tribe.base)).toBe(true);
@@ -79,9 +89,22 @@ describe('tribal expansion preparation and commitment', () => {
     f.think(60); f.think(64); f.think(80);
     expect(f.ops.state(2)).toMatchObject({ phase: 'war', target: 1 });
   });
+  it('keeps a Stone Age tribe from campaigning against a nation before minute 8 (OD-9)', () => {
+    const f = fixture(6, 2, true); f.nation.kind = 'tribe'; f.tribe.kind = 'regular';
+    f.think(30); f.think(34); f.think(50); f.think(120);
+    expect(f.ops.state(2)!.phase).toBe('peace');
+    // Minute 8 alone is not enough while the tribe is still in the Stone Age.
+    const t0 = TRIBE_NATION_CAMPAIGN_TICKS / TICKS_PER_SECOND;
+    f.think(t0 + 30); f.think(t0 + 34); f.think(t0 + 50);
+    expect(f.ops.state(2)!.phase).toBe('peace');
+    expect(tribeMayCampaignAgainstNation(TRIBE_NATION_CAMPAIGN_TICKS - 1, 'BronzeAge')).toBe(false);
+    expect(tribeMayCampaignAgainstNation(TRIBE_NATION_CAMPAIGN_TICKS, 'StoneAge')).toBe(false);
+    expect(tribeMayCampaignAgainstNation(TRIBE_NATION_CAMPAIGN_TICKS, 'BronzeAge')).toBe(true);
+  });
   it('does not cancel a tribal campaign pursuit just because the target is beyond the home patrol radius', () => {
     const f = fixture(6, 2, true); f.nation.kind = 'tribe'; f.tribe.kind = 'regular';
-    f.think(30); f.think(34); f.think(50);
+    const t0 = openNationCampaigns(f);
+    f.think(t0 + 30); f.think(t0 + 34); f.think(t0 + 50);
     const source = f.game.squadFacts().aliveByOwner(2)[0], enemy = f.game.squadFacts().aliveByOwner(1)[0];
     f.game.updateSquad(source.id, { order: { type: 'attack', targetId: enemy.id } });
     for (let i = 0; i < 16; i++) {
