@@ -252,6 +252,17 @@ describe("persistent concentrated port defense", () => {
     expect(bought.length).toBeGreaterThan(0);
     expect(bought.every(c=>c.definitionId==="modern-warship")).toBe(true);
   });
+  it("capability recruiting also buys the warship over the dearer submarine copy (I7, Expansion)",()=>{
+    const f=fixture();
+    f.expansion.progression.states[f.player.id].completed=TECHNOLOGIES.map(t=>t.id);
+    (f.game.building(f.port.id) as {age?:string}).age="Modern";
+    f.player.gold=1e7;f.player.reserves=1e5;
+    const apply=vi.spyOn(f.game,"applyCommand");
+    (f.expansion as unknown as {thinkCapabilities(p:unknown):void}).thinkCapabilities(f.player);
+    const bought=apply.mock.calls.map(([c])=>c).filter(c=>c.type==="recruit-ship") as {definitionId?:string}[];
+    expect(bought.length).toBeGreaterThan(0);
+    expect(bought.map(c=>c.definitionId)).toEqual(bought.map(()=>"modern-warship"));
+  });
   it.each([["regular",32],["tribe",24]] as const)("respects the %s warship cap across disconnected seas before requesting funds",(kind,cap)=>{
     const f=fixture(true);
     f.player.kind=kind;

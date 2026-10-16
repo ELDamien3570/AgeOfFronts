@@ -14,12 +14,28 @@ describe("AI battle competence", { timeout: 120_000 }, () => {
     expect(m.mineRanged).toBeLessThanOrEqual(2 * Math.max(1, m.foeRanged));
   });
 
-  it.each([40, 41])("AI vs AI makes contact within 30 s and is decided within 150 s (T-b, seed %i)", (seed) => {
-    const r = runDuel({ age: "EarlyMedieval", a: "ai", b: "ai", seconds: 150, seed });
+  // The duel has no seed-dependent behaviour; two starts offset by +-3 tiles
+  // (as duelMatrix uses) make these two distinct scenarios.
+  it.each([[40, -3], [41, 3]])("AI vs AI makes contact within 30 s and is decided within 150 s (T-b, seed %i, offset %i)", (seed, jitter) => {
+    const r = runDuel({ age: "EarlyMedieval", a: "ai", b: "ai", seconds: 150, seed, jitter });
     expect(r.firstContact).toBeGreaterThanOrEqual(0);
     expect(r.firstContact).toBeLessThanOrEqual(30);
     expect(r.decided).toBeGreaterThan(0);
     expect(r.decided).toBeLessThanOrEqual(150);
+  });
+
+  it("presses an idle defender: at least 80% of it is killed within 120 s, without regrouping while ahead (T-b)", () => {
+    let regroupAhead = 0;
+    const r = runDuel({ age: "EarlyMedieval", a: "ai", b: "idle", seconds: 120 }, undefined, (ctx) => {
+      const plan = ctx.planner.missions.get(ctx.planA!.id);
+      // A regroup order puts the mission in its "recover" phase.
+      if (plan?.phase !== "recover") return;
+      const hp = (side: typeof ctx.A) => side.reduce((n, s) => n + (ctx.game.squad(s.id)?.troops ?? 0), 0) /
+        Math.max(1, side.reduce((n, s) => n + s.troops, 0));
+      if (ctx.A.some((s) => ctx.game.squad(s.id)?.fighting) && hp(ctx.A) > hp(ctx.B)) regroupAhead++;
+    });
+    expect(r.remain[1]).toBeLessThanOrEqual(0.2);
+    expect(regroupAhead).toBe(0);
   });
 
   it("lands at least one charge bonus in a 60 s Late Medieval duel (T-c)", () => {
