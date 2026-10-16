@@ -1,4 +1,7 @@
 {
+  "skirmish_match": {
+    "simulation_fault": "The match stopped because of an internal simulation error. Return to the lobby to play again."
+  },
   "skirmish_production": {
     "automatic": "Automatic",
     "manual": "Manual priorities",

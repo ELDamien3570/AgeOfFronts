@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import english from "../../resources/lang/en.json";
 import type {
   LoadedMap,
   SnapshotPacket,
@@ -126,6 +127,17 @@ describe("server-only match client", () => {
     expect(session.commandsAvailable).toBe(false);
     expect(connection().stop).toHaveBeenCalledTimes(1);
     expect(decoder.terminate).toHaveBeenCalledTimes(1);
+  });
+  it("shows the translated fixed text for a simulation fault instead of server text",async()=>{
+    await initialize();
+    const decoder=DecoderWorker.instances[0];
+    connection().message(state(0));
+    await vi.waitFor(()=>expect(decoder.postMessage).toHaveBeenCalledTimes(1));
+    decoder.deliver(packet(0),{tick:0,winner:null} as Snapshot,1);
+    await vi.waitFor(()=>expect(session.commandsAvailable).toBe(true));
+    connection().message({type:"match-ended",matchId:manifest.id,completed:false,message:"server text",reason:"simulation-fault"});
+    expect(errors).toHaveBeenCalledWith({message:english.skirmish_match.simulation_fault});
+    expect(session.commandsAvailable).toBe(false);
   });
 
   it("applies sparse entity views only at presentation and keeps map changes fenced behind a stalled renderer", async () => {

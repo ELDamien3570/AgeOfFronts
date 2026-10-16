@@ -1,3 +1,4 @@
+import { matchEndText } from "./MatchEndText";
 import type {
   LoadedMap,
   SnapshotPacket,
@@ -121,12 +122,12 @@ export class OnlineMatchSession {
             message.type === "match-ended" &&
             message.matchId === this.matchId && !message.completed
           ) {
-            this.fail(`${message.message}. Return to the lobby to play again.`);
+            this.fail(matchEndText(message));
             return;
           }
         }
         if(message.type==="match-ended" && message.matchId===this.matchId && !message.completed){
-          this.fail(`${message.message}. Return to the lobby to play again.`);return;
+          this.fail(matchEndText(message));return;
         }
         if(message.type==="error"){this.status(message.message);return;}
         const state = message.type === "match-state";

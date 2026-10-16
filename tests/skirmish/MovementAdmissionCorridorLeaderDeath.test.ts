@@ -67,7 +67,7 @@ describe("corridor lead death during pending admission (R2-H1)", () => {
       for (let i = 0; i < 400 && game.commandApplications.diagnostics.pending; i++) game.step();
     }).not.toThrow();
     expect(game.commandApplications.diagnostics.pending).toBe(0);
-    expect(["executed", "superseded"]).toContain(outcomes.at(-1)!.status);
+    expect(["executed", "superseded"]).toContain(outcomes[outcomes.length - 1].status);
   });
   it("supersedes a cohort whose follower member dies", () => {
     const { game, command } = setup();

@@ -483,7 +483,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     }
     for (const match of matches.values())
       void match.advance().catch((error) => {
-        void match.end(`Match stopped: ${(error as Error).message}`);
+        void match.endAfterFailure(error);
       });
     if (JSON.stringify(rooms.snapshot()) !== before) {
       options.store.write(rooms.snapshot());

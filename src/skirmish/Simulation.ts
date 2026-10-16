@@ -82,6 +82,7 @@ import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Comb
 import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
 import { chargeFallbackOrder, commandRejection } from "./domain/CommandPolicy";
+import { SimulationFault, type TickFault } from "./SimulationFault";
 import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
 import { Occupation } from "./domain/Occupation";
@@ -206,17 +207,40 @@ export class Skirmish {
   compareUnitIndexes = false;
   private restoreFailure?: Error;
   get failureReason(): string | undefined { return this.restoreFailure?.message; }
+  private faultState?: TickFault;
+  /** Set when a tick threw part-way. The half-ticked world never runs again:
+   * every later step and command throws a SimulationFault. No rollback. */
+  get tickFault(): TickFault | undefined { return this.faultState && { ...this.faultState }; }
   private assertAvailable(): void {
+    if (this.faultState) throw new SimulationFault(`Simulation stopped after a fault at tick ${this.faultState.tick}`);
     if (this.restoreFailure) throw new Error(`Simulation stopped after checkpoint installation failed: ${this.restoreFailure.message}`);
   }
+  /** The last runtime phase a tick completed; observer only, not saved. */
+  private completedPhase: RuntimePhase | "tick-start" = "tick-start";
+  /** A cheap observer of authoritative writes, used only to classify a throw
+   * during command application. It covers entity rows, player gold and
+   * inventories, recruitment jobs and route planning jobs. Domain events
+   * raised while applying are counted by CommandApplications itself. */
+  mutationEpoch(): string {
+    const parts: number[] = [this.squadChanges.revision, this.shipChanges.revision, this.buildingChanges.revision,
+      this.recruitment.jobs.length, this.routePlanner.pendingCount];
+    for (const player of this.players) {
+      parts.push(player.gold);
+      const inventory = this.expansion?.supply.inventories[player.id];
+      if (inventory) for (const amount of Object.values(inventory)) parts.push(amount);
+    }
+    return parts.join(",");
+  }
   private diagnosticPhase(phase: RuntimePhase, start: number): number {
+    this.completedPhase = phase;
     if (!this.onPhase) return 0;
     const now = performance.now();
     this.onPhase(phase, Math.max(0, now - start));
     return now;
   }
 
-  readonly commandApplications = new CommandApplications({apply: command => this.applyCommand(command), tick: () => this.tick});
+  readonly commandApplications = new CommandApplications({apply: command => this.applyCommand(command), tick: () => this.tick,
+    mutationEpoch: () => this.mutationEpoch()});
   private phaseSpatial?: PhaseSpatialViews;
   get spatialDiagnostics() { return this.phaseSpatial?.diagnostics; }
   spatialFacts(phase: SpatialPhase) {
@@ -3411,7 +3435,14 @@ export class Skirmish {
     // and operation/diplomacy/threat revisions invalidate them immediately.
     this.routeFootprints = new Map();
     this.routeEntries = new Map();
+    this.completedPhase = "tick-start";
     try { this.performTick(); }
+    catch (error) {
+      // Latch before rethrowing: the world is half-ticked and must not run on.
+      this.faultState = { tick: this.tick, afterPhase: this.completedPhase,
+        message: error instanceof Error ? error.message : String(error) };
+      throw error;
+    }
     finally { this.routeFootprints = undefined; this.routeEntries = undefined; }
   }
 
