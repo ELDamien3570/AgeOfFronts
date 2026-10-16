@@ -22,7 +22,7 @@ import {
 } from "../../src/skirmish/SnapshotCodec";
 import { retainSquads } from "./UnitFixtures";
 const unit = UNIT.get("bronzeage-infantry")!;
-function fixture(count = 6, deferred = false) {
+function fixture(count = 6, deferred = false, enemyCount = count) {
   const terrain = new Uint8Array(96 * 96).fill(133),
     map = new GameMapImpl(96, 96, terrain, terrain.length);
   const options = {
@@ -39,7 +39,7 @@ function fixture(count = 6, deferred = false) {
     a = game.squads.find((s) => s.playerId === 1)!,
     b = game.squads.find((s) => s.playerId === 2)!;
   const bodies = [a, b].flatMap((template) =>
-    Array.from({ length: count }, (_, i) => ({
+    Array.from({ length: template.playerId === 1 ? count : enemyCount }, (_, i) => ({
       ...template,
       id: template.playerId * 100 + i,
       definitionId: unit.id,
@@ -225,6 +225,27 @@ describe("phase 8 persistent battle lines", () => {
       army.slots!.filter((r) => old.some((o) => o.squadId === r.squadId)),
     ).toEqual(old);
   });
+  it("restores every tick while two unequal armies plan across quantum boundaries (R2-M12)", () => {
+    const { game, e, map, options } = fixture(14, false, 29);
+    step(game, 1);
+    for (const army of e.armies.armies) {
+      army.facing = army.playerId === 1 ? 0 : Math.PI;
+      army.x = (army.playerId === 1 ? 35 : 40) * FIXED;
+      army.y = 48 * FIXED;
+    }
+    let crossed = 0;
+    for (let tick = 0; tick < 120; tick++) {
+      game.step();
+      const saved = e.engagements.checkpoint();
+      for (const [, j] of saved.jobs) {
+        expect(j.projections.length).toBe(j.enemyIds.length);
+        if (j.armyCursor > 0 && !j.enemyIds.length) crossed++;
+      }
+      const copy = new Skirmish(map, options);
+      expect(() => copy.restore(game.checkpoint())).not.toThrow();
+    }
+    expect(crossed).toBeGreaterThan(0);
+  }, 60_000);
   it("bounds planning work, distributes frontage and restores partially completed work", () => {
     const { game, e, map, options } = fixture(18);
     step(game, 1);
