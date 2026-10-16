@@ -2,6 +2,7 @@ import {validateAiWithdrawal} from "./domain/AiDiplomaticWithdrawal";
 import { FormationSlotDecoder } from "./FormationSlotStream";
 import {validateRaidDiplomacy} from './domain/DiplomacyValidation';
 import { TraderEncoder, TraderDecoder } from "./TraderStream";
+import { ProgressionReplicationDecoder, ProgressionReplicationEncoder, type ProgressionWire } from "./ProgressionReplication";
 import { validateOccupancy } from "./domain/TrenchOccupancy";
 import { validateStance } from "./domain/SkirmishStance";
 import { validateArmyRecords } from './domain/ArmyState';
@@ -107,6 +108,7 @@ function readOrder(input: Int32Array, at: number): Order {
 // Numeric buffers are transferred; ownership/construction changes are deltas.
 export class SnapshotEncoder {
   private readonly traders = new TraderEncoder();
+  private readonly progression = new ProgressionReplicationEncoder();
   private readonly compactTraders: boolean;
   private readonly detailCache: SquadDetailCache;
   get formationSlotDiagnostics() { return { retainedEntries: this.detailCache.retainedSlotEntries }; }
@@ -200,7 +202,7 @@ export class SnapshotEncoder {
   encodeBaseline(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities): SnapshotPacket {
     const packet = new SnapshotEncoder(true, { compactTraders: this.compactTraders }).encode(source, journal, facts);
     if (this.detailCache.compactFormationSlots) {
-      packet.details = packSnapshotDetails(source.squads, source.buildings, source.ships, source.volleys, this.detailCache, true);
+      packet.details = packSnapshotDetails(source.squads, source.buildings, source.ships, source.volleys, this.detailCache, true, source.tick);
     }
     return packet;
   }
@@ -356,9 +358,13 @@ export class SnapshotEncoder {
     this.barrierJournal = barriers?.journal; this.barrierCursor = barriers?.journal.revision ?? 0;
     this.diagnostics.barrierReads = source.expansion ? metadata!.full || !barriers ? source.expansion.barriers.length :
       (barrierChanges?.rows.length ?? 0) + (barrierChanges?.states?.length ?? 0) : 0;
+    const progression = source.expansion
+      ? this.progression.encode(source.expansion.progression, source.tick, metadata!.full, "progression" in metadata!.output)
+      : undefined;
     const expansion = source.expansion
       ? {
           ...metadata!.output,
+          progression: progression!.changes as unknown as NonNullable<Snapshot["expansion"]>["progression"] | undefined,
           deposits: resourceReset ? source.expansion.deposits.map(d => ({...d})) : undefined,
           depositOwners: depositOwners.length ? new Int32Array(depositOwners) : undefined,
           roads:
@@ -390,10 +396,11 @@ export class SnapshotEncoder {
       players: source.players.map((p) => ({ ...p })),
       expansion,
       expansionMode:metadata?(metadata.full?"full":"delta"):undefined,
+      progressionMode: progression?.mode,
       details: packSnapshotDetails(
         source.expansion ?? selected.squads.rows.some(s => s.afloat !== undefined || s.planningPaused === true || s.movementStatus !== undefined || s.meleeStrike !== undefined || s.chargeImpact !== undefined || s.cavalryEngagement !== undefined || s.cavalryMelee !== undefined) ? selected.squads.rows : undefined,
         source.expansion ? selected.buildings.rows : undefined,
-        selected.ships.rows, source.volleys, this.detailCache,
+        selected.ships.rows, source.volleys, this.detailCache, false, source.tick,
       ),
       ships: [],
       volleys: [],
@@ -426,6 +433,7 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
 
 export class SnapshotDecoder {
   private readonly traders = new TraderDecoder();
+  private readonly progression = new ProgressionReplicationDecoder();
   private readonly formationSlots = new FormationSlotDecoder();
   get formationSlotDiagnostics() { return { retainedEntries: this.formationSlots.retainedEntries }; }
   private readonly barriers = new Map<number, NonNullable<Snapshot["expansion"]>["barriers"][number]>();
@@ -450,6 +458,10 @@ export class SnapshotDecoder {
     if (slots && packet.reset && !packet.details?.formationSlots?.reset) throw new Error("Formation slot reset requires a baseline");
     if(packet.expansion?.armies)validateArmyRecords(packet.expansion.armies);
     if(packet.expansion?.diplomacy)validateRaidDiplomacy(packet.expansion.diplomacy);
+    if(packet.progressionMode!==undefined){
+      if(!packet.expansion)throw new Error("Progression mode requires metadata");
+      this.progression.validate(packet.progressionMode,packet.expansion.progression,packet.tick,packet.reset||packet.expansionMode!=="delta");
+    }
     const troops = new Map<number, number>();
     if (packet.expansion) for (let at = 0; at < packet.squads.length; at += SQUAD_STRIDE) troops.set(packet.squads[at],packet.squads[at+4]);
     const payloads = packet.details ? validateSnapshotDetails(packet.details,{ tick: packet.tick, troops, slots }) : undefined;
@@ -579,9 +591,15 @@ export class SnapshotDecoder {
       if(!this.expansionMetadata)throw new Error("Metadata delta has no baseline");
       for(const key of Object.keys(packet.expansion) as (keyof typeof packet.expansion)[]){
         if(key==="deposits" || key==="depositOwners" || key==="roads" || packet.expansion[key]===undefined)continue;
+        if(key==="progression" && packet.progressionMode!==undefined)continue;
         Object.assign(this.expansionMetadata,{[key]:structuredClone(packet.expansion[key])});
       }
     }
+    if (packet.reset) this.progression.clear();
+    if (packet.expansion && packet.progressionMode !== undefined)
+      this.expansionMetadata!.progression = this.progression.apply(packet.progressionMode,
+        packet.expansion.progression as unknown as ProgressionWire | undefined, packet.tick);
+    else if (packet.expansion?.progression) this.progression.clear();
     if (packet.expansion?.barriers) {
       this.barriers.clear();
       for (const wall of this.expansionMetadata!.barriers!) this.barriers.set(wall.id, wall);

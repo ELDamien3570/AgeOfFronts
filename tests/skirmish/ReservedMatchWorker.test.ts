@@ -30,7 +30,7 @@ const advance = (ticks: number, publish = true) => ({
 });
 
 describe("reserved authoritative worker", () => {
-  it("publishes committed human movement before the background snapshot deadline", async () => {
+  it("reports committed human movement and publishes it only at the coordinator's gate tick (N6 Design B)", async () => {
     const worker = new ReservedMatchWorker(), publications: {tick:number;packet:EncodedState}[] = [];
     const unsubscribe=worker.onPublication(publication=>publications.push(publication));
     try {
@@ -47,6 +47,11 @@ describe("reserved authoritative worker", () => {
       for(let at=0;at<100&&!update.commandOutcomes?.some(o=>o.id==="prompt-move"&&o.status==="executed");at++)
         update=await worker.request<MatchAdvance>(advance(1,false));
       expect(update.commandOutcomes).toContainEqual(expect.objectContaining({id:"prompt-move",status:"executed"}));
+      expect(update.commandVisible).toBe(true);
+      // No uncapped command publication: the worker waits for the gate.
+      await new Promise(resolve=>setTimeout(resolve,50));
+      expect(publications).toHaveLength(0);
+      update=await worker.request<MatchAdvance>(advance(1,true));
       await vi.waitFor(()=>expect(publications).toHaveLength(1));
       const visible=decoder.decode(await decodeState<SnapshotPacket>(publications[0].packet));
       expect(visible.tick).toBe(update.tick);
@@ -89,8 +94,10 @@ describe("reserved authoritative worker", () => {
       expect(publications.map(p => p.tick)).toEqual([1]);
       const packet = await decodeState<SnapshotPacket>(publications[0].packet);
       expect(packet.tick).toBe(1);
-      expect(packet.expansion!.progression![1].research.naval!.remainingTicks).toBe(TECHNOLOGIES.find(t=>t.id==="rus-stoneage-port-sea-trade")!.ticks-1);
-      decoder.decode(packet);
+      // N5/P12: the wire carries the finishing tick; the decoder derives the countdown.
+      expect(packet.progressionMode).toBe("delta");
+      expect((packet.expansion!.progression![1].research.naval as unknown as {endTick:number}).endTick).toBe(1+TECHNOLOGIES.find(t=>t.id==="rus-stoneage-port-sea-trade")!.ticks-1);
+      expect(decoder.decode(packet).expansion!.progression[1].research.naval!.remainingTicks).toBe(TECHNOLOGIES.find(t=>t.id==="rus-stoneage-port-sea-trade")!.ticks-1);
       const shared = decoder.decode(await decodeState<SnapshotPacket>(joined.packet));
       const baseline = new SnapshotDecoder().decode(await decodeState<SnapshotPacket>(joined.baseline));
       expect(shared.owners).toEqual(baseline.owners); expect(shared.squads).toEqual(baseline.squads);
@@ -236,7 +243,8 @@ describe("reserved authoritative worker", () => {
   it("applies player commands once, preserves domain ownership and converts departures to AI", async () => {
     const worker = new ReservedMatchWorker();
     try {
-      await worker.request<MatchAdvance>(initialize);
+      const decoder = new SnapshotDecoder();
+      decoder.decode(await decodeState<SnapshotPacket>((await worker.request<MatchAdvance>(initialize)).packet!));
       const update = await worker.request<MatchAdvance>({
         ...advance(1),
         commands: [
@@ -250,7 +258,7 @@ describe("reserved authoritative worker", () => {
           },
         ],
       });
-      const packet = await decodeState<SnapshotPacket>(update.packet!);
+      const packet = decoder.decode(await decodeState<SnapshotPacket>(update.packet!));
       expect(
         Object.values(packet.expansion!.progression![2].research).some(
           (job) => job?.technologyId === "rus-stoneage-port-sea-trade",

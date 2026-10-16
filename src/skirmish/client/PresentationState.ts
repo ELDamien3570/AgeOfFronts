@@ -9,6 +9,10 @@ export interface PresentationState {
   };
   tiles: Uint32Array;
   reset: boolean;
+  /** N4: "delta" views carry only squad rows changed since the last presented
+   * view, plus removed ids; absent or "full" carries every row. */
+  squadMode?: "full" | "delta";
+  removedSquads?: number[];
 }
 /** Apply only when presented: discarded views must not change renderer maps. */
 export class PresentationStateDecoder {
@@ -19,8 +23,12 @@ export class PresentationStateDecoder {
   private height = 0;
   private roads?: Expansion["roads"];
   private deposits?: Expansion["deposits"];
+  private squads?: Map<number, Snapshot["squads"][number]>;
   apply(view: PresentationState): Snapshot {
     const { snapshot, tiles, reset } = view;
+    // Validate the squad view before touching any retained state.
+    if (view.squadMode !== undefined && view.squadMode !== "full" && view.squadMode !== "delta") throw new Error("Invalid presentation squad mode");
+    if (view.squadMode === "delta" && (reset || !this.squads)) throw new Error("Presentation squads require a baseline");
     if (reset) {
       this.width = snapshot.width; this.height = snapshot.height;
       const size = this.width * this.height;
@@ -42,6 +50,13 @@ export class PresentationStateDecoder {
       if (!this.roads || !this.deposits) throw new Error("Presentation geometry requires a baseline");
       expansion = { ...snapshot.expansion, roads: this.roads, deposits: this.deposits };
     }
-    return { ...snapshot, owners: this.owners, claims: this.claims, progress: this.progress, changedTiles, expansion };
+    let squads = snapshot.squads;
+    if (view.squadMode === "delta") {
+      // Mirrors the canonical decoder: removals first, then rows in canonical order.
+      for (const id of view.removedSquads ?? []) this.squads!.delete(id);
+      for (const squad of snapshot.squads) this.squads!.set(squad.id, squad);
+      squads = [...this.squads!.values()];
+    } else this.squads = new Map(snapshot.squads.map(squad => [squad.id, squad]));
+    return { ...snapshot, squads, owners: this.owners, claims: this.claims, progress: this.progress, changedTiles, expansion };
   }
 }

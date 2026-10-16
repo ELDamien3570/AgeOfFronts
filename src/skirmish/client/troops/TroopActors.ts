@@ -1250,19 +1250,20 @@ export class TroopActors {
         assault.size?undefined:worldPosition);
     }
     const drawnBodies:{id:number;x:number;y:number}[]=[];
+    // U5: per-squad facts, hoisted out of the per-soldier loop (behaviour-neutral).
+    const definition = this.options?.unitDefinition?.(squad)??UNIT.get(squad.definitionId ?? "");
+    const cycle = definition && weaponCycle(definition);
+    const timing = throwTiming(this.assets.get(`${name}:attack`)!.clip);
+    const reloadStart = (squad.weaponState?.ranged?.reloadStartedTick ?? squad.reloadStartedTick ?? Infinity)*TICK_MS + timing.duration-timing.release;
+    const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*TICK_MS - (rangedWeapon?.preparation ? rangedWeapon.preparation.ticks*TICK_MS : timing.release);
+    const reloading = cycle && this.assets.has(`${name}:reload`) && tick*TICK_MS >= reloadStart && tick*TICK_MS < reloadEnd;
+    const bayonet = !squad.meleeStrike && definition?.age === "Napoleonic" && definition.troopClass === "frontline" && squad.charge?.phase === "recovery" && this.assets.has(`${name}:charge-attack`);
+    const stride=mounted?1.1*SOLDIER_SCALE:.7;
     for (const [soldierIndex,soldier] of soldiers.entries()) {
       drawnClip = "";
       const continuousPose=continuous?.get(soldier.id);
       const strike=committed.get(soldier.id);
       const moving = mounted && continuousPose?continuousPose.moving:soldier.speed > 0.001 || soldier.turning;
-      const stride=mounted?1.1*SOLDIER_SCALE:.7;
-      const definition = this.options?.unitDefinition?.(squad)??UNIT.get(squad.definitionId ?? "");
-      const cycle = definition && weaponCycle(definition);
-      const timing = throwTiming(this.assets.get(`${name}:attack`)!.clip);
-      const reloadStart = (squad.weaponState?.ranged?.reloadStartedTick ?? squad.reloadStartedTick ?? Infinity)*TICK_MS + timing.duration-timing.release;
-      const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*TICK_MS - (rangedWeapon?.preparation ? rangedWeapon.preparation.ticks*TICK_MS : timing.release);
-      const reloading = cycle && this.assets.has(`${name}:reload`) && tick*TICK_MS >= reloadStart && tick*TICK_MS < reloadEnd;
-      const bayonet = !squad.meleeStrike && definition?.age === "Napoleonic" && definition.troopClass === "frontline" && squad.charge?.phase === "recovery" && this.assets.has(`${name}:charge-attack`);
       // `engaged` means attention to any combat target, including one at bow
       // range. Only a committed melee strike owns this soldier's attack pose.
       const clip = strike ? meleeClipKey : bayonet ? "charge-attack" : reloading ? "reload" :

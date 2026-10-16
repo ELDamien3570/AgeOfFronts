@@ -20,6 +20,8 @@ export interface FormationRenderPose {
   }[];
   lodValid: boolean;
   footprints: readonly (readonly { x: number; y: number }[])[];
+  /** Footprints relative to `root`, when the pose came from FormationPoseMemo. */
+  relativeFootprints?: readonly (readonly { x: number; y: number }[])[];
 }
 /** Root and tick are shared by labels, selection, anchors and detailed actors. */
 export function formationRenderPose(
@@ -168,10 +170,14 @@ export function strategicFormationBox(
     right = -Infinity,
     top = Infinity,
     bottom = -Infinity;
-  for (const poly of pose.footprints)
+  // A memoised pose keeps root-relative footprints: no per-frame translation.
+  const relative = pose.relativeFootprints,
+    ox = relative ? 0 : pose.root.x,
+    oy = relative ? 0 : pose.root.y;
+  for (const poly of relative ?? pose.footprints)
     for (const p of poly) {
-      const dx = p.x - pose.root.x,
-        dy = p.y - pose.root.y,
+      const dx = p.x - ox,
+        dy = p.y - oy,
         x = dx * c + dy * s,
         y = -dx * s + dy * c;
       left = Math.min(left, x);
@@ -194,6 +200,72 @@ export function strategicFormationBox(
     height: (bottom - top) * scale,
     angle: pose.geometry.angle,
   };
+}
+type PoseSquad = Parameters<typeof formationRenderPose>[0];
+interface PoseMemoEntry {
+  formation: PoseSquad["formation"];
+  troops: number;
+  manpower: PoseSquad["manpower"];
+  definitionId: PoseSquad["definitionId"];
+  charge: PoseSquad["charge"];
+  kind: PoseSquad["kind"];
+  time: number;
+  broadRadius?: number;
+  local?: FormationRenderPose;
+}
+const translate = (p: { x: number; y: number }, root: { x: number; y: number }) => ({ x: p.x + root.x, y: p.y + root.y });
+/** U4 (R2-P9): per-squad memo of the formation pose. A pose depends on the
+ * root only by translation, so the memo stores the pose computed at root
+ * (0, 0) and translates it per frame. It is keyed on the inputs of
+ * formationRenderPose by identity (formation, manpower and charge records are
+ * immutable domain values) and, like formationEnvelope, on the tick only
+ * during a formation transition. Interpolated presentation objects reuse the
+ * formation record, so a moving squad keeps its entry. */
+export class FormationPoseMemo {
+  private readonly entries = new Map<number, PoseMemoEntry>();
+  readonly diagnostics = { hits: 0, misses: 0 };
+  private entry(squad: PoseSquad, tick: number): PoseMemoEntry {
+    const time = squad.formation?.transition ? tick : 0;
+    const old = this.entries.get(squad.id);
+    if (old && old.formation === squad.formation && old.troops === squad.troops && old.manpower === squad.manpower &&
+      old.definitionId === squad.definitionId && old.charge === squad.charge && old.kind === squad.kind && old.time === time) {
+      this.diagnostics.hits++;
+      return old;
+    }
+    this.diagnostics.misses++;
+    const entry: PoseMemoEntry = { formation: squad.formation, troops: squad.troops, manpower: squad.manpower,
+      definitionId: squad.definitionId, charge: squad.charge, kind: squad.kind, time };
+    this.entries.set(squad.id, entry);
+    return entry;
+  }
+  /** Pre-cull radius without building the pose. */
+  broadRadius(squad: PoseSquad, tick: number): number {
+    const entry = this.entry(squad, tick);
+    return entry.broadRadius ??= entry.local?.geometry.broadRadius ?? formationEnvelope(squad, tick).broadRadius;
+  }
+  pose(squad: PoseSquad, tick: number, root = { x: squad.x / FIXED, y: squad.y / FIXED }): FormationRenderPose {
+    const entry = this.entry(squad, tick);
+    const local = entry.local ??= formationRenderPose(squad, tick, { x: 0, y: 0 });
+    let footprints: FormationRenderPose["footprints"] | undefined;
+    // A fresh object per call: consumers attach per-frame liveSlots to it.
+    return {
+      root,
+      tick,
+      geometry: local.geometry,
+      slots: local.slots,
+      get footprints() { return footprints ??= local.footprints.map(poly => poly.map(p => translate(p, root))); },
+      relativeFootprints: local.footprints,
+      bounds: { left: local.bounds.left + root.x, right: local.bounds.right + root.x, top: local.bounds.top + root.y, bottom: local.bounds.bottom + root.y },
+      anchors: { front: translate(local.anchors.front, root), rear: translate(local.anchors.rear, root) },
+      lodValid: local.lodValid,
+    };
+  }
+  /** Drop squads that left the presented snapshot. */
+  retain(ids: Iterable<number>): void {
+    const keep = new Set(ids);
+    for (const id of this.entries.keys()) if (!keep.has(id)) this.entries.delete(id);
+  }
+  get size(): number { return this.entries.size; }
 }
 export function strategicFormationContains(
   box: ReturnType<typeof strategicFormationBox>,

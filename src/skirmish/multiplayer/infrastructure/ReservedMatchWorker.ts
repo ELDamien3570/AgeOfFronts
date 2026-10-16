@@ -1,6 +1,7 @@
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { Worker } from "node:worker_threads";
+import { MessageChannel, Worker } from "node:worker_threads";
+import { PublicationSequencer } from "../application/PublicationSequencer";
 import type {
   ExecutorRequest,
   ExecutorResult,
@@ -15,12 +16,20 @@ const workerPath = resolve(
 
 /** Empty listings never construct this adapter. Each admitted match owns one reserved worker. */
 export class ReservedMatchWorker implements MatchExecutor {
+  /** N6b (P14): the encoder thread publishes straight to this port. */
+  private readonly channel = new MessageChannel();
   private readonly worker = new Worker(
     workerPath,
     {
       execArgv: ["--import", "tsx"],
       resourceLimits: { maxOldGenerationSizeMb: 384 },
+      workerData: { publicationPort: this.channel.port2 },
+      transferList: [this.channel.port2],
     },
+  );
+  private readonly sequencer = new PublicationSequencer<MatchPublication, { id: number; result: ExecutorResult; error?: string }>(
+    publication => { if (!this.closed) for (const listener of this.publications) listener(publication); },
+    message => this.settle(message),
   );
   private readonly publications = new Set<(publication: MatchPublication) => void>();
   onPublication(listener: (publication: MatchPublication) => void): () => void {
@@ -37,21 +46,30 @@ export class ReservedMatchWorker implements MatchExecutor {
       timeout: ReturnType<typeof setTimeout>;
     }
   >();
+  private publication(publication: MatchPublication & { sequence?: number }): void {
+    try { this.sequencer.publication(publication.sequence ?? this.sequencer.deliveredPublications + 1, publication); }
+    catch (error) { this.fail(error as Error, "publication"); void this.worker.terminate(); }
+  }
+  private settle(message: { id: number; result: ExecutorResult; error?: string }): void {
+    const task = this.pending.get(message.id);
+    if (!task) return;
+    this.pending.delete(message.id);
+    clearTimeout(task.timeout);
+    if (message.error) task.reject(new Error(message.error));
+    else task.resolve(message.result);
+  }
   constructor() {
+    this.channel.port1.on("message", (message: { publication?: MatchPublication & { sequence: number } }) => {
+      if (message.publication) this.publication(message.publication);
+    });
     this.worker.on(
       "message",
-      (message: { id: number; result: ExecutorResult; error?: string; fatal?: string; failureCause?: "recovery"; publication?: MatchPublication }) => {
+      (message: { id: number; result: ExecutorResult; error?: string; fatal?: string; failureCause?: "recovery"; publication?: MatchPublication & { sequence?: number }; publicationsIssued?: number }) => {
         if (message.fatal) { this.fail(new Error(message.fatal), message.failureCause ?? "publication"); void this.worker.terminate(); return; }
-        if (message.publication) {
-          if (!this.closed) for (const listener of this.publications) listener(message.publication);
-          return;
-        }
-        const task = this.pending.get(message.id);
-        if (!task) return;
-        this.pending.delete(message.id);
-        clearTimeout(task.timeout);
-        if (message.error) task.reject(new Error(message.error));
-        else task.resolve(message.result);
+        if (message.publication) { this.publication(message.publication); return; }
+        // A result never overtakes a publication issued before it (join
+        // barriers and baselines continue the same delta chain).
+        this.sequencer.result(message.publicationsIssued ?? 0, message);
       },
     );
     this.worker.on("error", (error) => this.fail(error, "error"));
@@ -86,6 +104,8 @@ export class ReservedMatchWorker implements MatchExecutor {
     this.lifecycle.cause ??= cause;
     this.lifecycle.state = "stopped";
     this.closed = true;
+    this.sequencer.stop();
+    this.channel.port1.close();
     for (const task of this.pending.values()) {
       clearTimeout(task.timeout);
       task.reject(error);
