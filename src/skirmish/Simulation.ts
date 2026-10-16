@@ -222,12 +222,31 @@ export class Skirmish {
    * inventories, recruitment jobs and route planning jobs. Domain events
    * raised while applying are counted by CommandApplications itself. */
   mutationEpoch(): string {
-    const parts: number[] = [this.squadChanges.revision, this.shipChanges.revision, this.buildingChanges.revision,
-      this.recruitment.jobs.length, this.routePlanner.pendingCount];
+    const parts: (number | string)[] = [this.squadChanges.revision, this.shipChanges.revision, this.buildingChanges.revision,
+      this.recruitment.jobs.length, this.routePlanner.pendingCount, this.tileChanges.revision];
+    const expansion = this.expansion;
     for (const player of this.players) {
       parts.push(player.gold);
-      const inventory = this.expansion?.supply.inventories[player.id];
+      const inventory = expansion?.supply.inventories[player.id];
       if (inventory) for (const amount of Object.values(inventory)) parts.push(amount);
+      // Research queues and age advancement (a research or advance command).
+      const progress = expansion?.progression.states[player.id];
+      if (progress) parts.push(progress.age, progress.completed.length, Object.keys(progress.research).length,
+        progress.advancement?.target ?? "");
+    }
+    if (expansion) {
+      // Diplomacy: every relation list a command can append to or remove from.
+      const d = expansion.diplomacy, state = d.state;
+      parts.push(d.revision, state.offers.length, state.alliances.length, state.wars?.length ?? 0,
+        state.embargoes?.length ?? 0, state.peaceProtection?.length ?? 0, state.dontEmbargo?.length ?? 0,
+        Object.keys(state.cooldowns).length);
+      // Armies: membership, orders, queues and posture. Army commands write
+      // these without touching the squad change journal.
+      const armies = expansion.armies.armies;
+      parts.push(armies.length);
+      for (const army of armies)
+        parts.push(army.id, army.revision, army.order.type, army.queuedOrders.length, army.posture ?? "",
+          army.manual ? 1 : 0, army.autoTactics ? 1 : 0);
     }
     return parts.join(",");
   }

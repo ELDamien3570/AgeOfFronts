@@ -101,4 +101,29 @@ describe("match fault containment", () => {
     expect(() => runner.step(1)).toThrow(MatchFaultError);
     expect(step).not.toHaveBeenCalled();
   });
+  // Writes outside the entity journals, gold and inventories used to be
+  // invisible to the epoch, so these throws were misread as validation.
+  it.each<[string, (game: Skirmish) => void]>([
+    ["army posture", (game) => { game.expansion!.armies.armies[0].posture = "skirmish"; }],
+    ["army queue", (game) => { game.expansion!.armies.armies[0].queuedOrders.push({ type: "hold" }); }],
+    ["a war declaration", (game) => { (game.expansion!.diplomacy.state.wars ??= []).push({ a: 1, b: 2 }); }],
+    ["an alliance", (game) => { game.expansion!.diplomacy.state.alliances.push({ id: 99, a: 1, b: 2, expiresTick: 9999, renewal: [] }); }],
+    ["tile ownership", (game) => {
+      const tile = game.owners.findIndex(owner => owner === 0);
+      (game as unknown as { changeOwner(tile: number, id: number): void }).changeOwner(tile, 1);
+    }],
+    ["a research queue", (game) => {
+      game.expansion!.progression.states[1].research.Military = { technologyId: "x", remainingTicks: 10, totalTicks: 10 } as never;
+    }],
+  ])("faults a command that throws after writing %s", (_label, write) => {
+    const { game, runner } = setup();
+    expect(game.applyCommand({ type: "create-army", playerId: 1, squadIds: game.squads.filter(s => s.playerId === 1).map(s => s.id) })).toBeNull();
+    const apply = game.applyCommand.bind(game);
+    vi.spyOn(game, "applyCommand").mockImplementation((command: Command) => {
+      if (command.type === "research") { write(game); throw new Error("half applied"); }
+      return apply(command);
+    });
+    expect(() => runner.applyCommands([{ id: "w", command: { type: "research", playerId: 1, technologyId: "x" } }], () => {}))
+      .toThrow(MatchFaultError);
+  });
 });
