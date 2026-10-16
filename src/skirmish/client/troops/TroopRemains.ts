@@ -3,6 +3,8 @@ export const REMAINS = {
   bloodLifetime: 45_000,
   fallenScale: 1,
   bloodFadeStart: 5_000,
+  /** Hard cap so records cannot accumulate while nothing samples them. */
+  maxRecords: 4000,
 } as const;
 
 export interface FallenTroop {
@@ -33,8 +35,23 @@ export class TroopRemains {
   clear(): void {
     this.records.clear();
   }
+  get size(): number {
+    return this.records.size;
+  }
   add(troop: FallenTroop): void {
-    if (!this.records.has(troop.key)) this.records.set(troop.key, { ...troop });
+    if (this.records.has(troop.key)) return;
+    // Map iterates in insertion order, so the first key is the oldest record.
+    while (this.records.size >= REMAINS.maxRecords) {
+      const oldest = this.records.keys().next();
+      if (oldest.done) break;
+      this.records.delete(oldest.value);
+    }
+    this.records.set(troop.key, { ...troop });
+  }
+  /** Drops fully faded records without drawing, so hidden remains stay bounded. */
+  expire(now: number): void {
+    for (const [key, troop] of this.records)
+      if (now - troop.started >= REMAINS.bloodLifetime) this.records.delete(key);
   }
   sample(now: number): PresentedRemains[] {
     const result: PresentedRemains[] = [];
