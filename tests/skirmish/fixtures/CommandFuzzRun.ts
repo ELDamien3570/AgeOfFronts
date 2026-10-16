@@ -29,7 +29,9 @@ import { BUILDING_RULES } from "../../../src/skirmish/Rules";
 import { Skirmish } from "../../../src/skirmish/Simulation";
 import { invalidFormations } from "./FormationCheck";
 
-export const COMMANDS = 1500, SEED = 1;
+/** SKIRMISH_FUZZ_SEED=<n> runs another fixed seed (default 1, the pinned one). */
+const seedOverride = Number(process.env.SKIRMISH_FUZZ_SEED);
+export const COMMANDS = 1500, SEED = Number.isInteger(seedOverride) && seedOverride > 0 ? seedOverride : 1;
 const W = 160, H = 100, N = W * H;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Json = any;
