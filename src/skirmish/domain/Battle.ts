@@ -9,6 +9,7 @@ import { contactPath } from './ContactFront';
 import { polygonSweepEntry } from './ProjectileCollision';
 import { formationEnvelope, type FormationState } from "./FormationGeometry";
 import { legacyWeaponStrength, remainingHealth, HEALTH_SCALE } from './Manpower';
+import { directHitBodies, soldierHitCap } from './SoldierHitCap';
 import { commitWeaponShot } from "./WeaponTiming";
 import { cancelRangedPreparation, prepareRangedShot, releaseRangedShot, type RangedTarget } from "./RangedPreparation";
 import { weaponAccuracy } from "./WeaponAccuracy";
@@ -259,6 +260,17 @@ export class Battle {
   private participants(a:Squad,profile:AttackProfile,b?:Squad):number {
     return profile.perSoldier && profile.channel==="melee" && a.formation && b?.formation && !a.afloat && !b.afloat
       ? contactParticipants(a,b,this.world.tick,profile.ranks??2,this.contact(a,b),!a.charge && this.contact(a,b).gap<=CONTACT.release) : attackContributors(a,profile,b);
+  }
+  /** Soldier slots of `s` whose world position lies inside the blast (C3, OD3). */
+  private bodiesInBlast(s: Squad, point: Position, radius: number, tick: number): number {
+    if (!s.formation || s.afloat) return s.troops;
+    const angle = this.geometry.envelope(s, tick).angle, cos = Math.cos(angle), sin = Math.sin(angle);
+    let bodies = 0;
+    for (const slot of formationSlots(s, tick)) {
+      const x = s.x + slot.x * cos - slot.y * sin, y = s.y + slot.x * sin + slot.y * cos;
+      if ((x - point.x) ** 2 + (y - point.y) ** 2 <= radius ** 2) bodies++;
+    }
+    return bodies;
   }
   private distance(a: Position, b: Position): number {
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
@@ -1049,7 +1061,11 @@ export class Battle {
           contacts.push({targetId:other.id,budget,lunge,laneWidth,strikeDepth,targetBody,reshape,reachable:reachable.length,rankCounts,bearing,
             fromX:c.source.x,fromY:c.source.y,toX:c.target.x,toY:c.target.y});
         }else if(profile.channel==='melee')this.meleeHit(damage,contributions,squad,other,profile,contributors,hit,bonus>0);
-        else {damage.add(other.id,squad.playerId,hit);this.volley(squad,other,hit,false);this.contribution(contributions,other.id,squad.id,hit);}
+        else {
+          // C3: one hull/burst hit kills at most the bodies it reaches.
+          if(!profile.perSoldier)hit=Math.min(hit,soldierHitCap(other,directHitBodies(other)));
+          damage.add(other.id,squad.playerId,hit);this.volley(squad,other,hit,false);this.contribution(contributions,other.id,squad.id,hit);
+        }
       };
       const hit = damageAmount(
         profile,
@@ -1478,7 +1494,7 @@ export class Battle {
           directHit &&
           (p.launchUnitOwners?.includes(directHit.playerId) ?? this.diplomacy.hostile(directHit.playerId,p.playerId))
         ) {
-          const hit = hitDamage(
+          let hit = hitDamage(
             {
               channel: p.channel,
               damage: p.damage,
@@ -1498,6 +1514,8 @@ export class Battle {
                   bonusResistance: {},
                 },
           );
+          // C3: a direct shell hit kills at most one frontage of soldiers.
+          if ("troops" in directHit && !p.perSoldier) hit = Math.min(hit, soldierHitCap(directHit, directHitBodies(directHit)));
           ("troops" in directHit ? impacts : naval).add(
             directHit.id,
             p.playerId,
@@ -1656,6 +1674,8 @@ export class Battle {
             scaled(target),
             this.projectileDefence(target,p.fromX,p.fromY,tick),
           ),
+          // C3: a blast kills at most the soldier bodies inside its radius.
+          p.perSoldier ? Infinity : soldierHitCap(target, this.bodiesInBlast(target, p, radius, tick)),
         );
         if (hit <= 0) continue;
         impacts.add(target.id, p.playerId, hit);
