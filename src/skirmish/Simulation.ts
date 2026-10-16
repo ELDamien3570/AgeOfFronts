@@ -344,6 +344,8 @@ export class Skirmish {
   private installCheckpoint(saved: ReturnType<Skirmish["checkpoint"]>): void {
     if (saved.version !== 11 || saved.width!==this.map.width() || saved.height!==this.map.height() || JSON.stringify(saved.options)!==JSON.stringify(this.options) || Boolean(saved.expansion)!==Boolean(this.expansion)) throw new Error("Checkpoint does not match this simulation");
     const state=structuredClone(saved);
+    // Keyed on research count, not identity: an equal-size set can differ (L18).
+    this.amphibiousFactions.clear();
     for (const player of state.players) player.colorKind ??= FACTIONS.find(faction => faction.id === player.factionId)?.kind ?? player.kind;
     restoreArray(this.players,state.players);
     for(const squad of state.squads){
