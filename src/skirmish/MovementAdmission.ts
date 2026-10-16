@@ -21,6 +21,8 @@ interface Member {
   connector?: number;
   requested: boolean;
   limitedAttempts?: number;
+  /** Consecutive planner refusals (P20); reset by an accepted request. */
+  refusals?: number;
   retryAt?: number;
   queued: Order[];
   shared?: { stage: "entry" | "exit"; entry?: number[]; spine: number[] };
@@ -111,6 +113,9 @@ export interface MovementAdmissionPorts {
 }
 
 const CONNECTOR_REPLANS = 3;
+/** Owner decision D3 (P20): back-off after the route planner refuses an
+ * admission's request because it is full: 2, 4, 8, then 16 ticks. */
+export const ADMISSION_REFUSAL_BACKOFF = { firstTicks: 2, maximumTicks: 16 } as const;
 
 /** Transactional land admission: current orders run until every replacement
  * has a live, short connector. No member is activated after a partial success.
@@ -997,6 +1002,16 @@ export class MovementAdmission {
             start,
             goal,
           );
+          // P20: a refused request (planner full) waits 2, 4, 8, then 16
+          // ticks before asking again, so a saturated planner no longer burns
+          // the whole admission budget re-asking for the same member. Refusals
+          // never count toward limited-route exhaustion.
+          if (member.requested) member.refusals = undefined;
+          else {
+            member.refusals = (member.refusals ?? 0) + 1;
+            member.retryAt = tick + Math.min(ADMISSION_REFUSAL_BACKOFF.maximumTicks,
+              ADMISSION_REFUSAL_BACKOFF.firstTicks * 2 ** (member.refusals - 1));
+          }
           used++;
           idle = 0;
         } else if (admission.members.every((m) => !!m.path)) {
