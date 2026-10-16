@@ -3,7 +3,9 @@ import { translateText } from "../../client/Utils";
 import {
   MATCH_INITIALIZATION_FAILED_MESSAGE,
   MATCH_STOPPED_MESSAGE,
+  NO_LIVING_HUMAN_MESSAGE,
 } from "../multiplayer/application/TerminalMessages";
+import { INVALID_PLAYTEST_RULES } from "../lobby/LobbyDirectory";
 import type { ServerMessage } from "../multiplayer/Protocol";
 import { COMMAND_VALIDATION_FAILURE } from "../CommandApplications";
 
@@ -19,6 +21,8 @@ const KEYS: ReadonlyMap<string, ServerTextKey> = new Map<string, ServerTextKey>(
   ],
   ["No viable land for starting camps", "setup_no_viable_land"],
   [COMMAND_VALIDATION_FAILURE, "command_validation_failure"],
+  [NO_LIVING_HUMAN_MESSAGE, "no_living_human"],
+  [INVALID_PLAYTEST_RULES, "playtest_rules_invalid"],
 ]);
 
 /** Text the lobby shows for an unsolicited (requestId-less) coordinator error,

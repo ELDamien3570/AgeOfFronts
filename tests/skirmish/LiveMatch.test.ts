@@ -1,8 +1,11 @@
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it, vi } from "vitest";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
+import { NO_LIVING_HUMAN_MESSAGE } from "../../src/skirmish/multiplayer/application/TerminalMessages";
 import {
+  EMPTY_MATCH_GRACE_MS,
   LiveMatch,
+  NO_LIVING_HUMAN_END_MS,
   MAX_QUEUED_COMMANDS,
   MAX_RECENT_COMMANDS,
 } from "../../src/skirmish/multiplayer/application/LiveMatch";
@@ -22,6 +25,8 @@ async function fixture(stream = false, colorIndex?: number) {
     tick = 0,
     released = 0,
     closed = 0;
+  // Runtime seats the fake executor reports with every advance.
+  const eliminated = new Set<number>();
   const requests: ExecutorRequest[] = [];
   const messages: { guest: string; message: ServerMessage }[] = [];
   let publication: ((value: { tick: number; packet: typeof packet }) => void) | undefined;
@@ -49,6 +54,8 @@ async function fixture(stream = false, colorIndex?: number) {
             winner: null,
             packet: !stream && request.publish ? packet : undefined,
             rejectedCommands: [],
+            seats: [1, 2].map(playerId => ({ playerId, name: String(playerId), ai: false, kind: "regular" as const,
+              eliminated: eliminated.has(playerId) })),
           };
           break;
         case "baseline":
@@ -117,6 +124,7 @@ async function fixture(stream = false, colorIndex?: number) {
     setTime: (value: number) => {
       now = value;
     },
+    eliminate: (playerId: number) => eliminated.add(playerId),
     cleanup: () => ({ released, closed }),
   };
 }
@@ -323,6 +331,60 @@ describe("server-authoritative live match", () => {
     await f.match.advance();
     await f.match.end("repeat");
     expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
+  });
+
+  it("does not let a connected eliminated observer keep the match alive (13 G4)", async () => {
+    const f = await fixture();
+    f.eliminate(1);
+    f.setTime(10_125);
+    await f.match.advance();
+    const advances = () => f.requests.filter(r => r.type === "advance").length;
+    expect(advances()).toBe(1);
+    await f.match.disconnect("b");
+    f.setTime(10_250);
+    await f.match.advance();
+    // The living human left: the grace pause starts although "a" watches.
+    expect(advances()).toBe(1);
+    expect(f.match.progress().state).toBe("paused");
+    // The grace started when "b" left at 10_125.
+    f.setTime(10_125 + EMPTY_MATCH_GRACE_MS - 1);
+    await f.match.advance();
+    expect(f.cleanup()).toEqual({ released: 0, closed: 0 });
+    f.setTime(10_125 + EMPTY_MATCH_GRACE_MS);
+    await f.match.advance();
+    expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
+    expect(f.messages.some(m => m.message.type === "match-ended")).toBe(true);
+  });
+
+  it("ends a minute after every human seat is eliminated, without pausing", async () => {
+    const f = await fixture();
+    f.eliminate(1); f.eliminate(2);
+    f.setTime(10_125);
+    await f.match.advance();
+    await f.match.disconnect("a");
+    for (let t = 10_250; t < 10_125 + NO_LIVING_HUMAN_END_MS; t += 5_000) {
+      f.setTime(t);
+      await f.match.advance();
+    }
+    // Still simulating for the remaining observer; no grace pause.
+    expect(f.requests.filter(r => r.type === "advance").length).toBeGreaterThan(10);
+    expect(f.cleanup()).toEqual({ released: 0, closed: 0 });
+    f.setTime(10_125 + NO_LIVING_HUMAN_END_MS);
+    await f.match.advance();
+    expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
+    expect(f.messages.find(m => m.message.type === "match-ended")?.message)
+      .toMatchObject({ type: "match-ended", completed: false, message: NO_LIVING_HUMAN_MESSAGE });
+  });
+
+  it("keeps running while a living human stays connected", async () => {
+    const f = await fixture();
+    f.eliminate(1);
+    for (let t = 10_125; t <= 10_125 + 2 * EMPTY_MATCH_GRACE_MS; t += 10_000) {
+      f.setTime(t);
+      await f.match.advance();
+    }
+    expect(f.match.progress().state).not.toBe("paused");
+    expect(f.cleanup()).toEqual({ released: 0, closed: 0 });
   });
 
   it("reports domain rejections only to their sender and ignores repeated ready messages", async () => {

@@ -8,7 +8,9 @@
     "setup_not_enough_room": "Not enough room for these factions and tribes. Choose fewer opponents or a larger battlefield.",
     "setup_no_viable_land": "No viable land for starting camps",
     "rate_limited": "Too many messages were sent to the lobby server. Reconnecting…",
-    "command_validation_failure": "This command could not be processed"
+    "command_validation_failure": "This command could not be processed",
+    "no_living_human": "Every human empire has been defeated",
+    "playtest_rules_invalid": "Choose supported start protection, time limit and AI difficulty."
   },
   "skirmish_controls": {
     "double_right_click": "Double right click",

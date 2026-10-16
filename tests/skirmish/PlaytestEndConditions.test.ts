@@ -65,8 +65,8 @@ describe("playtest match end in the simulation", () => {
   it("ends at the time limit on the limit tick with a score winner", () => {
     const game = fixture({ timeLimitMinutes: 1 }), limit = timeLimitTick(game.options)!;
     expect(limit).toBe(480);
-    // Player 3 owns the most land, so it holds the best score.
-    for (let tile = 0; tile < 400; tile++) if (game.owners[tile] === 0) game.changeOwner(tile, 3);
+    // Player 3 gets the most kills, so it holds the best score.
+    game.players[2].kills = (game.players[2].kills ?? 0) + 4000;
     while (game.tick < limit - 1) game.step();
     expect(game.winner).toBeNull();
     expect(game.endReason).toBeNull();
