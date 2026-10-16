@@ -145,7 +145,7 @@ import {
 } from "./Protocol";
 import { RouteWork } from "./RouteWork";
 import { RoutePlanner } from "./RoutePlanner";
-import { MovementAdmission } from "./MovementAdmission";
+import { ADMISSION_REFUSAL_BACKOFF, MovementAdmission } from "./MovementAdmission";
 import { ShipMovementAdmission } from "./ShipMovementAdmission";
 import type { MatchRouteTask, ArmyRouteRequest } from "./domain/RouteTask";
 import {
@@ -896,6 +896,8 @@ export class Skirmish {
   /** At most one speculative leg per squad; scheduler work and replay state stay bounded. */
   private readonly moveContinuations = new Map<number, {
     revision: number; order: string; obstacleRevision: string; path?: number[]; retryAt: number;
+    /** Consecutive planner refusals; the next request waits as admissions do (P20). */
+    refusals?: number;
   }>();
   private readonly queuedLegs = new Map<number, { attempts: number; retryAt: number; paused?: boolean; deadline?:number }>();
   private startQueuedLeg(squad:Squad):void {
@@ -4224,10 +4226,19 @@ export class Skirmish {
       this.moveContinuations.set(squad.id, cached);
     }
     if (cached.path || this.routePlanner.has(key) || this.tick < cached.retryAt) return;
-    this.routePlanner.request({ key, start: squad.order.tile, goal: next.tile,
+    const accepted = this.routePlanner.request({ key, start: squad.order.tile, goal: next.tile,
       water: false, amphibious: this.amphibious(squad.playerId), createdTick: this.tick,
       obstacleRevision, context: { kind: "navigation", operation: "continuation",
         squadId: squad.id, revision, playerId: squad.playerId } });
+    // A speculative leg is the least urgent planner work: a refused request
+    // (planner full) backs off 2, 4, 8, then 16 ticks, as admissions do (P20),
+    // instead of asking again on every movement tick.
+    if (accepted) cached.refusals = undefined;
+    else {
+      cached.refusals = (cached.refusals ?? 0) + 1;
+      cached.retryAt = this.tick + Math.min(ADMISSION_REFUSAL_BACKOFF.maximumTicks,
+        ADMISSION_REFUSAL_BACKOFF.firstTicks * 2 ** (cached.refusals - 1));
+    }
   }
 
   /** Only an admitted continuation with a clear local join can bypass exact arrival. */
