@@ -14,6 +14,9 @@ const { generateMigration } = await import(`${source}/MigrationMap.ts`),
   { SnapshotEncoder, SnapshotDecoder } = await import(
     `${source}/SnapshotCodec.ts`
   );
+// I-0: thread CPU next to wall time, so a contended host is visible
+// (wall/CPU above WALL_PER_CPU_FLAG flags the run).
+const { threadCpuClock, WALL_PER_CPU_FLAG } = await import("../src/skirmish/RuntimeDiagnostics.ts");
 const saved = deserialize(readFileSync(`${root}/fresh-checkpoint.v8`)),
   loaded = generateMigration(1000, 504565698),
   game = new Skirmish(loaded.map, saved.options);
@@ -91,8 +94,10 @@ for (let i = 0; i < count; i++) {
   measuring = true;
   row = { tick: game.tick + 1, phases: {} };
   let at = performance.now();
+  const cpuAt = threadCpuClock() ?? 0;
   game.step();
   row.simulation = performance.now() - at;
+  row.simulationCpu = (threadCpuClock() ?? cpuAt) - cpuAt;
   at = performance.now();
   encoder.encode(
     game.replicationSource(),
@@ -166,6 +171,11 @@ const result = {
   node: process.version,
   ticks: [saved.tick + 41, game.tick],
   simulation: stats(rows.map((r) => r.simulation)),
+  simulationCpu: stats(rows.map((r) => r.simulationCpu)),
+  // Whole-run wall per thread-CPU time of the steps; above the flag the host
+  // was contended and the wall timings are not representative.
+  wallPerCpu: rows.reduce((a, r) => a + r.simulation, 0) / Math.max(1e-9, rows.reduce((a, r) => a + r.simulationCpu, 0)),
+  contended: rows.reduce((a, r) => a + r.simulation, 0) > WALL_PER_CPU_FLAG * rows.reduce((a, r) => a + r.simulationCpu, 0),
   encoding: stats(rows.map((r) => r.encoding)),
   total: stats(rows.map((r) => r.total)),
   phases: Object.fromEntries(
