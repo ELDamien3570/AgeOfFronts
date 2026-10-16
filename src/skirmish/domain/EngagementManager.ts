@@ -3,7 +3,9 @@ import { effectiveRange } from "./ElevationAdvantage";
 import { FIXED, type Squad } from "../Protocol";
 import type { ExactRouteOutcome } from "../RoutePlanner";
 import { distanceSquared, pointTile, tilePoint } from "../SquadGeometry";
-import { BUDGETS, ENGAGEMENT } from "../content/TacticalRules";
+import { AI_BATTLE, BUDGETS, ENGAGEMENT } from "../content/TacticalRules";
+import { AI_DOCTRINES } from "../content/AiDoctrines";
+import { personalityOf } from "../content/AiPersonalities";
 import { combatCohorts } from "./AiCombatPower";
 import { flankCandidate } from "./AiTacticalRoutes";
 import { attackContributors, damageAmount, defenceOf } from "./Combat";
@@ -82,6 +84,8 @@ interface PostureState {
   posture: EngagementPlan["posture"];
   since: number;
   weakPlans: number;
+  /** Latest local strength estimate (own / enemy). */
+  advantage?: number;
 }
 const legal = (s: Squad | undefined): s is Squad =>
   !!s && s.troops > 0 && s.embarkedOn === null && !s.afloat;
@@ -202,7 +206,8 @@ export class EngagementManager {
         !Number.isSafeInteger(id) ||
         id < 1 ||
         !["advance", "hold", "withdraw"].includes(p.posture) ||
-        [p.since, p.weakPlans].some((n) => !Number.isSafeInteger(n) || n < 0)
+        [p.since, p.weakPlans].some((n) => !Number.isSafeInteger(n) || n < 0) ||
+        (p.advantage !== undefined && (!Number.isFinite(p.advantage) || p.advantage < 0))
       )
         throw Error("Invalid engagement posture");
     for (const [target, rows] of [
@@ -224,6 +229,10 @@ export class EngagementManager {
     this.membership.clear();
     for (const e of this.engagements.values())
       for (const id of e.armyIds) this.membership.set(id, e.id);
+  }
+  /** Latest local strength estimate for an army, if it is in an engagement. */
+  advantageFor(id: number): number | undefined {
+    return this.postures.get(id)?.advantage;
   }
   planFor(id: number): EngagementPlan | undefined {
     const p = this.plans.get(id),
@@ -576,9 +585,13 @@ export class EngagementManager {
         estimate.advantage < ENGAGEMENT.withdrawBelow
           ? previous.weakPlans + 1
           : 0;
+      const owner = world.players.find((p) => p.id === a.playerId), ai = !!owner?.ai;
+      previous.advantage = Number.isFinite(estimate.advantage) ? estimate.advantage : 0;
+      // T-b: a depleted AI army that is clearly winning keeps fighting.
       const collapse =
-        own.reduce((n, s) => n + s.troops, 0) < (a.initialTroops ?? 1) * 0.55;
-      const ai = !!world.players.find((p) => p.id === a.playerId)?.ai;
+        own.reduce((n, s) => n + s.troops, 0) < (a.initialTroops ?? 1) * 0.55 &&
+        !(ai && estimate.advantage >= AI_BATTLE.pressOnAdvantage);
+      const advanceAbove = ai && owner ? AI_DOCTRINES[personalityOf(owner).id].advanceAbove : ENGAGEMENT.advanceAbove;
       if (
         world.tick - previous.since >= ENGAGEMENT.minPostureTicks ||
         collapse
@@ -586,7 +599,7 @@ export class EngagementManager {
         const posture =
           ai && (previous.weakPlans >= 2 || collapse)
             ? "withdraw"
-            : estimate.advantage >= ENGAGEMENT.advanceAbove &&
+            : estimate.advantage >= advanceAbove &&
                 a.posture !== "defend"
               ? "advance"
               : "hold";

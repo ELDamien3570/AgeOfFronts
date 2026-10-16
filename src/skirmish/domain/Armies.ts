@@ -122,6 +122,8 @@ const active = (s: Squad|undefined):s is Squad => !!s && s.troops > 0 && s.embar
 const attackOrder = (
   o: ArmyOrder,
 ): o is Extract<ArmyOrder, { targetId: number }> => "targetId" in o;
+/** Synchronous rejection when no legal army corridor exists (a side-effect-free rejection). */
+export const ARMY_ROUTE_BLOCKED = "Army route is blocked; choose another destination";
 export class Armies {
   readonly travelWork = { directLegs: 0, sharedLegs: 0, recoveryMembers: 0, directAdmissions: 0 };
   checkpoint() { return structuredClone({armies:this.armies, membership:this.membership, marches:this.marches, externalActions:this.externalActions,commandHistory:[...this.commandHistory], nextId:this.nextId, leaderAdmissions:[...this.leaderAdmissions], nextAdmission:this.nextAdmission, cohorts:this.cohorts?.checkpoint(), cohortArmies:[...this.cohortArmies], slotPlanning:[...this.slotPlanning]}); }
@@ -219,7 +221,13 @@ export class Armies {
     else if(outcome==="limited"){
       const retry=limitedRouteRetry(plan.attempts,this.world.tick,true);plan.attempts=retry.attempts;plan.retryAt=retry.retryAt;
       if(retry.exhausted)this.finishLeader(plan,"rejected",ROUTE_CAPACITY_REASON);
-    }else this.finishLeader(plan,outcome==="unreachable"?"rejected":"superseded","Army corridor unavailable");
+    }else{
+      this.finishLeader(plan,outcome==="unreachable"?"rejected":"superseded","Army corridor unavailable");
+      // I3 (R2-H4): an unreachable objective blocks the army so its owner can breach or recover.
+      const army=this.byArmyId.get(plan.armyId);
+      // Human armies keep their previous order, as before; the rejection event reports it.
+      if(outcome==="unreachable"&&army&&this.world.players.find(p=>p.id===army.playerId)?.ai){army.state="blocked";army.reason="Army corridor unavailable";}
+    }
   }
   private finishLeader(plan:ArmyLeaderAdmission,status:"executed"|"rejected"|"superseded",reason?:string):void {
     this.leaderAdmissions.delete(plan.id);
@@ -388,6 +396,20 @@ export class Armies {
       army.autoTactics = true;
       army.queuedOrders = [];
     }
+  }
+  /** I2 (R2-M5): only the battle line holds the advance; a fighting mounted wing does not. */
+  private lineFighting(army: Army, members: readonly Squad[]): boolean {
+    return members.some((s) => {
+      if (!s.fighting) return false;
+      const role = army.slots?.find((r) => r.squadId === s.id)?.role;
+      return role === "frontline" || role === "ranged";
+    });
+  }
+  /** True while an order for this army awaits route admission. */
+  admissionPending(armyId: number): boolean {
+    for (const plan of this.leaderAdmissions.values()) if (plan.armyId === armyId) return true;
+    for (const link of this.cohortArmies.values()) if (link.armyId === armyId) return true;
+    return false;
   }
   armyOf(squadId: number): Army | undefined {
     return this.byArmyId.get(this.membership.get(squadId) ?? -1);
@@ -671,7 +693,7 @@ export class Armies {
       (t) => this.world.armyBlocked(t, army.playerId),
     );
     if (path === null)
-      return "Army route is blocked; choose another destination";
+      return ARMY_ROUTE_BLOCKED;
     if (append && army.order.type !== "hold") {
       if (army.queuedOrders.length >= MAX_QUEUED_ORDERS)
         return "Army queue is full";
@@ -1169,7 +1191,7 @@ export class Armies {
         // Once contact begins the deployment anchor/facing remain stable. Flank pressure is local.
         let anchor=march.deployment?.point??(target?{x:leader.x,y:leader.y}:march.route[march.route.length-1]);
         const plan=this.engagements?.planFor(army.id);
-        if(plan?.posture==='advance'&&army.posture!=='defend'&&this.world.players.find(p=>p.id===army.playerId)?.ai&&this.world.tick-(army.lastAdvanceTick??march.started)>=ENGAGEMENT.refreshTicks&&!available.some(s=>s.fighting)){
+        if(plan?.posture==='advance'&&army.posture!=='defend'&&this.world.players.find(p=>p.id===army.playerId)?.ai&&this.world.tick-(army.lastAdvanceTick??march.started)>=ENGAGEMENT.refreshTicks&&!this.lineFighting(army,available)){
           const goal=near.length?{x:near.reduce((n,s)=>n+s.x,0)/near.length,y:near.reduce((n,s)=>n+s.y,0)/near.length}:undefined;
           if(goal){const length=Math.hypot(goal.x-anchor.x,goal.y-anchor.y);if(length>3*FIXED){anchor={x:Math.round(anchor.x+(goal.x-anchor.x)/length*FIXED),y:Math.round(anchor.y+(goal.y-anchor.y)/length*FIXED)};march.deployment=undefined;army.lastAdvanceTick=this.world.tick;}}
         }

@@ -7,17 +7,22 @@ export interface AiDoctrine {
   reservePercent: number;
   assemblyTicks: number;
   commitmentTicks: number;
+  /** Local advantage at which the engaged army advances (T-b; ENGAGEMENT.advanceAbove for humans). */
+  advanceAbove: number;
   preferredRoles: readonly UnitDefinition["role"][];
   engagement: "attack" | "fire-retreat" | "flank-left" | "flank-right";
   economy: Partial<Record<BuildingType, number>>;
   navalWeight: number;
   minimumHealth: number;
 }
+/** T-b (owner default): conqueror and rider advance at even odds (others 1.15). */
+const AGGRESSIVE_ADVANCE_ABOVE = 1.0;
 const balanced: AiDoctrine = {
   contract: "Mixed supported force with a mobile reserve",
   reservePercent: 25,
   assemblyTicks: secondsToTicks(8),
   commitmentTicks: secondsToTicks(60),
+  advanceAbove: 1.15,
   preferredRoles: ["frontline", "ranged", "mounted"],
   engagement: "attack",
   economy: { city: 100, factory: 100 },
@@ -37,6 +42,7 @@ export const AI_DOCTRINES: Readonly<Record<AiPersonalityId, AiDoctrine>> =
       reservePercent: 15,
       assemblyTicks: secondsToTicks(4),
       commitmentTicks: secondsToTicks(80),
+      advanceAbove: AGGRESSIVE_ADVANCE_ABOVE,
       economy: { barracks: 125, depot: 125 },
     }),
     warden: doctrine({
@@ -75,6 +81,7 @@ export const AI_DOCTRINES: Readonly<Record<AiPersonalityId, AiDoctrine>> =
       assemblyTicks: secondsToTicks(5),
       preferredRoles: ["mounted", "frontline", "ranged"],
       engagement: "flank-left",
+      advanceAbove: AGGRESSIVE_ADVANCE_ABOVE,
       economy: { stables: 150 },
     }),
     skirmisher: doctrine({

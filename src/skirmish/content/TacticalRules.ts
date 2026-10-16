@@ -71,3 +71,23 @@ export const SHAPES={shieldRanged:6500,shieldMelee:8500,shieldSpeed:6000,
   squareCharge:4000,squareMounted:7500,squareRanged:12500,squareSpeed:3500,
   looseRanged:8000,nonLineFire:7500,minimum:2500,maximum:20000} as const;
 export const TACTICAL_CHARGE={maxTargets:3,budgetFactor:1.5,wedgeFrontage:1.5,recoveryTicks:secondsToTicks(0.5)} as const;
+/** AI battle policy (Next #5 tactics). Owner-tunable; see the commit messages for defaults. */
+export const AI_BATTLE=Object.freeze({
+  // T-b: an engaged army recovers only after this many commitment periods without
+  // contact... or after commitmentCapFactor x commitmentTicks once nothing is fighting.
+  commitmentCapFactor:3,
+  // T-b: an engaged line that has had no contact for this long closes on the nearest enemy.
+  standoffTicks:secondsToTicks(6),
+  standoffSearchTiles:24,
+  // T-b: the re-deployed line stops this far short of the enemy centroid.
+  pressStopTiles:2,
+  // T-b: a routed target army within this many tiles is pursued.
+  pursuitTiles:48,
+  // I4: back-off before re-sending an objective move after a rejected route.
+  objectiveRetryTicks:secondsToTicks(10),
+  // I3: walls within this many tiles of a refused objective are breach targets.
+  breachObjectiveTiles:16,
+  breachCandidatesPerThink:4,
+  // T-b: a depleted AI army with at least this local advantage keeps fighting.
+  pressOnAdvantage:1.2,
+});
