@@ -235,21 +235,16 @@ export class MovementAdmission {
     }
     this.event(admission, tick, status, reason);
   }
-  cancel(ids: readonly number[], tick: number): void {
+  cancel(ids: readonly number[], tick: number, reason = "Replaced by a newer command"): void {
     const selected = new Set(ids);
     for (const [id, intent] of this.intents)
       if (intent.members.some((m) => selected.has(m.id))) {
         this.removeIntent(id);
-        this.event(intent, tick, "superseded", "Replaced by a newer command");
+        this.event(intent, tick, "superseded", reason);
       }
     for (const admission of this.pending.values())
       if (admission.members.some((m) => selected.has(m.id)))
-        this.finish(
-          admission,
-          tick,
-          "superseded",
-          "Replaced by a newer command",
-        );
+        this.finish(admission, tick, "superseded", reason);
   }
   private deadline(playerId:number,tick:number):{deadline?:number} {
     const value=planningDeadline(tick,this.ports.deadlineTicks?.(playerId));
@@ -806,9 +801,13 @@ export class MovementAdmission {
       const [id, admission] = entry;
       this.pending.delete(id);
       this.pending.set(id, admission);
+      // Full validation runs once per call; every visit still confirms each
+      // member squad exists, so the member lookups below cannot dereference a
+      // squad removed since validation.
       if (
-        !validated.has(id) &&
-        admission.members.some((m) => !this.valid(id, m.id))
+        (!validated.has(id) &&
+          admission.members.some((m) => !this.valid(id, m.id))) ||
+        admission.members.some((m) => !this.ports.squad(m.id))
       ) {
         this.finish(
           admission,
@@ -938,8 +937,11 @@ export class MovementAdmission {
         // exit connectors retain exact obstacle checks under the same queue.
         const leader = admission.members[0], corridor = admission.corridorId === undefined ? undefined : this.corridors.get(admission.corridorId),
           original = admission.corridorId === undefined ? undefined : this.pending.get(admission.corridorId);
-        if (original && original !== admission && !corridor &&
-          this.ports.squad(leader.id)!.kind === this.ports.squad(original.members[0].id)!.kind) {
+        // A follower waits for the corridor lead's spine only while that lead
+        // squad still exists; otherwise it plans its own route below.
+        const originalLead = original && original !== admission ? this.ports.squad(original.members[0].id) : undefined,
+          follower = this.ports.squad(leader.id);
+        if (originalLead && follower && !corridor && follower.kind === originalLead.kind) {
           if (++idle >= this.pending.size) break; continue;
         }
         if (!leader.path && leader.requested) { if (++idle >= this.pending.size) break; continue; }

@@ -1233,7 +1233,12 @@ export class Skirmish {
       this.routePlanner.cancel(`navigation:${id}`);
     }
   }
-  removeSquad(id: number): boolean { this.movementClearance.delete(id);this.playerAttacks.forget(id);return this.squadEntities.remove(id); }
+  removeSquad(id: number): boolean {
+    // A destroyed squad's pending admissions end now, while it still exists
+    // for their events; a corridor follower then plans its own route.
+    if(this.squadEntities.get(id))this.movementAdmission.cancel([id],this.tick,"Control or selected units changed");
+    this.movementClearance.delete(id);this.playerAttacks.forget(id);return this.squadEntities.remove(id);
+  }
   removeShip(id: number): boolean { return this.shipEntities.remove(id); }
   squadFacts(): UnitQueries<Squad> { if (this.compareUnitIndexes) this.verifyUnitIndexes(); return this.squadIndex; }
   shipFacts(): UnitQueries<Ship> { if (this.compareUnitIndexes) this.verifyUnitIndexes(); return this.shipIndex; }
