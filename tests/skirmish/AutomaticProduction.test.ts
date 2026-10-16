@@ -446,6 +446,20 @@ describe("persistent building-type priorities", () => {
     expect(plan({buildings, ai: true, aiDemand: empty, protectedInputs: {steel: goods.steel}}).size).toBe(0);
   });
 
+  it("lets quoted AI payloads go before kits that met their quote but sit below the reserve floor (R2-M1)", () => {
+    const buildings = [building(1, "arms-factory")];
+    const kit = equipmentItem("Modern");
+    const aiDemand = {equipment: {[kit]: 40, "payload:hydrogen": 2}, materials: {}, units: {}};
+    // Kit stock meets its quote but is below the 100-kit reserve: the payload starts.
+    expect(plan({buildings, inventory: {...goods, [kit]: 40}, ai: true, aiDemand}).get(1)).toBe("make-hydrogen");
+    // A kit still short of its quote keeps the arms factory ahead of payloads.
+    expect(plan({buildings, inventory: {...goods, [kit]: 39}, ai: true, aiDemand}).get(1)).toBe("make-modern-equipment");
+    // Once the payload quote is met, the reserve floor resumes kit production.
+    expect(plan({buildings, inventory: {...goods, [kit]: 40, "payload:hydrogen": 2}, ai: true, aiDemand}).get(1)).toBe("make-modern-equipment");
+    // Humans have no quote: the reserve floor still comes first.
+    expect(plan({buildings, inventory: {...goods, [kit]: 40}, priorities: {"arms-factory": ["make-hydrogen", "make-modern-equipment"]}}).get(1)).toBe("make-modern-equipment");
+  });
+
   it("scales automatic reserves with army and producer counts but counts paid output toward the bound", () => {
     const buildings = [building(1, "depot"), building(2, "depot"), building(3, "depot")];
     const inventory = {...goods, [equipmentItem("Modern", "vehicle")]: 5};
