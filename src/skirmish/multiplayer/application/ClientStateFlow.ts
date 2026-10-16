@@ -15,11 +15,12 @@ export class ClientStateFlow {
   dirty = false;
   recovering = false;
   offer(sequence: number): boolean {
-    if (
-      this.dirty ||
-      this.outstanding.length >= this.window ||
-      this.recovering
-    ) {
+    // A recovery capture flushes queued publications before it snapshots, so
+    // a frame refused while recovering is already contained in that baseline.
+    // Only frames published after the capture (`changedSinceCapture`) or a
+    // skipped frame of a live cursor require another baseline.
+    if (this.recovering) return false;
+    if (this.dirty || this.outstanding.length >= this.window) {
       this.dirty = true;
       return false;
     }
