@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8" /><title>Strategic and soldier draw measure</title>
+<style>html,body{margin:0;background:#000;color:#ddd;font:13px monospace}main.battlefield{position:relative;width:1600px;height:900px;overflow:hidden}main.battlefield canvas{position:absolute;left:0;top:0;width:100%;height:100%}</style></head>
+<!--
+  Chrome gates U4 (strategic draw p95 < 12 ms at 1,000 squads) and U5 (soldier
+  zoom p50 < 33 ms), roadmap Next #4. Real Chrome with WebGL2 on an idle
+  machine, window 1600x900, device pixel ratio 1:
+    npm run play
+    http://127.0.0.1:9000/tests/skirmish/browser/DrawMeasure.html?modes=strategic
+    http://127.0.0.1:9000/tests/skirmish/browser/DrawMeasure.html?squads=40&modes=soldier16,soldier12
+  The result is in the page and in window.__result ("draw" is the gate row).
+  ?nodraw replaces drawImage with a no-op to split choreography from blitting.
+-->
+<body><main class="battlefield"><canvas id="battlefield"></canvas></main><pre id="out">starting</pre>
+<script type="module" src="./DrawMeasure.ts"></script></body></html>
