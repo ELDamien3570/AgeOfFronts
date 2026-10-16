@@ -7,6 +7,7 @@ import type {
   MatchExecutor,
   MatchPublication,
 } from "../application/MatchExecutor";
+import { RequestDeadlines, requestTimeoutMs } from "./RequestDeadlines";
 
 const workerPath = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -34,9 +35,18 @@ export class ReservedMatchWorker implements MatchExecutor {
     {
       resolve: (value: ExecutorResult) => void;
       reject: (error: Error) => void;
-      timeout: ReturnType<typeof setTimeout>;
     }
   >();
+  /** Only the request the worker is processing runs a timer; queued ones start theirs when reached. */
+  private readonly deadlines = new RequestDeadlines<ExecutorRequest>((_id, request) => {
+    this.lifecycle.operation = request.type;
+    // The worker never gets to log a prepare it did not finish, so name the seed here.
+    if (request.type === "prepare")
+      console.error(JSON.stringify({ event: "map-prepare-timeout", mapId: request.settings.mapId,
+        size: request.settings.worldSize, seed: request.options.seed }));
+    this.fail(new Error(`Match executor timed out during ${request.type}`), "timeout");
+    void this.worker.terminate();
+  });
   constructor() {
     this.worker.on(
       "message",
@@ -49,7 +59,7 @@ export class ReservedMatchWorker implements MatchExecutor {
         const task = this.pending.get(message.id);
         if (!task) return;
         this.pending.delete(message.id);
-        clearTimeout(task.timeout);
+        this.deadlines.settle(message.id);
         if (message.error) task.reject(new Error(message.error));
         else task.resolve(message.result);
       },
@@ -65,16 +75,11 @@ export class ReservedMatchWorker implements MatchExecutor {
       return Promise.reject(new Error("Match executor backlog exceeded"));
     return new Promise<T>((resolve, reject) => {
       const id = this.nextId++;
-      const timeout = setTimeout(() => {
-        this.lifecycle.operation = request.type;
-        this.fail(new Error(`Match executor timed out during ${request.type}`), "timeout");
-        void this.worker.terminate();
-      }, 30_000);
       this.pending.set(id, {
         resolve: (value) => resolve(value as T),
         reject,
-        timeout,
       });
+      this.deadlines.enqueue(id, requestTimeoutMs(request.type), request);
       this.worker.postMessage({ id, request });
     });
   }
@@ -86,10 +91,8 @@ export class ReservedMatchWorker implements MatchExecutor {
     this.lifecycle.cause ??= cause;
     this.lifecycle.state = "stopped";
     this.closed = true;
-    for (const task of this.pending.values()) {
-      clearTimeout(task.timeout);
-      task.reject(error);
-    }
+    this.deadlines.clear();
+    for (const task of this.pending.values()) task.reject(error);
     this.pending.clear();
     this.publications.clear();
   }
