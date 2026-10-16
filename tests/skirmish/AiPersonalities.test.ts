@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { progressionStagger } from "../../src/skirmish/domain/Expansion";
+import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
   AI_PERSONALITIES,
@@ -127,8 +128,13 @@ describe("AI personality policies", () => {
       reserves = player.reserves,
       horses = stock.horses;
     const ids = new Set(game.squads.map((s) => s.id));
+    // The recruit now shares its tick with the AI progression pass (P26 stagger);
+    // hold the age advance and builds so the gold check isolates the paid recruit.
+    const apply = game.applyCommand.bind(game);
+    const spy = vi.spyOn(game, "applyCommand").mockImplementation((c) => c.type === "advance-age" || c.type === "build" ? "held for test" : apply(c));
     game.tick = 1;
     game.step();
+    spy.mockRestore();
     const job = game.recruitment.jobs.find(j => j.playerId === player.id)!;
     expect(job.kind).toBe("cavalry");
     expect(player.reserves).toBe(reserves - job.cost.reserves!);
@@ -153,7 +159,7 @@ describe("AI personality policies", () => {
         action: "offer",
       }),
     ).toBeNull();
-    game.tick = 5;
+    game.tick = progressionStagger(player.id) - 1;
     game.step();
     expect(game.expansion!.diplomacy.allied(1, player.id)).toBe(true);
     expect(game.expansion!.diplomacy.state.offers).toHaveLength(0);

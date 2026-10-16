@@ -66,7 +66,9 @@ describe("bounded frontier and river expansion",()=>{
     expect(game.paths.connected(map.ref(38,24),map.ref(41,24))).toBe(true);
     let crossings=0,landed=false;
     for(let tick=0;tick<800;tick++){
-      game.step();crossings=Math.max(crossings,afloat(game,tribe.id));
+      // The hop itself is bounded; after the bridgehead lands, ordinary frontier
+      // moves may also take short water routes (timing-dependent since P26).
+      game.step();if(!landed)crossings=Math.max(crossings,afloat(game,tribe.id));
       landed||=game.squads.some(s=>s.playerId===tribe.id&&!s.afloat&&map.x(game.tileOf(s))>=41);
     }
     expect(crossings).toBeGreaterThan(0);expect(crossings).toBeLessThanOrEqual(4);
