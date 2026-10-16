@@ -15,6 +15,8 @@ import {
   startingProgression,
 } from "../../src/skirmish/domain/Progression";
 import { Skirmish } from "../../src/skirmish/Simulation";
+import { advanceStatusText } from "../../src/skirmish/client/ProgressionText";
+import english from "../../resources/lang/en.json";
 
 const AGE: Age = "BronzeAge";
 const mandatory = (tree: string) =>
@@ -64,6 +66,11 @@ describe("age-up gate", () => {
     expect(player.gold).toBe(1e9);
     progression.states[player.id].completed.push(...mandatory("warfare").slice(0, W - 1).map(t => t.id));
     expect(game.applyCommand({ type: "advance-age", playerId: player.id })).toBeNull();
+  });
+  it("shows the gate and the ready state through translated text", () => {
+    expect(advanceStatusText(NATION_ADVANCE_TREES_MESSAGE)).toBe(english.skirmish_progression.advance_needs_warfare);
+    expect(advanceStatusText(null)).toBe(english.skirmish_progression.advance_ready);
+    expect(advanceStatusText("Needs 5 more gold")).toBe("Needs 5 more gold");
   });
   it("makes a racing AI research warfare when its two complete trees exclude it", () => {
     const terrain = new Uint8Array(64 * 64).fill(133);

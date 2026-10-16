@@ -12,6 +12,7 @@ import { AllianceRenewalView } from "./AllianceRenewalView";
 import { PeaceOfferView } from "./PeaceOfferView";
 import { AgeThemeView } from "./AgeThemeView";
 import { AGE_UI_THEMES } from "./AgeUiTheme";
+import { advanceStatusText } from "./ProgressionText";
 import { EmpireHudView } from "./EmpireHudView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { COLORS } from "./FactionColors";
@@ -555,7 +556,7 @@ export class EmpireView {
 
     const footer =
       this.panel === "technology"
-        ? `<div class="technology-progress"><b>${escape(vm.summary)}</b><p>${vm.progression.advancement ? `Advancing: ${Math.ceil(vm.progression.advancement.remainingTicks / TICKS_PER_SECOND)} sec` : (vm.advance.reason ?? "Two trees complete · ready to advance")}</p></div>${vm.advance.cost ? `<button data-advance="yes" ${vm.advance.reason ? "disabled" : ""}>Advance age · ${fmt(vm.advance.cost.gold)} gold · ${vm.advance.cost.ticks / TICKS_PER_SECOND}s</button>` : "<b>Final age</b>"}`
+        ? `<div class="technology-progress"><b>${escape(vm.summary)}</b><p>${vm.progression.advancement ? `Advancing: ${Math.ceil(vm.progression.advancement.remainingTicks / TICKS_PER_SECOND)} sec` : escape(advanceStatusText(vm.advance.reason))}</p></div>${vm.advance.cost ? `<button data-advance="yes" ${vm.advance.reason ? "disabled" : ""}>Advance age · ${fmt(vm.advance.cost.gold)} gold · ${vm.advance.cost.ticks / TICKS_PER_SECOND}s</button>` : "<b>Final age</b>"}`
         : "";
 
     if (!force && html + footer === this.fingerprint) return;
