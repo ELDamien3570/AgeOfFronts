@@ -216,7 +216,7 @@ describe("coordinator terminal messages (L11)", () => {
       expect(JSON.stringify(message)).not.toContain("reading");
     }
     expect(log).toHaveBeenCalled();
-  }, 15_000);
+  });
 });
 
 describe("failed match initialization (M7 / B-2)", () => {
@@ -238,5 +238,5 @@ describe("failed match initialization (M7 / B-2)", () => {
     expect(room!.ownerId).toBe(a.guestId);
     const directory = await first.next((m) => m.type === "directory" && m.state.rooms.some((candidate) => candidate.id === roomId));
     expect(directory.type === "directory" && directory.state.reservations).toHaveLength(0);
-  }, 15_000);
+  });
 });

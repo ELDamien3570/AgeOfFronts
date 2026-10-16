@@ -56,11 +56,11 @@ describe("public terminal messages", () => {
     } finally {
       await worker.close();
     }
-  }, 20_000);
+  });
   it("a worker terminated while idle reports a stopped lifecycle", async () => {
     const worker = new ReservedMatchWorker();
     expect(worker.lifecycle.state).toBe("running");
     await (worker as unknown as { worker: { terminate(): Promise<number> } }).worker.terminate();
     await vi.waitFor(() => expect(worker.lifecycle).toMatchObject({ state: "stopped", cause: "exit" }));
-  }, 20_000);
+  });
 });
