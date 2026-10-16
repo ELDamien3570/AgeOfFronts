@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import english from "../../resources/lang/en.json";
 import { serverText, unsolicitedErrorText } from "../../src/skirmish/client/ServerText";
+import { COMMAND_VALIDATION_FAILURE } from "../../src/skirmish/CommandApplications";
 import {
   MATCH_INITIALIZATION_FAILED_MESSAGE,
   MATCH_STOPPED_MESSAGE,
@@ -18,6 +19,10 @@ describe("fixed coordinator text", () => {
     // The English entries mirror the server constants exactly.
     expect(english.skirmish_server.match_stopped).toBe(MATCH_STOPPED_MESSAGE);
     expect(english.skirmish_server.match_initialization_failed).toBe(MATCH_INITIALIZATION_FAILED_MESSAGE);
+  });
+  it("translates the contained command-validation rejection", () => {
+    expect(serverText(COMMAND_VALIDATION_FAILURE)).toBe(english.skirmish_server.command_validation_failure);
+    expect(english.skirmish_server.command_validation_failure).toBe(COMMAND_VALIDATION_FAILURE);
   });
   it("passes other server text through unchanged", () => {
     expect(serverText("This lobby is full.")).toBe("This lobby is full.");

@@ -102,6 +102,7 @@ import { SpawnSelectionViewModel } from "./SpawnSelectionViewModel";
 import type { MatchOptions, SpawnState } from "../Protocol";
 
 import { TerrainViewModel } from "./TerrainViewModel";
+import { serverText } from "./ServerText";
 
 import "./style.css";
 import "./age-theme.css";
@@ -608,7 +609,7 @@ async function start(): Promise<void> {
       }
 
       if (message.type === "rejected") {
-        notify(message.message);
+        notify(serverText(message.message));
 
         return;
       }
@@ -843,7 +844,7 @@ async function startOnlineMatch(): Promise<void> {
   };
   session.onmessage = (event) => {
     if (event.data.type === "spawn") { showSpawn(event.data.state, onlineSpawnOptions!); return; }
-    if (event.data.type === "rejected") { notify(event.data.message); return; }
+    if (event.data.type === "rejected") { notify(serverText(event.data.message)); return; }
     if (event.data.type !== "state") return;
     renderer.spawn = undefined;
     element("spawn-selection").hidden = true;

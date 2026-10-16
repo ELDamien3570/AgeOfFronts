@@ -5,6 +5,7 @@ import {
   MATCH_STOPPED_MESSAGE,
 } from "../multiplayer/application/TerminalMessages";
 import type { ServerMessage } from "../multiplayer/Protocol";
+import { COMMAND_VALIDATION_FAILURE } from "../CommandApplications";
 
 type ServerTextKey = keyof typeof english.skirmish_server;
 
@@ -17,6 +18,7 @@ const KEYS: ReadonlyMap<string, ServerTextKey> = new Map<string, ServerTextKey>(
     "setup_not_enough_room",
   ],
   ["No viable land for starting camps", "setup_no_viable_land"],
+  [COMMAND_VALIDATION_FAILURE, "command_validation_failure"],
 ]);
 
 /** Text the lobby shows for an unsolicited (requestId-less) coordinator error,
