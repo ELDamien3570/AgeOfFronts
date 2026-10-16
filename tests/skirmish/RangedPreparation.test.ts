@@ -13,6 +13,7 @@ import {
 } from "../../src/skirmish/client/CombatPresentationTimeline";
 import { RangedAttackPresentation } from "../../src/skirmish/client/troops/RangedAttackPresentation";
 import type { ActorClip } from "../../src/skirmish/client/troops/TroopFormationModel";
+import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { UNIT, UNITS } from "../../src/skirmish/content/Units";
 import type { Aircraft } from "../../src/skirmish/domain/Definitions";
 import {
@@ -486,6 +487,104 @@ describe("ranged preparation survives order and target churn", () => {
     expect(attack(f)).toBeNull();
     f.battle.fight([]);
     expect(f.game.squad(f.source.id)!.lastAttackTick).toBe(first.releaseTick);
+  });
+  /** Ranged members march past a holding enemy, as an army or on individual
+   * move orders; returns shots in the first 32 member in-combat ticks. */
+  function marchPastFire(asArmy: boolean) {
+    const terrain = new Uint8Array(96 * 48).fill(133);
+    const map = new GameMapImpl(96, 48, terrain, terrain.length);
+    const game = new Skirmish(map, {
+      seed: 47,
+      aiCount: 1,
+      tribes: false,
+      runAi: false,
+      ruleset: "ages-v1",
+    });
+    const e = game.expansion!;
+    e.progression.states[1].age = "Modern";
+    e.progression.states[1].completed = TECHNOLOGIES.map((t) => t.id);
+    const own = game.squads.find((s) => s.playerId === 1)!;
+    const enemy = game.squads.find((s) => s.playerId === 2)!;
+    for (const s of [...game.squads])
+      if (s.id !== own.id && s.id !== enemy.id) game.removeSquad(s.id);
+    const place = (id: number, unitId: string, x: number, y: number) => {
+      const u = UNIT.get(unitId)!;
+      game.updateSquad(id, {
+        definitionId: unitId,
+        kind: u.line,
+        troops: u.formationRecipe!.capacity,
+        manpower: createManpower(u),
+        formation: { ...createFormation(unitId), facing: TURN / 4 },
+        x: x * FIXED,
+        y: y * FIXED,
+        order: { type: "hold" },
+        moved: false,
+        weaponState: undefined,
+        path: [],
+        queuedOrders: [],
+      });
+    };
+    const members = [own.id];
+    for (let i = 1; i < 3; i++)
+      members.push(game.addSquad({ ...own, id: game.allocateId() }).id);
+    members.forEach((id, i) => place(id, "modern-infantry", 12, 18 + i * 2));
+    place(enemy.id, "modern-heavycavalry", 40, 27);
+    if (asArmy) {
+      expect(
+        game.applyCommand({ type: "create-army", playerId: 1, squadIds: members }),
+      ).toBeNull();
+      const armyId = e.armies.armies[0]!.id;
+      expect(
+        game.applyCommand({
+          type: "army-order",
+          playerId: 1,
+          armyId,
+          order: { type: "move", tile: map.ref(75, 20) },
+        }),
+      ).toBeNull();
+    } else
+      expect(
+        game.applyCommand({
+          type: "order",
+          playerId: 1,
+          squadIds: members,
+          order: { type: "move", tile: map.ref(75, 20) },
+        }),
+      ).toBeNull();
+    let combat = 0,
+      shots = 0,
+      restarts = 0;
+    const aims = new Map<number, { startTick: number; phase: string }>();
+    for (let t = 0; t < 1200 && combat < 32; t++) {
+      const before = members.map((id) => game.squad(id)?.lastAttackTick);
+      game.step();
+      members.forEach((id, i) => {
+        const s = game.squad(id);
+        if (!s || combat >= 32) return;
+        const fired = s.lastAttackTick !== before[i];
+        const action = s.weaponState?.rangedAction;
+        if (!fired && !action) return;
+        combat++;
+        if (fired) shots++;
+        // An aim replaced before it ever released was restarted by churn.
+        const last = aims.get(id);
+        if (action && last && last.phase === "preparing" && action.startTick !== last.startTick)
+          restarts++;
+        if (action) aims.set(id, { startTick: action.startTick, phase: action.phase });
+      });
+    }
+    return { combat, shots, restarts };
+  }
+  it("keeps aims while an army marches its ranged members under fire (C10)", () => {
+    const individual = marchPastFire(false),
+      army = marchPastFire(true);
+    expect(individual.combat).toBe(32);
+    expect(army.combat).toBe(32);
+    expect(individual.shots).toBeGreaterThan(0);
+    expect(individual.restarts).toBe(0);
+    // Re-slotting (setArmyMove), slot nudges and slot-arrival holds keep aims.
+    expect(army.restarts).toBe(0);
+    expect(army.shots).toBeGreaterThanOrEqual(individual.shots);
   });
   it("still restarts the aim when a different order replaces the attack", () => {
     const f = scene("modern-infantry");
