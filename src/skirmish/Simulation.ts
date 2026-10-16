@@ -5135,6 +5135,12 @@ export class Skirmish {
         );
       const raids = new Map<number, Squad[]>();
       const marches=new Map<string,Squad[]>();
+      // P6: enemies with no raidable squad this think. The predicate below
+      // does not read the origin, and nothing in this loop changes an enemy
+      // squad's troops, embarkation or this player's pursue/enter policy (it
+      // only orders this player's own squads), so a miss holds for every
+      // later raider; a miss would otherwise rescan the whole spatial grid.
+      const raidMisses = new Set<number>();
       if(!recovering && (this.tick+player.id)%secondsToTicks(3)===0)this.expandAcrossRiver(player,own);
       for (let i = 0; i < own.length; i++) {
         const squad = own[i];
@@ -5294,10 +5300,11 @@ export class Skirmish {
           const remaining = conquestBuildings(this.buildingIndex.byOwner(enemy.id), enemy.ai)
             .filter(b => this.aiFootprintAllowed(player.id, b.tile))
             .sort((a,b) => this.map.euclideanDistSquared(current,a.tile) - this.map.euclideanDistSquared(current,b.tile) || a.id - b.id);
-          const lastSquad = !remaining.length ? this.spatial.nearest(squad.x, squad.y, candidate =>
+          const lastSquad = !remaining.length && !raidMisses.has(enemy.id) ? this.spatial.nearest(squad.x, squad.y, candidate =>
             candidate.troops > 0 && candidate.playerId === enemy.id && candidate.embarkedOn === null &&
             this.aiCanPursue(player.id, enemy.id, this.tileOf(candidate)) &&
             this.aiCanEnter(player.id,this.tileOf(candidate))) : undefined;
+          if (!remaining.length && !lastSquad) raidMisses.add(enemy.id);
           const objective = remaining[0]?.tile ?? (lastSquad ? this.tileOf(lastSquad) : enemy.base);
           goal = this.formationTile(
             objective,
