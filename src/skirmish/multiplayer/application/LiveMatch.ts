@@ -3,6 +3,7 @@ import { DEFAULT_AI_POLICIES } from "../../content/AiPolicies";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
 import {ClientStateFlow} from "./ClientStateFlow";
+import { publicStopMessage } from "./TerminalMessages";
 import type {ClientBaseline} from "./MatchExecutor";
 import type { EmpireProfile } from "../../lobby/EmpireProfile";
 import type { Command } from "../../Protocol";
@@ -670,7 +671,7 @@ export class LiveMatch {
     const dispatch = () => {
       this.tickTimer = undefined;
       void this.advance().catch((error) =>
-        this.end(`Match stopped: ${(error as Error).message}`));
+        this.end(publicStopMessage(error)));
     };
     const delay = Math.max(0, this.nextTickAt - this.now());
     if (delay === 0) {

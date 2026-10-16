@@ -15,6 +15,11 @@ import {
 } from "../application/MatchExecutor";
 import { PublicationQueue } from "../application/PublicationQueue";
 import { RecoveryBaselineCache } from "../application/RecoveryBaselineCache";
+import {
+  publicExecutorError,
+  SIMULATION_RECOVERY_FAILED_MESSAGE,
+  SNAPSHOT_PUBLICATION_FAILED_MESSAGE,
+} from "../application/TerminalMessages";
 import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
 import { secondsToTicks } from "../../Protocol";
 import type { SnapshotPacket } from "../../Protocol";
@@ -81,7 +86,10 @@ const recoveryBaseline = () => baselines.get(canonicalVersion, () => {
 });
 const publications = new PublicationQueue(encodePacket,
   (tick, packet) => diagnostics.measure("transfer", () => parentPort!.postMessage({ publication: { tick, packet } })),
-  error => parentPort!.postMessage({ fatal: `Snapshot publication failed: ${error.message}` }));
+  error => {
+    console.error("Snapshot publication failed", error);
+    parentPort!.postMessage({ fatal: SNAPSHOT_PUBLICATION_FAILED_MESSAGE });
+  });
 const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadBytes: number): MatchDiagnostics => {
   const m = match!, memory = process.memoryUsage(), planning = m.routePlanner.diagnostics;
   return { tick: m.tick, timings: diagnostics.snapshot(), lifetimeTimings: diagnostics.lifetimeSnapshot(), retainedBytes: diagnostics.retainedBytes,
@@ -303,14 +311,16 @@ parentPort.on(
         }
         diagnostics.measure("transfer", () => parentPort!.postMessage({ id: message.id, result }));
       } catch (error) {
-        // Retain the stack and operation on the server; client transport keeps
-        // the safe message and never receives private stack details.
+        // Retain the stack, operation and raw text on the server. Clients
+        // receive only deliberate messages or one fixed string (L11).
         console.error("Match executor operation failed",message.request.type,error);
-        if (match?.failureReason) parentPort!.postMessage({ fatal: `Simulation recovery failed: ${match.failureReason}`, failureCause: "recovery" });
+        if (match?.failureReason) {
+          console.error("Simulation recovery failed", match.failureReason);
+          parentPort!.postMessage({ fatal: SIMULATION_RECOVERY_FAILED_MESSAGE, failureCause: "recovery" });
+        }
         parentPort!.postMessage({
           id: message.id,
-          error:
-            error instanceof Error ? error.message : "Match executor failed",
+          error: publicExecutorError(error),
         });
       }
     });

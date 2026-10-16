@@ -9,6 +9,7 @@ import { join, normalize, resolve } from "node:path";
 import { WebSocket, WebSocketServer } from "ws";
 import { DEFAULT_EMPIRE_PROFILE } from "../../lobby/EmpireProfile";
 import { LiveMatch, type LiveMatchOptions } from "../application/LiveMatch";
+import { publicStopMessage } from "../application/TerminalMessages";
 import type { MatchExecutor } from "../application/MatchExecutor";
 import { RoomCoordinator } from "../domain/RoomCoordinator";
 import { clientMessageSchema, type ServerMessage } from "../Protocol";
@@ -483,7 +484,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     }
     for (const match of matches.values())
       void match.advance().catch((error) => {
-        void match.end(`Match stopped: ${(error as Error).message}`);
+        void match.end(publicStopMessage(error));
       });
     if (JSON.stringify(rooms.snapshot()) !== before) {
       options.store.write(rooms.snapshot());
