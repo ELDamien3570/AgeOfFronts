@@ -66,6 +66,9 @@ let runtime: { map: RuntimeMap; options: ConstructorParameters<typeof Skirmish>[
 // Tests only (ReservedMatchWorker testFaultTick): one injected throw when the
 // simulation steps from this tick, so the real rollback path can be exercised.
 const testFaultTick = (workerData as { testFaultTick?: number } | undefined)?.testFaultTick;
+// Tests only (ReservedMatchWorker testPrepareFailures): the first N map
+// generations throw, to exercise the real prepare retry (R2-L7).
+let testPrepareFailures = (workerData as { testPrepareFailures?: number } | undefined)?.testPrepareFailures ?? 0;
 let testFaultInjected = false;
 const attach = (target: Skirmish) => {
   if (testFaultTick !== undefined) {
@@ -206,7 +209,10 @@ parentPort.on(
             // A generator invariant failure retries with a derived seed; the
             // seed that worked is in plan.prepared.options (R2-L7).
             const plan = await preparePlan(request, {
-              load: (settings, seed) => loadServerMap(settings, undefined, seed),
+              load: (settings, seed) => {
+                if (testPrepareFailures > 0) { testPrepareFailures--; throw new Error("Injected generator failure"); }
+                return loadServerMap(settings, undefined, seed);
+              },
               identity: mapIdentity,
               makeMap,
               now: () => performance.now(),

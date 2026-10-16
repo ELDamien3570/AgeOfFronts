@@ -2,8 +2,11 @@ import {TECHNOLOGIES} from '../../src/skirmish/content/Technology';
 import { describe, expect, it, vi } from "vitest";
 import { RUNTIME_PHASES } from "../../src/skirmish/RuntimeDiagnostics";
 import { COMMAND_VALIDATION_FAILURE } from "../../src/skirmish/CommandApplications";
+import { deriveRetrySeed } from "../../src/skirmish/multiplayer/application/PreparePlan";
+import { mapIdentity } from "../../src/skirmish/multiplayer/application/MapIdentity";
+import { loadServerMap } from "../../src/skirmish/multiplayer/infrastructure/ServerMap";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
-import type { MatchAdvance } from "../../src/skirmish/multiplayer/application/MatchExecutor";
+import type { MatchAdvance, PreparedMatch } from "../../src/skirmish/multiplayer/application/MatchExecutor";
 import { ReservedMatchWorker } from "../../src/skirmish/multiplayer/infrastructure/ReservedMatchWorker";
 import type { EncodedState } from "../../src/skirmish/multiplayer/StateCodec";
 import { decodeState } from "../../src/skirmish/multiplayer/StateCodec";
@@ -208,6 +211,21 @@ describe("reserved authoritative worker", () => {
       await worker.close();
     }
   }, 60_000);
+  it("retries a failed map generation with the derived seed and prepares that map (R2-L7)", async () => {
+    const worker = new ReservedMatchWorker({ testPrepareFailures: 1 });
+    try {
+      const settings = { ...defaultLobbySettings("migration", 250), aiCount: 1, tribeCount: 0 };
+      const options = { seed: 1234, aiCount: 1, humanNames: ["A", "B"], ruleset: "ages-v1" as const, tribes: false };
+      const prepared = await worker.request<PreparedMatch>({ type: "prepare", settings, options });
+      // The first attempt threw; the second used deriveRetrySeed(1234), and the
+      // map it prepared is the one that seed generates.
+      expect(prepared.options.seed).toBe(deriveRetrySeed(1234));
+      const expected = await loadServerMap(settings, undefined, deriveRetrySeed(1234));
+      expect(prepared.mapHash).toBe(await mapIdentity(expected.map));
+    } finally {
+      await worker.close();
+    }
+  }, 120_000);
   it("exports live heap after a forced collection when the operator opts in (I-0)", async () => {
     vi.stubEnv("SKIRMISH_LIVE_HEAP", "1");
     const worker = new ReservedMatchWorker();

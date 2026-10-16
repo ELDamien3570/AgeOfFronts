@@ -64,16 +64,19 @@ export class ReservedMatchWorker implements MatchExecutor {
     this.fail(new Error(`Match executor timed out during ${request.type}`), "timeout");
     void this.worker.terminate();
   });
-  /** `testFaultTick` (tests only): the worker's simulation throws once when
-   * it steps from that tick, to exercise the real rollback path. */
-  constructor(options: { testFaultTick?: number } = {}) {
+  /** Tests only: `testFaultTick` makes the worker's simulation throw once
+   * when it steps from that tick (the real rollback path);
+   * `testPrepareFailures` makes the first N map generations throw (the real
+   * prepare retry). */
+  constructor(options: { testFaultTick?: number; testPrepareFailures?: number } = {}) {
     this.worker = new Worker(
       workerPath,
       {
         execArgv: ["--import", "tsx"],
         resourceLimits: { maxOldGenerationSizeMb: 384 },
         workerData: { publicationPort: this.channel.port2, liveHeap: liveHeapRequested(),
-          ...(options.testFaultTick === undefined ? {} : { testFaultTick: options.testFaultTick }) },
+          ...(options.testFaultTick === undefined ? {} : { testFaultTick: options.testFaultTick }),
+          ...(options.testPrepareFailures === undefined ? {} : { testPrepareFailures: options.testPrepareFailures }) },
         transferList: [this.channel.port2],
       },
     );
