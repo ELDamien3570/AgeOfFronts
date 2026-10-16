@@ -76,9 +76,14 @@ describe("N6 single publication gate (Design B)", () => {
     expect(f.published.length).toBeGreaterThanOrEqual(24);
     const states = f.messages.filter(m => m.type === "match-state");
     expect(states.length).toBe(f.published.length * 2);
-    // Never two publications closer than the gate interval in simulation time.
-    for (let i = 1; i < f.published.length; i++)
-      expect((f.published[i] - f.published[i - 1]) * TICK_MS).toBeGreaterThanOrEqual(TICK_MS);
+    // Each publication takes its own 200 ms gate slot in simulation time. The
+    // slots are phase-locked to 125 ms ticks, so one gap may be a single tick,
+    // but any k gaps span more than k slots minus one tick. Publishing on every
+    // command (every tick) breaks this for k >= 2.
+    expect(PUBLICATION_MIN_INTERVAL_MS).toBeGreaterThan(TICK_MS);
+    for (let i = 0; i < f.published.length; i++)
+      for (let j = i + 1; j < f.published.length; j++)
+        expect((f.published[j] - f.published[i]) * TICK_MS).toBeGreaterThan((j - i) * PUBLICATION_MIN_INTERVAL_MS - TICK_MS);
     await f.match.end("cadence tested");
   });
 
