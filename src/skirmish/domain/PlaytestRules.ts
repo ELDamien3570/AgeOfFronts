@@ -1,4 +1,7 @@
-import { AI_DIFFICULTIES, secondsToTicks, type AiDifficulty, type MatchOptions } from "../Protocol";
+import { AI_DIFFICULTIES, secondsToTicks, type AiDifficulty, type MatchOptions, type Player } from "../Protocol";
+import type { AiDifficultyRules } from "../content/AiDifficulty";
+import { tribeMayCampaignAgainstRegular, type TribeOpening } from "../FactionRules";
+import type { Age } from "./Definitions";
 
 /** Playtest rule options (13 R1, R2, R4). Every field is optional; absence is
  * the historical behaviour, so saved matches and fixtures replay unchanged. */
@@ -36,4 +39,17 @@ export function startProtectionUntil(options: Pick<MatchOptions, "startProtectio
 /** Absent difficulty is today's AI, which the table calls "hard". */
 export function aiDifficultyOf(options: Pick<MatchOptions, "aiDifficulty"> | undefined): AiDifficulty {
   return options?.aiDifficulty ?? "hard";
+}
+
+/** The playtest filters on an AI campaign candidate (AiOperations scan):
+ * 13 R1.3, a tribe campaigns against a regular faction only from Bronze Age and
+ * minute 8 (with the playtest tribe opening); 13 R4, at most
+ * `humanCampaignCap` AI campaigns press one human seat at a time. */
+export function playtestCampaignAllowed(c: {
+  actor: Pick<Player, "kind">; rival: Pick<Player, "kind">; humanRival: boolean; commitments: number;
+  tick: number; rules: AiDifficultyRules; opening: TribeOpening; actorAge: Age;
+}): boolean {
+  if (c.actor.kind === "tribe" && c.rival.kind === "regular" && !tribeMayCampaignAgainstRegular(c.opening, c.actorAge, c.tick))
+    return false;
+  return !c.humanRival || c.commitments < c.rules.humanCampaignCap;
 }

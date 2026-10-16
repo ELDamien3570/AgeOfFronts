@@ -8,6 +8,9 @@ import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
 import type { Player } from "../Protocol";
 import type { Expansion } from "./Expansion";
+import { AI_DIFFICULTY, aiRaidAfterTicks } from "../content/AiDifficulty";
+import { aiDifficultyOf, isHumanSeat } from "./PlaytestRules";
+import { playtestCampaignAllowed } from "./PlaytestRules";
 
 export interface ArmyTheatre {id:string;purpose:'offense'|'defense'|'screen';tile:number;target?:number;priority:number;desiredSquads:number}
 export type OperationPhase = "peace" | "preparing" | "war" | "recovery";
@@ -409,7 +412,8 @@ export class AiOperations {
         else r.nextThink = tick + secondsToTicks(3);
         continue;
       }
-      if (defending || tick < (player.kind === "tribe" ? secondsToTicks(30) : profile.raidAfterTicks)) {
+      const level = AI_DIFFICULTY[aiDifficultyOf(world.options)];
+      if (defending || tick < (player.kind === "tribe" ? secondsToTicks(30) : aiRaidAfterTicks(profile.raidAfterTicks, level))) {
         r.nextThink = tick + secondsToTicks(3) + player.id % TICKS_PER_SECOND; continue;
       }
       const expanding=diplomacy.raids&&!r.threats.length&&world.hasUnclaimedFrontier?.(player.id);
@@ -422,6 +426,9 @@ export class AiOperations {
         const commitments = [...this.records.values()].filter(other => other.target === rival.id && ["preparing", "war"].includes(other.phase)).length;
         const advantage = combatAdvantage(composition(player.id), composition(rival.id));
         const tribalActor = player.kind === "tribe";
+        const humanRival = isHumanSeat(world.options ?? {}, rival.id);
+        if (!playtestCampaignAllowed({ actor: player, rival, humanRival, commitments, tick, rules: level,
+          opening: world.options?.tribeOpening, actorAge: this.expansion.progression.states[player.id]?.age ?? "StoneAge" })) continue;
         // A tribe's first promotion route is peaceful land growth. Once boxed
         // in it may prepare against either a tribe or a vulnerable nation.
         if (tribalActor && (!blocked || advantage * ((world.squadCapacity(player) - 1) / Math.max(1, r.readiness.squads)) ** 2 < 1.1)) continue;
@@ -430,8 +437,8 @@ export class AiOperations {
           diplomacy.state.wars?.some(w=>w.initiator===rival.id&&(w.a===player.id||w.b===player.id))||
           diplomacy.state.embargoes?.some(raid=>raid.initiator===rival.id&&raid.victim===player.id&&diplomacy.embargo(player.id,rival.id)));
         if(!tribeExpansion && (strength < 2 || r.readiness.reason !== "ready")) continue;
-        if(expanding&&!retaliating&&!tribeExpansion&&advantage<(profile.id==="conqueror"?1.6:2.5))continue;
-        const required = ["warden","builder","diplomat"].includes(profile.id) ? 1.6 : profile.id === "conqueror" ? 1.1 : 1.25;
+        if(expanding&&!retaliating&&!tribeExpansion&&advantage<Math.max(profile.id==="conqueror"?1.6:2.5,humanRival?level.expandingVetoVsHuman:0))continue;
+        const required = (["warden","builder","diplomat"].includes(profile.id) ? 1.6 : profile.id === "conqueror" ? 1.1 : 1.25) + level.requiredAdvantageAdd;
         // Healthy parity-sized forces still commit; small forces need a clear
         // equipment/strength advantage instead of waiting for eight squads.
         if (!tribeExpansion && advantage < required && !(advantage >= .9 && strength >= profile.minimumRaidSquads)) continue;

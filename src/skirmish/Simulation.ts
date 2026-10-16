@@ -96,7 +96,8 @@ import {
   TRIBE_BASE_RADIUS,
   TRIBE_INTERCEPT_RANGE,
   TRIBE_PURSUIT_RANGE,
-  TRIBE_STARTING_SQUADS,
+  tribeStartingSquads,
+  PLAYTEST_TRIBE_OPENING,
   TRIBE_STARTING_RESERVES,
   TRIBE_STARTING_GOLD,
   matchTribeCount,
@@ -177,8 +178,9 @@ import { startingCamp } from "./domain/StartingCamp";
 import { TRIBE_CITY_BASE_RADIUS } from "./FactionRules";
 import { firingPosition } from "./TacticalRoutes";
 import { terrainSpeed } from "./Terrain";
-import { validatePlaytestOptions, isHumanSeat, timeLimitTick, startProtectionUntil } from "./domain/PlaytestRules";
+import { validatePlaytestOptions, isHumanSeat, timeLimitTick, startProtectionUntil, aiDifficultyOf } from "./domain/PlaytestRules";
 import { victoryOutcome, type VictoryCandidate } from "./domain/Victory";
+import { AI_DIFFICULTY, aiRaidAfterTicks } from "./content/AiDifficulty";
 
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
@@ -1177,7 +1179,7 @@ export class Skirmish {
       const city=this.addBuilding({id:this.nextId++,playerId:player.id,type:"city",tile:camp.city,remainingTicks:0,
         age:cityAge,maxHealth:buildingIntegrity("city",cityAge),health:buildingIntegrity("city",cityAge)});
       forestOf(this.map)?.occupy(this.map,city.tile,"city");
-      this.deployStartingSquads(player, kind === "tribe" ? TRIBE_STARTING_SQUADS : 3, this.expansion.startingAge);
+      this.deployStartingSquads(player, kind === "tribe" ? tribeStartingSquads(this.options.tribeOpening) : 3, this.expansion.startingAge);
       return;
     }
     const barracksTile = this.ownedLandNearest(player.id, base, 256).find(tile =>
@@ -1187,7 +1189,7 @@ export class Skirmish {
       id: this.nextId++, playerId: player.id, type: "barracks", tile: barracksTile, remainingTicks: 0,
     });
     forestOf(this.map)?.occupy(this.map, barracks.tile, "barracks");
-    for (let i = 0; i < (kind === "tribe" ? TRIBE_STARTING_SQUADS : 4); i++)
+    for (let i = 0; i < (kind === "tribe" ? tribeStartingSquads(this.options.tribeOpening) : 4); i++)
       this.recruit(player, barracks.id, undefined, kind === "tribe" ? "complete" : "instant");
     if (kind === "tribe") {
       player.reserves = this.expansion ? reserveConversion(TRIBE_STARTING_RESERVES) : TRIBE_STARTING_RESERVES;
@@ -1238,7 +1240,7 @@ export class Skirmish {
     return this.players.find((p) => p.id === id);
   }
   squadCapacity(player: Player): number {
-    return squadCap(player, this.expansion?.progression.states[player.id]?.age);
+    return squadCap(player, this.expansion?.progression.states[player.id]?.age, this.options.tribeOpening);
   }
   squad(id: number): Squad | undefined { return this.squadEntities.get(id); }
   ship(id: number): Ship | undefined { return this.shipEntities.get(id); }
@@ -3806,7 +3808,11 @@ export class Skirmish {
         const cities = this.buildingIndex.byType(player.id, "city").filter(b => !b.remainingTicks);
         const amount = Math.max(
           0,
-          (player.kind === "tribe" ? 40 : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
+          (player.kind === "tribe"
+            ? this.options.tribeOpening
+              ? PLAYTEST_TRIBE_OPENING.reserveIncomeMultiple * baseReserveIncome(this.expansion.progression.states[player.id].age)
+              : 40
+            : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
             cities.reduce(
               (n, b) => n + cityReserveIncome(b.age ?? "StoneAge",this.expansion!.progression.states[player.id].completed),
               0,
@@ -5283,7 +5289,7 @@ export class Skirmish {
           enemyPlayers.length &&
           (pushing || (!homeNeedsLand && own.length >= (this.expansion?.operations.offensiveTarget(player.id)!==undefined ? 2 : personality.minimumRaidSquads))) &&
           (committedInvasion ? i < own.length - invasionReserve : i % 8 < personality.raidSlots) &&
-          this.tick > (player.kind === "tribe" ? secondsToTicks(30) : personality.raidAfterTicks)
+          this.tick > (player.kind === "tribe" ? secondsToTicks(30) : aiRaidAfterTicks(personality.raidAfterTicks, AI_DIFFICULTY[aiDifficultyOf(this.options)]))
         ) {
           const enemy = enemyPlayers.reduce((a, b) =>
             this.map.euclideanDistSquared(current, a.base) <
