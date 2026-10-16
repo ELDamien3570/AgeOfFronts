@@ -129,7 +129,7 @@ export interface MatchDiagnostics {
     preparation?: { pending: number; work: number; completed: number; rejected: number; restarts: number; coalesced: number; superseded: number; discardedWork: number };
     work?: number; completed?: number; superseded?: number; admissionDeferred?: number;
     cohorts?: PlannerCohort[]; };
-  paths?: { land: PathResidency; water: PathResidency };
+  paths?: { land: PathResidency; water: PathResidency; amphibious?: PathResidency };
   domainWork?: { spatial?: { rebuilds: number; rows: number; hits: number };
     trade?: { spawnActorReads: number; quotaActorReads: number; playerReads: number; spawned: number; routeRequests: number; routeHits: number; marketReads: number } };
   /** RSS is shared process memory; the other fields are current worker usage. */
@@ -145,5 +145,7 @@ export interface PlannerCohort {
 }
 export interface PathResidency {
   routes: number; routeTiles: number; routeBytes: number;
+  /** False while a deferred (amphibious) hierarchy has not been needed. */
+  hierarchyBuilt?: boolean;
   hierarchy: { clusters: number; portals: number; startTrees: number; treeBytes: number };
 }

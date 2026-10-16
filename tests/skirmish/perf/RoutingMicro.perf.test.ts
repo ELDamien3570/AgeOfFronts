@@ -110,4 +110,25 @@ describe.runIf(enabled)("routing micro-benchmarks (opt-in)", () => {
     // About 10.7 min at 4 trees a tick; about 2.9 min at PATH_WARM_TREES = 15.
     expect(minutes(gates.water)).toBeLessThan(3.5);
   }, 600_000);
+
+  it("B5 (D6 probe): first lazy amphibious hierarchy build on Mig 1000 stays under the 250 ms tick gate", async () => {
+    const game = await liveMatch("migration", 1272661902, 1000), paths = game.amphibiousPaths!;
+    expect(paths.hierarchyBuilt).toBe(false);
+    const t0 = performance.now();
+    const portals = paths.hierarchyPortals; // builds the hierarchy (clusters and portals, no trees)
+    const buildMs = performance.now() - t0;
+    // The first long amphibious search on top: a few crossing trees.
+    const home = game.player(1)!.base, map = game.map;
+    let goal = -1;
+    for (let x = map.width() - 20; x > 0 && goal < 0; x -= 13)
+      for (let y = 20; y < map.height() - 20 && goal < 0; y += 13) {
+        const tile = map.ref(x, y);
+        if (paths.connected(home, tile) && map.manhattanDist(home, tile) > 300) goal = tile;
+      }
+    const t1 = performance.now(), route = goal >= 0 ? paths.find(home, goal) : null, findMs = performance.now() - t1;
+    console.log(`B5 Mig 1000 amphibious hierarchy: build ${buildMs.toFixed(1)} ms (${portals} portals), first long find ${findMs.toFixed(1)} ms ` +
+      `(${route?.length ?? 0} tiles), tree bytes ${paths.residency.hierarchy.treeBytes}`);
+    // Owner decision D6: if this exceeds 250 ms, build in prepare instead.
+    expect(buildMs).toBeLessThan(250);
+  }, 600_000);
 });

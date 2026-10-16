@@ -26,9 +26,26 @@ class TilePaths {
   private generation = 0;
   private readonly neighbors = new Array<number>(8);
   private readonly topology: PathTopology;
-  private readonly hierarchy?: HierarchicalPaths;
+  /** Whether this graph is large enough for a hierarchy at all. */
+  private readonly hasHierarchy: boolean;
+  private builtHierarchy?: HierarchicalPaths;
+  /** Shared-tree pins requested before a lazy hierarchy existed. */
+  private pendingPins?: number[];
+  /** The hierarchy, built on first use when construction was deferred
+   * (R2-P25). Every caller that only reads state checks `builtHierarchy`. */
+  private get hierarchy(): HierarchicalPaths | undefined {
+    if (!this.hasHierarchy) return undefined;
+    if (!this.builtHierarchy) {
+      this.builtHierarchy = new HierarchicalPaths(this.topology);
+      if (this.pendingPins) this.builtHierarchy.pinShared(this.pendingPins);
+      this.pendingPins = undefined;
+    }
+    return this.builtHierarchy;
+  }
+  /** False while a deferred hierarchy has not been needed yet. */
+  get hierarchyBuilt(): boolean { return !!this.builtHierarchy; }
   readonly component: Int32Array;
-  readonly largestComponent: number[];
+  readonly largestComponent: Int32Array;
   private readonly size: number;
   private costRevision = 0;
   private exactWork = 0;
@@ -43,13 +60,15 @@ class TilePaths {
   private readonly waterColumns?: Int32Array[];
   get residency() {
     return { routes: this.routes.size, routeTiles: this.routeTiles, routeBytes: this.routeTiles * Int32Array.BYTES_PER_ELEMENT,
-      hierarchy: this.hierarchy?.residency ?? { clusters: 0, portals: 0, startTrees: 0, treeBytes: 0 } };
+      hierarchyBuilt: !!this.builtHierarchy,
+      hierarchy: this.builtHierarchy?.residency ?? { clusters: 0, portals: 0, startTrees: 0, treeBytes: 0 } };
   }
 
   constructor(
     protected readonly map: GameMap,
     medium: PathMedium | boolean = false,
     prepare = true,
+    deferHierarchy = false,
   ) {
     const size = map.width() * map.height();
     this.size = size;
@@ -61,7 +80,7 @@ class TilePaths {
     this.closed = new Uint32Array(size);
     this.component = new Int32Array(size);
     const queue = new Int32Array(size);
-    let largest: number[] = [];
+    let largest = new Int32Array(0);
     let id = 0;
     for (let tile = 0; tile < size; tile++) {
       if (!this.walkable(tile) || this.component[tile] !== 0) continue;
@@ -80,9 +99,9 @@ class TilePaths {
           queue[tail++] = next;
         }
       }
-      if (tail > largest.length) largest = Array.from(queue.subarray(0, tail));
+      if (tail > largest.length) largest = queue.slice(0, tail);
     }
-    this.largestComponent = largest.sort((a, b) => a - b);
+    this.largestComponent = largest.sort();
     // Immutable, compressed water runs certify complete axis legs in logarithmic
     // time. Obstructed candidates never spend hundreds of live ticks discovering
     // a coast that was already known when the navigation topology was built.
@@ -90,9 +109,10 @@ class TilePaths {
       this.waterRows = this.buildWaterRuns(true);
       this.waterColumns = this.buildWaterRuns(false);
     }
-    if (size > HIERARCHY_MIN_CELLS) {
-      this.hierarchy = new HierarchicalPaths(this.topology);
-      if (prepare) this.hierarchy.prepare();
+    this.hasHierarchy = size > HIERARCHY_MIN_CELLS;
+    if (this.hasHierarchy && (prepare || !deferHierarchy)) {
+      const hierarchy = this.hierarchy!;
+      if (prepare) hierarchy.prepare();
     }
   }
   private buildWaterRuns(horizontal: boolean): Int32Array[] {
@@ -132,7 +152,7 @@ class TilePaths {
 
   /** Deterministic search effort so far; budgets use this, never wall time. */
   get work(): number {
-    return this.exactWork + this.replayedWork + (this.hierarchy?.work ?? 0);
+    return this.exactWork + this.replayedWork + (this.builtHierarchy?.work ?? 0);
   }
 
   walkable(tile: number): boolean {
@@ -207,20 +227,26 @@ class TilePaths {
    * search; the caller resumes its own resumable search instead. Effort is
    * reported through `work`. */
   hierarchical(start: number, goal: number, blocked?: (tile: number) => boolean): number[] | null {
-    if (!this.hierarchy || !this.connected(start, goal) || blocked?.(start) || blocked?.(goal)) return null;
-    const route = this.hierarchy.find(start, goal);
+    if (!this.hasHierarchy || !this.connected(start, goal) || blocked?.(start) || blocked?.(goal)) return null;
+    const route = this.hierarchy!.find(start, goal);
     if (!route || !route.length || route[route.length - 1] !== goal) return null;
     return this.routeClear([start, ...route], blocked) ? route : null;
   }
   beginCorridor(start:number,goal:number,nodes:Map<number,number>):CorridorState|undefined {
-    return this.hierarchy && this.connected(start,goal)?this.hierarchy.begin(start,goal,this.revision,nodes):undefined;
+    return this.hasHierarchy && this.connected(start,goal)?this.hierarchy!.begin(start,goal,this.revision,nodes):undefined;
   }
-  sharedPreparationCheckpoint(): SharedPreparationCheckpoint | undefined { return this.hierarchy?.sharedCheckpoint(); }
+  /** Undefined while a deferred hierarchy is unbuilt: it holds no shared state. */
+  sharedPreparationCheckpoint(): SharedPreparationCheckpoint | undefined { return this.builtHierarchy?.sharedCheckpoint(); }
   restoreSharedPreparation(saved?: SharedPreparationCheckpoint): void {
-    if (saved && !this.hierarchy) throw Error("Missing shared preparation topology");
-    this.hierarchy?.restoreShared(saved);
+    if (saved && !this.hasHierarchy) throw Error("Missing shared preparation topology");
+    // A saved preparation needs the hierarchy; an empty one leaves it unbuilt.
+    (saved ? this.hierarchy : this.builtHierarchy)?.restoreShared(saved);
+    if (!this.builtHierarchy) this.pendingPins = undefined;
   }
-  pinSharedPreparation(origins: Iterable<number>): void { this.hierarchy?.pinShared(origins); }
+  pinSharedPreparation(origins: Iterable<number>): void {
+    if (this.builtHierarchy) this.builtHierarchy.pinShared(origins);
+    else if (this.hasHierarchy) this.pendingPins = [...origins];
+  }
   stepCorridor(state:CorridorState,workspace:PlanningWorkspace,budget:number,blocked?: (tile:number)=>boolean,preparationBudget=Infinity,preparation:{used:number}={used:0},shared=false):number {
     if(!this.hierarchy)throw Error("Missing hierarchical route topology");
     return this.hierarchy.step(state,workspace,budget,this.revision,blocked,preparationBudget,preparation,shared);
@@ -315,13 +341,13 @@ class TilePaths {
   ): number[] | null {
     this.telemetry.searches++;
     if (
-      this.hierarchy &&
+      this.hasHierarchy &&
       expansionLimit === Infinity &&
       Math.abs(this.map.x(start) - this.map.x(goal)) +
         Math.abs(this.map.y(start) - this.map.y(goal)) >
         48
     ) {
-      const route = this.hierarchy.find(start, goal);
+      const route = this.hierarchy!.find(start, goal);
       if (
         !blocked ||
         (route &&
@@ -405,10 +431,10 @@ class TilePaths {
 }
 
 export class LandPaths extends TilePaths {
-  constructor(map: GameMap, prepare = true, medium: "land" | "amphibious" = "land") {
-    super(map, medium, prepare);
+  constructor(map: GameMap, prepare = true, medium: "land" | "amphibious" = "land", deferHierarchy = false) {
+    super(map, medium, prepare, deferHierarchy);
   }
-  get largestLand(): number[] {
+  get largestLand(): Int32Array {
     return this.largestComponent;
   }
 
@@ -458,8 +484,11 @@ export class LandPaths extends TilePaths {
 /** Squads of a faction with transport technology: land and water as one
  * graph, with an embarkation cost at every shoreline step. */
 export class AmphibiousPaths extends LandPaths {
+  /** Without `prepare`, the hierarchy is built on its first use (R2-P25):
+   * open-sea clusters make it the costliest graph, and many matches route
+   * amphibiously late or never. */
   constructor(map: GameMap, prepare = true) {
-    super(map, prepare, "amphibious");
+    super(map, prepare, "amphibious", !prepare);
   }
 }
 

@@ -478,7 +478,8 @@ export class Skirmish {
    * schedule keeps corridor use identical across restores. The amphibious
    * hierarchy is never warmed: open-sea clusters are portal-dense (~460us a
    * tree, thousands of trees), and bounded exact search already answers
-   * crossings within a few ticks, so it never serves the corridor. */
+   * crossings within a few ticks, so it never serves the corridor. It is
+   * not even built until a long amphibious search first needs it (R2-P25). */
   private corridorTicks = { land: 0, water: 0, amphibious: 0 };
   /** Human-commanded route work, which takes the planner's interactive share. */
   private interactiveRoute(task: { playerId?: number; kind: string; owner?: string }): boolean {
