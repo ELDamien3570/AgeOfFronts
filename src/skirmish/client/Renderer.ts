@@ -4,8 +4,7 @@ import type { BattleLineDeployment } from "../domain/BattleLineLayout";
 import { facingOf, formationSlots, formationDoctrine } from "../domain/FormationGeometry";
 import { FormationAngleSamples } from "./FormationAngleSamples";
 import { CombatPresentationTimeline, COMBAT_PRESENTATION_DELAY_TICKS } from './CombatPresentationTimeline';
-import { formationRenderPose, formationPoseContains, strategicFormationBox, strategicFormationContains, type FormationRenderPose } from "./FormationRenderPose";
-import { formationEnvelope } from "../domain/FormationGeometry";
+import { FormationPoseMemo, formationRenderPose, formationPoseContains, strategicFormationBox, strategicFormationContains, type FormationRenderPose } from "./FormationRenderPose";
 import { strengthFraction, legacyWeaponStrength } from '../domain/Manpower';
 
 import type { GameMap } from "../../core/game/GameMap";
@@ -117,6 +116,8 @@ export class Renderer {
   /** When set, collect all squad overrides before flushing globally sorted sprites. */
   squadArtworkFlush?: (ctx: CanvasRenderingContext2D) => void;
   private readonly formationPoses = new Map<number,FormationRenderPose>();
+  /** U4: formation poses and pre-cull radii survive frames until their inputs change. */
+  private readonly poseMemo = new FormationPoseMemo();
   private readonly healthLoss = new HealthLossTrail();
   private readonly deferredSquadArtwork = new Set<number>();
   /** Optional individual-soldier volley pass; true suppresses the legacy emitters. */
@@ -415,6 +416,7 @@ export class Renderer {
   update(snapshot: Snapshot): void {
     if (!this.map) return;
     this.combatTimeline.update(snapshot);
+    this.poseMemo.retain(snapshot.squads.map(squad => squad.id));
     assignFactionColors(snapshot.players);
     if (this.colorRevision !== factionColorRevision) {
       this.territory!.setColors(RGB);
@@ -1452,7 +1454,7 @@ export class Renderer {
           this.selected.has(squad.id) || this.inspectedSquadId === squad.id;
         const viewRadius = Math.max(squadViewRadius(this.scale, legacyWeaponStrength(squad), selected),
           this.squadArtworkViewRadius?.(squad, this.scale) ?? 0,
-          squad.formation && !squad.afloat ? (formationEnvelope(squad,visualTick).broadRadius/FIXED+1)*this.scale : 0);
+          squad.formation && !squad.afloat ? (this.poseMemo.broadRadius(squad,visualTick)/FIXED+1)*this.scale : 0);
         if (!visibleInViewport(p, viewRadius, this.width, this.height))
           return undefined;
         // Afloat, a squad is drawn as its faction's transport for this age.
@@ -1490,7 +1492,7 @@ export class Renderer {
           ? UNIT.get(squad.definitionId)
           : undefined;
         const image = symbol.artwork ? activeImage : undefined;
-        const formationPose=squad.formation && !squad.afloat ? formationRenderPose(squad,visualTick,this.world(p.x,p.y)) : undefined;
+        const formationPose=squad.formation && !squad.afloat ? this.poseMemo.pose(squad,visualTick,this.world(p.x,p.y)) : undefined;
         if(formationPose)this.formationPoses.set(squad.id,formationPose);
         return { squad, p, selected, symbol, image, definition, formationType, customArtwork, formationPose };
       })
