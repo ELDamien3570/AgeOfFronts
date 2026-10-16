@@ -534,6 +534,10 @@ export interface SnapshotPacket {
   winner: number | null;
   combatTicks: number;
   expansionMode?: "full" | "delta";
+  /** N5/P12: present when `expansion.progression` is in the endTick wire form
+   * of ProgressionReplication (only changed factions in "delta" mode). Absent
+   * in legacy packets, whose progression is a complete remainingTicks map. */
+  progressionMode?: "full" | "delta";
   expansion?: Partial<Omit<ExpansionSnapshot, "deposits">> & {
     /** Full resource facts at a baseline or geometry revision only. */
     deposits?: ExpansionSnapshot["deposits"];

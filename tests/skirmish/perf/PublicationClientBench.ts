@@ -99,7 +99,7 @@ all.mainThreadEntity = stats(body.map(r => r.cloneMain));
 all.mainThreadPacked = stats(body.map(r => r.packedMainDeserialize + r.packedMainDecode));
 const mean = (key: string) => (all[key] as { mean: number } | null)?.mean ?? NaN;
 const decision = mean("mainThreadPacked") < mean("mainThreadEntity") ? "packed" : "lazy-row-view";
-const meanOf = (map: Map<string, number[]>) => Object.fromEntries([...map].map(([k, v]) => [k, Math.round(v.slice(1).reduce((a, b) => a + b, 0) / Math.max(1, v.length - 1))]).sort((a, b) => b[1] - a[1]));
+const meanOf = (map: Map<string, number[]>) => Object.fromEntries([...map].map(([k, v]) => [k, Math.round(v.slice(1).reduce((a, b) => a + b, 0) / Math.max(1, v.length - 1))]).sort((a, b) => (b[1] as number) - (a[1] as number)));
 const span = body.length ? (body[body.length - 1].tick - (rows[0]?.tick ?? 0)) / 8 : 0;
 const result = { file, publications: rows.length, publicationsPerSimSecond: span ? +(body.length / span).toFixed(2) : null,
   gzKBPerSimSecond: span ? +(body.reduce((a, r) => a + r.gz, 0) / 1024 / span).toFixed(1) : null,

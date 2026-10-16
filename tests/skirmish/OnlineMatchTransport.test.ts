@@ -8,6 +8,7 @@ import type {
   ServerMessage,
 } from "../../src/skirmish/multiplayer/Protocol";
 import { decodeState } from "../../src/skirmish/multiplayer/StateCodec";
+import { SnapshotDecoder } from "../../src/skirmish/SnapshotCodec";
 import type { SnapshotPacket } from "../../src/skirmish/Protocol";
 
 it("runs two thin clients from one server simulation, enforces ownership and continues after one leaves", async () => {
@@ -158,7 +159,10 @@ it("runs two thin clients from one server simulation, enforces ownership and con
     );
     now += 250;
     await until(() => states(1).some((message) => message.tick >= 3));
-    const paidState = await decodeState<SnapshotPacket>(last(states(1)).packet);
+    // N5/P12: progression deltas omit unchanged factions, so replay the stream.
+    const streamDecoder = new SnapshotDecoder();
+    let paidState!: ReturnType<SnapshotDecoder["decode"]>;
+    for (const message of states(1)) paidState = streamDecoder.decode(await decodeState<SnapshotPacket>(message.packet));
     expect(
       Object.values(paidState.expansion!.progression![2].research).some(
         (job) => job?.technologyId === "rus-stoneage-port-sea-trade",

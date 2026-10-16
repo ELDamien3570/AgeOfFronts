@@ -140,7 +140,7 @@ for (let i = 1; i <= WARM + MEASURE; i++) {
     }
     for (const command of queue) {
       const parsed = commandSchema.safeParse(command);
-      if (parsed.success) { game.commandApplications.apply(`c${++sequence}`, parsed.data); commands++; }
+      if (parsed.success) { game.commandApplications.apply(`c${++sequence}`, parsed.data as never); commands++; }
     }
   }
   game.step();

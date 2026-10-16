@@ -94,8 +94,10 @@ describe("reserved authoritative worker", () => {
       expect(publications.map(p => p.tick)).toEqual([1]);
       const packet = await decodeState<SnapshotPacket>(publications[0].packet);
       expect(packet.tick).toBe(1);
-      expect(packet.expansion!.progression![1].research.naval!.remainingTicks).toBe(TECHNOLOGIES.find(t=>t.id==="rus-stoneage-port-sea-trade")!.ticks-1);
-      decoder.decode(packet);
+      // N5/P12: the wire carries the finishing tick; the decoder derives the countdown.
+      expect(packet.progressionMode).toBe("delta");
+      expect((packet.expansion!.progression![1].research.naval as unknown as {endTick:number}).endTick).toBe(1+TECHNOLOGIES.find(t=>t.id==="rus-stoneage-port-sea-trade")!.ticks-1);
+      expect(decoder.decode(packet).expansion!.progression[1].research.naval!.remainingTicks).toBe(TECHNOLOGIES.find(t=>t.id==="rus-stoneage-port-sea-trade")!.ticks-1);
       const shared = decoder.decode(await decodeState<SnapshotPacket>(joined.packet));
       const baseline = new SnapshotDecoder().decode(await decodeState<SnapshotPacket>(joined.baseline));
       expect(shared.owners).toEqual(baseline.owners); expect(shared.squads).toEqual(baseline.squads);
@@ -237,7 +239,8 @@ describe("reserved authoritative worker", () => {
   it("applies player commands once, preserves domain ownership and converts departures to AI", async () => {
     const worker = new ReservedMatchWorker();
     try {
-      await worker.request<MatchAdvance>(initialize);
+      const decoder = new SnapshotDecoder();
+      decoder.decode(await decodeState<SnapshotPacket>((await worker.request<MatchAdvance>(initialize)).packet!));
       const update = await worker.request<MatchAdvance>({
         ...advance(1),
         commands: [
@@ -251,7 +254,7 @@ describe("reserved authoritative worker", () => {
           },
         ],
       });
-      const packet = await decodeState<SnapshotPacket>(update.packet!);
+      const packet = decoder.decode(await decodeState<SnapshotPacket>(update.packet!));
       expect(
         Object.values(packet.expansion!.progression![2].research).some(
           (job) => job?.technologyId === "rus-stoneage-port-sea-trade",
