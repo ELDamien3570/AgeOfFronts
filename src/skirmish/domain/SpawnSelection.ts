@@ -15,6 +15,7 @@ export class SpawnSelection {
   readonly candidates: number[] = [];
   readonly viable: Uint8Array;
   private readonly reservations = new Map<number, number>();
+  private clearance?: Float64Array;
   readonly humanCount: number;
   constructor(
     readonly map: GameMap,
@@ -110,6 +111,8 @@ export class SpawnSelection {
 
   resolve(): number[] {
     let error: unknown;
+    const tribeRadius =
+      this.options.ruleset === "ages-v1" ? TRIBE_CITY_BASE_RADIUS : TRIBE_BASE_RADIUS;
     // Retry packing without moving human reservations. Each attempt is seeded,
     // so every executor constructs the same completed spawn plan.
     for (let attempt = 0; attempt < 16; attempt++) {
@@ -120,6 +123,12 @@ export class SpawnSelection {
         this.map,
         this.candidates,
         random,
+        {
+          radii: [CAMP_RADIUS, tribeRadius],
+          viable: this.viable,
+          // One buffer serves every attempt and every select; allocated on first resolve.
+          clearance: (this.clearance ??= new Float64Array(this.viable.length)),
+        },
       );
       const bases: number[] = [];
       for (const { playerId, tile } of this.choices) {
@@ -137,7 +146,7 @@ export class SpawnSelection {
           this.map.height(),
         );
         for (let i = 0; i < tribes; i++)
-          bases.push(placement.next(this.options.ruleset === "ages-v1" ? TRIBE_CITY_BASE_RADIUS : TRIBE_BASE_RADIUS));
+          bases.push(placement.next(tribeRadius));
         return bases;
       } catch (failure) {
         error = failure;

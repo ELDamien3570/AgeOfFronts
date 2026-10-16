@@ -10,7 +10,8 @@ function fixture(transport: boolean) {
   const cells=new Uint8Array(64*48).fill(133);
   for(let y=23;y<=25;y++)cells.fill(0,y*64,(y+1)*64);
   const map=new GameMapImpl(64,48,cells,2880);
-  const game=new Skirmish(map,{seed:42,aiCount:1,tribes:false,runAi:true,ruleset:"ages-v1",deferredPlanning:true});
+  // Seed 1: seed 42 no longer starts the factions where this river scene needs them (spawn streams were salted).
+  const game=new Skirmish(map,{seed:1,aiCount:1,tribes:false,runAi:true,ruleset:"ages-v1",deferredPlanning:true});
   const defender=game.squads.find(s=>s.playerId===2)!,enemy=game.squads.find(s=>s.playerId===1)!;
   retainSquads(game,[defender,enemy]);
   game.players[1].base=map.ref(32,12);game.players[1].gold=0;game.players[1].reserves=0;
