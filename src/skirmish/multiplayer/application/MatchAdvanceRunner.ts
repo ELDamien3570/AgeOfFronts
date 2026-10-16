@@ -67,6 +67,16 @@ export interface AdvanceResult {
   rolledBack: boolean;
 }
 type Advance = Extract<JournalEntry, { kind: "advance" }>;
+/** Wall and thread-CPU time of the stages of the last advance (I-0
+ * diagnostics only; never match state). CPU is undefined without a clock. */
+export interface AdvanceStageTimings {
+  /** Absent when the advance took no checkpoint. */
+  checkpoint?: { wall: number; cpu?: number };
+  commands: { wall: number; cpu?: number };
+  ticks: { wall: number; cpu?: number };
+}
+/** Clocks for stage timings; wall in ms, thread CPU in ms. */
+export interface StageClock { wall(): number; cpu(): number | undefined }
 /** A throw while running one advance on one simulation instance. */
 class StageFault {
   constructor(
@@ -105,6 +115,19 @@ export class MatchAdvanceRunner {
     this.current = match;
     this.journal = journal ?? new MatchJournal();
   }
+  /** Set by a host that reports stage timings (serverMatchWorker). */
+  clock?: StageClock;
+  /** Stage timings of the last advance, when a clock is set. A rolled-back
+   * advance reports the replay under "ticks". */
+  lastTimings?: AdvanceStageTimings;
+  private stage(): { wall: number; cpu?: number } | undefined {
+    return this.clock && { wall: this.clock.wall(), cpu: this.clock.cpu() };
+  }
+  private since(start: { wall: number; cpu?: number } | undefined): { wall: number; cpu?: number } {
+    const end = this.stage();
+    if (!start || !end) return { wall: 0 };
+    return { wall: end.wall - start.wall, ...(start.cpu !== undefined && end.cpu !== undefined ? { cpu: end.cpu - start.cpu } : {}) };
+  }
   /** The live simulation; replaced by a rollback. */
   get match(): Skirmish { return this.current; }
   get faulted(): MatchFaultReport | undefined { return this.faultReport && structuredClone(this.faultReport); }
@@ -124,7 +147,12 @@ export class MatchAdvanceRunner {
   advance(input: AdvanceInput, collect: (outcome: CommandOutcome) => void): AdvanceResult {
     this.assertHealthy();
     const match = this.current;
-    if (this.recovery && this.journal.shouldCheckpoint(match.tick)) this.journal.hold(match.tick, match.checkpoint());
+    if (this.clock) this.lastTimings = { commands: { wall: 0 }, ticks: { wall: 0 } };
+    if (this.recovery && this.journal.shouldCheckpoint(match.tick)) {
+      const started = this.stage();
+      this.journal.hold(match.tick, match.checkpoint());
+      if (this.lastTimings) this.lastTimings.checkpoint = this.since(started);
+    }
     const entry: Advance = { kind: "advance", disconnectedPlayerIds: [...input.disconnectedPlayerIds ?? []], commands: [...input.commands], ticks: input.ticks };
     this.journal.record(entry);
     try {
@@ -145,6 +173,7 @@ export class MatchAdvanceRunner {
   private execute(match: Skirmish, entry: Advance, collect: (outcome: CommandOutcome) => void, live: boolean, drop?: ReadonlySet<number>): MatchAdvance["rejectedCommands"] {
     for (const id of entry.disconnectedPlayerIds) if (match.player(id)) match.setAiController(id, true);
     const rejected: MatchAdvance["rejectedCommands"] = [];
+    const commandsStarted = live ? this.stage() : undefined;
     entry.commands.forEach((item, index) => {
       const player = match.player(item.command.playerId);
       if (live) this.remember(item, match.tick);
@@ -162,9 +191,15 @@ export class MatchAdvanceRunner {
       if (outcome.status === "rejected" && outcome.reason)
         rejected.push({ id: item.id, playerId: item.command.playerId, message: outcome.reason });
     });
-    for (let i = 0; i < entry.ticks; i++) {
-      try { match.step(); }
-      catch (error) { throw new StageFault("tick", match.tickFault?.afterPhase ?? "tick-start", error); }
+    const ticksStarted = live ? this.stage() : undefined;
+    if (live && this.lastTimings) this.lastTimings.commands = this.since(commandsStarted);
+    try {
+      for (let i = 0; i < entry.ticks; i++) {
+        try { match.step(); }
+        catch (error) { throw new StageFault("tick", match.tickFault?.afterPhase ?? "tick-start", error); }
+      }
+    } finally {
+      if (live && this.lastTimings) this.lastTimings.ticks = this.since(ticksStarted);
     }
     return rejected;
   }
@@ -180,6 +215,7 @@ export class MatchAdvanceRunner {
     if (!this.journal.admitRollback(report.tick)) return this.fail({ ...report, recovery: "budget" });
     const earlier = this.journal.entries.slice(0, this.journal.entries.lastIndexOf(entry));
     let fresh: Skirmish, rejectedCommands: MatchAdvance["rejectedCommands"];
+    const replayStarted = this.stage();
     try {
       fresh = this.recovery.create();
       fresh.restore(checkpoint);
@@ -192,6 +228,7 @@ export class MatchAdvanceRunner {
     } catch {
       return this.fail({ ...report, recovery: "failed" });
     }
+    if (this.lastTimings) this.lastTimings.ticks = this.since(replayStarted);
     this.current = fresh;
     // The recovered timeline differs from the journal; the next advance
     // checkpoints it afresh.

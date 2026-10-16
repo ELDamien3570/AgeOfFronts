@@ -9,6 +9,7 @@ import type {
   MatchPublication,
 } from "../application/MatchExecutor";
 import { RequestDeadlines, requestTimeoutMs } from "./RequestDeadlines";
+import { liveHeapRequested } from "./WorkerRuntimeDiagnostics";
 import { prepareAttemptSeeds } from "../application/PreparePlan";
 
 const workerPath = resolve(
@@ -25,7 +26,7 @@ export class ReservedMatchWorker implements MatchExecutor {
     {
       execArgv: ["--import", "tsx"],
       resourceLimits: { maxOldGenerationSizeMb: 384 },
-      workerData: { publicationPort: this.channel.port2 },
+      workerData: { publicationPort: this.channel.port2, liveHeap: liveHeapRequested() },
       transferList: [this.channel.port2],
     },
   );

@@ -177,6 +177,22 @@ describe("reserved authoritative worker", () => {
       await worker.close();
     }
   });
+  it("exports live heap after a forced collection when the operator opts in (I-0)", async () => {
+    vi.stubEnv("SKIRMISH_LIVE_HEAP", "1");
+    const worker = new ReservedMatchWorker();
+    vi.unstubAllEnvs();
+    try {
+      await worker.request<MatchAdvance>(initialize);
+      // The first sample is due at tick 600, on a publishing advance.
+      for (let tick = 0; tick < 600; tick += 4) await worker.request<MatchAdvance>(advance(4, false));
+      const update = await worker.request<MatchAdvance>(advance(4));
+      expect(update.diagnostics!.memory.liveHeapBytes).toBeGreaterThan(0);
+      expect(update.diagnostics!.memory.liveHeapBytes).toBeLessThanOrEqual(update.diagnostics!.memory.heapTotal);
+      expect(update.diagnostics!.memory.liveHeapTick).toBe(604);
+    } finally {
+      await worker.close();
+    }
+  }, 60_000);
   it("runs directly, emits an initial baseline and independently scheduled presentation deltas", async () => {
     const worker = new ReservedMatchWorker();
     try {
@@ -199,6 +215,10 @@ describe("reserved authoritative worker", () => {
       expect(update.diagnostics!.memory.heapUsed).toBeGreaterThan(0);
       // I-0: thread CPU of the simulation step rides with the wall timings.
       expect(update.diagnostics!.timings.simulate!.samples).toBe(2);
+      // "commands" and the rollback "checkpoint" are timed apart from the ticks:
+      // only the first advance took a checkpoint (interval 20 ticks).
+      expect(update.diagnostics!.timings.commands!.samples).toBe(2);
+      expect(update.diagnostics!.timings.checkpoint!.samples).toBe(1);
       expect(update.diagnostics!.cpu).toMatchObject({ windowTicks: 400, ticks: 4, samples: 2, complete: false });
       expect(update.diagnostics!.memory.liveHeapBytes).toBeUndefined();
       expect(update.diagnostics!.payloadBytes).toBe(update.packet!.binary!.byteLength);

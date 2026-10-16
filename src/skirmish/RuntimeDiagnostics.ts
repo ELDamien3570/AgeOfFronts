@@ -8,7 +8,7 @@ export const RUNTIME_PHASES = [
   "frame", "frameInterval", "presentation", "recovery", "gc",
   "hud.recruitment-feed", "hud.counters", "hud.quotes", "hud.selection",
   "hud.empire", "hud.cards", "hud.armies", "hud.roster",
-  "simulate",
+  "simulate", "checkpoint",
 ] as const;
 export type RuntimePhase = (typeof RUNTIME_PHASES)[number];
 export interface TimingSummary { samples: number; mean: number; p95: number; p99: number; maximum: number }

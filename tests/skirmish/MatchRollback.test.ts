@@ -168,3 +168,28 @@ describe("rollback containment", () => {
     expect(runner.recentCommands.map(c => c.id)).toEqual(["dropped", "later"]);
   });
 });
+
+describe("advance stage timings (I-0)", () => {
+  it("times the checkpoint, the commands and the ticks of an advance apart", () => {
+    const { game, runner } = setup(2);
+    // A synthetic clock: each checkpoint costs 1000, each command 100, each tick 1.
+    let now = 0;
+    const checkpoint = game.checkpoint.bind(game), step = game.step.bind(game), apply = game.commandApplications.apply.bind(game.commandApplications);
+    vi.spyOn(game, "checkpoint").mockImplementation(() => { now += 1000; return checkpoint(); });
+    vi.spyOn(game, "step").mockImplementation(() => { now += 1; step(); });
+    vi.spyOn(game.commandApplications, "apply").mockImplementation((id, command) => { now += 100; return apply(id, command); });
+    runner.clock = { wall: () => now, cpu: () => now / 2 };
+    runner.advance({ commands: [hold(game, "a"), hold(game, "b")], ticks: 3 }, () => {});
+    expect(runner.lastTimings).toEqual({
+      checkpoint: { wall: 1000, cpu: 500 }, commands: { wall: 200, cpu: 100 }, ticks: { wall: 3, cpu: 1.5 },
+    });
+    // Three ticks passed the interval of 2, so the next advance checkpoints again;
+    // the one after it (one tick later) does not.
+    runner.advance({ commands: [], ticks: 1 }, () => {});
+    expect(runner.lastTimings!.checkpoint!.wall).toBe(1000);
+    expect(runner.lastTimings!.commands.wall).toBe(0);
+    expect(runner.lastTimings!.ticks.wall).toBe(1);
+    runner.advance({ commands: [], ticks: 1 }, () => {});
+    expect(runner.lastTimings!.checkpoint).toBeUndefined();
+  });
+});

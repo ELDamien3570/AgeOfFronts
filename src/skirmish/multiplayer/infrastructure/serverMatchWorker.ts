@@ -28,7 +28,7 @@ import { secondsToTicks } from "../../Protocol";
 import type { SnapshotPacket } from "../../Protocol";
 import type { EncodedState } from "../StateCodec";
 import { loadServerMap } from "./ServerMap";
-import { liveHeapBytes, observeGarbageCollection } from "./WorkerRuntimeDiagnostics";
+import { exposeGarbageCollector, liveHeapBytes, observeGarbageCollection } from "./WorkerRuntimeDiagnostics";
 
 if (!parentPort) throw new Error("The match executor requires a worker thread");
 let match: Skirmish | undefined;
@@ -38,6 +38,10 @@ let streamPublications = false;
  * thread to yield. Every result carries publicationsIssued so the coordinator
  * applies it only after the publications it follows. */
 const publicationPort = (workerData as { publicationPort?: MessagePort } | undefined)?.publicationPort;
+// I-0 live heap: only when the operator opted in (SKIRMISH_LIVE_HEAP=1), since
+// each 30 s sample forces a full collection on this thread.
+const collectGarbage = (workerData as { liveHeap?: boolean } | undefined)?.liveHeap
+  ? exposeGarbageCollector() : (globalThis as { gc?: () => void }).gc;
 const encoding = new SnapshotEncodingWorker(publicationPort);
 let publicationsIssued = 0;
 const baselines = new RecoveryBaselineCache();
@@ -79,6 +83,7 @@ const startMatch = (map: RuntimeMap, options: ConstructorParameters<typeof Skirm
       invalidateBaselines();
     },
   });
+  runner.clock = { wall: () => performance.now(), cpu: () => diagnostics.cpuNow() };
 };
 const networkEncoding = { compactFormationSlots: true, compactTraders: true };
 let encoder = new SnapshotEncoder(true, networkEncoding);
@@ -311,14 +316,23 @@ parentPort.on(
               commands: request.commands, ticks: request.ticks, disconnectedPlayerIds: request.disconnectedPlayerIds,
             }, collectOutcome);
             match = runner!.match;
-            diagnostics.record("commands", performance.now() - advanceStarted);
             // The journaled advance applies commands and steps ticks in one call
-            // (rollback needs both), so "simulate" times the whole advance, with
-            // its paired thread CPU reading (I-0).
-            const stepWall = performance.now() - advanceStarted, stepCpuEnded = diagnostics.cpuNow();
-            const stepCpuMs = stepCpuStarted === undefined || stepCpuEnded === undefined ? undefined : stepCpuEnded - stepCpuStarted;
-            diagnostics.record("simulate", stepWall, stepCpuMs);
-            stepCpu.add(match.tick - previousTick, stepWall, stepCpuMs);
+            // (rollback needs both). The runner times its stages apart, so
+            // "commands" is command application only, "checkpoint" the rollback
+            // checkpoint, and "simulate" (with its paired thread CPU, I-0) the
+            // tick steps only: a checkpoint hitch never reads as contention.
+            const stages = runner!.lastTimings;
+            if (stages) {
+              diagnostics.record("commands", stages.commands.wall, stages.commands.cpu);
+              if (stages.checkpoint) diagnostics.record("checkpoint", stages.checkpoint.wall, stages.checkpoint.cpu);
+              diagnostics.record("simulate", stages.ticks.wall, stages.ticks.cpu);
+              stepCpu.add(match.tick - previousTick, stages.ticks.wall, stages.ticks.cpu);
+            } else {
+              const stepWall = performance.now() - advanceStarted, stepCpuEnded = diagnostics.cpuNow();
+              const stepCpuMs = stepCpuStarted === undefined || stepCpuEnded === undefined ? undefined : stepCpuEnded - stepCpuStarted;
+              diagnostics.record("simulate", stepWall, stepCpuMs);
+              stepCpu.add(match.tick - previousTick, stepWall, stepCpuMs);
+            }
             const outcomes = [...commandOutcomes.values()];
             result = {
               tick: match.tick,
@@ -354,7 +368,7 @@ parentPort.on(
               advanced.diagnostics = diagnosticSnapshot(request.commands.length, match.tick - previousTick, advanced.packet?.binary?.byteLength ?? advanced.packet?.payload.length ?? 0);
               if (match.tick >= nextDiagnosticTick) {
                 nextDiagnosticTick = match.tick + secondsToTicks(30);
-                const live = liveHeapBytes();
+                const live = liveHeapBytes(collectGarbage);
                 if (live !== undefined) {
                   liveHeap = { bytes: live, tick: match.tick };
                   advanced.diagnostics.memory = { ...advanced.diagnostics.memory, liveHeapBytes: live, liveHeapTick: match.tick };
