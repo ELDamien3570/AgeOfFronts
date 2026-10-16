@@ -140,9 +140,24 @@ describe('formation performance contracts', () => {
     // Adjacent fronts are close but start without overlapping physical bodies.
     const a=game.squads[0],b=game.squads[50];
     expect(formationFootprints(a,0).some(x=>formationFootprints(b,0).some(y=>polygonsOverlap(x,y)))).toBe(false);
-    game.step();
-    expect(game.squads.filter(s=>s.fighting).length).toBeGreaterThan(1900);
+    // Every squad is Napoleonic line infantry winding up its first volley,
+    // released at tick 5. Combat must be populated through the whole wind-up;
+    // a single step would end before any shot and prove nothing more.
+    for(let tick=1;tick<=4;tick++){
+      game.step();
+      expect(game.squads.filter(s=>s.fighting).length).toBeGreaterThan(1900);
+    }
+    const aims=game.squads.map(s=>s.weaponState?.rangedAction);
+    expect(aims.every(a=>a?.phase==='preparing'&&a.releaseTick===5)).toBe(true);
   });
+  // C3 (Napoleonic lethality, review Next #7): the first volley at tick 5
+  // removes 1,550 of the 2,000 squads, so 450 remain fighting past the longest
+  // aim. This is the C3 acceptance; when C3 lands it passes: drop `.fails`.
+  it.fails('keeps more than 1900 squads fighting after 8 steps, past the first volley (C3)',()=>{
+    const {game}=formationLoad('crowded');
+    for(let i=0;i<8;i++)game.step();
+    expect(game.squads.filter(s=>s.fighting).length).toBeGreaterThan(1900);
+  },30000);
   it('does not reuse targets after diplomacy changes or an explicit retarget',()=>{
     const {game}=formationLoad('crowded',60);
     for(let i=0;i<6;i++)game.step();
@@ -161,10 +176,23 @@ describe('formation performance contracts', () => {
     game.updateSquad(held.id,{x:source.x,y:source.y+3*FIXED});
     game.updateSquad(closer.id,{x:source.x,y:source.y+2.8*FIXED});
     game.updateSquad(source.id,{fighting:true,combatTargetId:held.id});
-    game.step();expect(source.combatTargetId).toBe(held.id);
+    // Keep the retained target through the whole aim, up to its release; the
+    // volley itself would destroy held (C3), so the retarget comes first.
+    game.step();
+    const aim=source.weaponState!.rangedAction!;
+    expect(aim).toMatchObject({targetKind:'squad',targetId:held.id,phase:'preparing'});
+    while(game.tick<aim.releaseTick-1){
+      game.step();
+      expect(source.combatTargetId).toBe(held.id);
+      expect(source.weaponState!.rangedAction).toMatchObject({targetId:held.id,startTick:aim.startTick,phase:'preparing'});
+    }
+    expect(source.combatTargetId).toBe(held.id);
     expect(game.applyCommand({type:'order',playerId:source.playerId,squadIds:[source.id],order:{type:'attack',targetId:closer.id}})).toBeNull();
     game.step();expect(source.combatTargetId).toBe(closer.id);
+    expect(source.weaponState!.rangedAction!.targetId).toBe(closer.id);
+    expect(game.squad(held.id)).toBeDefined();
     game.removeSquad(closer.id);game.step();expect(source.combatTargetId).toBe(held.id);
+    expect(source.weaponState!.rangedAction!.targetId).toBe(held.id);
   });
   it('keeps spatial facts through administrative edits and invalidates physical edits immediately', () => {
     const {game}=formationLoad('distributed',15),s=game.squads[0],index=new UnitIndex<typeof s>();
