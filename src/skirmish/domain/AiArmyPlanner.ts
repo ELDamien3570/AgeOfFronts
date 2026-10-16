@@ -622,6 +622,9 @@ export class AiArmyPlanner {
       ) {
         plan.phase = "recover";
         plan.since = world.tick;
+        // Was left at the previous phase's reason ("No enemy in reach; resuming
+        // the advance..."), which read wrong on a returning army.
+        plan.reason = "Commitment window ended; regrouping";
       }
     } else if (
       plan.phase === "recover" &&
