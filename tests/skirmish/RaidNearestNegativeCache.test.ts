@@ -33,10 +33,19 @@ describe("raid last-squad negative cache (P6)", () => {
     const spatial = (game as unknown as { spatial: SpatialGrid<Squad> }).spatial, nearest = spatial.nearest.bind(spatial);
     const misses = new Map<number, number>();
     let raidSearches = 0;
+    // Identify the raid's last-squad search by behaviour, not by its source
+    // text: it accepts a landed enemy squad with troops and rejects the same
+    // squad with none. The other nearest-enemy search (captured camps) does
+    // not test troops, and no other search accepts this enemy's squads.
+    const base = game.player(enemy.id)!.base, embarked = game.squads.find(s => s.playerId === enemy.id)!;
+    const probe: Squad = { ...embarked, embarkedOn: null, troops: Math.max(1, embarked.troops),
+      x: (game.map.x(base) + 0.5) * FIXED, y: (game.map.y(base) + 0.5) * FIXED };
+    const isRaidSearch = (accept: (candidate: Squad) => boolean) => {
+      try { return accept(probe) && !accept({ ...probe, troops: 0 }); } catch { return false; }
+    };
     spatial.nearest = (x, y, accept) => {
       const found = nearest(x, y, accept);
-      // Only the raid's last-squad predicate reads `candidate.playerId === enemy.id`.
-      if (/candidate\.playerId === enemy\.id/.test(accept.toString())) {
+      if (isRaidSearch(accept)) {
         raidSearches++;
         if (!found) misses.set(game.tick, (misses.get(game.tick) ?? 0) + 1);
       }
