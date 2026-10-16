@@ -7,6 +7,7 @@ import { validateCombatFact } from './domain/CombatFact';
 import { validateCavalryMelee } from './domain/CavalryMelee';
 import { validateFormation } from "./domain/FormationGeometry";
 import { validateWeaponState } from "./domain/WeaponTiming";
+import { replicatedWeaponState } from "./domain/RangedPreparation";
 import { validateMeleeStrike } from "./domain/MeleeStrike";
 import { validateChargeImpact } from './domain/ChargeImpact';
 import { validateCavalryEngagement } from './domain/CavalryEngagement';
@@ -120,7 +121,9 @@ export class SquadDetailCache {
   retain(ids: ReadonlySet<number>): void {
     for (const id of this.rows.keys()) if (!ids.has(id)) this.forget(id);
   }
-  encode(s: Snapshot["squads"][number]): string | undefined {
+  /** `tick` is the packet tick; with it, expired released ranged history is
+   * omitted from the row (N10, see replicatedWeaponState). */
+  encode(s: Snapshot["squads"][number], tick?: number): string | undefined {
     if (
       !(
         s.aiWithdrawal ||
@@ -142,7 +145,7 @@ export class SquadDetailCache {
       s.charge?.strength,
       s.manpower,
       s.refit?.recipeVariant,
-      s.weaponState,
+      replicatedWeaponState(s.weaponState, tick),
       s.formation,
       s.meleeStrike,
       s.combatFact,
@@ -184,6 +187,7 @@ export function packSnapshotDetails(
   volleys: readonly ArcherVolley[],
   cache?:SquadDetailCache,
   slotBaseline = false,
+  tick?: number,
 ): PackedSnapshotDetails {
   const strings: string[] = [],
     stringIds = new Map<string, number>()
@@ -239,7 +243,7 @@ export function packSnapshotDetails(
       b[at + 5] = number(s.lastAttackTick)
       b[at + 27] = number(s.magazineShots);
       b[at + 28] = number(s.reloadStartedTick);
-      b[at + 29] = string(detailCache.encode(s));
+      b[at + 29] = string(detailCache.encode(s, tick));
       b[at + 6] = boolean(s.planningPaused)
       b[at + 7] = s.movementStatus
         ? reasons.indexOf(s.movementStatus.reason)

@@ -85,3 +85,29 @@ export function releaseRangedShot(
     },
   };
 }
+
+/** N10 (owner decision D8, wire-only): how long a released ranged action stays
+ * in replicated detail rows after its last eligible tick. Twice the client's
+ * combat presentation delay (4 ticks), so a coalesced presentation endpoint
+ * still sees the release. The simulation keeps the action unchanged. */
+export const RANGED_HISTORY_TICKS = 8;
+const prunedWeaponStates = new WeakMap<WeaponState, WeaponState>();
+/** The weapon state as replicated at `tick`: a released action older than
+ * RANGED_HISTORY_TICKS is omitted. The pruned copy is memoised per source
+ * object, so encoder caches keyed by identity re-encode a row exactly once
+ * when it expires. Never feed the result back into the simulation. */
+export function replicatedWeaponState(
+  state: WeaponState | undefined,
+  tick: number | undefined,
+): WeaponState | undefined {
+  const action = state?.rangedAction;
+  if (!state || !action || action.phase !== "released" || tick === undefined) return state;
+  if (tick - Math.max(action.releaseTick, action.lastEligibleTick) <= RANGED_HISTORY_TICKS) return state;
+  let pruned = prunedWeaponStates.get(state);
+  if (!pruned) {
+    const { rangedAction: _expired, ...rest } = state;
+    pruned = rest;
+    prunedWeaponStates.set(state, pruned);
+  }
+  return pruned;
+}

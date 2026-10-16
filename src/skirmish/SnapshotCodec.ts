@@ -200,7 +200,7 @@ export class SnapshotEncoder {
   encodeBaseline(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities): SnapshotPacket {
     const packet = new SnapshotEncoder(true, { compactTraders: this.compactTraders }).encode(source, journal, facts);
     if (this.detailCache.compactFormationSlots) {
-      packet.details = packSnapshotDetails(source.squads, source.buildings, source.ships, source.volleys, this.detailCache, true);
+      packet.details = packSnapshotDetails(source.squads, source.buildings, source.ships, source.volleys, this.detailCache, true, source.tick);
     }
     return packet;
   }
@@ -393,7 +393,7 @@ export class SnapshotEncoder {
       details: packSnapshotDetails(
         source.expansion ?? selected.squads.rows.some(s => s.afloat !== undefined || s.planningPaused === true || s.movementStatus !== undefined || s.meleeStrike !== undefined || s.chargeImpact !== undefined || s.cavalryEngagement !== undefined || s.cavalryMelee !== undefined) ? selected.squads.rows : undefined,
         source.expansion ? selected.buildings.rows : undefined,
-        selected.ships.rows, source.volleys, this.detailCache,
+        selected.ships.rows, source.volleys, this.detailCache, false, source.tick,
       ),
       ships: [],
       volleys: [],
