@@ -14,7 +14,9 @@ charge, cover or flank exposure. Charge adds its authored damage separately.
 * 81 Napoleonic pikemen against 81 pikemen should resolve in about 60 seconds;
   40 Boyar Guards against 40 Boyar Guards in about 30 seconds.
 * 60 Bronze Age axemen starting in contact with 60 archers should win with about
-  30 survivors. Spearmen should win with about 15–20 survivors.
+  30 survivors. Spearmen should win with about 15–20 survivors. Both are
+  currently admitted gaps: axemen win with 36, and spearmen lose with 0
+  survivors (see "Admitted gaps").
 * Engaged archers cannot fight or fire. Eligible rear ranks can still shoot,
   including at close range. Ranged-only troops have no minimum firing distance.
 * Archers must outrun spearmen; mounted archers must outrun heavy cavalry but
@@ -32,7 +34,10 @@ Balance measurements must distinguish individual weapon duels, formation damage
 estimates and actual simulated engagements. Formation, frontage, rank cycling,
 movement, projectile interception and casualties can change aggregate outcomes.
 
-## Measured reference results
+## Measured reference results (historical)
+
+This table predates contact-limited melee (combat revision 10) and the
+October 16 promotion. Current values are in "Current measured results" below.
 
 The deterministic tests in `tests/skirmish/PreModernBalance.test.ts` exercise the
 real battle, melee-strike and projectile paths, maintain frontal contact as bodies
@@ -95,7 +100,8 @@ exist only during the combat step, with no persistent individual soldier state.
 The existing squad wound remainder is deducted once from the shared contact
 budget. Layout/count updates expose the next rank for subsequent legal attacks.
 
-Re-running the same controlled fixtures gives:
+Re-running the same controlled fixtures at revision 10 gave (historical; the
+Boyar and Bronze rows have since changed, see "Current measured results"):
 
 | Matchup | Contact-limited result |
 | --- | --- |
@@ -132,9 +138,87 @@ charge bonus. Double right-click activates that per-unit bonus; wedge remains a
 deliberate formation choice.
 
 The approved faster Boyar mirror now resolves in 15.75 seconds at 100 HP. The
-Bronze axemen reference currently wins with 39 survivors, above the earlier
+Bronze axemen reference currently wins with 36 survivors, above the earlier
 roughly-30 target. That calibration assertion remains unresolved; promotion does
 not silently retune damage to force the older survivor target.
+
+## Current measured results
+
+Measured on branch aof/next-9 with the `PreModernBalance.test.ts` fixtures
+(no approach, charge or promotion):
+
+| Engagement | Result |
+| --- | --- |
+| 81 Napoleonic pikemen against 81 | Mutual destruction in 62.5 seconds (target about 60: passes) |
+| 40 Boyar Guards against 40 | Mutual destruction in 15.75 seconds (approved 14-18: passes) |
+| 60 Bronze axemen against 60 archers, starting in contact | Axemen win with 36 survivors in 10.125 seconds (target about 30: admitted gap) |
+| 60 Bronze spearmen against 60 archers, starting in contact | Archers win with 50 survivors in 8.375 seconds (target 15-20 spearmen: admitted gap) |
+| Bronze axeman against three consecutive spearmen | Axeman survives without healing (passes) |
+
+## Admitted gaps
+
+These contract targets are kept but are not met. Each is an `it.fails` in
+`tests/skirmish/PreModernBalance.test.ts`; because `it.fails` also passes on an
+unrelated exception, the spearmen row is also pinned by a plain test of its
+measured outcome.
+
+* Bronze axemen against archers: 36 survivors, target about 30 (upper bound 33).
+* Bronze spearmen against archers: spearmen lose, 0 against 50 archers in
+  8.375 s, target 15-20 spearmen survive. Owner decision OD-16: none of the
+  balance-table rows (age-up gate, trade, stacking, refits, tribe opening,
+  content) covers ranged-versus-spear contact, so this stays an admitted gap
+  until the combat lane retunes spear-versus-archer contact or the owner
+  replaces the contract row.
+* `FormationPerformance.test.ts` C3 acceptance belongs to the combat lane and is
+  recorded there.
+
+## Economy and age-up rules (balance table)
+
+Each value is one named constant. The owner decision ID is the reference used in
+commit messages and in the tests that pin it.
+
+| Row | Rule | Constant (file) | Decision |
+| --- | --- | --- | --- |
+| Age-up gate | A nation advances with all three current-age trees, or two trees with warfare at most one technology short. Tribes keep any two trees (plus the 75% rule). | `ADVANCE_WARFARE_SHORTFALL = 1` (`domain/Progression.ts`) | OD-1 |
+| Age-up time | Advancement takes 90, 105, 120, 135, 150, 165, 180 s (was 50-85 s). Gold unchanged. | `ADVANCES` (`content/Technology.ts`) | OD-2 |
+| Trade tariff | A foreign market owner earns 25% of the trader's payout (was 100%). The trader keeps the full payout. | `RECEIVER_TARIFF_PERCENT = 25` (`content/Economy.ts`) | OD-3 |
+| Market intake | A market accepts at most one largest foreign visit (sea, foreign acceptance) of foreign goods per 20 s, refilled continuously. Domestic deliveries are exempt; per-visit limits are unchanged. | `MARKET_INTAKE_WINDOW_SECONDS = 20` (`domain/TradeReceiving.ts`) | OD-4 |
+| Commerce cap | Only 3 + age-index completed factories and ports per faction produce trade stock: goods/s = 2 x (age + 1) x min(producers, 3 + age). | `COMMERCE_PRODUCER_BASE = 3` (`content/Economy.ts`) | OD-5 |
+| Land income | Unchanged (no age scaling). | none | OD-6 |
+| Stacking | Mine 1 per deposit for every faction, city 3, factory 5, port 5; every other type 15. | `STACK_LIMITS`, `MAX_BUILDING_STACK` (`Construction.ts`) | OD-7 |
+| Refit price | Gold per squad or hull is max(per-age price, ceil(60% x (target recruit gold - source recruit gold))). A Stone warship's Modern refit is 2,940 (was 2,600); squad refits are unchanged for current content. | `REFIT_FLOOR_PERCENT = 60` (`domain/Refitting.ts`) | OD-8 |
+| Tribe opening | Tribe squad cap 6 + 4 per age; tribe reserve income 2 x the nation base (24..192 points/s, was a flat 40); no tribal campaign against a nation before minute 8 and Bronze Age, unless retaliating. | `TRIBE_SQUAD_CAP`, `TRIBE_SQUADS_PER_AGE`, `TRIBE_RESERVE_MULTIPLIER`, `TRIBE_NATION_CAMPAIGN_TICKS`, `TRIBE_NATION_CAMPAIGN_MIN_AGE` (`FactionRules.ts`) | OD-9 |
+| Tribe start | 4 starting squads (13 R1 proposed 3). | `TRIBE_STARTING_SQUADS` (`FactionRules.ts`) | OD-10 |
+
+OD-4 deviates from the notes' example (`marketDropCapacity(stack)` goods per
+20 s for all intake), which is smaller than the authored foreign and sea
+per-visit allowances and would have cut every first delivery and the domestic
+economy. Tests: `AgeUpGate`, `ResearchPacing`, `TradeFleet`, `TradeReceiving`,
+`CommerceCap`, `StackLimits`, `RefitQuote`, `TribeOpening`, `AiTribeExpansion`.
+
+## Content decisions
+
+`tests/skirmish/BalanceMatrix.test.ts` ("content decisions") pins each row.
+
+| ID | Unit | Current | Alternative | Status |
+| --- | --- | --- | --- | --- |
+| OD-12 | Modern machine-gun crew (`modern-field-support`) | 1000 HP, as the Early Modern crew (was 200) | 1200 HP (05 rec 1) | Applied: the notes' recommended default |
+| OD-13 | RPL-20 crew (`modern-archer`) | 100 HP, enlarged size 3 | 80 HP, enlarged size 1 (earlier contract text) | Kept pending the owner |
+| OD-14 | Bronze cavalry (`bronzeage-cavalry`) | 16 riders, 20 enlarged, 16 horses | 8 riders, 12 enlarged, 8 horses | Kept pending the owner |
+| OD-15 | Medieval infantry 40/50; Napoleonic cavalry 48/64 | As authored | Revert to 36/48 and 24/36 | Kept pending the owner |
+
+The "unchanged HP and counts" statement under "October 16 approved-balance
+promotion" is superseded by OD-12 for the Modern machine-gun crew only.
+
+## Analytic counter matrix
+
+`tests/skirmish/BalanceMatrix.test.ts` computes, per same-age pair, the
+equal-gold exchange value of a counter (dps per HP pool, both ways, scaled by
+gold). It fails when a recorded pair falls below 0.9 x its recorded value
+(`COUNTER_RATCHET_FACTOR`, OD-17). It is analytic: no charge, kiting, blast or
+losses during the fight. Spearmen are 9-15x better gold-for-gold against light
+cavalry and mainline infantry 7-8x against spearmen; heavy cavalry (0.09-0.13)
+and foot archers against infantry (0.19-0.33) are not equal-gold counters.
 
 ## Authoring sources
 
