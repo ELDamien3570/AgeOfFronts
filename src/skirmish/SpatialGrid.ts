@@ -5,24 +5,24 @@ export interface WorldPoint {
 }
 
 export class SpatialGrid<T extends WorldPoint> {
-  private readonly buckets: (T[] | undefined)[];
-  private readonly allocated: T[][] = [];
+  protected readonly buckets: (T[] | undefined)[];
+  protected readonly allocated: T[][] = [];
   // Buckets filled since the last rebuild. Once a grid is rebuilt, only these
   // need clearing, so cost follows occupancy and not explored map history.
-  private readonly active: T[][] = [];
-  private tracking = false;
-  private maximumExtent=0;
-  private readonly columns: number;
+  protected active: T[][] = [];
+  protected tracking = false;
+  protected maximumExtent=0;
+  protected readonly columns: number;
   private readonly rows: number;
-  private readonly partitions: (number | undefined)[];
-  private readonly occupied: Uint32Array;
+  protected readonly partitions: (number | undefined)[];
+  protected readonly occupied: Uint32Array;
 
   constructor(
     width: number,
     height: number,
     private readonly cellSize: number,
-    private readonly partition?: (item: T) => number,
-    private readonly extent?: (item:T)=>number,
+    protected readonly partition?: (item: T) => number,
+    protected readonly extent?: (item:T)=>number,
   ) {
     this.columns = Math.ceil(width / cellSize);
     this.rows = Math.ceil(height / cellSize);
@@ -46,11 +46,16 @@ export class SpatialGrid<T extends WorldPoint> {
     for (const item of items) this.insert(item);
   }
 
+  protected keyOf(item: WorldPoint): number {
+    return Math.floor(item.x / this.cellSize) + Math.floor(item.y / this.cellSize) * this.columns;
+  }
+
   insert(item: T): void {
-    this.maximumExtent=Math.max(this.maximumExtent,this.extent?.(item)??0);
-    const key =
-      Math.floor(item.x / this.cellSize) +
-      Math.floor(item.y / this.cellSize) * this.columns;
+    this.place(item, this.keyOf(item), this.extent?.(item) ?? 0);
+  }
+
+  protected place(item: T, key: number, extent: number): void {
+    this.maximumExtent=Math.max(this.maximumExtent,extent);
     let bucket = this.buckets[key];
     if (!bucket) {
       this.buckets[key] = bucket = [];
@@ -249,5 +254,92 @@ export class SpatialGrid<T extends WorldPoint> {
       if (distance <= edge * edge || edge === Infinity) return best;
     }
     return best;
+  }
+}
+
+/** A SpatialGrid whose buckets stay in ascending id order (the order a rebuild
+ * from an id-sorted source produces) and that can re-index only the items whose
+ * position, owner or extent may have changed. After update(changed), the grid
+ * equals rebuild(all) from the same id-sorted source: same bucket contents and
+ * order, occupancy bits, bucket partitions and maximum extent (I-3). */
+export class IncrementalSpatialGrid<T extends WorldPoint & { readonly id: number }> extends SpatialGrid<T> {
+  private readonly slots = new Map<T, { key: number; extent: number }>();
+  private readonly dirty: number[] = [];
+  /** update() calls, rows re-read and bucket moves; diagnostics only. */
+  readonly work = { updates: 0, rows: 0, moves: 0 };
+
+  override rebuild(items: Iterable<T>): void {
+    this.slots.clear();
+    super.rebuild(items);
+  }
+
+  override insert(item: T): void {
+    const key = this.keyOf(item), extent = this.extent?.(item) ?? 0;
+    this.place(item, key, extent);
+    this.slots.set(item, { key, extent });
+  }
+
+  get size(): number { return this.slots.size; }
+
+  /** Re-index changed items. Every other item must have the same position,
+   * owner and extent as when it was last indexed. */
+  update(changed: Iterable<T>): void {
+    if (!this.tracking) throw new Error("Incremental spatial update before rebuild");
+    this.work.updates++;
+    const dirty = this.dirty;
+    dirty.length = 0;
+    for (const item of changed) {
+      const slot = this.slots.get(item);
+      if (!slot) throw new Error("Unindexed spatial item");
+      this.work.rows++;
+      slot.extent = this.extent?.(item) ?? 0;
+      const key = this.keyOf(item);
+      if (key !== slot.key) {
+        this.work.moves++;
+        this.detach(slot.key, item);
+        dirty.push(slot.key);
+        this.attach(key, item);
+        slot.key = key;
+      }
+      // The owner may have changed in place as well.
+      if (this.partition) dirty.push(key);
+    }
+    if (this.partition) for (const key of dirty) {
+      const bucket = this.buckets[key];
+      if (!bucket?.length) continue;
+      let owner: number = this.partition(bucket[0]);
+      for (let at = 1; at < bucket.length && owner !== -1; at++) if (this.partition(bucket[at]) !== owner) owner = -1;
+      this.partitions[key] = owner;
+    }
+    let maximum = 0;
+    for (const slot of this.slots.values()) if (slot.extent > maximum) maximum = slot.extent;
+    this.maximumExtent = maximum;
+  }
+
+  private detach(key: number, item: T): void {
+    const bucket = this.buckets[key], index = bucket?.indexOf(item) ?? -1;
+    if (index < 0) throw new Error("Spatial bucket lost an item");
+    bucket!.splice(index, 1);
+    if (!bucket!.length) this.occupied[key >>> 5] &= ~(1 << (key & 31));
+  }
+
+  private attach(key: number, item: T): void {
+    let bucket = this.buckets[key];
+    if (!bucket) {
+      this.buckets[key] = bucket = [];
+      this.allocated.push(bucket);
+    }
+    let low = 0, high = bucket.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if (bucket[middle].id < item.id) low = middle + 1; else high = middle;
+    }
+    bucket.splice(low, 0, item);
+    if (bucket.length === 1) {
+      this.occupied[key >>> 5] |= 1 << (key & 31);
+      // Every non-empty bucket must be listed so the next rebuild clears it.
+      this.active.push(bucket);
+      if (this.active.length > 2 * this.allocated.length) this.active = this.allocated.filter(b => b.length > 0);
+    }
   }
 }

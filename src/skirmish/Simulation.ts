@@ -157,7 +157,7 @@ import {
   SQUAD_RULES,
   STARTING_GOLD,
 } from "./Rules";
-import { SpatialGrid, type WorldPoint } from "./SpatialGrid";
+import { IncrementalSpatialGrid, SpatialGrid, type WorldPoint } from "./SpatialGrid";
 import {
   ARRIVAL_TOLERANCE,
   distanceSquared,
@@ -394,7 +394,7 @@ export class Skirmish {
     // Permission generations are derived restore fences. Rebase saved waits
     // against the restored world instead of inventing another route attempt.
     for(const [id,progress] of this.navigationProgress)if(progress.policyWait){progress.policyWait.revision=this.navigationObstacleRevision(this.squad(id));progress.policyWait.start??=this.squad(id)?this.tileOf(this.squad(id)!):0;}
-    this.spatial.rebuild(this.squads.filter(s=>s.embarkedOn===null)); this.navalSpatial.rebuild(this.ships);
+    this.spatial.rebuild(this.squads.filter(s=>s.embarkedOn===null)); this.movementGridLand = -1; this.movementPoseChanges.clear(); this.navalSpatial.rebuild(this.ships);
   }
 
   readonly recruitment = new Recruitment();
@@ -424,7 +424,7 @@ export class Skirmish {
   private readonly buildingChanges = new EntityChangeJournal();
   private readonly squadEntities = new EntityCollection<Squad>({
     added: squad => { this.squadIndex.add(squad); this.squadChanges.record(squad.id, "add"); this.landingSpatial?.observe(squad); },
-    changed: (squad,fields) => { const spatialChanged=this.squadIndex.changed(squad,fields); this.squadChanges.record(squad.id, "change"); if(spatialChanged)this.landingSpatial?.observe(squad); },
+    changed: (squad,fields) => { const spatialChanged=this.squadIndex.changed(squad,fields); this.squadChanges.record(squad.id, "change"); if(spatialChanged){this.landingSpatial?.observe(squad);this.movementPoseChanges?.add(squad.id);} },
     removed: id => {
       this.squadIndex.remove(id); this.squadChanges.record(id, "remove"); this.landingSpatial?.remove(id);
       this.navigationProgress.delete(id); this.detours.delete(id);
@@ -512,7 +512,7 @@ export class Skirmish {
   private readonly avoidance: LocalAvoidance;
   private readonly passageTraffic: PassageTraffic;
   private readonly collisionHostile = (a: number, b: number): boolean => this.hostile(a,b);
-  private readonly spatial: SpatialGrid<Squad>;
+  private readonly spatial: IncrementalSpatialGrid<Squad>;
   private readonly navalSpatial: SpatialGrid<Ship>;
   private readonly heldSpatial: SpatialGrid<Squad>;
   private readonly landScratch: Squad[] = [];
@@ -533,7 +533,15 @@ export class Skirmish {
   private readonly idleTickWork = {
     groundProposals: 0, movementRebuilds: 0, movementRebuildRows: 0, heldRebuilds: 0, heldRows: 0,
     clearanceCalls: 0, clearanceReuses: 0, clearanceRevisionResets: 0,
+    movementUpdates: 0, movementUpdateRows: 0,
   };
+  // Ids whose spatial facts changed (UnitIndex.changed) since the movement grid
+  // was last synchronised. Derived, never checkpointed.
+  private readonly movementPoseChanges = new Set<number>();
+  private readonly movementPoseScratch: Squad[] = [];
+  private landVersion = 0;
+  /** landVersion the movement grid was fully rebuilt from; -1 forces a rebuild. */
+  private movementGridLand = -1;
   private movementLand(): Squad[] {
     if (this.landMembership !== this.squadIndex.membershipRevision ||
         this.landCargo !== this.squadIndex.cargoRevision) {
@@ -543,11 +551,27 @@ export class Skirmish {
       this.landScratch.sort((a, b) => a.id - b.id);
       this.landMembership = this.squadIndex.membershipRevision;
       this.landCargo = this.squadIndex.cargoRevision;
+      this.landVersion++;
     }
     if (this.movementSpatialRevision !== this.squadIndex.spatialRevision) {
-      this.spatial.rebuild(this.landScratch);
-      this.idleTickWork.movementRebuilds++;
-      this.idleTickWork.movementRebuildRows += this.landScratch.length;
+      if (this.movementGridLand !== this.landVersion) {
+        this.spatial.rebuild(this.landScratch);
+        this.movementGridLand = this.landVersion;
+        this.idleTickWork.movementRebuilds++;
+        this.idleTickWork.movementRebuildRows += this.landScratch.length;
+      } else {
+        // Same membership: re-index only squads whose position, owner or
+        // geometry changed, plus transitioning squads, whose envelope (the
+        // grid extent) depends on the tick. Equal to a full rebuild (I-3).
+        const changed = this.movementPoseScratch;
+        changed.length = 0;
+        for (const squad of this.landScratch)
+          if (this.movementPoseChanges.has(squad.id) || squad.formation?.transition) changed.push(squad);
+        this.spatial.update(changed);
+        this.idleTickWork.movementUpdates++;
+        this.idleTickWork.movementUpdateRows += changed.length;
+      }
+      this.movementPoseChanges.clear();
       this.movementSpatialRevision = this.squadIndex.spatialRevision;
     }
     return this.landScratch;
@@ -1052,7 +1076,7 @@ export class Skirmish {
     this.shipAdmission.onEvent = event => {this.commandApplications.observe("water", event);};
     this.avoidance = new LocalAvoidance(map, this.collisionHostile, id => this.amphibious(id));
     this.passageTraffic = new PassageTraffic(map, this.paths);
-    this.spatial = new SpatialGrid(
+    this.spatial = new IncrementalSpatialGrid(
       map.width() * FIXED,
       map.height() * FIXED,
       2 * FIXED,

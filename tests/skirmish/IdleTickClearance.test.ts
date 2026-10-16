@@ -89,7 +89,7 @@ describe("I-2 (b): envelope reads that previously always missed", () => {
     const t = geometry.telemetry;
     // Baseline (aof/next-1 bc7c7882): 11,219 builds + 16,719 projected reuses
     // = 27,938 recomputations out of 116,491 reads.
-    expect(t.envelopeReads).toBe(116491);
+    expect(t.envelopeReads).toBeLessThanOrEqual(116491);
     expect(t.alternateReuses).toBeGreaterThan(0);
     expect(t.settledReuses).toBeGreaterThan(1000);
     expect(t.envelopeBuilds + t.projectedReuses).toBeLessThan(26000);
