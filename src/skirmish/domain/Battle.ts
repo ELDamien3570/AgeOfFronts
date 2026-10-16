@@ -25,7 +25,7 @@ import { tacticalDefence, tacticalFacts, formationModifiers } from './FormationT
 import { facingArc } from './FormationFacing';
 import { TACTICAL_CHARGE } from '../content/TacticalRules';
 import { CAVALRY_ENTRY } from './CavalryEngagement';
-import { cavalryAssaultContact, meleeCavalry, ordinaryCavalryAssault, assaultBonus, assaultWeapon, assaultContactGeometry, commitCavalryBonus } from './CavalryAssault';
+import { cavalryAssaultContact, meleeCavalry, ordinaryCavalryAssault, assaultBonus, assaultWeapon, assaultContactGeometry, assaultGeometryChanged, commitCavalryBonus } from './CavalryAssault';
 import { waveTick,waveDamage,cavalryRanks,cavalryStrikeReach,cavalryAttackGap,cavalryUsesRankWaves,exposedCavalryContact,cavalryRankCycleTicks,type CavalryCycle } from './CavalryMelee';
 import { isCavalryTroopClass } from './Definitions';
 import { GUN_NEST_ATTACK } from "../content/Defences";
@@ -1016,9 +1016,13 @@ export class Battle {
       }
 
       const activeAssault=squad.cavalryEngagement?.assault;
-      if(activeAssault && squad.cavalryEngagement && squad.cavalryEngagement.targetIds.includes(target.id))
-        this.world.updateSquad(squad.id,{cavalryEngagement:{...squad.cavalryEngagement,
-          assault:{...activeAssault,...assaultContactGeometry(squad,target,tick,activeAssault.depth,(dx,dy,lateral)=>!!this.world.chargePresentationClear?.(squad,dx,dy,lateral))}}});
+      if(activeAssault && squad.cavalryEngagement && squad.cavalryEngagement.targetIds.includes(target.id)){
+        // Publish the edge only when it moved; rewriting an unchanged edge on
+        // every strike churned the record and its snapshot detail (R2-P11, C5).
+        const geometry=assaultContactGeometry(squad,target,tick,activeAssault.depth,(dx,dy,lateral)=>!!this.world.chargePresentationClear?.(squad,dx,dy,lateral));
+        if(assaultGeometryChanged(activeAssault,geometry))
+          this.world.updateSquad(squad.id,{cavalryEngagement:{...squad.cavalryEngagement,assault:{...activeAssault,...geometry}}});
+      }
       const waves=profile.channel==='melee' && profile.perSoldier && cavalryUsesRankWaves(squad) && isCavalryTroopClass(definition.troopClass);
       const contacts:CavalryCycle['contacts'][number][]=[];
       const applyHit=(other:Squad,hit:number,contributors:number)=>{

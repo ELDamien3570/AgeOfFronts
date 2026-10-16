@@ -55,7 +55,26 @@ export function cavalryResistance(source: Squad, target: Squad, attacker: UnitDe
     defender.troopClass === 'antiCavalry' ? CAVALRY_ASSAULT.counterResistance :
     shape === 'mass' ? 1 : CAVALRY_ASSAULT.frontResistance;
   const resistance = power(target, defender, attacker) * stance;
-  return { penetrates: pressure > resistance, pressure, resistance };
+  return { penetrates: pressure > resistance, pressure: roundedContest(pressure), resistance: roundedContest(resistance) };
+}
+
+/** Thresholds below which a recomputed contact edge is the same edge. They
+ * are the ones the client already re-plans passes at (CavalryAssaultPresentation),
+ * so skipping the write never hides a change the presentation would show (C5). */
+export const ASSAULT_GEOMETRY_CHANGE = Object.freeze({position: .5 * FIXED, normalDot: .8});
+type AssaultGeometry = Pick<CavalryAssault,'x'|'y'|'nx'|'ny'|'halfWidth'|'depth'|'approach'>;
+/** Integer positions and extents, 1e-4 normals: stable, compact snapshot values. */
+export function roundedAssaultGeometry<T extends AssaultGeometry>(g:T):T {
+  return {...g,x:Math.round(g.x),y:Math.round(g.y),nx:Math.round(g.nx*1e4)/1e4,ny:Math.round(g.ny*1e4)/1e4,
+    halfWidth:Math.round(g.halfWidth),depth:Math.round(g.depth),approach:Math.round(g.approach)};
+}
+/** Three significant figures; these only describe the contest to the client. */
+export function roundedContest(n:number):number {return n===0?0:Number(n.toPrecision(3));}
+/** True when a recomputed edge differs enough from the stored one to publish. */
+export function assaultGeometryChanged(old:AssaultGeometry&{penetrates:boolean},next:AssaultGeometry):boolean {
+  return Math.hypot(next.x-old.x,next.y-old.y)>ASSAULT_GEOMETRY_CHANGE.position ||
+    next.nx*old.nx+next.ny*old.ny<ASSAULT_GEOMETRY_CHANGE.normalDot ||
+    next.depth!==old.depth || next.halfWidth+16<old.halfWidth*.65;
 }
 
 /** Rebuilt only on committed attacks, so moving targets and casualty frontage
@@ -69,8 +88,8 @@ export function assaultContactGeometry(source:Squad,target:Squad,tick:number,dep
   const mid=(lo+hi)/2,edge=Math.min(...targetBody.map(p=>p.x*n.x+p.y*n.y));
   const halfWidth=Math.max(0,(hi-lo)/2),approach=Math.min(CAVALRY_ENTRY.maximum,formationEnvelope(source,tick).depth);
   const clear=hi>=lo&&certify(Math.round(n.x*(depth+CONTACT.release)),Math.round(n.y*(depth+CONTACT.release)),Math.min(32,halfWidth));
-  return {x:n.x*edge+t.x*mid,y:n.y*edge+t.y*mid,nx:n.x,ny:n.y,
-    halfWidth:clear?halfWidth:0,depth:clear?depth:0,approach:clear?approach:0};
+  return roundedAssaultGeometry({x:n.x*edge+t.x*mid,y:n.y*edge+t.y*mid,nx:n.x,ny:n.y,
+    halfWidth:clear?halfWidth:0,depth:clear?depth:0,approach:clear?approach:0});
 }
 
 /** The same resistance and terrain certificate govern ordinary assaults and

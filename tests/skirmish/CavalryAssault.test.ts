@@ -180,4 +180,19 @@ describe('committed cavalry assault', () => {
     expect(Math.hypot(rider.x-origin.x,rider.y-origin.y)).toBeGreaterThan(FIXED);
     expect(game.volleys.filter(v=>v.squadId===rider.id&&v.tick>tick&&v.melee)).toHaveLength(0);
   });
+
+  it('does not rewrite unchanged assault geometry on every strike (C5)', () => {
+    const {model,game,rider}=arena(20);
+    let writes=0;
+    const update=game.updateSquad.bind(game);
+    game.updateSquad=(id,changes)=>{if(id===rider.id && 'cavalryEngagement' in changes)writes++;return update(id,changes);};
+    let strikes=0;
+    for(let i=0;i<secondsToTicks(20);i++){model.step();if(game.squad(rider.id)?.combatFact?.tick===game.tick)strikes++;}
+    expect(strikes).toBeGreaterThan(10);
+    expect(game.squad(rider.id)?.cavalryEngagement?.assault).toBeDefined();
+    expect(writes).toBeLessThanOrEqual(3);
+    const a=game.squad(rider.id)!.cavalryEngagement!.assault!;
+    for(const n of [a.x,a.y,a.halfWidth,a.depth,a.approach])expect(Number.isInteger(n)).toBe(true);
+    validateCavalryEngagement(game.squad(rider.id)!.cavalryEngagement,game.tick);
+  });
 });
