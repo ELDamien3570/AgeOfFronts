@@ -1,4 +1,4 @@
-import { RuntimeDiagnostics, type MatchDiagnostics } from "../../RuntimeDiagnostics";
+import { RuntimeDiagnostics, ThreadCpuWindow, threadCpuClock, type MatchDiagnostics } from "../../RuntimeDiagnostics";
 import { parentPort, threadId } from "node:worker_threads";
 import { SpawnSelection } from "../../domain/SpawnSelection";
 import { createSkirmishMap } from "../../Elevation";
@@ -26,7 +26,7 @@ import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
 import { secondsToTicks } from "../../Protocol";
 import type { SnapshotPacket } from "../../Protocol";
 import { loadServerMap } from "./ServerMap";
-import { observeGarbageCollection } from "./WorkerRuntimeDiagnostics";
+import { liveHeapBytes, observeGarbageCollection } from "./WorkerRuntimeDiagnostics";
 
 if (!parentPort) throw new Error("The match executor requires a worker thread");
 let match: Skirmish | undefined;
@@ -37,7 +37,11 @@ let canonicalVersion = 0;
 const invalidateBaselines = () => { canonicalVersion++; baselines.invalidate(); };
 parentPort.on("close", () => baselines.close());
 parentPort.on("close", () => { void encoding.close(); });
-const diagnostics = new RuntimeDiagnostics();
+const diagnostics = new RuntimeDiagnostics(256, true, threadCpuClock);
+// Thread CPU of runner.step per 400 simulated ticks; wall/CPU > 1.5 flags a
+// contended host (I-0). liveHeap is sampled only at the 30 s log cadence.
+const stepCpu = new ThreadCpuWindow();
+let liveHeap: { bytes: number; tick: number } | undefined;
 const stopObserving = observeGarbageCollection(diagnostics);
 parentPort.on("close", stopObserving);
 let diagnosticContext = { matchId: "unassigned", runtimeId: "unknown" };
@@ -120,7 +124,9 @@ const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadByte
       work: planning.work, completed: planning.completed, superseded: planning.superseded, admissionDeferred: planning.admissionDeferred,
       cohorts: m.routePlanner.diagnosticCohorts(m.tick) },
     memory: { heapUsed: memory.heapUsed, heapTotal: memory.heapTotal, external: memory.external,
-      arrayBuffers: memory.arrayBuffers, processRss: memory.rss } };
+      arrayBuffers: memory.arrayBuffers, processRss: memory.rss,
+      ...(liveHeap ? { liveHeapBytes: liveHeap.bytes, liveHeapTick: liveHeap.tick } : {}) },
+    ...(stepCpu.snapshot() ? { cpu: stepCpu.snapshot() } : {}) };
 };
 const seats = () =>
   match!.players.map((p) => ({
@@ -267,7 +273,12 @@ parentPort.on(
             const rejectedCommands = runner!.applyCommands(request.commands, collectOutcome);
             diagnostics.record("commands", performance.now() - advanceStarted);
             const previousTick = match.tick;
+            const stepStarted = performance.now(), stepCpuStarted = diagnostics.cpuNow();
             runner!.step(request.ticks);
+            const stepWall = performance.now() - stepStarted, stepCpuEnded = diagnostics.cpuNow();
+            const stepCpuMs = stepCpuStarted === undefined || stepCpuEnded === undefined ? undefined : stepCpuEnded - stepCpuStarted;
+            diagnostics.record("simulate", stepWall, stepCpuMs);
+            stepCpu.add(match.tick - previousTick, stepWall, stepCpuMs);
             const outcomes = [...commandOutcomes.values()];
             result = {
               tick: match.tick,
@@ -297,6 +308,11 @@ parentPort.on(
               advanced.diagnostics = diagnosticSnapshot(request.commands.length, match.tick - previousTick, advanced.packet?.binary?.byteLength ?? advanced.packet?.payload.length ?? 0);
               if (match.tick >= nextDiagnosticTick) {
                 nextDiagnosticTick = match.tick + secondsToTicks(30);
+                const live = liveHeapBytes();
+                if (live !== undefined) {
+                  liveHeap = { bytes: live, tick: match.tick };
+                  advanced.diagnostics.memory = { ...advanced.diagnostics.memory, liveHeapBytes: live, liveHeapTick: match.tick };
+                }
                 console.info(JSON.stringify({ event: "match-runtime-diagnostics", threadId,
                   source: process.env.GIT_COMMIT ?? "unknown", ...advanced.diagnostics }));
               }
