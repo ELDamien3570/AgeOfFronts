@@ -9,8 +9,7 @@ import { personalityOf } from "../content/AiPersonalities";
 import type { Player } from "../Protocol";
 import type { Expansion } from "./Expansion";
 import { AI_DIFFICULTY, aiRaidAfterTicks } from "../content/AiDifficulty";
-import { aiDifficultyOf, isHumanSeat } from "./PlaytestRules";
-import { playtestCampaignAllowed } from "./PlaytestRules";
+import { aiDifficultyOf, isHumanSeat, playtestCampaignAllowed } from "./PlaytestRules";
 
 export interface ArmyTheatre {id:string;purpose:'offense'|'defense'|'screen';tile:number;target?:number;priority:number;desiredSquads:number}
 export type OperationPhase = "peace" | "preparing" | "war" | "recovery";
