@@ -1,6 +1,14 @@
 import { secondsToTicks } from '../Protocol';
 import { FIXED, type Command, type Squad } from "../Protocol";
 import { BUDGETS, SKIRMISH } from "../content/TacticalRules";
+
+/** I11 (R2-P18): stance visits per tick. At least BUDGETS.skirmish, and
+ * enough that every registered state is visited once per SKIRMISH.visitTicks,
+ * so a reloading skirmisher is evaluated inside even the shortest trigger
+ * window (a 2.5 s reload leaves 12 ticks before the last second). */
+export function skirmishVisitBudget(states: number): number {
+  return Math.max(BUDGETS.skirmish, Math.ceil(states / SKIRMISH.visitTicks));
+}
 import type { Expansion } from "./Expansion";
 import { formationDoctrine } from "./FormationGeometry";
 export function validateStance(
@@ -186,7 +194,7 @@ export class SkirmishStance {
         }
     const ids = [...this.states.keys()];
     if (!ids.length) return;
-    for (let n = 0; n < Math.min(BUDGETS.skirmish, ids.length); n++) {
+    for (let n = 0; n < Math.min(skirmishVisitBudget(ids.length), ids.length); n++) {
       const id = ids[this.cursor++ % ids.length],
         state = this.states.get(id)!,
         s = w.squad(id),

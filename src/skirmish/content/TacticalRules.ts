@@ -59,7 +59,9 @@ export const BUDGETS = Object.freeze({engagementDetect:32,engagementPlan:48,army
   // army re-evaluated each member every 4 ticks); 32 keeps every member under 0.5 s.
   skirmish:32});
 export const TRENCH=Object.freeze({occupationRevision:2,segmentTiles:4,slotsPerTile:6,maxSegmentsPerSquad:4,alliedAccess:false,reductionBp:2000});
-export const SKIRMISH=Object.freeze({minRemainingTicks:secondsToTicks(1),dangerTiles:5,cavalryDangerTiles:9,cooldownTicks:secondsToTicks(4),leashTiles:4,stepTiles:2,maxPerMinute:4});
+export const SKIRMISH=Object.freeze({minRemainingTicks:secondsToTicks(1),dangerTiles:5,cavalryDangerTiles:9,cooldownTicks:secondsToTicks(4),leashTiles:4,stepTiles:2,maxPerMinute:4,
+  /** Every stance state is visited at least this often (I11, R2-P18). */
+  visitTicks:secondsToTicks(1)});
 export const ELEVATION=Object.freeze({minDeltaDm:60,saturateDm:400,maxRangeBp:1000,maxDamageBp:1000});
 export const POSITIONS=Object.freeze({cell:8,ringTiles:10,minProminenceDm:80,maxObjectiveTiles:24,
   maxCandidates:6,minCommitTicks:secondsToTicks(30),reevaluateTicks:secondsToTicks(5),
