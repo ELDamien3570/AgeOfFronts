@@ -1,5 +1,5 @@
 import {secondsToTicks} from '../../src/skirmish/Protocol';
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import { LiveMatch } from "../../src/skirmish/multiplayer/application/LiveMatch";
 import type {
@@ -357,6 +357,32 @@ describe("bounded live admission lifecycle", () => {
     expect(f.match.isAdmitting("c")).toBe(true);
     expect(f.messages.slice(before).filter(m=>m.guest==="c"&&m.message.type==="error")).toEqual([]);
     await f.match.end("test");
+  });
+  it("defers a second client resync inside the 2 s cooldown instead of capturing another baseline",async()=>{
+    vi.useFakeTimers({toFake:["setTimeout","clearTimeout"]});
+    try{
+      const f=await fixture();const original=f.executor.request;
+      f.executor.request=async<T extends ExecutorResult>(request:ExecutorRequest)=>{
+        if(request.type!=="client-baseline")return original<T>(request);
+        f.requests.push(request);return {tick:f.match.progress().tick,winner:null,baseline:packet} as T;
+      };
+      f.watch("slow",3);await f.match.qualify("slow","build",true);
+      const joined=f.baseline("slow");f.match.stateApplied("slow",joined.publicationSequence!,joined.flowEpoch!);
+      f.match.acknowledge("slow",joined.syncId!,joined.publicationSequence!);
+      const baselines=()=>f.requests.filter(r=>r.type==="client-baseline").length;
+      f.match.resync("slow");await Promise.resolve();await Promise.resolve();
+      expect(baselines()).toBe(1);
+      const first=f.baseline("slow");expect(first.rebase).toBe(true);
+      f.time(11_000);f.match.resync("slow");f.match.resync("slow");
+      await vi.advanceTimersByTimeAsync(900);
+      expect(baselines()).toBe(1);
+      expect(f.baseline("slow").publicationSequence).toBe(first.publicationSequence);
+      f.time(12_000);await vi.advanceTimersByTimeAsync(100);
+      expect(baselines()).toBe(2);
+      const second=f.baseline("slow");expect(second.rebase).toBe(true);expect(second.flowEpoch).toBeGreaterThan(first.flowEpoch!);
+      expect(f.messages.some(m=>m.guest==="slow"&&m.message.type==="error")).toBe(false);
+      await f.match.end("test");
+    }finally{vi.useRealTimers();}
   });
   it("retains ownership and capacity through grace; successful rejoin clears it, failed joins never extend it", async () => {
     const f = await fixture();

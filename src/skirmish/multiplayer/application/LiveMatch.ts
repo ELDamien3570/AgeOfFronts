@@ -31,6 +31,10 @@ import {
 export const MAX_RECENT_COMMANDS = 2048;
 export const MAX_QUEUED_COMMANDS = MAX_COMMAND_BATCH;
 export const EMPTY_MATCH_GRACE_MS = 120_000;
+/** Minimum spacing between full recovery baselines for one guest. Each costs a
+ * synchronous capture on the simulation thread, so a later request is deferred
+ * (never refused: the flow is already recovering and must receive a baseline). */
+export const CLIENT_RESYNC_COOLDOWN_MS = 2_000;
 const TICK_MS = 1000 / TICKS_PER_SECOND;
 const SNAPSHOT_MS = 200;
 interface Seat {
@@ -112,6 +116,8 @@ export class LiveMatch {
   private readonly flows=new Map<string,ClientStateFlow>();
   private readonly recoveryQueue:string[]=[];
   private recoveringClient=false;
+  private readonly recoveredAt=new Map<string,number>();
+  private readonly deferredRecoveries=new Map<string,ReturnType<typeof setTimeout>>();
   readonly options;
   constructor(
     readonly reservation: MatchReservation,
@@ -838,6 +844,8 @@ export class LiveMatch {
     this.tickTimer = undefined;
     this.unsubscribePublication?.();
     clearTimeout(this.syncTimer);
+    for (const timer of this.deferredRecoveries.values()) clearTimeout(timer);
+    this.deferredRecoveries.clear();
     this.broadcast({
       type: "match-ended",
       completed,
@@ -897,7 +905,17 @@ export class LiveMatch {
     const flow=this.flows.get(guest);
     if(!flow || !this.connected(guest))return;
     if(!flow.beginBaseline())return;
-    this.recoveryQueue.push(guest);void this.drainRecovery();
+    const wait=(this.recoveredAt.get(guest)??-Infinity)+CLIENT_RESYNC_COOLDOWN_MS-this.now();
+    if(wait<=0){this.recoveryQueue.push(guest);void this.drainRecovery();return;}
+    if(this.deferredRecoveries.has(guest))return;
+    const timer=setTimeout(()=>{
+      this.deferredRecoveries.delete(guest);
+      // A join baseline or a disconnect may have superseded this recovery.
+      if(this.stopped || this.flows.get(guest)!==flow || !flow.recovering)return;
+      this.recoveryQueue.push(guest);void this.drainRecovery();
+    },wait);
+    timer.unref?.();
+    this.deferredRecoveries.set(guest,timer);
   }
   private async drainRecovery():Promise<void> {
     if(this.recoveringClient)return;this.recoveringClient=true;
@@ -907,11 +925,13 @@ export class LiveMatch {
         const epoch=flow.epoch;
         try{
           const result=await this.executor.request<ClientBaseline>({type:"client-baseline"});
+          this.recoveredAt.set(guest,this.now());
           if(this.stopped || this.flows.get(guest)!==flow || flow.epoch!==epoch || !this.connected(guest))continue;
           const sequence=++this.publicationSequence;
           flow.baseline(sequence,this.tick>result.tick);
           this.send(guest,{...this.state(result.baseline),tick:result.tick,publicationSequence:sequence,flowEpoch:flow.epoch,rebase:true});
         }catch(error){
+          this.recoveredAt.set(guest,this.now());
           if(this.stopped || this.flows.get(guest)!==flow || flow.epoch!==epoch || !this.connected(guest))continue;
           flow.recovering=false;
           this.send(guest,{type:"error",message:`State recovery failed: ${(error as Error).message}. Retry from the lobby.`});
