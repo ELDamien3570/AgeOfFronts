@@ -11,15 +11,14 @@ export interface CommandBounds { width: number; height: number }
 function boundsRejection(command: Command, bounds: CommandBounds): string | null {
   const tiles = bounds.width * bounds.height,
     record = command as unknown as Record<string, unknown>,
-    tile = (value: unknown) => value === undefined || (Number.isSafeInteger(value) && Number(value) >= 0 && Number(value) < tiles);
+    tile = (value: unknown) => value === undefined || (Number.isSafeInteger(value) && Number(value) >= 0 && Number(value) < tiles),
+    coord = (value: unknown, cells: number) => value === undefined || (Number.isSafeInteger(value) && Number(value) >= 0 && Number(value) < cells * FIXED),
+    point = (value: { x?: unknown; y?: unknown } | undefined) => !value || (coord(value.x, bounds.width) && coord(value.y, bounds.height));
   if (!tile(record.tile)) return "Invalid command position or identity";
-  if (record.x !== undefined && !(Number.isSafeInteger(record.x) && Number(record.x) >= 0 && Number(record.x) < bounds.width * FIXED))
-    return "Invalid command position or identity";
-  if (record.y !== undefined && !(Number.isSafeInteger(record.y) && Number(record.y) >= 0 && Number(record.y) < bounds.height * FIXED))
-    return "Invalid command position or identity";
+  if (!point(record as { x?: unknown; y?: unknown })) return "Invalid command position or identity";
   if (command.type === "occupy" && Array.isArray(command.frontageTiles) && !command.frontageTiles.every(tile))
     return "Invalid trench frontage";
-  if (command.type === "order" && command.order?.type === "move" && !tile(command.order.tile))
+  if (command.type === "order" && command.order?.type === "move" && (!tile(command.order.tile) || !point(command.order)))
     return "Choose a passable destination";
   if (command.type === "army-order" && ["move", "deploy", "regroup"].includes(command.order?.type as string) &&
     !tile((command.order as { tile?: number }).tile))

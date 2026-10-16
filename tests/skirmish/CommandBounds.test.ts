@@ -68,6 +68,20 @@ describe("map-bounded command positions (R2-H2)", () => {
     expect(commandRejection({ type: "army-order", playerId: 1, armyId: 1, order: { type: "move", tile: W * H } }, { width: W, height: H }))
       .toBe("Invalid army destination");
   });
+  it.each([
+    ["x far off-map", 1_000_000, 10 * FIXED],
+    ["x negative", -1_000_000, 10 * FIXED],
+    ["y one row below the map", 10 * FIXED, H * FIXED],
+  ])("rejects an order.move whose nested %s through applyCommand", (_label, x, y) => {
+    // Only the map-bounds pass rejects these: the tile is on the map and the
+    // domain would otherwise accept and defer the order. This pins the
+    // Simulation.applyCommand -> commandRejection(..., bounds) wiring.
+    const match = game(), own = match.squads.find(s => s.playerId === 1 && s.kind !== "cavalry")!;
+    const tile = match.map.ref(Math.floor(own.x / FIXED), Math.floor(own.y / FIXED));
+    const command: Command = { type: "order", playerId: 1, squadIds: [own.id], order: { type: "move", tile, x, y } };
+    expect(match.applyCommand(command)).toBe("Choose a passable destination");
+    expect(match.applyCommand({ ...command, order: { type: "move", tile, x: own.x, y: own.y } })).toBeNull();
+  });
   it("keeps the unbounded policy for callers without a map", () => {
     expect(commandRejection({ type: "order", playerId: 1, squadIds: [1], order: { type: "move", tile: W * H } })).toBeNull();
     expect(commandRejection({ type: "order", playerId: 1, squadIds: [1], order: { type: "move", tile: W * H - 1 } }, { width: W, height: H })).toBeNull();
