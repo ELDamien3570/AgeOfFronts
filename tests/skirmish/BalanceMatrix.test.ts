@@ -28,8 +28,7 @@ export const COUNTER_RATCHET_FACTOR = 0.9;
 
 type Weapon = NonNullable<UnitDefinition["meleeAttack"]> | NonNullable<UnitDefinition["rangedAttack"]> | UnitDefinition["attack"];
 const cap = (u: UnitDefinition) => u.formationRecipe!.capacity;
-const hpPool = (u: UnitDefinition) => u.formationRecipe!.model === "soldiers"
-  ? u.formationRecipe!.soldierHp * cap(u) : u.maxHealth;
+const hpPool = (u: UnitDefinition) => u.formationRecipe!.soldierHp * cap(u);
 const gold = (u: UnitDefinition) => scaledRecipeCost(u, "base").gold ?? 0;
 
 function hit(w: Weapon, def: UnitDefinition, perSoldier: boolean): number {
