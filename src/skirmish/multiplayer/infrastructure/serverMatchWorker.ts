@@ -1,5 +1,5 @@
 import { RuntimeDiagnostics, type MatchDiagnostics } from "../../RuntimeDiagnostics";
-import { parentPort, threadId } from "node:worker_threads";
+import { parentPort, threadId, workerData, type MessagePort } from "node:worker_threads";
 import { SpawnSelection } from "../../domain/SpawnSelection";
 import { createSkirmishMap } from "../../Elevation";
 import { Skirmish } from "../../Simulation";
@@ -25,13 +25,20 @@ import {
 import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
 import { secondsToTicks } from "../../Protocol";
 import type { SnapshotPacket } from "../../Protocol";
+import type { EncodedState } from "../StateCodec";
 import { loadServerMap } from "./ServerMap";
 import { observeGarbageCollection } from "./WorkerRuntimeDiagnostics";
 
 if (!parentPort) throw new Error("The match executor requires a worker thread");
 let match: Skirmish | undefined;
 let streamPublications = false;
-const encoding = new SnapshotEncodingWorker();
+/** N6b (P14): the coordinator's end of a MessageChannel. Streamed
+ * publications travel encoder thread -> coordinator without waiting for this
+ * thread to yield. Every result carries publicationsIssued so the coordinator
+ * applies it only after the publications it follows. */
+const publicationPort = (workerData as { publicationPort?: MessagePort } | undefined)?.publicationPort;
+const encoding = new SnapshotEncodingWorker(publicationPort);
+let publicationsIssued = 0;
 const baselines = new RecoveryBaselineCache();
 let canonicalVersion = 0;
 const invalidateBaselines = () => { canonicalVersion++; baselines.invalidate(); };
@@ -90,8 +97,15 @@ const recoveryBaseline = () => baselines.get(canonicalVersion, () => {
   capturedTick = state.tick; captureSequence++;
   return encodePacket(packet);
 });
-const publications = new PublicationQueue(encodePacket,
-  (tick, packet) => diagnostics.measure("transfer", () => parentPort!.postMessage({ publication: { tick, packet } })),
+type StreamedCapture = { packet: SnapshotPacket; tick: number; sequence: number };
+const publications = new PublicationQueue<StreamedCapture, { sequence: number; packet?: EncodedState }>(
+  value => diagnostics.measureAsync("encoding", async () => publicationPort
+    ? (await encoding.encode(value.packet, { tick: value.tick, sequence: value.sequence }), { sequence: value.sequence })
+    : { sequence: value.sequence, packet: await encoding.encode(value.packet) }),
+  (tick, { sequence, packet }) => {
+    // Without a direct port (legacy hosts), publications still hop through this thread.
+    if (packet) diagnostics.measure("transfer", () => parentPort!.postMessage({ publication: { tick, packet, sequence } }));
+  },
   error => {
     console.error("Snapshot publication failed", error);
     parentPort!.postMessage({ fatal: SNAPSHOT_PUBLICATION_FAILED_MESSAGE });
@@ -286,7 +300,8 @@ parentPort.on(
             if (commandVisible) (result as MatchAdvance).commandVisible = true;
             const publish = request.publish;
             if (publish || match.winner !== null) {
-              if (streamPublications && match.winner === null) publications.offer(match.tick, capture);
+              if (streamPublications && match.winner === null)
+                publications.offer(match.tick, () => ({ packet: capture(), tick: match!.tick, sequence: ++publicationsIssued }));
               else {
                 await publications.flush();
                 (result as MatchAdvance).packet = await snapshot();
@@ -305,7 +320,7 @@ parentPort.on(
             commandOutcomes.clear();
           } else throw new Error("Unknown match operation");
         }
-        diagnostics.measure("transfer", () => parentPort!.postMessage({ id: message.id, result }));
+        diagnostics.measure("transfer", () => parentPort!.postMessage({ id: message.id, result, publicationsIssued }));
       } catch (error) {
         // Retain the stack, operation and raw text on the server. Clients
         // receive only deliberate messages or one fixed string (L11).

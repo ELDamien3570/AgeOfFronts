@@ -1,4 +1,4 @@
-import { Worker } from "node:worker_threads";
+import { Worker, type MessagePort } from "node:worker_threads";
 import type { SnapshotPacket } from "../../Protocol";
 import type { EncodedState } from "../StateCodec";
 import { RuntimeDiagnostics, type RuntimePhase, type TimingSummary } from "../../RuntimeDiagnostics";
@@ -6,10 +6,8 @@ import { snapshotTransfers } from "../../SnapshotCodec";
 
 /** Owns pure immutable snapshot encoding, never authoritative game state. */
 export class SnapshotEncodingWorker {
-  private readonly worker = new Worker(new URL("./snapshotEncoderThread.ts", import.meta.url), {
-    execArgv: ["--import", "tsx"], resourceLimits: { maxOldGenerationSizeMb: 256 },
-  });
-  private readonly pending = new Map<number, { resolve: (packet: EncodedState) => void; reject: (error: Error) => void; timeout: ReturnType<typeof setTimeout> }>();
+  private readonly worker: Worker;
+  private readonly pending = new Map<number, { resolve: (packet: EncodedState | undefined) => void; reject: (error: Error) => void; timeout: ReturnType<typeof setTimeout> }>();
   memory?: { heapUsed: number; external: number; arrayBuffers: number };
   timings?: Partial<Record<RuntimePhase, TimingSummary>>;
   readonly diagnostics = new RuntimeDiagnostics();
@@ -18,8 +16,14 @@ export class SnapshotEncodingWorker {
   failureCause?: "timeout" | "exit" | "error" | "closed";
   private nextId = 1;
   private failure?: Error;
-  constructor() {
-    this.worker.on("message", (message: { id: number; packet: EncodedState; tick?: number; error?: string; timings?: Partial<Record<RuntimePhase, TimingSummary>>; retainedBytes?: number; memory?: { heapUsed: number; external: number; arrayBuffers: number } }) => {
+  /** With `publicationPort`, encode(packet, publication) posts the encoded
+   * publication on that port (N6b) and resolves without a packet. */
+  constructor(readonly publicationPort?: MessagePort) {
+    this.worker = new Worker(new URL("./snapshotEncoderThread.ts", import.meta.url), {
+      execArgv: ["--import", "tsx"], resourceLimits: { maxOldGenerationSizeMb: 256 },
+      ...(publicationPort ? { workerData: { publicationPort }, transferList: [publicationPort] } : {}),
+    });
+    this.worker.on("message", (message: { id: number; packet?: EncodedState; tick?: number; error?: string; timings?: Partial<Record<RuntimePhase, TimingSummary>>; retainedBytes?: number; memory?: { heapUsed: number; external: number; arrayBuffers: number } }) => {
       const task = this.pending.get(message.id); if (!task) return;
       this.pending.delete(message.id); clearTimeout(task.timeout);
       this.memory = message.memory;
@@ -31,7 +35,10 @@ export class SnapshotEncodingWorker {
     this.worker.on("error", error => this.fail(error, "error"));
     this.worker.on("exit", code => this.fail(new Error(`Snapshot encoder stopped (exit ${code})`), "exit"));
   }
-  encode(packet: SnapshotPacket): Promise<EncodedState> {
+  encode(packet: SnapshotPacket): Promise<EncodedState>;
+  encode(packet: SnapshotPacket, publication: { tick: number; sequence: number }): Promise<undefined>;
+  encode(packet: SnapshotPacket, publication?: { tick: number; sequence: number }): Promise<EncodedState | undefined> {
+    if (publication && !this.publicationPort) return Promise.reject(new Error("Snapshot encoder has no publication port"));
     if (this.failure) return Promise.reject(this.failure);
     if (this.pending.size >= 2) return Promise.reject(new Error("Snapshot encoder backlog exceeded"));
     return new Promise((resolve, reject) => {
@@ -41,7 +48,7 @@ export class SnapshotEncodingWorker {
       // Clone synchronously at this tick boundary. Expansion fields can still
       // reference domain records, so never defer postMessage until a later tick.
       // The encoder owns its isolated copy; the simulation may then advance.
-      try { this.diagnostics.measure("transfer", () => this.worker.postMessage({ id, packet }, snapshotTransfers(packet))); }
+      try { this.diagnostics.measure("transfer", () => this.worker.postMessage({ id, packet, ...(publication ? { publication } : {}) }, snapshotTransfers(packet))); }
       catch (error) { this.pending.delete(id); clearTimeout(timeout); reject(error as Error); }
     });
   }
