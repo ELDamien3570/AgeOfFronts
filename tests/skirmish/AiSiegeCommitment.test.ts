@@ -1,3 +1,4 @@
+import { finishRangedPreparation } from "./fixtures/RangedPreparation";
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
@@ -75,6 +76,8 @@ describe("AI siege target commitment", () => {
     expect(find).not.toHaveBeenCalled();
     expect(unit.order).toEqual({ type: "hold" });
     game.expansion!.battle.fight([]);
+    expect(game.expansion!.battle.projectiles).toHaveLength(0);
+    finishRangedPreparation(game, unit.id);
     expect(game.expansion!.battle.projectiles).toHaveLength(1);
     expect(unit.lastAttackTick).toBe(game.tick);
   });

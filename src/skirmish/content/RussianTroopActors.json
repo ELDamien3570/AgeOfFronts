@@ -234,6 +234,7 @@
     "facingOffset": 0
   },
   "Napoleonic:rangedCavalry": {
+    "bakedMuzzleSmoke": true,
     "key": "EarlyModern-MountedMusketeer",
     "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-MountedMusketeer/",
     "memberScale": 0.6580645161290323,
@@ -360,6 +361,7 @@
     "facingOffset": 0
   },
   "Napoleonic:rangedInfantry": {
+    "bakedMuzzleSmoke": true,
     "key": "EarlyModern-RusMusketeer",
     "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-RusMusketeer/",
     "memberScale": 0.27567567567567564,
@@ -558,6 +560,7 @@
     "facingOffset": 0
   },
   "Napoleonic:frontline": {
+    "bakedMuzzleSmoke": true,
     "key": "EarlyModern-RusGrenadier",
     "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-RusGrenadier/",
     "memberScale": 0.3090909090909091,

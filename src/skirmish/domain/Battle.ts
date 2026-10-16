@@ -10,6 +10,7 @@ import { polygonSweepEntry } from './ProjectileCollision';
 import { formationEnvelope, type FormationState } from "./FormationGeometry";
 import { legacyWeaponStrength, remainingHealth, HEALTH_SCALE } from './Manpower';
 import { commitWeaponShot } from "./WeaponTiming";
+import { cancelRangedPreparation, prepareRangedShot, releaseRangedShot, type RangedTarget } from "./RangedPreparation";
 import { weaponAccuracy } from "./WeaponAccuracy";
 import { MeleeDamageBatch, meleeReceivers } from './MeleeDamage';
 import { afterWeaponShot } from "../content/WeaponCycles";
@@ -563,9 +564,21 @@ export class Battle {
       this.world.recordMilitaryLosses([target], ledger);
     }
   }
-  private commitShot(squad: Squad, profile: AttackProfile): boolean {
+  private commitShot(squad: Squad, profile: AttackProfile, target?: RangedTarget): boolean {
     if (profile.projectile && !this.canFire()) return false;
     const tick = this.world.tick;
+    if (profile.channel === "ranged" && profile.preparation) {
+      if (!target) throw new Error("Ranged preparation requires a target");
+      const current = this.world.squad(squad.id)!;
+      const definition = this.definition(current);
+      const independent = !!(definition.meleeAttack?.perSoldier && definition.rangedAttack?.perSoldier);
+      const ready = profile.perSoldier
+        ? Math.max(current.weaponState?.ranged?.nextTick ?? 0, independent ? 0 : current.weaponState?.sharedReadyTick ?? 0)
+        : current.nextAttackTick ?? 0;
+      const preparation = prepareRangedShot(current.weaponState, profile, definition.id, target, tick, ready);
+      if (preparation.state !== current.weaponState) this.world.updateSquad(squad.id, {weaponState: preparation.state});
+      if (!preparation.ready) return false;
+    }
     if (profile.perSoldier) {
       const definition=this.definition(squad);
       const independent=!!(definition.meleeAttack?.perSoldier && definition.rangedAttack?.perSoldier);
@@ -578,6 +591,10 @@ export class Battle {
     } else {
       if (tick < (squad.nextAttackTick ?? 0)) return false;
       this.world.updateSquad(squad.id, { lastAttackTick: tick, ...afterWeaponShot(this.definition(squad), squad.magazineShots ?? 0, tick, attackInterval(profile, squad.moved)) });
+    }
+    if (profile.channel === "ranged" && profile.preparation) {
+      const current = this.world.squad(squad.id)!;
+      this.world.updateSquad(squad.id, {weaponState: releaseRangedShot(current.weaponState!, profile, tick)});
     }
     return true;
   }
@@ -822,7 +839,10 @@ export class Battle {
             (a, b) =>
               this.distance(squad, a) - this.distance(squad, b) || a.id - b.id,
           )[0];
-        if (target && tick >= (squad.nextAttackTick ?? 0)) {
+        if (target) {
+          fighting=true;
+          this.world.updateSquad(squad.id, { lastCombatTick: tick });
+          if (!this.commitShot(squad, profile, {targetKind: "aircraft", targetId: target.id})) continue;
           const hit = Math.min(
             target.health,
             damageAmount(
@@ -840,8 +860,6 @@ export class Battle {
           target.health -= hit;
           this.world.updateSquad(squad.id, { xp: Math.min(20000, (squad.xp ?? 0) + hit) });
           this.volley(squad, target);
-          this.world.updateSquad(squad.id, { lastAttackTick: tick });
-          this.world.updateSquad(squad.id, afterWeaponShot(definition, squad.magazineShots ?? 0, tick, attackInterval(profile, squad.moved)));
           fighting=true;
           this.world.updateSquad(squad.id, { lastCombatTick: tick });
           if (target.health <= 0) {
@@ -961,7 +979,7 @@ export class Battle {
         tick<squad.cavalryMelee.current.tick+squad.cavalryMelee.current.interval)continue;
       // Multiple weapon events may fall within one fixed step; acquisition is shared.
       const burstLimit=profile.perSoldier?Math.ceil(profile.rpm!/(60*TICKS_PER_SECOND))+1:1;
-      for(let shot=0;shot<burstLimit && this.commitShot(squad,profile);shot++){
+      for(let shot=0;shot<burstLimit && this.commitShot(squad,profile,{targetKind:"squad",targetId:target.id});shot++){
       const activated=profile.channel==='melee'?commitCavalryBonus(squad,definition,tick):undefined;
       if(activated){
         this.world.updateSquad(squad.id,{cavalryEngagement:activated.engagement,chargeReadyTick:activated.readyTick});
@@ -1056,6 +1074,9 @@ export class Battle {
       this.world.updateSquad(squad.id, { firingCharge: 0 });
       }
       } finally {
+        const state = this.world.squad(squad.id)?.weaponState;
+        if (state?.rangedAction && state.rangedAction.phase !== "released" && state.rangedAction.lastEligibleTick !== tick)
+          this.world.updateSquad(squad.id, {weaponState: cancelRangedPreparation(state)});
         // Publish the final state once; clearing and restoring the same target
         // every tick caused journal/index churn for every engaged squad.
         this.world.updateSquad(squad.id,{fighting,combatTargetId});
@@ -1130,7 +1151,7 @@ export class Battle {
       elevationRangeAt(this.world,squad,profile), squad.playerId, this.mapWidth, this.forts,this.world.tick);
     if (!p) return false;
     this.world.updateSquad(squad.id, { lastCombatTick: this.world.tick });
-    if (!this.commitShot(squad, profile)) return true;
+    if (!this.commitShot(squad, profile, {targetKind: "tile" in target ? "building" : "barrier", targetId: target.id})) return true;
     if (profile.projectile) {
       const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
       this.fire(

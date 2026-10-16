@@ -29,10 +29,13 @@ export function squadArtworkPose(
     // the wind-up before the next ready shot. Art never delays domain damage.
     const release = (Math.min(5, clip.frames - 1) * TICKS_PER_SECOND) / clip.fps;
     const recovery = (clip.frames * TICKS_PER_SECOND) / clip.fps - release;
+    const action = squad.weaponState?.rangedAction;
+    if (action && tick >= action.startTick && tick < action.releaseTick)
+      return {clip: "attack", elapsed: release*(tick-action.startTick)/(action.releaseTick-action.startTick)};
     if (since >= 0 && since < recovery)
       return { clip: "attack", elapsed: release + since };
     const until = (squad.nextAttackTick ?? Infinity) - tick;
-    if (squad.fighting && until > 0 && until <= release)
+    if (!UNIT.get(squad.definitionId ?? "")?.attack.preparation && squad.fighting && until > 0 && until <= release)
       return { clip: "attack", elapsed: release - until };
   } else if (since >= 0 && since < TICKS_PER_SECOND)
     return { clip: "attack", elapsed: since };

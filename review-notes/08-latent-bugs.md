@@ -48,7 +48,7 @@ These duplicates were merged; each merged entry names both source areas:
 
 ## Round 2 additions
 
-The round-2 ledger is in [`08e-round2-ledger.md`](08e-round2-ledger.md): 89 findings, of which 71 were confirmed (merged into 69 entries: 2 critical, 4 high, 28 medium, 35 low; 32 of them perf), 1 is plausible, 17 were refuted and 0 are unverified. It re-confirms H3, M2, M10 and M11 and lowers H5 to medium.
+The round-2 ledger is in [`08e-round2-ledger.md`](08e-round2-ledger.md): 89 findings, of which 71 were confirmed (merged into 69 entries: 2 critical, 7 high, 21 medium, 39 low; 30 of them perf), 1 is plausible, 17 were refuted and 0 are unverified. It re-confirms H3, M2, M10 and M11 and lowers H5 to medium.
 
 ---
 

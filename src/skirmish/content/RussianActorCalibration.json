@@ -55,6 +55,7 @@
     ]
   },
   "EarlyModern/MountedMusketeer": {
+    "bakedMuzzleSmoke": true,
     "releasePoints": [
       {
         "x": 0.51,
@@ -83,6 +84,7 @@
     ]
   },
   "EarlyModern/RusMusketeer": {
+    "bakedMuzzleSmoke": true,
     "releasePoints": [
       {
         "x": 0.45,
@@ -128,6 +130,7 @@
     "projectile": "bullet"
   },
   "EarlyModern/RusGrenadier": {
+    "bakedMuzzleSmoke": true,
     "releasePoints": [
       {
         "x": 0.5,

@@ -3,7 +3,7 @@ import { effectiveRange, rangedElevation } from "../domain/ElevationAdvantage";
 import type { BattleLineDeployment } from "../domain/BattleLineLayout";
 import { facingOf, formationSlots, formationDoctrine } from "../domain/FormationGeometry";
 import { FormationAngleSamples } from "./FormationAngleSamples";
-import { CombatPresentationTimeline } from './CombatPresentationTimeline';
+import { CombatPresentationTimeline, COMBAT_PRESENTATION_DELAY_TICKS } from './CombatPresentationTimeline';
 import { formationRenderPose, formationPoseContains, strategicFormationBox, strategicFormationContains, type FormationRenderPose } from "./FormationRenderPose";
 import { formationEnvelope } from "../domain/FormationGeometry";
 import { strengthFraction, legacyWeaponStrength } from '../domain/Manpower';
@@ -406,7 +406,7 @@ export class Renderer {
     this.home();
   }
 
-  private readonly combatTimeline=new CombatPresentationTimeline();
+  private readonly combatTimeline=new CombatPresentationTimeline(COMBAT_PRESENTATION_DELAY_TICKS);
   private presentedCombat?: import('./CombatPresentationTimeline').CombatPresentationFrame;
   combatFrame(now:number,speed:number,paused:boolean) {
     return this.presentedCombat=this.combatTimeline.sample(now,speed,paused);

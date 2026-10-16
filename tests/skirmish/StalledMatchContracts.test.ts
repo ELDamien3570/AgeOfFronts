@@ -1,3 +1,4 @@
+import { finishRangedPreparation } from "./fixtures/RangedPreparation";
 import { describe, expect, it } from 'vitest';
 import { Skirmish } from '../../src/skirmish/Simulation';
 import { SnapshotDecoder, SnapshotEncoder } from '../../src/skirmish/SnapshotCodec';
@@ -36,6 +37,7 @@ describe('stalled match state contracts',()=>{
     game.updateSquad(source.id,{definitionId:unit.id,kind:unit.line,troops:unit.formationRecipe!.capacity,
       manpower:createManpower(unit),formation:createFormation(unit.id),order:{type:'attack',targetId:target.id}});
     game.expansion!.battle.fight([]);
+    finishRangedPreparation(game,source.id);
     checkTransport(game,source.id);
   });
   it('replicates and restores downhill projectile impact explanations',()=>{

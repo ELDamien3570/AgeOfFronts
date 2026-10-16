@@ -25,6 +25,7 @@ import {
   TECHNOLOGY,
 } from "./Technology";
 import { applySoldierWeapons } from "./SoldierWeapons";
+import { applyRangedAttackTiming } from "./RangedAttackTiming";
 import { applyUnitTuning } from "./UnitTuning";
 import { weaponCycle } from "./WeaponCycles";
 const ground: readonly TargetTag[] = [
@@ -411,6 +412,7 @@ for (const unit of UNITS) {
   unit.formationRecipe=recipe;
   applyUnitTuning(unit);
   if (recipe.model === "soldiers") applySoldierWeapons(unit);
+  applyRangedAttackTiming(unit);
   unit.cost={...unit.cost,reserves:recipe.reserveCost,items:{...unit.cost.items,...(unit.tags.includes('mounted')?{horses:recipe.capacity}:{})}};
 }
 UNITS.sort(

@@ -2,6 +2,7 @@ import { UNIT } from "../../content/Units";
 import { FIXED, type ArcherVolley } from "../../Protocol";
 import { weaponVisual } from "../CombatEffectsViewModel";
 import { drawPreviewProjectile } from "./ProjectilePresentation";
+import { TICK_MS } from "../../Protocol";
 
 type Position = { x: number; y: number; angle: number };
 interface Contact {
@@ -19,6 +20,7 @@ interface Contact {
  * member is an attachment anchor, never an independently damaged game entity. */
 export class TroopImpacts {
   private readonly seen = new Map<number, number>();
+  private readonly released = new Map<number, number>();
   private readonly hits: Contact[] = [];
   private readonly byMember = new Map<string, Contact[]>();
   private readonly stains: Contact[] = [];
@@ -27,9 +29,11 @@ export class TroopImpacts {
     y: number;
     time: number;
     seed: number;
+    visibleAfter: number;
   }[] = [];
   clear() {
     this.seen.clear();
+    this.released.clear();
     this.byMember.clear();
     this.hits.length = this.stains.length = this.smoke.length = 0;
   }
@@ -40,23 +44,11 @@ export class TroopImpacts {
   ) {
     for (const [id, time] of this.seen)
       if (now - time > 5000) this.seen.delete(id);
+    for (const [id, time] of this.released)
+      if (now - time > 5000) this.released.delete(id);
     for (const fact of facts) {
       if (fact.sourceKind === "aircraft" || this.seen.has(fact.id)) continue;
       this.seen.set(fact.id, now);
-      if (
-        !fact.melee &&
-        !fact.impact &&
-        UNIT.get(fact.definitionId ?? "")?.age === "Napoleonic" &&
-        weaponVisual(fact.definitionId) === "bullet"
-      ) {
-        for (const member of lookup(fact.squadId))
-          this.smoke.push({
-            x: member.x,
-            y: member.y,
-            time: now,
-            seed: fact.id + member.id,
-          });
-      }
       if (fact.impact && !fact.damage && fact.targetId === undefined) {
         const kind=weaponVisual(fact.definitionId);
         this.stains.push({key:String(fact.id),squadId:fact.squadId,soldierId:-1,kind:kind==="arrow"?"bow":kind,angle:Math.atan2(fact.toY-fact.fromY,fact.toX-fact.fromX),time:now,x:fact.toX/FIXED,y:fact.toY/FIXED,missed:true});
@@ -112,6 +104,16 @@ export class TroopImpacts {
       (now - this.smoke[0].time > 2400 || this.smoke.length > 384)
     )
       this.smoke.shift();
+  }
+  /** Consume only after actual launch attachments exist. Age uses the shot's
+   * presentation tick, including when publications arrive late. */
+  release(fact: ArcherVolley, tick: number, points: readonly { x: number; y: number; soldierId: number }[], authoredSmokeMs = 0): void {
+    const age = (tick - fact.tick) * TICK_MS;
+    if (!points.length || age < 0 || age >= 2400 || this.released.has(fact.id)) return;
+    this.released.set(fact.id, fact.tick * TICK_MS);
+    if (UNIT.get(fact.definitionId ?? "")?.age !== "Napoleonic" || weaponVisual(fact.definitionId) !== "bullet") return;
+    for (const p of points) this.smoke.push({ x: p.x, y: p.y, time: fact.tick * TICK_MS, seed: fact.id + p.soldierId, visibleAfter: authoredSmokeMs });
+    if (this.smoke.length > 384) this.smoke.splice(0, this.smoke.length - 384);
   }
   detach(squadId: number, soldierId: number, now: number) {
     const shafts = this.hits
@@ -237,7 +239,7 @@ export class TroopImpacts {
         t = age / 2400,
         p = project(puff.x + t * 0.22, puff.y - t * 0.12);
       if (
-        t >= 1 ||
+        age < puff.visibleAfter || t >= 1 ||
         p.x < -40 ||
         p.y < -40 ||
         p.x > ctx.canvas.clientWidth + 40 ||

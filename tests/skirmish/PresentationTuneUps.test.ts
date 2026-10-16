@@ -1,3 +1,4 @@
+import { finishRangedPreparation } from "./fixtures/RangedPreparation";
 import { describe, expect, it } from "vitest";
 import {
   formationRenderPose,
@@ -10,6 +11,7 @@ import { UNIT } from "../../src/skirmish/content/Units";
 import { attackContributors,damageAmount,defenceOf } from '../../src/skirmish/domain/Combat';
 import { tacticalDefence } from '../../src/skirmish/domain/FormationTactics';
 import { contactParticipants } from '../../src/skirmish/domain/FormationContact';
+import { weaponAccuracy } from '../../src/skirmish/domain/WeaponAccuracy';
 import {
   createFormation,
   TURN,
@@ -102,14 +104,20 @@ describe("presentation tune ups", () => {
   });
   it("defends contacting enemies while firing at the explicit rear target", () => {
     const { game, grenadiers, contact, rear } = hybridCombatScene();
-    const unit=UNIT.get(grenadiers.definitionId!)!,n=contactParticipants(grenadiers,contact,0,unit.meleeAttack!.ranks);
-    const remaining=Math.min(attackContributors(grenadiers,unit.rangedAttack!),grenadiers.troops-n);
-    const expected=damageAmount(unit.rangedAttack!,tacticalDefence(grenadiers,rear,0,'ranged',defenceOf(UNIT.get(rear.definitionId!)!)),remaining);
     game.expansion!.battle.fight([]);
-    const shots = game.volleys.filter((v) => v.squadId === grenadiers.id);
-    expect(shots.some((v) => v.melee && v.targetId === contact.id)).toBe(true);
-    expect(shots.some((v) => !v.melee && v.targetId === rear.id)).toBe(true);
-    expect(shots.find(v=>!v.melee&&v.targetId===rear.id)?.damage).toBe(expected);
+    expect(game.volleys.some(v=>v.squadId===grenadiers.id&&v.melee&&v.targetId===contact.id)).toBe(true);
+    expect(game.volleys.some(v=>v.squadId===grenadiers.id&&!v.melee)).toBe(false);
+    finishRangedPreparation(game,grenadiers.id);
+    const shot=game.volleys.find(v=>v.squadId===grenadiers.id&&!v.melee&&v.targetId===rear.id)!;
+    expect(shot).toBeDefined();
+    expect(shot.tick).toBe(game.squad(grenadiers.id)!.weaponState!.rangedAction!.releaseTick);
+    // Contact reservations still prevent a second full-squad ranged budget.
+    const unit=UNIT.get(grenadiers.definitionId!)!;
+    const reserved=contactParticipants(grenadiers,contact,game.tick,unit.meleeAttack!.ranks);
+    const available=Math.min(attackContributors(grenadiers,unit.rangedAttack!),grenadiers.troops-reserved);
+    const accuracy=weaponAccuracy(unit.rangedAttack!,Math.hypot(rear.x-grenadiers.x,rear.y-grenadiers.y));
+    const expected=damageAmount(unit.rangedAttack!,tacticalDefence(grenadiers,rear,game.tick,'ranged',defenceOf(UNIT.get(rear.definitionId!)!)),available*accuracy);
+    expect(shot.damage).toBe(expected);
     expect(game.squad(grenadiers.id)!.weaponState?.melee).toBeDefined();
     expect(game.squad(grenadiers.id)!.weaponState?.ranged).toBeDefined();
   });

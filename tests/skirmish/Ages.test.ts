@@ -1,3 +1,4 @@
+import { finishRangedPreparation } from "./fixtures/RangedPreparation";
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -336,14 +337,18 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     pos(m, t, 34, 20);
     m.updateSquad(s.id, { moved: true });
     m.expansion!.battle.fight([]);
+    expect(m.expansion!.battle.projectiles).toHaveLength(0);
+    finishRangedPreparation(m,s.id);
     expect(m.expansion!.battle.projectiles).toHaveLength(1);
-    expect(s.nextAttackTick).toBe(secondsToTicks(12.5));
+    const next=s.nextAttackTick!;
+    // The authored javelin is 15 RPM: four seconds, or twenty while moving.
+    expect(next-s.lastAttackTick!).toBe(secondsToTicks(20));
     m.expansion!.battle.fight([]);
     expect(m.expansion!.battle.projectiles).toHaveLength(1);
     m.updateSquad(s.id, { moved: false });
-    m.tick = secondsToTicks(12.5);
-    m.expansion!.battle.fight([]);
-    expect(s.nextAttackTick).toBe(secondsToTicks(15));
+    while(m.tick<next){m.tick++;m.expansion!.battle.fight([]);}
+    expect(s.lastAttackTick).toBe(next);
+    expect(s.nextAttackTick).toBe(next+secondsToTicks(4));
   });
   it("sweeps fast shells and resolves damage and XP once", () => {
     const m = make(),
@@ -430,6 +435,8 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
       fuelTicks: secondsToTicks(5),
     };
     m.expansion!.battle.fight([air]);
+    expect(air.health).toBe(1000);
+    finishRangedPreparation(m,s.id,[air]);
     expect(air.health).toBeLessThan(1000);
   });
 });

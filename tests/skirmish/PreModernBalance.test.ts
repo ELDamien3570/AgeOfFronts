@@ -1,3 +1,4 @@
+import { finishRangedPreparation } from "./fixtures/RangedPreparation";
 import { describe, expect, it } from 'vitest';
 import { GameMapImpl } from '../../src/core/game/GameMap';
 import { UNIT, UNITS } from '../../src/skirmish/content/Units';
@@ -152,6 +153,7 @@ describe('agreed pre-modern balance contract', () => {
       f.game.updateSquad(target.id, { y: source.y + distance * FIXED });
       const before = remainingHealth(target);
       f.game.expansion!.battle.fight([]);
+      finishRangedPreparation(f.game, source.id);
       return before - remainingHealth(f.game.squad(target.id)!);
     });
     expect(losses[0]).toBeGreaterThan(losses[1]);

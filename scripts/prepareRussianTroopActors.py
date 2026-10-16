@@ -167,6 +167,7 @@ for binding, folder in bindings.items():
                           "members": calibration.get("members", 6 if mounted else 12),
                           "widthWorld": width_world, "lengthWorld": length_world,
                           "releasePoints": calibration.get("releasePoints", [{"x": .5, "y": .7}]),
+                          **({"bakedMuzzleSmoke": True} if calibration.get("bakedMuzzleSmoke") else {}),
                           "facingOffset": approved.get(binding, {}).get("facingOffset", calibration.get("facingOffset", 0))}
 atomic_text(ROOT / "src/skirmish/content/RussianTroopActors.json", json.dumps(catalogue, indent=2)+"\n")
 print(f"Rebuilt {len(selected) if selected else len(catalogue)} actor sources; {len(catalogue)} registered actor sets")

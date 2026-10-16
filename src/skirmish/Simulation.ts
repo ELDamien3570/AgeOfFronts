@@ -21,6 +21,7 @@ import { createFormation, formationDoctrine, formationSlots, radians, facingOf, 
 import { shapeSpeedBp } from './domain/FormationTactics';
 import { armyFacingToFormation } from './domain/FormationFacing';
 import { validateWeaponState } from "./domain/WeaponTiming";
+import { cancelRangedPreparation } from "./domain/RangedPreparation";
 import { validateMeleeStrike } from "./domain/MeleeStrike";
 import { chargeDisrupted, validateChargeImpact } from './domain/ChargeImpact';
 import { cavalryOverlapAllowed,validateCavalryEngagement } from './domain/CavalryEngagement';
@@ -267,7 +268,7 @@ export class Skirmish {
         ids.add(record.id);
       }
     }
-    if (this.expansion) for(const squad of saved.squads) { validateRecipeManpower(UNIT.get(squad.definitionId??""),squad.manpower,squad.troops); validateWeaponState(squad.weaponState);validateOccupancy(squad.occupancy);validateStance(squad.stance,squad.lastWithdrawTick);validateFormation(squad.formation,squad.definitionId,squad.troops); if([squad.formation?.lastDeployTick,squad.formation?.blockedSince,squad.formation?.settledSince].some(clock=>(clock??0)>saved.tick))throw new Error("Invalid formation deployment clock"); }
+    if (this.expansion) for(const squad of saved.squads) { validateRecipeManpower(UNIT.get(squad.definitionId??""),squad.manpower,squad.troops); validateWeaponState(squad.weaponState,saved.tick);validateOccupancy(squad.occupancy);validateStance(squad.stance,squad.lastWithdrawTick);validateFormation(squad.formation,squad.definitionId,squad.troops); if([squad.formation?.lastDeployTick,squad.formation?.blockedSince,squad.formation?.settledSince].some(clock=>(clock??0)>saved.tick))throw new Error("Invalid formation deployment clock"); }
     for (const squad of saved.squads) {
       validateTransportDamage(squad.afloat);validateAiWithdrawal(squad.aiWithdrawal,saved.tick);
       for(const order of [squad.order,...squad.queuedOrders])
@@ -1185,6 +1186,14 @@ export class Skirmish {
   addShip(ship: Ship): Ship { return this.shipEntities.add(ship); }
   updateSquad(id: number, changes: Partial<Omit<Squad, "id">>): Squad | undefined {
     const previous=this.squad(id);
+    if (previous?.weaponState?.rangedAction && !("weaponState" in changes) && (
+      changes.definitionId !== undefined && changes.definitionId !== previous.definitionId ||
+      changes.playerId !== undefined && changes.playerId !== previous.playerId ||
+      changes.refit || changes.afloat || changes.embarkedOn !== undefined && changes.embarkedOn !== null ||
+      changes.charge && changes.charge.phase !== "recovery" ||
+      changes.structureTarget !== undefined && (changes.structureTarget?.buildingId !== previous.structureTarget?.buildingId || changes.structureTarget?.barrierId !== previous.structureTarget?.barrierId) ||
+      changes.order !== undefined && !(changes.order.type === "attack" && previous.order.type === "attack" && changes.order.targetId === previous.order.targetId)
+    )) changes = {...changes, weaponState: cancelRangedPreparation(previous.weaponState)};
     if(previous && changes.definitionId && changes.definitionId!==previous.definitionId && previous.formation && !changes.formation) {
       const doctrine=formationDoctrine(changes.definitionId),old=previous.formation;
       const n=changes.troops??previous.troops,shape=eligibleShape(n,doctrine,old.shape);
@@ -1693,6 +1702,8 @@ export class Skirmish {
     return destination.x===center.x && destination.y===center.y ? {type:"move",tile} : {type:"move",tile,...destination};
   }
   private activateOrder(squad: Squad, order: Order, path: number[] = [], continuingAttack=false): void {
+    if (!continuingAttack && squad.weaponState?.rangedAction)
+      this.updateSquad(squad.id, {weaponState: cancelRangedPreparation(squad.weaponState)});
     this.routePlanner.cancel(`navigation:${squad.id}`);
     this.routePlanner.cancel(`continuation:${squad.id}`);
     this.moveContinuations.delete(squad.id);

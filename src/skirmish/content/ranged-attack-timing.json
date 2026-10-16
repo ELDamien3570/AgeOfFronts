@@ -1,0 +1,150 @@
+{
+  "stoneage-archer": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "bronzeage-archer": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "classicalage-field-support": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "classicalage-rangedcavalry": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "classicalage-siege": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "classicalage-archer": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "earlymedieval-field-support": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "earlymedieval-rangedcavalry": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "earlymedieval-siege": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "earlymedieval-archer": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "latemedieval-field-support": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "latemedieval-rangedcavalry": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "latemedieval-siege": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "latemedieval-archer": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "earlymodern-rangedcavalry": {
+    "prepareMs": 770,
+    "automatic": false
+  },
+  "napoleonic-field-support": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "napoleonic-siege": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "napoleonic-archer": {
+    "prepareMs": 580,
+    "automatic": false
+  },
+  "napoleonic-infantry": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "earlymodern-field-support": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "earlymodern-siege": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "modern-anti-air": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "modern-anticavalry": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "modern-heavycavalry": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "modern-rangedcavalry": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "earlymodern-archer": {
+    "prepareMs": 580,
+    "automatic": true
+  },
+  "earlymodern-cavalry": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "earlymodern-infantry": {
+    "prepareMs": 550,
+    "automatic": false
+  },
+  "modern-field-support": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "modern-launcher": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "modern-siege": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "present-day-anticavalry": {
+    "prepareMs": 560,
+    "automatic": false
+  },
+  "present-day-heavycavalry": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "present-day-rangedcavalry": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "modern-archer": {
+    "prepareMs": 580,
+    "automatic": true
+  },
+  "modern-cavalry": {
+    "prepareMs": 500,
+    "automatic": false
+  },
+  "modern-infantry": {
+    "prepareMs": 500,
+    "automatic": true
+  }
+}

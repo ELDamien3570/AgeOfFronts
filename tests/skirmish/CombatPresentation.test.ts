@@ -1,3 +1,4 @@
+import { finishRangedPreparation } from "./fixtures/RangedPreparation";
 import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 const presentationTicks=(seconds:number)=>seconds*TICKS_PER_SECOND;
 import {secondsToTicks} from '../../src/skirmish/Protocol';
@@ -148,6 +149,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
     m.updateSquad(target.id, { x: 12 * FIXED });
     m.updateSquad(target.id, { y: 10 * FIXED });
     m.expansion!.battle.fight([]);
+    finishRangedPreparation(m, source.id);
     const projectile = m.expansion!.battle.projectiles[0];
     expect(projectile.definitionId).toBe("present-day-rangedcavalry");
     expect(projectile.attackScale).toBe(1);

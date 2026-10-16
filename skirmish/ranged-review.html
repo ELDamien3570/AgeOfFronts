@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Ranged firing review · Age of Fronts</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #101a1b;
+        color: #e4e8df;
+        font: 15px system-ui;
+      }
+      main {
+        max-width: 1500px;
+        margin: auto;
+        padding: 28px;
+      }
+      h1 {
+        font-size: 30px;
+        margin: 8px 0;
+      }
+      p {
+        color: #aabbb6;
+        line-height: 1.6;
+      }
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        color: #c5ac71;
+      }
+      .controls {
+        display: flex;
+        align-items: end;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 20px 0;
+      }
+      label {
+        display: grid;
+        gap: 7px;
+        font-size: 12px;
+        color: #b8c9c1;
+      }
+      select,
+      button {
+        font: inherit;
+        padding: 10px 14px;
+        border: 1px solid #465c55;
+        border-radius: 5px;
+        background: #20342f;
+        color: #edf0e4;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:hover {
+        background: #345347;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 560px;
+        border: 1px solid #41564b;
+        border-radius: 8px;
+        background: #263329;
+      }
+      output {
+        display: block;
+        font:
+          13px ui-monospace,
+          monospace;
+        padding: 16px;
+        background: #192722;
+        line-height: 1.8;
+        white-space: pre-wrap;
+      }
+      a {
+        color: #d6c08a;
+      }
+      .notes {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .notes p {
+        max-width: 610px;
+      }
+      #error {
+        color: #ffb0a4;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="eyebrow">AGE OF FRONTS / COMBAT PRESENTATION</span>
+      <h1>Ranged firing review</h1>
+      <p>
+        Watch the current game simulation and troop renderer together. Pause or
+        slow down to inspect the release pose, projectile origin and lingering
+        musket smoke.
+      </p>
+      <div class="controls">
+        <label>Firing unit<select id="unit"></select></label>
+        <label
+          >Encounter<select id="encounter">
+            <option value="6">Close firing line</option>
+            <option value="20">Approach, then fire</option>
+          </select></label
+        >
+        <label
+          >Playback speed<select id="speed">
+            <option value="0.25">¼ speed</option>
+            <option value="0.5">½ speed</option>
+            <option value="1" selected>Normal</option>
+          </select></label
+        >
+        <label
+          >Camera<select id="camera">
+            <option value="0">Both formations</option>
+            <option value="1">Blue close-up</option>
+            <option value="2">Red close-up</option>
+          </select></label
+        >
+        <label
+          >Snapshot spacing<select id="spacing">
+            <option value="1">Every simulation tick</option>
+            <option value="2">250 ms (two ticks)</option>
+            <option value="4">500 ms (four ticks)</option>
+          </select></label
+        >
+        <button id="pause">Pause</button><button id="step">Step one tick</button
+        ><button id="restart">Restart encounter</button>
+        <button id="cancel">Cancel &amp; re-aim blue</button>
+        <a href="/skirmish/soldier-lab.html">Soldier lab</a>
+      </div>
+      <p id="error" role="alert"></p>
+      <canvas id="scene" aria-label="Live ranged combat review"></canvas>
+      <output id="status" aria-live="off">Loading troop artwork…</output>
+      <div class="notes">
+        <p>
+          <strong>What to inspect:</strong> every first shot now starts with a
+          complete preparation. Automatic weapons prepare once per burst. Cancel
+          &amp; re-aim blue interrupts preparation and requires a fresh wind-up.
+          Pause or step to inspect the announced start and release ticks. Smoke
+          stays at the muzzle where the shot was released.
+        </p>
+        <p>
+          <strong>Actual combat rules:</strong> damage, targeting, casualties
+          and reloads run in the existing battle simulation. The two sides use
+          the selected unit; the red side holds position. Playback uses a 500 ms
+          combat buffer so announced preparation can be shown before release.
+          Explicit tick stepping jumps to the simulation endpoint. Restart to
+          repeat the encounter. Snapshot spacing exercises sparse publication
+          locally; it does not emulate an Internet connection.
+        </p>
+      </div>
+    </main>
+    <script
+      type="module"
+      src="/src/skirmish/client/lab/RangedReview.ts"
+    ></script>
+  </body>
+</html>

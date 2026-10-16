@@ -74,6 +74,8 @@ export interface FlyingJavelin {
 /** Frozen world-space releases, one visual javelin per planted thrower in every rank. */
 export class TroopVolley {
   private readonly launches = new Map<number, Launch[]>();
+  /** The frozen hand/muzzle attachments used by this exact shot's flight. */
+  releases(id: number): readonly Launch[] { return this.launches.get(id) ?? []; }
   clear(): void {
     this.launches.clear();
   }
@@ -96,9 +98,10 @@ export class TroopVolley {
     flightTicks = 0.6*TICKS_PER_SECOND,
     targetOffsets: readonly {x:number;y:number}[] = [],
     targets: readonly { id: number; x: number; y: number }[] = [],
+    releaseLifetimeTicks = flightTicks,
   ): FlyingJavelin[] {
     const progress = (tick - volley.tick) / Math.max(1, flightTicks);
-    if (progress < 0 || progress >= 1) return [];
+    if (progress < 0 || tick - volley.tick >= Math.max(flightTicks, releaseLifetimeTicks)) return [];
     let launches = this.launches.get(volley.id);
     if (!launches) {
       const frame =
@@ -152,6 +155,9 @@ export class TroopVolley {
       // Do not freeze an empty cache; retry once its actor pose is available.
       if (launches.length) this.launches.set(volley.id, launches);
     }
+    // A short bullet can have finished by the time a sparse publication is
+    // shown. Capture its muzzle for lingering smoke without replaying its flight.
+    if (progress >= 1) return [];
     const live = new Map(targets.map((t) => [t.id, t]));
     return launches.map((start) => {
       // Re-read the paired soldier each frame so shots land on moving targets.

@@ -8,7 +8,7 @@ ties), a completeness critic drove round 2, and the summary was rewritten agains
 verified ledgers.
 
 Round 1 read the tree as of 2026-10-15 ~19:40; round 2 (Opus 5.5 agents) read it as of
-2026-10-16 ~02:00-03:00. The tree kept changing during both rounds (new cavalry assault,
+2026-10-16 ~02:00-03:00; round 3 read HEAD 0d1783ce "pre-ultra" plus the ranged-preparation delta (~06:00). The tree kept changing during both rounds (new cavalry assault,
 carrier/drone/airbase work), so where a round-1 note and a round-2 note disagree, round 2
 and the ledgers win. `09-working-tree-delta.md` holds a citation remap for drifted lines.
 
@@ -42,6 +42,8 @@ and the ledgers win. `09-working-tree-delta.md` holds a citation remap for drift
 | 18-command-fuzzing.md | Schema-valid command fuzzer results and exception-containment design |
 | 19-movement-core.md | HierarchicalPaths, formation core, route-cache memory measurement |
 | 20-naval.md | Naval combat model, per-age naval balance matrix, pirate counterplay |
+| 21-ranged-preparation-delta.md | Round 3: the ranged-preparation delta that appeared after HEAD 0d1783ce, test results, citation remap |
+| 22-idle-tick-and-heap.md | Round 3: where the idle 52-faction tick goes, per-squad costs, heap with human seats |
 
 Raw sweep files (08a-08d) contain unverified suspicions; the ledgers are the verified view
 and take precedence where they disagree. Reviewer scratch scripts and harnesses live outside

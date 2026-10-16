@@ -211,6 +211,8 @@ describe("per-soldier weapons and exact cycles", () => {
     // Javelins now have the authored short range of four tiles.
     f.game.updateSquad(f.target.id, { x: 8 * FIXED });
     f.battle.fight([]);
+    const releaseTick = f.game.squad(f.source.id)!.weaponState!.rangedAction!.releaseTick;
+    while (f.game.tick < releaseTick) { f.game.tick++; f.battle.fight([]); }
     const shot = f.battle.projectiles.find((p) => p.sourceId === f.source.id)!;
     expect(shot.perSoldier).toBe(true);
     expect(shot.attackScale).toBe(9);

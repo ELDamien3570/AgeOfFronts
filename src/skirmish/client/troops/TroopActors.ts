@@ -13,6 +13,7 @@ import { squadArtworkPose } from "../CombatEffectsViewModel";
 import { COLORS } from "../FactionColors";
 import { FactionFrames } from "./FactionFrames";
 import { TroopImpacts } from "./TroopImpacts";
+import { RangedAttackPresentation, rangedRecoveryClip } from "./RangedAttackPresentation";
 import { drawPreviewProjectile } from "./ProjectilePresentation";
 import { weaponCycle } from "../../content/WeaponCycles";
 import { UNIT } from "../../content/Units";
@@ -48,7 +49,6 @@ import {
 import { actorFormationSlots } from "./TroopPacking";
 import { TroopRemains } from "./TroopRemains";
 import {
-  javelinThrowTime,
   reloadClipTime,
   throwTiming,
   TroopVolley,
@@ -78,6 +78,8 @@ export interface TroopActorDefinition {
   lengthWorld?: number;
   releasePoints?: readonly { x: number; y: number }[];
   facingOffset?: number;
+  /** The attack sheet owns the initial muzzle puff; persist smoke afterward. */
+  bakedMuzzleSmoke?: boolean;
 }
 export interface TroopActorOptions {
   unitDefinition?: (squad:Snapshot['squads'][number])=>import('../../domain/Definitions').UnitDefinition|undefined;
@@ -151,9 +153,11 @@ export class TroopActors {
   private frameScale = 64;
   private frameProject?: (x:number,y:number)=>{x:number;y:number};
   private readonly ownerBySquad = new Map<number, number>();
+  private presentationSquads: ReadonlyMap<number, Snapshot["squads"][number]> = new Map();
   private readonly poses = new Map<number, { x: number; y: number; bottom: number; width: number }>();
   labelPose = (id: number) => this.poses.get(id);
   private readonly volleys = new TroopVolley();
+  private readonly rangedPlayback = new RangedAttackPresentation();
   private readonly shells = new TroopVolley();
   private readonly throwers = new Map<number, VolleyThrower[]>();
   /** Latest drawn soldier positions per squad, so bullets can land on live targets. */
@@ -189,7 +193,9 @@ export class TroopActors {
     this.contacts.clear();
     this.throwers.clear();
     this.bodies.clear();
+    this.presentationSquads = new Map();
     this.volleys.clear();
+    this.rangedPlayback.clear();
     this.shells.clear();
     this.drawQueue.clear();
     this.selectionIndex.clear();
@@ -361,11 +367,13 @@ export class TroopActors {
     this.factionFrames.clear();
     this.impacts.clear();
     this.ownerBySquad.clear();
+    this.presentationSquads = new Map();
     this.poses.clear();
     this.motions.clear();
     this.headings.clear();
     this.remains.clear();
     this.volleys.clear();
+    this.rangedPlayback.clear();
     this.shells.clear();
     this.throwers.clear();
     this.bodies.clear();
@@ -496,8 +504,11 @@ export class TroopActors {
     for (const squad of snapshot.squads) this.ownerBySquad.set(squad.id, squad.playerId);
     this.headings.update(snapshot, now);
     this.volleys.prune(snapshot.volleys);
+    this.rangedPlayback.observe(snapshot.volleys);
+    this.rangedPlayback.prune(new Set(snapshot.squads.map(s => s.id)));
     this.shells.prune(snapshot.expansion?.projectiles ?? []);
     const squads = new Map(snapshot.squads.map((s) => [s.id, s]));
+    this.presentationSquads = squads;
     for(const id of this.cavalryContinuity.keys())if(!squads.has(id))this.cavalryContinuity.delete(id);
     for(const id of this.cavalryAssaults.keys())if(!squads.get(id)?.cavalryEngagement?.assault)this.cavalryAssaults.delete(id);
     for(const id of this.cavalryCohorts.keys())if(!squads.get(id)?.cavalryMelee)this.cavalryCohorts.delete(id);
@@ -598,7 +609,7 @@ export class TroopActors {
     if (!this.detailed || !troop?.ranged || !this.loaded.has(troop.name))
       return false;
     const clip = this.assets.get(`${troop.name}:attack`)!.clip;
-    for (const flight of this.volleys.sample(
+    const flights = this.volleys.sample(
       volley,
       tick,
       this.throwers.get(volley.squadId) ?? [],
@@ -609,10 +620,14 @@ export class TroopActors {
       troop.projectile !== "bullet" &&
         troop.projectile !== "shell" &&
         troop.projectile !== "rocket",
-      undefined,
+      (troop.projectile === "bullet" ? .2 : troop.projectile === "rocket" ? .4 : .6) * TICKS_PER_SECOND,
       undefined,
       volley.targetId === undefined ? undefined : this.bodies.get(volley.targetId),
-    )) {
+      (throwTiming(clip).duration - throwTiming(clip).release) / TICK_MS,
+    );
+    this.impacts.release(volley, tick, this.volleys.releases(volley.id),
+      troop.bakedMuzzleSmoke ? throwTiming(clip).duration - throwTiming(clip).release : 0);
+    for (const flight of flights) {
       const p = project(flight.x, flight.y);
       if (p.x < -20 || p.y < -20 || p.x > width + 20 || p.y > height + 20)
         continue;
@@ -694,6 +709,7 @@ export class TroopActors {
     )
       return false;
     const throwers = this.throwers.get(projectile.sourceId) ?? [];
+    if (!this.rangedPlayback.permitsRelease(projectile.sourceId) && !this.shells.releases(projectile.id).length) return true;
     const volley = {
       ...projectile,
       squadId: projectile.sourceId,
@@ -702,7 +718,7 @@ export class TroopActors {
     const flights = this.shells.sample(
       volley,
       tick,
-      throwers.map((soldier) => ({ ...soldier, throwing: true })),
+      throwers,
       clip,
       2 / 0.75,
       troop.releasePoints,
@@ -1013,9 +1029,12 @@ export class TroopActors {
       : sharedPose?.geometry.angle ?? this.headings.angle(squad.id, now);
     angle = sharedPose?.geometry.angle ?? (mobile ? 0 : laneTravel ? state.angle : travelFacing);
     const contact = this.contacts.get(squad.id);
+    const preparation = squad.weaponState?.rangedAction;
+    const preparing = !!preparation && tick >= preparation.startTick && tick < preparation.releaseTick;
+    const preparedTarget = preparing && preparation.targetKind === "squad" ? this.presentationSquads.get(preparation.targetId) : undefined;
     const intent = {
       anchored:squad.occupancy?.phase==='occupying',
-      active: squad.fighting && squad.order.type !== "move",
+      active: (squad.fighting || preparing) && squad.order.type !== "move",
       charging: !!squad.charge && squad.charge.phase !== "recovery",
       mounted,
       ranged: ranged,
@@ -1032,7 +1051,7 @@ export class TroopActors {
         (squad.locomotion?.speed ?? 0) > 0,
       footprint: 2 / 0.75,
       layout: shape,
-      target: contact?.target,
+      target: preparedTarget ? {x:preparedTarget.x/FIXED,y:preparedTarget.y/FIXED} : contact?.target,
       threats: contact?.threats,
       opponents: contact?.opponents,
     };
@@ -1083,6 +1102,7 @@ export class TroopActors {
     const pose = squadArtworkPose(squad, tick);
     const footprint = 2 / 0.75,
       extent = tileSize * footprint;
+    let drawnClip = "";
     const draw = (
       position: { id: number; x: number; y: number; angle: number },
       scale: number,
@@ -1133,6 +1153,7 @@ export class TroopActors {
         this.options?.groundElevationAt?.(position.x, position.y) ?? 0,
       );
       state!.drawn.set(position.id,{x:position.x,y:position.y,angle:position.angle});
+      drawnClip = id;
     };
     for (const corpse of state.motion.dead(now))
       this.captureDeath(squad.id, state, corpse, now - corpse.age);
@@ -1146,9 +1167,12 @@ export class TroopActors {
     const rangedCycle=squad.weaponState?.ranged;
     const rangedShot=rangedCycle?.lastShotTick;
     const firingSquad=rangedShot===undefined?squad:{...squad,lastAttackTick:rangedShot,nextAttackTick:rangedCycle!.nextTick};
-    const lastWasMelee=rangedShot===undefined && squad.meleeStrike && squad.meleeStrike.tick>=(squad.lastAttackTick??-Infinity);
+    const lastWasMelee=rangedShot===undefined && !squad.weaponState?.rangedAction && squad.meleeStrike && squad.meleeStrike.tick>=(squad.lastAttackTick??-Infinity);
+    const rangedDefinition = this.options?.unitDefinition?.(squad) ?? UNIT.get(squad.definitionId ?? "");
+    const rangedWeapon = rangedDefinition?.rangedAttack ?? rangedDefinition?.attack;
     const throwTime = ranged && !lastWasMelee
-      ? javelinThrowTime(firingSquad, tick, this.assets.get(`${name}:attack`)!.clip)
+      ? this.rangedPlayback.sample(firingSquad, tick, this.assets.get(`${name}:attack`)!.clip,
+          rangedWeapon?.rpm ? 60000 / rangedWeapon.rpm : Infinity, rangedWeapon?.preparation)
       : undefined;
     const planted =
       throwTime !== undefined
@@ -1196,7 +1220,9 @@ export class TroopActors {
     const meleeRelease=meleeClip.durations?.slice(0,meleeClip.releaseFrame??0).reduce((n,t)=>n+t,0)??0;
     const meleeDuration=meleeClip.durations?.reduce((n,t)=>n+t,0)??meleeClip.frameCount*1000/(meleeClip.fps??6);
     const assaultAttackTime=meleeRelease+(tick-(squad.meleeStrike?.tick??-Infinity))*TICK_MS;
-    const committed=committedMeleeActors(squad.cavalryMelee?undefined:squad.meleeStrike,tick,meleeClip,soldiers,footprint,!!sharedPose);
+    // Ranged attention marks every shooter `front`; it is not a melee-contact
+    // mask. Hybrid strikes select their actual recorded fighting edge instead.
+    const committed=committedMeleeActors(squad.cavalryMelee?undefined:squad.meleeStrike,tick,meleeClip,soldiers,footprint,!!sharedPose && !ranged);
     let cohorts=this.cavalryCohorts.get(squad.id);
     if(squad.cavalryMelee){
       if(!cohorts)this.cavalryCohorts.set(squad.id,cohorts=new Map());
@@ -1224,6 +1250,7 @@ export class TroopActors {
     }
     const drawnBodies:{id:number;x:number;y:number}[]=[];
     for (const [soldierIndex,soldier] of soldiers.entries()) {
+      drawnClip = "";
       const continuousPose=continuous?.get(soldier.id);
       const strike=committed.get(soldier.id);
       const moving = mounted && continuousPose?continuousPose.moving:soldier.speed > 0.001 || soldier.turning;
@@ -1232,18 +1259,19 @@ export class TroopActors {
       const cycle = definition && weaponCycle(definition);
       const timing = throwTiming(this.assets.get(`${name}:attack`)!.clip);
       const reloadStart = (squad.weaponState?.ranged?.reloadStartedTick ?? squad.reloadStartedTick ?? Infinity)*TICK_MS + timing.duration-timing.release;
-      const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*TICK_MS - timing.release;
+      const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*TICK_MS - (rangedWeapon?.preparation ? rangedWeapon.preparation.ticks*TICK_MS : timing.release);
       const reloading = cycle && this.assets.has(`${name}:reload`) && tick*TICK_MS >= reloadStart && tick*TICK_MS < reloadEnd;
       const bayonet = !squad.meleeStrike && definition?.age === "Napoleonic" && definition.troopClass === "frontline" && squad.charge?.phase === "recovery" && this.assets.has(`${name}:charge-attack`);
-      const contactOccupied=!!(ranged && engagement.engaged && soldier.front);
+      // `engaged` means attention to any combat target, including one at bow
+      // range. Only a committed melee strike owns this soldier's attack pose.
       const clip = strike ? meleeClipKey : bayonet ? "charge-attack" : reloading ? "reload" :
-        ranged && !contactOccupied && throwTime !== undefined
+        ranged && throwTime !== undefined
           ? "attack"
           : moving
             ? "running"
             : (
                   ranged
-                    ? !contactOccupied && throwTime !== undefined
+                    ? throwTime !== undefined
                     : !squad.cavalryMelee && !squad.meleeStrike && soldier.front &&
                       (soldier.facingError ?? 0) < Math.PI / 6 &&
                       pose.clip === "attack"
@@ -1262,7 +1290,9 @@ export class TroopActors {
               duration
             : now + squad.id * 73 + soldier.id * 19;
       const reaction=chargeActors.get(soldier.id);
-      if(assault.has(soldier.id)){
+      if (ranged && clip === "attack" && !strike) {
+        draw({...soldier,...continuousPose},soldier.scale,clip,time);
+      }else if(assault.has(soldier.id)){
         const p=assault.get(soldier.id)!;
         const attacking=p.phase==='attack'&&assaultAttackTime>=0&&assaultAttackTime<meleeDuration;
         const moving=continuousPose?.recovering?continuousPose.moving:p.moving;
@@ -1276,11 +1306,18 @@ export class TroopActors {
         const wave=waves.get(soldier.id);
         const recovering=continuousPose?.recovering,walkingHome=recovering&&continuousPose.moving;
         if(wave)draw({...soldier,...wave,...continuousPose},soldier.scale,wave.attacking?meleeClipKey:(recovering?walkingHome:wave.moving)?'running':'idle',wave.attacking?wave.time:(continuousPose?.gaitDistance??wave.gaitDistance)/stride*duration+soldier.id*73);
-        else draw({...soldier,...(strike?{angle:strike.angle}:{}),...continuousPose}, soldier.scale, recovering&&!strike?(walkingHome?'running':'idle'):clip,walkingHome?continuousPose.gaitDistance/stride*duration+soldier.id*73:time);
+        else {
+          const finalClip = ranged ? rangedRecoveryClip(clip,!!recovering,!!walkingHome,!!strike)
+            : recovering && !strike ? walkingHome ? 'running' : 'idle' : clip;
+          const walkingTime = walkingHome && (!ranged || (clip !== 'attack' && clip !== 'reload'));
+          draw({...soldier,...(strike?{angle:strike.angle}:{}),...continuousPose},soldier.scale,finalClip,
+            walkingTime ? continuousPose.gaitDistance/stride*duration+soldier.id*73 : time);
+        }
       }
       const drawn=continuousPose??desired[soldierIndex];
       drawnBodies.push({id:soldier.id,x:drawn.x,y:drawn.y});
-      if (ranged) throwers.push({ ...soldier, throwing: !strike && clip === "attack" });
+      const attachment = state.drawn.get(soldier.id);
+      if (ranged && attachment && drawnClip) throwers.push({ ...soldier, ...attachment, throwing: !strike && drawnClip === "attack" });
     }
     this.bodies.set(squad.id,drawnBodies);
     if (ranged) this.throwers.set(squad.id, throwers);

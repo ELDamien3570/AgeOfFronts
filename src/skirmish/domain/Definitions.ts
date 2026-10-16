@@ -109,6 +109,8 @@ export interface ProgressionState {
   } | null;
 }
 export interface AttackProfile {
+  /** Authoritative preparation; independent of client artwork and frame rate. */
+  preparation?: { ticks: number; automatic: boolean };
   /** Percent hit contribution at contact and at authored maximum range. */
   accuracy?: { near: number; far: number };
   perSoldier?: boolean;

@@ -11,6 +11,18 @@ export interface WeaponState {
   melee?: ChannelCycle;
   ranged?: ChannelCycle;
   sharedReadyTick: number;
+  rangedSequence?: number;
+  rangedAction?: RangedAction;
+}
+export interface RangedAction {
+  sequence: number;
+  definitionId: string;
+  targetKind: "squad" | "aircraft" | "building" | "barrier";
+  targetId: number;
+  startTick: number;
+  releaseTick: number;
+  lastEligibleTick: number;
+  phase: "preparing" | "sustaining" | "released";
 }
 /** No idle catch-up: ammunition and fractional cadence survive disengagement. */
 export function commitWeaponShot(
@@ -59,12 +71,26 @@ export function sustainedInterval(profile: AttackProfile): number {
     rounds
   );
 }
-export function validateWeaponState(value: WeaponState | undefined): void {
+export function validateWeaponState(value: WeaponState | undefined, tick?: number): void {
   if (value === undefined) return;
   const integer = (n: number, max = Number.MAX_SAFE_INTEGER) =>
     Number.isSafeInteger(n) && n >= 0 && n <= max;
   if (!value || !integer(value.sharedReadyTick))
     throw new Error("Invalid weapon commitment");
+  if (value.rangedSequence !== undefined && !integer(value.rangedSequence))
+    throw new Error("Invalid ranged sequence");
+  const action = value.rangedAction;
+  if (action === null) throw new Error("Invalid ranged preparation");
+  if (action && (!integer(action.sequence) || action.sequence < 1 || action.sequence !== value.rangedSequence ||
+    typeof action.definitionId !== "string" || !action.definitionId.length || action.definitionId.length > 128 ||
+    !["squad", "aircraft", "building", "barrier"].includes(action.targetKind) || !integer(action.targetId) ||
+    !integer(action.startTick) || !integer(action.releaseTick) || action.releaseTick <= action.startTick ||
+    !integer(action.lastEligibleTick) || action.lastEligibleTick < action.startTick ||
+    !["preparing", "sustaining", "released"].includes(action.phase) ||
+    action.releaseTick - action.startTick > 60*TICKS_PER_SECOND ||
+    (tick !== undefined && (action.startTick > tick || action.lastEligibleTick > tick)) ||
+    (action.phase !== "preparing" && action.lastEligibleTick < action.releaseTick)))
+    throw new Error("Invalid ranged preparation");
   for (const channel of ["melee", "ranged"] as const) {
     const c = value[channel];
     if (
