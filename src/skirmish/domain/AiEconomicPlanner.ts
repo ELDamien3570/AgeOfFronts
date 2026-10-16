@@ -20,6 +20,7 @@ import type { AiPersonality } from "./AiPersonality";
 import { AGES, TREES, type Age, type Cost, type ProgressionState } from "./Definitions";
 import {
   advanceRejection,
+  ADVANCE_WARFARE_SHORTFALL,
   researchRejection,
   researchTerms,
 } from "./Progression";
@@ -283,6 +284,12 @@ export function economicCandidates(
     const work=new Set<string>();
     const visit=(id:string)=>{if(state.completed.includes(id)||work.has(id))return;work.add(id);TECHNOLOGIES.find(t=>t.id===id)!.prerequisites.forEach(visit);};
     TECHNOLOGIES.filter(t=>t.age===state.age&&!t.optional&&trees.includes(t.tree)).forEach(t=>visit(t.id));
+    // A nation that completes two non-warfare trees still needs warfare to
+    // within ADVANCE_WARFARE_SHORTFALL of complete (advanceTreesMet).
+    if (!trees.includes("warfare")) {
+      const warfare=TECHNOLOGIES.filter(t=>t.age===state.age&&!t.optional&&t.tree==="warfare").sort((a,b)=>a.slot-b.slot);
+      warfare.slice(0,Math.max(0,warfare.length-ADVANCE_WARFARE_SHORTFALL)).forEach(t=>visit(t.id));
+    }
     return work;
   };
   const pairs=TREES.flatMap((a,i)=>TREES.slice(i+1).map(b=>({trees:[a,b] as import("./Definitions").Tree[],work:outstanding([a,b])})))

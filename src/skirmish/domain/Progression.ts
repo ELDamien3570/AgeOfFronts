@@ -88,22 +88,38 @@ export function treeCompletion(state: ProgressionState, tree: Tree): number {
       t.age === state.age && t.tree === tree && !t.optional && state.completed.includes(t.id),
   ).length;
 }
+/** Owner decision OD-1 (13 R8(1)): a nation advances with all three current-age
+ * trees, or with two of them while warfare is at most this many technologies
+ * short of complete. Warfare can no longer be skipped on the way to Modern. */
+export const ADVANCE_WARFARE_SHORTFALL = 1;
+/** "nation" applies the warfare rule above; "tribe" keeps "any two trees" (05
+ * rec 2). Tribes are separately gated by TribeDevelopment's 75% rule. */
+export type AdvanceRule = "nation" | "tribe";
+export const advanceRuleFor = (kind: Player["kind"]): AdvanceRule =>
+  kind === "tribe" ? "tribe" : "nation";
+export const NATION_ADVANCE_TREES_MESSAGE =
+  "Complete two current-age trees and all but the last warfare technology";
+export function advanceTreesMet(state: ProgressionState, rule: AdvanceRule = "nation"): boolean {
+  const complete = TREES.filter(
+    (tree) => treeCompletion(state, tree) === treeWorkload(state.age, tree),
+  ).length;
+  if (complete < 2) return false;
+  return rule === "tribe" ||
+    treeCompletion(state, "warfare") >= treeWorkload(state.age, "warfare") - ADVANCE_WARFARE_SHORTFALL;
+}
 export function advanceRejection(
   state: ProgressionState,
   gold: number,
   speed: TechnologySpeed = 1,
   maximumAge?: Age,
+  rule: AdvanceRule = "nation",
 ): string | null {
   if (maximumAge && AGES.indexOf(state.age) >= AGES.indexOf(maximumAge))
     return `${maximumAge.replace("Age", " Age")} is the final age for this scenario`;
   if (state.age === "Modern") return "Modern is the final age";
   if (state.advancement) return "Age advancement already in progress";
-  if (
-    TREES.filter(
-      (tree) => treeCompletion(state, tree) === treeWorkload(state.age, tree),
-    ).length < 2
-  )
-    return "Complete any two current-age trees";
+  if (!advanceTreesMet(state, rule))
+    return rule === "tribe" ? "Complete any two current-age trees" : NATION_ADVANCE_TREES_MESSAGE;
   const price = researchTerms(ADVANCES[AGES.indexOf(state.age)], speed).gold;
   return gold < price ? `Needs ${price - gold} more gold` : null;
 }
@@ -174,7 +190,7 @@ export class Progression {
   }
   advance(player: Player): string | null {
     const state = this.states[player.id],
-      rejection = advanceRejection(state, availableGold(player), this.technologySpeed, this.maximumAge);
+      rejection = advanceRejection(state, availableGold(player), this.technologySpeed, this.maximumAge, advanceRuleFor(player.kind));
     if (rejection) return rejection;
     const index = AGES.indexOf(state.age),
       cost = researchTerms(ADVANCES[index], this.technologySpeed);

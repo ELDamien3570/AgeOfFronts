@@ -1662,7 +1662,7 @@ export class Expansion {
     const heldGold = recruit ? scaledRecipeCost(recruit.unit, recruitmentVariant(recruit.unit.id, state.completed)).gold ?? 0 : 0;
     const developmentGold = () => Math.max(0, availableGold(player) - heldGold);
     if (!tribeAdvanceRejection(player, this.world.players, this.progression.states) &&
-        !advanceRejection(state, developmentGold(), this.progression.technologySpeed, this.progression.maximumAge))
+        !advanceRejection(state, developmentGold(), this.progression.technologySpeed, this.progression.maximumAge, "tribe"))
       this.world.applyCommand({ type: "advance-age", playerId: player.id });
     const technologies = militarizing ? TRIBE_MILITARY_TECHNOLOGIES : TECHNOLOGIES;
     const next = technologies.find(t => t.age === state.age &&
