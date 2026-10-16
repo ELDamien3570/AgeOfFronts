@@ -108,7 +108,8 @@ describe("promoted balance and local preview drafts", () => {
     expect(approvedDefinition("napoleonic-infantry")).toMatchObject({
       speedPercent: 80,
       meleeAttack: { damage: 24, rpm: 40 },
-      rangedAttack: { damage: 150, rpm: 6 },
+      // C3: 150 HP volleys erased an equal line; 55 HP is the owner default.
+      rangedAttack: { damage: 55, rpm: 6 },
     });
     expect(approvedDefinition("napoleonic-archer").speedPercent).toBe(70);
   });

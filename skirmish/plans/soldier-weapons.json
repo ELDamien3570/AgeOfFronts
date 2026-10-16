@@ -474,7 +474,7 @@
     "napoleonic-archer": {
       "melee": null,
       "ranged": {
-        "damageHp": 150,
+        "damageHp": 55,
         "rpm": 5,
         "shotsPerReload": 1,
         "reloadMs": 12000,
@@ -516,7 +516,7 @@
         "bonuses": {}
       },
       "ranged": {
-        "damageHp": 150,
+        "damageHp": 55,
         "rpm": 6,
         "shotsPerReload": 1,
         "reloadMs": 10000,
@@ -622,7 +622,7 @@
         "shotsPerReload": 1,
         "reloadMs": 3000,
         "bonuses": {
-          "vehicle": 20
+          "vehicle": 400
         },
         "rangeTiles": 14
       },

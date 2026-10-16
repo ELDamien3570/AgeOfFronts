@@ -1,8 +1,9 @@
 # Pre-modern combat balance
 
 The October 2026 unit-lab export is the baseline for squad counts, HP, armour
-and movement. Modern weapon damage and cadence are retained. ATGM teams use
-one soldier, or two with the formation upgrade.
+and movement. Modern weapon damage and cadence are retained, except as listed
+under "Late-age lethality". ATGM teams use one soldier, or two with the
+formation upgrade.
 
 Comparisons use unpromoted, contemporary soldiers on level ground, without
 charge, cover or flank exposure. Charge adds its authored damage separately.
@@ -49,6 +50,23 @@ shrink, and suppress promotion. They exclude approach time and charge.
 
 Napoleonic firearms use a linear expected-hit contribution from 90% at contact
 to 35% at maximum range, with 10-second grenadier and 12-second musket cycles.
+Each grenadier and musket hit deals 55 HP (previously 150, which let one volley
+erase an equal line). A full-range grenadier volley kills 15–20% of an equal
+48-soldier line and a close volley (2–3 tiles) 35–50%
+(`tests/skirmish/CombatContractRows.test.ts`).
+
+## Late-age lethality (C3)
+
+A hit not resolved per soldier (a machine-gun burst, a hull gun, a shell) kills
+at most the soldier bodies it reaches: one frontage, `ceil(sqrt(capacity))`
+bodies, for a direct hit, and the bodies inside the radius for a blast. ATGM
+missiles carry a +400 vehicle bonus (one hit is about 27% of a T-14). Hull
+weapon damage and cadence are otherwise unchanged. Measured rows:
+
+| Engagement | Result |
+| --- | --- |
+| One machine-gun crew burst against an AK-47 squad | At most 4 riflemen die |
+| Two ATGM teams against a T-14 at 14 tiles | T-14 destroyed within 40 seconds |
 The lab combines this with the configurable target accuracy, distance and armour.
 Accuracy is committed into projectile contribution at launch and retained by
 snapshots. It does not create individual authoritative soldier projectiles.
