@@ -25,6 +25,13 @@ export function deriveRetrySeed(seed: number): number {
   return (Math.imul(seed, 1103515245) + 12345) & 0x7fffffff;
 }
 
+/** Every seed preparePlan may try for `seed`, in attempt order. */
+export function prepareAttemptSeeds(seed: number): number[] {
+  const seeds = [seed];
+  while (seeds.length <= PREPARE_MAX_RETRIES) seeds.push(deriveRetrySeed(seeds[seeds.length - 1]));
+  return seeds;
+}
+
 export interface PrepareInput {
   settings: LobbySettings;
   options: MatchOptions;

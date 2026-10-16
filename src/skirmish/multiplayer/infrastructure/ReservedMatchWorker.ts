@@ -9,6 +9,7 @@ import type {
   MatchPublication,
 } from "../application/MatchExecutor";
 import { RequestDeadlines, requestTimeoutMs } from "./RequestDeadlines";
+import { prepareAttemptSeeds } from "../application/PreparePlan";
 
 const workerPath = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -61,10 +62,12 @@ export class ReservedMatchWorker implements MatchExecutor {
   /** Only the request the worker is processing runs a timer; queued ones start theirs when reached. */
   private readonly deadlines = new RequestDeadlines<ExecutorRequest>((_id, request) => {
     this.lifecycle.operation = request.type;
-    // The worker never gets to log a prepare it did not finish, so name the seed here.
+    // The worker never gets to log a prepare it did not finish, so name the
+    // seeds here. The worker logs each failed attempt (map-prepare-failed);
+    // the attempt in progress used one of these seeds, in order.
     if (request.type === "prepare")
       console.error(JSON.stringify({ event: "map-prepare-timeout", mapId: request.settings.mapId,
-        size: request.settings.worldSize, seed: request.options.seed }));
+        size: request.settings.worldSize, seed: request.options.seed, attemptSeeds: prepareAttemptSeeds(request.options.seed) }));
     this.fail(new Error(`Match executor timed out during ${request.type}`), "timeout");
     void this.worker.terminate();
   });

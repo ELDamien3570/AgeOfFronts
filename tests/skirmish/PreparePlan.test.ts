@@ -6,6 +6,7 @@ import {
   deriveRetrySeed,
   PREPARE_MAX_RETRIES,
   PREPARE_RETRY_BUDGET_MS,
+  prepareAttemptSeeds,
   preparePlan,
   type PrepareDeps,
 } from "../../src/skirmish/multiplayer/application/PreparePlan";
@@ -71,6 +72,8 @@ describe("prepare plan retries a bad generated seed (R2-L7)", () => {
       seeds.map((seed, attempt) => ["map-prepare-failed", seed, attempt]),
     );
     expect(identity).not.toHaveBeenCalled();
+    // The prepare-timeout log names exactly these seeds, in attempt order.
+    expect(prepareAttemptSeeds(1234)).toEqual(seeds);
   });
 
   it("does not retry the setup errors that players can act on", async () => {
