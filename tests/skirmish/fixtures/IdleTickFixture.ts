@@ -9,6 +9,12 @@ import { Skirmish } from "../../../src/skirmish/Simulation";
  * match with AI nations and many marching tribes, so moving land squads,
  * clearance certification and spatial rebuilds are all exercised. */
 export const IDLE_TICK_FIXTURE_TICKS = 400;
+/** Digests after IDLE_TICK_FIXTURE_TICKS ticks, recorded at aof/next-1 (bc7c7882)
+ * before any I-2/I-3 change. I-2 and I-3 must leave both unchanged. */
+export const IDLE_TICK_GOLDEN = Object.freeze({
+  squads: "9168a8ec5812e44c31cbf67b1bf518708a98e9a430bcafd65c7f89eaa7b6ec61",
+  checkpoint: "be0563a7510d99d0711bae8262bf15d6f0f00cb321b95ba1069b4ed1c98c511c",
+});
 
 export function idleTickFixture(): Skirmish {
   return new Skirmish(generateMigration(250, 3).map, {

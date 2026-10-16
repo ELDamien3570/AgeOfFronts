@@ -527,6 +527,13 @@ export class Skirmish {
     candidates:{x:number;y:number;allowed:boolean}[];
   }>();
   private readonly approachRevisions = new Map<number, string>();
+  /** Non-authoritative work counters for the idle-tick probe and its tests
+   * (roadmap Next #2, I-2/I-3). Never read by the simulation, checkpointed
+   * or replicated. */
+  private readonly idleTickWork = {
+    groundProposals: 0, movementRebuilds: 0, movementRebuildRows: 0, heldRebuilds: 0, heldRows: 0,
+    clearanceCalls: 0, clearanceReuses: 0, clearanceRevisionResets: 0,
+  };
   private movementLand(): Squad[] {
     if (this.landMembership !== this.squadIndex.membershipRevision ||
         this.landCargo !== this.squadIndex.cargoRevision) {
@@ -539,6 +546,8 @@ export class Skirmish {
     }
     if (this.movementSpatialRevision !== this.squadIndex.spatialRevision) {
       this.spatial.rebuild(this.landScratch);
+      this.idleTickWork.movementRebuilds++;
+      this.idleTickWork.movementRebuildRows += this.landScratch.length;
       this.movementSpatialRevision = this.squadIndex.spatialRevision;
     }
     return this.landScratch;
@@ -2121,6 +2130,9 @@ export class Skirmish {
     if(!this.map.isValidCoord(Math.floor(end.x/FIXED),Math.floor(end.y/FIXED)))return undefined;
     const tile=this.tileOf(end);if(!this.map.isValidRef(tile))return undefined;
     if(s.cavalryEngagement && !this.map.isLand(tile))return undefined;
+    // A land body stepping onto land is exactly transportHandoff's "ground"
+    // result; skip the vessel lookup and landing closure on that hot path.
+    if(s.embarkedOn===null && !s.afloat && this.map.isLand(tile)){this.idleTickWork.groundProposals++;return {kind:"ground" as const};}
     return transportHandoff(s,end,!this.map.isLand(tile),this.transportVessel(s.playerId),candidate=>{
       if(!this.emptyFormationTerrain(candidate,this.tick) && !formationFootprints(candidate,this.tick).every(p=>this.certifyFormationPolygon(candidate,p,"deploy")))return false;
       // Landing reserves carrier space, rather than requiring an entire empty
@@ -2175,7 +2187,7 @@ export class Skirmish {
     // Include the same adjacent-pose padding used by transitionFootprint and
     // its final settled pose. This certifies the entire reform, not just a root.
     const from=this.facingGeometry.envelope(s,start),to=this.facingGeometry.envelope(s,end),
-      completed=this.facingGeometry.envelope({...s,formation:{...s.formation,transition:undefined}},end),
+      completed=this.facingGeometry.settledEnvelope(s,end),
       angle=Math.abs(Math.atan2(Math.sin(to.angle-from.angle),Math.cos(to.angle-from.angle)))/Math.max(1,end-start),
       skin=Math.ceil(from.broadRadius*(1-Math.cos(angle/2))+from.broadRadius*angle*angle/4)+2,
       radius=Math.max(from.broadRadius,to.broadRadius,completed.broadRadius)+2*skin+2+
@@ -2193,7 +2205,7 @@ export class Skirmish {
       radius = Math.max(radius,future.broadRadius) + 2*skin;
       halfX=Math.max(halfX,future.halfX);halfY=Math.max(halfY,future.halfY);padding+=skin;
       if(this.tick+1>=transition.startTick+transition.duration) {
-        const complete=this.facingGeometry.envelope({...s,formation:{...s.formation,transition:undefined}},this.tick+1);
+        const complete=this.facingGeometry.settledEnvelope(s,this.tick+1);
         halfX=Math.max(halfX,complete.halfX);halfY=Math.max(halfY,complete.halfY);
       }
     }
@@ -3589,6 +3601,8 @@ export class Skirmish {
     this.heldScratch.length = 0;
     for (const squad of land) if (this.holding(squad)) this.heldScratch.push(squad);
     this.heldSpatial.rebuild(this.heldScratch);
+    this.idleTickWork.heldRebuilds++;
+    this.idleTickWork.heldRows += this.heldScratch.length;
     const intents: MovementIntent[] = [];
     const approachEnemies:Squad[]=[];
     this.approachRevisions.clear();
@@ -3689,9 +3703,12 @@ export class Skirmish {
         const revision=this.squadIndex.spatialRevision;
         let proof=this.movementClearance.get(squad.id);
         if(!proof){proof={tick:this.tick,x:end.x,y:end.y,allowed:false,spatialRevision:revision,candidates:[]};this.movementClearance.set(squad.id,proof);}
+        this.idleTickWork.clearanceCalls++;
+        if(proof.tick===this.tick && proof.spatialRevision!==revision && proof.candidates.length)this.idleTickWork.clearanceRevisionResets++;
         if(proof.tick!==this.tick || proof.spatialRevision!==revision)proof.candidates.length=0;
         const previous=proof.candidates.find(point=>point.x===end.x && point.y===end.y);
         let allowed=previous?.allowed;
+        if(allowed!==undefined)this.idleTickWork.clearanceReuses++;
         if(allowed===undefined){
           const bodyAllowed=this.movementPolicyClear(squad,end)&&this.transportStepClear(squad,end);
           allowed=bodyAllowed && (!this.expansion || this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)));
