@@ -26,7 +26,7 @@ async function guest(url: string) {
   expect(response.status).toBe(200);
   return (await response.json()) as { guestId: string; token: string };
 }
-async function open(socket: string, options: { autoPong?: boolean } = {}) {
+async function open(socket: string, options: { autoPong?: boolean; headers?: Record<string, string> } = {}) {
   const ws = new WebSocket(socket, { origin, ...options });
   const messages: ServerMessage[] = [];
   ws.on("message", (data) => messages.push(JSON.parse(data.toString()) as ServerMessage));
@@ -91,6 +91,110 @@ async function readyBoth(first: Peer, second: Peer) {
     await peer.next((m) => m.type === "ack" && m.requestId === `ready-${i}`);
   }
 }
+
+describe("frame admission before parsing (M5)", () => {
+  it("rejects a 512 KB junk frame without ever parsing it", async () => {
+    const { url, socket } = await start();
+    const peer = await client(socket, (await guest(url)).token);
+    const parse = vi.spyOn(JSON, "parse");
+    cleanups.push(() => parse.mockRestore());
+    peer.ws.send("x".repeat(511_000)); // "512 KB": under the old 512_000-byte transport cap.
+    const closed = await peer.closed;
+    expect([1006, 1009]).toContain(closed.code);
+    expect(parse.mock.calls.some(([text]) => typeof text === "string" && text.length > 128_000)).toBe(false);
+  });
+  it("rejects an oversized unauthenticated frame before parsing", async () => {
+    const { socket } = await start();
+    const peer = await open(socket);
+    const parse = vi.spyOn(JSON, "parse");
+    cleanups.push(() => parse.mockRestore());
+    peer.ws.send(JSON.stringify({ type: "authenticate", token: "t".repeat(64 * 1024) }));
+    expect((await peer.closed).code).toBe(1008);
+    expect(parse.mock.calls.some(([text]) => typeof text === "string" && text.length > 4096)).toBe(false);
+  });
+  it("refuses large frames beyond the per-session byte budget without parsing them", async () => {
+    const { url, socket } = await start({ now: () => 5_000 });
+    const peer = await client(socket, (await guest(url)).token);
+    const parse = vi.spyOn(JSON, "parse");
+    cleanups.push(() => parse.mockRestore());
+    const frame = JSON.stringify({ type: "profile", requestId: "big", profile: { name: "A", flagCode: null }, pad: "p".repeat(100_000) });
+    for (let i = 0; i < 8; i++) peer.ws.send(frame);
+    const refused = await peer.next((m) => m.type === "error" && m.requestId === undefined && m.message.includes("rate"));
+    expect(refused.type).toBe("error");
+    expect(parse.mock.calls.filter(([text]) => typeof text === "string" && text.length > 100_000).length).toBeLessThan(8);
+    expect(peer.ws.readyState).toBe(WebSocket.OPEN);
+  });
+  it("closes a socket that exceeds the request rate in three consecutive windows, not after one burst", async () => {
+    let clock = 10_000;
+    const { url, socket } = await start({ now: () => clock });
+    const peer = await client(socket, (await guest(url)).token);
+    const burst = (tag: string) => {
+      for (let i = 0; i < 60; i++) peer.ws.send(JSON.stringify({ type: "match-command", requestId: `${tag}-${i}`, matchId: "missing", command: { type: "recruit" } }));
+    };
+    for (const window of [0, 1]) {
+      burst(`w${window}`);
+      await peer.next((m) => m.type === "error" && m.requestId === `w${window}-59`);
+      expect(peer.ws.readyState).toBe(WebSocket.OPEN);
+      clock += 1_001;
+    }
+    burst("w2");
+    expect(await peer.closed).toMatchObject({ code: 1008, reason: "Rate limit exceeded" });
+  });
+  it("forgives an earlier violation after a quiet window", async () => {
+    let clock = 10_000;
+    const { url, socket } = await start({ now: () => clock });
+    const peer = await client(socket, (await guest(url)).token);
+    for (const window of [0, 1, 2]) {
+      for (let i = 0; i < 60; i++) peer.ws.send(JSON.stringify({ type: "match-command", requestId: `q${window}-${i}`, matchId: "missing", command: { type: "recruit" } }));
+      await peer.next((m) => m.type === "error" && m.requestId === `q${window}-59`);
+      clock += window === 0 ? 2_500 : 1_001; // A quiet window resets the streak.
+    }
+    expect(peer.ws.readyState).toBe(WebSocket.OPEN);
+  });
+  it("caps concurrent sockets per client address", async () => {
+    const { socket } = await start({ maxSocketsPerAddress: 2 });
+    const first = await open(socket), second = await open(socket);
+    await expect(open(socket)).rejects.toThrow();
+    first.ws.close();
+    await first.closed;
+    await vi.waitFor(async () => { const again = await open(socket); again.ws.terminate(); }, { timeout: 2000 });
+    expect(second.ws.readyState).toBe(WebSocket.OPEN);
+  });
+});
+
+describe("per-address cap behind a trusted proxy (M5)", () => {
+  it("counts the forwarded client address, not the proxy's", async () => {
+    const { socket } = await start({ maxSocketsPerAddress: 1, trustProxy: true });
+    const via = (address: string) => open(socket, { headers: { "X-Forwarded-For": `198.51.100.7, ${address}` } });
+    await via("203.0.113.1");
+    await via("203.0.113.2");
+    await expect(via("203.0.113.1")).rejects.toThrow();
+  });
+});
+
+describe("heartbeat tolerance (P18)", () => {
+  it("tolerates two missed pongs and drops the socket on the third", async () => {
+    const { url, socket } = await start({ heartbeatMs: 60 });
+    const peer = await client(socket, (await guest(url)).token, { autoPong: false });
+    const started = Date.now();
+    const closed = await peer.closed;
+    // Pings at 1, 2 and 3 intervals go unanswered; the fourth tick terminates.
+    expect(Date.now() - started).toBeGreaterThanOrEqual(3 * 60 - 20);
+    expect(closed.code).toBe(1006);
+  });
+  it("keeps responsive clients, and a client that resumes answering, connected", async () => {
+    const { url, socket } = await start({ heartbeatMs: 40 });
+    const responsive = await client(socket, (await guest(url)).token);
+    const late = await client(socket, (await guest(url)).token, { autoPong: false });
+    let pings = 0;
+    // Misses two pings, then answers every later one.
+    late.ws.on("ping", () => { if (++pings >= 3) late.ws.pong(); });
+    await new Promise((resolve) => setTimeout(resolve, 40 * 10));
+    expect(pings).toBeGreaterThanOrEqual(5);
+    expect(responsive.ws.readyState).toBe(WebSocket.OPEN);
+    expect(late.ws.readyState).toBe(WebSocket.OPEN);
+  });
+});
 
 describe("coordinator terminal messages (L11)", () => {
   it("ends a match whose worker throws with a fixed string, never the internal text", async () => {
