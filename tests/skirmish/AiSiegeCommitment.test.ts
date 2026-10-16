@@ -1,3 +1,4 @@
+import { progressionStagger } from "../../src/skirmish/domain/Expansion";
 import { finishRangedPreparation } from "./fixtures/RangedPreparation";
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { retainSquads } from "./UnitFixtures";
@@ -43,7 +44,7 @@ function fixture() {
     maxHealth: 10000,
   });
   const think = () => {
-    game.tick = game.tick ? game.tick + secondsToTicks(3) : (player.id * 3)%secondsToTicks(3);
+    game.tick = game.tick ? game.tick + secondsToTicks(3) : progressionStagger(player.id);
     game.expansion!.beforeStep();
   };
   return { game, player, unit, target, think };

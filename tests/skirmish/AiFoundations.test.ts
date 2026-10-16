@@ -1,3 +1,4 @@
+import { progressionStagger } from "../../src/skirmish/domain/Expansion";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -28,7 +29,7 @@ function fixture() {
   player.gold = 0;
   player.reserves = 0;
   const think = () => {
-    game.tick = (player.id % 20) * 3;
+    game.tick = progressionStagger(player.id);
     expansion.beforeStep();
   };
   return { game, map, player, expansion, think };
