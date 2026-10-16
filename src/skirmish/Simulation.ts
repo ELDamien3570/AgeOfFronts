@@ -281,6 +281,9 @@ export class Skirmish {
     }
     this.expansion?.economy.release(playerId);
     this.expansion?.operations.release(playerId);
+    // M3: human armies stay intact for a reconnect, but the AI cannot re-task
+    // army members, so they fight under automatic tactics with no stale queue.
+    if(ai)this.expansion?.armies.handOverToAi(playerId);
     this.commandApplications.release(playerId, this.tick);
   }
   checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
@@ -5569,6 +5572,11 @@ export class Skirmish {
     // Mark the whole terminal batch before resolving credit, so simultaneous
     // defeats cannot award territory to another newly eliminated faction.
     for (const player of defeated) player.eliminated = true;
+    // L1: an eliminated faction keeps no AI missions, leases or reservations.
+    for (const player of defeated) {
+      this.expansion?.economy.release(player.id);
+      this.expansion?.operations.release(player.id);
+    }
     const eliminated = new Set(
       this.players.filter((p) => p.eliminated).map((p) => p.id),
     );

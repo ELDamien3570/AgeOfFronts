@@ -381,6 +381,14 @@ export class Armies {
     // Certification includes all members, but only idle/returning members receive movement commands.
     march.slots=slots;this.assign(army,march,moves,slots);
   }
+  /** Human-to-AI handover (M3): keep each army, enable automatic tactics and drop queued legs beyond the current order. */
+  handOverToAi(playerId: number): void {
+    for (const army of this.armies) {
+      if (army.playerId !== playerId) continue;
+      army.autoTactics = true;
+      army.queuedOrders = [];
+    }
+  }
   armyOf(squadId: number): Army | undefined {
     return this.byArmyId.get(this.membership.get(squadId) ?? -1);
   }
