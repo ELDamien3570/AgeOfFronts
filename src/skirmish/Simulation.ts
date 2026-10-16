@@ -48,7 +48,7 @@ import type { RuntimePhase } from "./RuntimeDiagnostics";
 import { startingEconomy } from "./content/StartingEconomy";
 import { tribeBuildingLimit } from "./domain/TribeDevelopment";
 import { navalLocalRoute, navalInterceptTile } from "./NavalLocalRoute";
-import type { RecruitmentJob } from "./domain/Definitions";
+import type { Aircraft, RecruitmentJob } from "./domain/Definitions";
 import { restoreArray, restoreMap, restoreSet } from "./StateTransfer";
 import type { GameMap } from "../core/game/GameMap";
 import { PseudoRandom } from "../core/PseudoRandom";
@@ -311,6 +311,12 @@ export class Skirmish {
         ids.add(record.id);
       }
     }
+    // L19: every owned or claimed tile names a roster faction. The pressure
+    // field's 255 contested marker is never written into owners or claims.
+    for (const tiles of [saved.owners, saved.claims])
+      for (let tile = 0; tile < tiles.length; tile++)
+        if (tiles[tile] !== 0 && !players.has(tiles[tile])) throw new Error("Invalid checkpoint tile owner");
+    if (this.expansion) validateAircraftRecords(saved.expansion?.aircraft, players);
     if (this.expansion) for(const squad of saved.squads) { validateRecipeManpower(UNIT.get(squad.definitionId??""),squad.manpower,squad.troops); validateWeaponState(squad.weaponState,saved.tick);validateOccupancy(squad.occupancy);validateStance(squad.stance,squad.lastWithdrawTick);validateFormation(squad.formation,squad.definitionId,squad.troops); if([squad.formation?.lastDeployTick,squad.formation?.blockedSince,squad.formation?.settledSince].some(clock=>(clock??0)>saved.tick))throw new Error("Invalid formation deployment clock"); }
     for (const squad of saved.squads) {
       validateTransportDamage(squad.afloat);validateAiWithdrawal(squad.aiWithdrawal,saved.tick);
@@ -5761,5 +5767,24 @@ export class Skirmish {
       volleys: this.volleys.map((v) => ({ ...v })),
       expansion: this.expansion?.snapshot(),
     };
+  }
+}
+const AIRCRAFT_KINDS: readonly string[] = ["fighter", "bomber", "drone"];
+const AIRCRAFT_STATES: readonly string[] = ["ready", "outbound", "patrolling", "returning", "transferring"];
+/** R2-L3: reject aircraft a live simulation cannot produce. A transferring
+ * plane without its reservation would otherwise bomb its destination airfield.
+ * The base airfield is not required to exist or be owned: a captured airfield
+ * can leave planes parked for one tick. */
+function validateAircraftRecords(aircraft: readonly Aircraft[] | undefined, players: ReadonlySet<number>): void {
+  if (!Array.isArray(aircraft)) throw new Error("Invalid checkpoint aircraft");
+  const ids = new Set<number>(), finite = (n: unknown) => typeof n === "number" && Number.isFinite(n);
+  for (const a of aircraft) {
+    if (!a || !Number.isSafeInteger(a.id) || a.id < 0 || ids.has(a.id) || !players.has(a.playerId) ||
+      !AIRCRAFT_KINDS.includes(a.definitionId) || !AIRCRAFT_STATES.includes(a.state) ||
+      (a.state === "transferring" && (!a.transfer || !Number.isSafeInteger(a.transfer.destinationId) || a.transfer.destinationId < 0)) ||
+      ![a.x, a.y, a.health, a.fuelTicks].every(finite) ||
+      (a.flightBudgetTicks !== undefined && !finite(a.flightBudgetTicks)))
+      throw new Error("Invalid checkpoint aircraft");
+    ids.add(a.id);
   }
 }
