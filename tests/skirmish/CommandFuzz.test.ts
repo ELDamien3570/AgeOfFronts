@@ -2,17 +2,15 @@
 // Ported from the review's scratch fuzzer: the same generators, valid-biased
 // generators, digest and invariants on a small fixed-seed all-land fixture.
 //
-// Asserted now: no command or tick throws (the match-ending class), and the
-// tick invariants below. Recorded as counters only, because they fail on
-// defects owned by other roadmap items:
-// - rejected => digest unchanged (R2-M10 remainder, Armies fire-retreat, trench
-//   budget: R3);
-// - accepted => no foreign entity or stance/trench row changed (occupy stance
-//   hole, R4);
-// - checkpoint -> restore round trip (R2-M11, R2-M12).
-// Measured on the development desktop: about 17-25 s for 1,500 commands
-// (seed 1, two epochs). On the base commit it throws at command 499: the
-// off-map charge fallback "Invalid coordinates: 160,3906" (R2-H2).
+// Asserted: no command or tick throws (the match-ending class), the tick
+// invariants below, rejected => digest unchanged (R5; roadmap Now #5), and
+// accepted => no other faction's entity, stance or trench row changed.
+// Recorded as a counter only, because it fails on defects owned by other
+// roadmap items: the checkpoint -> restore round trip (R2-M11, R2-M12).
+// Measured on the development desktop: about 25 s for 1,500 commands (seed 1,
+// two epochs). Before Now #5 the rejected oracle fails on seed 1: a rejected
+// fire-retreat army order flips posture (#148, R2-L14) and a rejected queued
+// replenish suppresses stance rows (#201, R2-M10).
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import type { CommandValidationFailure } from "../../src/skirmish/CommandApplications";
@@ -61,7 +59,7 @@ function run() {
   const BT = Object.keys(BUILDING_RULES);
   const counters = {
     applyThrows: [] as Json[], stepThrows: [] as Json[], validationFailures: [] as CommandValidationFailure[],
-    schemaRejected: 0, accepted: 0, rejected: 0, deferred: 0, rejectedMutated: {} as Record<string, number>,
+    schemaRejected: 0, accepted: 0, rejected: 0, deferred: 0, rejectedMutated: {} as Record<string, number>, rejectedSamples: [] as string[], foreignRows: [] as string[],
     foreignMutated: {} as Record<string, number>, restoreFailures: [] as string[], invariantViolations: {} as Record<string, number>,
   };
   const seen = { squads: new Set<number>(), ships: new Set<number>(), buildings: new Set<number>(), aircraft: new Set<number>(), armies: new Set<number>() };
@@ -321,6 +319,36 @@ function run() {
     }
     return { type: "order", squadIds: own.slice(0, 12).map(s => s.id), order: { type: "move", tile: game.map.ref(int(W), int(H)) } };
   };
+  // Rule generators for the side-effect classes of roadmap Now #5: stance and
+  // trench rows the order observers touch, army fire-retreat posture, and
+  // occupy batches naming another faction's squads.
+  const rule = (actor: number): Json | undefined => {
+    const own = game.squads.filter(s => s.playerId === actor && s.embarkedOn === null);
+    if (!own.length) return;
+    const stanced = own.filter(s => exp().skirmish.eligible(s));
+    const rows = new Set(exp().skirmish.checkpoint().states.map(([id]) => id));
+    const r = rnd();
+    if (r < 0.2 && stanced.length) return { type: "stance", squadIds: stanced.slice(0, 1 + int(4)).map(s => s.id), stance: "skirmish" };
+    if (r < 0.4) {
+      // Off-friendly-land replenish, queued behind a held squad: rejected after
+      // the order observers on the base commit.
+      const held = own.filter(s => s.order.type === "hold"), away = own.filter(s => game.owners[game.tileOf(s)] !== actor);
+      const pickRows = own.filter(s => rows.has(s.id));
+      const ids = [...new Set([...pickRows.slice(0, 3), ...held.slice(0, 1), ...away.slice(0, 2)].map(s => s.id))];
+      if (ids.length) return { type: "order", squadIds: ids, order: { type: "replenish" }, append: chance(0.7) };
+    }
+    if (r < 0.6) {
+      const armies = exp().armies.armies.filter(a => a.playerId === actor);
+      if (armies.length) return { type: "army-order", armyId: pick(armies).id, order: { type: "fire-retreat", targetId: pick([65536, 9_999_999, own[0].id]) }, ...(chance(0.3) ? { append: true } : {}) };
+      const free = own.filter(s => !exp().armies.armyOf(s.id));
+      if (free.length >= 2) return { type: "create-army", squadIds: free.slice(0, 2 + int(3)).map(s => s.id) };
+      return;
+    }
+    const trenches = game.buildings.filter(b => b.playerId === actor && b.type === "trench" && !b.remainingTicks);
+    const foreign = game.squads.filter(s => s.playerId !== actor && rows.has(s.id));
+    if (!trenches.length) return;
+    return { type: "occupy", squadIds: [...own.slice(0, 1 + int(3)), ...foreign.slice(0, 2)].map(s => s.id), tile: pick(trenches).tile };
+  };
   const weights: Record<string, number> = { order: 8, charge: 4, formation: 4, build: 4, recruit: 4, occupy: 3, "army-order": 3, "attack-structure": 2, sail: 2, sortie: 2, "transfer-aircraft": 2, "recruit-aircraft": 2, alliance: 2, launch: 1, "create-army": 2 };
   const bag: string[] = [];
   for (const t of Object.keys(gens)) for (let i = 0; i < (weights[t] ?? 1); i++) bag.push(t);
@@ -379,18 +407,18 @@ function run() {
     const trusted = chance(0.05);
     const actor = trusted ? pick(game.players.filter(p => p.ai && !p.eliminated).map(p => p.id).concat([1])) : pick(humans);
     const type = pick(bag), c = ctx(actor);
-    const edgeCase = chance(0.03) ? edge(actor) : undefined;
+    const edgeCase = chance(0.03) ? edge(actor) : chance(0.08) ? rule(actor) : undefined;
     const raw = edgeCase ?? { type, ...(chance(0.5) ? smart(type, actor) ?? gens[type](c) : gens[type](c)) };
     const parsed = commandSchema.safeParse({ ...raw, playerId: actor });
     if (!parsed.success) { counters.schemaRejected++; continue; }
     const command = parsed.data as Command;
-    // A digest every fifth command keeps the oracle counters within budget.
-    const sample = i % 5 === 0, before = sample ? digest() : undefined;
-    let status: string;
+    // Every command is digested: the rejected-command oracle is asserted.
+    const before = digest();
+    let status: string, reason: string | undefined;
     try {
-      if (trusted) status = game.applyCommand(command) ? "rejected" : "executed";
+      if (trusted) { reason = game.applyCommand(command) ?? undefined; status = reason ? "rejected" : "executed"; }
       else if (game.player(actor)!.ai) status = "rejected";
-      else status = game.commandApplications.apply(`fz${i}`, command).status;
+      else { const outcome = game.commandApplications.apply(`fz${i}`, command); status = outcome.status; reason = outcome.reason; }
     } catch (error) {
       counters.applyThrows.push({ type: command.type, command, tick: game.tick, message: (error as Error).message, stack: String((error as Error).stack).split("\n").slice(0, 8).join("\n") });
       break;
@@ -398,13 +426,25 @@ function run() {
     if (status === "rejected") counters.rejected++; else if (status === "deferred") counters.deferred++; else counters.accepted++;
     if (before) {
       const after = digest(), changed = Object.keys(before).filter(k => before[k] !== after[k]);
-      if (status === "rejected" && changed.length) for (const k of changed) counters.rejectedMutated[`${type}:${k}`] = (counters.rejectedMutated[`${type}:${k}`] ?? 0) + 1;
+      if (status === "rejected" && changed.length) {
+        for (const k of changed) counters.rejectedMutated[`${command.type}:${k}`] = (counters.rejectedMutated[`${command.type}:${k}`] ?? 0) + 1;
+        counters.rejectedSamples.push(`#${i} seed ${options.seed} ${command.type} "${reason}" changed ${changed.join("+")}: ${JSON.stringify(command).slice(0, 300)}`);
+      }
       if (status !== "rejected" && type !== "alliance")
         for (const k of ["squads", "ships", "buildings"]) if (before[k] !== after[k] && changedFor(before[k], after[k], actor)) {
           // Squads the actor does not own that changed during its own command.
           const own = owners(before[k]);
           if ([...own.values()].some(p => p !== actor)) counters.foreignMutated[`${type}:${k}`] = (counters.foreignMutated[`${type}:${k}`] ?? 0) + 1;
         }
+      if (status !== "rejected") {
+        // Stance and trench rows of another faction's squads are that faction's.
+        const ownerOf = owners(before.squads);
+        const rows = (json: string, of: (x: Json) => [number, Json][]) => new Map(of(JSON.parse(json)).filter(([id]) => (ownerOf.get(id) ?? actor) !== actor).map(([id, row]) => [id, JSON.stringify(row)]));
+        for (const [k, of] of [["stance", (x: Json) => x.states], ["trenches", (x: Json) => x.occupants.map((o: Json) => [o.squadId, o])]] as const) {
+          const a = rows(before[k], of), b = rows(after[k], of);
+          if ([...a].some(([id, row]) => b.get(id) !== row)) counters.foreignRows.push(`#${i} seed ${options.seed} ${command.type} changed foreign ${k}: ${JSON.stringify(command).slice(0, 300)}`);
+        }
+      }
     }
     try { for (let k = 0, ticks = 1 + int(2); k < ticks; k++) game.step(); }
     catch (error) {
@@ -422,13 +462,18 @@ describe("command fuzzing (bounded)", () => {
     const started = performance.now();
     const { counters, asserted, tick, processed, epochs } = run();
     const seconds = Math.round((performance.now() - started) / 100) / 10;
-    // Recorded, not asserted: see the header for the owning roadmap items.
+    // Restore failures are recorded, not asserted: see the header.
     console.info(JSON.stringify({ event: "command-fuzz", seed: SEED, commands: processed, epochs, seconds, tick,
       accepted: counters.accepted, deferred: counters.deferred, rejected: counters.rejected, schemaRejected: counters.schemaRejected,
       validationFailures: counters.validationFailures.map(f => `${f.type}: ${f.message}`),
       rejectedMutated: counters.rejectedMutated, foreignMutated: counters.foreignMutated,
       restoreFailures: counters.restoreFailures, invariantViolations: counters.invariantViolations }));
     expect(counters.applyThrows.map(t => `${t.type}: ${t.message}`)).toEqual([]);
+    // A rejected command is side-effect free: every sampled digest is unchanged.
+    expect(counters.rejectedSamples.slice(0, 10)).toEqual([]);
+    // An accepted command leaves other factions' entities, stance and trench rows alone.
+    expect(counters.foreignMutated).toEqual({});
+    expect(counters.foreignRows.slice(0, 10)).toEqual([]);
     expect(counters.stepThrows.map(t => `${t.lastType}: ${t.message}`)).toEqual([]);
     expect(processed).toBe(COMMANDS);
     expect(asserted.slice(0, 10)).toEqual([]);
