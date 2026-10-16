@@ -1241,12 +1241,18 @@ export class Skirmish {
       const doctrine=formationDoctrine(changes.definitionId),old=previous.formation;
       const n=changes.troops??previous.troops,shape=eligibleShape(n,doctrine,old.shape);
       const keep=shape===old.shape && !(doctrine.hull && old.automatic);
+      // R2-M11: size the preferred width for the shape the validator reads
+      // (deployedShape ?? shape) of the stored formation, and store that shape.
+      const storedShape=keep?old.shape:createFormation(changes.definitionId).shape;
+      const keptDeployed=old.deployedShape && doctrine.shapes.includes(old.deployedShape)?old.deployedShape:undefined;
+      const target=keptDeployed??storedShape,resolved=eligibleShape(n,doctrine,target);
+      const storedDeployed=resolved===target||resolved==="column"?keptDeployed:resolved;
       changes={...changes,formation:{...createFormation(changes.definitionId),...(keep?{shape:old.shape,mode:old.mode}:{}),
         facing:old.facing,revision:old.revision+1,lastDeployTick:old.lastDeployTick,shapeLock:old.shapeLock,
         frontage:old.frontage===undefined?undefined:frontageLayout(n,doctrine,keep?old.shape:doctrine.defaultShape,old.frontage)?.width,
-        preferredFrontage:old.preferredFrontage===undefined?undefined:frontageLayout(n,doctrine,eligibleShape(n,doctrine,old.deployedShape??shape),old.preferredFrontage)?.width,
+        preferredFrontage:old.preferredFrontage===undefined||(storedDeployed??storedShape)==="column"?undefined:frontageLayout(n,doctrine,storedDeployed??storedShape,old.preferredFrontage)?.width,
         autoFrontage:keep?old.autoFrontage:undefined,
-        deployedShape:old.deployedShape && doctrine.shapes.includes(old.deployedShape)?old.deployedShape:undefined,
+        deployedShape:storedDeployed,
         deploymentFacing:old.deploymentFacing,
         automatic:keep && old.shape==='column' && !doctrine.hull?old.automatic:undefined,
         trail:keep && old.shape==='column' && !doctrine.hull?old.trail:undefined}};

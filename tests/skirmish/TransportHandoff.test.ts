@@ -6,7 +6,7 @@ import {
   formationFootprints,
 } from "../../src/skirmish/domain/FormationContact";
 import { transportHandoff } from "../../src/skirmish/domain/TransportHandoff";
-import { createFormation, type FormationShape } from "../../src/skirmish/domain/FormationGeometry";
+import { createFormation, formationDoctrine, type FormationShape, validateFormation } from "../../src/skirmish/domain/FormationGeometry";
 import { UNIT } from "../../src/skirmish/content/Units";
 import { createManpower } from "../../src/skirmish/domain/Manpower";
 import {
@@ -178,6 +178,31 @@ describe("atomic researched transport handoff", () => {
     expect(proposal?.changes?.formation?.deployedShape).toBe("line");
     expect(proposal?.changes?.formation?.trail).toBeUndefined();
     expect(source.afloat.hull).toBe(100);
+  });
+  it("lands a manual column without a remembered shape in a state its validator accepts (R2-M11)", () => {
+    const f = transportScene();
+    const source = {
+      ...f.s,
+      x: 95.9 * FIXED,
+      afloat: { hull: 100, maxHull: 200, vesselId: "test" },
+      formation: {
+        ...f.s.formation!,
+        shape: "column" as const,
+        mode: "travel" as const,
+        automatic: false,
+        deployedShape: undefined,
+        preferredFrontage: undefined,
+        frontage: undefined,
+        trail: undefined,
+      },
+    };
+    validateFormation(source.formation, source.definitionId, source.troops);
+    const proposal = transportHandoff(source, { x: 96.1 * FIXED, y: f.s.y }, false, undefined, () => true);
+    const formation = proposal?.changes?.formation;
+    expect(formation?.shape).toBe("column");
+    expect(formation?.preferredFrontage).toBeDefined();
+    expect(formation?.deployedShape).toBe(formationDoctrine(source.definitionId).defaultShape);
+    expect(() => validateFormation(formation, source.definitionId, source.troops)).not.toThrow();
   });
   it("keeps damaged hull and root when landing has no legal footprint", () => {
     const f = transportScene();

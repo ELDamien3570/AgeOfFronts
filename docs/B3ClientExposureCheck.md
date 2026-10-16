@@ -1,6 +1,16 @@
 # B-3 client-exposure check (R2-M11)
 
-Status: check done; the fix itself (B-3 fix, roadmap item 10) is not applied yet.
+Status: fixed (roadmap Next #10, commit "Keep landed and refitted formations
+valid (R2-M11)"). `TransportHandoff.ts` now stores the deployed shape that the
+landed column's `preferredFrontage` was sized for, and the definition-change
+branch in `Simulation.updateSquad` sizes `preferredFrontage` for the shape the
+validator reads (`deployedShape ?? shape`). Tests:
+`tests/skirmish/FormationClientExposure.test.ts` (real landing and refit through
+both client decode paths, plus a codec guard),
+`tests/skirmish/FormationRefitValidity.test.ts` (same-line definition-change
+sweep, 0 invalid), `tests/skirmish/TransportHandoff.test.ts` (manual column
+landing), and the end-of-tick helper `tests/skirmish/fixtures/FormationCheck.ts`.
+The sections below record the check as it was made before the fix.
 
 ## Question
 
