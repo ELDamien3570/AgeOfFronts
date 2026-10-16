@@ -600,6 +600,7 @@ export class RoutePlanner<T> {
     this.diagnostics.pending = this.jobs.size;
     return true;
   }
+  private readonly pinFamilies = new Map<object, number[]>();
   step(tick: number, budget = 4096, quantum = 64): number {
     this.currentTick = tick;
     if (
@@ -636,15 +637,24 @@ export class RoutePlanner<T> {
       this.ports.completed(request, "limited", []);
     }
     let used = 0;
-    if (this.schedulingVersion >= 4) for (const paths of [this.land, this.water, this.amphibious]) {
-      if (!paths) continue;
-      paths.pinSharedPreparation([...this.jobs.values()].filter(job => this.pathsFor(job) === paths)
-        .flatMap(job => job.corridor?.local ? [job.corridor.local.origin] : []));
+    if (this.schedulingVersion >= 4) {
+      // P36: one pass over the table instead of a spread, filter and flatMap
+      // per path family. Each family still receives its origins in job order.
+      const families = this.pinFamilies;
+      families.clear();
+      for (const paths of [this.land, this.water, this.amphibious]) if (paths && !families.has(paths)) families.set(paths, []);
+      for (const job of this.jobs.values()) {
+        const origin = job.corridor?.local?.origin;
+        if (origin !== undefined) families.get(this.pathsFor(job))?.push(origin);
+      }
+      for (const paths of [this.land, this.water, this.amphibious]) if (paths) paths.pinSharedPreparation(families.get(paths)!);
+      families.clear();
     }
-    const humanWaiting=this.ports.lendIdlePreparation && this.ports.priority && [...this.jobs.values()].some(job=>{
+    let humanWaiting = false;
+    if (this.ports.lendIdlePreparation && this.ports.priority) for (const job of this.jobs.values()) {
       const live=job.discard?job.replacement:job.retired?undefined:job;
-      return live && this.priorityOf(live);
-    });
+      if (live && this.priorityOf(live)) { humanWaiting = true; break; }
+    }
     let preparationBudget = Math.min(Math.ceil(budget/16), budget),
       // At most 16,384 local dequeues, with 12,288 reserved for human work.
       corridorPreparationBudget = Math.min(32, budget),
