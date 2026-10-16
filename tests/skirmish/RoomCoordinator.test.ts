@@ -18,6 +18,14 @@ describe("online room lifecycle", () => {
     rooms.voteToStart(id, "b"); // Repeated votes do not create additional votes.
     expect(rooms.advance(2)).toHaveLength(1);
   });
+  it("restores a room persisted at the retired 2000 size as a 1000 room (G-a)", () => {
+    const saved = new RoomCoordinator(0, 1).snapshot();
+    const room = saved.rooms.find(r => r.id === "default-africa")!;
+    room.settings = { ...room.settings, worldSize: 2000 as never };
+    const restored = new RoomCoordinator(1, 1, saved);
+    expect(restored.snapshot().rooms.find(r => r.id === "default-africa")!.settings.worldSize).toBe(1000);
+    expect(restored.snapshot().rooms.every(r => r.settings.worldSize !== (2000 as never))).toBe(true);
+  });
   it("allows a lobby to start with 1 human if that human votes to start", () => {
     const rooms = new RoomCoordinator(0, 1);
     const id = "default-africa";

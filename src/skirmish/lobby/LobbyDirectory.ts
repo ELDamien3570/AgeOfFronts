@@ -173,6 +173,10 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
 export function migrateLobbySettings(saved: LobbySettings): LobbySettings {
   const settings: Record<string, unknown> = { ...saved };
   delete settings.fillVacanciesWithAi;
+  // G-a (R2-P1): 2000 is no longer offered. A room saved before that (or a
+  // reservation restored across the deploy) moves to the largest offered size
+  // instead of starting a 2000 match; faction ranges are the same at every size.
+  if ((saved.worldSize as number) === 2000) settings.worldSize = Math.max(...LOBBY_WORLD_SIZES);
   if ([250, 500, 1000, 2000].includes(saved.worldSize)) {
     const defaults = factionDefaults(saved.worldSize);
     if (settings.aiCount === undefined) settings.aiCount = defaults.aiCount;

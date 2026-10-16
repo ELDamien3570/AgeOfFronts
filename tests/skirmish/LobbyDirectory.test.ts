@@ -152,6 +152,14 @@ describe("custom lobby holder and waiting queue", () => {
     ).toThrow("AI opponents");
   });
 
+  it("moves a room saved at the retired 2000 size to 1000, so it can never start at 2000", () => {
+    const saved = { ...defaultLobbySettings("migration", 1000), worldSize: 2000 } as unknown as LobbySettings;
+    expect(() => validateLobbySettings(saved)).toThrow("world size");
+    const migrated = migrateLobbySettings(saved);
+    expect(migrated.worldSize).toBe(1000);
+    expect(validateLobbySettings(migrated).worldSize).toBe(1000);
+  });
+
   it("enforces consistent minimum humans, timer bounds, and alliance victory", () => {
     const base = defaultLobbySettings("heightmap-test1");
     expect(() =>
