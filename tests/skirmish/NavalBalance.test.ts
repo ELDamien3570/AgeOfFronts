@@ -82,6 +82,21 @@ describe("naval balance contract", () => {
     }
   }, 30_000);
 
+  it("an explicit naval-attack order from a 1-HP ship still deals damage (R2-L19)", () => {
+    const armed = VESSELS.filter((v) => v.kind !== "carrier" && v.attack?.targets.includes("ship"));
+    for (const vessel of armed) {
+      const game = openSea();
+      // Out of automatic engagement range, so only the explicit order fires.
+      const attacker = warship(game, 1, vessel.id, 60, 50, 1);
+      const defender = warship(game, 2, vessel.id, 60 + Math.ceil(vessel.attack!.range / FIXED) + 6, 50);
+      game.updateShip(defender.id, { nextAttackTick: 1e9 });
+      expect(game.applyCommand({ type: "naval-attack", playerId: 1, shipIds: [attacker.id], targetId: defender.id }), vessel.id).toBeNull();
+      const start = defender.health;
+      for (let t = 0; t < secondsToTicks(30) && defender.health === start; t++) game.step();
+      expect(defender.health, vessel.id).toBeLessThan(start);
+    }
+  }, 60_000);
+
   for (const deferred of [false, true])
     it(`interrupted recovery reaches full health within 90 s (deferred ${deferred})`, () => {
       const game = openSea({ deferred });

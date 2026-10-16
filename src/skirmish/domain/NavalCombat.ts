@@ -12,17 +12,22 @@ export type NavalTarget = Ship | Squad;
  * this fraction (per mille) of its full-health weapon. Damage rises linearly
  * to 1000 at full health, so a full-health ship's numbers are unchanged. */
 export const NAVAL_DAMAGE_FLOOR_PERMILLE = 600;
+/** floor(p / q) for p >= 0, q > 0 without rounding a float quotient: the
+ * remainder and the subtraction are exact, and the division is of a multiple. */
+const floorDivide = (p: number, q: number) => (p - (p % q)) / q;
 /** Integer per-mille strength of a ship's weapons at `health` of `maxHealth`. */
 export function navalStrengthPermille(health: number, maxHealth: number): number {
   const max = Math.max(1, maxHealth), h = Math.max(0, Math.min(health, max));
   return NAVAL_DAMAGE_FLOOR_PERMILLE +
-    Math.floor(((1000 - NAVAL_DAMAGE_FLOOR_PERMILLE) * h) / max);
+    floorDivide((1000 - NAVAL_DAMAGE_FLOOR_PERMILLE) * h, max);
 }
 /** Health after a hull's maximum changes (research, refit), keeping its share
  * of maximum health: a full hull stays full, a damaged one stays as damaged. */
 export function rescaledHullHealth(health: number, oldMax: number, newMax: number): number {
   if (oldMax <= 0 || oldMax === newMax) return Math.min(health, newMax);
-  return Math.max(0, Math.min(newMax, Math.ceil((health * newMax) / oldMax)));
+  // ceil(health * newMax / oldMax) in exact arithmetic (health >= 0).
+  const scaled = Math.max(0, health) * newMax;
+  return Math.max(0, Math.min(newMax, floorDivide(scaled + oldMax - 1, oldMax)));
 }
 export function navalHealth(target: NavalTarget): number {
   return "troops" in target ? (target.afloat?.hull ?? 0) : target.health;
