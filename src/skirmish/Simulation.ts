@@ -81,7 +81,7 @@ import { canPromoteTribe, MAX_PLAYER_ID } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
 import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
-import { commandRejection } from "./domain/CommandPolicy";
+import { chargeFallbackOrder, commandRejection } from "./domain/CommandPolicy";
 import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
 import { Occupation } from "./domain/Occupation";
@@ -1262,7 +1262,7 @@ export class Skirmish {
   }
   applyCommand(command: Command): string | null {
     this.assertAvailable();
-    const invalid = commandRejection(command);
+    const invalid = commandRejection(command, {width: this.map.width(), height: this.map.height()});
     if (invalid) return invalid;
     const player = this.player(command.playerId);
     if (!player || player.eliminated || this.winner !== null)
@@ -1308,9 +1308,11 @@ export class Skirmish {
           return "Tribes can only build 1 extra barracks";
       }
     }
-    if(command.type === "charge" && command.squadIds.some(id=>{const s=this.squad(id);return s?.kind!=='cavalry' && (s?.formation?.shape==='column' || s?.formation?.transition?.from==='column');})){
-      if(command.fallbackOrder)return this.applyCommand({type:'order',playerId:command.playerId,squadIds:command.squadIds,
-        order:command.fallbackOrder.type==='attack' && !this.squad(command.fallbackOrder.targetId)?{type:'move',tile:this.map.ref(Math.floor(command.x/FIXED),Math.floor(command.y/FIXED))}:command.fallbackOrder});
+    // Only the issuer's own marching infantry can block its charge; foreign
+    // squads in the selection are rejected by the charge domain itself.
+    if(command.type === "charge" && command.squadIds.some(id=>{const s=this.squad(id);return !!s && s.playerId===command.playerId && s.kind!=='cavalry' && (s.formation?.shape==='column' || s.formation?.transition?.from==='column');})){
+      const order=chargeFallbackOrder(this.map,command,id=>!!this.squad(id));
+      if(order)return this.applyCommand({type:'order',playerId:command.playerId,squadIds:command.squadIds,order});
       return "Deploy before charging";
     }
     if (command.type === "formation") {

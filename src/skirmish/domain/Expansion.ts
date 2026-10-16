@@ -1,5 +1,6 @@
 import { secondsToTicks } from '../Protocol';
 import { TrenchOccupancy } from "./TrenchOccupancy";
+import { chargeFallbackOrder } from "./CommandPolicy";
 import { airfieldAircraftCount } from "./AirfieldCapacity";
 import { constructionAvailabilityRejection } from "../content/ConstructionAvailability";
 import { SkirmishStance } from "./SkirmishStance";
@@ -757,14 +758,8 @@ export class Expansion {
     }
     if (command.type === "charge") {
       const fallback = (reason: string) => {
-        if (!command.fallbackOrder) return reason;
-        let order = command.fallbackOrder;
-        if (order.type === "attack" && !world.squad(order.targetId)) {
-          const tx = Math.floor(command.x / FIXED), ty = Math.floor(command.y / FIXED);
-          if (!world.map.isValidCoord(tx, ty)) return reason;
-          order = { type: "move", tile: world.map.ref(tx, ty) };
-        }
-        return world.applyCommand({ type: "order", playerId: player.id, squadIds: command.squadIds, order });
+        const order = chargeFallbackOrder(world.map, command, id => !!world.squad(id));
+        return order ? world.applyCommand({ type: "order", playerId: player.id, squadIds: command.squadIds, order }) : reason;
       };
       const selected = [...new Set(command.squadIds)].map((id) =>
         world.squad(id),
