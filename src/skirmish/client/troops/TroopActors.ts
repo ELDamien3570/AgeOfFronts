@@ -1253,7 +1253,9 @@ export class TroopActors {
     // U5: per-squad facts, hoisted out of the per-soldier loop (behaviour-neutral).
     const definition = this.options?.unitDefinition?.(squad)??UNIT.get(squad.definitionId ?? "");
     const cycle = definition && weaponCycle(definition);
-    const timing = throwTiming(this.assets.get(`${name}:attack`)!.clip);
+    // Read the attack clip only when a soldier will use it: a squad with no
+    // soldiers never reached this lookup before the hoist.
+    const timing = soldiers.length ? throwTiming(this.assets.get(`${name}:attack`)!.clip) : { release: 0, duration: 0 };
     const reloadStart = (squad.weaponState?.ranged?.reloadStartedTick ?? squad.reloadStartedTick ?? Infinity)*TICK_MS + timing.duration-timing.release;
     const reloadEnd = (squad.weaponState?.ranged?.nextTick ?? squad.nextAttackTick ?? 0)*TICK_MS - (rangedWeapon?.preparation ? rangedWeapon.preparation.ticks*TICK_MS : timing.release);
     const reloading = cycle && this.assets.has(`${name}:reload`) && tick*TICK_MS >= reloadStart && tick*TICK_MS < reloadEnd;
