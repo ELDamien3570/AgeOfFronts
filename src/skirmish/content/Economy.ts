@@ -23,6 +23,11 @@ export const TRADE_RULES = {
   foreignAcceptancePercent: 150,
   seaDropMultiplier: 2,
 } as const;
+/** Owner decision OD-3 (05 issue 4 / rec 3): a foreign market owner earns this
+ * share of the trader's payout instead of the whole payout. The trader keeps
+ * the full payout. */
+export const RECEIVER_TARIFF_PERCENT = 25;
+export const receiverTariff = (gold: number) => Math.floor(gold * RECEIVER_TARIFF_PERCENT / 100);
 export function marketDropCapacity(stack: number): number {
   return Math.round(TRADE_RULES.minimumDrop +
     (TRADE_RULES.maximumDrop - TRADE_RULES.minimumDrop) *
