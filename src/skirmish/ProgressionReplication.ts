@@ -8,6 +8,10 @@ export type WireResearchJob = Omit<ResearchJob, "remainingTicks"> & { endTick: n
 export interface WireProgressionState extends Omit<ProgressionState, "research" | "advancement"> {
   research: Partial<Record<Tree, WireResearchJob>>;
   advancement: (Omit<NonNullable<ProgressionState["advancement"]>, "remainingTicks"> & { endTick: number }) | null;
+  /** Present on an eliminated faction's record: its jobs are frozen, so every
+   * endTick is relative to this tick instead of the packet tick, and the
+   * record stays byte-identical while the faction stays eliminated. */
+  frozenAt?: number;
 }
 export type ProgressionWire = Record<number, WireProgressionState>;
 /** Mode tag on packets carrying the endTick form. Absent: legacy full map
@@ -17,7 +21,8 @@ export type ProgressionMode = "full" | "delta";
 const hasJob = (state: ProgressionState) =>
   state.advancement !== null || Object.values(state.research).some(job => job !== undefined);
 
-export function toWireProgression(state: ProgressionState, tick: number): WireProgressionState {
+export function toWireProgression(state: ProgressionState, tick: number, frozen = false): WireProgressionState {
+  if (frozen) return { ...toWireProgression(state, 0), frozenAt: 0 };
   const research: WireProgressionState["research"] = {};
   for (const [tree, job] of Object.entries(state.research) as [Tree, ResearchJob | undefined][])
     if (job) research[tree] = { technologyId: job.technologyId, endTick: tick + job.remainingTicks, totalTicks: job.totalTicks };
@@ -32,7 +37,8 @@ export function toWireProgression(state: ProgressionState, tick: number): WirePr
   };
 }
 
-export function fromWireProgression(state: WireProgressionState, tick: number): ProgressionState {
+export function fromWireProgression(state: WireProgressionState, packetTick: number): ProgressionState {
+  const tick = state.frozenAt ?? packetTick;
   const research: ProgressionState["research"] = {};
   for (const [tree, job] of Object.entries(state.research) as [Tree, WireResearchJob | undefined][])
     if (job) research[tree] = { technologyId: job.technologyId, remainingTicks: job.endTick - tick, totalTicks: job.totalTicks };
@@ -49,24 +55,31 @@ export function fromWireProgression(state: WireProgressionState, tick: number): 
 
 /** Encoder-owned per-faction cursor. A record is sent only when its wire form
  * differs from the last record sent on this stream (compared as JSON, so a
- * missed domain revision can never hide a change). */
+ * missed domain revision can never hide a change). Eliminated factions keep a
+ * frozen countdown; their records use the frozen form, so they are sent once
+ * rather than on every publication. */
 export class ProgressionReplicationEncoder {
   private readonly sent = new Map<number, string>();
+  private frozenKey = "";
   encode(
     states: Readonly<Record<number, ProgressionState>> | undefined,
     tick: number,
     full: boolean,
     revisionChanged: boolean,
+    frozen: ReadonlySet<number> = new Set(),
   ): { mode: ProgressionMode; changes?: ProgressionWire } {
     if (!states) return { mode: full ? "full" : "delta" };
     if (full) this.sent.clear();
-    // Eliminated factions keep a frozen countdown, so their endTick moves:
-    // any running job needs a comparison even without a revision change.
-    if (!full && !revisionChanged && !Object.values(states).some(hasJob)) return { mode: "delta" };
+    const frozenKey = [...frozen].sort((a, b) => a - b).join(","), frozenChanged = frozenKey !== this.frozenKey;
+    this.frozenKey = frozenKey;
+    // A live running job's endTick is stable, but compare whenever one runs so
+    // a missed revision cannot hide a change; frozen records never move.
+    if (!full && !revisionChanged && !frozenChanged &&
+      !Object.entries(states).some(([key, state]) => !frozen.has(Number(key)) && hasJob(state))) return { mode: "delta" };
     const changes: ProgressionWire = {};
     let changed = false;
     for (const [key, state] of Object.entries(states)) {
-      const id = Number(key), wire = toWireProgression(state, tick), json = JSON.stringify(wire);
+      const id = Number(key), wire = toWireProgression(state, tick, frozen.has(id)), json = JSON.stringify(wire);
       if (!full && this.sent.get(id) === json) continue;
       this.sent.set(id, json);
       changes[id] = wire;
@@ -77,10 +90,12 @@ export class ProgressionReplicationEncoder {
 }
 
 const isTick = (value: unknown) => Number.isSafeInteger(value);
-function validateWire(state: WireProgressionState, tick: number): void {
+function validateWire(state: WireProgressionState, packetTick: number): void {
   if (!state || typeof state !== "object" || !Array.isArray(state.completed) || typeof state.age !== "string" ||
-    typeof state.cultureId !== "string" || !state.research || typeof state.research !== "object")
+    typeof state.cultureId !== "string" || !state.research || typeof state.research !== "object" ||
+    (state.frozenAt !== undefined && !isTick(state.frozenAt)))
     throw new Error("Invalid progression record");
+  const tick = state.frozenAt ?? packetTick;
   const jobs: { endTick: number; totalTicks: number }[] = Object.values(state.research).filter(job => job !== undefined) as WireResearchJob[];
   if (state.advancement !== null) jobs.push(state.advancement);
   for (const job of jobs)
@@ -110,8 +125,9 @@ export class ProgressionReplicationDecoder {
       this.records.set(Number(key), { wire: structuredClone(state) });
     const output: Record<number, ProgressionState> = {};
     for (const [id, record] of this.records) {
-      // Idle records are stable; reuse their view. Running jobs count down.
-      const idle = record.wire.advancement === null && !Object.values(record.wire.research).some(job => job !== undefined);
+      // Idle and frozen records are stable; reuse their view. Running jobs count down.
+      const idle = record.wire.frozenAt !== undefined ||
+        record.wire.advancement === null && !Object.values(record.wire.research).some(job => job !== undefined);
       output[id] = idle ? (record.view ??= fromWireProgression(record.wire, tick)) : fromWireProgression(record.wire, tick);
     }
     return output;

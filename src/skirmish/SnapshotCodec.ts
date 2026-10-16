@@ -359,7 +359,8 @@ export class SnapshotEncoder {
     this.diagnostics.barrierReads = source.expansion ? metadata!.full || !barriers ? source.expansion.barriers.length :
       (barrierChanges?.rows.length ?? 0) + (barrierChanges?.states?.length ?? 0) : 0;
     const progression = source.expansion
-      ? this.progression.encode(source.expansion.progression, source.tick, metadata!.full, "progression" in metadata!.output)
+      ? this.progression.encode(source.expansion.progression, source.tick, metadata!.full, "progression" in metadata!.output,
+        new Set(source.players.filter(p => p.eliminated).map(p => p.id)))
       : undefined;
     const expansion = source.expansion
       ? {

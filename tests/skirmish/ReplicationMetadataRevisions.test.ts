@@ -9,7 +9,7 @@ import type { SnapshotPacket } from "../../src/skirmish/Protocol";
 import { researchRejection } from "../../src/skirmish/domain/Progression";
 import { availableGold } from "../../src/skirmish/domain/Gold";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
-import { toWireProgression } from "../../src/skirmish/ProgressionReplication";
+import { ProgressionReplicationDecoder, ProgressionReplicationEncoder, toWireProgression } from "../../src/skirmish/ProgressionReplication";
 
 /** Fixture: 96x48 open land, 2 regular AI nations plus player 1, AI running. */
 function match(seed = 11) {
@@ -92,5 +92,31 @@ describe("N5 progression replication (P12)", () => {
     for (const job of Object.values(record.research)) job!.endTick = game.tick - 5;
     (bad.expansion!.progression as unknown as Record<number, unknown>)[1] = record;
     expect(() => new SnapshotDecoder().decode(bad)).toThrow(/progression job/);
+  });
+
+  it("sends an eliminated faction's frozen job once, and decodes it without counting down", () => {
+    const game = match();
+    const technology = research(game, 1)!;
+    game.step();
+    // An eliminated faction's countdown is frozen: the domain state no longer changes.
+    const frozenState = structuredClone(game.expansion!.progression.states[1]);
+    const states = { 1: frozenState }, encoder = new ProgressionReplicationEncoder(), decoder = new ProgressionReplicationDecoder();
+    const remaining = Object.values(frozenState.research).find(job => job?.technologyId === technology.id)!.remainingTicks;
+    decoder.apply("full", encoder.encode(states, 100, true, false).changes, 100);
+    // Elimination alone (no progression revision) switches the record to the frozen form.
+    const switched = encoder.encode(states, 101, false, false, new Set([1]));
+    expect(switched.changes?.[1]?.frozenAt).toBe(0);
+    decoder.validate(switched.mode, switched.changes, 101, false);
+    decoder.apply(switched.mode, switched.changes, 101);
+    for (let tick = 102; tick < 140; tick++) {
+      const delta = encoder.encode(states, tick, false, false, new Set([1]));
+      expect(delta.changes).toBeUndefined();
+      const job = Object.values(decoder.apply(delta.mode, delta.changes, tick)[1].research).find(j => j?.technologyId === technology.id)!;
+      expect(job.remainingTicks).toBe(remaining);
+    }
+    // A full resend carries the frozen form again and still validates.
+    const full = encoder.encode(states, 200, true, false, new Set([1]));
+    expect(() => decoder.validate(full.mode, full.changes, 200, true)).not.toThrow();
+    expect(decoder.apply(full.mode, full.changes, 200)[1]).toEqual(JSON.parse(JSON.stringify(frozenState)));
   });
 });
