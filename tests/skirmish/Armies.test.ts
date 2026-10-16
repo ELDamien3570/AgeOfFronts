@@ -585,4 +585,20 @@ describe("fire-retreat army posture", () => {
     expect(army.queuedOrders.map((o) => o.type)).toEqual(["fire-retreat"]);
     expect(army.posture).toBe("line");
   });
+  it("takes skirmish posture when a queued fire-retreat is dequeued", () => {
+    const { m, army, enemy } = scene();
+    const leader = m.squads.find((s) => s.id === army.leaderId) ?? m.squads.find((s) => s.playerId === 1)!;
+    const near = m.map.ref(Math.floor(leader.x / FIXED) + 1, Math.floor(leader.y / FIXED));
+    expect(m.applyCommand({ type: "army-order", playerId: 1, armyId: army.id, order: { type: "move", tile: near } })).toBeNull();
+    expect(m.applyCommand({ type: "army-order", playerId: 1, armyId: army.id, order: { type: "fire-retreat", targetId: enemy.id }, append: true })).toBeNull();
+    expect(army.posture).toBe("line");
+    let started = -1;
+    for (let tick = 0; tick < 600 && started < 0; tick++) {
+      m.step();
+      if (army.order.type === "fire-retreat") started = tick;
+    }
+    expect(started).toBeGreaterThanOrEqual(0);
+    expect(army.queuedOrders).toEqual([]);
+    expect(army.posture).toBe("skirmish");
+  });
 });
