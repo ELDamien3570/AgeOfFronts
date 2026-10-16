@@ -2,6 +2,13 @@
   "skirmish_match": {
     "simulation_fault": "The match stopped because of an internal simulation error. Return to the lobby to play again."
   },
+  "skirmish_defeat": {
+    "eyebrow": "EMPIRE FALLEN",
+    "title": "Your empire has fallen",
+    "description": "The match continues. Observe the remaining empires or return to the lobby.",
+    "observe": "Observe",
+    "leave": "Leave"
+  },
   "skirmish_lobby_rules": {
     "start_protection": "Start protection",
     "time_limit": "Time limit",

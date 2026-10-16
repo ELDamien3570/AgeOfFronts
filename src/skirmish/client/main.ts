@@ -103,6 +103,7 @@ import type { MatchOptions, SpawnState } from "../Protocol";
 
 import { TerrainViewModel } from "./TerrainViewModel";
 import { serverText } from "./ServerText";
+import { localDefeated, showDefeatDialog } from "./DefeatDialog";
 import { controlsText } from "./ControlsText";
 
 import "./style.css";
@@ -863,6 +864,10 @@ async function startOnlineMatch(): Promise<void> {
     }
     syncControls(session.commandsAvailable);
     if (snapshot.winner !== null) showResult(snapshot.winner);
+    else if (localDefeated(snapshot, localPlayerId)) showDefeatDialog(() => {
+      worker?.terminate();
+      window.location.assign("/");
+    });
   };
   window.addEventListener("pagehide", () => session.terminate(), { once: true });
   session.connect();
@@ -1315,6 +1320,7 @@ function togglePause(): void {
 }
 
 function showResult(winner: number): void {
+  document.getElementById("defeat")?.remove();
   const player = snapshot!.players.find((p) => p.id === winner);
 
   element("result-title").textContent =
