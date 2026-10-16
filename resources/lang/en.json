@@ -2,6 +2,17 @@
   "skirmish_match": {
     "simulation_fault": "The match stopped because of an internal simulation error. Return to the lobby to play again."
   },
+  "skirmish_lobby_rules": {
+    "start_protection": "Start protection",
+    "time_limit": "Time limit",
+    "ai_difficulty": "AI difficulty",
+    "minutes": "{minutes} min",
+    "protection_none": "None",
+    "difficulty_relaxed": "Relaxed",
+    "difficulty_standard": "Standard",
+    "difficulty_hard": "Hard",
+    "hint": "Protected human empires cannot be raided or invaded and cannot invade until protection ends or they declare war. At the time limit the highest score wins."
+  },
   "skirmish_server": {
     "match_stopped": "Match stopped unexpectedly",
     "match_initialization_failed": "The match could not be started. You are back in your room",
