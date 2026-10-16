@@ -195,6 +195,10 @@ const FALLBACK_TRANSPORT = VESSELS.find(v => v.kind === "transport")!;
 export const WARSHIP_PATROL_RADIUS = 2;
 export const WARSHIP_COMBAT_COOLDOWN = secondsToTicks(3);
 export const WARSHIP_REPAIR_FRACTION = 0.10;
+/** Owner decision (roadmap Next #6, V2): an idle warship retreats to port, and
+ * stops wandering, only below this per-mille share of its maximum health. It
+ * is the complement of the AI's navalReady gate (health >= 60%). */
+export const WARSHIP_RETREAT_PERMILLE = 600;
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
@@ -2699,7 +2703,8 @@ export class Skirmish {
       kind,
       x: this.map.x(tile) * FIXED + FIXED / 2,
       y: this.map.y(tile) * FIXED + FIXED / 2,
-      health: rules.health,
+      // A new hull is launched at its research-adjusted maximum (R2-M14).
+      health: vessel ? this.expansion!.vesselMaxHealth(player.id, vessel) : rules.health,
       ...(vessel ? { definitionId: vessel.id, nextAttackTick: 0 } : {}),
       destination: null,
       waypoints: [],
@@ -3208,6 +3213,25 @@ export class Skirmish {
     return candidates[index];
   }
 
+  /** The first berth of `port` that lies in this ship's water component. */
+  private portBerth(ship: Ship, port: Building): number | undefined {
+    const shipTile = this.tileOf(ship);
+    if (!this.waterPaths.walkable(shipTile)) return undefined;
+    const component = this.waterPaths.component[shipTile];
+    return portWaterTiles(this.map, port.tile).find(
+      (n) => this.waterPaths.walkable(n) && this.waterPaths.component[n] === component,
+    );
+  }
+
+  private releaseRepairClaim(ship: Ship, occupiedPorts: Set<number>): void {
+    const portId = ship.repairPortId;
+    if (portId !== null && portId !== undefined &&
+      !this.ships.some((s) => s.id !== ship.id && s.repairPortId === portId))
+      occupiedPorts.delete(portId);
+    this.shipEntities.updateOwned(ship.id, { repairPortId: null });
+    this.shipEntities.updateOwned(ship.id, { repairState: "patrolling" });
+  }
+
   private startRecoveryVoyage(ship: Ship, goal: number): void {
     this.shipEntities.updateOwned(ship.id, { destination: goal });
     this.shipEntities.updateOwned(ship.id, { waypoints: [] });
@@ -3312,7 +3336,7 @@ export class Skirmish {
       if (ship.kind !== "warship" || ship.refit) continue;
 
       const maxHealth = this.shipMaxHealth(ship);
-      const isDamaged = ship.health < maxHealth;
+      const needsRetreat = ship.health * 1000 < maxHealth * WARSHIP_RETREAT_PERMILLE;
       const shipTile = this.tileOf(ship);
 
       if (ship.patrolTile === undefined || ship.patrolTile === null) {
@@ -3337,7 +3361,14 @@ export class Skirmish {
 
         const distToPort = this.map.euclideanDistSquared(shipTile, port.tile);
         if (distToPort > 8) {
-          this.shipEntities.updateOwned(ship.id, { repairState: "returning-to-dock" });
+          // Away from the berth (an order or a rolled-back move interrupted the
+          // voyage): sail back, or release the port when it is unreachable.
+          const berth = this.portBerth(ship, port);
+          if (berth === undefined) this.releaseRepairClaim(ship, occupiedPorts);
+          else {
+            this.shipEntities.updateOwned(ship.id, { repairState: "returning-to-dock" });
+            this.startRecoveryVoyage(ship, berth);
+          }
           continue;
         }
 
@@ -3385,15 +3416,23 @@ export class Skirmish {
 
         const distToPort = this.map.euclideanDistSquared(shipTile, port.tile);
         if (this.shipAdmission.executing(ship.id)) continue;
-        if (
-          distToPort <= 8 ||
-          ship.destination === null ||
-          ship.nextPathIndex >= ship.path.length
-        ) {
+        if (distToPort <= 8) {
           this.shipEntities.updateOwned(ship.id, { repairState: "repairing" });
           this.shipEntities.updateOwned(ship.id, { destination: null });
           this.shipEntities.updateOwned(ship.id, { path: [] });
           this.shipEntities.updateOwned(ship.id, { nextPathIndex: 0 });
+        } else if (
+          (ship.destination === null || ship.nextPathIndex >= ship.path.length) &&
+          !ship.attackTargetId
+        ) {
+          // The voyage ended short of the port: re-route on a half-second
+          // cadence (deferred recovery supersedes itself), or release the
+          // claim when no berth in this ship's water remains reachable.
+          const berth = this.portBerth(ship, port);
+          if (berth === undefined || !this.waterPaths.connected(shipTile, berth))
+            this.releaseRepairClaim(ship, occupiedPorts);
+          else if ((this.tick + ship.id) % secondsToTicks(.5) === 0)
+            this.startRecoveryVoyage(ship, berth);
         }
         continue;
       }
@@ -3432,7 +3471,7 @@ export class Skirmish {
         !ship.attackTargetId &&
         this.tick - (ship.lastCombatTick ?? -WARSHIP_COMBAT_COOLDOWN) >= WARSHIP_COMBAT_COOLDOWN;
 
-      if (isDamaged && outOfCombat && (this.tick + ship.id) % secondsToTicks(.5) === 0) {
+      if (needsRetreat && outOfCombat && (this.tick + ship.id) % secondsToTicks(.5) === 0) {
         const dock = this.findNearestDockWithCapacity(ship, occupiedPorts);
         if (dock) {
           this.shipEntities.updateOwned(ship.id, { repairPortId: dock.port.id });
@@ -3463,7 +3502,7 @@ export class Skirmish {
         ship.repairState === "patrolling" &&
         ship.destination === null &&
         !ship.attackTargetId &&
-        !isDamaged &&
+        !needsRetreat &&
         ship.patrolTile !== null &&
         ship.patrolTile !== undefined
       ) {
@@ -5589,7 +5628,9 @@ export class Skirmish {
         player.ai && player.kind === "regular" &&
         this.player(beneficiary)?.kind === "tribe" && this.expansion
       ) {
+        const previous = [...(this.expansion.progression.states[beneficiary]?.completed ?? [])];
         this.expansion.progression.inheritCompleted(beneficiary, player.id);
+        this.expansion.rescaleShipHealth(beneficiary, previous);
         inheritors.set(beneficiary, player.id);
       }
       if (

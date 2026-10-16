@@ -91,6 +91,7 @@ import {
 import { affordableRefitCount, vesselRefitCost } from "./RefitQuote";
 import { unitRefitCost } from "./Refitting";
 import { vesselEffects } from "./ResearchEffects";
+import { rescaledHullHealth } from "./NavalCombat";
 import { Roads } from "./Roads";
 import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
 import type { RecruitmentJob, VesselDefinition } from "./Definitions";
@@ -343,6 +344,25 @@ export class Expansion {
       VESSELS.find((v) => v.age === "StoneAge" && v.kind === ship.kind)!,
       completed = this.progression.states[ship.playerId].completed;
     return vesselEffects(definition, completed);
+  }
+  /** Research-adjusted maximum health of a new `definition` hull. */
+  vesselMaxHealth(playerId: number, definition: VesselDefinition): number {
+    return vesselEffects(definition, this.progression.states[playerId]?.completed ?? []).health;
+  }
+  /** R2-M14: research changed this player's hull maxima since `previous`;
+   * keep every ship's share of maximum health, so a full fleet stays full and
+   * on station instead of retreating to port as "damaged". */
+  rescaleShipHealth(playerId: number, previous: readonly string[]): void {
+    const completed = this.progression.states[playerId]?.completed ?? [];
+    for (const s of this.world.ships) {
+      if (s.playerId !== playerId) continue;
+      const definition = VESSEL.get(s.definitionId ?? "") ??
+        VESSELS.find((v) => v.age === "StoneAge" && v.kind === s.kind)!;
+      const oldMax = vesselEffects(definition, previous).health,
+        newMax = vesselEffects(definition, completed).health;
+      if (oldMax !== newMax)
+        this.world.updateShip(s.id, { health: rescaledHullHealth(s.health, oldMax, newMax) });
+    }
   }
   buildRejection(
     player: Player,
@@ -718,6 +738,10 @@ export class Expansion {
       for (const s of selected as Ship[]) {
         this.world.updateShip(s.id, { attackTargetId: target.id });
         this.world.updateShip(s.id, { lastPlanTick: -60 });
+        // An attack order interrupts any recovery, as a sail order does; the
+        // port slot is released and retreat restarts once the fight ends.
+        if (s.repairState && s.repairState !== "patrolling" && s.repairState !== "idle")
+          this.world.updateShip(s.id, { repairState: "patrolling", repairPortId: null });
       }
       return null;
     }
@@ -1152,9 +1176,15 @@ export class Expansion {
     this.features.step();
     const { world } = this;
     for (const id of this.tribePlans.keys()) if (!world.players.some(p => p.id === id && p.kind === "tribe" && !p.eliminated)) this.tribePlans.delete(id);
+    const researched = world.players.map((p) => this.progression.states[p.id]?.completed.length ?? 0);
     this.progression.step(world.players, (player, age) =>
       this.announce({ kind: "age", actorId: player.id, age }),
     );
+    world.players.forEach((p, i) => {
+      const completed = this.progression.states[p.id]?.completed;
+      if (completed && completed.length !== researched[i])
+        this.rescaleShipHealth(p.id, completed.slice(0, researched[i]));
+    });
     this.automaticTiers.step(world.players, this.progression.states, world.buildingFacts(),
       (id, patch) => {
         const building = world.buildings.find(b => b.id === id);
@@ -1184,9 +1214,17 @@ export class Expansion {
     for (const s of world.ships) {
       if (!s.refit) continue;
       const remainingTicks = s.refit.remainingTicks - 1;
-      world.updateShip(s.id, remainingTicks <= 0
-        ? { definitionId: s.refit.targetId, xp: 0, refit: null }
-        : { refit: { ...s.refit, remainingTicks } });
+      if (remainingTicks > 0) {
+        world.updateShip(s.id, { refit: { ...s.refit, remainingTicks } });
+        continue;
+      }
+      // A refit keeps the hull's share of health (R2-M14 / N10): a half-repaired
+      // hull comes out half-repaired at the new class's maximum.
+      const target = VESSEL.get(s.refit.targetId),
+        oldMax = this.vessel(s).health,
+        newMax = target ? this.vesselMaxHealth(s.playerId, target) : oldMax;
+      world.updateShip(s.id, { definitionId: s.refit.targetId, xp: 0, refit: null,
+        health: rescaledHullHealth(s.health, oldMax, newMax) });
     }
     for (const s of world.squads) {
       const enlargement=s.manpower?.enlargement;

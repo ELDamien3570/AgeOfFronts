@@ -1,4 +1,6 @@
 import {secondsToTicks} from '../../src/skirmish/Protocol';
+import { VESSEL } from "../../src/skirmish/content/Units";
+import { TECHNOLOGY, packageTechnology } from "../../src/skirmish/content/Technology";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED, type Ship } from "../../src/skirmish/Protocol";
@@ -242,7 +244,7 @@ describe("Warship patrol and dock repair logic", () => {
 
     match.updateShip(ship1.id, { health: 500 });
     match.updateShip(ship1.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
-    match.updateShip(ship2.id, { health: 600 });
+    match.updateShip(ship2.id, { health: 550 });
     match.updateShip(ship2.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
 
     for (let i = 0; i < secondsToTicks(0.75); i++) {
@@ -341,5 +343,111 @@ describe("Warship patrol and dock repair logic", () => {
     expect(ship.repairState).toBe("idle");
     expect(ship.patrolTile).toBeNull();
     expect(ship.destination).toBeNull();
+  });
+
+  it("keeps a lightly damaged warship on station and retreats below 60% (WARSHIP_RETREAT_PERMILLE)", () => {
+    const { match } = createMatch();
+    addPort(match, 19, 25);
+    const light = spawnWarship(match, 35, 20), heavy = spawnWarship(match, 35, 30);
+    match.updateShip(light.id, { health: 700, lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
+    match.updateShip(heavy.id, { health: 590, lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
+    for (let i = 0; i < secondsToTicks(5); i++) match.step();
+    expect(light.repairState).toBe("patrolling");
+    expect(light.repairPortId ?? null).toBeNull();
+    expect(heavy.repairState).not.toBe("patrolling");
+  });
+
+  for (const deferred of [false, true])
+    it(`a recovery stranded away from its port sails back and heals (R2-H5, deferred ${deferred})`, () => {
+      const { match } = createMatch(deferred), port = addPort(match, 19, 25);
+      const repairing = spawnWarship(match, 35, 20), stranded = spawnWarship(match, 35, 30);
+      // One ship is "repairing" far from the berth; the other's dock voyage was
+      // cut (as by a rolled-back move): destination kept, path empty.
+      match.updateShip(repairing.id, { health: 400, repairState: "repairing", repairPortId: port.id });
+      const second = addPort(match, 19, 35);
+      match.updateShip(stranded.id, { health: 400, repairState: "returning-to-dock", repairPortId: second.id,
+        destination: match.map.ref(20, 35), path: [], nextPathIndex: 0 });
+      const max = match.shipMaxHealth(repairing);
+      for (let i = 0; i < secondsToTicks(60) && (repairing.health < max || stranded.health < max); i++) match.step();
+      expect(repairing.health).toBe(max);
+      expect(stranded.health).toBe(max);
+    });
+
+  it("releases a repair claim whose port berth is in other water", () => {
+    // A land wall at x=30 splits the sea; the port's berths lie west of it.
+    const width = 64, height = 64, data = new Uint8Array(width * height);
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) data[y * width + x] = x < 20 || x === 30 ? 133 : 0;
+    const match = new Skirmish(new GameMapImpl(width, height, data, data.filter((t) => t & 128).length),
+      { seed: 42, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" });
+    for (let y = 0; y < height; y++) for (let x = 0; x < 20; x++) match.owners[match.map.ref(x, y)] = 1;
+    const port = addPort(match, 19, 25);
+    for (const state of ["repairing", "returning-to-dock"] as const) {
+      const ship = spawnWarship(match, 40, state === "repairing" ? 20 : 30);
+      match.updateShip(ship.id, { health: 400, repairState: state, repairPortId: port.id });
+      for (let i = 0; i < 3; i++) match.step();
+      expect(ship.repairPortId ?? null, state).toBeNull();
+      expect(ship.repairState, state).toBe("patrolling");
+    }
+  });
+
+  it("an attack order on a recovering warship releases its port slot", () => {
+    const { match } = createMatch(), port = addPort(match, 19, 25);
+    const ship = spawnWarship(match, 35, 25);
+    match.updateShip(ship.id, { health: 400, lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
+    for (let i = 0; i < 15 && ship.repairState === "patrolling"; i++) match.step();
+    expect(ship.repairPortId).toBe(port.id);
+    const enemy = spawnWarship(match, 40, 30, 2);
+    expect(match.applyCommand({ type: "naval-attack", playerId: 1, shipIds: [ship.id], targetId: enemy.id })).toBeNull();
+    expect(ship.repairState).toBe("patrolling");
+    expect(ship.repairPortId).toBeNull();
+    expect(ship.attackTargetId).toBe(enemy.id);
+  });
+
+  it("completing ship improvements does not move a full-health patrol and keeps damage proportional", () => {
+    const { match } = createMatch();
+    addPort(match, 19, 25);
+    const vessel = VESSEL.get("bronzeage-warship")!;
+    const full = spawnWarship(match, 35, 20), damaged = spawnWarship(match, 35, 30);
+    match.updateShip(full.id, { definitionId: vessel.id, health: vessel.health });
+    match.updateShip(damaged.id, { definitionId: vessel.id, health: vessel.health / 2 });
+    const state = match.expansion!.progression.states[1], technologyId = packageTechnology("BronzeAge", "ship-improvements");
+    const technology = TECHNOLOGY.get(technologyId)!;
+    state.research[technology.tree] = { technologyId, remainingTicks: 1, totalTicks: 1 };
+    match.step();
+    expect(state.completed).toContain(technologyId);
+    const max = match.shipMaxHealth(full);
+    expect(max).toBeGreaterThan(vessel.health);
+    expect(full.health).toBe(max);
+    expect(damaged.health).toBe(Math.ceil(max / 2));
+    const states = new Set<string>();
+    for (let i = 0; i < secondsToTicks(30); i++) { match.step(); states.add(full.repairState ?? ""); }
+    expect([...states]).toEqual(["patrolling"]);
+    expect(full.repairPortId ?? null).toBeNull();
+  });
+
+  it("launches recruits at their research-adjusted maximum health", () => {
+    const { match } = createMatch(), player = match.players.find((p) => p.id === 1)!;
+    const port = match.addBuilding({ id: match.allocateId(), playerId: 1, type: "port", tile: match.map.ref(18, 25),
+      remainingTicks: 0, health: 1000, maxHealth: 1000, age: "BronzeAge" });
+    const vessel = VESSEL.get("bronzeage-warship")!, completed = match.expansion!.progression.states[1].completed;
+    completed.push(vessel.technologyId, packageTechnology("BronzeAge", "ship-improvements"));
+    const before = new Set(match.ships.map((s) => s.id));
+    expect((match as any).recruitShip(player, port.id, "warship", vessel.id, true)).toBeNull();
+    const ship = match.ships.find((s) => !before.has(s.id))!;
+    expect(match.shipMaxHealth(ship)).toBeGreaterThan(vessel.health);
+    expect(ship.health).toBe(match.shipMaxHealth(ship));
+  });
+
+  it("a refit keeps the hull's share of health at the new class's maximum", () => {
+    const { match } = createMatch(), player = match.players.find((p) => p.id === 1)!;
+    const target = VESSEL.get("bronzeage-warship")!;
+    match.expansion!.progression.states[1].completed.push(target.technologyId);
+    player.gold = 1e6;
+    const ship = spawnWarship(match, 35, 25);
+    match.updateShip(ship.id, { definitionId: "stoneage-warship", health: 500 });
+    expect(match.applyCommand({ type: "refit-ships", playerId: 1, shipIds: [ship.id], definitionId: target.id })).toBeNull();
+    for (let i = 0; i < secondsToTicks(11) && ship.refit; i++) match.step();
+    expect(ship.definitionId).toBe(target.id);
+    expect(ship.health).toBe(Math.ceil((500 * target.health) / 1000));
   });
 });

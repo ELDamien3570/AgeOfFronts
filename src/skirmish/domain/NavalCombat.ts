@@ -18,6 +18,12 @@ export function navalStrengthPermille(health: number, maxHealth: number): number
   return NAVAL_DAMAGE_FLOOR_PERMILLE +
     Math.floor(((1000 - NAVAL_DAMAGE_FLOOR_PERMILLE) * h) / max);
 }
+/** Health after a hull's maximum changes (research, refit), keeping its share
+ * of maximum health: a full hull stays full, a damaged one stays as damaged. */
+export function rescaledHullHealth(health: number, oldMax: number, newMax: number): number {
+  if (oldMax <= 0 || oldMax === newMax) return Math.min(health, newMax);
+  return Math.max(0, Math.min(newMax, Math.ceil((health * newMax) / oldMax)));
+}
 export function navalHealth(target: NavalTarget): number {
   return "troops" in target ? (target.afloat?.hull ?? 0) : target.health;
 }
