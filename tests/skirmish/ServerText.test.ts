@@ -6,6 +6,7 @@ import {
   MATCH_INITIALIZATION_FAILED_MESSAGE,
   MATCH_STOPPED_MESSAGE,
   PUBLIC_SETUP_ERRORS,
+  SPAWN_SELECTION_BUSY_MESSAGE,
 } from "../../src/skirmish/multiplayer/application/TerminalMessages";
 
 describe("fixed coordinator text", () => {
@@ -23,6 +24,10 @@ describe("fixed coordinator text", () => {
   it("translates the contained command-validation rejection", () => {
     expect(serverText(COMMAND_VALIDATION_FAILURE)).toBe(english.skirmish_server.command_validation_failure);
     expect(english.skirmish_server.command_validation_failure).toBe(COMMAND_VALIDATION_FAILURE);
+  });
+  it("translates the busy spawn-selection rejection", () => {
+    expect(serverText(SPAWN_SELECTION_BUSY_MESSAGE)).toBe(english.skirmish_server.spawn_busy);
+    expect(english.skirmish_server.spawn_busy).toBe(SPAWN_SELECTION_BUSY_MESSAGE);
   });
   it("passes other server text through unchanged", () => {
     expect(serverText("This lobby is full.")).toBe("This lobby is full.");
