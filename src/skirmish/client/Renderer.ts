@@ -2390,48 +2390,9 @@ export class Renderer {
       ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
       ctx.stroke();
     }
-    if(this.trenchPreview){const p=this.trenchPreview;ctx.save();ctx.strokeStyle=p.required<=p.capacity?p.color:'#ff716b';ctx.fillStyle=ctx.strokeStyle+'55';ctx.lineWidth=2;
-      for(const tile of p.tiles){const q=this.screen(tile%snapshot.width,Math.floor(tile/snapshot.width));ctx.fillRect(q.x,q.y,this.scale,this.scale);ctx.strokeRect(q.x,q.y,this.scale,this.scale);}
-      const tile=p.tiles[Math.floor(p.tiles.length/2)],q=this.screen(tile%snapshot.width+.5,Math.floor(tile/snapshot.width));ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.fillText('Trench frontage: '+p.required+' soldiers / '+p.capacity+' slots',q.x,q.y-8);ctx.restore();}
-    if (this.deploymentPreview) {
-      const {line,color,valid}=this.deploymentPreview;
-      const tactical="layouts" in line?line as BattleLineDeployment:undefined;
-      ctx.save();ctx.strokeStyle=tactical?.warnings.length?"#f4bb65":(valid?color:"#ff716b")+"b3";ctx.lineWidth=1.25;
-      for (const [id, slot] of line.slots) {
-        const squad=snapshot.squads.find(s=>s.id===id);
-        if(!squad)continue;
-        const plan=tactical?.layouts.get(id);
-        const planned={...squad,charge:null,formation:squad.formation?{...squad.formation,
-          ...(plan?{shape:plan.shape,frontage:plan.frontage}:{}),facing:facingOf(line.facing),
-          transition:undefined,trail:undefined,occupationSlots:undefined}:undefined};
-        const c=Math.cos(line.facing),s=Math.sin(line.facing);
-        const circles=this.squadDeploymentPreview?.(planned,slot,line.facing) ?? (planned.formation
-          ? formationSlots(planned,snapshot.tick).map(p=>({
-            x:(slot.x+p.x*c-p.y*s)/FIXED,y:(slot.y+p.x*s+p.y*c)/FIXED,
-            radius:formationDoctrine(planned.definitionId).bodyWidth/(2*FIXED)}))
-          : [{x:slot.x/FIXED,y:slot.y/FIXED,radius:.35}]);
-        for(const circle of circles){
-          const p=this.screen(circle.x,circle.y);ctx.beginPath();
-          ctx.arc(p.x,p.y,Math.max(3,circle.radius*this.scale),0,Math.PI*2);ctx.stroke();
-        }
-      }
-      ctx.restore();
-    }
-    if (this.selectionBox) {
-      const b = this.selectionBox;
-      ctx.fillStyle = "#84ded21f";
-      ctx.strokeStyle = "#abf1e4";
-      ctx.lineWidth = 1;
-      ctx.fillRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
-      ctx.strokeRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
-    }
     if (paused) {
       ctx.fillStyle = "#07151e55";
       ctx.fillRect(0, 0, this.width, this.height);
-      ctx.fillStyle = "#f0f6ef";
-      ctx.font = "600 22px system-ui";
-      ctx.textAlign = "center";
-      ctx.fillText("Paused", this.width / 2, 40);
     }
     this.strategic.flush();
     const aircraftCtx = this.aircraftLayer.context;
@@ -2497,6 +2458,60 @@ export class Renderer {
         }
       }
     }
+    this.drawTopOverlays(snapshot, paused);
     return true;
+  }
+
+  /**
+   * Interactive overlays sit on the topmost canvas: the strategic-sprite and
+   * aircraft canvases are DOM siblings above #battlefield, so anything drawn
+   * on the battlefield is hidden beneath markers and aircraft.
+   */
+  private drawTopOverlays(snapshot: Snapshot, paused: boolean): void {
+    const ctx = this.aircraftLayer.context;
+    ctx.save();
+    ctx.globalAlpha = 1;
+    if(this.trenchPreview){const p=this.trenchPreview;ctx.save();ctx.strokeStyle=p.required<=p.capacity?p.color:'#ff716b';ctx.fillStyle=ctx.strokeStyle+'55';ctx.lineWidth=2;
+      for(const tile of p.tiles){const q=this.screen(tile%snapshot.width,Math.floor(tile/snapshot.width));ctx.fillRect(q.x,q.y,this.scale,this.scale);ctx.strokeRect(q.x,q.y,this.scale,this.scale);}
+      const tile=p.tiles[Math.floor(p.tiles.length/2)],q=this.screen(tile%snapshot.width+.5,Math.floor(tile/snapshot.width));ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.fillText('Trench frontage: '+p.required+' soldiers / '+p.capacity+' slots',q.x,q.y-8);ctx.restore();}
+    if (this.deploymentPreview) {
+      const {line,color,valid}=this.deploymentPreview;
+      const tactical="layouts" in line?line as BattleLineDeployment:undefined;
+      ctx.save();ctx.strokeStyle=tactical?.warnings.length?"#f4bb65":(valid?color:"#ff716b")+"b3";ctx.lineWidth=1.25;
+      for (const [id, slot] of line.slots) {
+        const squad=snapshot.squads.find(s=>s.id===id);
+        if(!squad)continue;
+        const plan=tactical?.layouts.get(id);
+        const planned={...squad,charge:null,formation:squad.formation?{...squad.formation,
+          ...(plan?{shape:plan.shape,frontage:plan.frontage}:{}),facing:facingOf(line.facing),
+          transition:undefined,trail:undefined,occupationSlots:undefined}:undefined};
+        const c=Math.cos(line.facing),s=Math.sin(line.facing);
+        const circles=this.squadDeploymentPreview?.(planned,slot,line.facing) ?? (planned.formation
+          ? formationSlots(planned,snapshot.tick).map(p=>({
+            x:(slot.x+p.x*c-p.y*s)/FIXED,y:(slot.y+p.x*s+p.y*c)/FIXED,
+            radius:formationDoctrine(planned.definitionId).bodyWidth/(2*FIXED)}))
+          : [{x:slot.x/FIXED,y:slot.y/FIXED,radius:.35}]);
+        for(const circle of circles){
+          const p=this.screen(circle.x,circle.y);ctx.beginPath();
+          ctx.arc(p.x,p.y,Math.max(3,circle.radius*this.scale),0,Math.PI*2);ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+    if (this.selectionBox) {
+      const b = this.selectionBox;
+      ctx.fillStyle = "#84ded21f";
+      ctx.strokeStyle = "#abf1e4";
+      ctx.lineWidth = 1;
+      ctx.fillRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
+      ctx.strokeRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
+    }
+    if (paused) {
+      ctx.fillStyle = "#f0f6ef";
+      ctx.font = "600 22px system-ui";
+      ctx.textAlign = "center";
+      ctx.fillText("Paused", this.width / 2, 40);
+    }
+    ctx.restore();
   }
 }
