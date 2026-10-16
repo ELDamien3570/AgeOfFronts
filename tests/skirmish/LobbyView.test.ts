@@ -53,6 +53,39 @@ describe("lobby page", () => {
     expect(root.querySelector('select[name="startingAge"] option[value="PostModern"]')?.textContent).toBe("Post-Modern");
     expect(root.querySelector("#lobby-dialog")?.textContent).toContain("all technologies and 1,000,000 gold");
   });
+  it("offers no 2000 map size and warns only for procedural maps at 1000 (R2-P1)", () => {
+    const { root, view, vm } = fixture();
+    vm.dialog = "create";
+    const original = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, "showModal");
+    Object.defineProperty(HTMLDialogElement.prototype, "showModal", { configurable: true, value: vi.fn() });
+    try {
+      view.renderDialog(vm);
+    } finally {
+      if (original) Object.defineProperty(HTMLDialogElement.prototype, "showModal", original);
+      else Reflect.deleteProperty(HTMLDialogElement.prototype, "showModal");
+    }
+    const sizes = Array.from(root.querySelectorAll<HTMLOptionElement>('select[name="worldSize"] option'));
+    expect(sizes.map((option) => option.value)).toEqual(["250", "500", "1000"]);
+    expect(root.querySelector('option[value="2000"]')).toBeNull();
+    const form = root.querySelector<HTMLFormElement>("#create-room")!;
+    const hint = root.querySelector<HTMLElement>("#world-size-hint")!;
+    const map = form.elements.namedItem("mapId") as HTMLSelectElement;
+    const size = form.elements.namedItem("worldSize") as HTMLSelectElement;
+    const choose = (field: HTMLSelectElement, value: string) => {
+      field.value = value;
+      field.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+    expect(hint.hidden).toBe(true);
+    choose(map, "black-forest");
+    choose(size, "1000");
+    expect(hint.hidden).toBe(false);
+    expect(hint.textContent).toContain("1000 cells");
+    choose(size, "500");
+    expect(hint.hidden).toBe(true);
+    choose(size, "1000");
+    choose(map, "africa");
+    expect(hint.hidden).toBe(true);
+  });
   it.each(["home", "room"])("retains the connected native color selector and options during %s publications", page => {
     const {root,view,vm,actions}=fixture();
     if (page === "room") { vm.showLobby("africa"); view.render(vm); }

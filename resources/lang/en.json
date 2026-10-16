@@ -10,6 +10,9 @@
     "rate_limited": "Too many messages were sent to the lobby server. Reconnecting…",
     "command_validation_failure": "This command could not be processed"
   },
+  "skirmish_lobby": {
+    "procedural_1000_hint": "Procedural maps at 1000 cells can take a minute or more to prepare before the match starts. Pick 500 for a faster start."
+  },
   "skirmish_controls": {
     "double_right_click": "Double right click",
     "charge": "Charge (same target, within a moment)",
