@@ -34,7 +34,12 @@ def garment_alpha(image, name):
 
 
 def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    # JSON metadata hashes with LF line endings (R2-L5), so CRLF and LF
+    # checkouts agree; binary sheets hash raw.
+    data = path.read_bytes()
+    if path.suffix == '.json':
+        data = data.replace(b'\r\n', b'\n')
+    return hashlib.sha256(data).hexdigest()
 
 def previous_masks():
     return {str(p): digest(p) for age in ('StoneAge', 'BronzeAge', 'ClassicalAge') for p in (CULTURE / 'FactionMasks' / age).rglob('*') if p.is_file()}
