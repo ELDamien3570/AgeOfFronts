@@ -79,6 +79,8 @@ export const AI_BATTLE=Object.freeze({
   // T-b: an engaged line that has had no contact for this long closes on the nearest enemy.
   standoffTicks:secondsToTicks(6),
   standoffSearchTiles:24,
+  // T-b: an army is engaged while at least this share of its members fight.
+  engagedShare:.25,
   // T-b: the re-deployed line stops this far short of the enemy centroid.
   pressStopTiles:2,
   // T-b: a routed target army within this many tiles is pursued.
@@ -88,6 +90,15 @@ export const AI_BATTLE=Object.freeze({
   // I3: walls within this many tiles of a refused objective are breach targets.
   breachObjectiveTiles:16,
   breachCandidatesPerThink:4,
+  // T-a: an unscreened enemy melee body this close makes an AI ranged member step back.
+  evadeTriggerTiles:2,
+  evadeStepTiles:3,
+  // T-a: an enemy melee attacker within this formation gap is answered first.
+  answerContactGap:FIXED/2,
+  // T-c: an idle AI wing rider engages enemies within this many tiles beyond its weapon reach.
+  wingGuardTiles:6,
+  // T-b: extra leash (tiles) for AI frontline slots pressing a withdrawing army.
+  advanceLeashTiles:4,
   // T-b: a depleted AI army with at least this local advantage keeps fighting.
-  pressOnAdvantage:1.2,
+  pressOnAdvantage:1.0,
 });

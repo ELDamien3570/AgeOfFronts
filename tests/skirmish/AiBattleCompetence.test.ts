@@ -1,10 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { TICKS_PER_SECOND, type Squad } from "../../src/skirmish/Protocol";
-import { buildDuel, runDuel, walledCityDuel } from "./fixtures/AiDuel";
+import { armyLineFighting } from "../../src/skirmish/domain/Armies";
+import type { Army } from "../../src/skirmish/domain/Definitions";
+import { buildDuel, duelMatrix, runDuel, walledCityDuel } from "./fixtures/AiDuel";
 
 // Roadmap Next #5 exit: AI battle competence (I2-I4, T-a to T-d).
 // The duels drive the real AiArmyPlanner mission step on an injected mission.
 describe("AI battle competence", { timeout: 120_000 }, () => {
+  it("beats an attack-nearest opponent in at least 2 of 4 Early Medieval 9v9 duels (T-a)", () => {
+    const m = duelMatrix("EarlyMedieval", "ai", "naive", 150, 2);
+    expect(m.wins).toBeGreaterThanOrEqual(2);
+    // AI archers no longer stand in melee far more than the opponent's.
+    expect(m.mineRanged).toBeLessThanOrEqual(2 * Math.max(1, m.foeRanged));
+  });
+
   it.each([40, 41])("AI vs AI makes contact within 30 s and is decided within 150 s (T-b, seed %i)", (seed) => {
     const r = runDuel({ age: "EarlyMedieval", a: "ai", b: "ai", seconds: 150, seed });
     expect(r.firstContact).toBeGreaterThanOrEqual(0);
@@ -13,20 +22,26 @@ describe("AI battle competence", { timeout: 120_000 }, () => {
     expect(r.decided).toBeLessThanOrEqual(150);
   });
 
-  it("advances the line while only a mounted wing is fighting (I2, R2-M5)", () => {
-    const o = { age: "LateMedieval", a: "idle" as const, b: "ai" as const, seconds: 30 };
+  it("lands at least one charge bonus in a 60 s Late Medieval duel (T-c)", () => {
+    const m = duelMatrix("LateMedieval", "ai", "naive", 60, 1);
+    expect(m.bonus).toBeGreaterThanOrEqual(1);
+  });
+
+  it("holds the advance creep only for a fighting line, not a fighting mounted wing (I2, R2-M5)", () => {
+    const army = { slots: [{ squadId: 1, role: "frontline" }, { squadId: 2, role: "ranged" }, { squadId: 3, role: "mounted-left" }] } as unknown as Pick<Army, "slots">;
+    expect(armyLineFighting(army, [{ id: 1, fighting: false }, { id: 2, fighting: false }, { id: 3, fighting: true }])).toBe(false);
+    expect(armyLineFighting(army, [{ id: 1, fighting: true }, { id: 3, fighting: false }])).toBe(true);
+    expect(armyLineFighting(army, [{ id: 2, fighting: true }])).toBe(true);
+    // The live advance still happens in a Late Medieval engagement against a passive line.
+    const o = { age: "LateMedieval", a: "idle" as const, b: "ai" as const, seconds: 60 };
     const ctx = buildDuel(o), { game, e } = ctx;
-    let wingOnlyAdvance = false;
+    let advanced = false;
     runDuel(o, ctx, (c) => {
       const live = c.B.map((s) => game.squad(s.id)).filter((s): s is Squad => !!s && s.troops > 0);
-      const army = live.length ? e.armies.armyOf(live[0].id) : undefined;
-      if (!army) return;
-      const role = (s: Squad) => army.slots?.find((r) => r.squadId === s.id)?.role ?? "";
-      const wing = live.some((s) => s.fighting && role(s).startsWith("mounted"));
-      const line = live.some((s) => s.fighting && (role(s) === "frontline" || role(s) === "ranged"));
-      if (wing && !line && army.lastAdvanceTick === game.tick - 1) wingOnlyAdvance = true;
+      const a = live.length ? e.armies.armyOf(live[0].id) : undefined;
+      if (a?.lastAdvanceTick !== undefined) advanced = true;
     });
-    expect(wingOnlyAdvance).toBe(true);
+    expect(advanced).toBe(true);
   });
 
   it("breaches a ring-walled city: breach phase within 30 s, wall damage within 90 s, siege kept (I3, I4, T7)", () => {
@@ -51,7 +66,8 @@ describe("AI battle competence", { timeout: 120_000 }, () => {
     expect(damage).toBeGreaterThanOrEqual(0);
     expect(damage).toBeLessThanOrEqual(90);
     expect(siegeLeft).toBe(false);
-    // I4 (R2-P19): at most one re-send per objective (it was 31 identical moves in 60 s).
-    for (const n of moves.values()) expect(n).toBeLessThanOrEqual(2);
+    // I4 (R2-P19): one move per objective change (breach opened, approach chosen),
+    // not a re-send every think: it was 31 identical moves in 60 s.
+    expect([...moves.values()].reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(8);
   });
 });

@@ -1,9 +1,10 @@
 import { effectiveRange } from "./ElevationAdvantage";
 import { formationContact } from './FormationContact';
+import { armCavalryBonus } from './CavalryAssault';
 import { formationEnvelope,formationDoctrine } from './FormationGeometry';
 import { layoutArmyBattleLine } from './BattleLineLayout';
 import { mayWrite, mayNavigateArmy,type ControlWorld } from './CommandPrecedence';
-import { ENGAGEMENT,LINES } from '../content/TacticalRules';
+import { AI_BATTLE,ENGAGEMENT,LINES } from '../content/TacticalRules';
 import { strengthFraction } from './Manpower';
 import { AI_DOCTRINES } from '../content/AiDoctrines';
 import { personalityOf } from '../content/AiPersonalities';
@@ -122,6 +123,14 @@ const active = (s: Squad|undefined):s is Squad => !!s && s.troops > 0 && s.embar
 const attackOrder = (
   o: ArmyOrder,
 ): o is Extract<ArmyOrder, { targetId: number }> => "targetId" in o;
+/** I2 (R2-M5): only the battle line holds the AI advance creep; a fighting mounted wing does not. */
+export function armyLineFighting(army: Pick<Army, "slots">, members: readonly Pick<Squad, "id" | "fighting">[]): boolean {
+  return members.some((s) => {
+    if (!s.fighting) return false;
+    const role = army.slots?.find((r) => r.squadId === s.id)?.role;
+    return role === "frontline" || role === "ranged";
+  });
+}
 /** Synchronous rejection when no legal army corridor exists (a side-effect-free rejection). */
 export const ARMY_ROUTE_BLOCKED = "Army route is blocked; choose another destination";
 export class Armies {
@@ -359,23 +368,54 @@ export class Armies {
         for(const r of army.slots??[])if(r.role==='frontline'){const s=this.world.squad(r.squadId),order=oldOrders.get(r.squadId);if(s&&order?.type==='attack')this.world.setArmyAttack(s,order.targetId);}
       }return;
     }
+    const routed=ai&&plan?.posture==='advance'&&near.some(t=>{const other=this.armyOf(t.id);return !!other&&(other.order.type==='regroup'||this.engagements?.planFor(other.id)?.posture==='withdraw');});
     for(const old of members){
       const s=this.world.squad(old.id)??old,record=army.slots?.find(r=>r.squadId===s.id),slot=slots.get(s.id);if(!record||!slot||!mayWrite(this.controls,s,'army'))continue;
+      if(ai&&record.role==='ranged'&&this.rangedEvade(army,s,members,near))continue;
       let targetId=plan?.assignments.find(a=>a.squadId===s.id)?.targetId??null;
       let leash=record.role==='frontline'?ENGAGEMENT.frontLeash:record.role==='ranged'?ENGAGEMENT.rangedLeash:0;
+      // T-b: an AI line that is winning (advance posture) against a withdrawing army lets
+      // its frontline close on the retreating enemy instead of watching it disengage.
+      if(ai&&plan?.posture==='advance'&&record.role==='frontline'&&routed)leash+=AI_BATTLE.advanceLeashTiles;
       const wing=record.role.startsWith('mounted')?this.engagements?.wingFor(army.id,record.role==='mounted-left'?'left':'right'):undefined;
+      // T-c: a routing wing whose target is already inside charge range charges it.
+      if(ai&&wing?.phase==='route'&&s.charge===null&&!s.cavalryEngagement&&wing.targetId!==undefined&&this.chargeInRange(army,s,this.world.squad(wing.targetId)))continue;
       if(wing?.phase==='route'&&wing.path&&wing.via!==undefined){const goal=tilePoint(this.world.map,wing.via);slots.set(s.id,{x:Math.round(goal.x-Math.sin(army.facing)*(record.lateral*.1)),y:Math.round(goal.y+Math.cos(army.facing)*(record.lateral*.1))});moves.push(s);continue;}
       if(wing?.phase==='strike'){targetId=wing.targetId??null;leash=14;}
-      if(s.cavalryEngagement?.phase==='engaged'&&s.order.type==='attack'&&active(this.world.squad(s.order.targetId)!)&&this.world.hostile(army.playerId,this.world.squad(s.order.targetId)!.playerId))continue;
+      if(s.cavalryEngagement?.phase==='engaged'&&s.order.type==='attack'&&active(this.world.squad(s.order.targetId)!)&&this.world.hostile(army.playerId,this.world.squad(s.order.targetId)!.playerId)){
+        // T-c: an engaged AI rider with a recovered charge arms its bonus on the
+        // engaged target, unless it faces a square or an anti-cavalry front.
+        if(ai)this.engagedCharge(army,s,this.world.squad(s.order.targetId)!);
+        continue;
+      }
       const allowed=(t:Squad|undefined,extra=0)=>!!t&&active(t)&&!t.afloat&&this.world.hostile(army.playerId,t.playerId)&&(this.world.armyTargetAllowed?.(army.playerId,t.playerId)??true)&&
         this.world.unit(s).attack.targets.some(tag=>this.world.unit(t).tags.includes(tag))&&
         formationContact({...s,...slot},t,this.world.tick).gap<=effectiveRange(this.world,{...s,...slot},this.world.unit(s).attack,t)+(leash+extra)*FIXED;
+      // T-c: an idle AI wing rider does not watch an enemy inside its guard radius. It
+      // rides in on an ordinary assault, keeping its charge to arm the bonus once engaged.
+      if(ai&&wing&&wing.phase==='hold'&&!s.cavalryEngagement&&s.charge===null){
+        const close=near.filter(t=>allowed(t,AI_BATTLE.wingGuardTiles)).sort((a,b)=>distanceSquared(s,a)-distanceSquared(s,b)||a.id-b.id)[0];
+        if(close){
+          if(!(s.order.type==='attack'&&s.order.targetId===close.id)){
+            this.world.cancelArmyRoute(`army:${army.id}:${s.id}`);march.pending.delete(s.id);this.world.setArmyAttack(s,close.id);
+          }
+          continue;
+        }
+      }
       // A legal current target is sticky; a new plan cannot cause command oscillation.
       const current=s.order.type==='attack'?this.world.squad(s.order.targetId):undefined;
       if(allowed(current)&&distanceSquared(s,slot)<=((leash+ENGAGEMENT.pursuitSlack)*FIXED)**2)targetId=current!.id;
       let target=targetId===null?undefined:this.world.squad(targetId);
       if(!allowed(target)){target=undefined;targetId=null;}
       if(!plan&&leash>0)target=near.find(t=>allowed(t)&&formationContact({...s,...slot},t,this.world.tick).gap<=effectiveRange(this.world,{...s,...slot},this.world.unit(s).attack,t));
+      // T-a: an AI member answers an enemy already striking it in melee before chasing a planned target out of contact.
+      if(ai&&leash>0){
+        const touching=(t:Squad)=>formationContact(s,t,this.world.tick).gap<AI_BATTLE.answerContactGap;
+        if(!target||!touching(target)){
+          const attacker=near.filter(t=>t.order.type==='attack'&&t.order.targetId===s.id&&this.world.unit(t).attack.channel==='melee'&&allowed(t)&&touching(t)).sort((a,b)=>a.id-b.id)[0];
+          if(attacker){target=attacker;targetId=attacker.id;}
+        }
+      }
       if(distanceSquared(s,slot)>((leash+ENGAGEMENT.pursuitSlack)*FIXED)**2&&wing?.phase!=='strike'){target=undefined;}
       if(target&&leash>0){
         const history=this.commandHistory.get(s.id),same=s.order.type==='attack'&&s.order.targetId===target.id;
@@ -397,13 +437,46 @@ export class Armies {
       army.queuedOrders = [];
     }
   }
-  /** I2 (R2-M5): only the battle line holds the advance; a fighting mounted wing does not. */
-  private lineFighting(army: Army, members: readonly Squad[]): boolean {
-    return members.some((s) => {
-      if (!s.fighting) return false;
-      const role = army.slots?.find((r) => r.squadId === s.id)?.role;
-      return role === "frontline" || role === "ranged";
-    });
+  /** T-a: an AI ranged member with an unscreened enemy melee body close by steps
+   * back along the army's rear axis instead of standing in melee. */
+  private rangedEvade(army: Army, s: Squad, members: readonly Squad[], near: readonly Squad[]): boolean {
+    const tick = this.world.tick, reach = AI_BATTLE.evadeTriggerTiles * FIXED;
+    const threat = near.find((t) => active(t) && !t.afloat && this.world.hostile(army.playerId, t.playerId) &&
+      // Riders outrun archers on foot: stepping back from cavalry only stops the volleys.
+      this.world.unit(t).attack.channel === "melee" && !this.world.unit(t).tags.includes("mounted") &&
+      formationContact(t, s, tick).gap < reach);
+    if (!threat) return false;
+    const own = distanceSquared(s, threat);
+    const screened = members.some((m) => m.id !== s.id && active(m) && army.slots?.find((r) => r.squadId === m.id)?.role === "frontline" &&
+      distanceSquared(m, threat) < own && formationContact(threat, m, tick).gap < reach);
+    if (screened) return false;
+    if (s.order.type === "move" && !s.fighting) return true;
+    const back = AI_BATTLE.evadeStepTiles * FIXED;
+    const goal = { x: Math.round(s.x - Math.cos(army.facing) * back), y: Math.round(s.y - Math.sin(army.facing) * back) };
+    if (goal.x < 0 || goal.y < 0 || goal.x >= this.world.map.width() * FIXED || goal.y >= this.world.map.height() * FIXED) return false;
+    const paths = this.world.squadPaths(army.playerId), goalTile = pointTile(this.world.map, goal);
+    if (!paths.walkable(goalTile)) return false;
+    const path = paths.find(pointTile(this.world.map, s), goalTile, (t) => this.world.armyBlocked(t, army.playerId));
+    if (!path) return false;
+    this.world.setArmyMove(s, goal, path);
+    return true;
+  }
+  /** Issues an ordinary charge when the target is a legal, unscreened charge target in range. */
+  private chargeInRange(army: Army, s: Squad, target: Squad | undefined): boolean {
+    const unit = this.world.unit(s), tick = this.world.tick;
+    if (!target || !active(target) || target.afloat || !this.world.hostile(army.playerId, target.playerId) || !this.world.applyArmyCommand ||
+      !unit.charge || (s.chargeReadyTick ?? 0) > tick || Math.hypot(target.x - s.x, target.y - s.y) > unit.charge.maximumDistance) return false;
+    if (formationEnvelope(target, tick).shape === "square" ||
+      this.world.unit(target).troopClass === "antiCavalry" && formationContact(target, s, tick).facing >= .25) return false;
+    return this.world.applyArmyCommand({ type: "charge", playerId: army.playerId, squadIds: [s.id], x: target.x, y: target.y, targetId: target.id }) === null;
+  }
+  private engagedCharge(army: Army, s: Squad, target: Squad): void {
+    const unit = this.world.unit(s), tick = this.world.tick;
+    if (!this.world.applyArmyCommand || !unit.charge || (s.chargeReadyTick ?? 0) > tick || !armCavalryBonus(s, unit, tick)) return;
+    const defender = this.world.unit(target);
+    if (formationEnvelope(target, tick).shape === "square" ||
+      defender.troopClass === "antiCavalry" && formationContact(target, s, tick).facing >= .25) return;
+    this.world.applyArmyCommand({ type: "charge", playerId: army.playerId, squadIds: [s.id], x: target.x, y: target.y, targetId: target.id });
   }
   /** True while an order for this army awaits route admission. */
   admissionPending(armyId: number): boolean {
@@ -947,6 +1020,13 @@ export class Armies {
         slots: new Map(slots),
         geometry: String(army.slotRevision),
       };
+    // T-a: while a re-slot is still being planned (a reserve swap bumps slotRevision
+    // every few seconds in melee), an AI army keeps fighting on its previous slots
+    // instead of skipping target assignment until the plan lands.
+    if (slots === undefined && cached && this.world.players.find((p) => p.id === army.playerId)?.ai) {
+      const stale = new Map([...cached.slots].filter(([id]) => members.some((s) => s.id === id)));
+      if (members.every((s) => stale.has(s.id))) return stale;
+    }
     return slots;
   }
   private assign(
@@ -1191,7 +1271,7 @@ export class Armies {
         // Once contact begins the deployment anchor/facing remain stable. Flank pressure is local.
         let anchor=march.deployment?.point??(target?{x:leader.x,y:leader.y}:march.route[march.route.length-1]);
         const plan=this.engagements?.planFor(army.id);
-        if(plan?.posture==='advance'&&army.posture!=='defend'&&this.world.players.find(p=>p.id===army.playerId)?.ai&&this.world.tick-(army.lastAdvanceTick??march.started)>=ENGAGEMENT.refreshTicks&&!this.lineFighting(army,available)){
+        if(plan?.posture==='advance'&&army.posture!=='defend'&&this.world.players.find(p=>p.id===army.playerId)?.ai&&this.world.tick-(army.lastAdvanceTick??march.started)>=ENGAGEMENT.refreshTicks&&!armyLineFighting(army,available)){
           const goal=near.length?{x:near.reduce((n,s)=>n+s.x,0)/near.length,y:near.reduce((n,s)=>n+s.y,0)/near.length}:undefined;
           if(goal){const length=Math.hypot(goal.x-anchor.x,goal.y-anchor.y);if(length>3*FIXED){anchor={x:Math.round(anchor.x+(goal.x-anchor.x)/length*FIXED),y:Math.round(anchor.y+(goal.y-anchor.y)/length*FIXED)};march.deployment=undefined;army.lastAdvanceTick=this.world.tick;}}
         }

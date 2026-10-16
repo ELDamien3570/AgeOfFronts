@@ -590,7 +590,7 @@ export class EngagementManager {
       // T-b: a depleted AI army that is clearly winning keeps fighting.
       const collapse =
         own.reduce((n, s) => n + s.troops, 0) < (a.initialTroops ?? 1) * 0.55 &&
-        !(ai && estimate.advantage >= AI_BATTLE.pressOnAdvantage);
+        !(ai && estimate.advantage >= (own.some((s) => s.fighting) ? ENGAGEMENT.withdrawBelow : AI_BATTLE.pressOnAdvantage));
       const advanceAbove = ai && owner ? AI_DOCTRINES[personalityOf(owner).id].advanceAbove : ENGAGEMENT.advanceAbove;
       if (
         world.tick - previous.since >= ENGAGEMENT.minPostureTicks ||

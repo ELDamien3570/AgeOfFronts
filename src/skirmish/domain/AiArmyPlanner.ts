@@ -60,6 +60,8 @@ interface ArmyObjective {
   rejoined?: number;
   /** T-b: tick of the last standoff press order. */
   pressTick?: number;
+  /** T-b: last tick at which at least AI_BATTLE.engagedShare of the members were fighting. */
+  engagedTick?: number;
   /** I3: tick of a synchronous no-corridor rejection (the army itself is left untouched). */
   routeBlockedTick?: number;
   /** I4: building or squad objective tile, kept apart from the theatre's targetTile. */
@@ -367,8 +369,10 @@ export class AiArmyPlanner {
           world.owners[plan.targetTile] !== player.id && operations.enabled(player) &&
           !operations.canEnter(player.id,world.owners[plan.targetTile],plan.targetTile)) ||
         troops < plan.initialTroops * 0.55 &&
-          // T-b: do not regroup while clearly ahead in a live engagement.
-          !(army && (this.expansion.engagements.advantageFor(army.id) ?? 0) >= AI_BATTLE.pressOnAdvantage))
+          // T-b: do not regroup while ahead in a live engagement, nor turn a line in
+          // melee contact into a rout unless it is clearly losing.
+          !(army && (this.expansion.engagements.advantageFor(army.id) ?? 0) >=
+            (members.some(s=>s.fighting) ? ENGAGEMENT.withdrawBelow : AI_BATTLE.pressOnAdvantage)))
     ) {
       if (
         this.order(plan, { type: "regroup", tile: plan.home ?? player.base })
@@ -508,7 +512,7 @@ export class AiArmyPlanner {
         if(this.order(plan,{type:'deploy',tile:pointTile(world.map,centre),facing:Math.atan2(enemy.y-centre.y,enemy.x-centre.x)})){
           plan.phase='engage';plan.since=world.tick;plan.reason='Persistent battle line with independently supported wings';
           const shapeTicks=new Map(plan.shapeTicks??[]),near=world.nearbyArmyEnemies(army!,14*FIXED,player.id),count=Math.max(1,near.length);
-          for(const s of members){if(world.tick-(shapeTicks.get(s.id)??-ENGAGEMENT.shapeCooldownTicks)<ENGAGEMENT.shapeCooldownTicks||s.formation?.shapeLock)continue;
+          for(const s of members){if(world.tick-(shapeTicks.get(s.id)??-ENGAGEMENT.shapeCooldownTicks)<ENGAGEMENT.shapeCooldownTicks||s.formation?.shapeLock||s.fighting)continue;
             const unit=this.expansion.unit(s),shape=preferredShape(unit,formationDoctrine(s.definitionId),{mountedShare:near.filter(t=>this.expansion.unit(t).tags.includes('mounted')).length/count,rangedShare:near.filter(t=>this.expansion.unit(t).attack.channel==='ranged').length/count,distanceTiles:Math.hypot(enemy.x-s.x,enemy.y-s.y)/FIXED},unit.role==='frontline'?'frontline':unit.role==='ranged'?'ranged':unit.tags.includes('mounted')?'mounted':'support');
             if(world.applyArmyCommand&&!world.applyArmyCommand({type:'formation',playerId:player.id,squadIds:[s.id],shape}))shapeTicks.set(s.id,world.tick);
           }plan.shapeTicks=[...shapeTicks];
@@ -536,9 +540,11 @@ export class AiArmyPlanner {
           } else plan.objectiveRetryTick = world.tick + AI_BATTLE.objectiveRetryTicks;
         }
       }
-      // T-b: commitment counts from the last contact, not from deployment.
-      const lastContact=Math.max(plan.since,...members.map(s=>s.lastCombatTick??0));
-      const anyFighting=members.some(s=>s.fighting);
+      // T-b: commitment counts from the last real engagement, not from deployment. One
+      // member trading shots at range is not an engagement and must not freeze the army.
+      const anyFighting=members.filter(s=>s.fighting).length>=Math.max(1,Math.ceil(members.length*AI_BATTLE.engagedShare));
+      if(anyFighting)plan.engagedTick=world.tick;
+      const lastContact=Math.max(plan.since,plan.engagedTick??0);
       const moving=!!army&&["marching","assembling","regrouping"].includes(army.state);
       // Hill and trench positioning own the army while they hold a plan.
       if((plan.phase==="engage"||plan.phase==="advance"&&!moving)&&!plan.hill&&!plan.trench&&army&&army.state!=="blocked"&&!anyFighting&&world.tick-lastContact>=AI_BATTLE.standoffTicks&&
@@ -578,7 +584,8 @@ export class AiArmyPlanner {
       }
     } else if (
       plan.phase === "recover" &&
-      (members.every(
+      // Disbanding mid-melee strands the members without orders; finish the retreat first.
+      (!members.some((s) => s.fighting) && members.every(
         (s) =>
           world.map.euclideanDistSquared(
             world.tileOf(s),
