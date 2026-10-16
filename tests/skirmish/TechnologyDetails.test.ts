@@ -24,8 +24,10 @@ describe("technology inspection", () => {
     }
   });
   it("shows cavalry equipment, production inputs and the halved base cycle", () => {
+    // One horse per rider (Units.ts horses = recipe capacity): 16 since the
+    // bronze cavalry recipe went from 8 to 16 riders.
     expect(text("rus-bronzeage-mobile")).toContain(
-      "8 horses + 2 Bronze Age equipment",
+      "16 horses + 2 Bronze Age equipment",
     );
     expect(text("rus-bronzeage-barracks-equipment")).toContain(
       "12 bronze → 1 Bronze Age equipment · 10s base cycle at Blacksmith",
