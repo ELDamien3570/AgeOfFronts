@@ -11,7 +11,8 @@
 //   hole, R4);
 // - checkpoint -> restore round trip (R2-M11, R2-M12).
 // Measured on the development desktop: about 17-25 s for 1,500 commands
-// (seed 1, two epochs). On the base commit it throws at command 499 (R2-H2).
+// (seed 1, two epochs). On the base commit it throws at command 499: the
+// off-map charge fallback "Invalid coordinates: 160,3906" (R2-H2).
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import type { CommandValidationFailure } from "../../src/skirmish/CommandApplications";
@@ -391,7 +392,7 @@ function run() {
       else if (game.player(actor)!.ai) status = "rejected";
       else status = game.commandApplications.apply(`fz${i}`, command).status;
     } catch (error) {
-      counters.applyThrows.push({ type, command, tick: game.tick, message: (error as Error).message, stack: String((error as Error).stack).split("\n").slice(0, 8).join("\n") });
+      counters.applyThrows.push({ type: command.type, command, tick: game.tick, message: (error as Error).message, stack: String((error as Error).stack).split("\n").slice(0, 8).join("\n") });
       break;
     }
     if (status === "rejected") counters.rejected++; else if (status === "deferred") counters.deferred++; else counters.accepted++;
@@ -407,7 +408,7 @@ function run() {
     }
     try { for (let k = 0, ticks = 1 + int(2); k < ticks; k++) game.step(); }
     catch (error) {
-      counters.stepThrows.push({ lastType: type, tick: game.tick, message: (error as Error).message, stack: String((error as Error).stack).split("\n").slice(0, 8).join("\n") });
+      counters.stepThrows.push({ lastType: command.type, tick: game.tick, message: (error as Error).message, stack: String((error as Error).stack).split("\n").slice(0, 8).join("\n") });
       break;
     }
     invariants(type);
@@ -427,9 +428,9 @@ describe("command fuzzing (bounded)", () => {
       validationFailures: counters.validationFailures.map(f => `${f.type}: ${f.message}`),
       rejectedMutated: counters.rejectedMutated, foreignMutated: counters.foreignMutated,
       restoreFailures: counters.restoreFailures, invariantViolations: counters.invariantViolations }));
+    expect(counters.applyThrows.map(t => `${t.type}: ${t.message}`)).toEqual([]);
+    expect(counters.stepThrows.map(t => `${t.lastType}: ${t.message}`)).toEqual([]);
     expect(processed).toBe(COMMANDS);
-    expect(counters.applyThrows).toEqual([]);
-    expect(counters.stepThrows).toEqual([]);
     expect(asserted.slice(0, 10)).toEqual([]);
     expect(counters.accepted + counters.deferred).toBeGreaterThan(100);
   }, 120_000);
