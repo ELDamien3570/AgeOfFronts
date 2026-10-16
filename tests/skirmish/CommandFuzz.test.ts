@@ -361,7 +361,7 @@ function run() {
       aircraft: JSON.stringify(e.aircraft), inventories: JSON.stringify(e.supply.inventories), trenches: JSON.stringify(e.trenches.checkpoint()),
       stance: JSON.stringify(e.skirmish.checkpoint()), armies: JSON.stringify(e.armies.checkpoint()), diplomacy: JSON.stringify(e.diplomacy.state),
       recruitment: JSON.stringify(g.recruitment.checkpoint()), admission: JSON.stringify(g.movementAdmission.checkpoint()),
-      barriers: JSON.stringify(e.fortifications.barriers), progression: JSON.stringify(e.progression.checkpoint()),
+      fortifications: JSON.stringify(e.fortifications.checkpoint()), progression: JSON.stringify(e.progression.checkpoint()),
       owners: Array.from(game.owners).join(","),
     } as Record<string, string>;
   };
