@@ -104,3 +104,21 @@ describe("analytic balance matrix", () => {
     expect(value).toBeGreaterThanOrEqual(recorded * COUNTER_RATCHET_FACTOR);
   });
 });
+
+// Content decisions (BalanceContract.md, "Content decisions"). Each row pins the
+// value now authored in skirmish/plans/formation-recipes.json, so a change is
+// deliberate. Only OD-12 changed content; the others keep HEAD pending the owner.
+describe("content decisions", () => {
+  it("OD-12: the Modern machine-gun crew has the Early Modern crew's 1000 HP (05 rec 1)", () => {
+    expect(UNIT.get("modern-field-support")!.formationRecipe!.soldierHp).toBe(1000);
+    expect(UNIT.get("earlymodern-field-support")!.formationRecipe!.soldierHp).toBe(1000);
+  });
+  it("OD-13: the RPL-20 crew keeps 100 HP and an enlarged size of 3 (contract text said 80 / 1)", () => {
+    expect(UNIT.get("modern-archer")!.formationRecipe).toMatchObject({ capacity: 1, enlargedCapacity: 3, soldierHp: 100 });
+  });
+  it("OD-14: Bronze cavalry keeps 16 riders, 20 enlarged, 16 horses", () => {
+    const u = UNIT.get("bronzeage-cavalry")!;
+    expect(u.formationRecipe).toMatchObject({ capacity: 16, enlargedCapacity: 20 });
+    expect(u.cost.items?.horses).toBe(16);
+  });
+});
