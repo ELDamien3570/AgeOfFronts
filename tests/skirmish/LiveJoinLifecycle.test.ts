@@ -337,6 +337,27 @@ describe("bounded live admission lifecycle", () => {
     const next=f.baseline("slow");expect(next.rebase).toBe(false);expect(next.publicationSequence).toBeGreaterThan(rebased.publicationSequence!);
     await f.match.end("test");
   });
+  it("a stale sync rollback never deletes or notifies the same guest's newer admission",async()=>{
+    const f=await fixture();const original=f.executor.request;
+    let restore:(()=>void)|undefined;
+    f.executor.request=async<T extends ExecutorResult>(request:ExecutorRequest)=>{
+      if(request.type==="set-controller")await new Promise<void>(resolve=>{restore=resolve;});
+      return original<T>(request);
+    };
+    f.watch("c",3);await f.match.qualify("c","build");
+    expect(f.baseline("c").syncId).toBeDefined();
+    const dropped=f.match.disconnect("c");
+    await Promise.resolve();await Promise.resolve();
+    expect(restore).toBeDefined();
+    // The guest reconnects while the rollback waits for the worker.
+    const before=f.messages.length;
+    f.watch("c",3);
+    expect(f.match.isAdmitting("c")).toBe(true);
+    restore!();await dropped;
+    expect(f.match.isAdmitting("c")).toBe(true);
+    expect(f.messages.slice(before).filter(m=>m.guest==="c"&&m.message.type==="error")).toEqual([]);
+    await f.match.end("test");
+  });
   it("retains ownership and capacity through grace; successful rejoin clears it, failed joins never extend it", async () => {
     const f = await fixture();
     await f.match.disconnect("a");

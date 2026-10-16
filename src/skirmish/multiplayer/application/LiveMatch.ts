@@ -464,8 +464,13 @@ export class LiveMatch {
       } catch {
         await this.end("Match executor unavailable during synchronization");
       } finally {
-        this.admissions.delete(sync.admission.guest);
-        this.send(sync.admission.guest, { type: "error", message });
+        // A disconnect already removed this attempt; the same guest may have
+        // reconnected and watched again during the rollback round trip. Only
+        // the attempt this sync owns is withdrawn and notified.
+        if (this.admissions.get(sync.admission.guest) === sync.admission) {
+          this.admissions.delete(sync.admission.guest);
+          this.send(sync.admission.guest, { type: "error", message });
+        }
         this.finishSync(sync);
       }
     })();
