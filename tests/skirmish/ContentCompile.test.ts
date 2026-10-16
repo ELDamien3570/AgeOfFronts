@@ -7,6 +7,8 @@ import {
   compileRecipesStep,
   compileRecruitmentStep,
   compileWeaponsStep,
+  compileContent,
+  renderContentJson,
 } from "../../scripts/content/ContentPipeline";
 
 // Gate for the authored-content build (review S1 / M10): the committed runtime
@@ -74,5 +76,14 @@ describe("content compile gate", () => {
     expect(canonical(compileWeaponsStep(drifted).data)).not.toEqual(
       canonical(read(CONTENT_PATHS.weapons)),
     );
+  });
+  it("renders every compiled output byte-for-byte as committed (what compile:content writes)", () => {
+    // writeContentOutput writes renderContentJson(output.data); a key-order or
+    // formatting drift would otherwise surface only as a git diff after a run.
+    const outputs = compileContent(read);
+    expect(outputs.map((output) => output.path).sort()).toEqual(Object.values(CONTENT_PATHS).filter((path) =>
+      outputs.some((output) => output.path === path)).sort());
+    for (const output of outputs)
+      expect(renderContentJson(output.data), output.path).toBe(readFileSync(output.path, "utf8").replace(/\r\n/g, "\n"));
   });
 });
