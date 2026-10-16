@@ -8,6 +8,16 @@ export const DEFAULT_NAVAL_PRIORITY: NavalPriority = "transports";
 export const TRANSPORT_SPEED_PERCENT = 80;
 export const PASSENGER_DAMAGE_PERCENT = 50;
 export type NavalTarget = Ship | Squad;
+/** Owner decision (roadmap Next #6, V1): a hull at 0 health still fires at
+ * this fraction (per mille) of its full-health weapon. Damage rises linearly
+ * to 1000 at full health, so a full-health ship's numbers are unchanged. */
+export const NAVAL_DAMAGE_FLOOR_PERMILLE = 600;
+/** Integer per-mille strength of a ship's weapons at `health` of `maxHealth`. */
+export function navalStrengthPermille(health: number, maxHealth: number): number {
+  const max = Math.max(1, maxHealth), h = Math.max(0, Math.min(health, max));
+  return NAVAL_DAMAGE_FLOOR_PERMILLE +
+    Math.floor(((1000 - NAVAL_DAMAGE_FLOOR_PERMILLE) * h) / max);
+}
 export function navalHealth(target: NavalTarget): number {
   return "troops" in target ? (target.afloat?.hull ?? 0) : target.health;
 }

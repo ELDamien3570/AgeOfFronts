@@ -79,7 +79,7 @@ import { FactionRoster } from "./domain/FactionRoster";
 import { AiForceInventory } from "./domain/AiForceInventory";
 import { canPromoteTribe, MAX_PLAYER_ID } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
-import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
+import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalStrengthPermille, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
 import { chargeFallbackOrder, commandRejection } from "./domain/CommandPolicy";
 import { SimulationFault, type TickFault } from "./SimulationFault";
@@ -2868,8 +2868,11 @@ export class Skirmish {
       if (!ship.attackTargetId && !this.hasNavalOpponents(ship.playerId)) continue;
       const vessel = this.expansion?.vessel(ship);
       const profile = vessel?.attack;
+      // V1: weapons weaken with hull damage only down to a floor, so damaged
+      // hulls never stall at 0-damage volleys and duels resolve in seconds.
+      const strength = profile ? navalStrengthPermille(ship.health, vessel!.health) : 1000;
       const effectiveAttack = profile
-        ? scaledAttack(profile, ship.health, vessel!.health, ship.xp)
+        ? scaledAttack(profile, strength, 1000, ship.xp)
         : undefined;
       const scaledDamage = effectiveAttack?.damage ?? 0;
       const navalDamage = () =>
@@ -2882,7 +2885,7 @@ export class Skirmish {
                 rangedArmour: 2000,
                 bonusResistance: {},
               },
-              Math.round((1000 * ship.health) / vessel!.health),
+              strength,
               ship.xp,
             )
           : Math.max(
@@ -3003,7 +3006,7 @@ export class Skirmish {
             { ...ship, domain: "ship" },
             p,
             effectiveAttack!,
-            scaledDamage,
+            Math.max(1, scaledDamage),
             "shell", undefined, 0, undefined, undefined, undefined,
             "tile" in explicit ? undefined : explicit.id,
           );
@@ -3024,7 +3027,7 @@ export class Skirmish {
                 rangedArmour: 6500,
                 bonusResistance: {},
               },
-              Math.round((1000 * ship.health) / vessel!.health),
+              strength,
               ship.xp,
             ),
             "ship",
