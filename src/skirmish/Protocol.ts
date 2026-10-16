@@ -553,6 +553,10 @@ export interface SnapshotPacket {
    * of ProgressionReplication (only changed factions in "delta" mode). Absent
    * in legacy packets, whose progression is a complete remainingTicks map. */
   progressionMode?: "full" | "delta";
+  /** P13: present when `expansion.recruitment` is in the per-faction endTick
+   * wire form of RecruitmentReplication (only changed factions in "delta"
+   * mode). Absent in legacy packets, whose queue is a remainingTicks list. */
+  recruitmentMode?: "full" | "delta";
   expansion?: Partial<Omit<ExpansionSnapshot, "deposits">> & {
     /** Full resource facts at a baseline or geometry revision only. */
     deposits?: ExpansionSnapshot["deposits"];
