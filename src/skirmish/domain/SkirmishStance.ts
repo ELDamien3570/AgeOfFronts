@@ -46,10 +46,13 @@ export class SkirmishStance {
       !Array.isArray(saved.states)
     )
       throw new Error("Invalid stance checkpoint");
+    // A row may outlive its squad: step() drops it when the cursor reaches it,
+    // so a live checkpoint can carry one and must restore unchanged.
     for (const [id, s] of structuredClone(saved.states)) {
       if (
         id !== s.id ||
-        !this.e.world.squad(id) ||
+        !Number.isSafeInteger(id) ||
+        id < 0 ||
         !Number.isSafeInteger(s.sinceTick) ||
         s.sinceTick < 0 ||
         !["ready", "withdrawing"].includes(s.phase) ||

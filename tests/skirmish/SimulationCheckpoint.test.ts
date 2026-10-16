@@ -86,6 +86,17 @@ describe("complete simulation recovery", () => {
     fresh.restore(legacy);
     expect(fresh.checkpoint()).toEqual(saved);
   });
+  it("restores a skirmish stance row that outlived its squad, as live play leaves it", () => {
+    const terrain = new Uint8Array(64 * 48).fill(133), map = new GameMapImpl(64, 48, terrain, terrain.length);
+    const options = { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" as const };
+    const saved = new Skirmish(map, options).checkpoint();
+    // SkirmishStance.step drops such a row when its cursor reaches it.
+    saved.expansion!.skirmish.states.push([90_000, { id: 90_000, sinceTick: 0, anchor: { x: 256, y: 256 }, suppressed: true, phase: "ready", withdrawals: [] }]);
+    const fresh = new Skirmish(map, options);
+    fresh.restore(saved);
+    expect(fresh.checkpoint()).toEqual(saved);
+    expect(() => fresh.step()).not.toThrow();
+  });
   it("stops the aggregate after an unexpected deep installation failure", () => {
     const terrain = new Uint8Array(64 * 48).fill(133), map = new GameMapImpl(64, 48, terrain, terrain.length);
     const game = new Skirmish(map, { seed: 47, aiCount: 1, tribes: false, runAi: false });
