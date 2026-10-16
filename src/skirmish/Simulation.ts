@@ -1519,21 +1519,29 @@ export class Skirmish {
       return this.amphibious(player.id) ? "That destination cannot be reached" : "Research Cargo Canoes to cross water";
     if (!append && order.type === "replenish" && selected.some((s) => this.owners[this.tileOf(s!)] !== player.id))
       return "Move every selected squad onto friendly territory before replenishing";
-    this.expansion?.skirmish.observe(command);
-    if(!append)this.expansion?.trenches.observe(command);
+    // The stance/trench observers write state, so they run once, only on an
+    // accepted path and before that path's first write (R2-M10).
+    let observed=false;
+    const observeAccepted=()=>{
+      if(observed)return;observed=true;
+      this.expansion?.skirmish.observe(command);
+      if(!append)this.expansion?.trenches.observe(command);
+    };
     if(this.options.deferredPlanning && append && this.movementAdmission.append(command.squadIds,order,this.tick)) {
+      observeAccepted();
       this.expansion?.armies.observeOrder(command.squadIds,order,true);
       return null;
     }
     if(this.options.deferredPlanning && !append && order.type==="move" &&
       selected.every(s=>!this.expansion?.armies.armyOf(s!.id) && squadPaths.connected(this.tileOf(s!),order.tile))) {
+      observeAccepted();
       this.movementAdmission.start(player.id,selected as Squad[],order.tile,this.tick,undefined,player.ai);return null;
     }
     // An appended leg is intent, not an executable route from today's position.
     // Admission preserves every deliberate Shift order without constructing
     // paths that would immediately be discarded.
     if (append && selected.every(s=>s!.order.type!=="hold")) {
-      const grouped=this.expansion?.armies.groupOrder(command.squadIds,order,true);
+      const grouped=this.expansion?.armies.groupOrder(command.squadIds,order,true,observeAccepted);
       if(grouped!==undefined)return grouped;
       let slots:Map<number,WorldPoint>|null=null;
       if(order.type==="move") {
@@ -1545,6 +1553,7 @@ export class Skirmish {
           this.options.formationFreeTravel ? translatedSlots(members.map(m=>({id:m.squad.id,origin:m.origin})),tilePoint(this.map,order.tile)) : undefined);
         if(!slots)return "There is no room for this formation at that destination";
       }
+      observeAccepted();
       for(const squad of selected as Squad[]){
         const point=slots?.get(squad.id);
         this.squadEntities.updateOwned(squad.id, { queuedOrders: [...squad.queuedOrders, order.type==="move" && point ? this.formationMove(point) : {...order}] });
@@ -1562,6 +1571,7 @@ export class Skirmish {
       command.squadIds,
       order,
       append,
+      observeAccepted,
     );
     if (armyOrder !== undefined) {
       if(armyOrder===null && !append)this.movementAdmission.cancel(command.squadIds,this.tick);
@@ -1617,6 +1627,7 @@ export class Skirmish {
       }
       orders.push({ squad, order: nextOrder, path });
     }
+    observeAccepted();
     if(!append)this.movementAdmission.cancel(command.squadIds,this.tick);
     for (const entry of orders) {
       if (this.expansion && !append) {

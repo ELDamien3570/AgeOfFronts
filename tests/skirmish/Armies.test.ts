@@ -556,3 +556,33 @@ describe("persistent armies and Bronze tree", () => {
     expect(army.order.type).toBe("hold");
   });
 });
+// R2-L14: posture is part of an admitted fire-retreat, never of a rejected one.
+describe("fire-retreat army posture", () => {
+  const scene = () => {
+    const m = make(3);
+    create(m);
+    const army = m.expansion!.armies.armies[0];
+    m.applyCommand({ type: "army-posture", playerId: 1, armyId: army.id, posture: "line" });
+    return { m, army, enemy: m.squads.find((s) => s.playerId === 2)! };
+  };
+  it("leaves the army unchanged when the fire-retreat target is rejected", () => {
+    const { m, army } = scene();
+    const before = JSON.stringify(m.expansion!.armies.checkpoint());
+    expect(m.applyCommand({ type: "army-order", playerId: 1, armyId: army.id, order: { type: "fire-retreat", targetId: 65536 } }))
+      .toBe("Choose a hostile land squad");
+    expect(army.posture).toBe("line");
+    expect(JSON.stringify(m.expansion!.armies.checkpoint())).toBe(before);
+  });
+  it("sets skirmish posture on an accepted fire-retreat", () => {
+    const { m, army, enemy } = scene();
+    expect(m.applyCommand({ type: "army-order", playerId: 1, armyId: army.id, order: { type: "fire-retreat", targetId: enemy.id } })).toBeNull();
+    expect(army.posture).toBe("skirmish");
+  });
+  it("keeps the posture of a queued fire-retreat until that leg starts", () => {
+    const { m, army, enemy } = scene();
+    expect(m.applyCommand({ type: "army-order", playerId: 1, armyId: army.id, order: { type: "move", tile: m.map.ref(40, 30) } })).toBeNull();
+    expect(m.applyCommand({ type: "army-order", playerId: 1, armyId: army.id, order: { type: "fire-retreat", targetId: enemy.id }, append: true })).toBeNull();
+    expect(army.queuedOrders.map((o) => o.type)).toEqual(["fire-retreat"]);
+    expect(army.posture).toBe("line");
+  });
+});

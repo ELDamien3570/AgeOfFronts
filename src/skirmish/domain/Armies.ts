@@ -393,6 +393,7 @@ export class Armies {
     ids: readonly number[],
     order: Order,
     append: boolean,
+    beforeCommit?: () => void,
   ): string | null | undefined {
     if (
       order.type !== "move" &&
@@ -409,7 +410,7 @@ export class Armies {
       available.some((s) => !selected.has(s.id))
     )
       return undefined;
-    return this.order(army, order, append);
+    return this.order(army, order, append, undefined, beforeCommit);
   }
   private members(army: Army): Squad[] {
     return army.memberIds
@@ -602,12 +603,14 @@ export class Armies {
         )
       : undefined;
   }
-  private order(army: Army, order: ArmyOrder, append = false, prepared?:{path:number[];route:WorldPoint[];lengths:number[]}): string | null {
+  // beforeCommit runs once, after every rejection and before the first write.
+  private order(army: Army, order: ArmyOrder, append = false, prepared?:{path:number[];route:WorldPoint[];lengths:number[]}, beforeCommit?: () => void): string | null {
     if(order.type==="deploy"&&order.facing!==undefined&&(!Number.isFinite(order.facing)||Math.abs(order.facing)>Math.PI))return "Invalid army facing";
     const members = this.members(army).filter(s=>active(s)&&mayNavigateArmy({...this.controls,directArmyAction:()=>false,stance:()=>false},{...s,occupancy:undefined}));
     if (!members.length) return "Army has no available land squads";
     let tile: number;
-    if(order.type==='fire-retreat')army.posture='skirmish';
+    // Posture and planning state change only once the order is admitted, so a
+    // rejected order leaves the army as it was (R2-L14).
     if (order.type === "hold") tile = pointTile(this.world.map, members[0]);
     else if (attackOrder(order)) {
       const target = this.world.squads.find(
@@ -624,6 +627,7 @@ export class Armies {
       return paths.amphibious ? "Choose passable land or navigable water for the army" : "Choose passable land for the army";
     if (append && army.order.type!=="hold") {
       if(army.queuedOrders.length>=MAX_QUEUED_ORDERS)return "Army queue is full";
+      beforeCommit?.();
       army.queuedOrders.push({...order});return null;
     }
     if (members.some((s) => !paths.connected(pointTile(this.world.map, s), tile)))
@@ -634,10 +638,15 @@ export class Armies {
         distanceSquared(a, objective) - distanceSquared(b, objective) ||
         a.id - b.id,
     )[0];
-    this.externalActions.delete(army.id);
     if(this.world.domainRoutes && !prepared && order.type!=="hold"){
+      // The army's own pending plan is superseded by this order, so it frees a slot.
+      let own=0;for(const plan of this.leaderAdmissions.values())if(plan.armyId===army.id)own++;
+      if(this.leaderAdmissions.size-own>=128)return "Army planning is full";
+      beforeCommit?.();
+      this.externalActions.delete(army.id);
       this.cancelPlanning(army.id);
-      if(this.leaderAdmissions.size>=128)return "Army planning is full";
+      // An admitted fire-retreat takes its posture now, as the direct path does.
+      if(order.type==='fire-retreat')army.posture='skirmish';
       const routes=this.world.domainRoutes,id=1_000_000_000+this.nextAdmission++;
       const plan:ArmyLeaderAdmission={id,armyId:army.id,revision:army.revision,playerId:army.playerId,generation:routes.generation(army.playerId),obstacles:routes.revision(army.playerId, "army"),order:{...order},leaderId:leader.id,
         memberIds:members.map(s=>s.id),memberRevisions:members.map(s=>routes.orderRevision(s.id)),tile,start:pointTile(this.world.map,leader),requested:false,route:[{x:leader.x,y:leader.y}],lengths:[0],cursor:0,attempts:0,retryAt:0,queueLength:army.queuedOrders.length};
@@ -653,10 +662,12 @@ export class Armies {
     if (append && army.order.type !== "hold") {
       if (army.queuedOrders.length >= MAX_QUEUED_ORDERS)
         return "Army queue is full";
+      beforeCommit?.();
       army.queuedOrders.push({ ...order });
       return null;
     }
     const retreatOrders=order.type==="regroup"&&(army.state==="fighting"||army.withdrawalTick!==undefined)?new Map(members.filter(s=>army.slots?.find(r=>r.squadId===s.id)?.role==="frontline").map(s=>[s.id,s.order])):undefined;
+    beforeCommit?.();
     this.stop(army);
     army.withdrawalTick=retreatOrders?.size?this.world.tick:undefined;
     army.order = { ...order };
