@@ -87,11 +87,13 @@ describe("I-2 (b): envelope reads that previously always missed", () => {
     expect(squadDigest(g.squads)).toBe(IDLE_TICK_GOLDEN.squads);
     expect(checkpointDigest(g)).toBe(IDLE_TICK_GOLDEN.checkpoint);
     const t = geometry.telemetry;
-    // Baseline (aof/next-1 bc7c7882): 11,219 builds + 16,719 projected reuses
-    // = 27,938 recomputations out of 116,491 reads.
+    // Baseline at the Next batch integration with the alternate slot and the
+    // settled cache disabled: 11,463 builds + 27,017 projected reuses = 38,480
+    // recomputations out of 101,477 reads; with them 26,011. (At aof/next-1,
+    // before the other lanes changed the fixture: 27,938 of 116,491.)
     expect(t.envelopeReads).toBeLessThanOrEqual(116491);
     expect(t.alternateReuses).toBeGreaterThan(0);
     expect(t.settledReuses).toBeGreaterThan(1000);
-    expect(t.envelopeBuilds + t.projectedReuses).toBeLessThan(26000);
+    expect(t.envelopeBuilds + t.projectedReuses).toBeLessThan(30000);
   }, 120_000);
 });
