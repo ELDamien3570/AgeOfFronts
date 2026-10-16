@@ -92,7 +92,7 @@ describe("tribe catch-up progression", () => {
 });
 
 describe("age-up pacing", () => {
-  it("preserves gold discounts with 35 to 70 second advancement at every technology speed", () => {
+  it("preserves gold discounts with 90 to 180 second advancement at every technology speed", () => {
     const original = [{ gold: 3000, ticks: secondsToTicks(100) }, { gold: 75000, ticks: secondsToTicks(45) }, { gold: 110000, ticks: secondsToTicks(50) },
       { gold: 160000, ticks: secondsToTicks(55) }, { gold: 230000, ticks: secondsToTicks(60) }, { gold: 330000, ticks: secondsToTicks(65) }, { gold: 480000, ticks: secondsToTicks(70) }];
     for (const speed of [1, 2, 3] as const) for (let i = 0; i < ADVANCES.length; i++) {
