@@ -67,7 +67,13 @@ describe("N6b publication sequencing (P14)", () => {
         options: { seed: 77, aiCount: 0, humanNames: ["A", "B"], ruleset: "ages-v1" as const, tribes: false } });
       const decoder = new SnapshotDecoder();
       decoder.decode(await decodeState<SnapshotPacket>(initial.packet!));
-      for (let i = 0; i < 4; i++) await worker.request<MatchAdvance>({ type: "advance", ticks: 1, commands: [], disconnectedPlayerIds: [], publish: true });
+      // Each publication lands before the next advance: the bounded queue
+      // (capacity 2) legitimately skips a capture while the encoder thread is
+      // behind, which a loaded host (the full suite) otherwise hits.
+      for (let i = 0; i < 4; i++) {
+        await worker.request<MatchAdvance>({ type: "advance", ticks: 1, commands: [], disconnectedPlayerIds: [], publish: true });
+        await vi.waitFor(() => expect(publications).toHaveLength(i + 1));
+      }
       const barrier = worker.request<JoinBarrier>({ type: "join-barrier", playerId: 1 }).then(b => { events.push("barrier"); return b; });
       const joined = await barrier;
       expect(events).toEqual(["pub:1", "pub:2", "pub:3", "pub:4", "barrier"]);
