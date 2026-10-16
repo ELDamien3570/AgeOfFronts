@@ -54,7 +54,10 @@ export const LINES = Object.freeze({gap:128,maxGap:768,rowGap:256,maxRows:16,
 export const ENGAGEMENT = Object.freeze({reservePercent:20,joinTiles:14,idleTicks:secondsToTicks(10),replanLossPct:.1,
   refreshTicks:secondsToTicks(3),quantum:12,maxPerTarget:2,maxArmies:12,maxLooseSquads:32,withdrawBelow:.55,
   advanceAbove:1.15,minPostureTicks:secondsToTicks(5),frontLeash:3,rangedLeash:1,pursuitSlack:2,wingCandidates:12,shapeCooldownTicks:secondsToTicks(10)});
-export const BUDGETS = Object.freeze({engagementDetect:32,engagementPlan:48,armyMissions:24,missionQuantum:8,featureRows:16,positionScore:12,trenchAdmission:8,skirmish:8});
+export const BUDGETS = Object.freeze({engagementDetect:32,engagementPlan:48,armyMissions:24,missionQuantum:8,featureRows:16,positionScore:12,trenchAdmission:8,
+  // R2-P18: stance evaluations per tick. 8 diluted large skirmish armies (a 32-squad
+  // army re-evaluated each member every 4 ticks); 32 keeps every member under 0.5 s.
+  skirmish:32});
 export const TRENCH=Object.freeze({occupationRevision:2,segmentTiles:4,slotsPerTile:6,maxSegmentsPerSquad:4,alliedAccess:false,reductionBp:2000});
 export const SKIRMISH=Object.freeze({minRemainingTicks:secondsToTicks(1),dangerTiles:5,cavalryDangerTiles:9,cooldownTicks:secondsToTicks(4),leashTiles:4,stepTiles:2,maxPerMinute:4});
 export const ELEVATION=Object.freeze({minDeltaDm:60,saturateDm:400,maxRangeBp:1000,maxDamageBp:1000});

@@ -35,7 +35,6 @@ interface ArmyObjective {
     | "advance"
     | "engage"
     | "recover"
-    | "flank"
     | "breach"
     | "replenish"
     | "refit"
@@ -90,7 +89,9 @@ export class AiArmyPlanner {
     this.cursor = saved?.cursor ?? 0;
     this.serial = saved?.serial ?? 0;
     for (const [id, plan] of structuredClone(saved?.missions ?? []))
-      {validateTrenchMission(plan.trench);validateHillState(plan.hill,plan.kind);if(id!==plan.id||!Number.isSafeInteger(plan.playerId)||plan.playerId<1||!Number.isSafeInteger(plan.cursor)||plan.cursor<0||plan.cursor>plan.rosterIds.length||plan.members.length>60||new Set(plan.members).size!==plan.members.length||!["select","rally","assemble","advance","engage","recover","flank","breach","replenish","refit","complete"].includes(plan.phase))throw Error("Invalid army mission");this.missions.set(id,plan);}
+      {// The unreachable "flank" phase was removed (R2-L11); older saves resume as engage.
+      if((plan.phase as string)==="flank")plan.phase="engage";
+      validateTrenchMission(plan.trench);validateHillState(plan.hill,plan.kind);if(id!==plan.id||!Number.isSafeInteger(plan.playerId)||plan.playerId<1||!Number.isSafeInteger(plan.cursor)||plan.cursor<0||plan.cursor>plan.rosterIds.length||plan.members.length>60||new Set(plan.members).size!==plan.members.length||!["select","rally","assemble","advance","engage","recover","breach","replenish","refit","complete"].includes(plan.phase))throw Error("Invalid army mission");this.missions.set(id,plan);}
     for(const [id,rows] of structuredClone(saved?.byPlayer??[])){if(rows.length>4||new Set(rows).size!==rows.length||rows.some(key=>this.missions.get(key)?.playerId!==id))throw Error("Invalid army mission index");this.byPlayer.set(id,rows);}
     if([...this.missions.values()].some(p=>!(this.byPlayer.get(p.playerId)??[]).includes(p.id)))throw Error("Missing army mission index");
   }
@@ -367,7 +368,7 @@ export class AiArmyPlanner {
       }
     }
     if(plan.trench&&(!["advance","engage"].includes(plan.phase)||plan.retire))this.trenchPositions.release(plan,members);
-    if(army&&["advance","engage"].includes(plan.phase)&&this.trenchPositions.step(plan,player,army,members)){plan.nextThink=world.tick+secondsToTicks(2);return Math.max(1,this.diagnostics.work);}
+    if(army&&["advance","engage"].includes(plan.phase)&&this.trenchPositions.step(plan,player,army,members,o=>this.order(plan,o))){plan.nextThink=world.tick+secondsToTicks(2);return Math.max(1,this.diagnostics.work);}
     if(army&&["advance","engage"].includes(plan.phase)&&this.hillPositions.step(plan,player,army,members,personalityOf(player).id,o=>this.order(plan,o))){
       plan.nextThink=world.tick+secondsToTicks(2);return Math.max(1,this.diagnostics.work);
     }
@@ -398,10 +399,6 @@ export class AiArmyPlanner {
         plan.since = world.tick;
         plan.reason = "Supported Army advancing on its committed region";
       }
-    } else if (plan.phase === "flank") {
-      const left=this.expansion.engagements.wingFor(army!.id,'left'),right=this.expansion.engagements.wingFor(army!.id,'right');
-      if(left?.phase==='strike'||right?.phase==='strike'){plan.phase='engage';plan.since=world.tick;plan.reason='Supported wing reached its strike opportunity';}
-      else if((left?.failures??2)>=2&&(right?.failures??2)>=2){plan.phase='engage';plan.reason='Wings holding; front line remains engaged';}
     } else if(plan.phase==="breach"){
       const b=plan.breach!,forts=this.expansion.fortifications;
       const wall=b.barrier===undefined?undefined:forts.barrier(b.barrier),building=b.building===undefined?undefined:world.building(b.building);
