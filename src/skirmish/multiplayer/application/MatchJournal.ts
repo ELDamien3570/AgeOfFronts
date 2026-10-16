@@ -2,10 +2,15 @@ import { secondsToTicks } from "../../Protocol";
 import type { Skirmish } from "../../Simulation";
 import type { MatchCommand } from "./MatchExecutor";
 
-/** Ticks between rollback checkpoints (owner decision OD-3, provisional).
- * tests/skirmish/perf/CheckpointCost.ts measures the cost and prints the
- * interval its decision rule selects; update this constant from it. */
-export const CHECKPOINT_INTERVAL_TICKS = 20;
+/** Ticks between rollback checkpoints (owner decision OD-3). The rule in
+ * tests/skirmish/perf/CheckpointCost.ts picks the smallest N with checkpoint
+ * cost at most 2% of the tick; the integration probe (Med 86 ms / 48 ms tick,
+ * Mig 136 / 39) gave 90 and 176 at the old double-cloning checkpoint, about
+ * 45 and 88 now that checkpoint() clones once. 10 s (80 ticks) replaces the
+ * provisional 20, which cost about 200 ms every 2.5 s with 8 active humans.
+ * The price is a longer replay after a fault (restore plus up to 80 ticks,
+ * several seconds once); re-run the probe on a quiet host to refine it. */
+export const CHECKPOINT_INTERVAL_TICKS = secondsToTicks(10);
 /** At most this many rollbacks within ROLLBACK_WINDOW_TICKS (OD-7). Beyond
  * it a fault ends the match, so a client cannot force repeated replays. */
 export const ROLLBACK_BUDGET = 3;

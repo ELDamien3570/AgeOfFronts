@@ -20,13 +20,18 @@
  * budget of a rollback). When no N satisfies both, the probe reports the
  * smallest N meeting the 2% rule and `replayBudgetExceeded: true`.
  *
- * Recorded result: not measured in this change (the machine was shared by
- * parallel agents, so timings would be meaningless). Estimates from the review
- * notes (checkpoint 5.2-9.0 MB at tick 4,000; structuredClone of the entity
- * graph 16-18 ms at 1,100 squads; tick mean 107.8 / 117.8 ms at about 1,200
- * squads) fail the per-tick 5% rule, so CHECKPOINT_INTERVAL_TICKS is set to the
- * provisional 20 (2.5 s at 8 Hz) in MatchJournal.ts. Re-run this probe on an
- * idle machine and update that constant from `interval`.
+ * Recorded results (Next batch integration, desktop, before checkpoint() stopped
+ * cloning its sub-checkpoints twice):
+ *   Med 500: 715 squads, checkpointMs 86.3, 7.97 MB, restoreMs 662.6,
+ *            tickMs 48.3, interval 90, replayBudgetExceeded true
+ *   Mig 500: 705 squads, checkpointMs 136.1, 12.7 MB, restoreMs 798,
+ *            tickMs 38.7, interval 176, replayBudgetExceeded true
+ *   EightHumanLoad Med 500, 8 active humans, CHECKPOINT_EVERY=20: checkpoint()
+ *            mean 199 ms, p95 260, p99 443, max 492; tick+checkpoint p95 248.
+ * The single clone halves checkpoint() (same contended host, Med 500 warm
+ * fixture at tick 1,300: 248 -> 121 ms). No N meets both conditions, so the
+ * rule's 2% interval applies; CHECKPOINT_INTERVAL_TICKS is 80 (10 s), see
+ * MatchJournal.ts. Re-run on a quiet host and refine that constant.
  */
 import { serialize } from "node:v8";
 import { join } from "node:path";

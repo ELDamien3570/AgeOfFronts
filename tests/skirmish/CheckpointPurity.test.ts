@@ -42,6 +42,9 @@ describe("checkpoint purity under lifecycle churn", () => {
     for (const id of humans) game.expansion!.progression.states[id].completed = TECHNOLOGIES.map((t) => t.id);
     const eliminated: number[] = [];
     let checks = 0, flips = 0, splits = 0, handovers = 0;
+    // checkpoint() clones live state once and reuses each sub-checkpoint's own
+    // copy; a saved checkpoint must never change as the match continues.
+    let previous: { saved: ReturnType<Skirmish["checkpoint"]>; frozen: ReturnType<Skirmish["checkpoint"]> } | undefined;
     for (let tick = 1; tick <= TICKS; tick++) {
       const alive = game.players.filter((p) => !p.eliminated);
       // Tile owner flip through the bus.
@@ -72,6 +75,8 @@ describe("checkpoint purity under lifecycle churn", () => {
       game.step();
       if (tick % CHECK === 0) {
         const copy = game.checkpoint();
+        if (previous) expect(previous.saved).toEqual(previous.frozen);
+        previous = { saved: copy, frozen: structuredClone(copy) };
         const fresh = new Skirmish(map(), options);
         fresh.restore(copy);
         expect(fresh.checkpoint()).toEqual(copy);
@@ -94,4 +99,26 @@ describe("checkpoint purity under lifecycle churn", () => {
     expect(splits).toBeGreaterThan(10);
     expect(handovers).toBeGreaterThan(100);
   }, 600_000);
+
+  // Rollback replays from a restored checkpoint (Next #10). A restored world
+  // starts with cold route caches and fresh derived indexes; its future must
+  // still equal the uninterrupted world's, tick for tick.
+  it("a restored 20-faction world evolves exactly like the uninterrupted one", () => {
+    const terrain = new Uint8Array(W * H).fill(133);
+    const map = () => new GameMapImpl(W, H, terrain, terrain.length);
+    const options = {
+      ...DEFAULT_AI_POLICIES, seed: 11, humanNames: ["H1", "H2", "H3", "H4", "H5", "H6"], aiCount: 14, tribes: false, ruleset: "ages-v1",
+      runAi: true, diplomacyRules: "raids-v1", deferredPlanning: true,
+    } as ConstructorParameters<typeof Skirmish>[1];
+    const game = new Skirmish(map(), options);
+    for (let tick = 0; tick < 300; tick++) game.step();
+    const saved = game.checkpoint();
+    const restored = new Skirmish(map(), options);
+    restored.restore(saved);
+    for (let tick = 0; tick < 300; tick++) {
+      game.step(); restored.step();
+      if (tick % 60 === 59) expect(restored.checkpoint()).toEqual(game.checkpoint());
+    }
+    expect(game.squads.some((s) => s.order.type === "move")).toBe(true);
+  }, 120_000);
 });
