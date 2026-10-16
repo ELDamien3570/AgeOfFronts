@@ -34,7 +34,6 @@ tmp/russian-art-build/
 *debug*.txt
 eslint_out.txt
 tests/perf/output/
-docs/
 
 # Locally built Go binary (gen-maps uses `go run .`)
 map-generator/map-generator

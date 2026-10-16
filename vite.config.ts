@@ -332,6 +332,9 @@ export default defineConfig(({ mode }) => {
         ...configDefaults.exclude,
         "**/.codex/**",
         "tests/skirmish/**",
+        // Local run/evidence copies of the tree (gitignored): their stale
+        // tests/skirmish copies would otherwise be collected and fail.
+        "**/out/**",
         "**/.worktrees/**",
         "**/.claude/worktrees/**",
       ],

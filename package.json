@@ -9,6 +9,8 @@
     "build:skirmish": "vite build --config vite.skirmish.config.ts",
     "preview:skirmish": "vite preview --config vite.skirmish.config.ts",
     "test:skirmish": "vitest run --config vite.skirmish.config.ts",
+    "check": "tsc --noEmit && npm run test:skirmish",
+    "compile:content": "tsx scripts/compileContent.ts",
     "start:multiplayer": "tsx src/skirmish/multiplayer/server.ts",
     "source:skirmish": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/packageSkirmishSource.ps1",
     "build-dev": "concurrently \"tsc --noEmit\" \"vite build --mode development\"",
