@@ -503,7 +503,7 @@ export class AiArmyPlanner {
           // An approach march refused after admission leaves the army holding short: try the next approach.
           else if(army&&army.order.type!=="move"&&!this.expansion.armies.admissionPending(army.id)&&
             members.filter(s=>this.expansion.unit(s).role==="frontline").some(s=>world.map.euclideanDistSquared(world.tileOf(s),b.tile!)>6**2)){b.tile=undefined;b.cursor++;}
-          if(shooters.some(s=>s.structureTarget&&(s.structureTarget.barrierId===wall?.id&&wall||s.structureTarget.buildingId===building?.id&&building)))b.since=world.tick;
+          if(shooters.some(s=>s.structureTarget&&(!!wall&&s.structureTarget.barrierId===wall.id||!!building&&s.structureTarget.buildingId===building.id)))b.since=world.tick;
           const ready=shooters.filter(s=>!s.structureTarget&&structureAim(s,tiles,elevationRangeAt(world,s,this.expansion.unit(s).attack),player.id,world.map.width(),forts));
           if(ready.length && members.filter(s=>this.expansion.unit(s).role==="frontline").every(s=>world.map.euclideanDistSquared(world.tileOf(s),b.tile!)<=6**2)){
             world.applyCommand({type:"attack-structure",playerId:player.id,squadIds:ready.map(s=>s.id),barrierId:wall?.id,buildingId:building?.id});

@@ -399,7 +399,7 @@ export class Skirmish {
       throw new Error("Invalid naval priority");
     if(this.expansion)for(const job of saved.recruitment.jobs)if(job.category==="land")validateRecruitmentRecipe(UNIT.get(job.definitionId??""),job);
     for(const player of saved.players) if(!Number.isSafeInteger(player.reserves)||player.reserves<0||!Number.isSafeInteger(player.reserveRemainder??0)||(player.reserveRemainder??0)<0||(player.reserveRemainder??0)>=1000) throw new Error('Invalid checkpoint reserves');
-    if (saved.endReason != null && !["conquest", "coalition", "time-limit", "extinction"].includes(saved.endReason))
+    if (saved.endReason !== undefined && saved.endReason !== null && !["conquest", "coalition", "time-limit", "extinction"].includes(saved.endReason))
       throw new Error("Invalid checkpoint end reason");
     if (saved.forest && !forestOf(this.map)) throw new Error("Missing forest field");
     try { this.installCheckpoint(saved); }

@@ -245,15 +245,14 @@ export class AiModernFronts {
     // tick, so it never finished). It runs to the live end of the roster; an
     // index shift from a removal can skip or repeat one entry, which this
     // heuristic count tolerates.
-    if (!section.assessment)
-      section.assessment = {
-        cursor: 0,
-        length: world.squads.length,
-        available: 0,
-        members: [],
-        enemyTroops: 0,
-        nearest: Infinity,
-      };
+    section.assessment ??= {
+      cursor: 0,
+      length: world.squads.length,
+      available: 0,
+      members: [],
+      enemyTroops: 0,
+      nearest: Infinity,
+    };
     const scan = section.assessment;
     let used = 0;
     while (used < budget && scan.cursor < world.squads.length) {
