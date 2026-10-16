@@ -199,6 +199,10 @@ export const WARSHIP_REPAIR_FRACTION = 0.10;
  * stops wandering, only below this per-mille share of its maximum health. It
  * is the complement of the AI's navalReady gate (health >= 60%). */
 export const WARSHIP_RETREAT_PERMILLE = 600;
+/** Owner decision (roadmap Next #6, V3): ship kinds whose movement into a
+ * non-allied faction's water declares an "entry" war under raids-v1.
+ * Warships have innocent passage; carriers keep the entry rule. */
+export const ENTRY_WAR_SHIP_KINDS: readonly ShipType[] = ["carrier"];
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
@@ -3587,7 +3591,10 @@ export class Skirmish {
       const diplomacy=this.expansion?.diplomacy,owner=this.owners[this.tileOf(ship)];
       if(diplomacy?.raids&&owner!==oldOwner&&diplomacy.protected(ship.playerId,owner)){
         this.shipEntities.updateOwned(ship.id,{x:before.x,y:before.y,path:[],nextPathIndex:0});
-      }else if(diplomacy?.raids&&owner!==oldOwner&&!this.player(ship.playerId)?.ai&&diplomacy.nonAllied(ship.playerId,owner))diplomacy.establishWar(ship.playerId,owner,this.tick,"entry");
+      // V3 innocent passage: a warship's transit or patrol drift never declares
+      // war by entry; firing still needs war or a raid embargo (hostile()).
+      // Afloat squads (landings) and ENTRY_WAR_SHIP_KINDS keep the entry rule.
+      }else if(diplomacy?.raids&&owner!==oldOwner&&ENTRY_WAR_SHIP_KINDS.includes(ship.kind)&&!this.player(ship.playerId)?.ai&&diplomacy.nonAllied(ship.playerId,owner))diplomacy.establishWar(ship.playerId,owner,this.tick,"entry");
       if (this.options.aiNaval && this.options.aiEconomy && this.options.deferredPlanning)
         this.expansion?.economy.navalFacts.observeShip(ship);
     }

@@ -127,4 +127,13 @@ describe("naval balance contract", () => {
     expect(d.declaredWar(1, 2)).toBe(false);
     expect(d.state.wars ?? []).toEqual([]);
   });
+
+  it("a carrier crossing foreign coastal water keeps the entry rule (ENTRY_WAR_SHIP_KINDS)", () => {
+    const game = openSea({ raids: true }), d = game.expansion!.diplomacy;
+    for (let y = 0; y < H; y++) for (let x = 98; x < 102; x++) game.owners[game.map.ref(x, y)] = 2;
+    const carrier = warship(game, 1, "earlymodern-carrier", 80, 50);
+    expect(game.applyCommand({ type: "sail", playerId: 1, shipIds: [carrier.id], tile: game.map.ref(120, 50) })).toBeNull();
+    for (let t = 0; t < secondsToTicks(20) && !d.declaredWar(1, 2); t++) game.step();
+    expect(d.state.wars?.[0]).toMatchObject({ initiator: 1, cause: "entry" });
+  });
 });
