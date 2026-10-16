@@ -57,11 +57,9 @@ describe("content compile gate", () => {
     );
   });
 
-  // R2-M2 (review Now #3): 20 of 24 mounted variants exceed
-  // FRONTAGE.mountedWidthRatioMax (bronzeage-cavalry 1.889 > 1.35), so the
-  // doctrine compiler throws and `npm run compile:content` cannot finish.
-  // When the content or the ratio is fixed this starts passing: drop `.fails`.
-  it.fails("accepts the authored doctrines in the compiler (R2-M2)", () => {
+  // R2-M2: with FRONTAGE.mountedWidthRatioMax at 1.35, 20 of 24 mounted
+  // variants were rejected and `npm run compile:content` could not finish.
+  it("accepts the authored doctrines in the compiler (R2-M2)", () => {
     const step = compileDoctrinesStep(read);
     expectCompiled(step.data, CONTENT_PATHS.doctrines);
   });

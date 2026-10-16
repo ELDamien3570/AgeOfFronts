@@ -13,6 +13,7 @@ import { SnapshotDecoder, SnapshotEncoder } from "../../src/skirmish/SnapshotCod
 import { contactParticipants } from "../../src/skirmish/domain/FormationContact";
 import authored from "../../skirmish/plans/formation-doctrines.json";
 import recipes from "../../skirmish/plans/formation-recipes.json";
+import { FRONTAGE } from "../../src/skirmish/content/TacticalRules";
 import { validateFormationDoctrineData } from "../../scripts/FormationDoctrineSchema";
 
 function fixture(count=72) {
@@ -71,7 +72,12 @@ describe("bounded flexible frontage",()=>{
   });
   it("rejects malformed profile data and mounted width exploits in the compiler",()=>{
     const compile=(input:unknown)=>validateFormationDoctrineData(input,recipes.recipes);
-    expect(compile(authored).mountedChecks).toHaveLength(24);
+    const checks=compile(authored).mountedChecks as {ratio:number}[];
+    expect(checks).toHaveLength(24);
+    // The gate admits the authored mounted lines with a narrow margin only.
+    const widest=Math.max(...checks.map(c=>c.ratio));
+    expect(widest).toBeLessThanOrEqual(FRONTAGE.mountedWidthRatioMax);
+    expect(FRONTAGE.mountedWidthRatioMax-widest).toBeLessThan(0.05);
     for(const edit of [
       (d:any)=>d.shapeProfiles.line.minRanks=1.5,
       (d:any)=>d.shapeProfiles.line.aspectBp.min=50000,
