@@ -240,7 +240,6 @@ export class AiRecovery {
   }
   checkpoint() {
     return structuredClone({
-      known: [...this.known],
       blocked: [...this.blocked],
       episodes: [...this.episodes],
       restricted: [...this.restricted],

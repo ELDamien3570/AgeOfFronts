@@ -70,6 +70,22 @@ describe("complete simulation recovery", () => {
     fresh.restore(control);
     expect(fresh.checkpoint()).toEqual(control);
   });
+  it("omits unused crowd recovery and derived AI building state, and still reads them (L15)", () => {
+    const terrain = new Uint8Array(64 * 48).fill(133), map = new GameMapImpl(64, 48, terrain, terrain.length);
+    const options = { seed: 47, aiCount: 1, tribes: false, runAi: true, ruleset: "ages-v1" as const };
+    const game = new Skirmish(map, options);
+    for (let tick = 0; tick < 20; tick++) game.step();
+    const saved = game.checkpoint();
+    expect(saved.avoidance).not.toHaveProperty("recovery");
+    expect(saved.expansion!.economy.recovery).not.toHaveProperty("known");
+    // A checkpoint written before the removal carries both; restore ignores them.
+    const legacy = structuredClone(saved) as typeof saved & { avoidance: { recovery: unknown }; expansion: { economy: { recovery: { known: unknown } } } };
+    legacy.avoidance.recovery = { waiting: new Map([[1, { x: 0, y: 0, since: 0, granted: 0 }]]), leases: [] };
+    legacy.expansion.economy.recovery.known = [[999, { owner: 1, tile: 0, type: "city" }]];
+    const fresh = new Skirmish(map, options);
+    fresh.restore(legacy);
+    expect(fresh.checkpoint()).toEqual(saved);
+  });
   it("stops the aggregate after an unexpected deep installation failure", () => {
     const terrain = new Uint8Array(64 * 48).fill(133), map = new GameMapImpl(64, 48, terrain, terrain.length);
     const game = new Skirmish(map, { seed: 47, aiCount: 1, tribes: false, runAi: false });
