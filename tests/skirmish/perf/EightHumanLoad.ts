@@ -22,11 +22,17 @@
  *   CHECKPOINT_EVERY=<n>  take match.checkpoint() every n ticks, as the worker's
  *                  MatchJournal does (Next #10; 20 in production). Timed apart
  *                  from tickAll, reported as checkpointMs and tickPlusCheckpoint.
+ *   SAVE_CKPT=<file>  write the warm checkpoint (v8.serialize) after tick <warm>
+ *   CKPT=<file>    restore that warm checkpoint instead of running the warm-up
+ *                  (same map, seed and warm; the measured run is identical)
+ *   HPA_PROBE=1    time every synchronous HierarchicalPaths.find (R2-P2) and
+ *                  report the slowest calls with their callers in the summary
  * Mode "idle" is the control: same seed and armies, human seats on human
  * control, but no commands are issued.
  */
 import { createHash } from "node:crypto";
-import { closeSync, openSync, writeFileSync, writeSync } from "node:fs";
+import { closeSync, openSync, readFileSync, writeFileSync, writeSync } from "node:fs";
+import * as v8 from "node:v8";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createSkirmishMap } from "../../../src/skirmish/Elevation";
@@ -43,6 +49,7 @@ import { TECHNOLOGIES } from "../../../src/skirmish/content/Technology";
 import { researchRejection } from "../../../src/skirmish/domain/Progression";
 import { availableGold } from "../../../src/skirmish/domain/Gold";
 import { SnapshotEncodingWorker } from "../../../src/skirmish/multiplayer/infrastructure/SnapshotEncodingWorker";
+import { HierarchicalPaths } from "../../../src/skirmish/HierarchicalPaths";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const REPO_FS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -67,7 +74,7 @@ const m = loaded.map;
 const game = new Skirmish(createSkirmishMap(m.width, m.height, m.terrain, m.elevation, m.forest, m.resourceTerrain), options);
 const map = game.map, W = m.width, H = m.height;
 // Optional profiling of admission/planner internals (PROFILE=1): wall+CPU inside stepAdmissions, planner refusals by class.
-const prof = { stepAdmCalls: 0, stepAdmMs: 0, stepAdmCpu: 0, stepAdmPrioMs: 0, stepAdmPending: 0, reqHuman: 0, reqHumanRefused: 0, reqAi: 0, reqAiRefused: 0, reqTrade: 0, reqTradeRefused: 0 };
+const prof = { stepAdmCalls: 0, stepAdmMs: 0, stepAdmCpu: 0, stepAdmPrioMs: 0, stepAdmPending: 0, reqHuman: 0, reqHumanRefused: 0, reqAi: 0, reqAiRefused: 0, reqTrade: 0, reqTradeRefused: 0, humanByKind: {} as Record<string, { requests: number; refused: number }> };
 const measuringRef = { on: false };
 if (process.env.PROFILE) {
   // Explicit instance wrappers of the public entry points (the private
@@ -88,7 +95,26 @@ if (process.env.PROFILE) {
   wrapStep("step", false); wrapStep("stepInteractive", true);
   const planner = game.routePlanner as any, request = planner.request.bind(planner);
   planner.request = (r: any) => { const ok = request(r); if (measuringRef.on) { const c = r.context; const human = c.playerId >= 1 && c.playerId <= 8 && !game.player(c.playerId)?.ai; const trade = c.kind === "domain" && c.owner === "trade";
-    if (human) { prof.reqHuman++; if (!ok) prof.reqHumanRefused++; } else if (trade) { prof.reqTrade++; if (!ok) prof.reqTradeRefused++; } else { prof.reqAi++; if (!ok) prof.reqAiRefused++; } } return ok; };
+    if (human) { prof.reqHuman++; if (!ok) prof.reqHumanRefused++; const kind = `${c.kind}${c.operation ? ":" + c.operation : ""}${c.owner ? ":" + c.owner : ""}`, row = (prof.humanByKind[kind] ??= { requests: 0, refused: 0 }); row.requests++; if (!ok) row.refused++; } else if (trade) { prof.reqTrade++; if (!ok) prof.reqTradeRefused++; } else { prof.reqAi++; if (!ok) prof.reqAiRefused++; } } return ok; };
+}
+// R2-P2 probe: synchronous hierarchical finds (cold crossing trees build inside them).
+const hpaFinds = { calls: 0, over50: 0, maxMs: 0, slowest: [] as { tick: number; ms: number; caller: string }[] };
+if (process.env.HPA_PROBE) {
+  const find = HierarchicalPaths.prototype.find;
+  HierarchicalPaths.prototype.find = function (this: HierarchicalPaths, start: number, goal: number) {
+    const t = performance.now();
+    try { return find.call(this, start, goal); }
+    finally {
+      const ms = performance.now() - t;
+      if (measuringRef.on) {
+        hpaFinds.calls++; if (ms > 50) hpaFinds.over50++; hpaFinds.maxMs = Math.max(hpaFinds.maxMs, ms);
+        if (ms > 20) {
+          hpaFinds.slowest.push({ tick: game.tick, ms: +ms.toFixed(1), caller: String(new Error().stack).split(String.fromCharCode(10)).slice(2, 7).map(l => l.trim().replace(/\(.*[\\/]/, "(")).join(" < ") });
+          hpaFinds.slowest.sort((a, b) => b.ms - a.ms); hpaFinds.slowest.length = Math.min(hpaFinds.slowest.length, 12);
+        }
+      }
+    }
+  };
 }
 console.log("map", mapId, W, "x", H, "players", game.players.length);
 for (let id = 1; id <= 8; id++) game.setAiController(id, true);
@@ -184,7 +210,8 @@ const stats = (v: number[]) => { if (!v.length) return null; const s = v.slice()
 const windows: any[] = [];
 let cpuAll = 0, wallAll = 0;
 let win = { wallSum: 0, cpuSum: 0, ticks: 0, pubs: 0, pubsGate: 0, raw: [] as number[], gz: [] as number[], capture: [] as number[], transfer: [] as number[], encode: [] as number[], decode: [] as number[], apply: [] as number[], project: [] as number[], clone: [] as number[],
-  plannerPending: [] as number[], admissions: [] as number[], prep: [] as number[], receipts: [] as number[], shipAdm: [] as number[], cmds: 0, cmdsPerAdvanceMax: 0, validateMs: [] as number[], applyCmdMs: [] as number[], squadRows: [] as number[] };
+  plannerPending: [] as number[], admissions: [] as number[], prep: [] as number[], receipts: [] as number[], shipAdm: [] as number[], cmds: 0, cmdsPerAdvanceMax: 0, validateMs: [] as number[], applyCmdMs: [] as number[], squadRows: [] as number[],
+  cohortSamples: 0, cohorts: {} as Record<string, number>, humanPhases: {} as Record<string, number> };
 const allTick: number[] = [], allTickPhase = new Map<string, number[]>();
 const rejections: Record<string, number> = {};
 const perHumanCmds = new Map<number, number>();
@@ -198,7 +225,14 @@ const commandLog: { tick: number; commands: any[] }[] = [];
 
 
 const TOTAL = WARM + MEASURE;
-for (let i = 1; i <= TOTAL; i++) {
+let firstTick = 1;
+if (process.env.CKPT) {
+  game.restore(v8.deserialize(readFileSync(process.env.CKPT)));
+  if (game.tick !== WARM) throw new Error(`CKPT is at tick ${game.tick}, expected the warm boundary ${WARM}`);
+  firstTick = WARM + 1;
+}
+for (let i = firstTick; i <= TOTAL; i++) {
+  if (i === WARM + 1 && process.env.SAVE_CKPT && !process.env.CKPT) writeFileSync(process.env.SAVE_CKPT, v8.serialize(game.checkpoint()));
   if (i === WARM + 1) {
     measuring = true; measuringRef.on = true;
     if (mode === "humans" || mode === "idle") {
@@ -275,6 +309,26 @@ for (let i = 1; i <= TOTAL; i++) {
     win.ticks++; win.cmds += parsed.length; win.cmdsPerAdvanceMax = Math.max(win.cmdsPerAdvanceMax, parsed.length);
     if (parsed.length) { win.validateMs.push(validateMs); win.applyCmdMs.push(applyCmdMs); }
     win.plannerPending.push(game.routePlanner.pendingCount); win.admissions.push(game.movementAdmission.pendingCount);
+    // Where human admissions wait (PROFILE): admission-ticks per phase over the window.
+    if (process.env.PROFILE) {
+      const adm: any = game.movementAdmission.checkpoint();
+      const ids = new Set(adm.pending.map(([id]: any) => id));
+      for (const [, a] of adm.pending) {
+        if (game.player(a.playerId)?.ai) continue;
+        const lead = a.corridorId !== undefined && a.corridorId !== a.id && ids.has(a.corridorId);
+        const sub = a.phase !== "routes" ? "" : a.members.some((m: any) => m.requested) ? ":planner" : lead ? ":lead" :
+          a.members.some((m: any) => !m.path && (m.retryAt ?? 0) > game.tick) ? ":backoff" : ":ready";
+        win.humanPhases[a.phase + sub] = (win.humanPhases[a.phase + sub] ?? 0) + 1;
+      }
+    }
+    // Planner occupancy by class (PROFILE): mean pending jobs per human/AI caller over the window.
+    if (process.env.PROFILE && game.tick % 20 === 0) {
+      win.cohortSamples++;
+      for (const c of game.routePlanner.diagnosticCohorts(game.tick)) {
+        const key = `${c.playerId >= 1 && c.playerId <= 8 && !game.player(c.playerId)?.ai ? "human" : "ai"}:${c.caller}`;
+        win.cohorts[key] = (win.cohorts[key] ?? 0) + c.pending;
+      }
+    }
     win.prep.push(game.movementAdmission.preparationCount); win.receipts.push(game.commandApplications.diagnostics.pending);
     win.shipAdm.push((game.shipAdmission as any).pendingCount ?? 0);
     if (gate) win.pubsGate++;
@@ -302,16 +356,20 @@ for (let i = 1; i <= TOTAL; i++) {
       pubsPerSimSec: +(win.pubs / (win.ticks / 8)).toFixed(2), gatePubsPerSimSec: +(win.pubsGate / (win.ticks / 8)).toFixed(2),
       gz: stats(win.gz), raw: stats(win.raw), capture: stats(win.capture), transfer: stats(win.transfer), encode: stats(win.encode), decode: stats(win.decode), apply: stats(win.apply), project: stats(win.project), clone: stats(win.clone), squadRows: stats(win.squadRows),
       plannerPending: stats(win.plannerPending), admissions: stats(win.admissions), prep: stats(win.prep), receipts: stats(win.receipts), shipAdm: stats(win.shipAdm),
-      validateMs: stats(win.validateMs), applyCmdMs: stats(win.applyCmdMs), prof: { ...prof, stepAdmMsPerTick: +(prof.stepAdmMs / 400).toFixed(2), stepAdmCpuPerTick: +(prof.stepAdmCpu / 400).toFixed(2), meanPending: +(prof.stepAdmPending / Math.max(1, prof.stepAdmCalls)).toFixed(1) }, plannerDiag: { ...game.routePlanner.diagnostics }, phases };
+      validateMs: stats(win.validateMs), applyCmdMs: stats(win.applyCmdMs), connectors: { ...game.movementAdmission.connectorDiagnostics },
+      humanAdmissionTicksByPhase: win.humanPhases,
+      plannerByClass: Object.fromEntries(Object.entries(win.cohorts).map(([k, v]) => [k, +(v / Math.max(1, win.cohortSamples)).toFixed(1)])), prof: { ...prof, stepAdmMsPerTick: +(prof.stepAdmMs / 400).toFixed(2), stepAdmCpuPerTick: +(prof.stepAdmCpu / 400).toFixed(2), meanPending: +(prof.stepAdmPending / Math.max(1, prof.stepAdmCalls)).toFixed(1) }, plannerDiag: { ...game.routePlanner.diagnostics }, phases };
     windows.push(row);
     console.log(JSON.stringify({ cpu: row.tickCpuMean, tick: row.tick, S: row.squads, H: row.ships, B: row.buildings, tr: row.traders, alive: row.alive, heap: row.heapMB, tick_ms: phases.tick, pubs: row.pubsPerSimSec, gz: row.gz?.mean, plan: row.plannerPending?.mean, adm: row.admissions?.mean, cmds: row.cmds }));
-    for (const k of Object.keys(prof)) (prof as any)[k] = 0;
-    win = { wallSum: 0, cpuSum: 0, ticks: 0, pubs: 0, pubsGate: 0, raw: [], gz: [], capture: [], transfer: [], encode: [], decode: [], apply: [], project: [], clone: [], plannerPending: [], admissions: [], prep: [], receipts: [], shipAdm: [], cmds: 0, cmdsPerAdvanceMax: 0, validateMs: [], applyCmdMs: [], squadRows: [] };
+    for (const k of Object.keys(prof)) (prof as any)[k] = k === "humanByKind" ? {} : 0;
+    win = { wallSum: 0, cpuSum: 0, ticks: 0, pubs: 0, pubsGate: 0, raw: [], gz: [], capture: [], transfer: [], encode: [], decode: [], apply: [], project: [], clone: [], plannerPending: [], admissions: [], prep: [], receipts: [], shipAdm: [], cmds: 0, cmdsPerAdvanceMax: 0, validateMs: [], applyCmdMs: [], squadRows: [], cohortSamples: 0, cohorts: {}, humanPhases: {} };
     const summaryPhases: any = {}; for (const [p, r] of allTickPhase) summaryPhases[p] = stats(r);
     const lat = (sel: (x: any) => boolean, k: "first" | "half" | "outcomeTick") => stats(latencyDone.filter(sel).map(x => x[k]).filter((v): v is number => v !== undefined));
     const perHuman = humans.map(h => ({ human: h.id, apm: h.apm, cmds: perHumanCmds.get(h.id) ?? 0, first: lat(x => x.human === h.id, "first"), half: lat(x => x.human === h.id, "half"), outcome: lat(x => x.human === h.id, "outcomeTick"),
       noMove: latencyDone.filter(x => x.human === h.id && x.first === undefined).length, tracked: latencyDone.filter(x => x.human === h.id).length }));
-    const byKind: any = {}; for (const k of ["move", "attack", "charge", "attack-structure"]) byKind[k] = { first: lat(x => x.kind === k, "first"), half: lat(x => x.kind === k, "half"), outcome: lat(x => x.kind === k, "outcomeTick"), noMove: latencyDone.filter(x => x.kind === k && x.first === undefined).length };
+    const byKind: any = {}; for (const k of ["move", "attack", "charge", "attack-structure"]) byKind[k] = { first: lat(x => x.kind === k, "first"), half: lat(x => x.kind === k, "half"), outcome: lat(x => x.kind === k, "outcomeTick"), noMove: latencyDone.filter(x => x.kind === k && x.first === undefined).length,
+      // Outcome latency per terminal status: "executed" is the commit latency the gate is about.
+      outcomeByStatus: Object.fromEntries(["executed", "superseded", "rejected"].map(status => [status, lat(x => x.kind === k && x.outcome === status, "outcomeTick")])) };
     const outcomeStatus: Record<string, number> = {}; for (const o of outcomeLog) if (o.status !== "deferred") outcomeStatus[o.status] = (outcomeStatus[o.status] ?? 0) + 1;
     writeFileSync(OUT.replace(/\.json$/, ".commands.json"), JSON.stringify({ warm: WARM, measure: MEASURE, seed, mapId, partialAtTick: game.tick, commandLog }));
     writeFileSync(OUT, JSON.stringify({ map: mapId, mode, seed, W, H, warm: WARM, measure: MEASURE, wallSec: +((performance.now() - t0) / 1000).toFixed(0), humans: humans.map(h => ({ id: h.id, apm: h.apm })),
@@ -328,7 +386,7 @@ function digests() {
   };
 }
 function finalize() {
-  writeFileSync(OUT.replace(/\.json$/, ".summary.json"), JSON.stringify({ map: mapId, mode, seed, warm: WARM, measure: MEASURE, reachedTick: game.tick, digests: digests(), measuredTicks: tickMsSeries.length, exceptions, tickAll: stats(tickMsSeries), designB: DESIGN_B, checkpointEvery: CHECKPOINT_EVERY, checkpointMs: stats(checkpointMsSeries), tickPlusCheckpoint: stats(tickPlusCheckpoint), pubsPerSimSec: +(windows.reduce((n: number, w: any) => n + w.pubsPerSimSec, 0) / Math.max(1, windows.length)).toFixed(2), tickCpuMeanAll: +(cpuAll / Math.max(1, tickMsSeries.length)).toFixed(2), rejections, actionCounts, squads: game.squads.length, alive: game.players.filter((p: any) => !p.eliminated).length, winner: (game as any).winner ?? null, wallSec: +((performance.now() - t0) / 1000).toFixed(0) }, null, 1));
+  writeFileSync(OUT.replace(/\.json$/, ".summary.json"), JSON.stringify({ map: mapId, mode, seed, warm: WARM, measure: MEASURE, reachedTick: game.tick, digests: digests(), measuredTicks: tickMsSeries.length, exceptions, tickAll: stats(tickMsSeries), designB: DESIGN_B, checkpointEvery: CHECKPOINT_EVERY, ...(process.env.HPA_PROBE ? { hpaFinds } : {}), checkpointMs: stats(checkpointMsSeries), tickPlusCheckpoint: stats(tickPlusCheckpoint), pubsPerSimSec: +(windows.reduce((n: number, w: any) => n + w.pubsPerSimSec, 0) / Math.max(1, windows.length)).toFixed(2), tickCpuMeanAll: +(cpuAll / Math.max(1, tickMsSeries.length)).toFixed(2), rejections, actionCounts, squads: game.squads.length, alive: game.players.filter((p: any) => !p.eliminated).length, winner: (game as any).winner ?? null, wallSec: +((performance.now() - t0) / 1000).toFixed(0) }, null, 1));
   console.log("SUMMARY", JSON.stringify({ reachedTick: game.tick, digests: digests(), exceptions: exceptions.length, tickAll: stats(tickMsSeries) }));
 }
 finalize();

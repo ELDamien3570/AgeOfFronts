@@ -11,6 +11,7 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { WALL_PER_CPU_FLAG } from "../../../src/skirmish/RuntimeDiagnostics";
 
 const enabled = process.env.SKIRMISH_EIGHT_HUMAN === "1";
 const maps = (process.env.EIGHT_HUMAN_MAPS ?? "med,mig").split(",").filter(Boolean);
@@ -31,13 +32,23 @@ describe.runIf(enabled)("eight-human load gate (Next #1)", () => {
       const windows: { plannerPending: { mean: number }; admissions: { mean: number } }[] = humans.full.windows;
       const report = {
         tickMean: humans.full.tickAll.mean, idleTickMean: idle.full.tickAll.mean,
+        // Quiet-host validity (I-0): wall time per thread-CPU time of the ticks.
+        wallPerCpu: humans.full.tickAll.mean / humans.full.tickCpuMeanAll,
+        idleWallPerCpu: idle.full.tickAll.mean / idle.full.tickCpuMeanAll,
         plannerWindowMeanMax: Math.max(...windows.map(w => w.plannerPending.mean)),
         admissionWindowMeanMax: Math.max(...windows.map(w => w.admissions.mean)),
-        moveCommitP95: humans.full.byKind?.move?.outcome?.p95,
+        // Commit latency: submit to the move's executed receipt. Superseded
+        // moves end when the player's next order replaces them, so they
+        // measure the scripted players' order rate, not routing.
+        moveCommitP95: humans.full.byKind?.move?.outcomeByStatus?.executed?.p95,
+        moveOutcomeP95: humans.full.byKind?.move?.outcome?.p95,
         routingMax: humans.full.summaryPhases?.routing?.max,
         exceptions: humans.summary.exceptions.length + idle.summary.exceptions.length,
       };
       console.log(map, JSON.stringify(report));
+      // A contended host inflates wall time; such a run says nothing about the gate.
+      expect(report.wallPerCpu).toBeLessThanOrEqual(WALL_PER_CPU_FLAG);
+      expect(report.idleWallPerCpu).toBeLessThanOrEqual(WALL_PER_CPU_FLAG);
       expect(report.exceptions).toBe(0);
       expect(report.tickMean).toBeLessThanOrEqual(1.15 * report.idleTickMean);
       expect(report.plannerWindowMeanMax).toBeLessThan(100);
