@@ -110,12 +110,21 @@ export interface RoutePlannerPorts<T> {
  * for the default 128-job queue. Humans hold at most 16 jobs per seat and 64
  * in total; background keeps a guaranteed 64 (16 of them for committed
  * trade) and may borrow idle interactive slots up to the version 4 limits.
- * Version 4 checkpoints keep uncapped interactive work. */
+ * Version 4 checkpoints keep uncapped interactive work.
+ *
+ * Scheduling version 6 (notes 16 rec 5, Next #1 remediation): a superseded or
+ * finished job that only reclaims arena slots no longer holds its seat's
+ * share, and `admissionReserve` of each seat's 16 slots are kept for movement
+ * admission (the moves a player just ordered): a seat's per-squad navigation
+ * work (pursuit, continuation, repair) takes at most 16 - 4 = 12. Background
+ * corridors and background exact searches have separate active limits.
+ * Version 5 checkpoints keep the version 5 counting. */
 export const PLANNER_PARTITION = {
   interactivePerPlayer: 16,
   interactiveTotal: 64,
   committedReserve: 16,
   minimumJobLimit: 128,
+  admissionReserve: 4,
 } as const;
 export class RoutePlanner<T> {
   private readonly jobs = new Map<string, Job<T>>();
@@ -150,7 +159,8 @@ export class RoutePlanner<T> {
   private readonly reclamation = new WeakMap<Map<number, number>, MapIterator<[number, number]>>();
   // Version 1 restores historical FIFO checkpoints without changing their outcomes.
   // Version 5 adds the interactive/background slot partition (R2-P3).
-  private schedulingVersion = 5;
+  // Version 6 frees reclaiming slots and reserves admission slots per seat.
+  private schedulingVersion = 6;
   private exclusiveKey?: string;
   private retiredJobs = 0;
   private lastPlayer = -1;
@@ -230,7 +240,7 @@ export class RoutePlanner<T> {
     const scheduling = saved.scheduling;
     if (
       scheduling &&
-      (![1, 2, 3, 4, 5].includes(scheduling.version) ||
+      (![1, 2, 3, 4, 5, 6].includes(scheduling.version) ||
         (scheduling.backgroundTurn !== undefined && (!Number.isSafeInteger(scheduling.backgroundTurn) || scheduling.backgroundTurn < 0)) ||
         (scheduling.priorityTurn !== undefined && (!Number.isSafeInteger(scheduling.priorityTurn) || scheduling.priorityTurn < 0)) ||
         !Number.isInteger(scheduling.lastPlayer) ||
@@ -262,7 +272,7 @@ export class RoutePlanner<T> {
         new PlanningWorkspace(this.workspace.capacity).checkpoint(),
     );
     this.schedulingVersion = saved.scheduling?.version ?? 1;
-    if (![1, 2, 3, 4, 5].includes(this.schedulingVersion))
+    if (![1, 2, 3, 4, 5, 6].includes(this.schedulingVersion))
       throw new Error("Unknown planner scheduling version");
     this.exclusiveKey = saved.scheduling?.exclusiveKey;
     this.retiredJobs = saved.scheduling?.retired ?? 0;
@@ -519,6 +529,10 @@ export class RoutePlanner<T> {
     const id = this.ports.identity?.(request)?.playerId;
     return id !== undefined && Number.isInteger(id) && id >= 0 && id < 256 ? id : 0;
   }
+  /** The caller class without creating a diagnostics cohort row. */
+  private callerOf(request: ExactRouteRequest<T>): PlannerCaller | undefined {
+    return this.cohortReads.get(request)?.caller ?? this.ports.identity?.(request)?.caller;
+  }
   /** Scheduling v5 slot partition (R2-P3) on the full-size queue. */
   private get partitioned(): boolean {
     return this.schedulingVersion >= 5 && !!this.ports.priority && this.jobLimit >= PLANNER_PARTITION.minimumJobLimit;
@@ -533,15 +547,25 @@ export class RoutePlanner<T> {
    * control. Same-key replacements return before this check. */
   private partitionRefuses(request: ExactRouteRequest<T>): boolean {
     const priority = this.priorityOf(request), playerId = priority ? this.playerOf(request) : -1;
-    let interactive = 0, player = 0, background = 0;
+    const v6 = this.schedulingVersion >= 6, navigation = v6 && priority && this.callerOf(request) !== "admission";
+    let interactive = 0, player = 0, playerNavigation = 0, background = 0;
     for (const job of this.jobs.values()) {
+      // Rec 5 (v6): a superseded or finished job only reclaims its arena
+      // slots; it no longer holds its seat's share, so a replacement order
+      // gets the slot on the tick the old one is cancelled. (Reclaiming
+      // entries still count toward the whole table's jobLimit.)
+      if (v6 && (job.retired || (job.discard && !job.replacement))) continue;
       if (this.priorityOf(job)) {
         interactive++;
-        if (priority && this.playerOf(job) === playerId) player++;
+        if (priority && this.playerOf(job) === playerId) {
+          player++;
+          if (navigation && this.callerOf(job) !== "admission") playerNavigation++;
+        }
       } else background++;
     }
     if (priority)
-      return interactive >= PLANNER_PARTITION.interactiveTotal || player >= PLANNER_PARTITION.interactivePerPlayer;
+      return interactive >= PLANNER_PARTITION.interactiveTotal || player >= PLANNER_PARTITION.interactivePerPlayer ||
+        navigation && playerNavigation >= PLANNER_PARTITION.interactivePerPlayer - PLANNER_PARTITION.admissionReserve;
     const share = this.jobLimit - PLANNER_PARTITION.interactiveTotal, size = this.jobs.size;
     if (background >= share && size >= this.jobLimit - 8) return true;
     return !!this.ports.committed && !this.committedOf(request) &&
@@ -742,9 +766,20 @@ export class RoutePlanner<T> {
             // Queue capacity is not arena concurrency. Admit a bounded number
             // of background searches; retain the rest without reporting a
             // false capacity failure or discarding their logical request.
+            // v6: corridors and exact searches are limited separately. A
+            // corridor is held by the shared per-tick preparation allowance,
+            // an exact search by arena work; counting both against one limit
+            // let cold trade corridors starve every exact background search
+            // (Mig 500: 16 corridors held 70+ AI admissions for minutes).
+            // Corridors keep their own limit, so the preparation allowance
+            // still concentrates on a few of them.
+            const split = this.schedulingVersion >= 6,
+              corridorNext = split && !job.corridorTried && !job.exclusiveRetry && job.nextCandidate === 0 &&
+                !!this.ports.corridorReady?.(job);
             let active = 0;
             for (const other of this.jobs.values()) if (!other.retired && !other.discard &&
-              !this.priorityOf(other) && (other.corridor || other.search.nodes.size)) active++;
+              !this.priorityOf(other) && (other.corridor || other.search.nodes.size) &&
+              (!split || !!other.corridor === corridorNext)) active++;
             const limit = this.ports.committed && !this.committedOf(job) ? 12 : 16;
             if (active >= limit) {
               this.jobs.set(key, job); deferred.add(job); used++; continue;

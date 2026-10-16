@@ -15,10 +15,12 @@ export const IDLE_TICK_FIXTURE_TICKS = 400;
  * I-2 and I-3 must leave both unchanged. Re-recorded for D2 (Next #1
  * remediation: AI cohorts plan short moves and spine connectors
  * synchronously); with the connector port removed the fixture still gives
- * the previous 58442984... / 5a6c5153.... */
+ * the previous 58442984... / 5a6c5153.... The checkpoint digest then moved
+ * from dcf33c01... for planner scheduling version 6 (its version field); the
+ * squad digest is unchanged by it. */
 export const IDLE_TICK_GOLDEN = Object.freeze({
   squads: "d6b6d993daa2a8aa8d14af71621e8ab2c44817f0c34d27191e6c6ca618693eb9",
-  checkpoint: "dcf33c01e62c33875d6b00c7dac149b618893a0d8f765e67405355eead8d2a40",
+  checkpoint: "45c688d7ce425a38a5cb4830395dbedb1301d7f20507993bafb8e221c63cddea",
 });
 
 export function idleTickFixture(): Skirmish {

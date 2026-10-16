@@ -90,7 +90,7 @@ describe("P11 player and command class shares", () => {
     a.request("second", 1);
     a.request("third", 2);
     const { scheduling, ...legacy } = a.planner.checkpoint();
-    expect(scheduling.version).toBe(5);
+    expect(scheduling.version).toBe(6);
     b.planner.restore(legacy);
     for (let tick = 0; tick < 3; tick++) b.planner.step(tick, 1, 1);
     expect(b.turns).toEqual(["first", "second", "third"]);
