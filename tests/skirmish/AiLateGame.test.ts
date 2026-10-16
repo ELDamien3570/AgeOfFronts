@@ -15,9 +15,9 @@ import { AiProductionDependencies } from "../../src/skirmish/domain/AiProduction
 import { militaryPosture } from "../../src/skirmish/domain/AiMilitaryPosture";
 import { UNITS } from "../../src/skirmish/content/Units";
 
-function fixture() {
+function fixture(aiCount=1) {
   const map=new GameMapImpl(220,100,new Uint8Array(220*100).fill(133),22000);
-  const game=new Skirmish(map,{seed:47,aiCount:1,tribes:false,ruleset:"ages-v1",aiEconomy:true,runAi:false});
+  const game=new Skirmish(map,{seed:47,aiCount,tribes:false,ruleset:"ages-v1",aiEconomy:true,runAi:false});
   let player=game.players[1]; const expansion=game.expansion!, research=TECHNOLOGIES.map(t=>t.id);
   const saved=game.checkpoint();saved.owners.fill(player.id);game.restore(saved);player=game.players[1];
   for(const b of [...game.buildings])game.removeBuilding(b.id);
@@ -168,5 +168,26 @@ describe("late-game AI development",()=>{
     (f.expansion as unknown as {thinkProgression():void}).thinkProgression();
     expect(commands.mock.calls.some(([c])=>c.type==="launch" && c.payload==="icbm")).toBe(true);
     expect(commands.mock.calls.some(([c])=>c.type==="launch" && c.payload==="hydrogen")).toBe(false);
+  });
+  it("skips a strategic target whose blast would hit an ally's land and strikes the next one",()=>{
+    const f=fixture(2),third=f.game.players.find(p=>p.id!==1&&p.id!==f.player.id)!;
+    f.add("missile-silo",40);
+    const shielded=f.add("city",100,50,1),open=f.add("city",180,50,1);
+    expect(shielded.id).toBeLessThan(open.id);
+    // The first-ranked city sits inside the land of a third faction allied to the AI.
+    const saved=f.game.checkpoint();
+    for(let y=40;y<=60;y++)for(let x=90;x<=110;x++)saved.owners[f.map.ref(x,y)]=third.id;
+    saved.owners[shielded.tile]=1;saved.owners[open.tile]=1;
+    f.game.restore(saved);
+    for(const s of [...f.game.squads])if(s.playerId!==f.player.id)f.game.removeSquad(s.id);
+    const player=f.game.players.find(p=>p.id===f.player.id)!;
+    Object.assign(f.expansion.supply.inventories[player.id],{"payload:icbm":1});
+    f.expansion.diplomacy.state.wars=[{a:player.id,b:1}];
+    f.expansion.diplomacy.state.alliances.push({id:999,a:player.id,b:third.id,expiresTick:100000,renewal:[]});
+    const commands=vi.spyOn(f.game,"applyCommand");f.game.tick=(player.id%20)*3;
+    (f.expansion as unknown as {thinkProgression():void}).thinkProgression();
+    const launches=commands.mock.calls.flatMap(([c])=>c.type==="launch"?[c]:[]);
+    expect(launches.map(c=>c.buildingId)).toEqual([open.id]);
+    expect(commands.mock.results.filter((_,i)=>commands.mock.calls[i][0].type==="launch").map(r=>r.value)).toEqual([null]);
   });
 });

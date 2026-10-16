@@ -1847,14 +1847,25 @@ export class Expansion {
       const airTargets=[...enemies.slice(0,16),...structures.slice(0,16).map(b=>this.battle.position(b))];
       const incoming=this.aircraft.filter(a=>a.health>0 && a.state!=="ready" && a.definitionId!=="drone" && atWar(a.playerId)).slice(0,16);
       const friendly=[...this.world.squads.filter(s=>s.troops>0&&!atWar(s.playerId)),...own.map(b=>this.battle.position(b))];
+      // A blast the order would refuse (R2-M4: an ally's or a non-war
+      // faction's land, units or buildings inside it) is skipped so the next
+      // candidate is tried. Memoised per pass: candidates repeat per aircraft.
+      const strikeChecks=new Map<string,boolean>();
+      const strikeAllowed=(t:{x:number;y:number},radius:number)=>{
+        const key=`${t.x},${t.y},${radius}`;let allowed=strikeChecks.get(key);
+        if(allowed===undefined){allowed=!this.strikeRejection(player.id,t.x,t.y,radius);strikeChecks.set(key,allowed);}
+        return allowed;
+      };
+      const bombRadius=BOMBER_ATTACK.projectile!.blastRadius,atomicRadius=ATOMIC_ATTACK.projectile!.blastRadius;
       // At most 32 candidates per ready aircraft, once per existing staggered strategic pass.
       for(const aircraft of ready) {
         const targets=aircraft.definitionId === "fighter" ? [...incoming,...airTargets].slice(0,32) : aircraft.definitionId === "drone" ? [...structures.filter(b=>b.type==="missile-defence").slice(0,16).map(b=>this.battle.position(b)),...airTargets].slice(0,32) : airTargets;
-        let target=targets.find(t=>flightReachable(aircraft,t.x,t.y));
+        const bomber=aircraft.definitionId==="bomber";
+        let target=targets.find(t=>flightReachable(aircraft,t.x,t.y)&&(!bomber||strikeAllowed(t,bombRadius)));
         if(!target)continue;
         let mission:import("../content/FlightOperations").AirMission=aircraft.definitionId==="fighter"?"patrol":aircraft.definitionId==="drone"?"drone":"bombing";
-        if(aircraft.definitionId==="bomber" && this.progression.has(player.id,"rus-earlymodern-nuclear-weapons") && (stock["payload:atomic"]??0)>0) {
-          const atomic=targets.find(t=>flightReachable(aircraft,t.x,t.y)&&!friendly.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=(16*FIXED)**2));
+        if(bomber && this.progression.has(player.id,"rus-earlymodern-nuclear-weapons") && (stock["payload:atomic"]??0)>0) {
+          const atomic=targets.find(t=>flightReachable(aircraft,t.x,t.y)&&!friendly.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=(16*FIXED)**2)&&strikeAllowed(t,atomicRadius));
           if(atomic){target=atomic;mission="atomic";}
         }
         this.world.applyCommand({type:"sortie",mission,playerId:player.id,aircraftIds:[aircraft.id],x:target.x,y:target.y});
@@ -1874,7 +1885,7 @@ export class Expansion {
         const strike=payloads.flatMap(payload=>{
           if(!(stock[`payload:${payload}`]>0))return [];
           const radius=STRATEGIC_PAYLOADS[payload].blastRadius;
-          const target=strategicTargets.find(t=>!protectedPositions.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=radius**2));
+          const target=strategicTargets.find(t=>!protectedPositions.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=radius**2)&&strikeAllowed(t,radius));
           return target ? [{payload,target}] : [];
         })[0];
         if(!strike)continue;
