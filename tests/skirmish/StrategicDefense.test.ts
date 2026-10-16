@@ -3,6 +3,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import { missileDefenseRange } from "../../src/skirmish/content/MissileDefense";
 import { defaultUnit } from "../../src/skirmish/content/Units";
 import { FIXED } from "../../src/skirmish/Protocol";
+import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import {
   SnapshotDecoder,
@@ -183,5 +184,66 @@ describe("strategic defense and nuclear damage", () => {
     ).toHaveLength(0);
     expect(f.game.building(center.id)!.health).toBe(0);
     expect(f.game.building(edge.id)!.health).toBe(10000);
+  });
+});
+// R2-M4 (review 12 Issue 1): a point-targeted launch needs the same right to
+// strike as a building-targeted one; neutral land never blocks it.
+describe("strategic launch diplomacy", () => {
+  const raid = () => {
+    const w = 120, h = 80, data = new Uint8Array(w * h).fill(133);
+    const game = new Skirmish(new GameMapImpl(w, h, data, data.length), {
+      seed: 3, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1", startingAge: "Modern", diplomacyRules: "raids-v1",
+    });
+    const e = game.expansion!;
+    e.progression.states[1].completed = TECHNOLOGIES.map((t) => t.id);
+    game.player(1)!.gold = 1e6;
+    e.supply.inventories[1]["payload:icbm"] = 2;
+    for (let t = 0; t < w * h; t++) game.owners[t] = game.map.x(t) < 60 ? 1 : game.map.x(t) < 100 ? 2 : 0;
+    game.restore(game.checkpoint());
+    const silo = game.addBuilding({ id: game.allocateId(), playerId: 1, type: "missile-silo", tile: game.map.ref(10, 40), age: "Modern", remainingTicks: 0, health: 6000, maxHealth: 6000 });
+    const launch = (x: number, y = 40) => game.applyCommand({ type: "launch", playerId: 1, launcherId: silo.id, payload: "icbm", x: (x + 0.5) * FIXED, y: (y + 0.5) * FIXED });
+    return { game, e, launch };
+  };
+  it("rejects a point launch into peace-protected land and changes nothing", () => {
+    const { game, e, launch } = raid();
+    e.diplomacy.state.peaceProtection = [{ a: 1, b: 2, untilTick: 1e7 }];
+    const owners = Array.from(game.owners).join(), gold = game.player(1)!.gold;
+    expect(launch(80)).toBe("Peace protection is still active");
+    for (let i = 0; i < 740; i++) game.step();
+    expect(Array.from(game.owners).join()).toBe(owners);
+    expect(game.wasteland.size).toBe(0);
+    expect(e.diplomacy.declaredWar(1, 2)).toBe(false);
+    expect(game.player(1)!.gold).toBeGreaterThanOrEqual(gold);
+    expect(e.supply.inventories[1]["payload:icbm"]).toBe(2);
+  });
+  it("rejects a point launch at a faction it is not at war with", () => {
+    const { e, launch } = raid();
+    expect(e.diplomacy.declaredWar(1, 2)).toBe(false);
+    expect(launch(80)).toBe("Choose a hostile building or unit");
+    // The blast edge alone is enough: 5 tiles from the border still reaches it.
+    expect(launch(104)).toBe("Choose a hostile building or unit");
+    expect(e.supply.inventories[1]["payload:icbm"]).toBe(2);
+  });
+  it("never retargets MIRV warheads onto a faction it may not strike", () => {
+    const { game, e } = raid();
+    // Embargo makes faction 2 hostile to units, but not a legal strike target.
+    e.diplomacy.state.embargoes = [{ initiator: 2, victim: 1, lastTheftTick: 1e7 }];
+    expect(e.diplomacy.hostile(1, 2)).toBe(true);
+    expect(e.diplomacy.canAttackStructure(1, 2)).toBe(false);
+    const target = game.addBuilding({ id: game.allocateId(), playerId: 2, type: "city", tile: game.map.ref(80, 40), age: "Modern", remainingTicks: 0, health: 6000, maxHealth: 6000 });
+    const aim = { x: 110.5 * FIXED, y: 40.5 * FIXED };
+    e.battle.fire({ id: 999, playerId: 1, x: 10.5 * FIXED, y: 40.5 * FIXED, domain: "building" }, aim,
+      { ...defaultUnit("infantry").attack, projectile: { diameter: FIXED, speed: FIXED, blastRadius: 3 * FIXED } }, 24000, "mirv", 100, 8, "mirv");
+    game.tick = 60;
+    e.battle.advanceProjectiles();
+    const warheads = e.battle.projectiles.filter((p) => p.kind === "warhead");
+    expect(warheads).toHaveLength(8);
+    const at = e.battle.position(target);
+    expect(warheads.some((p) => p.toX === at.x && p.toY === at.y)).toBe(false);
+  });
+  it("allows a point launch at neutral land", () => {
+    const { e, launch } = raid();
+    expect(launch(110)).toBeNull();
+    expect(e.supply.inventories[1]["payload:icbm"]).toBe(1);
   });
 });

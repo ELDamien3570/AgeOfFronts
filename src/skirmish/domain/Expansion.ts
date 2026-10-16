@@ -632,6 +632,10 @@ export class Expansion {
         !this.validPosition(command.x, command.y)
       )
         return "Select ready owned aircraft and a valid destination";
+      if(mission === "bombing" || mission === "atomic") {
+        const blocked=this.strikeRejection(player.id,command.x,command.y,(mission === "atomic" ? ATOMIC_ATTACK : BOMBER_ATTACK).projectile!.blastRadius);
+        if(blocked) return blocked;
+      }
       if(mission === "atomic") {
         if(!this.progression.has(player.id,"rus-earlymodern-nuclear-weapons")) return "Research Nuclear Weapons first";
         const stock=this.supply.inventories[player.id];
@@ -915,6 +919,29 @@ export class Expansion {
     }
     return undefined;
   }
+  /** Strategic strikes and bombing hit every faction in the blast. Like a
+   * building strike they need the right to attack each faction there (R2-M4):
+   * its land, buildings, squads and ships. Neutral land never blocks. */
+  private strikeRejection(playerId: number, x: number, y: number, radius: number): string | null {
+    const { world } = this, map = world.map, d = this.diplomacy;
+    let denied = 0;
+    const deny = (owner: number) => {
+      if (!denied && owner !== 0 && owner !== playerId && !d.canAttackStructure(playerId, owner)) denied = owner;
+    };
+    const inside = (px: number, py: number) => (px - x) ** 2 + (py - y) ** 2 <= radius ** 2;
+    // The same tile footprint the blast scorches (Wasteland.scorch).
+    const left = Math.max(0, Math.ceil((x - radius) / FIXED - 0.5)), right = Math.min(map.width() - 1, Math.floor((x + radius) / FIXED - 0.5));
+    const top = Math.max(0, Math.ceil((y - radius) / FIXED - 0.5)), bottom = Math.min(map.height() - 1, Math.floor((y + radius) / FIXED - 0.5));
+    for (let cy = top; cy <= bottom && !denied; cy++)
+      for (let cx = left; cx <= right && !denied; cx++)
+        if (inside((cx + 0.5) * FIXED, (cy + 0.5) * FIXED)) deny(world.owners[map.ref(cx, cy)]);
+    for (const b of world.buildings)
+      if ((b.health ?? 1) > 0 && inside((map.x(b.tile) + 0.5) * FIXED, (map.y(b.tile) + 0.5) * FIXED)) deny(b.playerId);
+    for (const s of world.squads) if (s.troops > 0 && inside(s.x, s.y)) deny(s.playerId);
+    for (const s of world.ships) if (s.health > 0 && inside(s.x, s.y)) deny(s.playerId);
+    if (!denied) return null;
+    return d.protected(playerId, denied) ? "Peace protection is still active" : "Choose a hostile building or unit";
+  }
   private validPosition(x: number, y: number): boolean {
     return (
       Number.isInteger(x) &&
@@ -1012,6 +1039,8 @@ export class Expansion {
       !this.progression.has(player.id, "modern-strategic-weapons")
     )
       return "Research Strategic Weapons and choose a valid target";
+    const blocked = this.strikeRejection(player.id, x, y, STRATEGIC_PAYLOADS[payload].blastRadius);
+    if (blocked) return blocked;
     const building = this.world.buildings.find(
       (b) =>
         b.id === id &&
