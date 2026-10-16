@@ -219,6 +219,10 @@ export function shellVisual(
 export interface TargetMarker extends Point {
   kind: "missile" | "bombing" | "siege";
 }
+/** Crosshairs belong to the snapshot's own local player, not player 1. */
+export function crosshairTargets(snapshot: Snapshot): TargetMarker[] {
+  return combatTargets(snapshot, snapshot.localPlayerId ?? 1);
+}
 export function combatTargets(
   snapshot: Snapshot,
   playerId = 1,

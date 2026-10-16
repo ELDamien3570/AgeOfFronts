@@ -74,3 +74,24 @@ describe("world-space troop remains", () => {
     expect(remains.sample(5000)).toHaveLength(0);
   });
 });
+
+describe("remains bounds", () => {
+  it("caps the record count by dropping the oldest first", () => {
+    const remains = new TroopRemains();
+    for (let i = 0; i < REMAINS.maxRecords + 25; i++)
+      remains.add({ ...death, key: `k${i}`, started: 1000 + i });
+    expect(remains.size).toBe(REMAINS.maxRecords);
+    const keys = remains.sample(1000 + REMAINS.maxRecords + 25).map((r) => r.key);
+    expect(keys).not.toContain("k0");
+    expect(keys).toContain(`k${REMAINS.maxRecords + 24}`);
+  });
+  it("expires faded records without being sampled", () => {
+    const remains = new TroopRemains();
+    remains.add(death);
+    remains.add({ ...death, key: "new", started: 30_000 });
+    remains.expire(1000 + REMAINS.bloodLifetime - 1);
+    expect(remains.size).toBe(2);
+    remains.expire(1000 + REMAINS.bloodLifetime);
+    expect(remains.size).toBe(1);
+  });
+});

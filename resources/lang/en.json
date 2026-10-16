@@ -8,6 +8,10 @@
     "setup_not_enough_room": "Not enough room for these factions and tribes. Choose fewer opponents or a larger battlefield.",
     "setup_no_viable_land": "No viable land for starting camps"
   },
+  "skirmish_controls": {
+    "double_right_click": "Double right click",
+    "charge": "Charge (same target, within a moment)"
+  },
   "skirmish_production": {
     "automatic": "Automatic",
     "manual": "Manual priorities",

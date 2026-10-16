@@ -9,6 +9,16 @@ interface DragSelection {
   selectedAircraft: Set<number>;
 }
 
+/** Recalling a control group replaces ground and ship selections and drops aircraft. */
+export function applyControlGroupRecall(
+  selection: DragSelection,
+  members: { selected: Set<number>; selectedShips: Set<number> },
+): void {
+  selection.selected = members.selected;
+  selection.selectedShips = members.selectedShips;
+  selection.selectedAircraft.clear();
+}
+
 /** Shift-drag targets ships; ordinary drag prioritizes ground troops. */
 export function applyDragSelection(
   selection: DragSelection,

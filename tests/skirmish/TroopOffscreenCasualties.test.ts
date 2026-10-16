@@ -1,6 +1,6 @@
 import {describe,it,expect,vi} from 'vitest';
 import {TroopActors,type TroopActorDefinition} from '../../src/skirmish/client/troops/TroopActors';
-import {TroopRemains} from '../../src/skirmish/client/troops/TroopRemains';
+import {TroopRemains,REMAINS} from '../../src/skirmish/client/troops/TroopRemains';
 import {formationLoad} from './fixtures/FormationLoad';
 import {FIXED} from '../../src/skirmish/Protocol';
 import {FormationEngagement} from '../../src/skirmish/client/FormationEngagement';
@@ -52,11 +52,27 @@ describe('snapshot-driven offscreen casualty placement',()=>{
     const bodies=internal.remains.sample(100);expect(bodies).toHaveLength(count);
     for(const body of bodies)expect(Math.abs(body.x-x)).toBeLessThan(6);
   });
-  it('tracks losses through icon-only detail and resets history with a new match',()=>{
-    const {game,squad,actors,internal,time}=fixture();actors.setDetailed(false);
-    game.updateSquad(squad.id,{troops:squad.troops-2});time(100);actors.prune(game.snapshot());
-    expect(internal.remains.sample(100)).toHaveLength(2);
-    actors.setDetailed(true);actors.prune(game.snapshot());expect(internal.remains.sample(100)).toHaveLength(2);
-    actors.clear();actors.prune(game.snapshot());expect(internal.remains.sample(100)).toHaveLength(0);
+  it('leaves no bodies for losses taken while icon-only and resets history with a new match',()=>{
+    const {game,squad,actors,internal,time}=fixture(),start=squad.troops;actors.setDetailed(false);
+    game.updateSquad(squad.id,{troops:start-2});time(100);actors.prune(game.snapshot());
+    expect(internal.remains.sample(100)).toHaveLength(0);
+    actors.setDetailed(true);actors.prune(game.snapshot());expect(internal.remains.sample(100)).toHaveLength(0);
+    game.updateSquad(squad.id,{troops:start-4});time(200);actors.prune(game.snapshot());
+    expect(internal.remains.sample(200)).toHaveLength(2);
+    actors.clear();actors.prune(game.snapshot());expect(internal.remains.sample(200)).toHaveLength(0);
+  });
+  it('keeps remains bounded across zoomed-out publications and expires them without drawing',()=>{
+    const {game,squad,actors,internal,time}=fixture(),start=squad.troops;actors.setDetailed(false);
+    for(let i=1;i<=12;i++){game.updateSquad(squad.id,{troops:start-i});time(i*100);actors.prune(game.snapshot());
+      expect(internal.remains.size).toBeLessThanOrEqual(REMAINS.maxRecords);}
+    expect(internal.remains.size).toBe(0);
+    // Records made while detailed are expired by prune alone, with no sample call.
+    actors.setDetailed(true);
+    game.updateSquad(squad.id,{troops:start-15});time(2000);actors.prune(game.snapshot());
+    expect(internal.remains.size).toBe(3);
+    actors.setDetailed(false);
+    for(let t=12_000;t<=122_000;t+=10_000){time(t);actors.prune(game.snapshot());
+      expect(internal.remains.size).toBeLessThanOrEqual(REMAINS.maxRecords);}
+    expect(internal.remains.size).toBe(0);
   });
 });

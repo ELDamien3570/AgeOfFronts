@@ -494,12 +494,13 @@ export class TroopActors {
       const count=(s:Snapshot['squads'][number])=>s.manpower?Math.max(0,s.troops):Math.ceil((troop.members??(troop.mounted?6:12))*Math.max(0,s.troops)/1000);
       const before=count(old),after=next?count(next):0;
       const visible=this.detailed&&this.completedDetail.has(old.id)&&this.motions.has(old.id);
-      if(before>after&&!visible)this.captureOffscreenLoss(next??old,before-after,before,snapshot.tick,now,troop);
+      if(this.detailed&&before>after&&!visible)this.captureOffscreenLoss(next??old,before-after,before,snapshot.tick,now,troop);
       // An undrawn motion history cannot be reused as current soldier poses.
       // Reentry starts at current strength without replaying missed losses.
       if(!visible){this.motions.delete(old.id);this.bodies.delete(old.id);this.throwers.delete(old.id);this.cavalryContinuity.delete(old.id);this.cavalryAssaults.delete(old.id);}
     }
     this.casualtySnapshot=snapshot;
+    this.remains.expire(now);
     if (!this.detailed) {this.ownerBySquad.clear();this.chargeCohorts.clear();this.cavalryCohorts.clear();this.cavalryContinuity.clear();this.cavalryAssaults.clear();return;}
     for (const squad of snapshot.squads) this.ownerBySquad.set(squad.id, squad.playerId);
     this.headings.update(snapshot, now);
