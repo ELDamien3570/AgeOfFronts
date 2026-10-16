@@ -99,7 +99,10 @@ interface SeedResult {
         return [a, { leader: at.length ? Math.min(...at) : null, median: median(at), reached: at.length }];
       }));
       writeFileSync(out, JSON.stringify({ map: "heightmap-test1", worldSize: 500, factions: game.players.length, minutes, results }, null, 1));
-      console.log(JSON.stringify({ seed, minute, wall: result.wallSeconds,
+      console.log(JSON.stringify({ seed, minute, wall: result.wallSeconds, squads: game.squads.length,
+        regularSquads: game.squads.filter(s => game.player(s.playerId)?.kind === "regular").length,
+        cities: game.buildings.filter(b => b.type === "city").length, factories: game.buildings.filter(b => b.type === "factory").length,
+        regularGold: Math.round(regular.reduce((n, p) => n + p.gold, 0)), regularReserves: Math.round(regular.reduce((n, p) => n + p.reserves, 0)),
         leaders: Object.fromEntries(Object.entries(result.ages).map(([a, v]) => [a, v.leader])) }));
     }
   }
