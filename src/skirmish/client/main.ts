@@ -103,6 +103,7 @@ import type { MatchOptions, SpawnState } from "../Protocol";
 
 import { TerrainViewModel } from "./TerrainViewModel";
 import { serverText } from "./ServerText";
+import { controlsText } from "./ControlsText";
 
 import "./style.css";
 import "./age-theme.css";
@@ -1072,7 +1073,7 @@ function updateSelection(): void {
   const selectedOrdersEl = document.getElementById("selected-orders");
   if (selectedOrdersEl) {
     selectedOrdersEl.textContent = selected.length
-      ? `Right click to move or attack. Shift queues orders. ${Math.max(...selected.map((s) => s.queuedOrders.length))} queued.`
+      ? `Right click to move or attack. ${controlsText("charge_hint")} Shift queues orders. ${Math.max(...selected.map((s) => s.queuedOrders.length))} queued.`
       : renderer.selectedShips.size
         ? "Right click water to sail. Shift queues waypoints."
         : vm?.building

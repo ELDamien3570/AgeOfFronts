@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import english from "../../resources/lang/en.json";
+import { controlsText } from "../../src/skirmish/client/ControlsText";
 import { hudMarkup } from "../../src/skirmish/client/HudView";
 import { OrderGesture } from "../../src/skirmish/client/OrderGesture";
 describe("charge gesture dispatch", () => {
@@ -46,5 +47,9 @@ describe("charge gesture discoverability", () => {
     const { double_right_click, charge } = english.skirmish_controls;
     expect(popover).toContain(`<dt>${double_right_click}</dt><dd>${charge}</dd>`);
     expect(popover.indexOf("Move / attack / board")).toBeLessThan(popover.indexOf(double_right_click));
+  });
+  it("keys the selected-orders charge hint in en.json", () => {
+    expect(controlsText("charge_hint")).toBe(english.skirmish_controls.charge_hint);
+    expect(english.skirmish_controls.charge_hint).toMatch(/double right click/i);
   });
 });

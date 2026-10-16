@@ -12,7 +12,8 @@
   },
   "skirmish_controls": {
     "double_right_click": "Double right click",
-    "charge": "Charge (same target, within a moment)"
+    "charge": "Charge (same target, within a moment)",
+    "charge_hint": "Double right click to charge."
   },
   "skirmish_production": {
     "automatic": "Automatic",
