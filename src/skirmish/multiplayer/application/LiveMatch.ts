@@ -3,7 +3,7 @@ import { DEFAULT_AI_POLICIES } from "../../content/AiPolicies";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
 import {ClientStateFlow} from "./ClientStateFlow";
-import { publicStopMessage } from "./TerminalMessages";
+import { MATCH_STOPPED_MESSAGE, publicStopMessage } from "./TerminalMessages";
 import type {ClientBaseline} from "./MatchExecutor";
 import type { EmpireProfile } from "../../lobby/EmpireProfile";
 import type { Command } from "../../Protocol";
@@ -621,6 +621,13 @@ export class LiveMatch {
   }
   async advance(): Promise<void> {
     if (this.stopped) return;
+    // A worker can die with nothing in flight (empty pause, spawn wait), where
+    // no request would ever observe the failure (L13).
+    if (this.executor.lifecycle?.state === "stopped") {
+      console.error("Match executor stopped", this.reservation.id, this.executor.lifecycle);
+      await this.end(MATCH_STOPPED_MESSAGE);
+      return;
+    }
     if (this.emptyExpired()) {
       await this.end("No players returned before the reconnect grace expired");
       return;

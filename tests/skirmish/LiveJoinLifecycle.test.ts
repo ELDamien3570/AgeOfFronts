@@ -384,6 +384,19 @@ describe("bounded live admission lifecycle", () => {
       await f.match.end("test");
     }finally{vi.useRealTimers();}
   });
+  it("ends a paused empty match within one advance when its worker has died",async()=>{
+    const f=await fixture();
+    await f.match.disconnect("a");await f.match.disconnect("b");
+    expect(f.match.summary("a")?.status).toBe("paused");
+    await f.match.advance();
+    expect(f.released()).toBe(0);
+    // The worker exits with nothing in flight (e.g. an async publication failure).
+    (f.executor as {lifecycle?:{state:"running"|"stopped"}}).lifecycle={state:"stopped"};
+    f.time(10_050);await f.match.advance();
+    expect(f.released()).toBe(1);
+    expect(f.match.summary("a")).toBeUndefined();
+    expect(f.match.progress().state).toBe("stopped");
+  });
   it("retains ownership and capacity through grace; successful rejoin clears it, failed joins never extend it", async () => {
     const f = await fixture();
     await f.match.disconnect("a");

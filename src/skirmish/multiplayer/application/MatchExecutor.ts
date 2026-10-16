@@ -94,6 +94,9 @@ export type ExecutorResult =
 
 /** One isolated worker owns and advances the authoritative simulation. */
 export interface MatchExecutor {
+  /** Becomes "stopped" when the executor can no longer serve requests (exit,
+   * fatal error, timeout or close), even if no request was in flight. */
+  readonly lifecycle?: { readonly state: "running" | "stopped" };
   onPublication?(listener: (publication: MatchPublication) => void): () => void;
   request<T extends ExecutorResult>(request: ExecutorRequest): Promise<T>;
   close(): Promise<void>;
