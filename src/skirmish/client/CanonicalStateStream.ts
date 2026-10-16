@@ -24,6 +24,13 @@ export class CanonicalStateStream {
   private readonly barrierViews = new Map<number, NonNullable<Snapshot["expansion"]>["barriers"][number]>();
   private projectedBarriers?: NonNullable<Snapshot["expansion"]>["barriers"];
   private readonly dirty = new Map<number, number>();
+  /** N4 (P1/R2-P8): squad rows changed or removed since a canonical sequence.
+   * Views carry only rows changed after the last presented (ACKed) view, so a
+   * dropped view never loses a change; a view after an entity baseline is full. */
+  private readonly rowDirty = new Map<number, number>();
+  private readonly rowRemoved = new Map<number, number>();
+  private rowResetSequence = 0;
+  static readonly MAX_ROW_REMOVALS = 16_384;
   constructor(
     private readonly maxMapCells = 64_000_000,
     private readonly maxDirtyTiles = 65_536,
@@ -110,6 +117,15 @@ export class CanonicalStateStream {
         }
       }
     this.latest = latest;
+    if (packet.reset || packet.entityMode !== "delta") {
+      this.rowDirty.clear(); this.rowRemoved.clear(); this.rowResetSequence = this.sequence;
+    } else {
+      for (const id of packet.removedSquads ?? []) { this.rowRemoved.set(id, this.sequence); this.rowDirty.delete(id); }
+      for (let at = 0; at < packet.squads.length; at += SQUAD_STRIDE) this.rowDirty.set(packet.squads[at], this.sequence);
+      if (this.rowRemoved.size > CanonicalStateStream.MAX_ROW_REMOVALS) {
+        this.rowDirty.clear(); this.rowRemoved.clear(); this.rowResetSequence = this.sequence;
+      }
+    }
     if (packet.reset || packet.expansion?.barriers) {
       this.barrierViews.clear();
       for (const wall of this.latest.expansion?.barriers ?? []) this.barrierViews.set(wall.id, { ...wall, tiles: [...wall.tiles] });
@@ -141,14 +157,18 @@ export class CanonicalStateStream {
     if (reset) for (let tile = 0; tile < source.owners.length; tile++) append(tile);
     else for (const tile of this.dirty.keys()) append(tile);
     const { owners, claims, progress, changedTiles, expansion, ...entities } = source;
-    const snapshot: PresentationState["snapshot"] = { ...entities,
+    const rowsFull = this.rowResetSequence > this.presented, presented = this.presented;
+    const squads = rowsFull ? entities.squads : entities.squads.filter(squad => (this.rowDirty.get(squad.id) ?? 0) > presented);
+    const removedSquads = rowsFull ? undefined : [...this.rowRemoved].flatMap(([id, at]) => at > presented ? [id] : []);
+    const snapshot: PresentationState["snapshot"] = { ...entities, squads,
       expansion: expansion ? { ...expansion,
         roads: reset || expansion.roadRevision !== this.acknowledgedRoadRevision ? expansion.roads : undefined,
         deposits: reset || this.depositRevision !== this.acknowledgedDepositRevision ? expansion.deposits : undefined,
       } : undefined };
     this.pendingGeometry.set(this.sequence, { roads: expansion?.roadRevision ?? -1, deposits: this.depositRevision });
     if (this.pendingGeometry.size > 4) this.pendingGeometry.delete(this.pendingGeometry.keys().next().value!);
-    return { view: { snapshot, tiles: new Uint32Array(tiles), reset }, canonicalSequence: this.sequence };
+    return { view: { snapshot, tiles: new Uint32Array(tiles), reset, squadMode: rowsFull ? "full" : "delta",
+      ...(removedSquads?.length ? { removedSquads } : {}) }, canonicalSequence: this.sequence };
   }
   /** Only for immediate synchronous postMessage. Its structured clone isolates
    * recipients. Roads are replaced, never mutated by the decoder; deposit
@@ -223,5 +243,7 @@ export class CanonicalStateStream {
     for (const key of this.pendingGeometry.keys()) if (key <= sequence) this.pendingGeometry.delete(key);
     for (const [tile, changed] of this.dirty)
       if (changed <= sequence) this.dirty.delete(tile);
+    for (const [id, changed] of this.rowDirty) if (changed <= sequence) this.rowDirty.delete(id);
+    for (const [id, removed] of this.rowRemoved) if (removed <= sequence) this.rowRemoved.delete(id);
   }
 }

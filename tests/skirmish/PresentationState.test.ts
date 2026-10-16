@@ -35,6 +35,34 @@ describe("decoded entity presentation with sparse map obligations", () => {
       stream.acknowledge(delivered.canonicalSequence);
     }
   });
+  it("sends only changed squad rows after a baseline and still equals the full view (N4 row view)", () => {
+    const { game, encoder, stream, receiver } = fixture();
+    const capture = () => encoder.encode(game.replicationSource(), game.tileChanges, game.replicationFacts());
+    stream.apply(capture());
+    const first = stream.presentationState();
+    expect(first.view.squadMode).toBe("full");
+    receiver.apply(structuredClone(first.view)); stream.acknowledge(first.canonicalSequence);
+    let sawPartial = false, sawRemoval = false;
+    for (let at = 0; at < 60; at++) {
+      if (at === 10) game.removeSquad(game.squads[0].id);
+      if (at === 30) game.removeSquad(game.squads[game.squads.length - 1].id);
+      if (at % 7 === 3) { const s = game.squads[at % game.squads.length]; game.updateSquad(s.id, { x: s.x + 256 }); }
+      game.step();
+      stream.apply(capture());
+      const projected = stream.presentationState();
+      const delivered = structuredClone(projected, { transfer: [projected.view.tiles.buffer] });
+      if (at % 3 === 1) continue; // dropped views keep their rows for the next one
+      if (delivered.view.squadMode === "delta" && delivered.view.snapshot.squads.length < stream.presentation().snapshot.squads.length) sawPartial = true;
+      if (delivered.view.removedSquads?.length) sawRemoval = true;
+      expect(receiver.apply(delivered.view)).toEqual(stream.presentation().snapshot);
+      stream.acknowledge(delivered.canonicalSequence);
+    }
+    expect(sawPartial).toBe(true);
+    expect(sawRemoval).toBe(true);
+    // A fresh receiver cannot apply a row delta.
+    const view = stream.presentationState().view;
+    if (view.squadMode === "delta") expect(() => new PresentationStateDecoder().apply({ ...view, reset: false })).toThrow(/baseline/);
+  });
   it("retains changed geometry until its presented sequence is acknowledged", () => {
     const { game, encoder, stream, receiver } = fixture();
     stream.apply(encoder.encode(game.snapshot()));
