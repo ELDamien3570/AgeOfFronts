@@ -96,8 +96,10 @@ describe("tribe opening", () => {
   it.each(["StoneAge", "Napoleonic"] as const)("credits a %s tribe's reserve points at the tribe rate", (age: Age) => {
     const terrain = new Uint8Array(96 * 64).fill(133);
     const game = new Skirmish(new GameMapImpl(96, 64, terrain, terrain.length), {
-      seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1",
+      seed: 47, aiCount: 2, tribes: false, runAi: false, ruleset: "ages-v1",
     });
+    // A third faction keeps two regulars alive: since Next #3 tribes do not
+    // block a conquest win, so a lone regular would end the match at once.
     const [tribe, nation] = game.players;
     tribe.kind = "tribe";
     for (const p of game.players) game.expansion!.progression.states[p.id].age = age;
