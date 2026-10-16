@@ -448,6 +448,7 @@ export class MovementAdmission {
       member: 0,
     };
     this.pending.set(id, admission);
+    this.priorityOrder?.ids.push(id);
     for (const member of admission.members)
       this.pendingBySquad.set(member.id, id);
     this.event(admission, tick, "deferred");
@@ -787,18 +788,47 @@ export class MovementAdmission {
    * ordinary allowance; no wall clock affects authoritative scheduling. */
   stepInteractive(tick:number,budget:number):number {
     if(!Number.isInteger(budget)||budget<0)throw new Error("Invalid interactive admission allowance");
-    if(![...this.pending.values()].some(p=>this.ports.priority?.(p.playerId)))return 0;
+    let waiting = false;
+    for (const p of this.pending.values()) if (this.ports.priority?.(p.playerId)) { waiting = true; break; }
+    if(!waiting)return 0;
     return this.stepAdmissions(tick,budget,true);
   }
+  /** Diagnostics hook: observes each admission a step visits, before rotation. */
+  onVisit?: (id: number, priority: boolean) => void;
+  /** Priority-pass visiting order (R2-P6): the priority admissions' ids in
+   * pending-map order. A visit rotates its entry to the map's end, and every
+   * admission created during the call is appended there too, so the queue's
+   * first live priority id is exactly the map's first priority entry. Stale
+   * ids (finished admissions) are skipped lazily. O(P) per call, not O(P^2). */
+  private priorityOrder?: { ids: number[]; head: number };
+  private nextPriority(): [number, Admission] | undefined {
+    const order = this.priorityOrder!;
+    while (order.head < order.ids.length) {
+      const id = order.ids[order.head++], admission = this.pending.get(id);
+      if (admission && this.ports.priority?.(admission.playerId)) { order.ids.push(id); return [id, admission]; }
+    }
+    return undefined;
+  }
   private stepAdmissions(tick: number, budget: number, priority: boolean): number {
+    const previousOrder = this.priorityOrder;
+    if (priority) {
+      const ids: number[] = [];
+      for (const [id, admission] of this.pending) if (this.ports.priority?.(admission.playerId)) ids.push(id);
+      this.priorityOrder = { ids, head: 0 };
+    } else this.priorityOrder = undefined;
+    try { return this.stepAdmissionsWith(tick, budget, priority); }
+    finally { this.priorityOrder = previousOrder; }
+  }
+  private stepAdmissionsWith(tick: number, budget: number, priority: boolean): number {
     const validated = new Set<number>();
     let used = 0, idle = 0;
     while (this.pending.size && used < budget) {
       const entry = priority
-        ? [...this.pending].find(([, admission]) => this.ports.priority?.(admission.playerId))
+        ? this.nextPriority()
         : this.pending.entries().next().value;
       if (!entry) break;
       const [id, admission] = entry;
+      this.onVisit?.(id, priority);
       this.pending.delete(id);
       this.pending.set(id, admission);
       // Full validation runs once per call; every visit still confirms each
