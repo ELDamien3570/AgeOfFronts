@@ -586,6 +586,79 @@ describe("ranged preparation survives order and target churn", () => {
     expect(army.restarts).toBe(0);
     expect(army.shots).toBeGreaterThanOrEqual(individual.shots);
   });
+  /** Mobile anti-air under `planes` hostile fighters moved by `fly` each tick; firing ticks. */
+  function antiAir(count: number, ticks: number, fly: (planes: Aircraft[], t: number, at: { x: number; y: number }) => void) {
+    const f = scene("modern-anti-air");
+    const planes: Aircraft[] = Array.from({ length: count }, () => ({
+      id: f.game.allocateId(),
+      playerId: 2,
+      definitionId: "fighter",
+      age: "EarlyModern",
+      airfieldId: 0,
+      x: f.source.x,
+      y: f.source.y,
+      health: 1_000_000,
+      state: "outbound",
+      target: null,
+      reloadTick: 0,
+      fuelTicks: 100_000,
+    }));
+    let firing = 0;
+    for (let t = 0; t < ticks; t++) {
+      f.game.tick = t;
+      fly(planes, t, f.source);
+      const before = f.game.squad(f.source.id)!.lastAttackTick;
+      f.battle.fight(planes);
+      if (f.game.squad(f.source.id)!.lastAttackTick !== before) firing++;
+    }
+    return firing;
+  }
+  // Patrol orbit: radius 2 tiles plus a per-plane spread, so the nearest
+  // fighter changes almost every tick.
+  const orbit = (planes: Aircraft[], t: number, at: { x: number; y: number }) =>
+    planes.forEach((p, i) => {
+      const a = i * 1.05 + t * 0.35,
+        r = 2 * FIXED + (((i * 37 + t * 11) % 16) * FIXED) / 16;
+      p.x = at.x + Math.round(Math.cos(a) * r);
+      p.y = at.y + Math.round(Math.sin(a) * r);
+    });
+  it("keeps an anti-air aim on its aircraft while 4 fighters orbit it (A5)", () => {
+    const one = antiAir(1, 200, orbit);
+    expect(one).toBeGreaterThanOrEqual(10);
+    expect(antiAir(4, 200, orbit)).toBeGreaterThanOrEqual(10);
+  });
+  it("keeps an anti-air aim while two overhead fighters alternate as the nearest (A5)", () => {
+    const shots = antiAir(2, 240, (planes, t, at) => {
+      planes[0]!.x = at.x + (t % 2 ? 2 * FIXED : 2 * FIXED + FIXED / 8);
+      planes[1]!.x = at.x - (t % 2 ? 2 * FIXED + FIXED / 8 : 2 * FIXED);
+    });
+    expect(shots).toBeGreaterThanOrEqual(13);
+  });
+  it("still retargets anti-air when its aircraft leaves range", () => {
+    const f = scene("modern-anti-air");
+    const plane = (dx: number): Aircraft => ({
+      id: f.game.allocateId(),
+      playerId: 2,
+      definitionId: "fighter",
+      age: "EarlyModern",
+      airfieldId: 0,
+      x: f.source.x + dx,
+      y: f.source.y,
+      health: 1_000_000,
+      state: "outbound",
+      target: null,
+      reloadTick: 0,
+      fuelTicks: 100_000,
+    });
+    const near = plane(FIXED),
+      far = plane(3 * FIXED);
+    f.battle.fight([near, far]);
+    expect(f.source.weaponState!.rangedAction!.targetId).toBe(near.id);
+    near.x = f.source.x + 200 * FIXED;
+    f.game.tick = 1;
+    f.battle.fight([near, far]);
+    expect(f.game.squad(f.source.id)!.weaponState!.rangedAction!.targetId).toBe(far.id);
+  });
   it("still restarts the aim when a different order replaces the attack", () => {
     const f = scene("modern-infantry");
     expect(attack(f)).toBeNull();
