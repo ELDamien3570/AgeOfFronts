@@ -18,6 +18,10 @@
  *   PROFILE=1      per-window admission/planner profile (instance wrappers, no prototype patching)
  *   ARMY=<n>       squads injected per human seat at the warm-up boundary (default 60)
  *   DUMP=1         also write every measured publication to out-...pubs.bin
+ *   DESIGN_B=1     publish only at the 5 Hz gate (Next #4 N6a), not on commands
+ *   CHECKPOINT_EVERY=<n>  take match.checkpoint() every n ticks, as the worker's
+ *                  MatchJournal does (Next #10; 20 in production). Timed apart
+ *                  from tickAll, reported as checkpointMs and tickPlusCheckpoint.
  * Mode "idle" is the control: same seed and armies, human seats on human
  * control, but no commands are issued.
  */
@@ -102,6 +106,8 @@ game.commandApplications.onValidationFailure = (f: any) => { exceptions.push({ t
 const encoder = new SnapshotEncoder(true, { compactFormationSlots: true, compactTraders: true });
 const client = new CanonicalStateStream(W * H, 65_536, { width: W, height: H });
 const encDiag = new RuntimeDiagnostics();
+const DESIGN_B = process.env.DESIGN_B === "1", CHECKPOINT_EVERY = Number(process.env.CHECKPOINT_EVERY ?? 0) || 0;
+const checkpointMsSeries: number[] = [], tickPlusCheckpoint: number[] = [];
 const DUMP = process.env.DUMP ? openSync(OUT.replace(/\.json$/, ".pubs.bin"), "w") : undefined;
 const dump = (tick: number, enc: any) => { if (DUMP === undefined) return; const hdr = Buffer.alloc(76); hdr.writeUInt32LE(tick, 0); hdr.writeUInt32LE(enc.binary.byteLength, 4); hdr.write(enc.hash, 8, 64, "latin1"); hdr.writeUInt32LE(0, 72); writeSync(DUMP, hdr); writeSync(DUMP, enc.binary); };
 
@@ -260,10 +266,12 @@ for (let i = 1; i <= TOTAL; i++) {
   const gate = game.tick * TICK_MS >= nextSnapshotSimulationMs;
   if (gate) nextSnapshotSimulationMs += (Math.floor((game.tick * TICK_MS - nextSnapshotSimulationMs) / SNAPSHOT_MS) + 1) * SNAPSHOT_MS;
   const executed = [...outcomesThisAdvance.values()].some(o => o.status === "executed");
-  const publish = gate || commandProgress || executed;
+  const publish = DESIGN_B ? gate : gate || commandProgress || executed;
+  let checkpointMs = 0;
+  if (CHECKPOINT_EVERY && game.tick % CHECKPOINT_EVERY === 0) { const tk = performance.now(); game.checkpoint(); checkpointMs = performance.now() - tk; if (measuring) checkpointMsSeries.push(checkpointMs); }
   commandProgress = false;
   if (measuring) {
-    tickMsSeries.push(tickMs); win.wallSum += tickMs; win.cpuSum += tickCpu; cpuAll += tickCpu; wallAll += tickMs;
+    tickMsSeries.push(tickMs); tickPlusCheckpoint.push(tickMs + checkpointMs); win.wallSum += tickMs; win.cpuSum += tickCpu; cpuAll += tickCpu; wallAll += tickMs;
     win.ticks++; win.cmds += parsed.length; win.cmdsPerAdvanceMax = Math.max(win.cmdsPerAdvanceMax, parsed.length);
     if (parsed.length) { win.validateMs.push(validateMs); win.applyCmdMs.push(applyCmdMs); }
     win.plannerPending.push(game.routePlanner.pendingCount); win.admissions.push(game.movementAdmission.pendingCount);
@@ -320,7 +328,7 @@ function digests() {
   };
 }
 function finalize() {
-  writeFileSync(OUT.replace(/\.json$/, ".summary.json"), JSON.stringify({ map: mapId, mode, seed, warm: WARM, measure: MEASURE, reachedTick: game.tick, digests: digests(), measuredTicks: tickMsSeries.length, exceptions, tickAll: stats(tickMsSeries), tickCpuMeanAll: +(cpuAll / Math.max(1, tickMsSeries.length)).toFixed(2), rejections, actionCounts, squads: game.squads.length, alive: game.players.filter((p: any) => !p.eliminated).length, winner: (game as any).winner ?? null, wallSec: +((performance.now() - t0) / 1000).toFixed(0) }, null, 1));
+  writeFileSync(OUT.replace(/\.json$/, ".summary.json"), JSON.stringify({ map: mapId, mode, seed, warm: WARM, measure: MEASURE, reachedTick: game.tick, digests: digests(), measuredTicks: tickMsSeries.length, exceptions, tickAll: stats(tickMsSeries), designB: DESIGN_B, checkpointEvery: CHECKPOINT_EVERY, checkpointMs: stats(checkpointMsSeries), tickPlusCheckpoint: stats(tickPlusCheckpoint), pubsPerSimSec: +(windows.reduce((n: number, w: any) => n + w.pubsPerSimSec, 0) / Math.max(1, windows.length)).toFixed(2), tickCpuMeanAll: +(cpuAll / Math.max(1, tickMsSeries.length)).toFixed(2), rejections, actionCounts, squads: game.squads.length, alive: game.players.filter((p: any) => !p.eliminated).length, winner: (game as any).winner ?? null, wallSec: +((performance.now() - t0) / 1000).toFixed(0) }, null, 1));
   console.log("SUMMARY", JSON.stringify({ reachedTick: game.tick, digests: digests(), exceptions: exceptions.length, tickAll: stats(tickMsSeries) }));
 }
 finalize();
