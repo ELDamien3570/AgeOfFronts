@@ -21,15 +21,7 @@ const workerPath = resolve(
 export class ReservedMatchWorker implements MatchExecutor {
   /** N6b (P14): the encoder thread publishes straight to this port. */
   private readonly channel = new MessageChannel();
-  private readonly worker = new Worker(
-    workerPath,
-    {
-      execArgv: ["--import", "tsx"],
-      resourceLimits: { maxOldGenerationSizeMb: 384 },
-      workerData: { publicationPort: this.channel.port2, liveHeap: liveHeapRequested() },
-      transferList: [this.channel.port2],
-    },
-  );
+  private readonly worker: Worker;
   private readonly sequencer = new PublicationSequencer<MatchPublication, { id: number; result: ExecutorResult; error?: string }>(
     publication => { if (!this.closed) for (const listener of this.publications) listener(publication); },
     message => this.settle(message),
@@ -72,7 +64,19 @@ export class ReservedMatchWorker implements MatchExecutor {
     this.fail(new Error(`Match executor timed out during ${request.type}`), "timeout");
     void this.worker.terminate();
   });
-  constructor() {
+  /** `testFaultTick` (tests only): the worker's simulation throws once when
+   * it steps from that tick, to exercise the real rollback path. */
+  constructor(options: { testFaultTick?: number } = {}) {
+    this.worker = new Worker(
+      workerPath,
+      {
+        execArgv: ["--import", "tsx"],
+        resourceLimits: { maxOldGenerationSizeMb: 384 },
+        workerData: { publicationPort: this.channel.port2, liveHeap: liveHeapRequested(),
+          ...(options.testFaultTick === undefined ? {} : { testFaultTick: options.testFaultTick }) },
+        transferList: [this.channel.port2],
+      },
+    );
     this.channel.port1.on("message", (message: { publication?: MatchPublication & { sequence: number } }) => {
       if (message.publication) this.publication(message.publication);
     });

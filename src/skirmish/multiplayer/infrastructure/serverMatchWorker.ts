@@ -63,7 +63,18 @@ let runner: MatchAdvanceRunner | undefined;
 // The exact map and options the match was built from: a rollback rebuilds a
 // fresh simulation from them and restores the last checkpoint into it.
 let runtime: { map: RuntimeMap; options: ConstructorParameters<typeof Skirmish>[1] } | undefined;
+// Tests only (ReservedMatchWorker testFaultTick): one injected throw when the
+// simulation steps from this tick, so the real rollback path can be exercised.
+const testFaultTick = (workerData as { testFaultTick?: number } | undefined)?.testFaultTick;
+let testFaultInjected = false;
 const attach = (target: Skirmish) => {
+  if (testFaultTick !== undefined) {
+    const step = target.step.bind(target);
+    target.step = () => {
+      if (!testFaultInjected && target.tick === testFaultTick) { testFaultInjected = true; throw new Error("Injected test fault"); }
+      step();
+    };
+  }
   target.commandApplications.onOutcome = collectOutcome;
   target.commandApplications.onProgress = collectProgress;
   target.onPhase = (phase, ms) => diagnostics.record(phase, ms);

@@ -1,6 +1,7 @@
 import {TECHNOLOGIES} from '../../src/skirmish/content/Technology';
 import { describe, expect, it, vi } from "vitest";
 import { RUNTIME_PHASES } from "../../src/skirmish/RuntimeDiagnostics";
+import { COMMAND_VALIDATION_FAILURE } from "../../src/skirmish/CommandApplications";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import type { MatchAdvance } from "../../src/skirmish/multiplayer/application/MatchExecutor";
 import { ReservedMatchWorker } from "../../src/skirmish/multiplayer/infrastructure/ReservedMatchWorker";
@@ -175,6 +176,38 @@ describe("reserved authoritative worker", () => {
       await worker.close();
     }
   });
+  it("rolls back a real worker fault: drops the advance's commands, publishes a baseline, keeps advancing (Next #10)", async () => {
+    const worker = new ReservedMatchWorker({ testFaultTick: 6 });
+    try {
+      const initial = await worker.request<MatchAdvance>(initialize);
+      const decoder = new SnapshotDecoder();
+      const state = decoder.decode(await decodeState<SnapshotPacket>(initial.packet!));
+      const squad = state.squads.find((s) => s.playerId === 1)!;
+      await worker.request<MatchAdvance>(advance(4, false));
+      // Ticks 4..7 include the injected throw at tick 6, with one command in the advance.
+      const faulted = await worker.request<MatchAdvance>({
+        ...advance(4, false),
+        commands: [{ id: "dropped", command: { type: "order", playerId: 1, squadIds: [squad.id], order: { type: "hold" } } }],
+      });
+      expect(faulted.rolledBack).toBe(true);
+      expect(faulted.tick).toBe(8);
+      expect(faulted.rejectedCommands).toEqual([{ id: "dropped", playerId: 1, message: COMMAND_VALIDATION_FAILURE }]);
+      // The reply carries the new encoder's complete packet even though the
+      // coordinator did not ask for a publication: every seat rebases on it.
+      const rebase = await decodeState<SnapshotPacket>(faulted.packet!);
+      expect(rebase).toMatchObject({ tick: 8, reset: true });
+      const rebased = new SnapshotDecoder();
+      rebased.decode(rebase);
+      const next = await worker.request<MatchAdvance>(advance(2));
+      expect(next.tick).toBe(10);
+      expect(next.rolledBack).toBeUndefined();
+      const delta = await decodeState<SnapshotPacket>(next.packet!);
+      expect(delta.reset).toBe(false);
+      expect(rebased.decode(delta).tick).toBe(10);
+    } finally {
+      await worker.close();
+    }
+  }, 60_000);
   it("exports live heap after a forced collection when the operator opts in (I-0)", async () => {
     vi.stubEnv("SKIRMISH_LIVE_HEAP", "1");
     const worker = new ReservedMatchWorker();
