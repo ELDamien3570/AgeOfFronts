@@ -1480,15 +1480,23 @@ export class Skirmish {
       )
         return "Choose an enemy squad";
     }
-    this.expansion?.skirmish.observe(command);
-    if(!append)this.expansion?.trenches.observe(command);
     // Squads of a faction with transports route over land and water alike;
     // on water they travel as that transport. Others stay on their landmass.
     const squadPaths = this.squadPaths(player.id);
+    // These read-only rejections run before the stance/trench observers, so a
+    // rejected order leaves those rows unchanged. Non-append connectivity and
+    // replenish checks are hoisted unchanged: no branch between here and their
+    // original position handles a non-append order that fails them.
     if (order.type === "move" && !squadPaths.walkable(order.tile))
       return this.waterPaths.walkable(order.tile) ? "Research Cargo Canoes to take squads onto water" : "Choose passable land or navigable water";
     if(this.options.deferredPlanning && append && this.movementAdmission.queued(command.squadIds)>=MAX_QUEUED_ORDERS)
       return "A squad can queue up to 32 additional orders";
+    if (order.type === "move" && !append && selected.some(s => !squadPaths.connected(this.tileOf(s!),order.tile)))
+      return this.amphibious(player.id) ? "That destination cannot be reached" : "Research Cargo Canoes to cross water";
+    if (!append && order.type === "replenish" && selected.some((s) => this.owners[this.tileOf(s!)] !== player.id))
+      return "Move every selected squad onto friendly territory before replenishing";
+    this.expansion?.skirmish.observe(command);
+    if(!append)this.expansion?.trenches.observe(command);
     if(this.options.deferredPlanning && append && this.movementAdmission.append(command.squadIds,order,this.tick)) {
       this.expansion?.armies.observeOrder(command.squadIds,order,true);
       return null;
