@@ -7,7 +7,7 @@ import {
   TURN,
 } from "../../../src/skirmish/domain/FormationGeometry";
 import { createManpower } from "../../../src/skirmish/domain/Manpower";
-export function transportScene(count = 72, research = true, island = false) {
+export function transportScene(count = 72, research = true, island = false, seed = 47) {
   const size = 160,
     terrain = new Uint8Array(size * size).fill(133);
   for (let y = 0; y < size; y++)
@@ -20,7 +20,7 @@ export function transportScene(count = 72, research = true, island = false) {
     terrain.filter((v) => v & 128).length,
   );
   const options = {
-    seed: 47,
+    seed,
     aiCount: 1,
     tribes: false,
     runAi: false,

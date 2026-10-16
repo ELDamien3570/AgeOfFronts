@@ -33,6 +33,13 @@ export const MAP_CAMP_LIMITS: Partial<
   migration: { 250: { regularCost: 7, tribeCost: 4, budget: 250 } },
 };
 
+/**
+ * World sizes a shared lobby may select. 2000 is solo-only: preparing it takes
+ * 47-81 s on desktop and an extrapolated 118-200 s on the ARM host (R2-P1), so
+ * a room could never reach its start reliably.
+ */
+export const LOBBY_WORLD_SIZES: readonly (250 | 500 | 1000)[] = Object.freeze([250, 500, 1000] as const);
+
 export const LOBBY_MAP_IDS = PLAYABLE_MAPS.map((map) => map.id);
 export type LobbyMapId = PlayableMapId;
 

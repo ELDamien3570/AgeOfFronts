@@ -63,7 +63,7 @@ function scene(
     terrain.filter((v) => v & 128).length,
   );
   const options = {
-    seed: 47,
+    seed: 1, // was 47 before spawn placement changed (R2-P5, R2-L6)
     aiCount: 1,
     tribes: false,
     runAi: false,

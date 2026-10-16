@@ -4,6 +4,7 @@ import {
   MATCH_INITIALIZATION_FAILED_MESSAGE,
   MATCH_STOPPED_MESSAGE,
   NO_LIVING_HUMAN_MESSAGE,
+  SPAWN_SELECTION_BUSY_MESSAGE,
 } from "../multiplayer/application/TerminalMessages";
 import { INVALID_PLAYTEST_RULES } from "../lobby/LobbyDirectory";
 import type { ServerMessage } from "../multiplayer/Protocol";
@@ -25,6 +26,7 @@ const KEYS: ReadonlyMap<string, ServerTextKey> = new Map<string, ServerTextKey>(
   [MIXED_ARMY_SELECTION_MESSAGE, "mixed_army_selection"],
   [NO_LIVING_HUMAN_MESSAGE, "no_living_human"],
   [INVALID_PLAYTEST_RULES, "playtest_rules_invalid"],
+  [SPAWN_SELECTION_BUSY_MESSAGE, "spawn_busy"],
 ]);
 
 /** Text the lobby shows for an unsolicited (requestId-less) coordinator error,

@@ -2,7 +2,7 @@ import { lobbyMatchOptions } from "./LobbyMatchOptions";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
 import {ClientStateFlow} from "./ClientStateFlow";
-import { MATCH_STOPPED_MESSAGE, NO_LIVING_HUMAN_MESSAGE, publicStopMessage } from "./TerminalMessages";
+import { MATCH_STOPPED_MESSAGE, NO_LIVING_HUMAN_MESSAGE, publicStopMessage, SPAWN_SELECTION_BUSY_MESSAGE } from "./TerminalMessages";
 import type {ClientBaseline} from "./MatchExecutor";
 import type { EmpireProfile } from "../../lobby/EmpireProfile";
 import type { Command, MatchOptions } from "../../Protocol";
@@ -89,6 +89,7 @@ export class LiveMatch {
       commandPublication: { ...this.commandPublication } };
   }
   private loaded = new Set<string>();
+  private readonly selecting = new Set<string>();
   private seats = new Map<number, Seat>();
   private runtimeSeats: RuntimeSeat[] = [];
   private admissions = new Map<string, Admission>();
@@ -525,11 +526,20 @@ export class LiveMatch {
       this.running
     )
       throw new Error("Spawn selection is not open");
-    const reply = await this.executor.request<SpawnReply>({
-      type: "select-spawn",
-      playerId: this.playerId(guest),
-      tile,
-    });
+    // One check per guest at a time: each resolves the whole faction plan, and
+    // clicks that queue behind it only lengthen the wait (R2-P5).
+    if (this.selecting.has(guest)) throw new Error(SPAWN_SELECTION_BUSY_MESSAGE);
+    this.selecting.add(guest);
+    let reply: SpawnReply;
+    try {
+      reply = await this.executor.request<SpawnReply>({
+        type: "select-spawn",
+        playerId: this.playerId(guest),
+        tile,
+      });
+    } finally {
+      this.selecting.delete(guest);
+    }
     if (reply.rejection) throw new Error(reply.rejection);
     if (!this.running && !this.stopped)
       this.broadcast({

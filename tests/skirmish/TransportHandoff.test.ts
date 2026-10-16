@@ -26,7 +26,8 @@ function move(f: ReturnType<typeof transportScene>) {
 }
 describe("atomic researched transport handoff", () => {
   it("lands several enlarged squads on the same small island without requiring body-sized beaches",()=>{
-    const f=transportScene(144,true,true),targets=[[96,63],[98,63],[96,65],[98,65]];
+    // Seed 1: the default seed no longer places the factions clear of this scene after the spawn streams were salted.
+    const f=transportScene(144,true,true,1),targets=[[96,63],[98,63],[96,65],[98,65]];
     const squads=targets.map((_,index)=>index===0?f.s:f.game.addSquad({...f.s,id:f.game.allocateId(),y:(61.5+index*3)*FIXED,formation:{...f.s.formation!},manpower:structuredClone(f.s.manpower)}));
     squads.forEach((s,index)=>expect(f.game.applyCommand({type:"order",playerId:1,squadIds:[s.id],order:{type:"move",tile:f.map.ref(...targets[index] as [number,number])}})).toBeNull());
     for(let tick=0;tick<1600;tick++){f.game.step();if(squads.every((s,index)=>!s.afloat&&s.order.type==='hold'&&f.game.tileOf(s)===f.map.ref(...targets[index] as [number,number])))break;}

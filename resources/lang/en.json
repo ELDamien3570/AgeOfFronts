@@ -29,11 +29,15 @@
     "command_validation_failure": "This command could not be processed",
     "mixed_army_selection": "Move a whole army, or only squads outside armies, in one order",
     "no_living_human": "Every human empire has been defeated",
-    "playtest_rules_invalid": "Choose supported start protection, time limit and AI difficulty."
+    "playtest_rules_invalid": "Choose supported start protection, time limit and AI difficulty.",
+    "spawn_busy": "Your last spawn choice is still being checked. Wait a moment and try again."
   },
   "skirmish_progression": {
     "advance_ready": "Age requirements met · ready to advance",
     "advance_needs_warfare": "Complete two current-age trees and all but the last warfare technology"
+  },
+  "skirmish_lobby": {
+    "procedural_1000_hint": "Procedural maps at 1000 cells can take a minute or more to prepare before the match starts. Pick 500 for a faster start."
   },
   "skirmish_controls": {
     "double_right_click": "Double right click",

@@ -15,6 +15,9 @@ export const NO_LIVING_HUMAN_MESSAGE = "Every human empire has been defeated";
 /** The match worker could not prepare the battlefield; members return to their room. */
 export const MATCH_INITIALIZATION_FAILED_MESSAGE =
   "The match could not be started. You are back in your room";
+/** A second spawn choice arrived while the guest's previous one was still being checked. */
+export const SPAWN_SELECTION_BUSY_MESSAGE =
+  "Your last spawn choice is still being checked. Wait a moment and try again.";
 /** A worker request failed for an internal reason. */
 export const MATCH_EXECUTOR_FAILED_MESSAGE = "Match executor failed";
 /** Worker fatal notifications (the raw cause is logged in the worker). */

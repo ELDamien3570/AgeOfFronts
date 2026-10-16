@@ -17,6 +17,7 @@ import {
   type MatchAdvance,
   type MatchExecutor,
 } from "../../src/skirmish/multiplayer/application/MatchExecutor";
+import { SPAWN_SELECTION_BUSY_MESSAGE } from "../../src/skirmish/multiplayer/application/TerminalMessages";
 import type { ServerMessage } from "../../src/skirmish/multiplayer/Protocol";
 
 const packet = { hash: "0".repeat(64), payload: "test" };
@@ -250,6 +251,115 @@ describe("server-authoritative live match", () => {
       guest: "b",
       message: { type: "match", manifest: { mapHash: "prepared-map" } },
     });
+  });
+
+  it("announces the seed the prepare step settled on, so clients regenerate the retried map (R2-L7)", async () => {
+    let finish!: (result: ExecutorResult) => void;
+    const messages: { guest: string; message: ServerMessage }[] = [];
+    const match = new LiveMatch(
+      {
+        id: "retried",
+        roomId: "room",
+        createdAt: 0,
+        settings: defaultLobbySettings("black-forest", 250),
+        members: ["a", "b"].map((guestId) => ({
+          guestId,
+          profile: { name: guestId, flagCode: null },
+          joinedAt: 0,
+          connected: true,
+        })),
+      },
+      {
+        request: <T extends ExecutorResult>() =>
+          new Promise<ExecutorResult>((resolve) => {
+            finish = resolve;
+          }) as Promise<T>,
+        close: async () => {},
+      },
+      "version",
+      (guest, message) => messages.push({ guest, message }),
+      () => {},
+      () => 0,
+    );
+    const drawn = match.options.seed;
+    const preparing = match.initialize();
+    finish({ mapHash: "retried-map", options: { ...match.options, seed: (drawn + 1) & 0x7fffffff } });
+    await preparing;
+    expect(match.options.seed).toBe((drawn + 1) & 0x7fffffff);
+    const manifests = messages.filter((m) => m.message.type === "match");
+    expect(manifests.length).toBeGreaterThan(0);
+    for (const { message } of manifests)
+      expect(message).toMatchObject({ manifest: { options: { seed: (drawn + 1) & 0x7fffffff } } });
+  });
+
+  it("allows one select-spawn in flight per guest and releases it afterwards (R2-P5)", async () => {
+    const releases: (() => void)[] = [];
+    const selects: { playerId: number }[] = [];
+    let now = 0, failNext = false;
+    const executor: MatchExecutor = {
+      async request<T extends ExecutorResult>(request: ExecutorRequest): Promise<T> {
+        switch (request.type) {
+          case "prepare":
+            return { mapHash: "map", options: request.options } as T;
+          case "spawn-state":
+            return { remainingMs: request.remainingMs, reservations: [] } as unknown as T;
+          case "select-spawn":
+            if (failNext) { failNext = false; throw new Error("executor failed"); }
+            selects.push({ playerId: request.playerId });
+            await new Promise<void>((resolve) => releases.push(resolve));
+            return { rejection: null, state: { remainingMs: 0, reservations: [] } } as unknown as T;
+          default:
+            throw new Error("Unexpected operation");
+        }
+      },
+      async close() {},
+    };
+    const match = new LiveMatch(
+      {
+        id: "spawn",
+        roomId: "room",
+        createdAt: 0,
+        settings: { ...defaultLobbySettings("africa"), aiCount: 0, tribeCount: 0 },
+        members: ["a", "b"].map((guestId) => ({
+          guestId,
+          profile: { name: guestId, flagCode: null },
+          joinedAt: 0,
+          connected: true,
+        })),
+      },
+      executor,
+      "version",
+      () => {},
+      () => {},
+      () => now,
+    );
+    await match.initialize();
+    await match.qualify("a", "version");
+    await match.qualify("b", "version");
+    await match.advance();
+    const first = match.selectSpawn("a", 10);
+    await expect(match.selectSpawn("a", 11)).rejects.toThrow(SPAWN_SELECTION_BUSY_MESSAGE);
+    // Another seat is not blocked by a's pending choice.
+    const other = match.selectSpawn("b", 12);
+    await vi.waitFor(() => expect(releases).toHaveLength(2));
+    expect(selects).toEqual([{ playerId: 1 }, { playerId: 2 }]);
+    releases[0]();
+    await first;
+    releases[1]();
+    await other;
+    // The flag clears after success...
+    const again = match.selectSpawn("a", 13);
+    await vi.waitFor(() => expect(releases).toHaveLength(3));
+    releases[2]();
+    await again;
+    // ...and after an executor failure.
+    failNext = true;
+    await expect(match.selectSpawn("a", 14)).rejects.toThrow("executor failed");
+    const recovered = match.selectSpawn("a", 15);
+    await vi.waitFor(() => expect(releases).toHaveLength(4));
+    releases[3]();
+    await recovered;
+    expect(selects).toHaveLength(4);
   });
 
   it("ticks at 8 Hz, retains the independent publication cadence, and bounds catch-up",async()=>{

@@ -182,6 +182,7 @@ import { terrainSpeed } from "./Terrain";
 import { validatePlaytestOptions, isHumanSeat, timeLimitTick, startProtectionUntil, aiDifficultyOf } from "./domain/PlaytestRules";
 import { victoryOutcome, type VictoryCandidate } from "./domain/Victory";
 import { AI_DIFFICULTY, aiRaidAfterTicks } from "./content/AiDifficulty";
+import { SIMULATION_STREAM_SALT } from "./SeedStreams";
 
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
@@ -956,7 +957,7 @@ export class Skirmish {
         options.territoryIncomeScale > 256)
     )
       throw new Error("Invalid territory income scale");
-    this.random = new PseudoRandom(options.seed);
+    this.random = new PseudoRandom(options.seed ^ SIMULATION_STREAM_SALT);
     const size = map.width() * map.height();
     this.tileChanges = new TileChangeJournal(size);
     this.owners = new Uint8Array(size);

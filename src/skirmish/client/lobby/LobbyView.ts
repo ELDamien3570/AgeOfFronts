@@ -1,3 +1,6 @@
+import english from "../../../../resources/lang/en.json";
+import { translateText } from "../../../client/Utils";
+import { isProceduralMap } from "../../content/Maps";
 import { FACTION_PALETTE } from "../../lobby/FactionPalette";
 import { STARTING_AGES, startingAgeName } from "../../domain/Definitions";
 import {
@@ -64,6 +67,22 @@ export function factionHint(worldSize: FactionWorldSize): string {
     ai = factionCountRange(worldSize, "aiCount"),
     tribes = factionCountRange(worldSize, "tribeCount");
   return `This map size starts with ${base.aiCount} AI opponents and ${base.tribeCount} tribes. Choose ${ai.min}–${ai.max} AI and ${tribes.min}–${tribes.max} tribes. Humans join on top of these.`;
+}
+const WORLD_SIZE_HINT_KEY = "skirmish_lobby.procedural_1000_hint";
+/** Translated text for the slow-preparation hint, with an English fallback before translations load. */
+function worldSizeHintText(): string {
+  const translated = translateText(WORLD_SIZE_HINT_KEY);
+  return translated !== WORLD_SIZE_HINT_KEY ? translated : english.skirmish_lobby.procedural_1000_hint;
+}
+/** Procedural maps at 1000 cells take the server tens of seconds to prepare (R2-P1). */
+export function showsWorldSizeHint(mapId: string, worldSize: number): boolean {
+  return worldSize === 1000 && isProceduralMap(mapId);
+}
+function updateWorldSizeHint(form: HTMLFormElement): void {
+  const hint = form.querySelector<HTMLElement>("#world-size-hint");
+  const map = form.elements.namedItem("mapId"), size = form.elements.namedItem("worldSize");
+  if (!hint || !(map instanceof HTMLSelectElement) || !(size instanceof HTMLSelectElement)) return;
+  hint.hidden = !showsWorldSizeHint(map.value, Number(size.value));
 }
 const compass = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 28 28 20 23 12 28Z"/><path d="M20 23v14M3 20h9m16 0h9"/></svg>`;
 
@@ -154,7 +173,7 @@ function seatMarkup(vm: LobbyViewModel): string {
 }
 
 function createDialog(vm: LobbyViewModel): string {
-  return `<dialog id="lobby-dialog" class="directory-dialog" aria-labelledby="dialog-title"><form id="create-room"><div class="dialog-heading"><div><p class="overline">CUSTOM WAR ROOM</p><h2 id="dialog-title">Create a lobby</h2></div><button type="button" class="dialog-close" data-close-dialog aria-label="Close create lobby dialog">×</button></div><p class="dialog-description">${vm.online ? "Create a shared lobby with your chosen rules." : "Create a local preview, then try its roster and start rules."}</p><label>Lobby name<input name="title" value="${e(vm.profile.name)}'s lobby" maxlength="40" required /></label><label>Battlefield<select name="mapId">${vm.maps.map((map) => `<option value="${map.id}">${map.name}</option>`).join("")}</select></label><div class="settings-row three"><label>Human seats<input name="slots" type="number" min="2" max="${MAX_HUMAN_PLAYERS}" value="${FRIENDS_MATCH_RULES.slots}" required /></label><label>Minimum humans<input name="minimumHumans" type="number" min="1" max="20" value="2" required /></label><label>Start timer (seconds)<input name="countdownSeconds" type="number" min="15" max="300" value="60" required /></label></div><div class="settings-row three"><label>Map size<select name="worldSize"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option><option value="2000">2000 cells · procedural maps only</option></select></label><label>Starting age<select name="startingAge">${STARTING_AGES.map(age => `<option value="${age}"${age === "StoneAge" ? " selected" : ""}>${startingAgeName(age)}</option>`).join("")}</select></label><label>Technology speed<select name="technologySpeed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label></div><p class="settings-hint">Map size sets the longest edge. Starting age begins everyone in that age with prior technologies unlocked. Post-Modern starts everyone with all technologies and 1,000,000 gold.</p><div class="settings-row"><label>AI opponents<input name="aiCount" type="number" ${factionInputRange(500, "aiCount")} required /></label><label>Tribes<input name="tribeCount" type="number" ${factionInputRange(500, "tribeCount")} required /></label></div><p id="faction-settings-hint" class="settings-hint">${factionHint(500)}</p><div class="settings-row"><label>Resource density<select name="resourceDensity" aria-describedby="resource-settings-hint">${RESOURCE_MULTIPLIERS.map((value) => `<option value="${value}">${value}×${value === 1 ? " · Normal" : ""}</option>`).join("")}</select></label><label>Deposit output<select name="resourceOutput" aria-describedby="resource-settings-hint">${RESOURCE_MULTIPLIERS.map((value) => `<option value="${value}">${value}×${value === 1 ? " · Normal" : ""}</option>`).join("")}</select></label></div><p id="resource-settings-hint" class="settings-hint">Density adds more deposit locations. Output increases extraction from each deposit. These rules apply to every faction.</p>${playtestRuleFields()}<div class="settings-row"><label>Alliances<select name="alliances"><option value="disabled">Disabled</option><option value="allowed">Allowed</option></select></label><label>Victory<select name="victory"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label></div><div class="queue-opt-in"><label class="checkbox-label"><input name="infiniteGoldForPlayers" type="checkbox" /> Infinite Gold for Players</label><p class="settings-hint">Unlimited gold purchases for humans. AI, supplies and research times follow normal rules.</p></div><div class="queue-opt-in"><label class="checkbox-label"><input name="publicAiTakeover" type="checkbox" checked aria-describedby="live-join-hint" /> Allow new players to take over unclaimed AI empires</label><p id="live-join-hint" class="settings-hint">On by default. Returning players can rejoin a surviving reserved empire. Tribes and away human empires are never offered to strangers.</p></div><div class="queue-opt-in"><p>${vm.directory.full ? "All three custom display spaces are occupied." : "There is a custom display space available."}</p><label class="checkbox-label"><input name="willingToWait" type="checkbox" /> If full, put my lobby in the waiting queue</label></div><p class="dialog-error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="lobby-button subtle" data-close-dialog>Cancel</button><button class="lobby-button brass" type="submit">${vm.directory.full ? "Create / join queue" : "Create lobby"} ${arrow}</button></div></form></dialog>`;
+  return `<dialog id="lobby-dialog" class="directory-dialog" aria-labelledby="dialog-title"><form id="create-room"><div class="dialog-heading"><div><p class="overline">CUSTOM WAR ROOM</p><h2 id="dialog-title">Create a lobby</h2></div><button type="button" class="dialog-close" data-close-dialog aria-label="Close create lobby dialog">×</button></div><p class="dialog-description">${vm.online ? "Create a shared lobby with your chosen rules." : "Create a local preview, then try its roster and start rules."}</p><label>Lobby name<input name="title" value="${e(vm.profile.name)}'s lobby" maxlength="40" required /></label><label>Battlefield<select name="mapId">${vm.maps.map((map) => `<option value="${map.id}">${map.name}</option>`).join("")}</select></label><div class="settings-row three"><label>Human seats<input name="slots" type="number" min="2" max="${MAX_HUMAN_PLAYERS}" value="${FRIENDS_MATCH_RULES.slots}" required /></label><label>Minimum humans<input name="minimumHumans" type="number" min="1" max="20" value="2" required /></label><label>Start timer (seconds)<input name="countdownSeconds" type="number" min="15" max="300" value="60" required /></label></div><div class="settings-row three"><label>Map size<select name="worldSize"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select name="startingAge">${STARTING_AGES.map(age => `<option value="${age}"${age === "StoneAge" ? " selected" : ""}>${startingAgeName(age)}</option>`).join("")}</select></label><label>Technology speed<select name="technologySpeed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label></div><p class="settings-hint">Map size sets the longest edge. Starting age begins everyone in that age with prior technologies unlocked. Post-Modern starts everyone with all technologies and 1,000,000 gold.</p><p id="world-size-hint" class="settings-hint" role="status" hidden>${worldSizeHintText()}</p><div class="settings-row"><label>AI opponents<input name="aiCount" type="number" ${factionInputRange(500, "aiCount")} required /></label><label>Tribes<input name="tribeCount" type="number" ${factionInputRange(500, "tribeCount")} required /></label></div><p id="faction-settings-hint" class="settings-hint">${factionHint(500)}</p><div class="settings-row"><label>Resource density<select name="resourceDensity" aria-describedby="resource-settings-hint">${RESOURCE_MULTIPLIERS.map((value) => `<option value="${value}">${value}×${value === 1 ? " · Normal" : ""}</option>`).join("")}</select></label><label>Deposit output<select name="resourceOutput" aria-describedby="resource-settings-hint">${RESOURCE_MULTIPLIERS.map((value) => `<option value="${value}">${value}×${value === 1 ? " · Normal" : ""}</option>`).join("")}</select></label></div><p id="resource-settings-hint" class="settings-hint">Density adds more deposit locations. Output increases extraction from each deposit. These rules apply to every faction.</p>${playtestRuleFields()}<div class="settings-row"><label>Alliances<select name="alliances"><option value="disabled">Disabled</option><option value="allowed">Allowed</option></select></label><label>Victory<select name="victory"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label></div><div class="queue-opt-in"><label class="checkbox-label"><input name="infiniteGoldForPlayers" type="checkbox" /> Infinite Gold for Players</label><p class="settings-hint">Unlimited gold purchases for humans. AI, supplies and research times follow normal rules.</p></div><div class="queue-opt-in"><label class="checkbox-label"><input name="publicAiTakeover" type="checkbox" checked aria-describedby="live-join-hint" /> Allow new players to take over unclaimed AI empires</label><p id="live-join-hint" class="settings-hint">On by default. Returning players can rejoin a surviving reserved empire. Tribes and away human empires are never offered to strangers.</p></div><div class="queue-opt-in"><p>${vm.directory.full ? "All three custom display spaces are occupied." : "There is a custom display space available."}</p><label class="checkbox-label"><input name="willingToWait" type="checkbox" /> If full, put my lobby in the waiting queue</label></div><p class="dialog-error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="lobby-button subtle" data-close-dialog>Cancel</button><button class="lobby-button brass" type="submit">${vm.directory.full ? "Create / join queue" : "Create lobby"} ${arrow}</button></div></form></dialog>`;
 }
 
 function flagResults(vm: LobbyViewModel): string {
@@ -242,6 +261,14 @@ export class LobbyView {
         return;
       }
       if (
+        select instanceof HTMLSelectElement &&
+        select.name === "mapId" &&
+        select.form?.id === "create-room"
+      ) {
+        updateWorldSizeHint(select.form);
+        return;
+      }
+      if (
         !(select instanceof HTMLSelectElement) ||
         select.name !== "worldSize" ||
         select.form?.id !== "create-room"
@@ -258,6 +285,7 @@ export class LobbyView {
       }
       const hint = select.form.querySelector("#faction-settings-hint");
       if (hint) hint.textContent = factionHint(worldSize);
+      updateWorldSizeHint(select.form);
     });
   }
 

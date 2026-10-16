@@ -147,7 +147,7 @@ describe("authored Black Forest", () => {
           families: new Uint8Array(250 * 250).fill(255),
         }),
     ).toThrow("authored map biomes");
-    expect(BLACK_FOREST_THEME.revision).toBe(4);
+    expect(BLACK_FOREST_THEME.revision).toBe(5);
   });
 
   const pondSamples = [

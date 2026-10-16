@@ -15,6 +15,7 @@ import {
   validateLobbySettings,
   type LobbySettings,
 } from "../../src/skirmish/lobby/LobbyDirectory";
+import { LOBBY_WORLD_SIZES } from "../../src/skirmish/lobby/LobbyRules";
 
 const room = (id: string) => ({
   id,
@@ -107,6 +108,26 @@ describe("custom lobby holder and waiting queue", () => {
         "AI opponents",
       );
     }
+  });
+
+  it("does not offer the 2000 world size in shared lobbies on any map (R2-P1)", () => {
+    expect(LOBBY_WORLD_SIZES).toEqual([250, 500, 1000]);
+    for (const mapId of ["black-forest", "migration", "continents", "africa"] as const)
+      expect(() =>
+        validateLobbySettings(defaultLobbySettings(mapId, 2000)),
+      ).toThrow("world size");
+    for (const worldSize of LOBBY_WORLD_SIZES)
+      expect(
+        validateLobbySettings(defaultLobbySettings("black-forest", worldSize)),
+      ).toMatchObject({ worldSize });
+    const directory = new LobbyDirectory();
+    expect(() =>
+      directory.create(
+        { ...room("big"), settings: defaultLobbySettings("continents", 2000) },
+        false,
+      ),
+    ).toThrow("world size");
+    expect(directory.visible).toHaveLength(0);
   });
 
   it("brings rooms saved before AI and tribe counts up to the base for their size", () => {
