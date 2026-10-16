@@ -1,3 +1,4 @@
+import { splitMoveSelection } from "./MixedSelectionSplit";
 import { trenchFrontage } from "../domain/TrenchFrontage";
 import { readDiagnosticReplay } from "../DiagnosticReplay";
 import { certifyFootprint, formationFootprint } from "../domain/FormationContact";
@@ -1946,8 +1947,18 @@ canvas.addEventListener("pointerup", (event) => {
     };
     const context = `${matchSequence}:${ids.sort((a,b)=>a-b).join(",")}`;
     orderGesture.submit({time:performance.now(),...p,context,single:()=>{
-      if (snapshot?.winner === null && context === `${matchSequence}:${[...renderer.selected].sort((a,b)=>a-b).join(",")}`)
+      if (snapshot?.winner === null && context === `${matchSequence}:${[...renderer.selected].sort((a,b)=>a-b).join(",")}`) {
+        // D4: a move mixing an army with other squads goes out as one move
+        // per whole army plus one for the loose squads.
+        if (ordinary.type === "order" && ordinary.order.type === "move" && !ordinary.append) {
+          const split = splitMoveSelection(ordinary.squadIds, snapshot.expansion?.armies.filter(a => a.playerId === localPlayerId) ?? [], snapshot.squads);
+          if (split.groups.length + (split.partial.length ? 1 : 0) > 1) {
+            for (const squadIds of [...split.groups, ...(split.partial.length ? [split.partial] : [])]) command({ ...ordinary, squadIds });
+            return;
+          }
+        }
         command(ordinary);
+      }
     }}, !start.shift && !structureOrder ? ()=>{
       // The first click's order is already under way. The second click charges
       // eligible squads here; cavalry stamina changes impact, not admission.
