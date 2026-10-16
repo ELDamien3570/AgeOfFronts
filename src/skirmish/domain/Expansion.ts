@@ -148,6 +148,10 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
+/** P26: AI progression phase within its 3 s cycle. (id * 3) only used every third tick. */
+export function progressionStagger(playerId: number): number {
+  return playerId % secondsToTicks(3);
+}
 export class Expansion {
   checkpoint() { return structuredClone({trenches:this.trenches.checkpoint(),skirmish:this.skirmish.checkpoint(),features:this.features.checkpoint(),progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),engagements:this.engagements.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint(),relations:this.relations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
@@ -1401,7 +1405,7 @@ export class Expansion {
       if (
         !player.ai ||
         player.eliminated ||
-        this.world.tick % secondsToTicks(3) !== (player.id * 3) % secondsToTicks(3)
+        this.world.tick % secondsToTicks(3) !== progressionStagger(player.id)
       )
         continue;
       if (player.kind === "tribe") {

@@ -51,6 +51,14 @@ export interface AiOperation {
   reason?: string;
 }
 /** Decision policy only. Never replaces Diplomacy.hostile or legal damage. */
+/** Sleep-key force bucket width: a rival's ready force must change by about this percentage to wake a sleeping faction (P25). */
+export const SLEEP_FORCE_STEP_PERCENT = 25;
+/** Integer geometric bucket of a force count; deterministic, no floating-point logarithm. */
+export function forceBucket(count: number): number {
+  let bucket = 0;
+  for (let edge = 1; edge <= count; edge += Math.max(1, Math.floor((edge * SLEEP_FORCE_STEP_PERCENT) / 100))) bucket++;
+  return bucket;
+}
 export class AiOperations {
   private readonly records = new Map<number, AiOperation>();
   revision = 0;
@@ -306,7 +314,9 @@ export class AiOperations {
       if (!compositions.has(id)) compositions.set(id, combatCohorts(this.expansion, world.squadFacts().aliveByOwner(id)));
       return compositions.get(id)!;
     };
-    const ageKey = world.players.map(p => `${p.id}:${this.expansion.progression.states[p.id]?.age}:${this.expansion.progression.states[p.id]?.completed.length}:${forces.get(p.id) ?? 0}:${p.eliminated}`).join(",");
+    // P25: rival forces enter the sleep key as ~25% buckets, so one recruit anywhere
+    // no longer wakes every sleeping faction.
+    const ageKey = world.players.map(p => `${p.id}:${this.expansion.progression.states[p.id]?.age}:${this.expansion.progression.states[p.id]?.completed.length}:${forceBucket(forces.get(p.id) ?? 0)}:${p.eliminated}`).join(",");
     const diplomacyKey = JSON.stringify([diplomacy.state.alliances,diplomacy.state.wars ?? []]);
     for (const [id] of this.records) if (!this.enabled(world.players.find(p => p.id === id))) this.release(id);
     for (const player of world.players) {
