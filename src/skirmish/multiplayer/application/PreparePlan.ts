@@ -68,7 +68,6 @@ export async function preparePlan(
   const { settings } = input;
   const started = deps.now();
   let seed = input.options.seed;
-  let lastAttemptMs = 0;
   for (let attempt = 0; ; attempt++) {
     const attemptStarted = deps.now();
     let genMs: number | undefined;
@@ -98,7 +97,7 @@ export async function preparePlan(
     } catch (error) {
       const now = deps.now();
       genMs ??= now - attemptStarted;
-      lastAttemptMs = now - attemptStarted;
+      const lastAttemptMs = now - attemptStarted;
       deps.log("warn", {
         event: "map-prepare-failed",
         mapId: settings.mapId,
