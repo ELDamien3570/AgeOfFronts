@@ -196,16 +196,16 @@ describe("remaining gameplay passes", () => {
         id: 1000 + i,
         tile,
         playerId: player.id,
-        type: "city",
+        type: "barracks",
         remainingTicks: 0,
       }),
     );
     expect(
-      constructionRejection(map, game.owners, stack, player, "city", tile),
+      constructionRejection(map, game.owners, stack, player, "barracks", tile),
     ).toBeNull();
     stack.push({ ...stack[0], id: 2000 });
     expect(
-      constructionRejection(map, game.owners, stack, player, "city", tile),
+      constructionRejection(map, game.owners, stack, player, "barracks", tile),
     ).toContain("at most 15");
     expect(stackCargoPercent(15)).toBe(stackCargoPercent(10));
     expect(TRADE_RULES.valuePerGood).toBe(20);

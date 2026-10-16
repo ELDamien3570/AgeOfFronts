@@ -16,6 +16,19 @@ import { constructionAvailabilityRejection } from "./content/ConstructionAvailab
 // Shared domain validation also drives placement previews. A preview is advisory;
 // applyCommand checks again against the current authoritative simulation state.
 export const MAX_BUILDING_STACK = 15;
+/** Owner decision OD-7 (05 issue 5 / rec 4): economic buildings stack less
+ * deeply than military ones, so one deposit or site cannot carry a whole
+ * economy. Types not listed keep MAX_BUILDING_STACK. Restore never re-runs
+ * this validator, so older over-stacked saves still load. */
+export const STACK_LIMITS: Readonly<Partial<Record<BuildingType, number>>> = {
+  mine: 1,
+  city: 3,
+  factory: 5,
+  port: 5,
+};
+export function stackLimit(type: BuildingType): number {
+  return STACK_LIMITS[type] ?? MAX_BUILDING_STACK;
+}
 export function constructionRejection(
   map: GameMap,
   owners: Uint8Array,
@@ -47,10 +60,10 @@ export function constructionRejection(
       : [];
   if (stack.length > 0 && stack[0].type !== type)
     return "Only buildings of the same type can share a tile";
-  if (player.kind === "tribe" && type === "mine" && stack.length > 0)
-    return "Tribes cannot stack mines on the same deposit";
-  if (stack.length >= MAX_BUILDING_STACK)
-    return `A single site can support at most ${MAX_BUILDING_STACK} stacked buildings`;
+  if (type === "mine" && stack.length >= stackLimit("mine"))
+    return "Factions cannot stack mines on the same deposit";
+  if (stack.length >= stackLimit(type))
+    return `A single site can support at most ${stackLimit(type)} stacked buildings`;
   const bounds = buildingReservationBounds(map, tile, type);
   const nearby =
     "reservationConflicts" in buildings && buildings.reservationConflicts
