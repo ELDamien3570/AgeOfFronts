@@ -17,10 +17,11 @@ export const IDLE_TICK_FIXTURE_TICKS = 400;
  * synchronously); with the connector port removed the fixture still gives
  * the previous 58442984... / 5a6c5153.... The checkpoint digest then moved
  * from dcf33c01... for planner scheduling version 6 (its version field); the
- * squad digest is unchanged by it. */
+ * squad digest is unchanged by it. OD-10 (tribes start with 3 squads) then
+ * moved them from d6b6d993... / 45c688d7.... */
 export const IDLE_TICK_GOLDEN = Object.freeze({
-  squads: "d6b6d993daa2a8aa8d14af71621e8ab2c44817f0c34d27191e6c6ca618693eb9",
-  checkpoint: "45c688d7ce425a38a5cb4830395dbedb1301d7f20507993bafb8e221c63cddea",
+  squads: "ad84c0cb653f04581666fe7d8d979bdc49f8a3ee1d77d44ac06fdd3e0a4b2d07",
+  checkpoint: "d5a36cb1fe844a1767329c4fa5b2a3254f0448199a69c14e856cf4bacdbecd53",
 });
 
 export function idleTickFixture(): Skirmish {

@@ -43,7 +43,8 @@ describe("playtest tribe opening (13 R1.2-R1.3)", () => {
 
   it("deploys three tribe squads and applies the cap in the simulation", () => {
     const opened = fixture({ tribeOpening: "playtest-v1" }), historical = fixture();
-    for (const [game, squads, cap] of [[opened, 3, 6], [historical, 4, 6]] as const)
+    // OD-10: the global tribe start is now the opening's 3 squads.
+    for (const [game, squads, cap] of [[opened, 3, 6], [historical, 3, 6]] as const)
       for (const player of game.players.filter(p => p.kind === "tribe")) {
         expect(game.squads.filter(s => s.playerId === player.id)).toHaveLength(squads);
         expect(game.squadCapacity(player)).toBe(cap);
@@ -82,7 +83,7 @@ describe("playtest tribe opening (13 R1.2-R1.3)", () => {
 
 describe("tribe opening", () => {
   it("records the owner-decision values (OD-9, OD-10)", () => {
-    expect([TRIBE_SQUAD_CAP, TRIBE_SQUADS_PER_AGE, TRIBE_RESERVE_MULTIPLIER, TRIBE_STARTING_SQUADS]).toEqual([6, 4, 2, 4]);
+    expect([TRIBE_SQUAD_CAP, TRIBE_SQUADS_PER_AGE, TRIBE_RESERVE_MULTIPLIER, TRIBE_STARTING_SQUADS]).toEqual([6, 4, 2, 3]);
     expect(TRIBE_NATION_CAMPAIGN_TICKS).toBe(secondsToTicks(8 * 60));
     expect(TRIBE_NATION_CAMPAIGN_MIN_AGE).toBe("BronzeAge");
   });

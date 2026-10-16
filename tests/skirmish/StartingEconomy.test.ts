@@ -5,6 +5,7 @@ import { startingEconomy } from "../../src/skirmish/content/StartingEconomy";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { defaultUnit } from "../../src/skirmish/content/Units";
 import { AGES, type Age } from "../../src/skirmish/domain/Definitions";
+import { TRIBE_STARTING_SQUADS } from "../../src/skirmish/FactionRules";
 import { costRejection } from "../../src/skirmish/domain/Supply";
 import { tribeBuildingLimit } from "../../src/skirmish/domain/TribeDevelopment";
 import type { BuildingType } from "../../src/skirmish/Protocol";
@@ -40,12 +41,12 @@ describe("age-scaled opening resources and tribes", () => {
     for (const [item, n] of Object.entries(unit.cost.items ?? {})) items[item] = (items[item] ?? 0) + n * 2;
     expect(costRejection(m.players[0], e.supply.inventories[1], { gold, reserves: unit.formationRecipe!.capacity*2, items })).toBeNull();
   });
-  it.each(AGES)("starts tribes in %s with four matching squads, prior technologies and an age-scaled bank", age => {
+  it.each(AGES)("starts tribes in %s with TRIBE_STARTING_SQUADS matching squads, prior technologies and an age-scaled bank", age => {
     const { m, e, tribe } = fixture(age), state = e.progression.states[tribe.id], bank = startingEconomy(age, true);
     expect(state.age).toBe(age);
     expect([tribe.gold, tribe.reserves]).toEqual([bank.gold, Math.floor(bank.reserves*12/1000)]);
     const units = m.squads.filter(s => s.playerId === tribe.id);
-    expect(units).toHaveLength(4);
+    expect(units).toHaveLength(TRIBE_STARTING_SQUADS);
     expect(units.every(s => s.definitionId === defaultUnit("infantry", age).id)).toBe(true);
     expect(m.buildings.find(b => b.playerId === tribe.id)!.age).toBe(age);
     for (const tech of TECHNOLOGIES.filter(t => !t.optional && AGES.indexOf(t.age) < AGES.indexOf(age))) expect(state.completed).toContain(tech.id);

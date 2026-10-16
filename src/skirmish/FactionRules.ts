@@ -47,7 +47,9 @@ export function factionCountRange(
 ): { min: number; max: number } {
   return { min: 0, max: kind === "aiCount" ? MAX_AI_OPPONENTS : MAX_TRIBES };
 }
-export const TRIBE_STARTING_SQUADS = 4;
+/** Owner decision OD-10 (13 R1(2), the notes' default): tribes start with 3
+ * squads (was 4). The playtest opening uses the same horde. */
+export const TRIBE_STARTING_SQUADS = 3;
 export const TRIBE_STARTING_RESERVES = 1500;
 export const TRIBE_STARTING_GOLD = 150;
 // Owner decision OD-9 (05 issue 10 / rec 6; 13 R1(2)(3)): a smaller tribe opening
@@ -67,10 +69,11 @@ export function tribeMayCampaignAgainstNation(tick: number, age: Age): boolean {
 export const tribeReserveIncome = (age: Age) => TRIBE_RESERVE_MULTIPLIER * baseReserveIncome(age);
 /** 13 R1.2-R1.3 playtest tribe opening (MatchOptions.tribeOpening
  * "playtest-v1"). Since Next #9 the cap, reserve curve and campaign gate are
- * the global tribe rules above (OD-9); the opening adds only the smaller
- * starting horde and keeps its own (retaliation-blind) campaign gate. */
+ * the global tribe rules above (OD-9), and since OD-10 took the notes' 3
+ * starting squads so is the horde; the opening now differs only in its own
+ * (retaliation-blind) campaign gate. */
 export const PLAYTEST_TRIBE_OPENING = Object.freeze({
-  startingSquads: 3,
+  startingSquads: TRIBE_STARTING_SQUADS,
   squadCap: TRIBE_SQUAD_CAP,
   squadsPerAge: TRIBE_SQUADS_PER_AGE,
   /** Tribe reserve points per second = this x baseReserveIncome(age). */
