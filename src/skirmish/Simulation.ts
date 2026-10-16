@@ -68,7 +68,7 @@ import { buildingTerrainRejection, constructionRejection } from "./Construction"
 import { buildingGroundBounds } from "./BuildingFootprint";
 import { buildingCostMultiplier, buildingTicks, buildingIntegrity } from "./content/Buildings";
 import { defaultUnit, UNIT, VESSEL, VESSELS } from "./content/Units";
-import { STARTING_AGE_TROOPS, baseReserveIncome, cityReserveIncome } from "./content/Economy";
+import { STARTING_AGE_TROOPS, baseReserveIncome, cityReserveIncome, landGoldIncome } from "./content/Economy";
 import { personalityOf } from "./content/AiPersonalities";
 import { FACTIONS } from "./content/Factions";
 import {
@@ -4014,11 +4014,7 @@ export class Skirmish {
         const earned=this.applyReservePoints(player,amount);
         player.recruited += earned;
         this.producedTroops += earned;
-        player.gold +=
-          20 +
-          Math.floor(
-            player.land / (40 * (this.options.territoryIncomeScale ?? 1)),
-          );
+        player.gold += landGoldIncome(this.expansion.progression.states[player.id].age, player.land, this.options.territoryIncomeScale);
       }
       return;
     }

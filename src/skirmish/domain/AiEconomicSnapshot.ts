@@ -1,5 +1,5 @@
 import type { Building, Player, Ship, Squad } from "../Protocol";
-import { baseReserveIncome, cityReserveIncome } from "../content/Economy";
+import { baseReserveIncome, cityReserveIncome, landGoldIncome } from "../content/Economy";
 import { AiForceInventory } from "./AiForceInventory";
 import type {
   Age,
@@ -93,8 +93,7 @@ export function economicSnapshot(input: {
       completed
         .filter((b) => b.type === "city")
         .reduce((n, b) => n + cityReserveIncome(b.age ?? "StoneAge",input.research), 0))*12/1000,
-    goldIncome:
-      20 + Math.floor(player.land / (40 * (input.territoryIncomeScale ?? 1))),
+    goldIncome: landGoldIncome(age, player.land, input.territoryIncomeScale),
     cap: input.cap,
     headroom: Math.max(
       0,

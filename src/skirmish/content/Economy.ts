@@ -33,6 +33,14 @@ export const TRADE_RULES = {
  * share of the trader's payout instead of the whole payout. The trader keeps
  * the full payout. */
 export const RECEIVER_TARIFF_PERCENT = 25;
+/** Owner decision OD-6 (05 rec 3, the notes' default): land income scales
+ * with age, `20 x (age + 1) / 2 + land / 40` gold per second, so territory
+ * stays relevant in Modern: 10 at Stone, 20 at Bronze ... 80 at Modern, plus
+ * the unchanged land term (was a flat 20 + land / 40 in every age). */
+export const LAND_INCOME_BASE_GOLD = 20;
+export function landGoldIncome(age: Age, land: number, territoryIncomeScale = 1): number {
+  return Math.floor(LAND_INCOME_BASE_GOLD * (AGES.indexOf(age) + 1) / 2) + Math.floor(land / (40 * territoryIncomeScale));
+}
 export const receiverTariff = (gold: number) => Math.floor(gold * RECEIVER_TARIFF_PERCENT / 100);
 export function marketDropCapacity(stack: number): number {
   return Math.round(TRADE_RULES.minimumDrop +

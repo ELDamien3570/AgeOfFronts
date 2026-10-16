@@ -18,10 +18,11 @@ export const IDLE_TICK_FIXTURE_TICKS = 400;
  * the previous 58442984... / 5a6c5153.... The checkpoint digest then moved
  * from dcf33c01... for planner scheduling version 6 (its version field); the
  * squad digest is unchanged by it. OD-10 (tribes start with 3 squads) then
- * moved them from d6b6d993... / 45c688d7.... */
+ * moved them from d6b6d993... / 45c688d7..., and OD-6 (land income scaled
+ * by age) from ad84c0cb... / d5a36cb1.... */
 export const IDLE_TICK_GOLDEN = Object.freeze({
-  squads: "ad84c0cb653f04581666fe7d8d979bdc49f8a3ee1d77d44ac06fdd3e0a4b2d07",
-  checkpoint: "d5a36cb1fe844a1767329c4fa5b2a3254f0448199a69c14e856cf4bacdbecd53",
+  squads: "e85f66129596c7cec4af0bc8bffd908104b372f8838b9d6dba1f9b15c5dfb038",
+  checkpoint: "25da28caaceb87c72b1f876482eeac1e872966be46612bf1bf624147c48af615",
 });
 
 export function idleTickFixture(): Skirmish {

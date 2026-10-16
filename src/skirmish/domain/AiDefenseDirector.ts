@@ -1,3 +1,4 @@
+import { landGoldIncome } from "../content/Economy";
 import {TICKS_PER_SECOND} from '../Protocol';
 import { secondsToTicks } from '../Protocol';
 import { effectiveRange, maxEffectiveRange } from "./ElevationAdvantage";
@@ -158,11 +159,7 @@ export class AiDefenseDirector {
           : ["builder", "merchant"].includes(profile.id)
             ? 20
             : 10,
-      income =
-        20 +
-        Math.floor(
-          player.land / (40 * (world.options?.territoryIncomeScale ?? 1)),
-        );
+      income = landGoldIncome(this.expansion.progression.states[player.id].age, player.land, world.options?.territoryIncomeScale);
     // Missed decisions do not create a catch-up construction burst.
     previous.amount = Math.min(
       120000,

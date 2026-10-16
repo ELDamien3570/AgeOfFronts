@@ -1,3 +1,4 @@
+import { landGoldIncome } from "../content/Economy";
 import {TICKS_PER_SECOND} from '../Protocol';
 import { secondsToTicks } from '../Protocol';
 import { portWaterTiles } from "../PortWaterAccess";
@@ -864,7 +865,7 @@ export class AiNavalPlanner {
   private projectedCredit(player: Player, spending: { investmentCredit?: number; creditTick?: number }, costGold: number): number {
     const { world } = this.expansion;
     const tradeRate=(this.economy.tradeQuotes.best(player.id,true)?.quote.riskAdjustedGoldPer1000Ticks ?? 0)*TICKS_PER_SECOND/1000;
-    const income=20+Math.floor(player.land/(40*(world.options?.territoryIncomeScale ?? 1)))+tradeRate;
+    const income=landGoldIncome(this.expansion.progression.states[player.id].age,player.land,world.options?.territoryIncomeScale)+tradeRate;
     const allowance=Math.max(costGold*4,Math.floor(income*60*.35));
     return Math.min(allowance,(spending.investmentCredit ?? costGold*4)+
       Math.max(0,world.tick-(spending.creditTick ?? world.tick))/TICKS_PER_SECOND*income*.35);
