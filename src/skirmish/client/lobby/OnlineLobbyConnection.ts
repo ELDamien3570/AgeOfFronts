@@ -1,5 +1,14 @@
 import type { ClientMessage, ServerMessage } from "../../multiplayer/Protocol";
 import { decodeSnapshotFrame } from "../../multiplayer/SnapshotWireCodec";
+import { rateLimitedText } from "../ServerText";
+
+/** 1008 reasons the coordinator sends for a valid session that misbehaved
+ * or was slow (CoordinatorServer rate gate and authentication timer). */
+const TRANSIENT_POLICY_CLOSES: ReadonlySet<string> = new Set([
+  "Rate limit exceeded",
+  "Authenticate first",
+  "Authentication required",
+]);
 type LobbyRequest = Exclude<ClientMessage, { type: "authenticate" }>;
 
 /** Browser transport port. Remembered credentials are private and independent of empire cosmetics. */
@@ -100,6 +109,13 @@ export class OnlineLobbyConnection {
           this.retry();
           return;
         }
+        // Transient coordinator closes: the session is still valid, so
+        // reconnect (with the usual backoff) instead of reporting a rejected
+        // guest and giving up.
+        if (event.code === 1008 && TRANSIENT_POLICY_CLOSES.has(event.reason)) {
+          this.retry(event.reason === "Rate limit exceeded" ? rateLimitedText() : undefined);
+          return;
+        }
         if (event.code === 4001 || event.code === 1008) {
           this.onStatus(
             event.code === 4001
@@ -167,7 +183,7 @@ export class OnlineLobbyConnection {
       this.endpoint.endsWith("/") ? this.endpoint : `${this.endpoint}/`,
     );
   }
-  private retry(): void {
+  private retry(status?: string): void {
     if (this.stopped) return;
     if (this.options.reconnect === false) {
       this.onStatus(
@@ -189,7 +205,7 @@ export class OnlineLobbyConnection {
       this.onStatus("Reconnection window expired. Return to the lobby to rejoin.",false);
       this.stop();this.options.onExhausted?.();return;
     }
-    this.onStatus("Lobby server disconnected. Reconnecting…", false);
+    this.onStatus(status ?? "Lobby server disconnected. Reconnecting…", false);
     this.reconnectTimer = window.setTimeout(
       () => void this.connect(),
       Math.min(10_000, 500 * 2 ** Math.min(this.failures++, 5)),

@@ -36,3 +36,10 @@ export function serverText(message: string): string {
   const translated = translateText(fullKey);
   return translated !== fullKey ? translated : english.skirmish_server[key];
 }
+
+/** Lobby status after the coordinator closed the socket for flooding. */
+export function rateLimitedText(): string {
+  const fullKey = "skirmish_server.rate_limited";
+  const translated = translateText(fullKey);
+  return translated !== fullKey ? translated : english.skirmish_server.rate_limited;
+}

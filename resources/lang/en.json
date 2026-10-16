@@ -6,7 +6,8 @@
     "match_stopped": "Match stopped unexpectedly",
     "match_initialization_failed": "The match could not be started. You are back in your room",
     "setup_not_enough_room": "Not enough room for these factions and tribes. Choose fewer opponents or a larger battlefield.",
-    "setup_no_viable_land": "No viable land for starting camps"
+    "setup_no_viable_land": "No viable land for starting camps",
+    "rate_limited": "Too many messages were sent to the lobby server. Reconnecting…"
   },
   "skirmish_controls": {
     "double_right_click": "Double right click",

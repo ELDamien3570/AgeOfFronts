@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import english from "../../resources/lang/en.json";
 import { OnlineLobbyConnection } from "../../src/skirmish/client/lobby/OnlineLobbyConnection";
 class Socket {
   static OPEN = 1;
@@ -57,6 +58,37 @@ describe("bounded match connection", () => {
       expect.stringContaining("Keep that tab open"),
       false,
     );
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(Socket.instances).toHaveLength(1);
+  });
+  it("reconnects after a rate-limit close instead of rejecting the guest", async () => {
+    const status = vi.fn(), exhausted = vi.fn();
+    connection = new OnlineLobbyConnection("http://localhost", vi.fn(), status, vi.fn(), { onExhausted: exhausted });
+    await connection.connect();
+    Socket.instances[0].onclose?.({ code: 1008, reason: "Rate limit exceeded" });
+    expect(status).toHaveBeenLastCalledWith(english.skirmish_server.rate_limited, false);
+    expect(status).not.toHaveBeenCalledWith(expect.stringContaining("Guest session rejected"), false);
+    expect(localStorage.removeItem).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(500);
+    expect(Socket.instances).toHaveLength(2);
+    expect(exhausted).not.toHaveBeenCalled();
+  });
+  it.each(["Authenticate first", "Authentication required"])(
+    "reconnects after a %s close", async (reason) => {
+      const status = vi.fn();
+      connection = new OnlineLobbyConnection("http://localhost", vi.fn(), status);
+      await connection.connect();
+      Socket.instances[0].onclose?.({ code: 1008, reason });
+      expect(status).toHaveBeenLastCalledWith(expect.stringContaining("Reconnecting"), false);
+      await vi.advanceTimersByTimeAsync(500);
+      expect(Socket.instances).toHaveLength(2);
+    });
+  it("still stops on an unknown policy close", async () => {
+    const status = vi.fn();
+    connection = new OnlineLobbyConnection("http://localhost", vi.fn(), status);
+    await connection.connect();
+    Socket.instances[0].onclose?.({ code: 1008, reason: "Origin not allowed" });
+    expect(status).toHaveBeenLastCalledWith(expect.stringContaining("Guest session rejected"), false);
     await vi.advanceTimersByTimeAsync(30_000);
     expect(Socket.instances).toHaveLength(1);
   });
