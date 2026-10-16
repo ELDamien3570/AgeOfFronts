@@ -39,6 +39,7 @@ import { chargeReadiness, chargeBonusLabel } from "./ChargeReadiness";
 import { CombatEffectsView } from "./CombatEffectsView";
 import {
   combatTargets,
+  crosshairTargets,
   impactSize,
   shellVisual,
   squadArtworkPose,
@@ -426,7 +427,7 @@ export class Renderer {
     this.formationAngles.update(snapshot.squads,snapshot.tick,this.squadSamples.progress(arrivedAt));
     this.squadSamples.update(snapshot.squads, snapshot.tick, arrivedAt,
       Math.min(600, Math.max(50, (spanTicks * TICK_MS) / Math.max(1, this.drawSpeed))));
-    this.combatMarkers = combatTargets(snapshot);
+    this.combatMarkers = crosshairTargets(snapshot);
     this.snapshot = snapshot;
     this.healthLoss.update(snapshot.squads.map(s => ({id:s.id,strength:s.afloat ? s.afloat.hull/s.afloat.maxHull : strengthFraction(s)})),snapshot.tick);
     this.buildingGuns.update(snapshot.buildings, snapshot.volleys, snapshot.tick);

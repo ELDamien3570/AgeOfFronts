@@ -12,6 +12,7 @@ import { ARTWORK_CATALOG } from "../../src/skirmish/client/ArtworkCatalog";
 import { javelinThrowTime } from "../../src/skirmish/client/troops/TroopVolley";
 import {
   combatTargets,
+  crosshairTargets,
   impactSize,
   shellVisual,
   squadArtworkPose,
@@ -201,5 +202,29 @@ describe("read-only enemy inspection and weapon presentation", () => {
     expect(combatTargets(state).map((t) => t.kind)).toEqual(["bombing"]);
     state.expansion!.aircraft[0].state = "returning";
     expect(combatTargets(state)).toHaveLength(0);
+  });
+  it("draws crosshairs for the snapshot's local player, not player 1", () => {
+    const m = setup(),
+      state = m.snapshot();
+    const bomber = (id: number, playerId: number, x: number) => ({
+      id,
+      playerId,
+      definitionId: "bomber",
+      airfieldId: 1,
+      health: 100,
+      x: 0,
+      y: 0,
+      target: { x: x * FIXED, y: x * FIXED },
+      state: "outbound" as const,
+      reloadTick: 0,
+      fuelTicks: presentationTicks(25),
+    });
+    state.expansion!.aircraft.push(bomber(20, 1, 40), bomber(21, 3, 70));
+    expect(crosshairTargets(state)).toHaveLength(1);
+    expect(crosshairTargets(state)[0].x).toBe(40 * FIXED);
+    state.localPlayerId = 3;
+    expect(crosshairTargets(state)).toEqual([
+      { kind: "bombing", x: 70 * FIXED, y: 70 * FIXED },
+    ]);
   });
 });
