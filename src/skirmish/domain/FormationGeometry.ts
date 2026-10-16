@@ -115,6 +115,9 @@ export function reorientedFormation(s:Squad,tick:number,facing:number):Formation
   const source=formationSlots(s,tick).map(p=>({...p,x:Math.round(p.x*c-p.y*sin),y:Math.round(p.x*sin+p.y*c)}));
   const formation={...old,facing,transition:undefined,revision:old.revision+1};
   const to=formationSlots({...s,formation},tick),assignment=minimumTravelAssignment(source,to);
+  // R2-P10: the certification that follows interpolates this same transition;
+  // hand it the assignment instead of solving it a second time.
+  seedTransitionAssignment(source,to,assignment);
   const distance=Math.max(0,...to.map((p,i)=>Math.hypot(p.x-source[assignment[i]].x,p.y-source[assignment[i]].y)));
   return {...formation,transition:{reorientation:true,from:formationEnvelope(s,tick).shape,fromFacing:facing,fromSlots:source,startTick:tick,duration:Math.min(secondsToTicks(10),Math.max(1,Math.ceil(distance*TICKS_PER_SECOND/(FIXED*2.5))))}};
 }
@@ -453,6 +456,27 @@ export function formationSlots(
 }
 const transitionAssignments=new Map<string,Slots>();
 const assignmentPairs = new WeakMap<object, WeakMap<object, Map<number, Slots>>>();
+type AssignmentPoint = Readonly<{x:number;y:number;row:number}>;
+function rememberAssignment(source:readonly AssignmentPoint[],to:readonly AssignmentPoint[],groupSize:number,result:Slots):Slots {
+  let destinations = assignmentPairs.get(source);
+  if (!destinations) { destinations = new WeakMap(); assignmentPairs.set(source, destinations); }
+  let groups = destinations.get(to); if (!groups) { groups = new Map(); destinations.set(to, groups); }
+  groups.set(groupSize, result); return result;
+}
+/** Record an already solved single-member assignment exactly as
+ * assignedTransitionSources would compute it. With equal lengths its padded
+ * `sources` are element-wise `source`, so the result is identical; other
+ * lengths are left to the ordinary path. */
+function seedTransitionAssignment(source:readonly AssignmentPoint[],to:readonly AssignmentPoint[],assignment:readonly number[]):void {
+  if (source.length !== to.length || assignmentPairs.get(source)?.get(to)?.get(1)) return;
+  const key=`1:${arrayGeometryKey(source)}|${arrayGeometryKey(to)}`;
+  const result=transitionAssignments.get(key) ?? Object.freeze(assignment.map(i=>source[i])) as unknown as Slots;
+  if(!transitionAssignments.has(key)){
+    if(transitionAssignments.size>=128)transitionAssignments.delete(transitionAssignments.keys().next().value!);
+    transitionAssignments.set(key,result);
+  }
+  rememberAssignment(source,to,1,result);
+}
 function assignedTransitionSources(source:readonly Readonly<{x:number;y:number;row:number}>[],to:readonly Readonly<{x:number;y:number;row:number}>[],groupSize:number) {
   let destinations = assignmentPairs.get(source);
   const known = destinations?.get(to)?.get(groupSize); if (known) return known;
