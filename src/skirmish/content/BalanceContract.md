@@ -220,6 +220,35 @@ losses during the fight. Spearmen are 9-15x better gold-for-gold against light
 cavalry and mainline infantry 7-8x against spearmen; heavy cavalry (0.09-0.13)
 and foot archers against infantry (0.19-0.33) are not equal-gold counters.
 
+## Pacing
+
+`scripts/pacingProbe.ts` (heightmap-test1 at 500, 8 idle human seats, 14 AI
+nations, 30 tribes, Stone start, technology speed 1, 60 simulated minutes)
+records the minute regular factions first reach each age. Values are leader /
+median minute over the factions that reached the age (count in brackets). "Base"
+is branch aof/next-6 (before these rows), "After" is aof/next-9. A recording,
+not a gate. Seed 47 was not run.
+
+| Age | Target leader / median (13 R8) | Base 424242 | After 424242 | Base 9001 | After 9001 |
+| --- | --- | --- | --- | --- | --- |
+| Bronze | 5 / 6 | 4 / 4 (22) | 5 / 5 (17) | 4 / 4.5 (22) | 5 / 5 (19) |
+| Classical | 12 / 14 | 8 / 9 (14) | 9 / 11 (15) | 8 / 11 (14) | 9 / 13 (15) |
+| Early Medieval | 20 / 23 | 13 / 14 (13) | 15 / 17 (12) | 13 / 15 (13) | 16 / 19 (11) |
+| Late Medieval | 28 / 32 | 19 / 20 (10) | 23 / 25 (10) | 19 / 21 (13) | 23 / 29 (9) |
+| Napoleonic | 37 / 42 | 26 / 27 (7) | 32 / 33 (8) | 26 / 28 (13) | 35 / 38.5 (8) |
+| Early Modern | 47 / 53 | 33 / 34 (7) | 43 / 47.5 (6) | 34 / 36 (12) | 50 / 53.5 (4) |
+| Modern | 58 / 65 | 44 / 46 (6) | not reached by 60 | 46 / 47 (7) | not reached by 60 |
+
+Other measurements at minute 60 (base / after): squads alive 827 / 79 (424242)
+and 1,055 / 100 (9001); regular factions 30 / 25 and 31 / 27; tribes promoted
+8 / 3 and 9 / 5. Idle human seats: 1 / 1 and 3 / 4 alive at minute 10, none at
+minute 20 in either build. A 30-minute diagnostic run of seed 424242 shows
+regular-faction gold 2.1M / 0.44M at minute 15 and 6.7M / 0.82M at minute 30,
+with regular squads 290 / 236 at minute 30: the trade rows cut gold about
+8x, and the army gap opens after minute 30. That late collapse in army size is
+not explained by these measurements and needs a playtest before the trade
+constants are confirmed.
+
 ## Authoring sources
 
 `skirmish/plans/formation-recipes.json` and `skirmish/plans/soldier-weapons.json`
