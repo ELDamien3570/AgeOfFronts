@@ -205,7 +205,20 @@ it("runs two thin clients from one server simulation, enforces ownership and con
       now += 125;
       return false;
     });
-    const remaining = last(states(1));
+    // The AI handover is applied by the simulation, so it can reach the
+    // snapshot a publication after the tick first advances. Under full-suite
+    // load that lag made a single-read assertion flaky: keep advancing the
+    // clock until a publication carries the handover (bounded by a deadline).
+    const handoverDeadline = performance.now() + 15_000;
+    let remaining = last(states(1));
+    while (!(await decodeState<SnapshotPacket>(remaining.packet)).players[0].ai) {
+      if (errors.length) throw errors[0];
+      if (performance.now() > handoverDeadline)
+        throw new Error("Timed out waiting for the AI handover");
+      now += 125;
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      remaining = last(states(1));
+    }
     expect(remaining.executor).toBe("server");
     expect(remaining.disconnectedPlayerIds).toEqual([1]);
     expect(
