@@ -188,7 +188,9 @@ const RADIAL_SPANS = Array.from({ length: BASE_RADIUS + 1 }, (_, radius) =>
 );
 const ROUTE_EFFORT_LIMIT = 20_000;
 // Crossing trees built per tick until every portal has one (land, then water).
-const PATH_WARM_TREES = 4;
+// Owner decision D5: 120 trees per simulated second (15 a tick at 8 Hz), so
+// the corridor gates open about 3.75x sooner than the former 4 a tick.
+export const PATH_WARM_TREES = Math.ceil(120 / TICKS_PER_SECOND);
 /** Owner decision D8 (R2-P10): back-off after a failed reorientation, and
  * the heading change (30 degrees) that retries immediately. */
 const REORIENT_RETRY = { ticks: COLUMN_TRAVEL.retryTicks, facing: Math.round(65536 * 30 / 360) } as const;

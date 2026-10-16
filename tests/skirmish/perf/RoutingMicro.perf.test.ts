@@ -8,7 +8,7 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../../src/core/game/GameMap";
 import { MovementAdmission } from "../../../src/skirmish/MovementAdmission";
-import { FIXED } from "../../../src/skirmish/Protocol";
+import { FIXED, TICKS_PER_SECOND } from "../../../src/skirmish/Protocol";
 import { Skirmish } from "../../../src/skirmish/Simulation";
 import { retainSquads } from "../UnitFixtures";
 import { createSkirmishMap } from "../../../src/skirmish/Elevation";
@@ -21,8 +21,8 @@ import { TECHNOLOGIES } from "../../../src/skirmish/content/Technology";
 const enabled = process.env.SKIRMISH_PERF === "1";
 
 /** The load harness's Med/Mig 500 live configuration with one human seat. */
-async function liveMatch(mapId: "heightmap-test1" | "migration", seed = 1272661902) {
-  const settings = { ...defaultLobbySettings(mapId, 500), aiCount: 14, tribeCount: 30, startingAge: "Napoleonic" } as never;
+async function liveMatch(mapId: "heightmap-test1" | "migration", seed = 1272661902, size: 500 | 1000 = 500) {
+  const settings = { ...defaultLobbySettings(mapId, size), aiCount: 14, tribeCount: 30, startingAge: "Napoleonic" } as never;
   const loaded = await loadServerMap(settings, "resources", seed), m = loaded.map;
   const options = { ...DEFAULT_AI_POLICIES, diplomacyRules: "raids-v1", armyTravel: "corridors-v1", ...FORMATION_MOVEMENT, seed,
     humanNames: ["H1"], aiCount: 14, tribes: true, tribeCount: 30, ruleset: "ages-v1", victoryMode: "solo", technologySpeed: 1,
@@ -99,4 +99,15 @@ describe.runIf(enabled)("routing micro-benchmarks (opt-in)", () => {
     console.log(`B2 mixed move applyCommand: ${ms.toFixed(2)} ms (${reason ?? "accepted"}), tree bytes ${game.paths.residency.hierarchy.treeBytes}`);
     expect(ms).toBeLessThanOrEqual(20);
   }, 120_000);
+
+  it("B3: the Mig 1000 water corridor gate opens within about 3 minutes of simulated time", async () => {
+    const t0 = performance.now(), game = await liveMatch("migration", 1272661902, 1000);
+    const gates = (game as unknown as { corridorTicks: { land: number; water: number } }).corridorTicks;
+    const minutes = (ticks: number) => ticks / TICKS_PER_SECOND / 60;
+    console.log(`B3 Mig 1000: land gate ${gates.land} ticks (${minutes(gates.land).toFixed(2)} min), water gate ${gates.water} ticks ` +
+      `(${minutes(gates.water).toFixed(2)} min), portals land ${game.paths.hierarchyPortals} water ${game.waterPaths.hierarchyPortals}, ` +
+      `setup ${((performance.now() - t0) / 1000).toFixed(1)} s`);
+    // About 10.7 min at 4 trees a tick; about 2.9 min at PATH_WARM_TREES = 15.
+    expect(minutes(gates.water)).toBeLessThan(3.5);
+  }, 600_000);
 });
