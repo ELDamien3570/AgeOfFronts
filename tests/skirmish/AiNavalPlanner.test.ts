@@ -194,8 +194,11 @@ describe("persistent concentrated port defense", () => {
     expect(mission.state).toBe("recover");
     planner.funding.set(key,{...planner.funding.get(key)!,investmentCredit:VESSEL.get("stoneage-warship")!.cost.gold!,creditTick:f.game.tick});
     const apply=vi.spyOn(f.game,"applyCommand");
-    f.game.tick=Math.max(f.game.tick+1,mission.nextAssessment);f.refresh();
-    mission=f.assess();
+    // Within 1 s of credit covering the hull, well before the next assessment
+    // (5 s cadence, and one faction per planner tick).
+    expect(mission.nextAssessment).toBeGreaterThan(f.game.tick+secondsToTicks(1));
+    for(let tick=0;tick<secondsToTicks(1)&&mission.state==="recover";tick++){f.game.tick++;f.planner.step(3);}
+    expect(f.game.tick).toBeLessThan(mission.nextAssessment);
     expect(mission.state).not.toBe("recover");
     expect(apply.mock.calls.some(([c])=>c.type==="recruit-ship")).toBe(true);
   });

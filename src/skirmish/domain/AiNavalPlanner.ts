@@ -72,6 +72,11 @@ export interface AiFleetMission {
   purchases: number;
   assessment?: Assessment;
   phaseSince?:number;lostPower?:number;trackedPower?:Map<number,number>;recorded?:boolean;
+  /** I5/L3: a recovery parked only for investment credit, with the funding
+   * request its last assessment would make. Checked every tick, so funding
+   * resumes on the tick credit covers the next hull rather than at the next
+   * assessment of this faction. */
+  creditPark?: { port: number; required: number; have: number; enemyPower: number };
 }
 /** Integer rate proxy based on authored, researched attack and current health.
  * It is a planning comparison, never an alternative combat damage rule. */
@@ -270,6 +275,7 @@ export class AiNavalPlanner {
     this.diagnostics.work = 0;
     if (!this.economy.navalFacts.ready || !world.players.length || budget <= 0)
       return 0;
+    this.resumeCreditParked();
     // One faction per tick; entity work inside it shares one fixed allowance.
     let player: Player | undefined;
     for (let n = 0; n < world.players.length; n++) {
@@ -581,9 +587,12 @@ export class AiNavalPlanner {
       if(age>=secondsToTicks(40) && !enough){this.transition(m,"abort","Recovery deadline reached; paid repairs remain physical tasks");return;}
       // L3: a recovery parked only for credit resumes funding once credit covers the next hull.
       const pending=a.futurePower+(a.recoveringPower ?? 0);
-      if(!enough && !repairPending && readyPower+pending<Math.max(1,required) && this.creditCovers(player,m,port.age)){
-        this.fund(player,m,port.id,required,readyPower+pending,a.enemyPower);
-        if(m.state!=="recover")return;
+      m.creditPark=undefined;
+      if(!enough && !repairPending && readyPower+pending<Math.max(1,required)){
+        if(this.creditCovers(player,m,port.age)){
+          this.fund(player,m,port.id,required,readyPower+pending,a.enemyPower);
+          if(m.state!=="recover")return;
+        } else m.creditPark={port:port.id,required,have:readyPower+pending,enemyPower:a.enemyPower};
       }
       if(!enough || repairPending || age<secondsToTicks(10)){if(ships.length)this.sail(m,ships,a.anchor);m.reason=repairPending?"Waiting for paid repair subtasks":"Consolidating surviving fleet power";return;}
       this.transition(m,"stage","Recovered fleet can safely rejoin its intended sea");
@@ -859,6 +868,24 @@ export class AiNavalPlanner {
     const allowance=Math.max(costGold*4,Math.floor(income*60*.35));
     return Math.min(allowance,(spending.investmentCredit ?? costGold*4)+
       Math.max(0,world.tick-(spending.creditTick ?? world.tick))/TICKS_PER_SECOND*income*.35);
+  }
+  /** I5/L3: every credit-parked recovery is checked each tick (a few
+   * missions, one ledger read each); one whose credit now covers the next hull
+   * funds at once with its last assessment's request. */
+  private resumeCreditParked(): void {
+    const { world } = this.expansion;
+    for (const m of this.missions.values()) {
+      const park = m.creditPark;
+      if (!park || m.state !== "recover") continue;
+      const player = world.players.find(p => p.id === m.playerId), port = world.building(park.port);
+      if (!player || !this.enabled(player) || m.generation !== world.aiGeneration(player.id) ||
+        !port || port.playerId !== player.id || world.owners[port.tile] !== player.id || (port.health ?? 1) <= 0) {
+        m.creditPark = undefined; continue;
+      }
+      if (!this.creditCovers(player, m, port.age)) continue;
+      m.creditPark = undefined;
+      this.fund(player, m, park.port, park.required, park.have, park.enemyPower);
+    }
   }
   private creditCovers(player: Player, m: AiFleetMission, portAge: Age | undefined): boolean {
     const definition = this.fleetVessel(player, portAge);
