@@ -81,7 +81,7 @@ import { canPromoteTribe, MAX_PLAYER_ID } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
 import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
-import { chargeFallbackOrder, commandRejection } from "./domain/CommandPolicy";
+import { chargeFallbackOrder, commandRejection, MIXED_ARMY_SELECTION_MESSAGE } from "./domain/CommandPolicy";
 import { SimulationFault, type TickFault } from "./SimulationFault";
 import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
@@ -1602,6 +1602,12 @@ export class Skirmish {
       if(armyOrder===null && !append)this.movementAdmission.cancel(command.squadIds,this.tick);
       return armyOrder;
     }
+    // Deferred planning admits every non-army move above; what reaches here
+    // with an army member would run cold synchronous HPA* (R2-P2). Rejected
+    // before any write, so the rejection is side-effect free (R2-M10).
+    if (this.options.deferredPlanning && !append && order.type === "move" &&
+      selected.some(s => this.expansion?.armies.armyOf(s!.id)))
+      return MIXED_ARMY_SELECTION_MESSAGE;
     const orders: { squad: Squad; order: Order; path: number[] }[] = [];
     let destinations: Map<number, WorldPoint> | null = null;
     let groupPaths: (number[] | null)[] = [];

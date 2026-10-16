@@ -8,7 +8,8 @@
     "setup_not_enough_room": "Not enough room for these factions and tribes. Choose fewer opponents or a larger battlefield.",
     "setup_no_viable_land": "No viable land for starting camps",
     "rate_limited": "Too many messages were sent to the lobby server. Reconnecting…",
-    "command_validation_failure": "This command could not be processed"
+    "command_validation_failure": "This command could not be processed",
+    "mixed_army_selection": "Move a whole army, or only squads outside armies, in one order"
   },
   "skirmish_controls": {
     "double_right_click": "Double right click",

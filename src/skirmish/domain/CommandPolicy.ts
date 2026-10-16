@@ -2,6 +2,10 @@ import type { Command, Order } from "../Protocol";
 import { FIXED, MAX_SQUADS } from "../Protocol";
 import { BUILDING_RULES, MAX_FACTION_SHIPS } from "../Rules";
 import { AGES } from "./Definitions";
+/** R2-P2 (owner decision D4): a move order whose selection mixes army
+ * members with other squads, or holds only part of an army, is rejected
+ * instead of running synchronous whole-map routing inside the command. */
+export const MIXED_ARMY_SELECTION_MESSAGE = "Move a whole army, or only squads outside armies, in one order";
 // Runtime boundary shared by local worker and eventual authenticated transport.
 // Authentication is deliberately outside this pure shape validation policy.
 export interface CommandBounds { width: number; height: number }

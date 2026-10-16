@@ -11,8 +11,25 @@ import { MovementAdmission } from "../../../src/skirmish/MovementAdmission";
 import { FIXED } from "../../../src/skirmish/Protocol";
 import { Skirmish } from "../../../src/skirmish/Simulation";
 import { retainSquads } from "../UnitFixtures";
+import { createSkirmishMap } from "../../../src/skirmish/Elevation";
+import { loadServerMap } from "../../../src/skirmish/multiplayer/infrastructure/ServerMap";
+import { defaultLobbySettings } from "../../../src/skirmish/lobby/LobbyDirectory";
+import { DEFAULT_AI_POLICIES } from "../../../src/skirmish/content/AiPolicies";
+import { FORMATION_MOVEMENT } from "../../../src/skirmish/content/FormationMovement";
+import { TECHNOLOGIES } from "../../../src/skirmish/content/Technology";
 
 const enabled = process.env.SKIRMISH_PERF === "1";
+
+/** The load harness's Med/Mig 500 live configuration with one human seat. */
+async function liveMatch(mapId: "heightmap-test1" | "migration", seed = 1272661902) {
+  const settings = { ...defaultLobbySettings(mapId, 500), aiCount: 14, tribeCount: 30, startingAge: "Napoleonic" } as never;
+  const loaded = await loadServerMap(settings, "resources", seed), m = loaded.map;
+  const options = { ...DEFAULT_AI_POLICIES, diplomacyRules: "raids-v1", armyTravel: "corridors-v1", ...FORMATION_MOVEMENT, seed,
+    humanNames: ["H1"], aiCount: 14, tribes: true, tribeCount: 30, ruleset: "ages-v1", victoryMode: "solo", technologySpeed: 1,
+    startingAge: "Napoleonic", resourceDensity: 1, resourceOutput: 1, infiniteGoldForPlayers: false, alliances: false,
+    territoryIncomeScale: loaded.territoryIncomeScale } as ConstructorParameters<typeof Skirmish>[1];
+  return new Skirmish(createSkirmishMap(m.width, m.height, m.terrain, m.elevation, m.forest, m.resourceTerrain), options);
+}
 
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -54,4 +71,32 @@ describe.runIf(enabled)("routing micro-benchmarks (opt-in)", () => {
     console.log(`B1 stepInteractive P=${P}: median ${median(samples).toFixed(3)} ms, max ${Math.max(...samples).toFixed(3)} ms`);
     expect(median(samples)).toBeLessThan(1);
   });
+
+  it("B2: a mixed army/non-army move on Med 500 returns within 20 ms", async () => {
+    const game = await liveMatch("heightmap-test1"), player = game.player(1)!;
+    game.expansion!.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
+    const tiles = game.ownedLandNearest(1, player.base, 400).filter(t => game.map.isLand(t));
+    // Private recruitment spawn path, reached deliberately for the fixture.
+    const spawn = (game as unknown as { spawnSquad(p: unknown, kind: string, tile: number, definition?: string, staged?: boolean): unknown }).spawnSquad.bind(game);
+    const template = game.squads.find(s => s.playerId === 1 && s.definitionId)!;
+    for (let i = 0; game.squads.filter(s => s.playerId === 1).length < 12 && i < tiles.length; i += 3)
+      spawn(player, template.kind, tiles[i], template.definitionId, false);
+    const own = game.squads.filter(s => s.playerId === 1 && s.embarkedOn === null).slice(0, 12).map(s => s.id);
+    expect(own.length).toBe(12);
+    expect(game.applyCommand({ type: "create-army", playerId: 1, squadIds: own.slice(0, 6) })).toBeNull();
+    // Far land on the other side of the map.
+    const home = player.base;
+    let goal = -1;
+    for (let x = game.map.width() - 10; x > 0 && goal < 0; x -= 7)
+      for (let y = 10; y < game.map.height() - 10 && goal < 0; y += 7) {
+        const tile = game.map.ref(x, y);
+        if (game.map.isLand(tile) && game.paths.connected(home, tile)) goal = tile;
+      }
+    expect(goal).toBeGreaterThanOrEqual(0);
+    const t0 = performance.now();
+    const reason = game.applyCommand({ type: "order", playerId: 1, squadIds: own, order: { type: "move", tile: goal } });
+    const ms = performance.now() - t0;
+    console.log(`B2 mixed move applyCommand: ${ms.toFixed(2)} ms (${reason ?? "accepted"}), tree bytes ${game.paths.residency.hierarchy.treeBytes}`);
+    expect(ms).toBeLessThanOrEqual(20);
+  }, 120_000);
 });
