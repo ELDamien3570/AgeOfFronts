@@ -23,8 +23,8 @@ export class AiLossWindow {
       if (last?.tick === bucket) last.deaths += deaths;
       else history.samples.push({ tick: bucket, deaths });
     }
-    // Fixed 50-tick bins retain at most 48 entries. Pressure expires at most
-    // 49 ticks early; old deaths never roll forward into a younger bucket.
+    // Fixed 2.5 s bins (secondsToTicks(2.5)) retain at most 48 entries. Pressure
+    // expires at most one bin early; old deaths never roll forward into a younger bucket.
     return history.samples.reduce((n, s) => n + s.deaths, 0);
   }
   release(playerId: number): void {
