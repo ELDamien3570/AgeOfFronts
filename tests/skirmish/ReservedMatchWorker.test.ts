@@ -56,7 +56,7 @@ describe("reserved authoritative worker", () => {
       await worker.request({type:"baseline"});
       expect(publications).toHaveLength(1);
     } finally {unsubscribe();await worker.close();}
-  },20_000);
+  });
 
   it("reuses exact baselines and invalidates same-tick controller changes", async () => {
     const worker = new ReservedMatchWorker();
@@ -73,7 +73,7 @@ describe("reserved authoritative worker", () => {
       const update = await worker.request<MatchAdvance>(advance(1));
       expect(update.diagnostics?.replication?.baselineCache).toEqual({hits: 1, misses: 2, retainedBytes: 0});
     } finally { await worker.close(); }
-  }, 20_000);
+  });
 
   it("streams ordered coherent publications outside advance results and drains before join barriers", async () => {
     const worker = new ReservedMatchWorker(), publications: { tick: number; packet: EncodedState }[] = [];
@@ -100,7 +100,7 @@ describe("reserved authoritative worker", () => {
       await vi.waitFor(() => expect(publications.map(p => p.tick)).toEqual([1, 5]));
       expect((await decodeState<SnapshotPacket>(publications[1].packet)).tick).toBe(5);
     } finally { unsubscribe(); await worker.close(); }
-  }, 20_000);
+  });
   it("correlates deferred execution and supersession, rejects oversized batches before advancing, and deduplicates completed commands", async () => {
     const worker = new ReservedMatchWorker();
     try {
@@ -169,7 +169,7 @@ describe("reserved authoritative worker", () => {
     } finally {
       await worker.close();
     }
-  }, 20_000);
+  });
   it("runs directly, emits an initial baseline and independently scheduled presentation deltas", async () => {
     const worker = new ReservedMatchWorker();
     try {
@@ -227,7 +227,7 @@ describe("reserved authoritative worker", () => {
       "stopped",
     );
     expect(worker.lifecycle).toMatchObject({ state: "stopped", cause: "closed" });
-  }, 20_000);
+  });
 
   it("applies player commands once, preserves domain ownership and converts departures to AI", async () => {
     const worker = new ReservedMatchWorker();
@@ -278,5 +278,5 @@ describe("reserved authoritative worker", () => {
     } finally {
       await worker.close();
     }
-  }, 20_000);
+  });
 });

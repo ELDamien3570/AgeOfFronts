@@ -41,7 +41,7 @@ describe("atomic researched transport handoff", () => {
     expect(f.game.applyCommand({type:"order",playerId:1,squadIds:[f.s.id],order:{type:"move",tile:f.map.ref(103,64)}})).toBeNull();
     for(let tick=0;tick<400&&!f.s.afloat;tick++)f.game.step();
     expect(f.s.afloat).toBeTruthy();
-  },20000);
+  });
   it.each([
     ["napoleonic-infantry", 144, "mass"],
     ["napoleonic-infantry", 144, "line"],
@@ -61,7 +61,7 @@ describe("atomic researched transport handoff", () => {
     }
     expect(f.s.afloat).toBeTruthy();
     expect(f.s.formation!.shapeLock).toBe(true);
-  },20000);
+  });
   it("relaxes shore water without relaxing walls or map bounds",()=>{
     const f=transportScene(144);
     expect(move(f)).toBeNull();
@@ -226,7 +226,7 @@ describe("atomic researched transport handoff", () => {
       if (f.s.afloat) expect(f.s.afloat.hull).toBe(73);
     }
     expect(restored.checkpoint()).toEqual(f.game.checkpoint());
-  }, 20000);
+  });
   it("keeps explicit ship passengers separate", () => {
     const f = transportScene();
     expect(

@@ -137,5 +137,11 @@ export default defineConfig({
       },
     },
   },
-  test: { environment: "node", include: ["tests/skirmish/**/*.test.ts"] },
+  test: {
+    environment: "node",
+    include: ["tests/skirmish/**/*.test.ts"],
+    // Whole-match scenarios run for tens of seconds under a parallel full run;
+    // the 5 s default turns slow-but-correct tests into timeouts.
+    testTimeout: 30_000,
+  },
 });

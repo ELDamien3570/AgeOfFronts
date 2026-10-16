@@ -828,13 +828,19 @@ export class Battle {
       if(squad.cavalryEngagement?.phase==='penetrating')continue;
       if(quietOwners?.has(squad.playerId)&&!squad.structureTarget){this.acquisitionWork.noOpponentSkips++;continue;}
       if (profile.targets.includes("aircraft")) {
-        const target = aircraft
-          .filter(
-            (a) =>
-              a.health > 0 && a.state !== "ready" &&
-              this.diplomacy.hostile(squad.playerId, a.playerId) &&
-              this.distance(squad, a) <= effectiveRange(this.world,squad,profile,a) ** 2,
-          )
+        const eligible = (a: Aircraft) =>
+          a.health > 0 && a.state !== "ready" &&
+          this.diplomacy.hostile(squad.playerId, a.playerId) &&
+          this.distance(squad, a) <= effectiveRange(this.world,squad,profile,a) ** 2;
+        // Stay on the aircraft being aimed at while it remains eligible, as the
+        // ground path keeps its previous target; re-picking the nearest every
+        // tick restarted the wind-up and orbiting fighters were never shot (A5).
+        const aim = squad.weaponState?.rangedAction;
+        const held = aim?.targetKind === "aircraft"
+          ? aircraft.find((a) => a.id === aim.targetId && eligible(a))
+          : undefined;
+        const target = held ?? aircraft
+          .filter(eligible)
           .sort(
             (a, b) =>
               this.distance(squad, a) - this.distance(squad, b) || a.id - b.id,

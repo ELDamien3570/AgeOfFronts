@@ -43,4 +43,4 @@ it("rejects malformed static paths without losing authenticated sockets or HTTP 
     await server.close(); store.close();
     unlinkSync(join(directory, "index.html")); unlinkSync(join(directory, "valid file.txt")); rmdirSync(directory);
   }
-}, 10_000);
+});

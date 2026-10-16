@@ -1757,9 +1757,15 @@ export class Skirmish {
     const tile=pointTile(this.map,destination),center=tilePoint(this.map,tile);
     return destination.x===center.x && destination.y===center.y ? {type:"move",tile} : {type:"move",tile,...destination};
   }
-  private activateOrder(squad: Squad, order: Order, path: number[] = [], continuingAttack=false): void {
-    if (!continuingAttack && squad.weaponState?.rangedAction)
-      this.updateSquad(squad.id, {weaponState: cancelRangedPreparation(squad.weaponState)});
+  private activateOrder(squad: Squad, order: Order, path: number[] = [], continuingAttack=false, keepAim=false): void {
+    // Re-issuing the attack the squad is already making keeps its aim, as the
+    // updateSquad order guard does; otherwise repeated clicks never fire (C9).
+    // Army marches re-slot members every tick and keep it too (C10); the
+    // battle step still drops an aim whose target is no longer eligible.
+    const live=this.squad(squad.id)??squad;
+    const sameAttack=order.type==="attack"&&live.order.type==="attack"&&live.order.targetId===order.targetId;
+    if (!continuingAttack && !keepAim && !sameAttack && live.weaponState?.rangedAction)
+      this.updateSquad(squad.id, {weaponState: cancelRangedPreparation(live.weaponState)});
     this.routePlanner.cancel(`navigation:${squad.id}`);
     this.routePlanner.cancel(`continuation:${squad.id}`);
     this.moveContinuations.delete(squad.id);
@@ -1828,7 +1834,10 @@ export class Skirmish {
       return;
     }
     const facing=squad.order.type==="move" || squad.order.type==="hold" ? squad.order.facing : undefined;
-    this.activateOrder(squad, facing===undefined ? { type:"hold" } : { type:"hold",facing });
+    // A marching army member reaches its creeping slot and holds until the
+    // next re-slot; that pause keeps its ranged aim (C10).
+    const marching=this.expansion?.armies.slotAnchor(squad.id)!==undefined;
+    this.activateOrder(squad, facing===undefined ? { type:"hold" } : { type:"hold",facing }, [], false, marching);
   }
 
   private recruit(
@@ -3920,6 +3929,7 @@ export class Skirmish {
     point: WorldPoint,
     path: number[],
     via: WorldPoint[] = [],
+    keepAim = false,
   ): void {
     const destination = via[0] ?? point,army=this.expansion?.armies.armyOf(squad.id);
     const facing=army?Math.atan2(Math.sin(army.facing-Math.PI/2),Math.cos(army.facing-Math.PI/2)):undefined;
@@ -3927,6 +3937,8 @@ export class Skirmish {
       squad,
       { type: "move", tile: pointTile(this.map, destination), ...destination,...(!via.length&&facing!==undefined?{facing}:{}) },
       path,
+      false,
+      keepAim,
     );
     if (via.length)
       this.squadEntities.updateOwned(squad.id, { queuedOrders: [...via.slice(1), point].map((p,i) => ({
@@ -3934,6 +3946,12 @@ export class Skirmish {
         tile: pointTile(this.map, p),
         ...p,...(i===via.length-1&&facing!==undefined?{facing}:{}),
       })) });
+  }
+  retargetArmyMove(squad: Squad, point: WorldPoint): void {
+    const current=this.squad(squad.id);
+    if (current?.order.type !== "move") return;
+    // Same tile, same route: not a new order, so the ranged aim stays (C10).
+    this.squadEntities.update(squad.id, { order: { ...current.order, x: point.x, y: point.y } });
   }
   setArmyAttack(squad: Squad, targetId: number): void {
     if (squad.order.type !== "attack" || squad.order.targetId !== targetId)

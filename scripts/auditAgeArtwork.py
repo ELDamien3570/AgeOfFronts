@@ -32,7 +32,12 @@ for key, asset in manifest.items():
         hashes[asset["portraitSource"]] = asset["portraitHash"]
     for name, expected in hashes.items():
         path = ROOT / name
-        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+        # JSON metadata is baked with LF-normalized hashes, so CRLF and LF
+        # checkouts of the same commit agree; binary sources hash raw.
+        data = path.read_bytes() if path.is_file() else b""
+        if path.suffix == ".json":
+            data = data.replace(b"\r\n", b"\n")
+        if not path.is_file() or hashlib.sha256(data).hexdigest() != expected:
             stale.append(f"{key}: source changed or missing: {name}")
     source = ROOT / asset.get("source", "")
     if source.suffix == ".json" and source.is_file():

@@ -33,7 +33,14 @@ function fixture(sea = false) {
     e = game.expansion!;
   player.base = map.ref(30, 15);
   player.reserves = 5000;
-  game.owners.fill(player.id);
+  // Claim through the production path: a direct owners.fill skips the
+  // adjacency, owned-tile and AI-territory indexes that changeOwner keeps, so
+  // the live world would disagree with its own restored checkpoint.
+  const changeOwner = (
+    game as unknown as { changeOwner(tile: number, id: number): void }
+  ).changeOwner.bind(game);
+  for (let tile = 0; tile < game.owners.length; tile++)
+    changeOwner(tile, player.id);
   const template = structuredClone(game.squads[0]);
   for (const s of [...game.squads]) game.removeSquad(s.id);
   for (const b of [...game.buildings]) game.removeBuilding(b.id);

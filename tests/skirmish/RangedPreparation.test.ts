@@ -13,6 +13,7 @@ import {
 } from "../../src/skirmish/client/CombatPresentationTimeline";
 import { RangedAttackPresentation } from "../../src/skirmish/client/troops/RangedAttackPresentation";
 import type { ActorClip } from "../../src/skirmish/client/troops/TroopFormationModel";
+import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { UNIT, UNITS } from "../../src/skirmish/content/Units";
 import type { Aircraft } from "../../src/skirmish/domain/Definitions";
 import {
@@ -432,5 +433,246 @@ describe("authoritative ranged preparation", () => {
     ).toBe(580);
     const frozen = timeline.sample(100 * TICK_MS, 1, true)!;
     expect(frozen.tick).toBe(frames[frames.length - 1].tick);
+  });
+});
+
+// Review C9 / A5 / C10 (R3-ranged-delta): order churn and target churn must
+// not restart a ranged aim that is still valid, or the squad never fires.
+describe("ranged preparation survives order and target churn", () => {
+  const attack = (f: ReturnType<typeof scene>) =>
+    f.game.applyCommand({
+      type: "order",
+      playerId: 1,
+      squadIds: [f.source.id],
+      order: { type: "attack", targetId: f.target.id },
+    });
+  /** Firing ticks over `ticks` ticks, re-issuing the same attack every `every` ticks (0 = never). */
+  function reissued(id: string, every: number, ticks = 120) {
+    const f = scene(id);
+    let firing = 0;
+    for (let t = 0; t < ticks; t++) {
+      f.game.tick = t;
+      // Napoleonic volleys destroy the target inside the window (C3 lethality).
+      if (every && t % every === 0 && f.game.squad(f.target.id))
+        expect(attack(f)).toBeNull();
+      const before = f.game.squad(f.source.id)!.lastAttackTick;
+      f.battle.fight([]);
+      if (f.game.squad(f.source.id)!.lastAttackTick !== before) firing++;
+    }
+    return firing;
+  }
+  it.each(["modern-infantry", "napoleonic-infantry", "earlymodern-rangedcavalry"])(
+    "%s fires as often when the same attack is re-issued every tick or every 6 ticks",
+    (id) => {
+      const never = reissued(id, 0);
+      expect(never).toBeGreaterThan(0);
+      expect(reissued(id, 1)).toBe(never);
+      expect(reissued(id, 6)).toBe(never);
+    },
+  );
+  it("keeps the aim's start tick while the same attack is re-issued during the wind-up", () => {
+    const f = scene("modern-infantry");
+    expect(attack(f)).toBeNull();
+    f.at(0);
+    const first = f.game.squad(f.source.id)!.weaponState!.rangedAction!;
+    expect(first.startTick).toBe(0);
+    for (let t = 1; t < first.releaseTick; t++) {
+      f.game.tick = t;
+      expect(attack(f)).toBeNull();
+      expect(f.game.squad(f.source.id)!.weaponState!.rangedAction!.startTick).toBe(0);
+      f.battle.fight([]);
+      expect(f.game.squad(f.source.id)!.weaponState!.rangedAction!.startTick).toBe(0);
+    }
+    f.game.tick = first.releaseTick;
+    expect(attack(f)).toBeNull();
+    f.battle.fight([]);
+    expect(f.game.squad(f.source.id)!.lastAttackTick).toBe(first.releaseTick);
+  });
+  /** Ranged members march past a holding enemy, as an army or on individual
+   * move orders; returns shots in the first 32 member in-combat ticks. */
+  function marchPastFire(asArmy: boolean) {
+    const terrain = new Uint8Array(96 * 48).fill(133);
+    const map = new GameMapImpl(96, 48, terrain, terrain.length);
+    const game = new Skirmish(map, {
+      seed: 47,
+      aiCount: 1,
+      tribes: false,
+      runAi: false,
+      ruleset: "ages-v1",
+    });
+    const e = game.expansion!;
+    e.progression.states[1].age = "Modern";
+    e.progression.states[1].completed = TECHNOLOGIES.map((t) => t.id);
+    const own = game.squads.find((s) => s.playerId === 1)!;
+    const enemy = game.squads.find((s) => s.playerId === 2)!;
+    for (const s of [...game.squads])
+      if (s.id !== own.id && s.id !== enemy.id) game.removeSquad(s.id);
+    const place = (id: number, unitId: string, x: number, y: number) => {
+      const u = UNIT.get(unitId)!;
+      game.updateSquad(id, {
+        definitionId: unitId,
+        kind: u.line,
+        troops: u.formationRecipe!.capacity,
+        manpower: createManpower(u),
+        formation: { ...createFormation(unitId), facing: TURN / 4 },
+        x: x * FIXED,
+        y: y * FIXED,
+        order: { type: "hold" },
+        moved: false,
+        weaponState: undefined,
+        path: [],
+        queuedOrders: [],
+      });
+    };
+    const members = [own.id];
+    for (let i = 1; i < 3; i++)
+      members.push(game.addSquad({ ...own, id: game.allocateId() }).id);
+    members.forEach((id, i) => place(id, "modern-infantry", 12, 18 + i * 2));
+    place(enemy.id, "modern-heavycavalry", 40, 27);
+    if (asArmy) {
+      expect(
+        game.applyCommand({ type: "create-army", playerId: 1, squadIds: members }),
+      ).toBeNull();
+      const armyId = e.armies.armies[0]!.id;
+      expect(
+        game.applyCommand({
+          type: "army-order",
+          playerId: 1,
+          armyId,
+          order: { type: "move", tile: map.ref(75, 20) },
+        }),
+      ).toBeNull();
+    } else
+      expect(
+        game.applyCommand({
+          type: "order",
+          playerId: 1,
+          squadIds: members,
+          order: { type: "move", tile: map.ref(75, 20) },
+        }),
+      ).toBeNull();
+    let combat = 0,
+      shots = 0,
+      restarts = 0;
+    const aims = new Map<number, { startTick: number; phase: string }>();
+    for (let t = 0; t < 1200 && combat < 32; t++) {
+      const before = members.map((id) => game.squad(id)?.lastAttackTick);
+      game.step();
+      members.forEach((id, i) => {
+        const s = game.squad(id);
+        if (!s || combat >= 32) return;
+        const fired = s.lastAttackTick !== before[i];
+        const action = s.weaponState?.rangedAction;
+        if (!fired && !action) return;
+        combat++;
+        if (fired) shots++;
+        // An aim replaced before it ever released was restarted by churn.
+        const last = aims.get(id);
+        if (action && last && last.phase === "preparing" && action.startTick !== last.startTick)
+          restarts++;
+        if (action) aims.set(id, { startTick: action.startTick, phase: action.phase });
+      });
+    }
+    return { combat, shots, restarts };
+  }
+  it("keeps aims while an army marches its ranged members under fire (C10)", () => {
+    const individual = marchPastFire(false),
+      army = marchPastFire(true);
+    expect(individual.combat).toBe(32);
+    expect(army.combat).toBe(32);
+    expect(individual.shots).toBeGreaterThan(0);
+    expect(individual.restarts).toBe(0);
+    // Re-slotting (setArmyMove), slot nudges and slot-arrival holds keep aims.
+    expect(army.restarts).toBe(0);
+    expect(army.shots).toBeGreaterThanOrEqual(individual.shots);
+  });
+  /** Mobile anti-air under `planes` hostile fighters moved by `fly` each tick; firing ticks. */
+  function antiAir(count: number, ticks: number, fly: (planes: Aircraft[], t: number, at: { x: number; y: number }) => void) {
+    const f = scene("modern-anti-air");
+    const planes: Aircraft[] = Array.from({ length: count }, () => ({
+      id: f.game.allocateId(),
+      playerId: 2,
+      definitionId: "fighter",
+      age: "EarlyModern",
+      airfieldId: 0,
+      x: f.source.x,
+      y: f.source.y,
+      health: 1_000_000,
+      state: "outbound",
+      target: null,
+      reloadTick: 0,
+      fuelTicks: 100_000,
+    }));
+    let firing = 0;
+    for (let t = 0; t < ticks; t++) {
+      f.game.tick = t;
+      fly(planes, t, f.source);
+      const before = f.game.squad(f.source.id)!.lastAttackTick;
+      f.battle.fight(planes);
+      if (f.game.squad(f.source.id)!.lastAttackTick !== before) firing++;
+    }
+    return firing;
+  }
+  // Patrol orbit: radius 2 tiles plus a per-plane spread, so the nearest
+  // fighter changes almost every tick.
+  const orbit = (planes: Aircraft[], t: number, at: { x: number; y: number }) =>
+    planes.forEach((p, i) => {
+      const a = i * 1.05 + t * 0.35,
+        r = 2 * FIXED + (((i * 37 + t * 11) % 16) * FIXED) / 16;
+      p.x = at.x + Math.round(Math.cos(a) * r);
+      p.y = at.y + Math.round(Math.sin(a) * r);
+    });
+  it("keeps an anti-air aim on its aircraft while 4 fighters orbit it (A5)", () => {
+    const one = antiAir(1, 200, orbit);
+    expect(one).toBeGreaterThanOrEqual(10);
+    expect(antiAir(4, 200, orbit)).toBeGreaterThanOrEqual(10);
+  });
+  it("keeps an anti-air aim while two overhead fighters alternate as the nearest (A5)", () => {
+    const shots = antiAir(2, 240, (planes, t, at) => {
+      planes[0]!.x = at.x + (t % 2 ? 2 * FIXED : 2 * FIXED + FIXED / 8);
+      planes[1]!.x = at.x - (t % 2 ? 2 * FIXED + FIXED / 8 : 2 * FIXED);
+    });
+    expect(shots).toBeGreaterThanOrEqual(13);
+  });
+  it("still retargets anti-air when its aircraft leaves range", () => {
+    const f = scene("modern-anti-air");
+    const plane = (dx: number): Aircraft => ({
+      id: f.game.allocateId(),
+      playerId: 2,
+      definitionId: "fighter",
+      age: "EarlyModern",
+      airfieldId: 0,
+      x: f.source.x + dx,
+      y: f.source.y,
+      health: 1_000_000,
+      state: "outbound",
+      target: null,
+      reloadTick: 0,
+      fuelTicks: 100_000,
+    });
+    const near = plane(FIXED),
+      far = plane(3 * FIXED);
+    f.battle.fight([near, far]);
+    expect(f.source.weaponState!.rangedAction!.targetId).toBe(near.id);
+    near.x = f.source.x + 200 * FIXED;
+    f.game.tick = 1;
+    f.battle.fight([near, far]);
+    expect(f.game.squad(f.source.id)!.weaponState!.rangedAction!.targetId).toBe(far.id);
+  });
+  it("still restarts the aim when a different order replaces the attack", () => {
+    const f = scene("modern-infantry");
+    expect(attack(f)).toBeNull();
+    f.at(0);
+    expect(f.game.squad(f.source.id)!.weaponState!.rangedAction).toBeDefined();
+    f.game.tick = 1;
+    expect(
+      f.game.applyCommand({
+        type: "order",
+        playerId: 1,
+        squadIds: [f.source.id],
+        order: { type: "move", tile: 15 * 64 + 3 },
+      }),
+    ).toBeNull();
+    expect(f.game.squad(f.source.id)!.weaponState?.rangedAction).toBeUndefined();
   });
 });

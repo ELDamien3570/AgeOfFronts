@@ -1,3 +1,4 @@
+import { SLOW_MAP_TIMEOUT } from "./fixtures/TestTimeouts";
 import { describe, expect, it } from "vitest";
 import { SpawnSelection } from "../../src/skirmish/domain/SpawnSelection";
 import {
@@ -36,7 +37,7 @@ describe("Migration layout", () => {
         }),
       ).toBe(await mapIdentity(b.map));
       expect(await mapIdentity(c.map)).not.toBe(await mapIdentity(b.map));
-    }, 30000);
+    }, SLOW_MAP_TIMEOUT);
   it("keeps outer islands separate from a larger mainland and preserves navigable sea", () => {
     for (const size of [250, 500, 1000])
       for (const seed of [0, 3, 42]) {
@@ -90,7 +91,7 @@ describe("Migration layout", () => {
             ),
           ).toBe(true);
       }
-  }, 30000);
+  }, SLOW_MAP_TIMEOUT);
   it("accepts human island and mainland starts under unchanged game rules", () => {
     const loaded = generateMigration(250, 3),
       options = {
@@ -117,7 +118,7 @@ describe("Migration layout", () => {
       for (let i = 0; i < 20; i++) game.step();
       expect(game.tick).toBe(20);
     }
-  }, 30000);
+  }, SLOW_MAP_TIMEOUT);
   it("rejects invalid sizes and seeds", () => {
     expect(() => generateMigration(128, 0)).toThrow();
     expect(() => generateMigration(250, -1)).toThrow();
@@ -159,7 +160,7 @@ describe("Migration layout", () => {
       if (loaded.map.isWater(tile)) components.add(sea.component[tile]);
     expect(components.size).toBe(1);
     expect(loaded.layout.mainlands.length).toBeLessThanOrEqual(3);
-  }, 30_000);
+  }, SLOW_MAP_TIMEOUT);
   it.each([0, 1, 2, 3, 4, 5])(
     "adds small islands with size and preserves mainland patterns for seed %i",
     (seed) => {
@@ -218,7 +219,7 @@ describe("Migration layout", () => {
       expect(bases).toHaveLength(64);
       expect(new Set(bases).size).toBe(64);
     }
-  }, 30_000);
+  }, SLOW_MAP_TIMEOUT);
   it("guards overcrowded small-map lobbies and fits representative boundary rosters", () => {
     // SpawnSelection reads the immutable map. Reuse each seeded geography
     // across roster variants rather than regenerating identical terrain five times.
@@ -262,5 +263,5 @@ describe("Migration layout", () => {
         expect(bases).toHaveLength(regular + tribes);
       }
     }
-  }, 30_000);
+  }, SLOW_MAP_TIMEOUT);
 });

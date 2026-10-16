@@ -27,6 +27,11 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def text_digest(path):
+    # Hash text metadata with LF endings so CRLF and LF checkouts agree.
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
 def static(key, path, frame=None):
     image = Image.open(path).convert("RGBA")
     if frame:
@@ -81,7 +86,7 @@ def animated(key, path, aliases=None):
     for alias, original in (aliases or {}).items():
         if original in clips:
             clips[alias] = clips[original]
-    manifest[key] = {"clips": clips, "facing": data.get("facing", "screen-down"), "source": path.relative_to(ROOT).as_posix(), "metadataHash": digest(path), "hashes": hashes}
+    manifest[key] = {"clips": clips, "facing": data.get("facing", "screen-down"), "source": path.relative_to(ROOT).as_posix(), "metadataHash": text_digest(path), "hashes": hashes}
     if 'poster' in locals():
         manifest[key]["poster"] = poster
 

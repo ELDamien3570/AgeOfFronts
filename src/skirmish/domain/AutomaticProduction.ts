@@ -324,6 +324,13 @@ export function automaticProduction(
   const blocked = new Set<ProductionRecipe>()
   const priority = (r: ProductionRecipe) =>
     equipmentKind(r) === "troop" ? 0 : equipmentKind(r) === "siege" ? 1 : 2
+  // An AI demand quote outranks the shared reserve floor: a recipe still
+  // short of its quote (payloads included) goes before kits that already meet
+  // their quote and are only topping up the 100-kit reserve. Without a quote
+  // every recipe is in the same tier, so human allocation is unchanged.
+  const demand = context.ai ? context.aiDemand?.equipment : undefined
+  const tier = (r: ProductionRecipe) =>
+    demand && amount(r) < (demand[output(r)] ?? 0) ? 0 : 1
   while (idle.size) {
     const next = [...targets]
       .filter(
@@ -332,6 +339,7 @@ export function automaticProduction(
       )
       .sort(
         ([a, at], [b, bt]) =>
+          tier(a) - tier(b) ||
           (equipmentKind(a) === null ? 1 : 0) -
             (equipmentKind(b) === null ? 1 : 0) ||
           amount(a) * bt - amount(b) * at ||

@@ -26,6 +26,10 @@ def atomic_image(path, image):
     temporary.write_bytes(buffer.getvalue())
     temporary.replace(path)
 
+def text_digest(path):
+    # Hash text metadata with LF endings so CRLF and LF checkouts agree.
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "Art/Cultures/Russians/Units"
 OUT = ROOT / "Art/Runtime/Russians/Troops"
@@ -89,7 +93,7 @@ for binding, folder in bindings.items():
     target = OUT / key
     target.mkdir(exist_ok=True)
     runtime = {"actorCount": 1, "animations": [], "source": source.relative_to(ROOT).as_posix(),
-               "metadataHash": hashlib.sha256(source.read_bytes()).hexdigest(), "hashes": {}}
+               "metadataHash": text_digest(source), "hashes": {}}
     for name in ("idle", "running", "attack", "death", "reload", "charge", "charge-attack", "hit"):
         if name not in clips:
             continue

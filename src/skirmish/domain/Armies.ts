@@ -73,12 +73,17 @@ export interface ArmyWorld {
   ): Map<number, WorldPoint> | null;
   queueArmyRoute(key: string, work: ArmyRouteRequest): void;
   cancelArmyRoute(key: string): void;
+  /** `keepAim`: an army march re-slotting a member keeps its ranged aim. */
   setArmyMove(
     squad: Squad,
     point: WorldPoint,
     path: number[],
     via?: WorldPoint[],
+    keepAim?: boolean,
   ): void;
+  /** Nudge a marching member's move point inside its planned tile; keeps the
+   * route and any ranged aim (an order-only write would cancel the aim). */
+  retargetArmyMove(squad: Squad, point: WorldPoint): void;
   setArmyAttack(squad: Squad, targetId: number): void;
   setArmyHold(squad: Squad): void;
   applyArmyCommand?(command:Extract<Command,{type:"formation"|"charge"}>):string|null;
@@ -179,7 +184,7 @@ export class Armies {
         }
         const march=this.marches.get(army.id);
         for(const member of members){
-          const current=world.squad(member.squad.id);if(!current||!mayNavigateArmy(this.controls,current)||army.withdrawalTick!==undefined&&world.tick-army.withdrawalTick<LINES.rearWithdrawalTicks&&army.slots?.find(r=>r.squadId===current.id)?.role==="frontline")continue;world.setArmyMove(current,member.point,member.path);
+          const current=world.squad(member.squad.id);if(!current||!mayNavigateArmy(this.controls,current)||army.withdrawalTick!==undefined&&world.tick-army.withdrawalTick<LINES.rearWithdrawalTicks&&army.slots?.find(r=>r.squadId===current.id)?.role==="frontline")continue;world.setArmyMove(current,member.point,member.path,[],true);
           world.updateSquad(member.squad.id,{nextPathIndex:member.index});
           march?.planned.set(member.squad.id,member.point);march?.pending.delete(member.squad.id);
         }
@@ -842,7 +847,7 @@ export class Armies {
       return false;
     this.world.cancelArmyRoute(`army:${army.id}:${s.id}`);
     march.pending.delete(s.id);
-    this.world.setArmyMove(s, slot, tile === pointTile(this.world.map, s) ? [] : [tile]);
+    this.world.setArmyMove(s, slot, tile === pointTile(this.world.map, s) ? [] : [tile], [], true);
     march.planned.set(s.id, slot);
     this.travelWork.directLegs++;
     return true;
@@ -874,7 +879,7 @@ export class Armies {
     if(!clear.call(this.world,{...s,x:previous.x,y:previous.y},slot))return false;
     const tile=pointTile(this.world.map,slot);if(path[path.length-1]!==tile)path.push(tile);
     this.world.cancelArmyRoute(`army:${army.id}:${s.id}`);march.pending.delete(s.id);
-    this.world.setArmyMove(s,slot,path);march.planned.set(s.id,slot);this.travelWork.sharedLegs++;
+    this.world.setArmyMove(s,slot,path,[],true);march.planned.set(s.id,slot);this.travelWork.sharedLegs++;
     return true;
   }
   private deploy(
@@ -935,7 +940,7 @@ export class Armies {
         if(distanceSquared(s,slot)<=(FIXED/5)**2)continue;
         if(planned && distanceSquared(planned,slot)<=(FIXED/3)**2){
           if(s.order.type==="move" && pointTile(this.world.map,planned)===pointTile(this.world.map,slot))
-            this.world.updateSquad(s.id,{order:{...s.order,x:slot.x,y:slot.y}});
+            this.world.retargetArmyMove(s,slot);
           continue;
         }
         if(!this.directMove(army,march,s,slot)&&!this.followCorridor(army,march,s,slot)){needs=true;recovery.push(s);}
@@ -977,7 +982,7 @@ export class Armies {
           pointTile(this.world.map, planned) ===
           pointTile(this.world.map, point)
         ) {
-          this.world.updateSquad(s.id, { order: { ...s.order, x: point.x, y: point.y } });
+          this.world.retargetArmyMove(s, point);
           continue;
         }
       }
@@ -1090,7 +1095,7 @@ export class Armies {
           march.speed = 0;
           return;
         }
-        this.world.setArmyMove(s, current, path, via);
+        this.world.setArmyMove(s, current, path, via, true);
         march.planned.set(s.id, current);
   }
   private finish(army: Army): void {

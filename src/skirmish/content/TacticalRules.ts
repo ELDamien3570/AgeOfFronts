@@ -42,7 +42,12 @@ export const COLUMN = Object.freeze({
   movingDeploy: false,
 });
 
-export const FRONTAGE = Object.freeze({quantum:16, candidatesPerDecision:6, mountedWidthRatioMax:1.35});
+// mountedWidthRatioMax is a compile-time content gate only (scripts/FormationDoctrineSchema.ts).
+// The current mounted recipes (e.g. bronze cavalry 8/12 -> 16/20 in the HEAD retune) put the
+// widest authored line at 2.034x its era's widest infantry line (napoleonic-cavalry),
+// so 1.35 rejected 20 of 24 variants. 2.05 admits the authored set and still rejects
+// spacing exploits such as a 1024-unit cavalry spacing.
+export const FRONTAGE = Object.freeze({quantum:16, candidatesPerDecision:6, mountedWidthRatioMax:2.05});
 export const LINES = Object.freeze({gap:128,maxGap:768,rowGap:256,maxRows:16,
   bandGap:256,wingGap:384,reserveDepth:512,maxFrontTiles:40,gapCheckTicks:secondsToTicks(2),
   gapStrength:.25,relayoutTiles:1.5,retargetTicks:secondsToTicks(1.5),facingDeadband:Math.PI/9,facingRefreshTicks:secondsToTicks(3),rearWithdrawalTicks:secondsToTicks(1)});

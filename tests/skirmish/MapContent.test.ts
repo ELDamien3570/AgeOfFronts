@@ -1,3 +1,4 @@
+import { SLOW_MAP_TIMEOUT } from "./fixtures/TestTimeouts";
 import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
@@ -453,5 +454,5 @@ describe("small Amazon River lobbies", () => {
         tribeCount: 30,
       }),
     ).toBeTruthy();
-  }, 60_000);
+  }, SLOW_MAP_TIMEOUT);
 });

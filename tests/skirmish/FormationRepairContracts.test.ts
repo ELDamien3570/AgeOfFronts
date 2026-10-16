@@ -33,10 +33,12 @@ describe('formation repair contracts',()=>{
   const saved=game.checkpoint(),restored=encounter().game;restored.restore(saved);
   expect(restored.squad(a.id)!.meleeStrike).toEqual(a.meleeStrike);
  });
- it('authors medieval 36/48 and Napoleonic 48/72, with cavalry counts retained',()=>{
-  for(const id of ['earlymedieval-infantry','latemedieval-infantry'])expect(UNIT.get(id)!.formationRecipe).toMatchObject({capacity:36,enlargedCapacity:48,reserveCost:36});
+ // Literals follow the current authored recipes (medieval 36/48 -> 40/50 and
+ // Napoleonic cavalry 24/36 -> 48/64 in the HEAD retune).
+ it('authors medieval 40/50, Napoleonic infantry 48/72 and Napoleonic cavalry 48/64',()=>{
+  for(const id of ['earlymedieval-infantry','latemedieval-infantry'])expect(UNIT.get(id)!.formationRecipe).toMatchObject({capacity:40,enlargedCapacity:50,reserveCost:40});
   expect(UNIT.get('napoleonic-infantry')!.formationRecipe).toMatchObject({capacity:48,enlargedCapacity:72,reserveCost:48});
-  expect(UNIT.get('napoleonic-cavalry')!.formationRecipe).toMatchObject({capacity:24,enlargedCapacity:36});
+  expect(UNIT.get('napoleonic-cavalry')!.formationRecipe).toMatchObject({capacity:48,enlargedCapacity:64});
  });
  it('shares geometry while invalidating roots, facing, casualties and transition progress',()=>{
   const{a,b}=encounter();

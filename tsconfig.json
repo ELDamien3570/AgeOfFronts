@@ -30,6 +30,12 @@
     "generated/**/*",
     "tests/**/*",
     "src/scripts",
+    "scripts/content/**/*",
+    "scripts/compileContent.ts",
+    "scripts/compileFormationRecipes.ts",
+    "scripts/compileSoldierWeapons.ts",
+    "scripts/compileFormationDoctrines.ts",
+    "scripts/compileRusPackagedRecruitment.ts",
     "vite.config.ts",
     "vite.skirmish.config.ts"
   ],

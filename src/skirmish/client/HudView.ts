@@ -71,7 +71,7 @@ export function icon(kind: HudKind, definitionId?: string) {
         : buildingPreviewArtworkId(kind as keyof typeof BUILDING_RULES, age)) ??
       artworkId;
   }
-  const portrait = (definitionId && eraPortrait(`unit-portrait-${definitionId}`)) || eraPortrait(artworkId);
+  const portrait = (definitionId ? eraPortrait(`unit-portrait-${definitionId}`) : undefined) ?? eraPortrait(artworkId);
   if (portrait) return `<img class="hud-art" src="${portrait}" alt="">`;
   if (kind === "infantry" || kind === "archer" || kind === "cavalry") {
     const grid = UNIT_ANIMATIONS[kind].grid;

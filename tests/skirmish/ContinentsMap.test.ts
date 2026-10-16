@@ -1,3 +1,4 @@
+import { SLOW_MAP_TIMEOUT } from "./fixtures/TestTimeouts";
 import {TICKS_PER_SECOND} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { CONTINENTS_THEME } from "../../src/skirmish/content/Continents";
@@ -46,7 +47,7 @@ describe("Continents layout", () => {
         });
       expect(await identity(a)).toBe(await mapIdentity(b.map));
       expect(await mapIdentity(c.map)).not.toBe(await mapIdentity(b.map));
-    }, 60000);
+    }, SLOW_MAP_TIMEOUT);
 
   it("scales the continent count with map size", () => {
     for (const [size, [low, high]] of [
@@ -64,7 +65,7 @@ describe("Continents layout", () => {
       [1, 2, 3, 4, 5, 6, 7, 8].map((seed) => generateContinents(1000, seed).layout.continentCount),
     );
     expect(counts).toEqual(new Set([4, 5]));
-  }, 120000);
+  }, SLOW_MAP_TIMEOUT);
 
   it("keeps all water connected to the ocean, with rivers and lakes present", () => {
     for (const [size, seed] of [[500, 3], [500, 21], [1000, 7]] as const) {
@@ -74,7 +75,7 @@ describe("Continents layout", () => {
       for (const lake of layout.lakes)
         expect(layout.regions[Math.floor(lake.y) * size + Math.floor(lake.x)]).toBe(0);
     }
-  }, 120000);
+  }, SLOW_MAP_TIMEOUT);
 
   it("gives continents distinct climates, relief and forest, with impassable ridges only where rugged", () => {
     const climates = new Set<string>();
@@ -104,7 +105,7 @@ describe("Continents layout", () => {
     expect(climates.size).toBeGreaterThanOrEqual(5);
     expect(rugged).toBeGreaterThan(0);
     expect(calm).toBeGreaterThan(0);
-  }, 120000);
+  }, SLOW_MAP_TIMEOUT);
 
   it("rejects invalid input", () => {
     expect(() => generateContinents(300, 1)).toThrow();

@@ -100,7 +100,7 @@ describe("durable authenticated lobby transport", () => {
     const recovery=await first.next(m=>m.type==="match-state"&&m.rebase===true);
     expect(recovery.type==="match-state"&&recovery.packet.binary).toBeInstanceOf(Uint8Array);
     expect(recovery.type==="match-state"&&await decodeState(recovery.packet)).toEqual(value);
-  },15_000);
+  });
   it("rejects rapid recruitment without disconnecting or starving state receipts", async () => {
     let clock = Date.now();
     const { url, socket, store } = await start(undefined, () => clock);

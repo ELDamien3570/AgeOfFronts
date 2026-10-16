@@ -284,4 +284,4 @@ it("fences one socket to one pending or claimed match and releases admission on 
     await server.close();
     store.close();
   }
-}, 20_000);
+});

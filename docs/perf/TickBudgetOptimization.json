@@ -1,0 +1,606 @@
+{
+  "baselineCommit": "4e3f507",
+  "objective": "Implement optimization items 1 through 5 and measure progress toward 50 ms simulation ticks on the existing two-core Oracle instance.",
+  "constraints": [
+    "Preserve gameplay, deterministic ordering and cold restore",
+    "Do not lower entity caps or tick frequency",
+    "No purchases, production deployment or GitHub push",
+    "Do not modify unrelated code"
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "name": "Incremental capture contributions and dependency invalidation",
+      "status": "implemented and tested",
+      "implementation": "Persistent capture contributions, sparse contested-owner counts, tile/building/diplomacy invalidation and conservative clear-area reuse."
+    },
+    {
+      "id": 2,
+      "name": "Clear-terrain movement fast path with exact collision fallback",
+      "status": "implemented and tested",
+      "implementation": "Reuse exact solver-approved movement endpoints in the rollback guard; retain full checks after collision cancellation and at obstacles."
+    },
+    {
+      "id": 3,
+      "name": "Reduced route churn and suitable shared routing work",
+      "status": "implemented and tested",
+      "implementation": "Reuse formation reservation storage and skip unchanged admission occupancy rebuilds using canonical revisions. Existing route search budgets, shared corridors and fairness remain intact."
+    },
+    {
+      "id": 4,
+      "name": "Direct combat target selection preserving distance and ID ties",
+      "status": "implemented and tested",
+      "implementation": "Single-pass nearest eligible target selection, preserving distance/ID ties, explicit targets and line of sight."
+    },
+    {
+      "id": 5,
+      "name": "Event-driven staggered strategic AI",
+      "status": "implemented and tested",
+      "implementation": "Coalesce routine territorial updates at staggered deadlines; immediate new aggression and territorial loss; tactical threat observations remain live."
+    }
+  ],
+  "validation": [
+    "Baseline and candidate CPU profiles and per-phase timings",
+    "Identical seeded workloads and entity loads",
+    "Behavior equivalence where behavior is unchanged",
+    "Cold restore continuation",
+    "Focused regressions, full suite, TypeScript and production build",
+    "Final ARM p95 and publication cost, not just mean tick time"
+  ],
+  "evidenceDirectory": "out/tick-budget",
+  "resume": "Implementation and requested validation are complete. Do not continue scheduled edits. The 50 ms gate failed; report that honestly. No deployment or GitHub push was performed. Any future performance work should start from the remaining measured costs, preserving the validated behavior and load.",
+  "status": "Complete: all five items implemented and validated; 50 ms performance gate not met",
+  "validationResults": {
+    "fullSuite": {
+      "files": 205,
+      "tests": 1445,
+      "status": "passed"
+    },
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "behavior": "Items 1-4 matched full baseline checkpoints across seeds 47 and 72: 12024 ticks per seed on the small fixture and 801 ticks per seed on the dense fixture. Item 5 intentionally changes strategic scheduling; regression tests and final dense cold-restore comparisons passed.",
+    "restore": "Dense 801-tick runs for seeds 47 and 72 passed with final AI cadence",
+    "fixtureCorrection": "Port setup now uses canonical ownership commits. The original direct-write fixture produced the same tick-501 cold-restore discrepancy in baseline and candidate."
+  },
+  "arm": {
+    "configuration": {
+      "regularFactions": 16,
+      "tribes": 30,
+      "ticks": 800,
+      "warmup": 200,
+      "cpuCores": 2,
+      "heapMiB": 384,
+      "profiler": false
+    },
+    "baseline": {
+      "phases": {
+        "setup": {
+          "mean": 1.5991457250002774,
+          "p95": 1.705138999997871,
+          "p99": 3.6321200000020326,
+          "max": 5.684382999999798
+        },
+        "economy": {
+          "mean": 2.2835776716664924,
+          "p95": 5.17233699999997,
+          "p99": 8.737295999999333,
+          "max": 10.658236999996006
+        },
+        "ai": {
+          "mean": 9.358967640000126,
+          "p95": 15.293728000004194,
+          "p99": 22.924772999998822,
+          "max": 28.86279800000193
+        },
+        "ships": {
+          "mean": 10.226267958333422,
+          "p95": 16.105297000001883,
+          "p99": 18.761327000000165,
+          "max": 30.233053000003565
+        },
+        "routing": {
+          "mean": 7.793162614999886,
+          "p95": 14.610000999993645,
+          "p99": 22.44424799999979,
+          "max": 52.625740000003134
+        },
+        "movement": {
+          "mean": 10.471310830000153,
+          "p95": 17.601433999996516,
+          "p99": 25.399600000004284,
+          "max": 37.691735000000335
+        },
+        "combat": {
+          "mean": 19.966935768333222,
+          "p95": 29.227241999993566,
+          "p99": 36.59656299999915,
+          "max": 48.1925310000006
+        },
+        "capture": {
+          "mean": 25.20409972499985,
+          "p95": 29.757486999995308,
+          "p99": 33.322767000005115,
+          "max": 39.20527200000652
+        },
+        "transport": {
+          "mean": 22.661555023333392,
+          "p95": 54.73320299999614,
+          "p99": 80.83045000000129,
+          "max": 101.26275499999974
+        },
+        "cleanup": {
+          "mean": 0.6717965933332319,
+          "p95": 0.8159689999883994,
+          "p99": 0.9153300000034506,
+          "max": 1.493257000001904
+        },
+        "tick": {
+          "mean": 110.23819809500041,
+          "p95": 156.39660300000105,
+          "p99": 175.87741699999606,
+          "max": 204.86057500000243
+        }
+      },
+      "label": "baseline-coherent-a",
+      "regulars": 16,
+      "tribes": 30,
+      "ticks": 800,
+      "warmup": 200,
+      "squads": 3581,
+      "ships": 333,
+      "traders": 23,
+      "combatTicks": 301,
+      "simulation": {
+        "mean": 110.24532037166661,
+        "p95": 156.40460300000268,
+        "p99": 175.88377699999546,
+        "max": 204.86693599999853
+      },
+      "encoding": {
+        "mean": 29.993491134999843,
+        "p95": 62.458128000002034,
+        "p99": 80.80681000000004,
+        "max": 126.428672
+      },
+      "compressedPacketBytes": {
+        "mean": 29202.105,
+        "p95": 53583,
+        "p99": 68259,
+        "max": 68325
+      },
+      "above50": 600,
+      "peakRss": 375664640,
+      "peakHeap": 163703488
+    },
+    "candidates": [
+      {
+        "phases": {
+          "setup": {
+            "mean": 1.5701745633331423,
+            "p95": 1.663857999999891,
+            "p99": 3.60555899999963,
+            "max": 5.608621999999741
+          },
+          "economy": {
+            "mean": 1.938015435000046,
+            "p95": 4.630611000000499,
+            "p99": 6.5453919999999925,
+            "max": 12.13229400000273
+          },
+          "ai": {
+            "mean": 8.539418921666813,
+            "p95": 11.92101100000582,
+            "p99": 19.5439750000005,
+            "max": 28.798477000003913
+          },
+          "ships": {
+            "mean": 2.1661021516665886,
+            "p95": 3.0260330000019167,
+            "p99": 4.674691000000166,
+            "max": 6.041066999998293
+          },
+          "routing": {
+            "mean": 3.7089682433333473,
+            "p95": 7.725246000001789,
+            "p99": 10.298913999999058,
+            "max": 19.16913100000238
+          },
+          "movement": {
+            "mean": 9.794861753333402,
+            "p95": 12.896902999993472,
+            "p99": 20.29562299999816,
+            "max": 31.597788999999466
+          },
+          "combat": {
+            "mean": 15.73398224999996,
+            "p95": 25.945965999999316,
+            "p99": 31.865592000001925,
+            "max": 37.386092000000644
+          },
+          "capture": {
+            "mean": 11.435177425000056,
+            "p95": 22.45380700000169,
+            "p99": 24.910875000001397,
+            "max": 40.6852080000026
+          },
+          "transport": {
+            "mean": 2.433644795,
+            "p95": 3.7860020000007353,
+            "p99": 4.847732999998698,
+            "max": 7.1097589999990305
+          },
+          "cleanup": {
+            "mean": 0.6251243699999517,
+            "p95": 0.7453280000008817,
+            "p99": 0.9418110000005981,
+            "max": 4.005443999994895
+          },
+          "tick": {
+            "mean": 57.94686878500009,
+            "p95": 81.3716179999974,
+            "p99": 92.37241799999902,
+            "max": 139.84966200000054
+          }
+        },
+        "label": "candidate-coherent-a",
+        "regulars": 16,
+        "tribes": 30,
+        "ticks": 800,
+        "warmup": 200,
+        "squads": 3581,
+        "ships": 333,
+        "traders": 23,
+        "combatTicks": 301,
+        "simulation": {
+          "mean": 57.95310692666679,
+          "p95": 81.3776180000059,
+          "p99": 92.409980000004,
+          "max": 139.88250300000072
+        },
+        "encoding": {
+          "mean": 23.531192089999713,
+          "p95": 62.55920999999944,
+          "p99": 82.17874600000005,
+          "max": 132.84974499999998
+        },
+        "compressedPacketBytes": {
+          "mean": 29202.105,
+          "p95": 53583,
+          "p99": 68259,
+          "max": 68325
+        },
+        "above50": 444,
+        "peakRss": 362422272,
+        "peakHeap": 144763824
+      },
+      {
+        "phases": {
+          "setup": {
+            "mean": 1.5601341666667274,
+            "p95": 1.6599779999996827,
+            "p99": 2.5847090000024764,
+            "max": 5.653502000001026
+          },
+          "economy": {
+            "mean": 1.9031983900000342,
+            "p95": 4.532929999997577,
+            "p99": 7.698124999995343,
+            "max": 13.453509000006306
+          },
+          "ai": {
+            "mean": 8.364237036666625,
+            "p95": 11.665689000001294,
+            "p99": 18.574525000003632,
+            "max": 23.349537999994936
+          },
+          "ships": {
+            "mean": 2.111380336666789,
+            "p95": 2.9605529999971623,
+            "p99": 4.222447000000102,
+            "max": 18.176840999996784
+          },
+          "routing": {
+            "mean": 3.717195286666556,
+            "p95": 7.951128000000608,
+            "p99": 11.516246999999566,
+            "max": 16.202739000000292
+          },
+          "movement": {
+            "mean": 9.572484840000028,
+            "p95": 12.87746199999674,
+            "p99": 24.0217049999992,
+            "max": 28.409713999993983
+          },
+          "combat": {
+            "mean": 15.332246948333347,
+            "p95": 24.714633000003232,
+            "p99": 31.32102600000144,
+            "max": 43.234677000000374
+          },
+          "capture": {
+            "mean": 11.382469893333413,
+            "p95": 22.812331999997696,
+            "p99": 26.295250000002852,
+            "max": 41.28361500000028
+          },
+          "transport": {
+            "mean": 2.3025864916666374,
+            "p95": 3.4897990000026766,
+            "p99": 4.812653000000864,
+            "max": 6.418950999999652
+          },
+          "cleanup": {
+            "mean": 0.5911028733332689,
+            "p95": 0.7256080000006477,
+            "p99": 0.941410999999789,
+            "max": 3.2488760000014736
+          },
+          "tick": {
+            "mean": 56.83834548333337,
+            "p95": 79.87508099999832,
+            "p99": 98.22000400000252,
+            "max": 118.27006599999731
+          }
+        },
+        "label": "candidate-coherent-b",
+        "regulars": 16,
+        "tribes": 30,
+        "ticks": 800,
+        "warmup": 200,
+        "squads": 3581,
+        "ships": 333,
+        "traders": 23,
+        "combatTicks": 301,
+        "simulation": {
+          "mean": 56.84435659500015,
+          "p95": 79.88172099999792,
+          "p99": 98.2268839999997,
+          "max": 118.27722599999834
+        },
+        "encoding": {
+          "mean": 23.455545285000127,
+          "p95": 60.50930799999878,
+          "p99": 77.27061300000014,
+          "max": 120.49884900000006
+        },
+        "compressedPacketBytes": {
+          "mean": 29202.105,
+          "p95": 53583,
+          "p99": 68259,
+          "max": 68325
+        },
+        "above50": 403,
+        "peakRss": 368541696,
+        "peakHeap": 145253416
+      }
+    ],
+    "targetMs": 50,
+    "targetMet": false,
+    "steady": {
+      "configuration": {
+        "ticks": 1600,
+        "warmup": 800,
+        "profiler": false
+      },
+      "baseline": {
+        "phases": {
+          "setup": {
+            "mean": 1.6266095662499174,
+            "p95": 1.6541379999980563,
+            "p99": 3.749960999994073,
+            "max": 7.637644000002183
+          },
+          "economy": {
+            "mean": 2.7796455312506807,
+            "p95": 6.133826999983285,
+            "p99": 11.307044999994105,
+            "max": 31.652310000004945
+          },
+          "ai": {
+            "mean": 10.585175747498907,
+            "p95": 20.487026999995578,
+            "p99": 27.94026900001336,
+            "max": 38.308663999981945
+          },
+          "ships": {
+            "mean": 3.2797328525006195,
+            "p95": 6.415591000026325,
+            "p99": 8.862698000011733,
+            "max": 15.400129999994533
+          },
+          "routing": {
+            "mean": 13.120982147500198,
+            "p95": 26.28453000000445,
+            "p99": 35.041147000010824,
+            "max": 54.602522999979556
+          },
+          "movement": {
+            "mean": 15.39455562249981,
+            "p95": 26.925537000002805,
+            "p99": 36.82020599997486,
+            "max": 45.300459999998566
+          },
+          "combat": {
+            "mean": 15.529674692499848,
+            "p95": 24.162586000020383,
+            "p99": 30.959302000002936,
+            "max": 34.41457999999693
+          },
+          "capture": {
+            "mean": 28.97411179499997,
+            "p95": 35.11906799999997,
+            "p99": 45.31445999999414,
+            "max": 59.780781000008574
+          },
+          "transport": {
+            "mean": 15.263404344999344,
+            "p95": 59.4715369999758,
+            "p99": 61.819203000020934,
+            "max": 79.43579799999134
+          },
+          "cleanup": {
+            "mean": 0.9057460262507812,
+            "p95": 1.0839320000086445,
+            "p99": 1.624818000011146,
+            "max": 6.86767599999439
+          },
+          "tick": {
+            "mean": 107.46084538624986,
+            "p95": 160.63533499999903,
+            "p99": 179.88890700000047,
+            "max": 206.05371499998728
+          }
+        },
+        "label": "baseline-steady",
+        "regulars": 16,
+        "tribes": 30,
+        "ticks": 1600,
+        "warmup": 800,
+        "squads": 3742,
+        "ships": 102,
+        "traders": 15,
+        "combatTicks": 1019,
+        "simulation": {
+          "mean": 107.46715180500041,
+          "p95": 160.6403350000037,
+          "p99": 179.89722699999402,
+          "max": 206.06223599999794
+        },
+        "encoding": {
+          "mean": 23.057328944998993,
+          "p95": 51.62256999999954,
+          "p99": 68.83059999999386,
+          "max": 115.89487899999995
+        },
+        "compressedPacketBytes": {
+          "mean": 22853.25,
+          "p95": 49440,
+          "p99": 55665,
+          "max": 68325
+        },
+        "above50": 800,
+        "peakRss": 426840064,
+        "peakHeap": 194608960
+      },
+      "candidate": {
+        "phases": {
+          "setup": {
+            "mean": 1.6003293850001683,
+            "p95": 1.6796179999946617,
+            "p99": 3.6248800000030315,
+            "max": 7.640605000007781
+          },
+          "economy": {
+            "mean": 2.436628317499999,
+            "p95": 5.784343999999692,
+            "p99": 11.183282999998482,
+            "max": 17.497073999998975
+          },
+          "ai": {
+            "mean": 9.972537748750165,
+            "p95": 15.274967999997898,
+            "p99": 26.895696999999927,
+            "max": 34.714223000002676
+          },
+          "ships": {
+            "mean": 1.3747319862499352,
+            "p95": 1.739659999999276,
+            "p99": 3.7636809999967227,
+            "max": 12.905503000001772
+          },
+          "routing": {
+            "mean": 10.65757432874966,
+            "p95": 22.520929000005708,
+            "p99": 34.63738299999386,
+            "max": 61.85260299999209
+          },
+          "movement": {
+            "mean": 15.119510286250316,
+            "p95": 22.290286000003107,
+            "p99": 30.475377000009757,
+            "max": 48.31553399999393
+          },
+          "combat": {
+            "mean": 13.771625798749774,
+            "p95": 17.69135500000266,
+            "p99": 28.532754999992903,
+            "max": 31.866871999998693
+          },
+          "capture": {
+            "mean": 12.022474426249946,
+            "p95": 17.09918900000048,
+            "p99": 19.382494999998016,
+            "max": 33.307207999998354
+          },
+          "transport": {
+            "mean": 1.8237821950000126,
+            "p95": 2.3633459999982733,
+            "p99": 3.7728409999981523,
+            "max": 5.265497999993386
+          },
+          "cleanup": {
+            "mean": 0.7826574237500062,
+            "p95": 0.961131000003661,
+            "p99": 1.206653000001097,
+            "max": 3.333236999998917
+          },
+          "tick": {
+            "mean": 69.56301110875009,
+            "p95": 98.92393300000549,
+            "p99": 120.67525400000159,
+            "max": 149.01612699999532
+          }
+        },
+        "label": "candidate-steady",
+        "regulars": 16,
+        "tribes": 30,
+        "ticks": 1600,
+        "warmup": 800,
+        "squads": 3742,
+        "ships": 102,
+        "traders": 15,
+        "combatTicks": 1019,
+        "simulation": {
+          "mean": 69.56836426249998,
+          "p95": 98.93049299999984,
+          "p99": 120.68161400000099,
+          "max": 149.02360699999554
+        },
+        "encoding": {
+          "mean": 18.84023995250033,
+          "p95": 46.314031000001705,
+          "p99": 76.64928699999928,
+          "max": 114.61618599999997
+        },
+        "compressedPacketBytes": {
+          "mean": 22853.25,
+          "p95": 49440,
+          "p99": 55665,
+          "max": 68325
+        },
+        "above50": 787,
+        "peakRss": 403324928,
+        "peakHeap": 160030784
+      }
+    },
+    "meanReductionPercent": {
+      "short": [
+        47.43259239368049,
+        48.43830431680679
+      ],
+      "steady": 35.26546196298934
+    }
+  },
+  "remainingCosts": "Steady-state mean phase costs: movement 15.1 ms, combat 13.8 ms, capture 12.0 ms, routing 10.7 ms, AI 10.0 ms. Publication averages 18.8 ms every four ticks in this diagnostic. These are synthetic ARM timings, not measured live-match input latency.",
+  "reproduce": [
+    "node scripts/buildTickBudgetDiagnostics.mjs 4e3f507",
+    "node out/tick-budget/equivalence-legacy-strategy.mjs 12000",
+    "node out/tick-budget/equivalence-legacy-strategy.mjs 800 --dense",
+    "node out/tick-budget/equivalence.mjs 800 --dense --restore-only",
+    "node node_modules/vitest/vitest.mjs run --config vite.skirmish.config.ts --maxWorkers 4",
+    "node node_modules/typescript/bin/tsc --noEmit",
+    "node node_modules/vite/bin/vite.js build --config vite.skirmish.config.ts",
+    "node --max-old-space-size=384 out/tick-budget/baseline-coherent.mjs baseline 16 1600 800",
+    "node --max-old-space-size=384 out/tick-budget/candidate-coherent.mjs candidate 16 1600 800"
+  ]
+}

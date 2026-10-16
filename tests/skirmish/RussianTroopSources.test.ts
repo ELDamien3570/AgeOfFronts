@@ -9,6 +9,12 @@ const expected = {
 const calibration = JSON.parse(readFileSync("src/skirmish/content/RussianVisualCalibration.json", "utf8"));
 const hash = (path: string) =>
   createHash("sha256").update(readFileSync(path)).digest("hex");
+// Text metadata is hashed with LF line endings, so a CRLF (autocrlf) and an LF
+// checkout of the same commit agree. Pose sheets are binary and hashed raw.
+const textHash = (path: string) =>
+  createHash("sha256")
+    .update(readFileSync(path, "utf8").replace(/\r\n/g, "\n"))
+    .digest("hex");
 describe("requested Russian top-down troop sources", () => {
   for (const [key, folder] of Object.entries(expected))
     it(`${key} uses the top-down review for every baked pose`, () => {
@@ -17,7 +23,7 @@ describe("requested Russian top-down troop sources", () => {
       expect(baked.source).toBe(
         `Art/Cultures/Russians/Units/${folder}/TopDownReview/animations.json`,
       );
-      expect(baked.metadataHash).toBe(hash(baked.source));
+      expect(baked.metadataHash).toBe(textHash(baked.source));
       expect(baked.animations.map((c: any) => c.id)).toEqual(expect.arrayContaining([
         "idle",
         "running",

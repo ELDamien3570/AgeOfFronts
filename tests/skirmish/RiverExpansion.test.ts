@@ -83,9 +83,19 @@ describe("bounded frontier and river expansion",()=>{
     for(let y=20;y<29;y++)for(let x=41;x<46;x++)game.owners[map.ref(x,y)]=tribe.id;
     const enemy=game.squads.find(s=>s.playerId===1)!;
     game.updateSquad(enemy.id,{x:43.5*FIXED,y:24.5*FIXED,troops:2});game.tick=56;
-    let crossings=0;
-    for(let tick=0;tick<900;tick++){game.step();crossings=Math.max(crossings,afloat(game,tribe.id));}
+    // Assert the reinforcement as it happens, inside a live match. The tribe
+    // later captures both nation cities by territory (loop tick ~746) and the
+    // world freezes, so an end-state position check would only sample luck.
+    let crossings=0,firstLanded:number|undefined,intruderDead:number|undefined;
+    for(let tick=0;tick<300;tick++){
+      game.step();crossings=Math.max(crossings,afloat(game,tribe.id));
+      if(firstLanded===undefined&&game.squads.some(s=>s.playerId===tribe.id&&!s.afloat&&map.x(game.tileOf(s))>=41))firstLanded=tick;
+      if(intruderDead===undefined&&!game.squad(enemy.id))intruderDead=tick;
+    }
+    expect(game.winner).toBeNull();
     expect(crossings).toBeGreaterThan(0);expect(crossings).toBeLessThanOrEqual(4);
-    expect(game.squads.some(s=>s.playerId===tribe.id&&map.x(game.tileOf(s))>=41)).toBe(true);
+    // The reinforcement lands promptly and removes the intruder (measured 12 / 32).
+    expect(firstLanded).toBeDefined();expect(firstLanded!).toBeLessThanOrEqual(120);
+    expect(intruderDead).toBeDefined();expect(intruderDead!).toBeLessThanOrEqual(240);
   });
 });

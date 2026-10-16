@@ -63,7 +63,10 @@ describe("read-only enemy inspection and weapon presentation", () => {
     if (card.mode !== "detail") throw new Error("Expected detail");
     expect(card.card.title).toContain("RPL-20 Crew");
     expect(card.card.subtitle).toContain("read only");
-    expect(card.card.meter?.value).toBe(48);
+    // Actual strength: the authored crew HP minus the 32 HP of wounds.
+    expect(card.card.meter?.value).toBe(
+      UNITS.find((u) => u.id === "modern-archer")!.formationRecipe!.soldierHp - 32,
+    );
     expect(
       card.card.stats.find((s) => s.label === "Ranged Armour")?.value,
     ).toContain("points");
