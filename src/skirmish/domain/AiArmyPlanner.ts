@@ -310,7 +310,8 @@ export class AiArmyPlanner {
       !members.length || (!army && plan.phase !== "replenish" && plan.phase !== "refit") ||
       members.some((s) => !this.economy.assets.owns(`squad:${s.id}`, plan!.id))
     ) {
-      this.release(player.id);
+      // Only the failing mission is torn down; sibling armies keep their leases.
+      this.releaseMission(plan);
       return this.diagnostics.work;
     }
     plan.members=members.map(s=>s.id);
