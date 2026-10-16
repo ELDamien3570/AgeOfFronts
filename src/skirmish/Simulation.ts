@@ -5237,6 +5237,9 @@ export class Skirmish {
         }
         // Meet nearby invaders with actual squads, using the same attack order.
         if (nearest && distance < (personality.interceptRange * FIXED) ** 2) {
+          // T-c: a charge-capable loose squad charges an invader inside charge range
+          // (the charge command falls back to the same attack order when refused).
+          if (this.aiLooseCharge(player.id, squad, nearest)) continue;
           if (
             squad.order.type !== "attack" ||
             squad.order.targetId !== nearest.id
@@ -5561,6 +5564,16 @@ export class Skirmish {
     }
   }
 
+  private aiLooseCharge(playerId: number, squad: Squad, target: Squad): boolean {
+    const unit = this.expansion?.unit(squad), charge = unit?.charge;
+    if (!unit || !charge || !unit.tags.includes("mounted") || squad.charge || squad.cavalryEngagement ||
+      (squad.chargeReadyTick ?? 0) > this.tick || target.afloat || target.embarkedOn !== null ||
+      Math.hypot(target.x - squad.x, target.y - squad.y) > charge.maximumDistance) return false;
+    const defender = this.expansion!.unit(target);
+    if (formationEnvelope(target, this.tick).shape === "square" ||
+      defender.troopClass === "antiCavalry" && formationContact(target, squad, this.tick).facing >= .25) return false;
+    return this.applyCommand({ type: "charge", playerId, squadIds: [squad.id], x: target.x, y: target.y, targetId: target.id }) === null;
+  }
   private checkWinner(): void {
     // Survival is identical for humans and AI: living ground squads (including
     // embarked squads) or a completed city. Fleets and other buildings do not count.
