@@ -219,6 +219,8 @@ export class Renderer {
   private offsetY = 0;
   private width = 0;
   private height = 0;
+  /** CSS-pixel viewport of the map canvas. */
+  get viewportSize(): { width: number; height: number } { return { width: this.width, height: this.height }; }
   private hudBottomInset = 0;
   private resizeObserver: ResizeObserver;
   selected = new Set<number>();

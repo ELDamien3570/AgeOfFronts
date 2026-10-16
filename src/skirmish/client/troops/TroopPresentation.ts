@@ -1,4 +1,5 @@
-import {TICK_MS} from '../../Protocol';
+import {FIXED, TICK_MS} from '../../Protocol';
+import { selectDetailedSquads, type DetailCandidate } from "./TroopDetailBudget";
 import { eligibleShape } from "../../domain/FormationProfiles";
 import { formationDoctrine } from "../../domain/FormationGeometry";
 import type { Command } from "../../Protocol";
@@ -35,11 +36,26 @@ export function installTroopPresentation(
   });
   actors.isSelected = (id) =>
     renderer.selected.has(id) || renderer.inspectedSquadId === id;
+  // U5: chosen once per frame before any squad is drawn ("12 px AND in budget").
+  let detailed: Set<number> | undefined;
   renderer.squadArtworkDetailed = (squad, scale) =>
     UNIT.get(squad.definitionId ?? "")?.troopClass
       ? scale >= TROOP_DETAIL_CUTOFF &&
-        actors.isLoaded(squad.definitionId ?? "")
+        actors.isLoaded(squad.definitionId ?? "") &&
+        (detailed?.has(squad.id) ?? true)
       : undefined;
+  const detailCandidates = (snapshot: Snapshot): DetailCandidate[] => {
+    const { width, height } = renderer.viewportSize, margin = renderer.pixelsPerCell * 6 + 64;
+    const candidates: DetailCandidate[] = [];
+    for (const squad of snapshot.squads) {
+      if (squad.embarkedOn !== null || squad.afloat || !UNIT.get(squad.definitionId ?? "")?.troopClass) continue;
+      const p = renderer.screen(squad.x / FIXED, squad.y / FIXED);
+      if (p.x < -margin || p.y < -margin || p.x > width + margin || p.y > height + margin) continue;
+      candidates.push({ id: squad.id, soldiers: squad.troops, selected: actors.isSelected(squad.id),
+        distance: (p.x - width / 2) ** 2 + (p.y - height / 2) ** 2 });
+    }
+    return candidates;
+  };
   renderer.squadDeploymentPreview = actors.deploymentPreview;
   renderer.squadArtworkHitTest = actors.hitTest;
   renderer.squadArtworkIntersectsBox = actors.intersectsBox;
@@ -95,6 +111,7 @@ export function installTroopPresentation(
         );
       previousFrame = now;
       const detailChanged=actors.setDetailed(renderer.pixelsPerCell >= TROOP_DETAIL_CUTOFF);
+      detailed = latest && renderer.pixelsPerCell >= TROOP_DETAIL_CUTOFF ? selectDetailedSquads(detailCandidates(latest)) : undefined;
       if(latest && (detailChanged || (frame?.source??latest)!==presentedSource)){
         actors.prune(latest);presentedSource=frame?.source??latest;
       }
