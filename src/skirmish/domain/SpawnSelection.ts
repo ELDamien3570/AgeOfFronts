@@ -2,6 +2,7 @@ import type { GameMap } from "../../core/game/GameMap";
 import { PseudoRandom } from "../../core/PseudoRandom";
 import { TRIBE_BASE_RADIUS, TRIBE_CITY_BASE_RADIUS, matchTribeCount } from "../FactionRules";
 import { LandPaths } from "../Pathfinding";
+import { SPAWN_STREAM_SALT } from "../SeedStreams";
 import type { MatchOptions, SpawnState } from "../Protocol";
 import { StartingPositions } from "../StartingPositions";
 import { startingCamp } from "./StartingCamp";
@@ -113,7 +114,7 @@ export class SpawnSelection {
     // so every executor constructs the same completed spawn plan.
     for (let attempt = 0; attempt < 16; attempt++) {
       const random = new PseudoRandom(
-        this.options.seed + Math.imul(attempt, 104729),
+        (this.options.seed ^ SPAWN_STREAM_SALT) + Math.imul(attempt, 104729),
       );
       const placement = new StartingPositions(
         this.map,

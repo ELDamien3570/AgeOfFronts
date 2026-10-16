@@ -1,4 +1,5 @@
 import { PseudoRandom } from "../core/PseudoRandom";
+import { BLACK_FOREST_LAYOUT_SALT } from "./SeedStreams";
 import { terrainNoise } from "./TerrainNoise";
 import { BLACK_FOREST_THEME } from "./content/BlackForest";
 export { BLACK_FOREST_THEME } from "./content/BlackForest";
@@ -41,7 +42,7 @@ export function blackForestLayout(
     seed > 0x7fffffff
   )
     throw new Error("Invalid Black Forest size or seed");
-  const random = new PseudoRandom(seed),
+  const random = new PseudoRandom(seed ^ BLACK_FOREST_LAYOUT_SALT),
     side = Math.max(4, Math.round(size / BLACK_FOREST_THEME.clearingSpacing)),
     spacing = size / side,
     clearings: ForestClearing[] = [];
@@ -119,9 +120,13 @@ export function blackForestLayout(
       const t = index / 16,
         offset =
           Math.sin(Math.PI * t) * bend + Math.sin(Math.PI * 2 * t) * secondBend;
+      // A bend beside an edge clearing can leave the map's forested rim, which
+      // would bury the route's centre line in dense woodland.
+      const rim = BLACK_FOREST_THEME.boundaryWidth + 1,
+        inside = (value: number) => Math.max(rim, Math.min(size - 1 - rim, value));
       return {
-        x: a.x + dx * t - (dy / edge.distance) * offset,
-        y: a.y + dy * t + (dx / edge.distance) * offset,
+        x: inside(a.x + dx * t - (dy / edge.distance) * offset),
+        y: inside(a.y + dy * t + (dx / edge.distance) * offset),
         halfWidth: Math.max(
           BLACK_FOREST_THEME.passageHalfWidth,
           halfWidth *

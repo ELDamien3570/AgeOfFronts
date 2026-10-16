@@ -1,7 +1,7 @@
 /** Editable theme recipe. Layout and appearance share no camera or match state. */
 export const BLACK_FOREST_THEME = Object.freeze({
   id: "black-forest",
-  revision: 4,
+  revision: 5,
   name: "Black Forest",
   clearingSpacing: 82,
   clearingRadiusRatio: 0.28,
