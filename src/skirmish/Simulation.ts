@@ -176,6 +176,7 @@ import { startingCamp } from "./domain/StartingCamp";
 import { TRIBE_CITY_BASE_RADIUS } from "./FactionRules";
 import { firingPosition } from "./TacticalRoutes";
 import { terrainSpeed } from "./Terrain";
+import { validatePlaytestOptions, isHumanSeat, timeLimitTick, startProtectionUntil } from "./domain/PlaytestRules";
 
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
@@ -826,6 +827,7 @@ export class Skirmish {
     )
       throw new Error(`Choose between 0 and ${MAX_TRIBES} tribes`);
     if (!Number.isInteger(options.seed)) throw new Error("Invalid match seed");
+    validatePlaytestOptions(options);
     if (
       options.territoryIncomeScale !== undefined &&
       (!Number.isFinite(options.territoryIncomeScale) ||

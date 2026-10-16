@@ -39,6 +39,7 @@ import type {
   Squad,
 } from "../Protocol";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
+import type { AiDifficulty } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
 import { recoveredChargeStrength } from './ChargeStrength';
 import { armCavalryBonus } from './CavalryAssault';
@@ -112,7 +113,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   wasteland: NuclearWasteland;
   spatialFacts(phase: import("../PhaseSpatialViews").SpatialPhase): import("../PhaseSpatialViews").PhaseSpatialFacts;
   recruitment: Recruitment;
-  options?: { runAi?: boolean; formationLocomotion?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; diplomacyRules?:"raids-v1"; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge; maximumAge?: Age };
+  options?: { runAi?: boolean; formationLocomotion?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; diplomacyRules?:"raids-v1"; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge; maximumAge?: Age; humanNames?: readonly string[]; startProtectionMinutes?: number; timeLimitMinutes?: number; aiDifficulty?: AiDifficulty; tribeOpening?: "playtest-v1" };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;

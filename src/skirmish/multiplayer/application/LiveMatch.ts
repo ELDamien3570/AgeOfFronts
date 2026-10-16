@@ -1,12 +1,11 @@
-import { FORMATION_MOVEMENT } from "../../content/FormationMovement";
-import { DEFAULT_AI_POLICIES } from "../../content/AiPolicies";
+import { lobbyMatchOptions } from "./LobbyMatchOptions";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
 import {ClientStateFlow} from "./ClientStateFlow";
 import { MATCH_STOPPED_MESSAGE, publicStopMessage } from "./TerminalMessages";
 import type {ClientBaseline} from "./MatchExecutor";
 import type { EmpireProfile } from "../../lobby/EmpireProfile";
-import type { Command } from "../../Protocol";
+import type { Command, MatchOptions } from "../../Protocol";
 import { TICKS_PER_SECOND } from "../../Protocol";
 import { commandSchema } from "../CommandSchema";
 import type { MatchReservation } from "../domain/RoomCoordinator";
@@ -121,7 +120,7 @@ export class LiveMatch {
   private recoveringClient=false;
   private readonly recoveredAt=new Map<string,number>();
   private readonly deferredRecoveries=new Map<string,ReturnType<typeof setTimeout>>();
-  readonly options;
+  readonly options: MatchOptions;
   constructor(
     readonly reservation: MatchReservation,
     readonly executor: MatchExecutor,
@@ -151,27 +150,11 @@ export class LiveMatch {
         connected: member.connected,
       }),
     );
-    this.options = {
-      ...DEFAULT_AI_POLICIES,
-      diplomacyRules: "raids-v1" as const,
-      armyTravel: "corridors-v1" as const,
-      ...FORMATION_MOVEMENT,
-      seed: Math.floor(Math.random() * 0x7fffffff),
-      humanNames: reservation.members.map((member) => member.profile.name),
-      ...(reservation.members.some(member => typeof member.profile.colorIndex === "number")
-        ? { humanColors: reservation.members.map(member => member.profile.colorIndex ?? null) } : {}),
-      aiCount: settings.aiCount,
-      tribes: settings.tribeCount > 0,
-      tribeCount: settings.tribeCount,
-      ruleset: "ages-v1" as const,
-      victoryMode: settings.victory,
-      technologySpeed: settings.technologySpeed,
-      startingAge: settings.startingAge,
-      resourceDensity: settings.resourceDensity,
-      resourceOutput: settings.resourceOutput,
-      infiniteGoldForPlayers: settings.infiniteGoldForPlayers,
-      alliances: settings.alliances,
-    };
+    this.options = lobbyMatchOptions(
+      settings,
+      reservation.members.map((member) => member.profile),
+      Math.floor(Math.random() * 0x7fffffff),
+    );
   }
   async initialize(): Promise<void> {
     const prepared = await this.executor.request<PreparedMatch>({

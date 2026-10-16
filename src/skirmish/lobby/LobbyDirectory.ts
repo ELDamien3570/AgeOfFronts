@@ -4,6 +4,7 @@ import {
   MAX_HUMAN_PLAYERS,
 } from "../FactionRules";
 import { isProceduralMap } from "../content/Maps";
+import { AI_DIFFICULTIES, type AiDifficulty } from "../Protocol";
 import { createEmpireProfile, type EmpireProfile } from "./EmpireProfile";
 import { STARTING_AGES, type StartingAge } from "../domain/Definitions";
 import {
@@ -39,7 +40,26 @@ export interface LobbySettings {
   /** Explicit opt-in to newcomers taking an unclaimed regular AI. */
   readonly publicAiTakeover?: boolean;
   readonly infiniteGoldForPlayers?: boolean;
+  /** Playtest rules (13 R1, R2, R4). Absent in lobbies saved before they existed:
+   * such a lobby keeps the historical rules (no limit, no protection, hard AI). */
+  readonly startProtectionMinutes?: StartProtectionMinutes;
+  readonly timeLimitMinutes?: TimeLimitMinutes;
+  readonly aiDifficulty?: AiDifficulty;
 }
+
+/** Lobby choices for the playtest rules (13 R1.1, R2.6 and OD4: no "none"). */
+export const START_PROTECTION_CHOICES = [0, 5, 8, 12] as const;
+export type StartProtectionMinutes = (typeof START_PROTECTION_CHOICES)[number];
+export const TIME_LIMIT_CHOICES = [60, 90, 120] as const;
+export type TimeLimitMinutes = (typeof TIME_LIMIT_CHOICES)[number];
+/** New lobbies' playtest defaults (13 OD4, OD11, OD12). Standard AI is a
+ * deliberate change from today's (hard) AI for new lobbies only. */
+export const PLAYTEST_LOBBY_DEFAULTS = Object.freeze({
+  startProtectionMinutes: 8 as StartProtectionMinutes,
+  timeLimitMinutes: 90 as TimeLimitMinutes,
+  aiDifficulty: "standard" as AiDifficulty,
+});
+export const INVALID_PLAYTEST_RULES = "Choose supported start protection, time limit and AI difficulty.";
 
 export function defaultLobbySettings(
   mapId: LobbyMapId,
@@ -57,6 +77,7 @@ export function defaultLobbySettings(
     alliances: false,
     victory: "solo",
     publicAiTakeover: true,
+    ...PLAYTEST_LOBBY_DEFAULTS,
   });
 }
 
@@ -137,6 +158,12 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
     throw new Error("Invalid infinite gold rule");
   if (settings.publicAiTakeover !== undefined && typeof settings.publicAiTakeover !== "boolean")
     throw new Error("Choose whether public AI takeover is allowed.");
+  if (
+    settings.startProtectionMinutes !== undefined && !START_PROTECTION_CHOICES.includes(settings.startProtectionMinutes) ||
+    settings.timeLimitMinutes !== undefined && !TIME_LIMIT_CHOICES.includes(settings.timeLimitMinutes) ||
+    settings.aiDifficulty !== undefined && !AI_DIFFICULTIES.includes(settings.aiDifficulty)
+  )
+    throw new Error(INVALID_PLAYTEST_RULES);
   return Object.freeze({ ...settings, publicAiTakeover: settings.publicAiTakeover ?? true });
 }
 
