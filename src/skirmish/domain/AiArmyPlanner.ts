@@ -110,12 +110,18 @@ export class AiArmyPlanner {
     const { world, armies } = this.expansion;
     for (const [playerId, since] of [...this.orphanSince]) {
       if (world.tick < since + ORPHAN_ARMY_GRACE_TICKS) continue;
-      this.orphanSince.delete(playerId);
       const player = world.players.find(p => p.id === playerId);
-      if (!player?.ai || player.eliminated) continue;
+      if (!player?.ai || player.eliminated) { this.orphanSince.delete(playerId); continue; }
       const missionArmies = new Set((this.byPlayer.get(playerId) ?? []).map(id => this.missions.get(id)?.armyId));
-      for (const army of armies.armies.filter(a => a.playerId === playerId && !missionArmies.has(a.id)))
+      let fighting = false;
+      for (const army of armies.armies.filter(a => a.playerId === playerId && !missionArmies.has(a.id))) {
+        // An army in melee keeps its automatic tactics (handOverToAi) until the
+        // fight ends; disbanding it then would strand its members without
+        // orders mid-battle. It is disbanded on the first think after.
+        if (army.memberIds.some(id => world.squad(id)?.fighting)) { fighting = true; continue; }
         world.applyCommand({ type: "disband-army", playerId, armyId: army.id });
+      }
+      if (!fighting) this.orphanSince.delete(playerId);
     }
   }
   restore(saved?: ReturnType<AiArmyPlanner["checkpoint"]>): void {
@@ -153,7 +159,10 @@ export class AiArmyPlanner {
     if(army)this.expansion.world.applyCommand({type:'disband-army',playerId:plan.playerId,armyId:army.id});
     this.missions.delete(plan.id);this.byPlayer.set(plan.playerId,(this.byPlayer.get(plan.playerId)??[]).filter(id=>id!==plan.id));
   }
-  release(playerId:number):void {this.orphanSince.delete(playerId);this.invasion.release(playerId);for(const id of [...(this.byPlayer.get(playerId)??[])]){const plan=this.missions.get(id);if(plan)this.releaseMission(plan);}this.byPlayer.delete(playerId);}
+  release(playerId:number):void {this.orphanSince.delete(playerId);this.invasion.release(playerId);this.releaseMissions(playerId);}
+  /** Offensive missions only: an invasion response frees their squads but
+   * keeps the faction's orphaned-army grace (M3) and its own response. */
+  private releaseMissions(playerId:number):void {for(const id of [...(this.byPlayer.get(playerId)??[])]){const plan=this.missions.get(id);if(plan)this.releaseMission(plan);}this.byPlayer.delete(playerId);}
   acquireCoast(player:Player,tile:number):boolean {
     const {world}=this.expansion;
     if((this.byPlayer.get(player.id)?.length??0)>=this.missionCap(player)||!world.squadPaths(player.id).connected(player.base,tile))return false;
@@ -212,7 +221,7 @@ export class AiArmyPlanner {
     let player:Player|undefined;
     for(let n=0;n<world.players.length;n++){const p=world.players[this.cursor++%world.players.length];if(this.economy.enabled(p)){player=p;break;}}
     if(!player)return 0;
-    const defense=this.invasion.step(player,Math.min(budget,BUDGETS.missionQuantum),()=>this.release(player!.id));
+    const defense=this.invasion.step(player,Math.min(budget,BUDGETS.missionQuantum),()=>this.releaseMissions(player!.id));
     let total=defense;
     const cap=this.missionCap(player),ids=this.byPlayer.get(player.id)??[];
     for(const id of [...ids]){const p=this.missions.get(id);if(p&&(p.generation!==world.aiGeneration(player.id)||!cap||p.phase==='complete'&&world.tick>=p.nextThink))this.releaseMission(p);}

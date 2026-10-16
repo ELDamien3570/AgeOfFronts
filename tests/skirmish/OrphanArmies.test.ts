@@ -53,4 +53,21 @@ describe("orphaned armies after a handover (M3)", () => {
     step(fresh, ORPHAN_ARMY_GRACE_TICKS);
     expect(fresh.expansion!.armies.armies.some((a) => a.id === army.id)).toBe(false);
   });
+  it("keeps an orphaned army in melee until the fight ends, then disbands it", () => {
+    const { game, ids, army } = handoverMatch();
+    const member = game.squad(ids[0])!, enemyTemplate = game.squads.find((s) => s.playerId === 2)!;
+    // A sturdy enemy keeps the melee going past the grace period.
+    const enemy = game.addSquad({ ...structuredClone(enemyTemplate), id: game.allocateId(), x: member.x + FIXED, y: member.y, path: [], order: { type: "hold" }, queuedOrders: [],
+      troops: enemyTemplate.troops * 20 });
+    game.setAiController(1, true);
+    let fought = false;
+    for (let i = 0; i < ORPHAN_ARMY_GRACE_TICKS + 4; i++) { game.step(); fought ||= ids.some((id) => game.squad(id)?.fighting); }
+    expect(fought).toBe(true);
+    // Past the grace period: an army whose members are fighting is not disbanded mid-melee.
+    expect(ids.some((id) => game.squad(id)?.fighting)).toBe(true);
+    expect(game.expansion!.armies.armies.some((a) => a.id === army.id)).toBe(true);
+    game.removeSquad(enemy.id);
+    for (let i = 0; i < 40 && game.expansion!.armies.armies.some((a) => a.id === army.id); i++) game.step();
+    expect(game.expansion!.armies.armies.some((a) => a.id === army.id)).toBe(false);
+  });
 });
