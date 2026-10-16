@@ -209,7 +209,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
     const bomber = (id: number, playerId: number, x: number) => ({
       id,
       playerId,
-      definitionId: "bomber",
+      definitionId: "bomber" as const,
       airfieldId: 1,
       health: 100,
       x: 0,
