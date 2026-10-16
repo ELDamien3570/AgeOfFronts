@@ -189,6 +189,9 @@ const RADIAL_SPANS = Array.from({ length: BASE_RADIUS + 1 }, (_, radius) =>
 const ROUTE_EFFORT_LIMIT = 20_000;
 // Crossing trees built per tick until every portal has one (land, then water).
 const PATH_WARM_TREES = 4;
+/** Owner decision D8 (R2-P10): back-off after a failed reorientation, and
+ * the heading change (30 degrees) that retries immediately. */
+const REORIENT_RETRY = { ticks: COLUMN_TRAVEL.retryTicks, facing: Math.round(65536 * 30 / 360) } as const;
 // A squad on water without researched transports (e.g. a legacy placement)
 // still floats; it uses the first age's hull.
 const FALLBACK_TRANSPORT = VESSELS.find(v => v.kind === "transport")!;
@@ -283,7 +286,7 @@ export class Skirmish {
     this.expansion?.operations.release(playerId);
     this.commandApplications.release(playerId, this.tick);
   }
-  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,reorientRetry:this.reorientRetry,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     this.assertAvailable();
     this.captureContributions.clear();
@@ -360,6 +363,7 @@ export class Skirmish {
     restoreMap(this.navigationProgress,state.navigationProgress);
     this.navigationCleanupNeeded = true;
     restoreMap(this.orderRevisions,state.orderRevisions);
+    restoreMap(this.reorientRetry,state.reorientRetry ?? new Map());
     restoreMap(this.queuedLegs,state.queuedLegs ?? new Map());
     restoreMap(this.moveContinuations,state.moveContinuations ?? new Map());
     restoreMap(this.routeApproaches,state.routeApproaches ?? new Map());
@@ -422,7 +426,7 @@ export class Skirmish {
     removed: id => {
       this.squadIndex.remove(id); this.squadChanges.record(id, "remove"); this.landingSpatial?.remove(id);
       this.navigationProgress.delete(id); this.detours.delete(id);
-      this.orderRevisions.delete(id); this.queuedLegs.delete(id);
+      this.orderRevisions.delete(id); this.queuedLegs.delete(id); this.reorientRetry.delete(id);
       this.moveContinuations.delete(id); this.routeApproaches.delete(id); this.routePlanner.cancel(`continuation:${id}`);
       this.routeWork.cancel(`navigation:${id}`); this.routePlanner.cancel(`navigation:${id}`);
     },
@@ -766,6 +770,9 @@ export class Skirmish {
     return this.movementAdmission.startStructure(playerId, squads, tiles[0], this.tick, state);
   }
   private readonly orderRevisions = new Map<number, number>();
+  /** Failed reorientation attempts (R2-P10): squad id -> earliest retry tick
+   * and the heading that failed. Checkpointed; never replicated. */
+  private readonly reorientRetry = new Map<number, { tick: number; facing: number }>();
   /** Stable incoming segment for the current steering point, retained across overshoot. */
   private readonly routeApproaches = new Map<number, { goalX: number; goalY: number; heading: number }>();
   /** At most one speculative leg per squad; scheduler work and replay state stay bounded. */
@@ -2369,8 +2376,15 @@ export class Skirmish {
           // Ignore small route-bearing noise until a meaningful heading change;
           // explicit facing orders remain exact.
           if(Math.abs(delta)<65536/12 && !(s.order.type==='hold' && s.order.facing!==undefined))continue;
+          // R2-P10: a reorientation that failed certification waits
+          // REORIENT_RETRY.ticks before trying the same heading again; a
+          // heading change beyond REORIENT_RETRY.facing retries at once.
+          const retry=this.reorientRetry.get(s.id);
+          if(retry && this.tick<retry.tick && Math.abs(((facing-retry.facing+32768)%65536+65536)%65536-32768)<=REORIENT_RETRY.facing)continue;
           const formation=reorientedFormation(s,this.tick,facing),candidate={...s,formation};
-          if(this.emptyTransitionTerrain(candidate,this.tick,this.tick+formation.transition!.duration) || this.certifyFormationPolygon(candidate,transitionFootprint(candidate,this.tick,this.tick+formation.transition!.duration),'deploy'))this.squadEntities.updateOwned(s.id,{formation});
+          if(this.emptyTransitionTerrain(candidate,this.tick,this.tick+formation.transition!.duration) || this.certifyFormationPolygon(candidate,transitionFootprint(candidate,this.tick,this.tick+formation.transition!.duration),'deploy')){
+            this.squadEntities.updateOwned(s.id,{formation});this.reorientRetry.delete(s.id);
+          }else this.reorientRetry.set(s.id,{tick:this.tick+REORIENT_RETRY.ticks,facing});
           continue;
         }
         const step=Math.max(-MOTION.turnPerTick[old.shape],Math.min(MOTION.turnPerTick[old.shape],delta));
