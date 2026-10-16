@@ -1907,10 +1907,9 @@ canvas.addEventListener("pointerup", (event) => {
     if(!enemy && tile!==null && (building?.type==="trench"&&building.playerId===localPlayerId||barrier?.kind==="trench"&&barrier.playerId===localPlayerId)) {
       command({type:"occupy",playerId:localPlayerId,squadIds:[...renderer.selected],tile,append:start.shift});return;
     }
-    const hasEnemyStructure = Boolean(
-      (building && building.playerId !== localPlayerId) ||
-      (barrier && barrier.playerId !== localPlayerId)
-    );
+    const hasEnemyStructure =
+      (!!building && building.playerId !== localPlayerId) ||
+      (!!barrier && barrier.playerId !== localPlayerId);
     const ids = [...renderer.selected];
     const selectedSquads = ids.map(id => snapshot?.squads.find(s => s.id === id)).filter((s): s is NonNullable<typeof s> => !!s);
     const siegeOnly = selectedSquads.length > 0 && selectedSquads.every(s => {

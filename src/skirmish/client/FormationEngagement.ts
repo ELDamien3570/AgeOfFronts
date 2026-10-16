@@ -100,7 +100,7 @@ export class FormationEngagement {
     if (primary) {
       const bearing = Math.atan2(primary.y, primary.x);
       const requested = Math.round(bearing / (Math.PI / 4));
-      if (this.sector === undefined) this.sector = requested;
+      this.sector ??= requested;
       // Ignore boundary noise. A genuine new fighting edge must persist 300ms.
       if (
         Math.abs(delta((this.sector * Math.PI) / 4, bearing)) >

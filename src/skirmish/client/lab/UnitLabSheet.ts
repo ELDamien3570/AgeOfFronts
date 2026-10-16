@@ -479,7 +479,7 @@ export function installUnitLabSheet(deps: {
           (draft.definition as unknown as UnitDefinition).formationRecipe
             ?.model === "hull";
         const readonly =
-          column.readonly ||
+          column.readonly === true ||
           (hull &&
             [
               "formationRecipe.capacity",

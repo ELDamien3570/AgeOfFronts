@@ -1031,7 +1031,7 @@ export class Renderer {
       ctx.globalAlpha = 1;
     }
     const towerId = buildingArtworkId("tower", age);
-    const frame = (towerId && this.eraArtwork.get(towerId)) || this.wallArtwork.tower(age);
+    const frame = (towerId ? this.eraArtwork.get(towerId) : undefined) ?? this.wallArtwork.tower(age);
     if (frame) {
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
       ctx.imageSmoothingEnabled = true;
