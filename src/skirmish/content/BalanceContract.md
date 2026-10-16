@@ -58,7 +58,12 @@ to 35% at maximum range, with 10-second grenadier and 12-second musket cycles.
 Each grenadier and musket hit deals 55 HP (previously 150, which let one volley
 erase an equal line). A full-range grenadier volley kills 15–20% of an equal
 48-soldier line and a close volley (2–3 tiles) 35–50%
-(`tests/skirmish/CombatContractRows.test.ts`).
+(`tests/skirmish/CombatContractRows.test.ts`). Owner decision OD-18: the
+notes' default was 70 HP (05 rec 7), which still lost 450 squads of the
+crowded `FormationPerformance` fixture by step 5; 55 HP is the value that
+meets the Next #7 exit criterion. It applies to every Napoleonic musket
+profile in `skirmish/plans/soldier-weapons.json`, including
+`napoleonic-archer` (a musket unit), not only grenadiers and muskets.
 
 ## Late-age lethality (C3)
 
@@ -145,7 +150,8 @@ not silently retune damage to force the older survivor target.
 ## Current measured results
 
 Measured on branch aof/next-9 with the `PreModernBalance.test.ts` fixtures
-(no approach, charge or promotion):
+(no approach, charge or promotion). Re-checked at the integrated Next batch
+head: the tests that pin these rows pass unchanged.
 
 | Engagement | Result |
 | --- | --- |
@@ -169,8 +175,9 @@ measured outcome.
   content) covers ranged-versus-spear contact, so this stays an admitted gap
   until the combat lane retunes spear-versus-archer contact or the owner
   replaces the contract row.
-* `FormationPerformance.test.ts` C3 acceptance belongs to the combat lane and is
-  recorded there.
+* None for `FormationPerformance.test.ts`: its C3 acceptance (more than 1,900
+  squads still fighting after 8 steps) is a normal passing test since the
+  Napoleonic volley retune (OD-18).
 
 ## Economy and age-up rules (balance table)
 
@@ -184,21 +191,24 @@ commit messages and in the tests that pin it.
 | Trade tariff | A foreign market owner earns 25% of the trader's payout (was 100%). The trader keeps the full payout. | `RECEIVER_TARIFF_PERCENT = 25` (`content/Economy.ts`) | OD-3 |
 | Market intake | A market accepts at most one largest foreign visit (sea, foreign acceptance) of foreign goods per 20 s, refilled continuously. Domestic deliveries are exempt; per-visit limits are unchanged. | `MARKET_INTAKE_WINDOW_SECONDS = 20` (`domain/TradeReceiving.ts`) | OD-4 |
 | Commerce cap | Only 3 + age-index completed factories and ports per faction produce trade stock: goods/s = 2 x (age + 1) x min(producers, 3 + age). | `COMMERCE_PRODUCER_BASE = 3` (`content/Economy.ts`) | OD-5 |
-| Land income | Unchanged (no age scaling). | none | OD-6 |
+| Land income | `20 x (age + 1) / 2 + land / 40` gold per second: 10 at Stone, 20 at Bronze ... 80 at Modern, plus the land term (was a flat 20 + land / 40). The notes' default (05 rec 3). | `LAND_INCOME_BASE_GOLD = 20`, `landGoldIncome` (`content/Economy.ts`) | OD-6 |
 | Stacking | Mine 1 per deposit for every faction, city 3, factory 5, port 5; every other type 15. | `STACK_LIMITS`, `MAX_BUILDING_STACK` (`Construction.ts`) | OD-7 |
 | Refit price | Gold per squad or hull is max(per-age price, ceil(60% x (target recruit gold - source recruit gold))). A Stone warship's Modern refit is 2,940 (was 2,600); squad refits are unchanged for current content. | `REFIT_FLOOR_PERCENT = 60` (`domain/Refitting.ts`) | OD-8 |
 | Tribe opening | Tribe squad cap 6 + 4 per age; tribe reserve income 2 x the nation base (24..192 points/s, was a flat 40); no tribal campaign against a nation before minute 8 and Bronze Age, unless retaliating. | `TRIBE_SQUAD_CAP`, `TRIBE_SQUADS_PER_AGE`, `TRIBE_RESERVE_MULTIPLIER`, `TRIBE_NATION_CAMPAIGN_TICKS`, `TRIBE_NATION_CAMPAIGN_MIN_AGE` (`FactionRules.ts`) | OD-9 |
-| Tribe start | 4 starting squads (13 R1 proposed 3). | `TRIBE_STARTING_SQUADS` (`FactionRules.ts`) | OD-10 |
+| Tribe start | 3 starting squads, the notes' default (13 R1(2); was 4). The playtest-v1 opening uses the same horde. | `TRIBE_STARTING_SQUADS = 3` (`FactionRules.ts`) | OD-10 |
+| Vessel refit port | A vessel refit needs an owned, completed port of at least the target vessel's age (05 rec 5, the notes' default). | `vesselRefitPortReady` (`domain/RefitQuote.ts`) | 05 rec 5 |
 
 OD-4 deviates from the notes' example (`marketDropCapacity(stack)` goods per
 20 s for all intake), which is smaller than the authored foreign and sea
 per-visit allowances and would have cut every first delivery and the domestic
 economy. Tests: `AgeUpGate`, `ResearchPacing`, `TradeFleet`, `TradeReceiving`,
-`CommerceCap`, `StackLimits`, `RefitQuote`, `TribeOpening`, `AiTribeExpansion`.
+`CommerceCap`, `StackLimits`, `RefitQuote`, `TribeOpening`, `AiTribeExpansion`,
+`LandIncome`.
 
 ## Content decisions
 
-`tests/skirmish/BalanceMatrix.test.ts` ("content decisions") pins each row.
+`tests/skirmish/BalanceMatrix.test.ts` ("content decisions") pins OD-12 to
+OD-15; OD-18 is pinned by the combat tests named in its row.
 
 | ID | Unit | Current | Alternative | Status |
 | --- | --- | --- | --- | --- |
@@ -206,6 +216,7 @@ economy. Tests: `AgeUpGate`, `ResearchPacing`, `TradeFleet`, `TradeReceiving`,
 | OD-13 | RPL-20 crew (`modern-archer`) | 100 HP, enlarged size 3 | 80 HP, enlarged size 1 (earlier contract text) | Kept pending the owner |
 | OD-14 | Bronze cavalry (`bronzeage-cavalry`) | 16 riders, 20 enlarged, 16 horses | 8 riders, 12 enlarged, 8 horses | Kept pending the owner |
 | OD-15 | Medieval infantry 40/50; Napoleonic cavalry 48/64 | As authored | Revert to 36/48 and 24/36 | Kept pending the owner |
+| OD-18 | Napoleonic musket hits (grenadier, musket, `napoleonic-archer`) | 55 HP (was 150) | 70 HP (05 rec 7) | Applied by the combat lane; pinned by `CombatContractRows` and `FormationPerformance` |
 
 The "unchanged HP and counts" statement under "October 16 approved-balance
 promotion" is superseded by OD-12 for the Modern machine-gun crew only.
@@ -248,6 +259,23 @@ with regular squads 290 / 236 at minute 30: the trade rows cut gold about
 8x, and the army gap opens after minute 30. That late collapse in army size is
 not explained by these measurements and needs a playtest before the trade
 constants are confirmed.
+
+Integrated build (30 minutes, seed 424242, idle seats). "Head" is the Next
+batch integration head (eadf217f); "follow-up" adds OD-6 (land income by
+age), OD-10 (3 tribe squads) and the routing remediation (one planner job
+per cohort, AI cohorts included):
+
+| Minute 30 | Head | Follow-up |
+| --- | --- | --- |
+| Leader minute: Bronze / Classical / Early Med / Late Med | 4 / 9 / 15 / 23 | 5 / 9 / 16 / 23 |
+| Regular squads | 120 | 164 |
+| Regular gold | 0.72M | 0.70M |
+| Cities / factories | 66 / 47 | 61 / 43 |
+
+Napoleonic is not reached by minute 30 in either. Idle human seats alive at
+minutes 10 / 20 / 30 in the follow-up: 4 / 1 / 1. Seeds 9001 and 47 and the
+60-minute run were not repeated; the army size is still below the lane's 236
+and the pre-trade-row 290, so the trade rows (OD-3/4/5) remain unconfirmed.
 
 ## Authoring sources
 

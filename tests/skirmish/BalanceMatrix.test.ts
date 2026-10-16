@@ -121,4 +121,9 @@ describe("content decisions", () => {
     expect(u.formationRecipe).toMatchObject({ capacity: 16, enlargedCapacity: 20 });
     expect(u.cost.items?.horses).toBe(16);
   });
+  it("OD-15: medieval infantry keeps 40/50 and Napoleonic cavalry 48/64 (alternative 36/48 and 24/36)", () => {
+    for (const id of ["earlymedieval-infantry", "latemedieval-infantry"])
+      expect(UNIT.get(id)!.formationRecipe).toMatchObject({ capacity: 40, enlargedCapacity: 50 });
+    expect(UNIT.get("napoleonic-cavalry")!.formationRecipe).toMatchObject({ capacity: 48, enlargedCapacity: 64 });
+  });
 });
