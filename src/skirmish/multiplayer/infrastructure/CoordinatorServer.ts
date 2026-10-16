@@ -9,8 +9,13 @@ import { join, normalize, resolve } from "node:path";
 import { WebSocket, WebSocketServer } from "ws";
 import { DEFAULT_EMPIRE_PROFILE } from "../../lobby/EmpireProfile";
 import { LiveMatch, type LiveMatchOptions } from "../application/LiveMatch";
+import {
+  MATCH_INITIALIZATION_FAILED_MESSAGE,
+  publicInitializationMessage,
+  publicStopMessage,
+} from "../application/TerminalMessages";
 import type { MatchExecutor } from "../application/MatchExecutor";
-import { RoomCoordinator } from "../domain/RoomCoordinator";
+import { RoomCoordinator, type CoordinatorState } from "../domain/RoomCoordinator";
 import { clientMessageSchema, type ServerMessage } from "../Protocol";
 import { CoordinatorStore } from "./CoordinatorStore";
 import { ReservedMatchWorker } from "./ReservedMatchWorker";
@@ -27,7 +32,45 @@ export interface CoordinatorServerOptions {
   liveMatch?: LiveMatchOptions;
   /** Injectable executor for deterministic integration tests; production uses one reserved worker. */
   createExecutor?: () => MatchExecutor;
+  /** Heartbeat ping interval (default 5000 ms). Two missed pongs are tolerated. */
+  heartbeatMs?: number;
+  /** Concurrent WebSockets per client address; 0 (default) disables the cap.
+   * Behind a reverse proxy, enable `trustProxy` or every player shares one address. */
+  maxSocketsPerAddress?: number;
+  /** Use the last X-Forwarded-For hop (appended by the trusted proxy) as the client address. */
+  trustProxy?: boolean;
 }
+
+/** Transport ceiling. The largest legal command (10,000 building ids) is about
+ * 100 KB; `ws` closes larger frames (1009) before any message event. */
+export const MAX_FRAME_BYTES = 128_000;
+/** Frames before authentication only carry a token and an optional match id. */
+export const MAX_UNAUTHENTICATED_FRAME_BYTES = 4_096;
+const MAX_UNAUTHENTICATED_FRAMES = 8;
+/** Frames above this size count against the per-second byte budget. */
+const BUDGETED_FRAME_BYTES = 2_048;
+const SESSION_BYTES_PER_SECOND = 512_000;
+/** Pre-parse frame ceiling per second, receipts included (the 50/s request
+ * limit applies after parsing and exempts receipts). */
+const SESSION_FRAMES_PER_SECOND = 200;
+const SESSION_REQUESTS_PER_SECOND = 50;
+/** Consecutive over-limit one-second windows that close the socket. */
+const RATE_STRIKES_TO_CLOSE = 3;
+const MISSED_PONGS_TOLERATED = 2;
+
+interface Session {
+  guestId: string;
+  missedPongs: number;
+  count: number;
+  frames: number;
+  bytes: number;
+  windowAt: number;
+  overLimit: boolean;
+  strikes: number;
+  binarySnapshots: boolean;
+}
+const frameBytes = (data: Buffer | ArrayBuffer | Buffer[]): number =>
+  Array.isArray(data) ? data.reduce((sum, part) => sum + part.length, 0) : data.byteLength;
 
 function serveStatic(
   req: IncomingMessage,
@@ -97,10 +140,18 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     rooms.releaseMatch(reservation.id);
   options.store.write(rooms.snapshot());
   const authenticationClaims=new Set<string>();
-  const sessions = new Map<
-    WebSocket,
-    { guestId: string; alive: boolean; count: number; windowAt: number; binarySnapshots: boolean }
-  >();
+  const sessions = new Map<WebSocket, Session>();
+  const socketsByAddress = new Map<string, number>();
+  const maxSocketsPerAddress = options.maxSocketsPerAddress ?? 0;
+  const clientAddress = (req: IncomingMessage): string => {
+    if (options.trustProxy) {
+      const forwarded = req.headers["x-forwarded-for"];
+      const hops = (Array.isArray(forwarded) ? forwarded.join(",") : forwarded ?? "")
+        .split(",").map((hop) => hop.trim()).filter(Boolean);
+      if (hops.length) return hops[hops.length - 1];
+    }
+    return req.socket.remoteAddress ?? "unknown";
+  };
   const attempts = new Map<string, { count: number; windowAt: number }>();
   const trustedOrigin = (req: IncomingMessage) => {
     if (!req.headers.origin) return true;
@@ -153,7 +204,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         res.writeHead(405).end();
         return;
       }
-      const key = req.socket.remoteAddress ?? "unknown";
+      const key = clientAddress(req);
       let attempt = attempts.get(key);
       if (!attempt || now() - attempt.windowAt > 60_000) {
         attempt = { count: 0, windowAt: now() };
@@ -179,13 +230,27 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   const ws = new WebSocketServer({
     noServer: true,
     // Clients send orders only; large simulation proposals no longer exist.
-    maxPayload: 512_000,
+    maxPayload: MAX_FRAME_BYTES,
     perMessageDeflate: false,
   });
   http.on("upgrade", (req, socket, head) => {
     if (req.url !== "/socket" || !trustedOrigin(req)) {
       socket.destroy();
       return;
+    }
+    if (maxSocketsPerAddress > 0) {
+      const address = clientAddress(req), open = socketsByAddress.get(address) ?? 0;
+      if (open >= maxSocketsPerAddress) {
+        socket.end("HTTP/1.1 429 Too Many Requests\r\nConnection: close\r\nContent-Length: 0\r\n\r\n");
+        return;
+      }
+      socketsByAddress.set(address, open + 1);
+      // The raw socket closes for failed handshakes and finished connections alike.
+      socket.once("close", () => {
+        const remaining = (socketsByAddress.get(address) ?? 1) - 1;
+        if (remaining > 0) socketsByAddress.set(address, remaining);
+        else socketsByAddress.delete(address);
+      });
     }
     ws.handleUpgrade(req, socket, head, (client) =>
       ws.emit("connection", client),
@@ -230,6 +295,13 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       if (session.guestId === guest) send(client, message);
     });
   };
+  const disconnectSession = async (session: Session) => {
+    rooms.disconnect(session.guestId, now());
+    await Promise.allSettled([...matches.values()].map(match=>match.disconnect(session.guestId)));
+    if([...sessions.values()].some(s=>s.guestId===session.guestId))return;
+    options.store.write(rooms.snapshot());
+    publish();
+  };
   ws.on("connection", (client) => {
     const authenticationDeadline = setTimeout(
       () => client.close(1008, "Authentication required"),
@@ -237,12 +309,50 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     );
     client.on("pong", () => {
       const session = sessions.get(client);
-      if (session) session.alive = true;
+      if (session) session.missedPongs = 0;
     });
+    let unauthenticatedFrames = 0;
+    /** Mark this window over its limit; close after consecutive violations. */
+    const violate = (session: Session): boolean => {
+      session.overLimit = true;
+      if (session.strikes + 1 < RATE_STRIKES_TO_CLOSE) return false;
+      sessions.delete(client);
+      client.close(1008, "Rate limit exceeded");
+      void disconnectSession(session);
+      return true;
+    };
     client.on("message", async (data) => {
+      // Admission by size and frequency happens before any parsing or
+      // validation, so oversized or flooding frames cost only a length check.
+      const bytes = frameBytes(data);
+      const admitted = sessions.get(client);
+      if (!admitted) {
+        if (bytes > MAX_UNAUTHENTICATED_FRAME_BYTES || ++unauthenticatedFrames > MAX_UNAUTHENTICATED_FRAMES) {
+          client.close(1008, "Authenticate first");
+          return;
+        }
+      } else {
+        if (now() - admitted.windowAt > 1000) {
+          // A quiet window between violations resets the streak.
+          admitted.strikes = admitted.overLimit && now() - admitted.windowAt <= 2000 ? admitted.strikes + 1 : 0;
+          admitted.overLimit = false;
+          admitted.windowAt = now();
+          admitted.count = 0;
+          admitted.frames = 0;
+          admitted.bytes = 0;
+        }
+        admitted.bytes += bytes;
+        if (++admitted.frames > SESSION_FRAMES_PER_SECOND ||
+          (bytes > BUDGETED_FRAME_BYTES && admitted.bytes > SESSION_BYTES_PER_SECOND)) {
+          if (!violate(admitted))
+            send(client, { type: "error", message: "Request rate exceeded. This action was not accepted; retry after one second." });
+          return;
+        }
+      }
       let requestId: string | undefined;
       let matchRequest = false;
-      let previousState = rooms.snapshot();
+      // Captured lazily, immediately before the first room mutation.
+      let previousState: CoordinatorState | undefined;
       try {
         const message = clientMessageSchema.parse(JSON.parse(data.toString()));
         requestId = "requestId" in message ? message.requestId : undefined;
@@ -268,6 +378,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
             if(active.length)matchRequest=true;
             await Promise.all(active.map(([,match])=>match.disconnect(guestId)));
             if(client.readyState!==WebSocket.OPEN)return;
+          previousState = rooms.snapshot();
           rooms.disconnect(guestId,now());
           // One controlling socket per remembered guest, including duplicate browser tabs.
           for (const [other, session] of sessions)
@@ -278,9 +389,13 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           sessions.set(client, {
             guestId,
             binarySnapshots: message.snapshotTransport === "binary-v1",
-            alive: true,
+            missedPongs: 0,
             count: 0,
+            frames: 0,
+            bytes: 0,
             windowAt: now(),
+            overLimit: false,
+            strikes: 0,
           });
           clearTimeout(authenticationDeadline);
           // Presence is restored only by an explicit join request.
@@ -294,16 +409,13 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           client.close(1008, "Authenticate first");
           return;
         }
-        if (now() - session.windowAt > 1000) {
-          session.windowAt = now();
-          session.count = 0;
-        }
         // State receipts release publication/backpressure; player action bursts
         // must not consume their budget or prevent the client staying current.
         const stateReceipt = message.type === "match-state-applied" ||
           message.type === "match-sync-applied";
-        if (!stateReceipt && ++session.count > 50) {
-          send(client,{type:"error",requestId:message.requestId,message:"Request rate exceeded. This action was not accepted; retry after one second."});
+        if (!stateReceipt && ++session.count > SESSION_REQUESTS_PER_SECOND) {
+          if (!violate(session))
+            send(client,{type:"error",requestId:message.requestId,message:"Request rate exceeded. This action was not accepted; retry after one second."});
           return;
         }
         if ("matchId" in message) {
@@ -383,6 +495,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
             previousState=rooms.snapshot();options.store.write(previousState);
           }
         }
+        previousState ??= rooms.snapshot();
         switch (message.type) {
           case "profile":
             rooms.updateProfile(session.guestId, message.profile);
@@ -425,7 +538,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         publish();
         send(client, reply);
       } catch (error) {
-        if (!matchRequest)
+        if (!matchRequest && previousState)
           rooms = new RoomCoordinator(now(), capacity, previousState);
         send(client, {
           type: "error",
@@ -442,11 +555,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       const session = sessions.get(client);
       if (!session) return;
       sessions.delete(client);
-      rooms.disconnect(session.guestId, now());
-      await Promise.allSettled([...matches.values()].map(match=>match.disconnect(session.guestId)));
-      if([...sessions.values()].some(s=>s.guestId===session.guestId))return;
-      options.store.write(rooms.snapshot());
-      publish();
+      await disconnectSession(session);
     });
     client.on("error", () => client.terminate());
   });
@@ -473,12 +582,14 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       );
       matches.set(reservation.id, match);
       void match.initialize().catch(async (error) => {
-        for (const member of reservation.members)
-          sendGuest(member.guestId, {
-            type: "error",
-            message: (error as Error).message,
-          });
-        await match.end("Unable to initialize match");
+        // The match never started: put its current members (live state, not
+        // the start-time copy) back in their room before releasing capacity.
+        const message = publicInitializationMessage(error);
+        for (const guest of rooms.abandonReservation(reservation.id, now()))
+          sendGuest(guest, { type: "error", message });
+        options.store.write(rooms.snapshot());
+        publish();
+        await match.end(MATCH_INITIALIZATION_FAILED_MESSAGE);
       });
     }
     for (const match of matches.values())
@@ -493,16 +604,18 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   // Public summaries are runtime-derived and cheap; no per-tick SQLite writes.
   const directoryClock = setInterval(publish, 1_000);
   const heartbeat = setInterval(() => {
+    // A ping can queue behind large state frames or a brief network blip.
+    // Tolerate two unanswered pings; terminate when a third goes unanswered.
     for (const [client, session] of sessions) {
-      if (!session.alive) client.terminate();
+      if (session.missedPongs > MISSED_PONGS_TOLERATED) client.terminate();
       else {
-        session.alive = false;
+        session.missedPongs++;
         client.ping();
       }
     }
     for (const [key, attempt] of attempts)
       if (now() - attempt.windowAt > 60_000) attempts.delete(key);
-  }, 5000);
+  }, options.heartbeatMs ?? 5000);
   const diagnosticClock = setInterval(() => {
     if (!matches.size) return;
     console.info(JSON.stringify({ event: "coordinator-runtime-diagnostics", source: process.env.GIT_COMMIT ?? "unknown",

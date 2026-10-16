@@ -192,3 +192,58 @@ describe("explicit lobby presence",()=>{
     expect(rooms.snapshot().rooms.find(r=>r.id==="default-africa")!.members[0].connected).toBe(true);
   });
 });
+
+describe("abandoned match reservations", () => {
+  const reserve = (rooms: RoomCoordinator, roomId: string, now = 1) => {
+    rooms.voteToStart(roomId, "a");
+    rooms.voteToStart(roomId, "b");
+    const [match] = rooms.advance(now);
+    expect(match).toBeDefined();
+    return match;
+  };
+  it("returns members to their default room without their votes and releases capacity", () => {
+    const rooms = new RoomCoordinator(0, 1);
+    rooms.join("default-africa", "a", profile("A"), 0);
+    rooms.join("default-africa", "b", profile("B"), 0);
+    const match = reserve(rooms, "default-africa");
+    expect(rooms.abandonReservation(match.id, 2).sort()).toEqual(["a", "b"]);
+    const state = rooms.snapshot();
+    expect(state.reservations).toHaveLength(0);
+    const room = state.rooms.find((candidate) => candidate.id === "default-africa")!;
+    expect(room.members.map((member) => member.guestId)).toEqual(["a", "b"]);
+    expect(room.members.some((member) => member.votedToStart)).toBe(false);
+    expect(rooms.advance(3)).toHaveLength(0); // A failed start never retries on stale votes.
+    rooms.join("default-amazon-river", "c", profile("C"), 3);
+    rooms.voteToStart("default-amazon-river", "c");
+    expect(rooms.advance(4)).toHaveLength(1); // Capacity was released.
+  });
+  it("recreates a deleted custom room with its id, title, settings and owner", () => {
+    const rooms = new RoomCoordinator(0, 1);
+    const created = rooms.create("a", profile("A"), "Friends", rules, false, 0);
+    rooms.join(created.id, "b", profile("B"), 0);
+    const match = reserve(rooms, created.id);
+    expect(rooms.snapshot().rooms.some((room) => room.id === created.id)).toBe(false);
+    expect(match.ownerId).toBe("a");
+    rooms.abandonReservation(match.id, 2);
+    const room = rooms.snapshot().rooms.find((candidate) => candidate.id === created.id)!;
+    expect(room).toMatchObject({ title: "Friends", kind: "custom", ownerId: "a", listing: "visible", settings: created.settings });
+    expect(room.members.map((member) => member.guestId)).toEqual(["a", "b"]);
+    expect(() => rooms.create("a", profile("A"), "Again", rules, false, 3)).toThrow(/already own/);
+  });
+  it("uses live reservation member state, not the start-time copy", () => {
+    const rooms = new RoomCoordinator(0, 1);
+    const created = rooms.create("a", profile("A"), "Friends", rules, false, 0);
+    rooms.join(created.id, "b", profile("B"), 0);
+    const match = reserve(rooms, created.id);
+    rooms.disconnect("a", 2);
+    rooms.claimMatchSeat(match.id, "c", profile("C"), 2);
+    expect(rooms.abandonReservation(match.id, 3).sort()).toEqual(["a", "b", "c"]);
+    const room = rooms.snapshot().rooms.find((candidate) => candidate.id === created.id)!;
+    expect(room.members.find((member) => member.guestId === "a")).toMatchObject({ connected: false, disconnectedAt: 2 });
+    expect(room.members.map((member) => member.guestId)).toEqual(["a", "b", "c"]);
+    // The disconnected owner keeps ownership through its normal grace.
+    expect(room.ownerId).toBe("a");
+    expect(room.ownerMissingSince).toBe(2);
+    expect(rooms.abandonReservation(match.id, 4)).toEqual([]);
+  });
+});

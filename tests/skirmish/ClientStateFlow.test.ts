@@ -37,7 +37,7 @@ describe("client publication credit epochs", () => {
     expect(flow.applied(7, flow.epoch)).toBe("credit");
     expect(flow.offer(8)).toBe(true);
   });
-  it("rejects unsent and duplicate credits and retains missed publications during capture", () => {
+  it("rejects unsent and duplicate credits; frames refused during capture are covered by the baseline", () => {
     const flow = new ClientStateFlow();
     flow.offer(1);
     flow.offer(2);
@@ -46,7 +46,10 @@ describe("client publication credit epochs", () => {
     expect(flow.applied(1, flow.epoch)).toBe("ignored");
     flow.beginBaseline();
     expect(flow.offer(3)).toBe(false);
+    // The capture flushes publications first, so a frame refused while
+    // recovering is already contained in the baseline.
     flow.baseline(4, false);
-    expect(flow.applied(4, flow.epoch)).toBe("baseline");
+    expect(flow.applied(4, flow.epoch)).toBe("credit");
+    expect(flow.offer(5)).toBe(true);
   });
 });

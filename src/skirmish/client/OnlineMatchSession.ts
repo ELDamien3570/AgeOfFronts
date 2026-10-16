@@ -12,6 +12,7 @@ import type { StateDecodeStats } from "../multiplayer/StateCodec";
 import type { CommandOutcome } from "../CommandApplications";
 import { mapIdentity } from "../multiplayer/application/MapIdentity";
 import { OnlineLobbyConnection } from "./lobby/OnlineLobbyConnection";
+import { serverText } from "./ServerText";
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
 import { SNAPSHOT_QUEUE_LIMITS } from "../multiplayer/StateLimits";
 import { PresentationStateDecoder, type PresentationState } from "./PresentationState";
@@ -507,7 +508,7 @@ export class OnlineMatchSession {
         await this.present({ data: { type: "state", packet: decoded.viewPacket ?? decoded.packet,
           snapshot: decoded.snapshot, paused: context.paused, speed: 1 }, sequence: decoded.canonicalSequence, view: decoded.view });
       }
-      this.status(`${message.message}. Return to the lobby to play again.`);
+      this.status(`${serverText(message.message)}. Return to the lobby to play again.`);
       this.terminate();
     } else if (message.type === "error") {
       if (this.pendingSync || this.lastTick < 0) this.fail(message.message);

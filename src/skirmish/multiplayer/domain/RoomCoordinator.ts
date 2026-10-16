@@ -36,6 +36,8 @@ export interface MatchReservation {
   title?: string;
   id: string;
   roomId: string;
+  /** Custom-room owner at reservation, so a failed start can restore the room. */
+  ownerId?: string;
   settings: LobbySettings;
   members: RoomMember[];
   createdAt: number;
@@ -315,6 +317,7 @@ export class RoomCoordinator {
         id: `match-${this.state.nextSequence++}`,
         roomId: room.id,
         title: room.title,
+        ...(room.ownerId === undefined ? {} : { ownerId: room.ownerId }),
         settings: room.settings,
         members: structuredClone(connected),
         createdAt: now,
@@ -328,6 +331,61 @@ export class RoomCoordinator {
     this.removeEmptyCustoms();
     this.promote();
     return started;
+  }
+
+  /**
+   * A reserved match never started (its worker could not prepare). Release the
+   * capacity and put the reservation's current members back into the room it
+   * came from, recreating a custom room that emptied at reservation. Votes are
+   * cleared so a failed start does not immediately retry. Returns the guests
+   * to notify; members who already joined another room stay there.
+   */
+  abandonReservation(id: string, now: number): string[] {
+    const match = this.state.reservations.find((candidate) => candidate.id === id);
+    if (!match) return [];
+    this.releaseMatch(id);
+    const placed = (guestId: string) =>
+      this.state.rooms.some((room) => room.members.some((member) => member.guestId === guestId));
+    const returning = match.members
+      .filter((member) => !placed(member.guestId))
+      .map((member) => {
+        const restored = structuredClone(member);
+        delete restored.votedToStart;
+        return restored;
+      });
+    let room = this.state.rooms.find((candidate) => candidate.id === match.roomId);
+    if (!room && returning.some((member) => member.connected)) {
+      room = {
+        id: match.roomId,
+        title: match.title ?? `${match.settings.mapId} lobby`,
+        kind: "custom",
+        settings: match.settings,
+        members: [],
+        listing: this.customListed() < 3 ? "visible" : "queued",
+        createdAt: now,
+        capacityWaiting: false,
+      };
+      this.state.rooms.push(room);
+    }
+    if (room) {
+      for (const member of returning)
+        if (room.members.length < room.settings.slots) room.members.push(member);
+      if (room.kind === "custom" && room.ownerId === undefined) {
+        const owner = room.members.find((member) => member.guestId === match.ownerId);
+        if (owner && !this.ownsCustomRoom(owner.guestId)) {
+          room.ownerId = owner.guestId;
+          if (!owner.connected) room.ownerMissingSince = owner.disconnectedAt ?? now;
+        } else this.transferOwner(room);
+      }
+      this.updateCountdown(room, now);
+    }
+    this.removeEmptyCustoms();
+    this.promote();
+    return match.members.map((member) => member.guestId);
+  }
+
+  private ownsCustomRoom(guestId: string): boolean {
+    return this.state.rooms.some((room) => room.kind === "custom" && room.ownerId === guestId);
   }
 
   releaseMatch(id: string): void {

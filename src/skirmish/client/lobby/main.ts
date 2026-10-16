@@ -7,6 +7,7 @@ import { BrowserLobbyPreviewStore } from "./LobbyPreviewStore";
 import { LobbyView } from "./LobbyView";
 import { LobbyViewModel } from "./LobbyViewModel";
 import { OnlineLobbyConnection } from "./OnlineLobbyConnection";
+import { unsolicitedErrorText } from "../ServerText";
 import "./stone-lobby.css";
 
 const lobbyRoot = document.querySelector<HTMLElement>("#lobby-app")!;
@@ -296,6 +297,11 @@ if (coordinatorUrl) {
     (message) => {
       if (message.type === "match") { connection?.stop();
         window.location.href = `/skirmish/index.html?match=${encodeURIComponent(message.manifest.id)}`; }
+      else {
+        // Unsolicited failures, e.g. a reserved match that could not start (M7).
+        const notice = unsolicitedErrorText(message);
+        if (notice !== undefined) reportError(new Error(notice));
+      }
     },
   );
   void connection.connect();

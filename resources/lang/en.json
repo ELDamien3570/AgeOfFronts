@@ -2,6 +2,12 @@
   "skirmish_match": {
     "simulation_fault": "The match stopped because of an internal simulation error. Return to the lobby to play again."
   },
+  "skirmish_server": {
+    "match_stopped": "Match stopped unexpectedly",
+    "match_initialization_failed": "The match could not be started. You are back in your room",
+    "setup_not_enough_room": "Not enough room for these factions and tribes. Choose fewer opponents or a larger battlefield.",
+    "setup_no_viable_land": "No viable land for starting camps"
+  },
   "skirmish_production": {
     "automatic": "Automatic",
     "manual": "Manual priorities",

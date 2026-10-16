@@ -1,0 +1,38 @@
+import english from "../../../resources/lang/en.json";
+import { translateText } from "../../client/Utils";
+import {
+  MATCH_INITIALIZATION_FAILED_MESSAGE,
+  MATCH_STOPPED_MESSAGE,
+} from "../multiplayer/application/TerminalMessages";
+import type { ServerMessage } from "../multiplayer/Protocol";
+
+type ServerTextKey = keyof typeof english.skirmish_server;
+
+/** Fixed coordinator strings with a translation. Other server text is shown as sent. */
+const KEYS: ReadonlyMap<string, ServerTextKey> = new Map<string, ServerTextKey>([
+  [MATCH_STOPPED_MESSAGE, "match_stopped"],
+  [MATCH_INITIALIZATION_FAILED_MESSAGE, "match_initialization_failed"],
+  [
+    "Not enough room for these factions and tribes. Choose fewer opponents or a larger battlefield.",
+    "setup_not_enough_room",
+  ],
+  ["No viable land for starting camps", "setup_no_viable_land"],
+]);
+
+/** Text the lobby shows for an unsolicited (requestId-less) coordinator error,
+ * e.g. a reserved match that could not start. Replies to requests are handled
+ * by their own promise and yield undefined here. */
+export function unsolicitedErrorText(message: ServerMessage): string | undefined {
+  return message.type === "error" && message.requestId === undefined
+    ? serverText(message.message)
+    : undefined;
+}
+
+/** Translate a fixed coordinator message for display; unknown text passes through. */
+export function serverText(message: string): string {
+  const key = KEYS.get(message);
+  if (!key) return message;
+  const fullKey = `skirmish_server.${key}`;
+  const translated = translateText(fullKey);
+  return translated !== fullKey ? translated : english.skirmish_server[key];
+}
