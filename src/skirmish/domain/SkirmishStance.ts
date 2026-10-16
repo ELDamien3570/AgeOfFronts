@@ -123,13 +123,16 @@ export class SkirmishStance {
     )
       for (const id of c.squadIds) {
         const state = this.states.get(id);
-        if (state) {
+        // Only the commanding faction's own squads: a command naming another
+        // faction's squad must not suppress that faction's stance (R2-M9).
+        const owner = this.e.world.squad(id)?.playerId;
+        if (state && (owner === undefined || owner === c.playerId)) {
           state.suppressed = true;
           this.finish(id, false);
         }
       }
     if (c.type === "army-order")
-      for (const id of this.e.armies.armies.find((a) => a.id === c.armyId)
+      for (const id of this.e.armies.armies.find((a) => a.id === c.armyId && a.playerId === c.playerId)
         ?.memberIds ?? []) {
         const state = this.states.get(id);
         if (state) {

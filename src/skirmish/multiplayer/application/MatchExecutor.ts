@@ -54,6 +54,12 @@ export interface MatchAdvance {
 }
 export interface MatchPublication { tick: number; packet: EncodedState }
 export interface ClientBaseline {tick:number;winner:number|null;baseline:EncodedState;}
+/** Error message an executor uses for a faulted simulation. Hosts end the
+ * match with MATCH_FAULT_MESSAGE instead of forwarding internal error text. */
+export const MATCH_FAULT_CODE = "simulation-fault";
+/** Server-side English text for logs and older clients. Current clients show
+ * the translated `skirmish_match.simulation_fault` text for this ending. */
+export const MATCH_FAULT_MESSAGE = "The match stopped because of an internal simulation error";
 export const MAX_ADVANCE_TICKS = 4;
 export const MAX_COMMAND_BATCH = 100;
 export type ExecutorRequest =

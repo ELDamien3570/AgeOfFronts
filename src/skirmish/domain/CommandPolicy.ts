@@ -1,10 +1,48 @@
-import type { Command } from "../Protocol";
-import { MAX_SQUADS } from "../Protocol";
+import type { Command, Order } from "../Protocol";
+import { FIXED, MAX_SQUADS } from "../Protocol";
 import { BUILDING_RULES, MAX_FACTION_SHIPS } from "../Rules";
 import { AGES } from "./Definitions";
 // Runtime boundary shared by local worker and eventual authenticated transport.
 // Authentication is deliberately outside this pure shape validation policy.
-export function commandRejection(command: Command): string | null {
+export interface CommandBounds { width: number; height: number }
+/** Map-bounded positions. Every top-level and nested tile/x/y a command
+ * carries must address the authoritative map, so later domain reads such as
+ * `GameMap.ref` never see client coordinates outside it. */
+function boundsRejection(command: Command, bounds: CommandBounds): string | null {
+  const tiles = bounds.width * bounds.height,
+    record = command as unknown as Record<string, unknown>,
+    tile = (value: unknown) => value === undefined || (Number.isSafeInteger(value) && Number(value) >= 0 && Number(value) < tiles);
+  if (!tile(record.tile)) return "Invalid command position or identity";
+  if (record.x !== undefined && !(Number.isSafeInteger(record.x) && Number(record.x) >= 0 && Number(record.x) < bounds.width * FIXED))
+    return "Invalid command position or identity";
+  if (record.y !== undefined && !(Number.isSafeInteger(record.y) && Number(record.y) >= 0 && Number(record.y) < bounds.height * FIXED))
+    return "Invalid command position or identity";
+  if (command.type === "occupy" && Array.isArray(command.frontageTiles) && !command.frontageTiles.every(tile))
+    return "Invalid trench frontage";
+  if (command.type === "order" && command.order?.type === "move" && !tile(command.order.tile))
+    return "Choose a passable destination";
+  if (command.type === "army-order" && ["move", "deploy", "regroup"].includes(command.order?.type as string) &&
+    !tile((command.order as { tile?: number }).tile))
+    return "Invalid army destination";
+  if (command.type === "charge" && command.fallbackOrder?.type === "move" && !tile(command.fallbackOrder.tile))
+    return "Choose a passable destination";
+  return null;
+}
+/** The order a blocked charge falls back to. An attack on a vanished target
+ * becomes a move to the charge point, or no order when that point is off-map. */
+export function chargeFallbackOrder(
+  map: { isValidCoord(x: number, y: number): boolean; ref(x: number, y: number): number },
+  command: Extract<Command, { type: "charge" }>,
+  exists: (id: number) => boolean,
+): Order | undefined {
+  const order = command.fallbackOrder;
+  if (!order) return undefined;
+  if (order.type !== "attack" || exists(order.targetId)) return order;
+  if (!Number.isSafeInteger(command.x) || !Number.isSafeInteger(command.y)) return undefined;
+  const tx = Math.floor(command.x / FIXED), ty = Math.floor(command.y / FIXED);
+  return map.isValidCoord(tx, ty) ? { type: "move", tile: map.ref(tx, ty) } : undefined;
+}
+export function commandRejection(command: Command, bounds?: CommandBounds): string | null {
   if (
     !command ||
     typeof command !== "object" ||
@@ -153,5 +191,5 @@ export function commandRejection(command: Command): string | null {
     )
       return "Invalid army target";
   }
-  return null;
+  return bounds ? boundsRejection(command, bounds) : null;
 }

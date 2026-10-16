@@ -281,4 +281,21 @@ describe("flight-time air operations", () => {
         })?.type,
       ).toBe(type);
   });
+  // R2-M4: an atomic bomb over an ally is rejected before the bomb is spent.
+  it("rejects an atomic sortie over an allied faction and allows it once the alliance ends", () => {
+    const { game, e, planes } = fixture(),
+      a = planes("bomber"),
+      base = game.players[1].base,
+      x = (game.map.x(base) + 0.5) * FIXED,
+      y = (game.map.y(base) + 0.5) * FIXED;
+    e.supply.inventories[1]["payload:atomic"] = 1;
+    e.diplomacy.state.alliances.push({ id: 999, a: 1, b: 2, expiresTick: 1e7, renewal: [] });
+    const sortie = () => game.applyCommand({ type: "sortie", mission: "atomic", playerId: 1, aircraftIds: [a.id], x, y });
+    expect(sortie()).toBe("Choose a hostile building or unit");
+    expect(e.supply.inventories[1]["payload:atomic"]).toBe(1);
+    expect(a.state).toBe("ready");
+    e.diplomacy.state.alliances.length = 0;
+    expect(sortie()).toBeNull();
+    expect(e.supply.inventories[1]["payload:atomic"]).toBe(0);
+  });
 });

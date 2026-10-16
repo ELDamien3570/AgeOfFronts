@@ -81,7 +81,8 @@ import { canPromoteTribe, MAX_PLAYER_ID } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
 import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
-import { commandRejection } from "./domain/CommandPolicy";
+import { chargeFallbackOrder, commandRejection } from "./domain/CommandPolicy";
+import { SimulationFault, type TickFault } from "./SimulationFault";
 import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
 import { Occupation } from "./domain/Occupation";
@@ -206,17 +207,40 @@ export class Skirmish {
   compareUnitIndexes = false;
   private restoreFailure?: Error;
   get failureReason(): string | undefined { return this.restoreFailure?.message; }
+  private faultState?: TickFault;
+  /** Set when a tick threw part-way. The half-ticked world never runs again:
+   * every later step and command throws a SimulationFault. No rollback. */
+  get tickFault(): TickFault | undefined { return this.faultState && { ...this.faultState }; }
   private assertAvailable(): void {
+    if (this.faultState) throw new SimulationFault(`Simulation stopped after a fault at tick ${this.faultState.tick}`);
     if (this.restoreFailure) throw new Error(`Simulation stopped after checkpoint installation failed: ${this.restoreFailure.message}`);
   }
+  /** The last runtime phase a tick completed; observer only, not saved. */
+  private completedPhase: RuntimePhase | "tick-start" = "tick-start";
+  /** A cheap observer of authoritative writes, used only to classify a throw
+   * during command application. It covers entity rows, player gold and
+   * inventories, recruitment jobs and route planning jobs. Domain events
+   * raised while applying are counted by CommandApplications itself. */
+  mutationEpoch(): string {
+    const parts: number[] = [this.squadChanges.revision, this.shipChanges.revision, this.buildingChanges.revision,
+      this.recruitment.jobs.length, this.routePlanner.pendingCount];
+    for (const player of this.players) {
+      parts.push(player.gold);
+      const inventory = this.expansion?.supply.inventories[player.id];
+      if (inventory) for (const amount of Object.values(inventory)) parts.push(amount);
+    }
+    return parts.join(",");
+  }
   private diagnosticPhase(phase: RuntimePhase, start: number): number {
+    this.completedPhase = phase;
     if (!this.onPhase) return 0;
     const now = performance.now();
     this.onPhase(phase, Math.max(0, now - start));
     return now;
   }
 
-  readonly commandApplications = new CommandApplications({apply: command => this.applyCommand(command), tick: () => this.tick});
+  readonly commandApplications = new CommandApplications({apply: command => this.applyCommand(command), tick: () => this.tick,
+    mutationEpoch: () => this.mutationEpoch()});
   private phaseSpatial?: PhaseSpatialViews;
   get spatialDiagnostics() { return this.phaseSpatial?.diagnostics; }
   spatialFacts(phase: SpatialPhase) {
@@ -1233,7 +1257,12 @@ export class Skirmish {
       this.routePlanner.cancel(`navigation:${id}`);
     }
   }
-  removeSquad(id: number): boolean { this.movementClearance.delete(id);this.playerAttacks.forget(id);return this.squadEntities.remove(id); }
+  removeSquad(id: number): boolean {
+    // A destroyed squad's pending admissions end now, while it still exists
+    // for their events; a corridor follower then plans its own route.
+    if(this.squadEntities.get(id))this.movementAdmission.cancel([id],this.tick,"Control or selected units changed");
+    this.movementClearance.delete(id);this.playerAttacks.forget(id);return this.squadEntities.remove(id);
+  }
   removeShip(id: number): boolean { return this.shipEntities.remove(id); }
   squadFacts(): UnitQueries<Squad> { if (this.compareUnitIndexes) this.verifyUnitIndexes(); return this.squadIndex; }
   shipFacts(): UnitQueries<Ship> { if (this.compareUnitIndexes) this.verifyUnitIndexes(); return this.shipIndex; }
@@ -1246,6 +1275,12 @@ export class Skirmish {
   addBuilding(building: Building): Building { return this.buildingEntities.add(building); }
   updateBuilding(id: number, changes: Partial<Omit<Building, "id">>): Building | undefined { return this.buildingEntities.update(id, changes); }
   removeBuilding(id: number): boolean { return this.buildingEntities.remove(id); }
+  /** Removes a building with its walls, tower index entry and producer row. */
+  private dropBuilding(building: Building): void {
+    this.removeBuilding(building.id);
+    this.expansion?.supply.forgetProducer(building.id);
+    this.expansion?.fortifications.forgetBuilding(building, this.buildings);
+  }
   verifyBuildingIndexes(): void { this.buildingIndex.verify(this.buildings); }
   tileOf(squad: Pick<Squad, "x" | "y">): number {
     return this.map.ref(
@@ -1262,7 +1297,7 @@ export class Skirmish {
   }
   applyCommand(command: Command): string | null {
     this.assertAvailable();
-    const invalid = commandRejection(command);
+    const invalid = commandRejection(command, {width: this.map.width(), height: this.map.height()});
     if (invalid) return invalid;
     const player = this.player(command.playerId);
     if (!player || player.eliminated || this.winner !== null)
@@ -1308,9 +1343,11 @@ export class Skirmish {
           return "Tribes can only build 1 extra barracks";
       }
     }
-    if(command.type === "charge" && command.squadIds.some(id=>{const s=this.squad(id);return s?.kind!=='cavalry' && (s?.formation?.shape==='column' || s?.formation?.transition?.from==='column');})){
-      if(command.fallbackOrder)return this.applyCommand({type:'order',playerId:command.playerId,squadIds:command.squadIds,
-        order:command.fallbackOrder.type==='attack' && !this.squad(command.fallbackOrder.targetId)?{type:'move',tile:this.map.ref(Math.floor(command.x/FIXED),Math.floor(command.y/FIXED))}:command.fallbackOrder});
+    // Only the issuer's own marching infantry can block its charge; foreign
+    // squads in the selection are rejected by the charge domain itself.
+    if(command.type === "charge" && command.squadIds.some(id=>{const s=this.squad(id);return !!s && s.playerId===command.playerId && s.kind!=='cavalry' && (s.formation?.shape==='column' || s.formation?.transition?.from==='column');})){
+      const order=chargeFallbackOrder(this.map,command,id=>!!this.squad(id));
+      if(order)return this.applyCommand({type:'order',playerId:command.playerId,squadIds:command.squadIds,order});
       return "Deploy before charging";
     }
     if (command.type === "formation") {
@@ -1473,28 +1510,44 @@ export class Skirmish {
       )
         return "Choose an enemy squad";
     }
-    this.expansion?.skirmish.observe(command);
-    if(!append)this.expansion?.trenches.observe(command);
     // Squads of a faction with transports route over land and water alike;
     // on water they travel as that transport. Others stay on their landmass.
     const squadPaths = this.squadPaths(player.id);
+    // These read-only rejections run before the stance/trench observers, so a
+    // rejected order leaves those rows unchanged. Non-append connectivity and
+    // replenish checks are hoisted unchanged: no branch between here and their
+    // original position handles a non-append order that fails them.
     if (order.type === "move" && !squadPaths.walkable(order.tile))
       return this.waterPaths.walkable(order.tile) ? "Research Cargo Canoes to take squads onto water" : "Choose passable land or navigable water";
     if(this.options.deferredPlanning && append && this.movementAdmission.queued(command.squadIds)>=MAX_QUEUED_ORDERS)
       return "A squad can queue up to 32 additional orders";
+    if (order.type === "move" && !append && selected.some(s => !squadPaths.connected(this.tileOf(s!),order.tile)))
+      return this.amphibious(player.id) ? "That destination cannot be reached" : "Research Cargo Canoes to cross water";
+    if (!append && order.type === "replenish" && selected.some((s) => this.owners[this.tileOf(s!)] !== player.id))
+      return "Move every selected squad onto friendly territory before replenishing";
+    // The stance/trench observers write state, so they run once, only on an
+    // accepted path and before that path's first write (R2-M10).
+    let observed=false;
+    const observeAccepted=()=>{
+      if(observed)return;observed=true;
+      this.expansion?.skirmish.observe(command);
+      if(!append)this.expansion?.trenches.observe(command);
+    };
     if(this.options.deferredPlanning && append && this.movementAdmission.append(command.squadIds,order,this.tick)) {
+      observeAccepted();
       this.expansion?.armies.observeOrder(command.squadIds,order,true);
       return null;
     }
     if(this.options.deferredPlanning && !append && order.type==="move" &&
       selected.every(s=>!this.expansion?.armies.armyOf(s!.id) && squadPaths.connected(this.tileOf(s!),order.tile))) {
+      observeAccepted();
       this.movementAdmission.start(player.id,selected as Squad[],order.tile,this.tick,undefined,player.ai);return null;
     }
     // An appended leg is intent, not an executable route from today's position.
     // Admission preserves every deliberate Shift order without constructing
     // paths that would immediately be discarded.
     if (append && selected.every(s=>s!.order.type!=="hold")) {
-      const grouped=this.expansion?.armies.groupOrder(command.squadIds,order,true);
+      const grouped=this.expansion?.armies.groupOrder(command.squadIds,order,true,observeAccepted);
       if(grouped!==undefined)return grouped;
       let slots:Map<number,WorldPoint>|null=null;
       if(order.type==="move") {
@@ -1506,6 +1559,7 @@ export class Skirmish {
           this.options.formationFreeTravel ? translatedSlots(members.map(m=>({id:m.squad.id,origin:m.origin})),tilePoint(this.map,order.tile)) : undefined);
         if(!slots)return "There is no room for this formation at that destination";
       }
+      observeAccepted();
       for(const squad of selected as Squad[]){
         const point=slots?.get(squad.id);
         this.squadEntities.updateOwned(squad.id, { queuedOrders: [...squad.queuedOrders, order.type==="move" && point ? this.formationMove(point) : {...order}] });
@@ -1523,6 +1577,7 @@ export class Skirmish {
       command.squadIds,
       order,
       append,
+      observeAccepted,
     );
     if (armyOrder !== undefined) {
       if(armyOrder===null && !append)this.movementAdmission.cancel(command.squadIds,this.tick);
@@ -1578,6 +1633,7 @@ export class Skirmish {
       }
       orders.push({ squad, order: nextOrder, path });
     }
+    observeAccepted();
     if(!append)this.movementAdmission.cancel(command.squadIds,this.tick);
     for (const entry of orders) {
       if (this.expansion && !append) {
@@ -3396,7 +3452,14 @@ export class Skirmish {
     // and operation/diplomacy/threat revisions invalidate them immediately.
     this.routeFootprints = new Map();
     this.routeEntries = new Map();
+    this.completedPhase = "tick-start";
     try { this.performTick(); }
+    catch (error) {
+      // Latch before rethrowing: the world is half-ticked and must not run on.
+      this.faultState = { tick: this.tick, afterPhase: this.completedPhase,
+        message: error instanceof Error ? error.message : String(error) };
+      throw error;
+    }
     finally { this.routeFootprints = undefined; this.routeEntries = undefined; }
   }
 
@@ -5494,7 +5557,13 @@ export class Skirmish {
         });
       // Foundations disappear before territory transfer can change their owner.
       for (const building of [...this.buildingIndex.byOwner(player.id)])
-        if (building.remainingTicks > 0) this.removeBuilding(building.id);
+        if (building.remainingTicks > 0) this.dropBuilding(building);
+      // An ownerless defence is allied to no one and would block every faction
+      // forever (B-1, H2). Neutral land has no operator, so when no faction
+      // inherits, the defences go before land transfer could re-own them.
+      if (recipient === 0)
+        for (const building of [...this.buildingIndex.byOwner(player.id)])
+          if (DEFENSIVE_BUILDINGS.includes(building.type)) this.dropBuilding(building);
       for (const tile of [...(this.ownedTiles.get(player.id) ?? []), ...(this.ownedWater.get(player.id) ?? [])].sort(
         (a, b) => a - b,
       )) {

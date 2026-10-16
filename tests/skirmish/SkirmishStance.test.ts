@@ -114,4 +114,20 @@ describe("Explicit reload skirmish", () => {
     expect(e.skirmish.active(s.id)).toBe(false);
     expect(game.squad(s.id)!.order.type).toBe("hold");
   });
+  // R2-M9 (review 18 Issue 3): an occupy naming another faction's squad must
+  // not suppress that faction's skirmish stance.
+  it("ignores another faction's squads listed in an occupy command", () => {
+    const { game, defenders } = trenchLineScene(),
+      e = game.expansion!;
+    const foreign = game.addSquad({ ...structuredClone(defenders[1]), id: game.allocateId(), playerId: 1, y: defenders[1].y + 12 * FIXED });
+    expect(game.applyCommand({ type: "stance", playerId: 1, squadIds: [foreign.id], stance: "skirmish" })).toBeNull();
+    expect(game.applyCommand({ type: "stance", playerId: 2, squadIds: [defenders[1].id], stance: "skirmish" })).toBeNull();
+    const row = (id: number) => e.skirmish.checkpoint().states.find(([key]) => key === id)?.[1];
+    expect(row(foreign.id)?.suppressed).toBe(false);
+    expect(game.applyCommand({ type: "occupy", playerId: 2, squadIds: [defenders[0].id, foreign.id, defenders[1].id], tile: game.map.ref(30, 32) })).toBeNull();
+    expect(row(foreign.id)?.suppressed).toBe(false);
+    expect(game.squad(foreign.id)!.stance).toBe("skirmish");
+    // The commanding faction's own stance row is still suppressed by its occupy.
+    expect(row(defenders[1].id)?.suppressed).toBe(true);
+  });
 });

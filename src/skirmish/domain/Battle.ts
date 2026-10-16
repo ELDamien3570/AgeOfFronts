@@ -1257,7 +1257,7 @@ export class Battle {
         p.impacted = true;
         p.impactAt = tick;
         const targets = p.targetBuildingId === undefined ? this.world.buildings
-          .filter(b => (b.health ?? 1) > 0 && this.diplomacy.hostile(p.playerId,b.playerId))
+          .filter(b => (b.health ?? 1) > 0 && this.diplomacy.hostile(p.playerId,b.playerId) && this.diplomacy.canAttackStructure(p.playerId,b.playerId))
           .sort((a,b) => this.distance(this.position(a), {x:p.toX,y:p.toY}) -
             this.distance(this.position(b), {x:p.toX,y:p.toY}) || a.id-b.id).slice(0,8) : [];
         for (let i = 0; i < p.warheads; i++) {

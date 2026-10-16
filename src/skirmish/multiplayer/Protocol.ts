@@ -169,7 +169,7 @@ export type ServerMessage =
     }
   | { type: "match-status"; matchId: string; message: string; paused: boolean }
   | { type: "match-sync-complete"; matchId: string; syncId: string }
-  | { type: "match-ended"; matchId: string; message: string; completed?: boolean }
+  | { type: "match-ended"; matchId: string; message: string; completed?: boolean; reason?: "simulation-fault" }
   | {
       type: "directory";
       guestId: string;

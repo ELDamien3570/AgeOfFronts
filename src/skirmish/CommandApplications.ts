@@ -1,5 +1,6 @@
 import type { MovementAdmissionEvent } from "./MovementAdmission";
 import type { Command } from "./Protocol";
+import { SimulationFault, stackFrames } from "./SimulationFault";
 
 export interface CommandOutcome {
   id: string;
@@ -15,6 +16,19 @@ interface Receipt {
 interface Ports {
   apply(command: Command): string | null;
   tick(): number;
+  /** Observer of authoritative writes. Without it every throw propagates. */
+  mutationEpoch?(): string | number;
+}
+/** The receipt reason when command validation threw before any write. */
+export const COMMAND_VALIDATION_FAILURE = "This command could not be processed";
+export interface CommandValidationFailure {
+  event: "command-validation-failure";
+  id: string;
+  playerId: number;
+  type: string;
+  tick: number;
+  message: string;
+  stack: string[];
 }
 /** Application receipts correlate input identity with domain planning events.
  * They own no movement, payment, jobs or transport acknowledgements. A host
@@ -23,8 +37,12 @@ export class CommandApplications {
   private readonly pending = new Map<string, Receipt>();
   private readonly plans = new Map<string, string>();
   private readonly recent = new Map<string, CommandOutcome>();
-  private applying?: { key: string; playerId: number; plans: Set<string> };
+  private applying?: { key: string; playerId: number; plans: Set<string>; events?: number };
   onOutcome?: (outcome: CommandOutcome) => void;
+  /** Structured report of a validation throw turned into a rejection. The
+   * default writes one JSON line to stderr; it is outside simulation state. */
+  onValidationFailure: (failure: CommandValidationFailure) => void = failure =>
+    console.error(JSON.stringify(failure));
   /** A plan of a still-deferred receipt committed, e.g. the lead cohort of a
    * large selection started moving. The receipt itself stays deferred. */
   onProgress?: (playerId: number) => void;
@@ -86,11 +104,37 @@ export class CommandApplications {
       key,
       playerId: command.playerId,
       plans: new Set<string>(),
+      events: 0,
     };
+    const epoch = this.ports.mutationEpoch?.();
     this.applying = applying;
     let rejection: string | null;
     try {
       rejection = this.ports.apply(command);
+    } catch (error) {
+      // Only a throw with no observed write is a validation failure. Any
+      // observed write, domain event or plan makes it a fault; so does a
+      // fault raised by the simulation itself or a missing epoch observer.
+      if (
+        error instanceof SimulationFault ||
+        epoch === undefined ||
+        applying.plans.size ||
+        applying.events ||
+        this.ports.mutationEpoch!() !== epoch
+      )
+        throw error instanceof SimulationFault || epoch === undefined
+          ? error
+          : new SimulationFault("Command application failed after a write", { cause: error });
+      rejection = COMMAND_VALIDATION_FAILURE;
+      this.onValidationFailure({
+        event: "command-validation-failure",
+        id,
+        playerId: command.playerId,
+        type: typeof command.type === "string" ? command.type.slice(0, 64) : "unknown",
+        tick: result.tick,
+        message: (error instanceof Error ? error.message : String(error)).slice(0, 512),
+        stack: stackFrames(error),
+      });
     } finally {
       this.applying = undefined;
     }
@@ -108,6 +152,7 @@ export class CommandApplications {
   }
   observe(source: "land" | "water" | "army" | "trade", event: MovementAdmissionEvent): void {
     const plan = `${source}:${event.id}`;
+    if (this.applying?.events !== undefined) this.applying.events++;
     if (event.status === "deferred") {
       if (this.applying?.playerId === event.playerId)
         this.applying.plans.add(plan);

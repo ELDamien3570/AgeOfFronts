@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
+  COMMAND_VALIDATION_FAILURE,
   CommandApplications,
   type CommandOutcome,
+  type CommandValidationFailure,
 } from "../../src/skirmish/CommandApplications";
+import { SimulationFault } from "../../src/skirmish/SimulationFault";
 import type { Command } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
@@ -14,6 +17,49 @@ const move: Command = {
   order: { type: "move", tile: 12 },
 };
 describe("command receipts", () => {
+  describe("throw containment", () => {
+    const harness = (apply: (bump: () => void, receipts: CommandApplications) => string | null) => {
+      let epoch = 0;
+      const outcomes: CommandOutcome[] = [], failures: CommandValidationFailure[] = [];
+      const receipts: CommandApplications = new CommandApplications({ tick: () => 7, mutationEpoch: () => epoch,
+        apply: () => apply(() => epoch++, receipts) });
+      receipts.onOutcome = outcome => outcomes.push(outcome);
+      receipts.onValidationFailure = failure => failures.push(failure);
+      return { receipts, outcomes, failures };
+    };
+    it("turns a throw before any write into a rejection and keeps accepting commands", () => {
+      let calls = 0;
+      const { receipts, outcomes, failures } = harness(() => { if (calls++ === 0) throw new Error("bad read"); return null; });
+      expect(receipts.apply("a", move)).toMatchObject({ status: "rejected", reason: COMMAND_VALIDATION_FAILURE });
+      expect(outcomes).toHaveLength(1);
+      expect(failures).toEqual([expect.objectContaining({ event: "command-validation-failure", id: "a", playerId: 1, type: "order", tick: 7, message: "bad read" })]);
+      expect(failures[0].stack.length).toBeLessThanOrEqual(10);
+      expect(receipts.diagnostics.pending).toBe(0);
+      expect(receipts.apply("b", move).status).toBe("executed");
+    });
+    it("faults a throw after an observed write", () => {
+      const { receipts, outcomes, failures } = harness(bump => { bump(); throw new Error("half written"); });
+      expect(() => receipts.apply("a", move)).toThrow(SimulationFault);
+      expect(outcomes).toEqual([]);
+      expect(failures).toEqual([]);
+      // The application scope was released: no "nested application" error.
+      expect(() => receipts.apply("b", move)).toThrow("Command application failed after a write");
+    });
+    it("faults a throw after a domain event or plan", () => {
+      const { receipts } = harness((_bump, r) => { r.observe("land", { id: 3, playerId: 1, tick: 7, status: "superseded" }); throw new Error("after event"); });
+      expect(() => receipts.apply("a", move)).toThrow(SimulationFault);
+      const deferred = harness((_bump, r) => { r.observe("land", { id: 4, playerId: 1, tick: 7, status: "deferred" }); throw new Error("after plan"); });
+      expect(() => deferred.receipts.apply("a", move)).toThrow(SimulationFault);
+    });
+    it("propagates a simulation fault and any throw without an epoch observer unchanged", () => {
+      const fault = new SimulationFault("stopped");
+      const { receipts } = harness(() => { throw fault; });
+      expect(() => receipts.apply("a", move)).toThrow(fault);
+      const original = new Error("plain");
+      const bare = new CommandApplications({ tick: () => 0, apply: () => { throw original; } });
+      expect(() => bare.apply("a", move)).toThrow(original);
+    });
+  });
   it("reports a committed lead cohort as progress while the receipt stays deferred", () => {
     const progress: number[] = [], outcomes: CommandOutcome["status"][] = [];
     const receipts: CommandApplications = new CommandApplications({ tick: () => 0, apply: () => {

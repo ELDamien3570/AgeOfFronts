@@ -488,6 +488,9 @@ export class TrenchOccupancy {
         dy = w.map.y(frontage[frontage.length - 1]) - w.map.y(frontage[0]);
       squads.sort((a, b) => (a.x - b.x) * dx + (a.y - b.y) * dy || a.id - b.id);
     }
+    // A batch that admits nobody is a rejection and must leave no trace:
+    // admit() writes only on success, so restoring these is exact (R2-M10).
+    const saved = { queue: this.queue, used: this.used, budgetTick: this.budgetTick };
     this.resetBudget();
     let accepted = 0,
       error = "Not enough trench space";
@@ -515,7 +518,11 @@ export class TrenchOccupancy {
       if (result === null) accepted++;
       else error = result;
     }
-    return accepted ? null : error;
+    if (accepted) return null;
+    this.queue = saved.queue;
+    this.used = saved.used;
+    this.budgetTick = saved.budgetTick;
+    return error;
   }
   private resetBudget() {
     if (this.budgetTick !== this.e.world.tick) {
@@ -621,12 +628,14 @@ export class TrenchOccupancy {
         command.type === "attack-structure")
     )
       for (const id of command.squadIds) {
+        const owner = this.e.world.squad(id)?.playerId;
+        if (owner !== undefined && owner !== command.playerId) continue;
         this.queue = this.queue.filter((q) => q.squadId !== id);
         if (command.type !== "order" || command.order.type !== "hold")
           this.leave(id);
       }
     if (command.type === "army-order" && command.order.type !== "hold") {
-      const army = this.e.armies.armies.find((a) => a.id === command.armyId);
+      const army = this.e.armies.armies.find((a) => a.id === command.armyId && a.playerId === command.playerId);
       for (const id of army?.memberIds ?? []) this.leave(id);
     }
   }

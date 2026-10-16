@@ -16,6 +16,8 @@ import type {
 } from "../Protocol";
 import type { EncodedState } from "../StateCodec";
 import {
+  MATCH_FAULT_CODE,
+  MATCH_FAULT_MESSAGE,
   MAX_ADVANCE_TICKS,
   MAX_COMMAND_BATCH,
   type JoinBarrier,
@@ -658,8 +660,7 @@ export class LiveMatch {
     if (this.stopped || !this.running || this.tickTimer !== undefined) return;
     const dispatch = () => {
       this.tickTimer = undefined;
-      void this.advance().catch((error) =>
-        this.end(`Match stopped: ${(error as Error).message}`));
+      void this.advance().catch((error) => this.endAfterFailure(error));
     };
     const delay = Math.max(0, this.nextTickAt - this.now());
     if (delay === 0) {
@@ -826,7 +827,15 @@ export class LiveMatch {
           : Math.max(0, this.emptyDeadline - this.now()),
     };
   }
-  async end(message: string, completed = false): Promise<void> {
+  /** End after a failed advance. A simulation fault ends with fixed text and
+   * a reason code; its internal error details stay in the server log. */
+  endAfterFailure(error: unknown): Promise<void> {
+    const message = error instanceof Error ? error.message : String(error);
+    return message === MATCH_FAULT_CODE
+      ? this.end(MATCH_FAULT_MESSAGE, false, MATCH_FAULT_CODE)
+      : this.end(`Match stopped: ${message}`);
+  }
+  async end(message: string, completed = false, reason?: typeof MATCH_FAULT_CODE): Promise<void> {
     if (this.stopped) return;
     this.stopped = true;
     this.tickTimer?.cancel();
@@ -838,6 +847,7 @@ export class LiveMatch {
       completed,
       matchId: this.reservation.id,
       message,
+      ...(reason ? { reason } : {}),
     });
     for (const guest of this.admissions.keys())
       this.send(guest, {
@@ -845,6 +855,7 @@ export class LiveMatch {
         completed,
         matchId: this.reservation.id,
         message,
+        ...(reason ? { reason } : {}),
       });
     try {
       await this.executor.close();

@@ -9,11 +9,13 @@ import { mapIdentity } from "../application/MapIdentity";
 import {
   MAX_ADVANCE_TICKS,
   MAX_COMMAND_BATCH,
+  MATCH_FAULT_CODE,
   type ExecutorRequest,
   type MatchAdvance,
   type RuntimeMap,
 } from "../application/MatchExecutor";
 import { PublicationQueue } from "../application/PublicationQueue";
+import { MatchAdvanceRunner, MatchFaultError } from "../application/MatchAdvanceRunner";
 import { RecoveryBaselineCache } from "../application/RecoveryBaselineCache";
 import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
 import { secondsToTicks } from "../../Protocol";
@@ -36,7 +38,11 @@ parentPort.on("close", stopObserving);
 let diagnosticContext = { matchId: "unassigned", runtimeId: "unknown" };
 let captureSequence = 0, capturedTick = 0;
 let nextDiagnosticTick = 600;
-const observeMatch = () => { match!.onPhase = (phase, ms) => diagnostics.record(phase, ms); };
+let runner: MatchAdvanceRunner | undefined;
+const observeMatch = () => {
+  match!.onPhase = (phase, ms) => diagnostics.record(phase, ms);
+  runner = new MatchAdvanceRunner(match!, () => ({ ...diagnosticContext, source: process.env.GIT_COMMIT ?? "unknown" }));
+};
 const networkEncoding = { compactFormationSlots: true, compactTraders: true };
 const encoder = new SnapshotEncoder(true, networkEncoding);
 let setup: SpawnSelection | undefined;
@@ -192,6 +198,8 @@ parentPort.on(
           }
         } else {
           if (!match) throw new Error("Executor not initialized");
+          // A faulted world is never advanced, published or handed to joiners.
+          if (request.type !== "seat-status") runner!.assertHealthy();
           if (["baseline", "client-baseline", "join-barrier"].includes(request.type)) await publications.flush();
           if (request.type === "seat-status") {
             result = { seats: seats() };
@@ -247,24 +255,10 @@ parentPort.on(
               if (player) match.setAiController(id, true);
             }
             const advanceStarted = performance.now();
-            const rejectedCommands: MatchAdvance["rejectedCommands"] = [];
-            for (const item of request.commands) {
-              const player = match.player(item.command.playerId);
-              const outcome: CommandOutcome = !player || player.ai
-                ? {id: item.id, playerId: item.command.playerId, tick: match.tick, status: "rejected", reason: "You are not active in this match"}
-                : match.commandApplications.apply(item.id, item.command);
-              if (!player || player.ai) collectOutcome(outcome);
-              const rejection = outcome.status === "rejected" ? outcome.reason : undefined;
-              if (rejection)
-                rejectedCommands.push({
-                  id: item.id,
-                  playerId: item.command.playerId,
-                  message: rejection,
-                });
-            }
+            const rejectedCommands = runner!.applyCommands(request.commands, collectOutcome);
             diagnostics.record("commands", performance.now() - advanceStarted);
             const previousTick = match.tick;
-            for (let i = 0; i < request.ticks; i++) match.step();
+            runner!.step(request.ticks);
             const outcomes = [...commandOutcomes.values()];
             result = {
               tick: match.tick,
@@ -305,6 +299,12 @@ parentPort.on(
       } catch (error) {
         // Retain the stack and operation on the server; client transport keeps
         // the safe message and never receives private stack details.
+        if (error instanceof MatchFaultError) {
+          // The structured fault report was already logged once by the runner.
+          commandOutcomes.clear();
+          parentPort!.postMessage({ id: message.id, error: MATCH_FAULT_CODE });
+          return;
+        }
         console.error("Match executor operation failed",message.request.type,error);
         if (match?.failureReason) parentPort!.postMessage({ fatal: `Simulation recovery failed: ${match.failureReason}`, failureCause: "recovery" });
         parentPort!.postMessage({

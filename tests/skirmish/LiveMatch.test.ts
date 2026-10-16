@@ -6,11 +6,13 @@ import {
   MAX_QUEUED_COMMANDS,
   MAX_RECENT_COMMANDS,
 } from "../../src/skirmish/multiplayer/application/LiveMatch";
-import type {
-  ExecutorRequest,
-  ExecutorResult,
-  MatchAdvance,
-  MatchExecutor,
+import {
+  MATCH_FAULT_CODE,
+  MATCH_FAULT_MESSAGE,
+  type ExecutorRequest,
+  type ExecutorResult,
+  type MatchAdvance,
+  type MatchExecutor,
 } from "../../src/skirmish/multiplayer/application/MatchExecutor";
 import type { ServerMessage } from "../../src/skirmish/multiplayer/Protocol";
 
@@ -355,6 +357,26 @@ describe("server-authoritative live match", () => {
       "match-ended",
     ]);
     expect(f.messages.filter(item => item.message.type === "match-ended").every(item => item.message.type === "match-ended" && item.message.completed)).toBe(true);
+    expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
+  });
+
+  it("ends a faulted simulation with the fixed message and stops advancing", async () => {
+    const f = await fixture();
+    let advances = 0;
+    f.executor.request = async <T extends ExecutorResult>(request: ExecutorRequest): Promise<T> => {
+      if (request.type === "advance") advances++;
+      throw new Error(MATCH_FAULT_CODE);
+    };
+    f.setTime(10_125);
+    await f.match.advance().catch((error) => f.match.endAfterFailure(error));
+    await vi.waitFor(() => expect(f.messages.filter(item => item.message.type === "match-ended")).toHaveLength(2));
+    const ended = f.messages.filter(item => item.message.type === "match-ended").map(item => item.message);
+    expect(ended).toEqual([0, 1].map(() => ({ type: "match-ended", completed: false, matchId: "test",
+      message: MATCH_FAULT_MESSAGE, reason: MATCH_FAULT_CODE })));
+    const count = advances;
+    f.setTime(20_000);
+    await f.match.advance().catch(() => undefined);
+    expect(advances).toBe(count);
     expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
   });
 });
