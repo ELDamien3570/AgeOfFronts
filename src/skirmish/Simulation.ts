@@ -1275,6 +1275,12 @@ export class Skirmish {
   addBuilding(building: Building): Building { return this.buildingEntities.add(building); }
   updateBuilding(id: number, changes: Partial<Omit<Building, "id">>): Building | undefined { return this.buildingEntities.update(id, changes); }
   removeBuilding(id: number): boolean { return this.buildingEntities.remove(id); }
+  /** Removes a building with its walls, tower index entry and producer row. */
+  private dropBuilding(building: Building): void {
+    this.removeBuilding(building.id);
+    this.expansion?.supply.forgetProducer(building.id);
+    this.expansion?.fortifications.forgetBuilding(building, this.buildings);
+  }
   verifyBuildingIndexes(): void { this.buildingIndex.verify(this.buildings); }
   tileOf(squad: Pick<Squad, "x" | "y">): number {
     return this.map.ref(
@@ -5551,7 +5557,13 @@ export class Skirmish {
         });
       // Foundations disappear before territory transfer can change their owner.
       for (const building of [...this.buildingIndex.byOwner(player.id)])
-        if (building.remainingTicks > 0) this.removeBuilding(building.id);
+        if (building.remainingTicks > 0) this.dropBuilding(building);
+      // An ownerless defence is allied to no one and would block every faction
+      // forever (B-1, H2). Neutral land has no operator, so when no faction
+      // inherits, the defences go before land transfer could re-own them.
+      if (recipient === 0)
+        for (const building of [...this.buildingIndex.byOwner(player.id)])
+          if (DEFENSIVE_BUILDINGS.includes(building.type)) this.dropBuilding(building);
       for (const tile of [...(this.ownedTiles.get(player.id) ?? []), ...(this.ownedWater.get(player.id) ?? [])].sort(
         (a, b) => a - b,
       )) {

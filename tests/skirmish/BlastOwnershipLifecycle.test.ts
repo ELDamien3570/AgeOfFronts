@@ -159,4 +159,34 @@ describe("explosion ownership and publication lifecycle", () => {
       expect(publisher()(cold).expansion!.fallout).toEqual(snapshot.expansion!.fallout);
     });
   }
+
+  // B-1 (review 08 H2): a raid-only defeat hands land to no one. The victim's
+  // tower must not survive as an owner-0 obstacle that blocks every faction.
+  it.each(["raid", "war"] as const)("resolves the eliminated faction's tower outside the blast (%s)", mode => {
+    const { game, add } = fixture();
+    for (const squad of game.squads) game.updateSquad(squad.id, {
+      ...(squad.playerId === 2 ? TARGET : { x: (10.5 + squad.playerId * 5) * FIXED, y: 70.5 * FIXED }),
+      order: { type: "hold" },
+    });
+    add(1, "city", 15, 70); add(3, "city", 25, 70); add(2, "city", 60, 40);
+    const tower = game.addBuilding({ id: game.allocateId(), playerId: 2, type: "tower", tile: game.map.ref(20, 20),
+      remainingTicks: 0, age: "StoneAge", health: 2000, maxHealth: 2000 });
+    for (let x = 18; x <= 22; x++) for (let y = 18; y <= 22; y++) game.owners[game.map.ref(x, y)] = 2;
+    game.restore(game.checkpoint());
+    if (mode === "war") game.expansion!.diplomacy.establishWar(1, 2, game.tick);
+    else game.expansion!.diplomacy.recordTheft(1, 2, game.tick);
+    fire(game, "atomic");
+    for (let i = 0; i < 20 && !game.player(2)!.eliminated; i++) game.step();
+    expect(game.player(2)!.eliminated).toBe(true);
+    game.step();
+    const forts = game.expansion!.fortifications, squad = game.squads.find(s => s.playerId === 1)!;
+    game.updateSquad(squad.id, { x: 20.5 * FIXED, y: 23.5 * FIXED, order: { type: "hold" } });
+    if (mode === "raid") {
+      expect(game.building(tower.id)).toBeUndefined();
+      expect(game.owners[tower.tile]).toBe(0);
+      expect(game.expansion!.canCaptureTile(game.squad(squad.id)!, tower.tile)).toBe(true);
+    } else expect(game.building(tower.id)).toMatchObject({ playerId: 1 });
+    expect(forts.blocked(tower.tile, 1)).toBe(false);
+    expect(forts.blocked(tower.tile, 3)).toBe(mode === "war");
+  });
 });
