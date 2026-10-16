@@ -9,7 +9,11 @@ import { join, normalize, resolve } from "node:path";
 import { WebSocket, WebSocketServer } from "ws";
 import { DEFAULT_EMPIRE_PROFILE } from "../../lobby/EmpireProfile";
 import { LiveMatch, type LiveMatchOptions } from "../application/LiveMatch";
-import { publicStopMessage } from "../application/TerminalMessages";
+import {
+  MATCH_INITIALIZATION_FAILED_MESSAGE,
+  publicInitializationMessage,
+  publicStopMessage,
+} from "../application/TerminalMessages";
 import type { MatchExecutor } from "../application/MatchExecutor";
 import { RoomCoordinator } from "../domain/RoomCoordinator";
 import { clientMessageSchema, type ServerMessage } from "../Protocol";
@@ -474,12 +478,14 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       );
       matches.set(reservation.id, match);
       void match.initialize().catch(async (error) => {
-        for (const member of reservation.members)
-          sendGuest(member.guestId, {
-            type: "error",
-            message: (error as Error).message,
-          });
-        await match.end("Unable to initialize match");
+        // The match never started: put its current members (live state, not
+        // the start-time copy) back in their room before releasing capacity.
+        const message = publicInitializationMessage(error);
+        for (const guest of rooms.abandonReservation(reservation.id, now()))
+          sendGuest(guest, { type: "error", message });
+        options.store.write(rooms.snapshot());
+        publish();
+        await match.end(MATCH_INITIALIZATION_FAILED_MESSAGE);
       });
     }
     for (const match of matches.values())
