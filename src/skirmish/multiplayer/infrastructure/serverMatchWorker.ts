@@ -44,12 +44,32 @@ let diagnosticContext = { matchId: "unassigned", runtimeId: "unknown" };
 let captureSequence = 0, capturedTick = 0;
 let nextDiagnosticTick = 600;
 let runner: MatchAdvanceRunner | undefined;
-const observeMatch = () => {
-  match!.onPhase = (phase, ms) => diagnostics.record(phase, ms);
-  runner = new MatchAdvanceRunner(match!, () => ({ ...diagnosticContext, source: process.env.GIT_COMMIT ?? "unknown" }));
+// The exact map and options the match was built from: a rollback rebuilds a
+// fresh simulation from them and restores the last checkpoint into it.
+let runtime: { map: RuntimeMap; options: ConstructorParameters<typeof Skirmish>[1] } | undefined;
+const attach = (target: Skirmish) => {
+  target.commandApplications.onOutcome = collectOutcome;
+  target.commandApplications.onProgress = collectProgress;
+  target.onPhase = (phase, ms) => diagnostics.record(phase, ms);
+};
+const startMatch = (map: RuntimeMap, options: ConstructorParameters<typeof Skirmish>[1]) => {
+  runtime = { map, options };
+  match = new Skirmish(makeMap(map), options);
+  attach(match);
+  runner = new MatchAdvanceRunner(match, () => ({ ...diagnosticContext, source: process.env.GIT_COMMIT ?? "unknown" }), undefined, {
+    create: () => new Skirmish(makeMap(runtime!.map), runtime!.options),
+    attach,
+    installed: (recovered) => {
+      // Queued captures already hold packets; the old encoder's delta cursor
+      // describes the abandoned world, so the next publication is a baseline.
+      match = recovered;
+      encoder = new SnapshotEncoder(true, networkEncoding);
+      invalidateBaselines();
+    },
+  });
 };
 const networkEncoding = { compactFormationSlots: true, compactTraders: true };
-const encoder = new SnapshotEncoder(true, networkEncoding);
+let encoder = new SnapshotEncoder(true, networkEncoding);
 let setup: SpawnSelection | undefined;
 let preparedMap: RuntimeMap | undefined;
 let pending = Promise.resolve();
@@ -160,10 +180,8 @@ parentPort.on(
             setup.resolve();
             result = { mapHash: await mapIdentity(loaded.map), options };
           } else {
-            match = new Skirmish(makeMap(loaded.map), options);
-            match.commandApplications.onOutcome = collectOutcome;
-            match.commandApplications.onProgress = collectProgress;
-            observeMatch();
+            startMatch(loaded.map, options);
+            match = match!;
             result = {
               tick: match.tick,
               winner: match.winner,
@@ -187,13 +205,11 @@ parentPort.on(
           else if (request.type === "spawn-state")
             result = setup.state(request.remainingMs);
           else {
-            match = new Skirmish(makeMap(preparedMap), {
+            startMatch(preparedMap, {
               ...setup.options,
               humanSpawns: setup.choices,
             });
-            match.commandApplications.onOutcome = collectOutcome;
-            match.commandApplications.onProgress = collectProgress;
-            observeMatch();
+            match = match!;
             setup = undefined;
             preparedMap = undefined;
             result = {
@@ -213,7 +229,7 @@ parentPort.on(
             result = { seats: seats() };
           } else if (request.type === "set-controller") {
             invalidateBaselines();
-            match.setAiController(request.playerId, request.ai);
+            runner!.setController(request.playerId, request.ai);
             result = { seats: seats() };
           } else if (request.type === "join-barrier") {
             const player = match.player(request.playerId);
@@ -225,7 +241,7 @@ parentPort.on(
             )
               throw new Error("This faction is no longer available");
             invalidateBaselines();
-            match.setAiController(player.id, false);
+            runner!.setController(player.id, false);
             // Both packets describe exactly S. Advancing the shared cursor here is
             // essential: a tile that changes back after this barrier must be sent.
             const state = diagnostics.measure("extraction", () => match!.replicationSource());
@@ -258,15 +274,14 @@ parentPort.on(
               throw new Error("Invalid match advance");
             if (request.commands.length > MAX_COMMAND_BATCH)
               throw new Error("Match command batch exceeds its budget");
-            for (const id of request.disconnectedPlayerIds) {
-              const player = match.player(id);
-              if (player) match.setAiController(id, true);
-            }
-            const advanceStarted = performance.now();
-            const rejectedCommands = runner!.applyCommands(request.commands, collectOutcome);
+            const advanceStarted = performance.now(), previousTick = match.tick;
+            // Disconnected seats, commands and ticks run as one journaled advance;
+            // a fault rolls back to the last checkpoint when it can (MatchJournal).
+            const { rejectedCommands, rolledBack } = runner!.advance({
+              commands: request.commands, ticks: request.ticks, disconnectedPlayerIds: request.disconnectedPlayerIds,
+            }, collectOutcome);
+            match = runner!.match;
             diagnostics.record("commands", performance.now() - advanceStarted);
-            const previousTick = match.tick;
-            runner!.step(request.ticks);
             const outcomes = [...commandOutcomes.values()];
             result = {
               tick: match.tick,
@@ -274,6 +289,7 @@ parentPort.on(
               packet: undefined,
               rejectedCommands,
               ...(outcomes.length ? {commandOutcomes: outcomes} : {}),
+              ...(rolledBack ? {rolledBack: true} : {}),
               seats: seats(),
             } satisfies MatchAdvance;
             // A committed player command should be visible in its authoritative
@@ -281,10 +297,12 @@ parentPort.on(
             // Deferred/rejected commands do not expose uncommitted intentions;
             // a committed lead cohort of a deferred selection is published.
             // Offer once per advance through the same bounded, ordered queue.
-            const publish = request.publish || commandProgress || outcomes.some(outcome => outcome.status === "executed");
+            const publish = rolledBack || request.publish || commandProgress || outcomes.some(outcome => outcome.status === "executed");
             commandProgress = false;
             if (publish || match.winner !== null) {
-              if (streamPublications && match.winner === null) publications.offer(match.tick, capture);
+              // After a rollback the reply carries the new encoder's first,
+              // complete packet; the host sends it to every seat as a rebase.
+              if (streamPublications && match.winner === null && !rolledBack) publications.offer(match.tick, capture);
               else {
                 await publications.flush();
                 (result as MatchAdvance).packet = await snapshot();

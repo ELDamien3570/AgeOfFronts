@@ -31,6 +31,8 @@ function setup() {
 }
 const report = (logs: string[]) => logs.map(line => JSON.parse(line) as MatchFaultReport).filter(entry => entry.event === "match-simulation-fault");
 
+// These runners have no MatchRecovery, so every fault ends the match: the
+// terminal path a rollback falls back to. Rollback: MatchRollback.test.ts.
 describe("match fault containment", () => {
   it("never steps a half-ticked world again after a mid-tick throw", () => {
     const { game, runner, logs, hold } = setup();
