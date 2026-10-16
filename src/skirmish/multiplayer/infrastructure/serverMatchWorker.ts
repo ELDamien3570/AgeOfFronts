@@ -320,7 +320,12 @@ parentPort.on(
             commandOutcomes.clear();
           } else throw new Error("Unknown match operation");
         }
-        diagnostics.measure("transfer", () => parentPort!.postMessage({ id: message.id, result, publicationsIssued }));
+        // Only results that carry packets continue the delta chain and must
+        // follow earlier publications; an advance result is never held back
+        // behind its own still-encoding publication.
+        const ordered = ["baseline", "client-baseline", "join-barrier"].includes(message.request.type) ||
+          (message.request.type === "advance" && (result as MatchAdvance).packet !== undefined);
+        diagnostics.measure("transfer", () => parentPort!.postMessage({ id: message.id, result, publicationsIssued: ordered ? publicationsIssued : 0 }));
       } catch (error) {
         // Retain the stack, operation and raw text on the server. Clients
         // receive only deliberate messages or one fixed string (L11).
