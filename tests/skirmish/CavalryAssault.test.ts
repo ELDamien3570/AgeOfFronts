@@ -3,7 +3,7 @@ import { cavalryImpactScene, cavalryRankScene } from './fixtures/CavalryImpact';
 import { tacticalFacts } from '../../src/skirmish/domain/FormationTactics';
 import { UNIT } from '../../src/skirmish/content/Units';
 import { FIXED, secondsToTicks } from '../../src/skirmish/Protocol';
-import { cavalryResistance, assaultBonus, assaultWeapon, cavalryWithdrawal } from '../../src/skirmish/domain/CavalryAssault';
+import { cavalryResistance, assaultBonus, assaultWeapon, cavalryWithdrawal, CAVALRY_WITHDRAW_GUARD_TICKS } from '../../src/skirmish/domain/CavalryAssault';
 import { validateCavalryEngagement } from '../../src/skirmish/domain/CavalryEngagement';
 import { CavalryAssaultMotion } from '../../src/skirmish/client/troops/CavalryAssaultPresentation';
 import { chargeReadiness, chargeStatus } from '../../src/skirmish/client/ChargeReadiness';
@@ -138,14 +138,16 @@ describe('committed cavalry assault', () => {
     expect(motion.sample({...a,approach:0},10,members).size).toBe(0);
   });
 
-  it('lets an engaged assault withdraw without auto-attacking again', () => {
+  it('lets an engaged assault withdraw without auto-attacking again, and ends the engagement once away', () => {
     const {model,game,rider}=arena();
     const origin={x:rider.x,y:rider.y};
     const tile=game.map.ref(Math.floor(rider.x/FIXED)-8,Math.floor(rider.y/FIXED));
     expect(model.command({type:'order',playerId:1,squadIds:[rider.id],order:{type:'move',tile}})).toBeNull();
-    for(let i=0;i<secondsToTicks(3);i++)model.step();
-    expect(rider.order.type).toBe('move');
     expect(rider.cavalryEngagement?.phase).toBe('withdrawing');
+    expect(rider.cavalryEngagement?.withdrawUntilTick).toBeGreaterThanOrEqual(game.tick+CAVALRY_WITHDRAW_GUARD_TICKS);
+    for(let i=0;i<secondsToTicks(3);i++){model.step();expect(rider.order.type).toBe('move');}
+    // C1: the withdrawal lasts its guard, not the whole move.
+    expect(rider.cavalryEngagement).toBeUndefined();
     expect(Math.hypot(rider.x-origin.x,rider.y-origin.y)).toBeGreaterThan(FIXED);
   });
 
@@ -166,7 +168,7 @@ describe('committed cavalry assault', () => {
     const cycle=rider.cavalryMelee!.current;
     while(game.tick<waveTick(cycle,0)+1)game.step();
     expect(cavalryRankExposure(cycle,game.tick)).not.toBe(0);
-    expect(cavalryWithdrawal(rider,game.tick)?.withdrawUntilTick).toBeGreaterThan(game.tick);
+    expect(cavalryWithdrawal(rider,game.tick,()=>false)?.withdrawUntilTick).toBeGreaterThan(game.tick);
     const origin={x:rider.x,y:rider.y},tick=game.tick;
     const tile=game.map.ref(Math.floor(rider.x/FIXED),Math.floor(rider.y/FIXED)-8);
     expect(game.applyCommand({type:'order',playerId:1,squadIds:[rider.id],order:{type:'move',tile}})).toBeNull();
@@ -177,5 +179,20 @@ describe('committed cavalry assault', () => {
     expect(rider.order.type).toBe('move');
     expect(Math.hypot(rider.x-origin.x,rider.y-origin.y)).toBeGreaterThan(FIXED);
     expect(game.volleys.filter(v=>v.squadId===rider.id&&v.tick>tick&&v.melee)).toHaveLength(0);
+  });
+
+  it('does not rewrite unchanged assault geometry on every strike (C5)', () => {
+    const {model,game,rider}=arena(20);
+    let writes=0;
+    const update=game.updateSquad.bind(game);
+    game.updateSquad=(id,changes)=>{if(id===rider.id && 'cavalryEngagement' in changes)writes++;return update(id,changes);};
+    let strikes=0;
+    for(let i=0;i<secondsToTicks(20);i++){model.step();if(game.squad(rider.id)?.combatFact?.tick===game.tick)strikes++;}
+    expect(strikes).toBeGreaterThan(10);
+    expect(game.squad(rider.id)?.cavalryEngagement?.assault).toBeDefined();
+    expect(writes).toBeLessThanOrEqual(3);
+    const a=game.squad(rider.id)!.cavalryEngagement!.assault!;
+    for(const n of [a.x,a.y,a.halfWidth,a.depth,a.approach])expect(Number.isInteger(n)).toBe(true);
+    validateCavalryEngagement(game.squad(rider.id)!.cavalryEngagement,game.tick);
   });
 });

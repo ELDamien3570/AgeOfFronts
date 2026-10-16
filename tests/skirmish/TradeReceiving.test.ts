@@ -1,7 +1,7 @@
 import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { describe, expect, it } from "vitest";
 import { marketDropLimit } from "../../src/skirmish/content/Economy";
-import { TradeReceiving } from "../../src/skirmish/domain/TradeReceiving";
+import { MARKET_INTAKE_WINDOW_SECONDS, TradeReceiving } from "../../src/skirmish/domain/TradeReceiving";
 import { tradePayout, tradeCycleQuote } from "../../src/skirmish/domain/TradeQuote";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -17,16 +17,42 @@ describe("per-trip market limits and multi-stop trade", () => {
     expect(marketDropLimit(10,true,true,false)).toBe(150);
     expect([1,5,10].map(s=>marketDropLimit(s,true,false,false))).toEqual([20,56,100]);
   });
-  it("does not deplete a market when many traders deliver during the same tick", () => {
+  it("does not deplete a market when many domestic traders deliver during the same tick", () => {
     const r = new TradeReceiving(); r.configure("1:10",10,0);
     const initial = r.checkpoint();
     for (let i=0;i<1000;i++) {
-      expect(r.take("1:10",0,450,false,true,false)).toBe(75);
       expect(r.take("1:10",0,450,false,false,false)).toBe(50);
-      expect(r.take("1:10",0,450,true,true,false)).toBe(Math.min(450,marketDropLimit(10,true,true,false)));
+      expect(r.take("1:10",0,450,true,false,false)).toBe(Math.min(450,marketDropLimit(10,true,false,false)));
     }
     expect(r.checkpoint()).toEqual(initial);
-    expect(r.available("1:10",10000,false,true,false)).toBe(75);
+    const cold = new TradeReceiving(); cold.restore(r.checkpoint());
+    expect(cold.checkpoint()).toEqual(r.checkpoint());
+  });
+  it("saturates a market's foreign intake within the window and refills it continuously (OD-4)", () => {
+    expect(MARKET_INTAKE_WINDOW_SECONDS).toBe(20);
+    const r = new TradeReceiving(); r.configure("1:10",10,0);
+    const budget = marketDropLimit(10,true,true,false);
+    expect(budget).toBe(150);
+    // One full sea visit (150) or two land visits (75) fill the window budget.
+    expect(r.take("1:10",0,450,false,true,false)).toBe(75);
+    expect(r.take("1:10",0,450,false,true,true)).toBe(63);
+    expect(r.take("1:10",0,450,false,true,false)).toBe(12);
+    expect(r.take("1:10",0,450,false,true,false)).toBe(0);
+    expect(r.take("1:10",0,450,true,true,true)).toBe(0);
+    // Domestic intake is exempt from the budget.
+    expect(r.take("1:10",0,450,false,false,false)).toBe(50);
+    const half = secondsToTicks(MARKET_INTAKE_WINDOW_SECONDS / 2);
+    expect(r.available("1:10",half,false,true,false)).toBe(75);
+    expect(r.available("1:10",half,true,true,false)).toBe(75);
+    // available() is pure: reading never changes the budget.
+    const saved = r.checkpoint();
+    r.available("1:10",half,false,true,false);
+    expect(r.checkpoint()).toEqual(saved);
+    // Frequent small deliveries never lose partial refill.
+    let taken = 0;
+    for (let t = 1; t <= secondsToTicks(MARKET_INTAKE_WINDOW_SECONDS); t++) taken += r.take("1:10",t,1,false,true,false);
+    expect(taken).toBe(budget);
+    expect(r.available("1:10",3*secondsToTicks(MARKET_INTAKE_WINDOW_SECONDS),true,true,false)).toBe(150);
     const cold = new TradeReceiving(); cold.restore(r.checkpoint());
     expect(cold.checkpoint()).toEqual(r.checkpoint());
   });

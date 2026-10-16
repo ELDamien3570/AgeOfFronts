@@ -33,6 +33,7 @@
     "scripts/content/**/*",
     "scripts/compileContent.ts",
     "scripts/playtestProbe.ts",
+    "scripts/pacingProbe.ts",
     "scripts/compileFormationRecipes.ts",
     "scripts/compileSoldierWeapons.ts",
     "scripts/compileFormationDoctrines.ts",

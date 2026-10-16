@@ -30,13 +30,15 @@ export const STARTING_TECHNOLOGIES = [
 export const ADVANCES = [
   // Post-Stone prices follow capped market throughput, not the former unlimited
   // unload economy. Research catalogue prices use the same one-third rebalance.
-  { gold: 3_000, ticks: secondsToTicks(50) },
-  { gold: 18_750, ticks: secondsToTicks(55) },
-  { gold: 27_500, ticks: secondsToTicks(60) },
-  { gold: 40_000, ticks: secondsToTicks(65) },
-  { gold: 57_500, ticks: secondsToTicks(70) },
-  { gold: 82_500, ticks: secondsToTicks(75) },
-  { gold: 120_000, ticks: secondsToTicks(85) },
+  // Owner decision OD-2 (13 R8(2)): advancement takes 90-180 s, 15 s longer
+  // per age (was 50-85 s), so the serial floor to Modern grows by ~8 min.
+  { gold: 3_000, ticks: secondsToTicks(90) },
+  { gold: 18_750, ticks: secondsToTicks(105) },
+  { gold: 27_500, ticks: secondsToTicks(120) },
+  { gold: 40_000, ticks: secondsToTicks(135) },
+  { gold: 57_500, ticks: secondsToTicks(150) },
+  { gold: 82_500, ticks: secondsToTicks(165) },
+  { gold: 120_000, ticks: secondsToTicks(180) },
 ] as const;
 export function treeWorkload(age: Age, tree: Tree): number {
   return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree && !t.optional).length;

@@ -31,6 +31,10 @@
     "no_living_human": "Every human empire has been defeated",
     "playtest_rules_invalid": "Choose supported start protection, time limit and AI difficulty."
   },
+  "skirmish_progression": {
+    "advance_ready": "Age requirements met · ready to advance",
+    "advance_needs_warfare": "Complete two current-age trees and all but the last warfare technology"
+  },
   "skirmish_controls": {
     "double_right_click": "Double right click",
     "charge": "Charge (same target, within a moment)",

@@ -2,7 +2,7 @@ import type { Player, ShipType } from "./Protocol";
 import { MAX_SHIPS } from "./Rules";
 import { MAX_SQUADS, secondsToTicks } from "./Protocol";
 import { AGES, type Age } from "./domain/Definitions";
-import { TRADE_RULES } from "./content/Economy";
+import { baseReserveIncome, TRADE_RULES } from "./content/Economy";
 
 export const AGE_SQUAD_CAPS: Readonly<Record<Age, number>> = {
   StoneAge: 60,
@@ -50,18 +50,33 @@ export function factionCountRange(
 export const TRIBE_STARTING_SQUADS = 4;
 export const TRIBE_STARTING_RESERVES = 1500;
 export const TRIBE_STARTING_GOLD = 150;
-export const TRIBE_SQUAD_CAP = 10;
-export const TRIBE_SQUADS_PER_AGE = 5;
+// Owner decision OD-9 (05 issue 10 / rec 6; 13 R1(2)(3)): a smaller tribe opening
+// horde (6 squads at Stone, +4 per age), reserve income on the nation curve
+// (TRIBE_RESERVE_MULTIPLIER x base) and no campaign against a nation before
+// minute 8 and Bronze Age, whichever is later. Was 10 + 5 per age and flat 40.
+export const TRIBE_SQUAD_CAP = 6;
+export const TRIBE_SQUADS_PER_AGE = 4;
+export const TRIBE_RESERVE_MULTIPLIER = 2;
+export const TRIBE_NATION_CAMPAIGN_TICKS = secondsToTicks(8 * 60);
+export const TRIBE_NATION_CAMPAIGN_MIN_AGE: Age = "BronzeAge";
+/** Whether a tribe may start a campaign against a regular faction. Tribe-on-tribe
+ * and nation-on-tribe campaigns are never gated, and retaliation is exempt. */
+export function tribeMayCampaignAgainstNation(tick: number, age: Age): boolean {
+  return tick >= TRIBE_NATION_CAMPAIGN_TICKS && AGES.indexOf(age) >= AGES.indexOf(TRIBE_NATION_CAMPAIGN_MIN_AGE);
+}
+export const tribeReserveIncome = (age: Age) => TRIBE_RESERVE_MULTIPLIER * baseReserveIncome(age);
 /** 13 R1.2-R1.3 playtest tribe opening (MatchOptions.tribeOpening
- * "playtest-v1"); without the option the constants above apply unchanged. */
+ * "playtest-v1"). Since Next #9 the cap, reserve curve and campaign gate are
+ * the global tribe rules above (OD-9); the opening adds only the smaller
+ * starting horde and keeps its own (retaliation-blind) campaign gate. */
 export const PLAYTEST_TRIBE_OPENING = Object.freeze({
   startingSquads: 3,
-  squadCap: 6,
-  squadsPerAge: 4,
+  squadCap: TRIBE_SQUAD_CAP,
+  squadsPerAge: TRIBE_SQUADS_PER_AGE,
   /** Tribe reserve points per second = this x baseReserveIncome(age). */
-  reserveIncomeMultiple: 2,
+  reserveIncomeMultiple: TRIBE_RESERVE_MULTIPLIER,
   /** A tribe may not campaign against a regular faction before this age... */
-  campaignAge: "BronzeAge" as Age,
+  campaignAge: TRIBE_NATION_CAMPAIGN_MIN_AGE,
   /** ...nor before this many seconds, whichever is later. */
   campaignAfterSeconds: 8 * 60,
 });

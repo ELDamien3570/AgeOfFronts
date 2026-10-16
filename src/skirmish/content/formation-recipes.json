@@ -389,7 +389,7 @@
       "model": "hull",
       "capacity": 1,
       "enlargedCapacity": 1,
-      "soldierHp": 200,
+      "soldierHp": 1000,
       "reserveCost": 12
     },
     "modern-launcher": {

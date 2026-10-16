@@ -4,6 +4,7 @@ import { TraderEncoder, TraderDecoder } from "../../src/skirmish/TraderStream";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
+  RECEIVER_TARIFF_PERCENT,
   stackCargoPercent,
   TRADE_RULES,
 } from "../../src/skirmish/content/Economy";
@@ -196,7 +197,7 @@ describe("bounded civilian trade", () => {
     expect(expansion.supply.goods.get(sources[0].id)).toBe(1000 - trade.actors.reduce((n, a) => n + a.cargo, 0));
     expect(isDeepStrictEqual(clone.checkpoint(), game.checkpoint())).toBe(true);
   });
-  it.each([[false,false],[false,true],[true,false],[true,true]])("pays both participants equally and publishes the recipient's income label (naval=%s, allied=%s)",(naval,allied)=>{
+  it.each([[false,false],[false,true],[true,false],[true,true]])("pays the trader in full, the market owner a 25% tariff, and publishes the recipient's income label (naval=%s, allied=%s)",(naval,allied)=>{
     const {game,trade,step}=fleet(naval?0:1,naval?1:0);
     if(allied){
       game.expansion!.diplomacy.action(game.players[0],game.players[1],"offer",0);
@@ -210,19 +211,22 @@ describe("bounded civilian trade", () => {
       x:(game.map.x(market.tile)+.5)*FIXED,y:(game.map.y(market.tile)+.5)*FIXED});
     step();
     const income=game.players[0].gold-before[0];
+    const tariff=Math.floor(income*RECEIVER_TARIFF_PERCENT/100);
+    expect(RECEIVER_TARIFF_PERCENT).toBe(25);
     expect(income).toBeGreaterThan(0);
-    expect(game.players[1].gold-before[1]).toBe(income);
+    expect(tariff).toBeGreaterThan(0);
+    expect(game.players[1].gold-before[1]).toBe(tariff);
     expect(trade.deliveredGold[1]).toBe(income);
-    expect(trade.deliveredGold[2]).toBe(income);
+    expect(trade.deliveredGold[2]).toBe(tariff);
     const snapshot=new SnapshotDecoder().decode(new SnapshotEncoder().encode(game.snapshot()));
     const receiverLabels=new TradePayoutPresentation();
     receiverLabels.update(snapshot.expansion!.tradeReceipts!,2,100);
-    expect(receiverLabels.amount(market.tile,100)).toBe(income);
+    expect(receiverLabels.amount(market.tile,100)).toBe(tariff);
     // Visiting the same physical market again cannot repeat either payment.
     Object.assign(actor,{state:"outbound",destination:market.id,path:[],waitTicks:0});
     step();
     expect(game.players[0].gold-before[0]).toBe(income);
-    expect(game.players[1].gold-before[1]).toBe(income);
+    expect(game.players[1].gold-before[1]).toBe(tariff);
   });
   it("pays domestic deliveries once rather than doubling the owner's income",()=>{
     const {game,trade,step}=fleet(1,0);step(secondsToTicks(1.1));

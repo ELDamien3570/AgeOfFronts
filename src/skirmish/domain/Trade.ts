@@ -5,7 +5,7 @@ import type { GameMap } from "../../core/game/GameMap";
 import { tradeActorCap } from "../FactionRules";
 import { SpatialGrid } from "../SpatialGrid";
 import type { BuildingQueries } from "../BuildingIndex";
-import { TRADE_RULES } from "../content/Economy";
+import { receiverTariff, TRADE_RULES } from "../content/Economy";
 import { technologyAt } from "../content/Technology";
 import { VESSELS } from "../content/Units";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
@@ -1386,10 +1386,11 @@ export class Trade {
       a.visited.push(b.id);
       (a.visitedTiles ??= []).push(b.tile);
       this.creditDelivery(player, b.tile, gold);
-      // Foreign settlement rewards both participants equally. Prize unloading
-      // is salvage, and a domestic delivery must never pay the same owner twice.
+      // Foreign settlement pays the market owner a tariff (RECEIVER_TARIFF_PERCENT
+      // of the trader's payout). Prize unloading is salvage, and a domestic
+      // delivery must never pay the same owner twice.
       const recipient = foreign && a.state !== "prize" ? players.get(b.playerId) : undefined;
-      if (recipient && !recipient.eliminated) this.creditDelivery(recipient, b.tile, gold);
+      if (recipient && !recipient.eliminated) this.creditDelivery(recipient, b.tile, receiverTariff(gold));
       a.destination = null;
       a.path = [];
       a.waitTicks = TICKS_PER_SECOND;

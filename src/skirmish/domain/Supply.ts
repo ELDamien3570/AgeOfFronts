@@ -3,7 +3,7 @@ import { availableGold, spendGold } from "./Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import { producerCompatible } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
-import { extractionYieldMultiplier, tradeStockPerSecond } from "../content/Economy";
+import { commerceProducerLimit, extractionYieldMultiplier, tradeStockPerSecond } from "../content/Economy";
 import { resourceTechnology } from "../content/Resources";
 import type { LandPaths } from "../Pathfinding";
 import type { Building, BuildingType, Player, Squad } from "../Protocol";
@@ -298,6 +298,7 @@ export class Supply {
     if (activeIds) for (const [id, selection] of this.selectedRecipes)
       if (selection.recipeId !== "paused") activeIds.add(id);
     const activeBuildings = activeIds ? facts!.buildings.byIds(activeIds) : buildings;
+    const commerce = new Map<number, number>();
     for (const b of activeBuildings) {
       const player = byPlayer.get(b.playerId);
       if (
@@ -348,9 +349,15 @@ export class Supply {
       const age = b.age ?? "StoneAge";
       if (b.type === "factory" || b.type === "port") {
         this.goodsOwners.set(b.id, player.id);
+        // Commerce cap: only the first commerceProducerLimit producers of each
+        // faction (stable building order) add stock this second.
+        const producing = (commerce.get(player.id) ?? 0) + 1;
+        commerce.set(player.id, producing);
+        const commerceAge = this.progression.states[player.id]?.age;
+        const added = !commerceAge || producing <= commerceProducerLimit(commerceAge) ? tradeStockPerSecond(age) : 0;
         this.goods.set(
           b.id,
-          Math.min(this.goodsCapacity(b), (this.goods.get(b.id) ?? 0) + tradeStockPerSecond(age)),
+          Math.min(this.goodsCapacity(b), (this.goods.get(b.id) ?? 0) + added),
         );
       }
       if (

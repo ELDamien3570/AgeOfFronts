@@ -25,7 +25,7 @@ import { cancelRangedPreparation } from "./domain/RangedPreparation";
 import { validateMeleeStrike } from "./domain/MeleeStrike";
 import { chargeDisrupted, validateChargeImpact } from './domain/ChargeImpact';
 import { cavalryOverlapAllowed,validateCavalryEngagement } from './domain/CavalryEngagement';
-import { cavalryWithdrawal } from './domain/CavalryAssault';
+import { cavalryWithdrawal, CAVALRY_ENGAGEMENT_REACH } from './domain/CavalryAssault';
 import { movingCavalryRush,movingFormationReform,validateChargeStrength } from './domain/ChargeStrength';
 import { createManpower, damageManpower, HEALTH_SCALE, readyFraction, remainingHealth, maximumHealth, recipeCapacity, reserveConversion, scaledRecipeCost, validateRecipeManpower, validateRecruitmentRecipe, manpowerCount, type RecipeVariant } from './domain/Manpower';
 import { recruitmentVariant } from './content/FormationRecipes';
@@ -78,9 +78,9 @@ import {
 } from "./domain/AiPersonality";
 import { FactionRoster } from "./domain/FactionRoster";
 import { AiForceInventory } from "./domain/AiForceInventory";
-import { canPromoteTribe, MAX_PLAYER_ID } from "./FactionRules";
+import { canPromoteTribe, MAX_PLAYER_ID, tribeReserveIncome } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
-import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
+import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalStrengthPermille, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
 import { chargeFallbackOrder, commandRejection, MIXED_ARMY_SELECTION_MESSAGE } from "./domain/CommandPolicy";
 import { SimulationFault, type TickFault } from "./SimulationFault";
@@ -206,6 +206,14 @@ const FALLBACK_TRANSPORT = VESSELS.find(v => v.kind === "transport")!;
 export const WARSHIP_PATROL_RADIUS = 2;
 export const WARSHIP_COMBAT_COOLDOWN = secondsToTicks(3);
 export const WARSHIP_REPAIR_FRACTION = 0.10;
+/** Owner decision (roadmap Next #6, V2): an idle warship retreats to port, and
+ * stops wandering, only below this per-mille share of its maximum health. It
+ * is the complement of the AI's navalReady gate (health >= 60%). */
+export const WARSHIP_RETREAT_PERMILLE = 600;
+/** Owner decision (roadmap Next #6, V3): ship kinds whose movement into a
+ * non-allied faction's water declares an "entry" war under raids-v1.
+ * Warships have innocent passage; carriers keep the entry rule. */
+export const ENTRY_WAR_SHIP_KINDS: readonly ShipType[] = ["carrier"];
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
@@ -1940,10 +1948,11 @@ export class Skirmish {
     if(!continuingAttack){
       const e=squad.cavalryEngagement;
       const withdrawing=order.type==='move'||order.type==='replenish'||order.type==='attack'&&!!e&&!e.targetIds.includes(order.targetId);
-      const withdrawal=withdrawing?cavalryWithdrawal(squad,this.tick):undefined;
+      const withdrawal=withdrawing?cavalryWithdrawal(squad,this.tick,id=>this.cavalryEngagementContact(squad,id)):undefined;
       if(squad.cavalryMelee)this.updateSquad(squad.id,{cavalryMelee:withdrawal?{...squad.cavalryMelee,current:{...squad.cavalryMelee.current,completed:3}}:undefined,meleeStrike:undefined});
       const continueAssault=e && order.type==='attack' && order.cavalryMode!=='ranks' && e.targetIds.includes(order.targetId);
-      if(withdrawal || e)this.updateSquad(squad.id,{cavalryEngagement:withdrawal??(continueAssault?{...e!,phase:e!.phase==='withdrawing'?'engaged':e!.phase}:{...e!,phase:'engaged',assault:undefined}),charge:null});
+      // Leaving without anything in contact ends the engagement outright (C1).
+      if(withdrawal || e)this.updateSquad(squad.id,{cavalryEngagement:withdrawal??(continueAssault?{...e!,phase:e!.phase==='withdrawing'?'engaged':e!.phase}:withdrawing?undefined:{...e!,phase:'engaged',assault:undefined}),charge:null});
     }
     if(!continuingAttack&&!this.player(squad.playerId)?.ai)this.playerAttacks.observe(squad,order.type==="attack"?this.squad(order.targetId):undefined);
     this.orderRevisions.set(squad.id, (this.orderRevisions.get(squad.id) ?? 0) + 1);
@@ -2842,7 +2851,8 @@ export class Skirmish {
       kind,
       x: this.map.x(tile) * FIXED + FIXED / 2,
       y: this.map.y(tile) * FIXED + FIXED / 2,
-      health: rules.health,
+      // A new hull is launched at its research-adjusted maximum (R2-M14).
+      health: vessel ? this.expansion!.vesselMaxHealth(player.id, vessel) : rules.health,
       ...(vessel ? { definitionId: vessel.id, nextAttackTick: 0 } : {}),
       destination: null,
       waypoints: [],
@@ -3011,8 +3021,11 @@ export class Skirmish {
       if (!ship.attackTargetId && !this.hasNavalOpponents(ship.playerId)) continue;
       const vessel = this.expansion?.vessel(ship);
       const profile = vessel?.attack;
+      // V1: weapons weaken with hull damage only down to a floor, so damaged
+      // hulls never stall at 0-damage volleys and duels resolve in seconds.
+      const strength = profile ? navalStrengthPermille(ship.health, vessel!.health) : 1000;
       const effectiveAttack = profile
-        ? scaledAttack(profile, ship.health, vessel!.health, ship.xp)
+        ? scaledAttack(profile, strength, 1000, ship.xp)
         : undefined;
       const scaledDamage = effectiveAttack?.damage ?? 0;
       const navalDamage = () =>
@@ -3025,7 +3038,7 @@ export class Skirmish {
                 rangedArmour: 2000,
                 bonusResistance: {},
               },
-              Math.round((1000 * ship.health) / vessel!.health),
+              strength,
               ship.xp,
             )
           : Math.max(
@@ -3146,7 +3159,7 @@ export class Skirmish {
             { ...ship, domain: "ship" },
             p,
             effectiveAttack!,
-            scaledDamage,
+            Math.max(1, scaledDamage),
             "shell", undefined, 0, undefined, undefined, undefined,
             "tile" in explicit ? undefined : explicit.id,
           );
@@ -3167,7 +3180,7 @@ export class Skirmish {
                 rangedArmour: 6500,
                 bonusResistance: {},
               },
-              Math.round((1000 * ship.health) / vessel!.health),
+              strength,
               ship.xp,
             ),
             "ship",
@@ -3348,6 +3361,25 @@ export class Skirmish {
     return candidates[index];
   }
 
+  /** The first berth of `port` that lies in this ship's water component. */
+  private portBerth(ship: Ship, port: Building): number | undefined {
+    const shipTile = this.tileOf(ship);
+    if (!this.waterPaths.walkable(shipTile)) return undefined;
+    const component = this.waterPaths.component[shipTile];
+    return portWaterTiles(this.map, port.tile).find(
+      (n) => this.waterPaths.walkable(n) && this.waterPaths.component[n] === component,
+    );
+  }
+
+  private releaseRepairClaim(ship: Ship, occupiedPorts: Set<number>): void {
+    const portId = ship.repairPortId;
+    if (portId !== null && portId !== undefined &&
+      !this.ships.some((s) => s.id !== ship.id && s.repairPortId === portId))
+      occupiedPorts.delete(portId);
+    this.shipEntities.updateOwned(ship.id, { repairPortId: null });
+    this.shipEntities.updateOwned(ship.id, { repairState: "patrolling" });
+  }
+
   private startRecoveryVoyage(ship: Ship, goal: number): void {
     this.shipEntities.updateOwned(ship.id, { destination: goal });
     this.shipEntities.updateOwned(ship.id, { waypoints: [] });
@@ -3452,7 +3484,7 @@ export class Skirmish {
       if (ship.kind !== "warship" || ship.refit) continue;
 
       const maxHealth = this.shipMaxHealth(ship);
-      const isDamaged = ship.health < maxHealth;
+      const needsRetreat = ship.health * 1000 < maxHealth * WARSHIP_RETREAT_PERMILLE;
       const shipTile = this.tileOf(ship);
 
       if (ship.patrolTile === undefined || ship.patrolTile === null) {
@@ -3477,7 +3509,14 @@ export class Skirmish {
 
         const distToPort = this.map.euclideanDistSquared(shipTile, port.tile);
         if (distToPort > 8) {
-          this.shipEntities.updateOwned(ship.id, { repairState: "returning-to-dock" });
+          // Away from the berth (an order or a rolled-back move interrupted the
+          // voyage): sail back, or release the port when it is unreachable.
+          const berth = this.portBerth(ship, port);
+          if (berth === undefined) this.releaseRepairClaim(ship, occupiedPorts);
+          else {
+            this.shipEntities.updateOwned(ship.id, { repairState: "returning-to-dock" });
+            this.startRecoveryVoyage(ship, berth);
+          }
           continue;
         }
 
@@ -3525,15 +3564,23 @@ export class Skirmish {
 
         const distToPort = this.map.euclideanDistSquared(shipTile, port.tile);
         if (this.shipAdmission.executing(ship.id)) continue;
-        if (
-          distToPort <= 8 ||
-          ship.destination === null ||
-          ship.nextPathIndex >= ship.path.length
-        ) {
+        if (distToPort <= 8) {
           this.shipEntities.updateOwned(ship.id, { repairState: "repairing" });
           this.shipEntities.updateOwned(ship.id, { destination: null });
           this.shipEntities.updateOwned(ship.id, { path: [] });
           this.shipEntities.updateOwned(ship.id, { nextPathIndex: 0 });
+        } else if (
+          (ship.destination === null || ship.nextPathIndex >= ship.path.length) &&
+          !ship.attackTargetId
+        ) {
+          // The voyage ended short of the port: re-route on a half-second
+          // cadence (deferred recovery supersedes itself), or release the
+          // claim when no berth in this ship's water remains reachable.
+          const berth = this.portBerth(ship, port);
+          if (berth === undefined || !this.waterPaths.connected(shipTile, berth))
+            this.releaseRepairClaim(ship, occupiedPorts);
+          else if ((this.tick + ship.id) % secondsToTicks(.5) === 0)
+            this.startRecoveryVoyage(ship, berth);
         }
         continue;
       }
@@ -3572,7 +3619,7 @@ export class Skirmish {
         !ship.attackTargetId &&
         this.tick - (ship.lastCombatTick ?? -WARSHIP_COMBAT_COOLDOWN) >= WARSHIP_COMBAT_COOLDOWN;
 
-      if (isDamaged && outOfCombat && (this.tick + ship.id) % secondsToTicks(.5) === 0) {
+      if (needsRetreat && outOfCombat && (this.tick + ship.id) % secondsToTicks(.5) === 0) {
         const dock = this.findNearestDockWithCapacity(ship, occupiedPorts);
         if (dock) {
           this.shipEntities.updateOwned(ship.id, { repairPortId: dock.port.id });
@@ -3603,7 +3650,7 @@ export class Skirmish {
         ship.repairState === "patrolling" &&
         ship.destination === null &&
         !ship.attackTargetId &&
-        !isDamaged &&
+        !needsRetreat &&
         ship.patrolTile !== null &&
         ship.patrolTile !== undefined
       ) {
@@ -3688,7 +3735,10 @@ export class Skirmish {
       const diplomacy=this.expansion?.diplomacy,owner=this.owners[this.tileOf(ship)];
       if(diplomacy?.raids&&owner!==oldOwner&&diplomacy.protected(ship.playerId,owner)){
         this.shipEntities.updateOwned(ship.id,{x:before.x,y:before.y,path:[],nextPathIndex:0});
-      }else if(diplomacy?.raids&&owner!==oldOwner&&!this.player(ship.playerId)?.ai&&diplomacy.nonAllied(ship.playerId,owner))diplomacy.establishWar(ship.playerId,owner,this.tick,"entry");
+      // V3 innocent passage: a warship's transit or patrol drift never declares
+      // war by entry; firing still needs war or a raid embargo (hostile()).
+      // Afloat squads (landings) and ENTRY_WAR_SHIP_KINDS keep the entry rule.
+      }else if(diplomacy?.raids&&owner!==oldOwner&&ENTRY_WAR_SHIP_KINDS.includes(ship.kind)&&!this.player(ship.playerId)?.ai&&diplomacy.nonAllied(ship.playerId,owner))diplomacy.establishWar(ship.playerId,owner,this.tick,"entry");
       if (this.options.aiNaval && this.options.aiEconomy && this.options.deferredPlanning)
         this.expansion?.economy.navalFacts.observeShip(ship);
     }
@@ -3938,11 +3988,7 @@ export class Skirmish {
         const cities = this.buildingIndex.byType(player.id, "city").filter(b => !b.remainingTicks);
         const amount = Math.max(
           0,
-          (player.kind === "tribe"
-            ? this.options.tribeOpening
-              ? PLAYTEST_TRIBE_OPENING.reserveIncomeMultiple * baseReserveIncome(this.expansion.progression.states[player.id].age)
-              : 40
-            : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
+          (player.kind === "tribe" ? tribeReserveIncome(this.expansion.progression.states[player.id].age) : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
             cities.reduce(
               (n, b) => n + cityReserveIncome(b.age ?? "StoneAge",this.expansion!.progression.states[player.id].completed),
               0,
@@ -3987,6 +4033,11 @@ export class Skirmish {
     const ordinary = this.ordinarySpeed(squad);
     return this.expansion?.armies.speed(squad, ordinary) ?? ordinary;
   }
+  private cavalryEngagementContact(squad:Squad,targetId:number):boolean {
+    const target=this.squad(targetId);
+    return !!target && target.troops>0 && this.hostile(squad.playerId,target.playerId) &&
+      formationContact(squad,target,this.tick).gap<=CAVALRY_ENGAGEMENT_REACH;
+  }
   private advanceCavalryEngagements(land:readonly Squad[]):void {
     for(const squad of land){
       const old=squad.cavalryEngagement;if(!old)continue;
@@ -3994,13 +4045,13 @@ export class Skirmish {
       if(squad.order.type==='move'||squad.order.type==='replenish'||squad.order.type==='attack'&&!old.targetIds.includes(squad.order.targetId))phase='withdrawing';
       else if(squad.order.type==='hold'&&phase==='penetrating')phase='engaged';
       if(phase==='penetrating'&&(this.tick>=old.untilTick||Math.hypot(squad.x-old.goalX,squad.y-old.goalY)<=4))phase='engaged';
-      const targetIds=old.targetIds.filter(id=>{
-        const target=this.squad(id);return !!target && target.troops>0 && this.hostile(squad.playerId,target.playerId) &&
-          (phase!=='withdrawing'||formationContact(squad,target,this.tick).gap<=CONTACT.release);
-      });
-      // A human withdrawal stays a movement order until its destination. Close
-      // encounter acquisition must not repeatedly turn it back into an attack.
-      if(phase==='withdrawing'&&!targetIds.length&&this.tick>=(old.withdrawUntilTick??0)&&squad.order.type!=='move'){
+      // Every phase keeps a target only while in contact; an attacker that
+      // walks away alive no longer leaves a permanent engagement (R2-H3, C1).
+      const targetIds=old.targetIds.filter(id=>this.cavalryEngagementContact(squad,id));
+      // A withdrawal is immune to re-acquisition only for its guard (and any
+      // exposed rank's return). After that a Move is an ordinary march again:
+      // a body-blocked rider meets the close-encounter rule and fights back.
+      if(phase==='withdrawing'&&this.tick>=(old.withdrawUntilTick??0)&&(!targetIds.length||squad.order.type==='move')){
         this.updateSquad(squad.id,{cavalryEngagement:undefined,cavalryMelee:undefined});continue;
       }
       if(phase!=='withdrawing'&&!targetIds.length){this.updateSquad(squad.id,{cavalryEngagement:undefined,charge:null});continue;}
@@ -5763,7 +5814,9 @@ export class Skirmish {
         player.ai && player.kind === "regular" &&
         this.player(beneficiary)?.kind === "tribe" && this.expansion
       ) {
+        const previous = [...(this.expansion.progression.states[beneficiary]?.completed ?? [])];
         this.expansion.progression.inheritCompleted(beneficiary, player.id);
+        this.expansion.rescaleShipHealth(beneficiary, previous);
         inheritors.set(beneficiary, player.id);
       }
       if (

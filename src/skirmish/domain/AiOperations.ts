@@ -10,6 +10,7 @@ import type { Player } from "../Protocol";
 import type { Expansion } from "./Expansion";
 import { AI_DIFFICULTY, aiRaidAfterTicks } from "../content/AiDifficulty";
 import { aiDifficultyOf, isHumanSeat, playtestCampaignAllowed } from "./PlaytestRules";
+import { tribeMayCampaignAgainstNation } from "../FactionRules";
 
 export interface ArmyTheatre {id:string;purpose:'offense'|'defense'|'screen';tile:number;target?:number;priority:number;desiredSquads:number}
 export type OperationPhase = "peace" | "preparing" | "war" | "recovery";
@@ -435,6 +436,10 @@ export class AiOperations {
         const retaliating=diplomacy.raids&&(r.threats.some(t=>t.rival===rival.id)||
           diplomacy.state.wars?.some(w=>w.initiator===rival.id&&(w.a===player.id||w.b===player.id))||
           diplomacy.state.embargoes?.some(raid=>raid.initiator===rival.id&&raid.victim===player.id&&diplomacy.embargo(player.id,rival.id)));
+        // Tribe opening (OD-9): no tribal campaign against a nation before
+        // minute 8 and Bronze Age, unless the tribe is retaliating.
+        if (tribalActor && rival.kind !== "tribe" && !retaliating &&
+          !tribeMayCampaignAgainstNation(tick, this.expansion.progression.states[player.id].age)) continue;
         if(!tribeExpansion && (strength < 2 || r.readiness.reason !== "ready")) continue;
         if(expanding&&!retaliating&&!tribeExpansion&&advantage<Math.max(profile.id==="conqueror"?1.6:2.5,humanRival?level.expandingVetoVsHuman:0))continue;
         const required = (["warden","builder","diplomat"].includes(profile.id) ? 1.6 : profile.id === "conqueror" ? 1.1 : 1.25) + level.requiredAdvantageAdd;

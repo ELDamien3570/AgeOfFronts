@@ -11,6 +11,6 @@ describe("research pacing contract", () => {
       expect(Number.isSafeInteger(technology.ticks)).toBe(true);
       expect(technology.ticks).toBeGreaterThanOrEqual(0);
     }
-    expect(ADVANCES.map(a => a.ticks / TICKS_PER_SECOND)).toEqual([50,55,60,65,70,75,85]);
+    expect(ADVANCES.map(a => a.ticks / TICKS_PER_SECOND)).toEqual([90,105,120,135,150,165,180]);
   });
 });

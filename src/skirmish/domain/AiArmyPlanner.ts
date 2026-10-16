@@ -13,6 +13,7 @@ import { tilePoint,pointTile } from "../SquadGeometry";
 import { UNITS } from "../content/Units";
 import { AGES } from "./Definitions";
 import { unitRefitCost } from "./Refitting";
+import { recruitmentVariant } from "../content/FormationRecipes";
 import { conquestBuildings } from "./AiConquestObjective";
 import { ARMY_ROUTE_BLOCKED } from "./Armies";
 import { affordableAiCost } from "./AiBudgetLedger";
@@ -650,7 +651,7 @@ export class AiArmyPlanner {
         const unit=[...UNITS].reverse().find(u=>u.line===this.expansion.unit(replacement).line&&u.role===this.expansion.unit(replacement).role&&
           AGES.indexOf(u.age)>AGES.indexOf(this.expansion.unit(replacement).age)&&this.expansion.progression.has(player!.id,u.technologyId))!;
         const stock=this.economy.ledger.spendable(player.id,{gold:player.gold,reserves:player.reserves,items:this.expansion.supply.inventories[player.id]},plan.id,"growth");
-        if(affordableAiCost(stock,unitRefitCost(unit,1))&&!world.applyCommand({type:"refit",playerId:player.id,squadIds:[replacement.id],definitionId:unit.id})){
+        if(affordableAiCost(stock,unitRefitCost(unit,this.expansion.unit(replacement),1,recruitmentVariant(unit.id,this.expansion.progression.states[player.id].completed)))&&!world.applyCommand({type:"refit",playerId:player.id,squadIds:[replacement.id],definitionId:unit.id})){
           plan.phase="refit";plan.since=world.tick;plan.reason="Paid compatible survivor refit";return this.diagnostics.work;
         }
       }

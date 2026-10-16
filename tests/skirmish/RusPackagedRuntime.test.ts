@@ -18,6 +18,7 @@ import { AutomaticBuildingTiers } from "../../src/skirmish/domain/AutomaticBuild
 import { AGES } from "../../src/skirmish/domain/Definitions";
 import {
   advanceRejection,
+  NATION_ADVANCE_TREES_MESSAGE,
   startingProgression,
 } from "../../src/skirmish/domain/Progression";
 import { TradeReceiving } from "../../src/skirmish/domain/TradeReceiving";
@@ -89,11 +90,13 @@ describe("approved Rus runtime tree", () => {
         (t.age === "EarlyModern" &&
           (t.tree === "naval" || t.tree === "economic")),
     ).map((t) => t.id);
-    expect(advanceRejection(state, 1000000)).toBeNull();
+    // Tribes keep "any two trees"; nations also need warfare (age-up gate).
+    expect(advanceRejection(state, 1000000, 1, undefined, "tribe")).toBeNull();
+    expect(advanceRejection(state, 1000000)).toBe(NATION_ADVANCE_TREES_MESSAGE);
     state.completed = state.completed.filter(
       (id) => id !== "rus-earlymodern-submarines",
     );
-    expect(advanceRejection(state, 1000000)).toBe(
+    expect(advanceRejection(state, 1000000, 1, undefined, "tribe")).toBe(
       "Complete any two current-age trees",
     );
   });

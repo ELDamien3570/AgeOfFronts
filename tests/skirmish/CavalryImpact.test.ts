@@ -136,6 +136,11 @@ describe('bounded cavalry impact prototype',()=>{
     for(let i=0;i<presentationTicks(0.5);i++)crowded.game.step();
     expect(crowded.rider.y).toBeLessThan(crowded.rider.cavalryEngagement!.goalY);
     expect(crowded.rider.cavalryEngagement!.targetIds).not.toContain(blocker.id);
+    // The blocker shares the defender's footprint. The rider leaves that shared
+    // overlap once the defender's next strike lands; since disruption is staged
+    // (C2) that strike comes after the defender's impact-tick reload.
+    for(let i=0;i<presentationTicks(1);i++)crowded.game.step();
+    expect(crowded.rider.y).toBeLessThan(crowded.rider.cavalryEngagement!.goalY);
     expect(polygonsOverlap(formationFootprint(crowded.rider,crowded.game.tick),formationFootprint(blocker,crowded.game.tick))).toBe(false);
   });
   it('continues physical entry identically after checkpoint restoration',()=>{
@@ -309,6 +314,11 @@ describe('bounded cavalry impact prototype',()=>{
     for(let i=game.tick;i<=until;i++)game.step();
     expect(defender.chargeImpact).toEqual(impact);expect(chargeDisrupted(defender,game.tick)).toBe(false);
     expect(game.ordinarySpeed(defender)).toBeGreaterThan(0);
+    // Disruption is staged after the impact tick (C2), so the defender also
+    // strikes in the impact tick and recovers on its next weapon cycle.
+    const impactTick=impact!.tick;
+    expect(defender.lastAttackTick).toBe(impactTick);
+    for(let i=0;i<presentationTicks(2)&&(defender.lastAttackTick??-1)<until;i++)game.step();
     expect(defender.lastAttackTick??-1).toBeGreaterThanOrEqual(until);
   });
   it('makes flank disruption stronger and braced spears resistant',()=>{

@@ -9,7 +9,7 @@ import {
 } from "../../src/skirmish/BuildingFootprint";
 import { BuildingIndex } from "../../src/skirmish/BuildingIndex";
 import { fittedBuildingSprite } from "../../src/skirmish/client/BuildingSpriteLayout";
-import { constructionRejection } from "../../src/skirmish/Construction";
+import { constructionRejection, stackLimit } from "../../src/skirmish/Construction";
 import { portWaterTiles } from "../../src/skirmish/PortWaterAccess";
 import type { Building, Player } from "../../src/skirmish/Protocol";
 
@@ -175,7 +175,7 @@ describe("building footprints and reservations", () => {
     index.rebuild(stacked);
     expect(
       constructionRejection(map, owners, index, player, "city", b.tile),
-    ).toContain("15");
+    ).toBe(`A single site can support at most ${stackLimit("city")} stacked buildings`);
     index.verify(stacked);
   });
 

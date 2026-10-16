@@ -5,6 +5,7 @@ import type { Player } from "../Protocol";
 import type { AiEconomicDirector } from "./AiEconomicDirector";
 import type { Expansion } from "./Expansion";
 import { unitRefitCost } from "./Refitting";
+import { recruitmentVariant } from "../content/FormationRecipes";
 
 /** Military development owns reservations and leases; normal refit/recruit
  * commands retain sole authority over costs, jobs, movement and completion.
@@ -75,7 +76,7 @@ export class AiMilitaryDirector {
       const controller = `modernize:${player.id}:${squad.id}`,
         target = UNIT.get(lease.targetId);
       if (!target) continue;
-      const cost = unitRefitCost(target),
+      const cost = unitRefitCost(target, this.expansion.unit(squad), 1, recruitmentVariant(target.id, progression.states[player.id].completed)),
         generation = world.aiGeneration(player.id);
       if (
         !ledger.tryReserve(

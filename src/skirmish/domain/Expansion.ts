@@ -42,7 +42,7 @@ import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 import type { AiDifficulty } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
 import { recoveredChargeStrength } from './ChargeStrength';
-import { armCavalryBonus } from './CavalryAssault';
+import { armCavalryBonus, CAVALRY_ENGAGEMENT_REACH } from './CavalryAssault';
 import { isCavalryTroopClass } from './Definitions';
 import { formationDoctrine, formationEnvelope } from './FormationGeometry';
 import { formationContact, CONTACT_TOLERANCE } from './FormationContact';
@@ -90,9 +90,10 @@ import {
   advanceRejection,
   researchRejection,
 } from "./Progression";
-import { affordableRefitCount, vesselRefitCost } from "./RefitQuote";
+import { affordableRefitPrefix, sumCosts, vesselRefitCost } from "./RefitQuote";
 import { unitRefitCost } from "./Refitting";
 import { vesselEffects } from "./ResearchEffects";
+import { rescaledHullHealth } from "./NavalCombat";
 import { Roads } from "./Roads";
 import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
 import type { RecruitmentJob, VesselDefinition } from "./Definitions";
@@ -349,6 +350,25 @@ export class Expansion {
       VESSELS.find((v) => v.age === "StoneAge" && v.kind === ship.kind)!,
       completed = this.progression.states[ship.playerId].completed;
     return vesselEffects(definition, completed);
+  }
+  /** Research-adjusted maximum health of a new `definition` hull. */
+  vesselMaxHealth(playerId: number, definition: VesselDefinition): number {
+    return vesselEffects(definition, this.progression.states[playerId]?.completed ?? []).health;
+  }
+  /** R2-M14: research changed this player's hull maxima since `previous`;
+   * keep every ship's share of maximum health, so a full fleet stays full and
+   * on station instead of retreating to port as "damaged". */
+  rescaleShipHealth(playerId: number, previous: readonly string[]): void {
+    const completed = this.progression.states[playerId]?.completed ?? [];
+    for (const s of this.world.ships) {
+      if (s.playerId !== playerId) continue;
+      const definition = VESSEL.get(s.definitionId ?? "") ??
+        VESSELS.find((v) => v.age === "StoneAge" && v.kind === s.kind)!;
+      const oldMax = vesselEffects(definition, previous).health,
+        newMax = vesselEffects(definition, completed).health;
+      if (oldMax !== newMax)
+        this.world.updateShip(s.id, { health: rescaledHullHealth(s.health, oldMax, newMax) });
+    }
   }
   buildRejection(
     player: Player,
@@ -682,9 +702,10 @@ export class Expansion {
         return "Research a military vessel refit first";
       const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible fleet out of combat with no active refit";
-      const count=affordableRefitCount(vesselRefitCost(target),availableGold(player),this.supply.inventories[player.id],eligible.length);
-      if(!count)return costRejection(player,this.supply.inventories[player.id],vesselRefitCost(target))??"No affordable vessel refit";
-      spend(player,this.supply.inventories[player.id],vesselRefitCost(target,count));
+      const costs=eligible.map(s=>vesselRefitCost(target,this.vessel(s)));
+      const count=affordableRefitPrefix(costs,availableGold(player),this.supply.inventories[player.id]);
+      if(!count)return costRejection(player,this.supply.inventories[player.id],costs[0])??"No affordable vessel refit";
+      spend(player,this.supply.inventories[player.id],sumCosts(costs.slice(0,count)));
       for(const s of eligible.slice(0,count)){
         world.updateShip(s.id,{refit:{targetId:target.id,remainingTicks:secondsToTicks(10),totalTicks:secondsToTicks(10)},destination:null,waypoints:[],path:[],nextPathIndex:0,attackTargetId:null});
       }
@@ -724,6 +745,10 @@ export class Expansion {
       for (const s of selected as Ship[]) {
         this.world.updateShip(s.id, { attackTargetId: target.id });
         this.world.updateShip(s.id, { lastPlanTick: -60 });
+        // An attack order interrupts any recovery, as a sail order does; the
+        // port slot is released and retreat restarts once the fight ends.
+        if (s.repairState && s.repairState !== "patrolling" && s.repairState !== "idle")
+          this.world.updateShip(s.id, { repairState: "patrolling", repairPortId: null });
       }
       return null;
     }
@@ -754,12 +779,13 @@ export class Expansion {
         return "Research the requested refit first";
       const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.afloat&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&this.unit(s).troopClass===target.troopClass&&this.unit(s).formationRecipe?.model===target.formationRecipe?.model&&!s.manpower?.enlargement&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible stationary group on owned land, out of combat";
-      const count=affordableRefitCount(unitRefitCost(target,1,recruitmentVariant(target.id,this.progression.states[player.id].completed)),availableGold(player),this.supply.inventories[player.id],eligible.length);
-      if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target,1,recruitmentVariant(target.id,this.progression.states[player.id].completed)))??"No affordable refit";
+      const costs=eligible.map(s=>unitRefitCost(target,this.unit(s),1,recruitmentVariant(target.id,this.progression.states[player.id].completed)));
+      const count=affordableRefitPrefix(costs,availableGold(player),this.supply.inventories[player.id]);
+      if(!count)return costRejection(player,this.supply.inventories[player.id],costs[0])??"No affordable refit";
       if(eligible.slice(0,count).some(s=>world.canDeploy && !world.canDeploy(s,Math.min(s.troops,recipeCapacity(target,recruitmentVariant(target.id,this.progression.states[player.id].completed))),target.id)))return "There is no room for this refitted formation";
       if(eligible.slice(0,count).some(s=>this.trenches.occupants.has(s.id)&&(target.formationRecipe?.model!=="soldiers"||formationDoctrine(target.id).mounted)))return "Exit the trench before refitting to mounted or hull units";
       if(!this.trenches.reserveChanges(eligible.slice(0,count).map(s=>({id:s.id,capacity:recipeCapacity(target,recruitmentVariant(target.id,this.progression.states[player.id].completed))}))))return "Exit the trench or free trench space first";
-      spend(player,this.supply.inventories[player.id],unitRefitCost(target,count,recruitmentVariant(target.id,this.progression.states[player.id].completed)));
+      spend(player,this.supply.inventories[player.id],sumCosts(costs.slice(0,count)));
       for(const s of eligible.slice(0,count)){
         world.updateSquad(s.id,{refit:{targetId:target.id,recipeVariant:recruitmentVariant(target.id,this.progression.states[player.id].completed),totalTicks:secondsToTicks(10),remainingTicks:secondsToTicks(10)},order:{type:"hold"},queuedOrders:[],charge:null});
         world.installSquadPath(s.id,[]);
@@ -816,10 +842,14 @@ export class Expansion {
         const mounted=isCavalryTroopClass(this.unit(s!).troopClass);
         // A rush already lodged in this target is sustained melee. Reissuing it
         // must not duplicate the impact or revoke its authorized overlap.
-        if(mounted && s!.cavalryEngagement && s!.cavalryEngagement.phase!=='withdrawing' &&
-          (command.targetId===undefined || s!.cavalryEngagement.targetIds.includes(command.targetId))){
+        // Only a target actually in contact is "lodged"; a charge to a point
+        // must never become an attack on a far, stale engagement target (C1).
+        const lodged=mounted && s!.cavalryEngagement && s!.cavalryEngagement.phase!=='withdrawing'
+          ? s!.cavalryEngagement.targetIds.find(id=>(command.targetId===undefined || id===command.targetId) && this.lodgedTarget(s!,id))
+          : undefined;
+        if(lodged!==undefined){
           const armed=armCavalryBonus(s!,this.unit(s!),world.tick);
-          world.updateSquad(s!.id,{order:{type:'attack',targetId:command.targetId??s!.cavalryEngagement.targetIds[0]},cavalryMelee:undefined,queuedOrders:[],...(armed?{cavalryEngagement:armed}:{})});
+          world.updateSquad(s!.id,{order:{type:'attack',targetId:lodged},cavalryMelee:undefined,queuedOrders:[],...(armed?{cavalryEngagement:armed}:{})});
           return;
         }
         const continuing=mounted && s!.charge && s!.charge.phase!=='recovery';
@@ -1154,9 +1184,15 @@ export class Expansion {
     this.features.step();
     const { world } = this;
     for (const id of this.tribePlans.keys()) if (!world.players.some(p => p.id === id && p.kind === "tribe" && !p.eliminated)) this.tribePlans.delete(id);
+    const researched = world.players.map((p) => this.progression.states[p.id]?.completed.length ?? 0);
     this.progression.step(world.players, (player, age) =>
       this.announce({ kind: "age", actorId: player.id, age }),
     );
+    world.players.forEach((p, i) => {
+      const completed = this.progression.states[p.id]?.completed;
+      if (completed && completed.length !== researched[i])
+        this.rescaleShipHealth(p.id, completed.slice(0, researched[i]));
+    });
     this.automaticTiers.step(world.players, this.progression.states, world.buildingFacts(),
       (id, patch) => {
         const building = world.buildings.find(b => b.id === id);
@@ -1186,9 +1222,17 @@ export class Expansion {
     for (const s of world.ships) {
       if (!s.refit) continue;
       const remainingTicks = s.refit.remainingTicks - 1;
-      world.updateShip(s.id, remainingTicks <= 0
-        ? { definitionId: s.refit.targetId, xp: 0, refit: null }
-        : { refit: { ...s.refit, remainingTicks } });
+      if (remainingTicks > 0) {
+        world.updateShip(s.id, { refit: { ...s.refit, remainingTicks } });
+        continue;
+      }
+      // A refit keeps the hull's share of health (R2-M14 / N10): a half-repaired
+      // hull comes out half-repaired at the new class's maximum.
+      const target = VESSEL.get(s.refit.targetId),
+        oldMax = this.vessel(s).health,
+        newMax = target ? this.vesselMaxHealth(s.playerId, target) : oldMax;
+      world.updateShip(s.id, { definitionId: s.refit.targetId, xp: 0, refit: null,
+        health: rescaledHullHealth(s.health, oldMax, newMax) });
     }
     for (const s of world.squads) {
       const enlargement=s.manpower?.enlargement;
@@ -1292,6 +1336,10 @@ export class Expansion {
         this.world.volleys.push({id:this.world.allocateId(),squadId:b.id,playerId:b.playerId,definitionId:"naval-air-defence",tick:this.world.tick,fromX:point.x,fromY:point.y,toX:target.x,toY:target.y});
       }
     }
+    // Fighter guns target start-of-tick health and land together after every
+    // aircraft has acted, so creation order never decides a mirrored duel (R2-L8, C2).
+    const startHealth=new Map(this.aircraft.map(a=>[a.id,a.health]));
+    const gunHits=new Map<number,{target:Aircraft;hits:{playerId:number;damage:number}[]}>();
     for (const a of this.aircraft) {
       if (a.health <= 0) continue;
       if(a.definitionId==="drone" && a.drone && a.state!=="ready"){this.advanceDrone(a);continue;}
@@ -1309,20 +1357,16 @@ export class Expansion {
         const enemy = this.nearbyAircraft
           .filter(
             (t) =>
-              t.id !== a.id && t.health > 0 && t.state !== "ready" && this.diplomacy.hostile(a.playerId, t.playerId) &&
+              t.id !== a.id && (startHealth.get(t.id) ?? t.health) > 0 && t.state !== "ready" && this.diplomacy.hostile(a.playerId, t.playerId) &&
               (t.x - a.x) ** 2 + (t.y - a.y) ** 2 < (8 * FIXED) ** 2,
           )
           .sort((b, c) => Number(c.definitionId === "bomber") - Number(b.definitionId === "bomber") || b.id - c.id)[0];
         if (enemy && this.world.tick >= a.reloadTick) {
-          if (enemy.health <= 0) continue;
-          const health = enemy.health;
-          enemy.health -= 200;
-          if (this.world.volleys.length < 4096) this.world.volleys.push({id:this.world.allocateId(),tick:this.world.tick,squadId:a.id,playerId:a.playerId,definitionId:"fighter-guns",fromX:a.x,fromY:a.y,toX:enemy.x,toY:enemy.y,sourceKind:"aircraft",targetKind:"aircraft",targetId:enemy.id,damage:Math.min(200,health)});
-          if (health > 0 && enemy.health <= 0) {
-            const damage = new DamageLedger();
-            damage.add(enemy.id, a.playerId, Math.min(200, health));
-            this.world.recordMilitaryLosses([enemy], damage);
-          }
+          const staged = gunHits.get(enemy.id) ?? { target: enemy, hits: [] };
+          const health = (startHealth.get(enemy.id) ?? enemy.health) - staged.hits.reduce((n, h) => n + h.damage, 0);
+          staged.hits.push({ playerId: a.playerId, damage: 200 });
+          gunHits.set(enemy.id, staged);
+          if (this.world.volleys.length < 4096) this.world.volleys.push({id:this.world.allocateId(),tick:this.world.tick,squadId:a.id,playerId:a.playerId,definitionId:"fighter-guns",fromX:a.x,fromY:a.y,toX:enemy.x,toY:enemy.y,sourceKind:"aircraft",targetKind:"aircraft",targetId:enemy.id,damage:Math.max(0,Math.min(200,health))});
           a.reloadTick = this.world.tick + secondsToTicks(2);
         }
       }
@@ -1380,6 +1424,22 @@ export class Expansion {
         a.state = "returning";
       }
     }
+    for (const id of [...gunHits.keys()].sort((a, b) => a - b)) {
+      const { target, hits } = gunHits.get(id)!;
+      if (target.health <= 0) continue;
+      const health = target.health, damage = new DamageLedger();
+      for (const hit of hits) {
+        const dealt = Math.min(hit.damage, Math.max(0, target.health));
+        target.health -= hit.damage;
+        if (dealt > 0) damage.add(target.id, hit.playerId, dealt);
+      }
+      if (health > 0 && target.health <= 0) this.world.recordMilitaryLosses([target], damage);
+    }
+  }
+  private lodgedTarget(s:Squad,targetId:number):boolean {
+    const target=this.world.squad(targetId);
+    return !!target && target.troops>0 && this.diplomacy.hostile(s.playerId,target.playerId) &&
+      formationContact(s,target,this.world.tick).gap<=CAVALRY_ENGAGEMENT_REACH;
   }
   private advanceTransfer(a:Aircraft):void {
     const transfer=a.transfer!,bases=this.aviationBases().filter(b=>b.playerId===a.playerId&&baseAccepts(b,a.definitionId));
@@ -1610,7 +1670,7 @@ export class Expansion {
     const heldGold = recruit ? scaledRecipeCost(recruit.unit, recruitmentVariant(recruit.unit.id, state.completed)).gold ?? 0 : 0;
     const developmentGold = () => Math.max(0, availableGold(player) - heldGold);
     if (!tribeAdvanceRejection(player, this.world.players, this.progression.states) &&
-        !advanceRejection(state, developmentGold(), this.progression.technologySpeed, this.progression.maximumAge))
+        !advanceRejection(state, developmentGold(), this.progression.technologySpeed, this.progression.maximumAge, "tribe"))
       this.world.applyCommand({ type: "advance-age", playerId: player.id });
     const technologies = militarizing ? TRIBE_MILITARY_TECHNOLOGIES : TECHNOLOGIES;
     const next = technologies.find(t => t.age === state.age &&

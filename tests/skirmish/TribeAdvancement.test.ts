@@ -85,7 +85,7 @@ describe("tribe catch-up progression", () => {
   });
 
   it("scales tribe caps and preserves regular caps", () => {
-    expect(AGES.map(age => squadCap({ kind: "tribe" }, age))).toEqual([10, 15, 20, 25, 30, 35, 40, 45]);
+    expect(AGES.map(age => squadCap({ kind: "tribe" }, age))).toEqual([6, 10, 14, 18, 22, 26, 30, 34]);
     expect(AGES.map(age => tradeActorCap({ kind: "tribe" }, age))).toEqual([16, 18, 20, 22, 24, 26, 28, 30]);
     expect(AGES.map(age => tradeActorCap({ kind: "regular" }, age))).toEqual(AGES.map(() => 48));
     expect(squadCap({ kind: "regular" }, "Modern")).toBe(200);
@@ -93,7 +93,7 @@ describe("tribe catch-up progression", () => {
 });
 
 describe("age-up pacing", () => {
-  it("preserves gold discounts with 35 to 70 second advancement at every technology speed", () => {
+  it("preserves gold discounts with 90 to 180 second advancement at every technology speed", () => {
     const original = [{ gold: 3000, ticks: secondsToTicks(100) }, { gold: 75000, ticks: secondsToTicks(45) }, { gold: 110000, ticks: secondsToTicks(50) },
       { gold: 160000, ticks: secondsToTicks(55) }, { gold: 230000, ticks: secondsToTicks(60) }, { gold: 330000, ticks: secondsToTicks(65) }, { gold: 480000, ticks: secondsToTicks(70) }];
     for (const speed of [1, 2, 3] as const) for (let i = 0; i < ADVANCES.length; i++) {

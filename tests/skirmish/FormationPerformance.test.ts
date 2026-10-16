@@ -150,10 +150,10 @@ describe('formation performance contracts', () => {
     const aims=game.squads.map(s=>s.weaponState?.rangedAction);
     expect(aims.every(a=>a?.phase==='preparing'&&a.releaseTick===5)).toBe(true);
   });
-  // C3 (Napoleonic lethality, review Next #7): the first volley at tick 5
-  // removes 1,550 of the 2,000 squads, so 450 remain fighting past the longest
-  // aim. This is the C3 acceptance; when C3 lands it passes: drop `.fails`.
-  it.fails('keeps more than 1900 squads fighting after 8 steps, past the first volley (C3)',()=>{
+  // C3 (Napoleonic lethality, review Next #7): before C3 the first volley at
+  // tick 5 removed 1,550 of the 2,000 squads (450 left fighting). With the
+  // 55 HP volley no line falls to its first two volleys, so all keep fighting.
+  it('keeps more than 1900 squads fighting after 8 steps, past the first volley (C3)',()=>{
     const {game}=formationLoad('crowded');
     for(let i=0;i<8;i++)game.step();
     expect(game.squads.filter(s=>s.fighting).length).toBeGreaterThan(1900);
@@ -177,7 +177,7 @@ describe('formation performance contracts', () => {
     game.updateSquad(closer.id,{x:source.x,y:source.y+2.8*FIXED});
     game.updateSquad(source.id,{fighting:true,combatTargetId:held.id});
     // Keep the retained target through the whole aim, up to its release; the
-    // volley itself would destroy held (C3), so the retarget comes first.
+    // retarget comes before the volley so held is still untouched.
     game.step();
     const aim=source.weaponState!.rangedAction!;
     expect(aim).toMatchObject({targetKind:'squad',targetId:held.id,phase:'preparing'});

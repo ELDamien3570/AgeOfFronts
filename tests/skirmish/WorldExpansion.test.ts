@@ -2,6 +2,8 @@ import {secondsToTicks} from '../../src/skirmish/Protocol';
 import { claimBuildingFootprint } from "./BuildingFixtures";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
+import { STACK_LIMITS } from "../../src/skirmish/Construction";
+const CITY_STACK = STACK_LIMITS.city!;
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
 import { SkirmishViewModel } from "../../src/skirmish/client/SkirmishViewModel";
@@ -245,7 +247,7 @@ describe("transferable presentation snapshots", () => {
 });
 
 describe("stacked buildings and large fleets", () => {
-  it("permits 15 cities at one site with independent cost, construction and full income", () => {
+  it("permits a full city stack (STACK_LIMITS.city) at one site with independent cost, construction and full income", () => {
     const match = plains(),
       tile = match.map.ref(30, 25),
       player = match.players[0];
@@ -257,7 +259,7 @@ describe("stacked buildings and large fleets", () => {
     claimBuildingFootprint(match,tile,"city");
     player.gold = 100000;
     const before = player.gold;
-    for (let i = 0; i < 15; i++)
+    for (let i = 0; i < CITY_STACK; i++)
       expect(
         match.applyCommand({
           type: "build",
@@ -266,7 +268,7 @@ describe("stacked buildings and large fleets", () => {
           tile,
         }),
       ).toBeNull();
-    const expectedCost = Array.from({ length: 15 }, (_, i) =>
+    const expectedCost = Array.from({ length: CITY_STACK }, (_, i) =>
       Math.round(BUILDING_RULES.city.cost * Math.min(4,1 + i * 0.3)),
     ).reduce((a, b) => a + b, 0);
     expect(player.gold).toBe(before - expectedCost);
@@ -277,10 +279,10 @@ describe("stacked buildings and large fleets", () => {
         buildingType: "city",
         tile,
       }),
-    ).toBe("A single site can support at most 15 stacked buildings");
+    ).toBe(`A single site can support at most ${CITY_STACK} stacked buildings`);
     const cities = match.buildings.filter((b) => b.tile === tile);
-    expect(cities).toHaveLength(15);
-    expect(new Set(cities.map((b) => b.id)).size).toBe(15);
+    expect(cities).toHaveLength(CITY_STACK);
+    expect(new Set(cities.map((b) => b.id)).size).toBe(CITY_STACK);
     expect(
       match.applyCommand({
         type: "build",
@@ -302,13 +304,19 @@ describe("stacked buildings and large fleets", () => {
       (sum, b) => sum + (b.buildTicks ?? b.remainingTicks),
       0,
     );
-    for (let i = 0; i < totalTicks - 1; i++) match.step();
-    const beforeIncome = (player.reserves = 0);
-    match.step();
-    expect(player.reserves - beforeIncome).toBe(
+    for (let i = 0; i < totalTicks; i++) match.step();
+    expect(match.buildings.filter((b) => b.tile === tile && b.remainingTicks > 0)).toHaveLength(0);
+    // Reserve income is credited once per second; take the next credit.
+    let gained = 0;
+    for (let i = 0; i < 16 && !gained; i++) {
+      player.reserves = 0;
+      match.step();
+      gained = player.reserves;
+    }
+    expect(gained).toBe(
       40 +
         Math.floor(player.land / 20) +
-        15 * BUILDING_RULES.city.reserveIncome,
+        CITY_STACK * BUILDING_RULES.city.reserveIncome,
     );
     const s = selection();
     s.selectedBuilding = cities[0].id;
@@ -316,10 +324,10 @@ describe("stacked buildings and large fleets", () => {
       new SkirmishViewModel(match.snapshot(), s),
     ).selectionCard(null);
     if (card.mode !== "detail") throw new Error("Expected stack card");
-    expect(card.card.count).toBe(15);
+    expect(card.card.count).toBe(CITY_STACK);
     expect(
       card.card.stats.find((s) => s.label === "Combined reserve income")?.value,
-    ).toBe("+600 / sec");
+    ).toBe(`+${CITY_STACK * BUILDING_RULES.city.reserveIncome} / sec`);
   });
   it("captures every copy while preserving independent construction progress", () => {
     const match = plains(),

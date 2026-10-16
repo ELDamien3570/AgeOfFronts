@@ -28,6 +28,7 @@ import { AGE_NAMES, AGES, TREES, type Age } from "../domain/Definitions";
 import { availableGold } from "../domain/Gold";
 import {
   advanceRejection,
+  advanceRuleFor,
   researchRejection,
   researchTerms,
   treeCompletion,
@@ -136,6 +137,7 @@ export class EmpireViewModel {
         availableGold(this.player),
         this.technologySpeed,
         this.expansion.maximumAge,
+        advanceRuleFor(this.player.kind),
       ),
     };
   }

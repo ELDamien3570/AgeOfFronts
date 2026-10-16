@@ -1,6 +1,7 @@
 import {secondsToTicks} from "../Protocol";
 import { recruitmentVariant } from '../content/FormationRecipes';
 import { scaledRecipeCost } from './Manpower';
+import { stackLimit } from "../Construction";
 import { buildingFootprint } from "../BuildingFootprint";
 import type { Coast } from "../CoastIndex";
 import type { BuildingType, Player } from "../Protocol";
@@ -13,7 +14,7 @@ import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { Expansion } from "./Expansion";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
-import { TRADE_RULES, marketDropCapacity } from "../content/Economy";
+import { TRADE_RULES, commerceProducerLimit, marketDropCapacity } from "../content/Economy";
 import { tradeSupplyLimited } from "./AiTradeOpportunities";
 import { militaryPosture } from "./AiMilitaryPosture";
 import { personalityOf } from "../content/AiPersonalities";
@@ -216,7 +217,7 @@ export class AiPlacementCandidates {
       const growth = (naval: boolean) => {
         const evidence = naval ? productiveSea : productiveLand;
         const source = evidence && this.expansion.trade.sourceStatus(evidence.source);
-        return safeGrowth && factories + ports < TRADE_RULES.actorCap &&
+        return safeGrowth && factories + ports < Math.min(TRADE_RULES.actorCap, commerceProducerLimit(snapshot.age)) &&
           !snapshot.buildings.some(b=>b.type===(naval?"port":"factory") && b.remainingTicks>0) &&
           !!evidence && tradeSupplyLimited(evidence.quote,source);
       };
@@ -286,7 +287,7 @@ export class AiPlacementCandidates {
             if(world.map.isValidCoord(x-dx,y-dy)) anchors.add(world.map.ref(x-dx,y-dy));
         }
         const source=productiveSea && world.building(productiveSea.source);
-        const stack=source?.type === "port" && snapshot.buildings.filter(b=>b.type==="port" && b.tile===source.tile).length<TRADE_RULES.maximumStack ? source.tile : undefined;
+        const stack=source?.type === "port" && snapshot.buildings.filter(b=>b.type==="port" && b.tile===source.tile).length<Math.min(TRADE_RULES.maximumStack,stackLimit("port")) ? source.tile : undefined;
         preferredTile=stack;
         tiles = [...anchors].sort((a,b)=>Number(b===stack)-Number(a===stack) || a-b);
         objective = tiles.length ? (!count ? snapshot.isolated ? 11000 : 7000 : seaGrowth ? 3000 : 2000) : 0;
@@ -298,7 +299,7 @@ export class AiPlacementCandidates {
         tiles = page.tiles;
         if(type === "factory" && landGrowth) {
           const source=world.building(productiveLand?.source ?? productiveSea?.source ?? -1);
-          if(source?.type==="factory" && snapshot.buildings.filter(b=>b.type==="factory" && b.tile===source.tile).length<TRADE_RULES.maximumStack)
+          if(source?.type==="factory" && snapshot.buildings.filter(b=>b.type==="factory" && b.tile===source.tile).length<Math.min(TRADE_RULES.maximumStack,stackLimit("factory")))
             preferredTile=source.tile;
         }
       }

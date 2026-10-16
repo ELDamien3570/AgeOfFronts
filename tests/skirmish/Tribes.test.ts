@@ -4,7 +4,7 @@ import { startingEconomy } from "../../src/skirmish/content/StartingEconomy";
 import { startingCamp } from "../../src/skirmish/domain/StartingCamp";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { squadCap, tribeCountFor } from "../../src/skirmish/FactionRules";
+import { squadCap, TRIBE_SQUAD_CAP, tribeCountFor } from "../../src/skirmish/FactionRules";
 import { HomeTerritory } from "../../src/skirmish/HomeTerritory";
 import type { MatchOptions } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -60,7 +60,7 @@ describe("minor tribes", () => {
         4,
       );
       expect(game.owners[tribe.base]).toBe(tribe.id);
-      expect(squadCap(tribe)).toBe(10);
+      expect(squadCap(tribe)).toBe(TRIBE_SQUAD_CAP);
       expect(tribe.reserves).toBe(1500);
       expect(tribe.gold).toBe(150);
     }
@@ -93,7 +93,7 @@ describe("minor tribes", () => {
     );
   });
 
-  it("starts with four, enforces the ten-squad cap including cargo, and rebuilds a casualty", () => {
+  it("starts with four, enforces the Stone tribe squad cap including cargo, and rebuilds a casualty", () => {
     const game = match(),
       tribe = game.players.find((p) => p.kind === "tribe")!,
       camp = game.buildings.find((b) => b.playerId === tribe.id)!;
@@ -103,7 +103,7 @@ describe("minor tribes", () => {
     tribe.gold = 1000;
     const own = game.squads.filter((s) => s.playerId === tribe.id);
     expect(own).toHaveLength(4);
-    for (let i = 0; i < 6; i++)
+    for (let i = 0; i < TRIBE_SQUAD_CAP - 4; i++)
       expect(
         game.applyCommand({
           type: "recruit",
@@ -118,12 +118,12 @@ describe("minor tribes", () => {
         playerId: tribe.id,
         buildingId: camp.id,
       }),
-    ).toContain("10-squad limit");
+    ).toContain(`${TRIBE_SQUAD_CAP}-squad limit`);
     game.updateSquad(own[0].id, { embarkedOn: null });
     for (const record of game.squads.slice(game.squads.indexOf(own[0]), (game.squads.indexOf(own[0])) + (1))) game.removeSquad(record.id);
     tribe.losses += own[0].troops;
     for (let tick = 0; tick < secondsToTicks(9); tick++) game.step();
-    expect(game.squads.filter((s) => s.playerId === tribe.id)).toHaveLength(10);
+    expect(game.squads.filter((s) => s.playerId === tribe.id)).toHaveLength(TRIBE_SQUAD_CAP);
     expect(
       game.buildings
         .filter((b) => b.playerId === tribe.id)

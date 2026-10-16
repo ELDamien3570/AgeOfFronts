@@ -273,7 +273,7 @@ describe("integrated shipments and military progression", () => {
     complete(m);
     const s = ship(m, 10), target = VESSEL.get("bronzeage-warship")!;
     m.owners.fill(owner);
-    m.expansion!.supply.inventories[1] = { ...vesselRefitCost(target).items };
+    m.expansion!.supply.inventories[1] = { ...vesselRefitCost(target, null).items };
     const destination = m.map.ref(20, 30);
     m.updateShip(s.id, { destination, waypoints: [destination], path: [destination], nextPathIndex: 1, attackTargetId: 999, fighting: true });
     const quote = () => quoteShipRefits([s], undefined, {
@@ -299,12 +299,13 @@ describe("integrated shipments and military progression", () => {
     expect(m.applyCommand(command)).not.toBeNull();
     expect(m.players[0].gold).toBe(paidGold);
   });
-  it("refits a fleet atomically, preserves health, resets XP and rejects movement during refit", () => {
+  it("refits a fleet atomically, preserves its health share, resets XP and rejects movement during refit", () => {
     const m = match(true);
     complete(m);
     const s = ship(m, 10),
       t = ship(m, 11);
     m.updateShip(s.id, { health: 400 });
+    const oldMax = m.shipMaxHealth(s);
     m.updateShip(s.id, { xp: 3000 });
     const target = VESSEL.get("modern-warship")!;
     const startingGold = m.players[0].gold;
@@ -339,7 +340,9 @@ describe("integrated shipments and military progression", () => {
     ).toMatch(/own ships/);
     for (let i = 0; i < 200; i++) m.expansion!.beforeStep();
     expect(s.definitionId).toBe(target.id);
-    expect(s.health).toBe(400);
+    // R2-M14: the refit keeps the share of health, not the absolute value.
+    expect(s.health).toBe(Math.ceil((400 * m.shipMaxHealth(s)) / oldMax));
+    expect(s.health).toBeGreaterThan(400);
     expect(s.xp).toBe(0);
   });
   it("prevents shell splash crossing an intact wall while damaging the wall", () => {

@@ -1,4 +1,4 @@
-import type { Squad } from '../Protocol';
+import { FIXED, secondsToTicks, type Squad } from '../Protocol';
 import { damageAmount, defenceOf } from './Combat';
 import type { AttackProfile, UnitDefinition } from './Definitions';
 import { isCavalryTroopClass } from './Definitions';
@@ -55,7 +55,26 @@ export function cavalryResistance(source: Squad, target: Squad, attacker: UnitDe
     defender.troopClass === 'antiCavalry' ? CAVALRY_ASSAULT.counterResistance :
     shape === 'mass' ? 1 : CAVALRY_ASSAULT.frontResistance;
   const resistance = power(target, defender, attacker) * stance;
-  return { penetrates: pressure > resistance, pressure, resistance };
+  return { penetrates: pressure > resistance, pressure: roundedContest(pressure), resistance: roundedContest(resistance) };
+}
+
+/** Thresholds below which a recomputed contact edge is the same edge. They
+ * are the ones the client already re-plans passes at (CavalryAssaultPresentation),
+ * so skipping the write never hides a change the presentation would show (C5). */
+export const ASSAULT_GEOMETRY_CHANGE = Object.freeze({position: .5 * FIXED, normalDot: .8});
+type AssaultGeometry = Pick<CavalryAssault,'x'|'y'|'nx'|'ny'|'halfWidth'|'depth'|'approach'>;
+/** Integer positions and extents, 1e-4 normals: stable, compact snapshot values. */
+export function roundedAssaultGeometry<T extends AssaultGeometry>(g:T):T {
+  return {...g,x:Math.round(g.x),y:Math.round(g.y),nx:Math.round(g.nx*1e4)/1e4,ny:Math.round(g.ny*1e4)/1e4,
+    halfWidth:Math.round(g.halfWidth),depth:Math.round(g.depth),approach:Math.round(g.approach)};
+}
+/** Three significant figures; these only describe the contest to the client. */
+export function roundedContest(n:number):number {return n===0?0:Number(n.toPrecision(3));}
+/** True when a recomputed edge differs enough from the stored one to publish. */
+export function assaultGeometryChanged(old:AssaultGeometry&{penetrates:boolean},next:AssaultGeometry):boolean {
+  return Math.hypot(next.x-old.x,next.y-old.y)>ASSAULT_GEOMETRY_CHANGE.position ||
+    next.nx*old.nx+next.ny*old.ny<ASSAULT_GEOMETRY_CHANGE.normalDot ||
+    next.depth!==old.depth || next.halfWidth+16<old.halfWidth*.65;
 }
 
 /** Rebuilt only on committed attacks, so moving targets and casualty frontage
@@ -69,8 +88,8 @@ export function assaultContactGeometry(source:Squad,target:Squad,tick:number,dep
   const mid=(lo+hi)/2,edge=Math.min(...targetBody.map(p=>p.x*n.x+p.y*n.y));
   const halfWidth=Math.max(0,(hi-lo)/2),approach=Math.min(CAVALRY_ENTRY.maximum,formationEnvelope(source,tick).depth);
   const clear=hi>=lo&&certify(Math.round(n.x*(depth+CONTACT.release)),Math.round(n.y*(depth+CONTACT.release)),Math.min(32,halfWidth));
-  return {x:n.x*edge+t.x*mid,y:n.y*edge+t.y*mid,nx:n.x,ny:n.y,
-    halfWidth:clear?halfWidth:0,depth:clear?depth:0,approach:clear?approach:0};
+  return roundedAssaultGeometry({x:n.x*edge+t.x*mid,y:n.y*edge+t.y*mid,nx:n.x,ny:n.y,
+    halfWidth:clear?halfWidth:0,depth:clear?depth:0,approach:clear?approach:0});
 }
 
 /** The same resistance and terrain certificate govern ordinary assaults and
@@ -122,15 +141,23 @@ export function assaultWeapon(profile: AttackProfile, unit: UnitDefinition, stre
   return strength > 0 ? { ...profile, damage: profile.damage * (1 + ((unit.chargeMultiplier ?? 1) - 1) * strength) } : profile;
 }
 
+/** A withdrawal ignores re-acquisition for this long, then ordinary close
+ * encounters apply again so a body-blocked rider can fight back (R2-H3, C1). */
+export const CAVALRY_WITHDRAW_GUARD_TICKS = secondsToTicks(2);
+/** An engagement keeps a target only while the bodies are this close. */
+export const CAVALRY_ENGAGEMENT_REACH = CONTACT.release + FIXED;
+
 /** Rank riders remain exposed while coming home; cancelling their attack does
- * not erase them or allow the Move order to be reacquired as another attack. */
-export function cavalryWithdrawal(s: Squad, tick: number): CavalryEngagement | undefined {
+ * not erase them or allow the Move order to be reacquired as another attack
+ * during the guard. A rider with nothing in contact and no exposed rank has
+ * nothing to withdraw from. */
+export function cavalryWithdrawal(s: Squad, tick: number, inContact: (targetId: number) => boolean): CavalryEngagement | undefined {
   const old = s.cavalryEngagement;
   const cycles = [s.cavalryMelee?.current, s.cavalryMelee?.previous].filter(c => !!c);
   const exposed = cycles.filter(c => cavalryRankExposure(c, tick));
-  if (!old && !exposed.length) return undefined;
+  if (!exposed.length && !old?.targetIds.some(inContact)) return undefined;
   const targetIds = [...new Set([...(old?.targetIds ?? []), ...exposed.flatMap(c => c!.contacts.map(p => p.targetId))])].slice(0, 8);
-  const withdrawUntilTick = Math.ceil(Math.max(tick, ...exposed.flatMap(c => [0, 1, 2].filter(rank => cavalryRankExposure(c, tick) & (1 << rank)).map(rank =>
+  const withdrawUntilTick = Math.ceil(Math.max(old?.withdrawUntilTick ?? 0, tick + CAVALRY_WITHDRAW_GUARD_TICKS, ...exposed.flatMap(c => [0, 1, 2].filter(rank => cavalryRankExposure(c, tick) & (1 << rank)).map(rank =>
     waveTick(c!, rank) + CAVALRY_RANK_MOTION.brake + CAVALRY_RANK_MOTION.turn * 2 + CAVALRY_RANK_MOTION.return))));
   return { ...(old ?? { tick, untilTick: tick, originX: s.x, originY: s.y, goalX: s.x, goalY: s.y }),
     phase: 'withdrawing', targetIds, withdrawUntilTick,

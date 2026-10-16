@@ -58,7 +58,7 @@ describe("literal formation manpower conservation", () => {
     const f = fixture(),
       target = UNIT.get("modern-infantry")!;
     f.expansion.progression.states[1].completed.push(target.technologyId);
-    f.expansion.supply.inventories[1] = { ...unitRefitCost(target).items };
+    f.expansion.supply.inventories[1] = { ...unitRefitCost(target, null).items };
     expect(
       f.game.applyCommand({
         type: "refit",
@@ -269,7 +269,7 @@ describe("literal formation manpower conservation", () => {
       nextAttackTick: 10000,
     });
     f.expansion.progression.states[1].completed.push(target.technologyId);
-    f.expansion.supply.inventories[1] = { ...unitRefitCost(target).items };
+    f.expansion.supply.inventories[1] = { ...unitRefitCost(target, null).items };
     const reserves = f.player.reserves;
     expect(
       f.game.applyCommand({
