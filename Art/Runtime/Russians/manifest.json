@@ -566,7 +566,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Ships/StoneAge/Warship/animations.json",
-    "metadataHash": "5f939db237861f3dcadf8c3b75ed9fffc989beac76931d454e40f24c6df4d4aa",
+    "metadataHash": "6c7ad581dca9f8f96deb4932ef11e4a859b4e1ca93b13e2b9495dd7631797f92",
     "hashes": {
       "Art/Cultures/Russians/Ships/StoneAge/Warship/Idle.png": "4c5e2183ade79f53a462e1956a8ffae422c150dae149f9ff1318026b1d5aabe2",
       "Art/Cultures/Russians/Ships/StoneAge/Warship/Sailing.png": "f6263c0d3539d91ffb1b7559e709c7b94e817a7a214f136b1aa4c0f17d3aacf5",
@@ -618,7 +618,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Ships/StoneAge/Transport/animations.json",
-    "metadataHash": "998a4149617b537635ef1ba179c88521d3c3c871bc3d88e6450412efff51364d",
+    "metadataHash": "d7ffb631dc98fcb85a8016cbb9ae566c6411ad939b17a1c18c12763889ec97df",
     "hashes": {
       "Art/Cultures/Russians/Ships/StoneAge/Transport/Idle.png": "135d1110e0ae793d92de083e4f237810d764f9120ec3455f240ca4efb0b19ff4",
       "Art/Cultures/Russians/Ships/StoneAge/Transport/Sailing.png": "0ab9c68952ebda47cba42f8462bd397330d6d786ba5c95c8ca9768b906f00fbb"
@@ -669,7 +669,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Ships/StoneAge/Trade/animations.json",
-    "metadataHash": "579e1d3ae539908a606820d3a31f0c5c2e0131f85ba544742d46e4511d8b7db8",
+    "metadataHash": "57196c4beacc620958e5fd2e6f9c4493b5d3e029622ea5251177248761e663ed",
     "hashes": {
       "Art/Cultures/Russians/Ships/StoneAge/Trade/Idle.png": "948a320b9aa205c036b1e503fba1bea756a3666fbf1aadd447f99e1ec8c603b4",
       "Art/Cultures/Russians/Ships/StoneAge/Trade/Sailing.png": "2351bd88e0bff038f41873fdac0b757ccbc06660a87a2414278138d431ca77e0"
@@ -733,7 +733,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Ships/BronzeAge/Warship/animations.json",
-    "metadataHash": "d60f9686c2a2f1c439004975bb4c1296f24115bd22a902eb0a7b07792c95dbc1",
+    "metadataHash": "e04c1d0689310a015b6532bfcd1aa5a7c507304d7f20eedeb97f407848e666a5",
     "hashes": {
       "Art/Cultures/Russians/Ships/BronzeAge/Warship/Idle.png": "cff5e1993756525f323f880d40b6a7b1ad38b99b3330ec7615e3f7da87b4e3e7",
       "Art/Cultures/Russians/Ships/BronzeAge/Warship/Sailing.png": "2c63c727041fbac82ed395e07f82f738f655e97eb9c737d64a60654e085f15c2",
@@ -785,7 +785,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Ships/BronzeAge/Transport/animations.json",
-    "metadataHash": "1e27fa6230ce8d9e516baaf5316014f0580f444c28b3188e7d9b09f7ee617177",
+    "metadataHash": "80de400b512d980673058d803ab70f893ce53a3d264b02d1c657d3a8a3bfed18",
     "hashes": {
       "Art/Cultures/Russians/Ships/BronzeAge/Transport/Idle.png": "666af4fd01fab19d5a5bf9f4be11394332e4bc5e095c077a322c1eac9cd6f21d",
       "Art/Cultures/Russians/Ships/BronzeAge/Transport/Sailing.png": "1799f9c93104db487e24205c8997700613283b5f8798182f85ed98df56b31471"
@@ -836,7 +836,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Ships/BronzeAge/Trade/animations.json",
-    "metadataHash": "ad8fbd3614121ec327957fd64131ef8533adb9f4e617f7b87f839a1edf73ed66",
+    "metadataHash": "441f847bb7bf7fe857771313e8497f3c138984800c51ca29bcf95bd66cc05237",
     "hashes": {
       "Art/Cultures/Russians/Ships/BronzeAge/Trade/Idle.png": "9533584eeb675b3786cce85c2e39f15bb4d77be7d594a0ebfe5cceb1db121358",
       "Art/Cultures/Russians/Ships/BronzeAge/Trade/Sailing.png": "152a0e3090a5185f2e720fbd6627acdf12f73a2150d34b6eea9e49c460433531"
@@ -1067,7 +1067,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Ships/EarlyMedieval/Warship/animations.json",
-    "metadataHash": "a3738bc11c665a2d86e4d3c46de0762aea1169020d4bc78b5036891d4de075a4",
+    "metadataHash": "a0de3ece5d3ad1bb4ec00afb038eac71615819db4f563f9c6e4e76bf841a2196",
     "hashes": {
       "Art/Cultures/Russians/Ships/EarlyMedieval/Warship/Idle.png": "9e2eab0d0cd8ee88cb7e0372ca7236bada5d9260cd54e2ec0895317f61450d5b",
       "Art/Cultures/Russians/Ships/EarlyMedieval/Warship/Sailing.png": "76032e8223b33ecdd5beab1a04b2c0ef95e0fc72333f8e72573799eb0047615c",
@@ -1119,7 +1119,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/EarlyMedieval/Transport/animations.json",
-    "metadataHash": "06520cec670984406a621ea39867646c92e2c1dd8b9429badd239daa76a757bf",
+    "metadataHash": "bf849a6f7dde437823bfae41c96fe746356f0b74ecb4b3efdd0cddb7ea8f1abc",
     "hashes": {
       "Art/Cultures/Russians/Ships/EarlyMedieval/Transport/Idle.png": "04b3e0106775d0d56c49fd2f2d227d6418eb14d92002c2bd4b03fa4c9c0ffecc",
       "Art/Cultures/Russians/Ships/EarlyMedieval/Transport/Sailing.png": "ff812e0643fff1d4af3cbd54869ad22ea8d6fe1b89538fd50688e0dc23f6ff51"
@@ -1170,7 +1170,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/EarlyMedieval/Trade/animations.json",
-    "metadataHash": "0bc4fc2c51833fb4b871e14d737e8a1e28b445f185429f6f3a0f2936e6cd35a6",
+    "metadataHash": "3cd65572ab51492223db8a90bc744945c2b76a8ea26709f9469eeecb091c48ff",
     "hashes": {
       "Art/Cultures/Russians/Ships/EarlyMedieval/Trade/Idle.png": "b4adef3d2deab6a8703489ceb0f6b18f4effa250f907740e6297df5b17fb9564",
       "Art/Cultures/Russians/Ships/EarlyMedieval/Trade/Sailing.png": "0c57871eb88c34015a17ef4a82a69c48d5e03da13c1242df3247f0abce46f665"
@@ -1234,7 +1234,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/LateMedieval/Warship/animations.json",
-    "metadataHash": "f3c8fa1318e4018b6b0911bb7b682343aedc5f4282da4a9e970d574020d561cf",
+    "metadataHash": "ac149521edd6ca06f338dddc5d454d9b4346d95aa796d41b8f747df928854605",
     "hashes": {
       "Art/Cultures/Russians/Ships/LateMedieval/Warship/Idle.png": "9dd1a7f9103017ce37d8e0a2b917c255b9153664aaa46e89bd251fa62c7a5f9a",
       "Art/Cultures/Russians/Ships/LateMedieval/Warship/Sailing.png": "8e79603d09f2b10e7d4d812a96264e436d1d8cddcc4f74aab1c8224a22a09c11",
@@ -1286,7 +1286,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/LateMedieval/Transport/animations.json",
-    "metadataHash": "46dcb7730855ec1ce42437deaf3b30c5cbb3b8b7d49d054ca4be47fee2310296",
+    "metadataHash": "91cfc95654520b0377972c3ae8277d00d2e8c6683a1ef1249a69ee17411cb1e1",
     "hashes": {
       "Art/Cultures/Russians/Ships/LateMedieval/Transport/Idle.png": "516c02659ff06eebdfa4e6c6d6a919713b9b90365f6d700f2f2ac530a91635ab",
       "Art/Cultures/Russians/Ships/LateMedieval/Transport/Sailing.png": "c5747c6d36593cccff2ea2dc8dc354e9ee161ca6dd02c08371a1853d819507b4"
@@ -1337,7 +1337,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/LateMedieval/Trade/animations.json",
-    "metadataHash": "ea9ec394c25c28a7a74221fb7fd861ea4feef9e8ba0352f864b171902cdacce9",
+    "metadataHash": "6dae4d5b48c7969ba5a3b5ee7c0623bd3952f1edea3c0cd466c8233bd872303c",
     "hashes": {
       "Art/Cultures/Russians/Ships/LateMedieval/Trade/Idle.png": "82cc2e0e8b7f63e85df9b2b47d64511aa2c0f48f1812e24e6d7ef60166195681",
       "Art/Cultures/Russians/Ships/LateMedieval/Trade/Sailing.png": "b947a38de003c4ba2fca5b48aebc8637a9527576b8a1104de27b0c3a421f9bf8"
@@ -1401,7 +1401,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/Napoleonic/Warship/animations.json",
-    "metadataHash": "af4e4eae67937a9eed989ee1c2fccfdf1c66353b395d279fa50d5928b428000f",
+    "metadataHash": "a81aa44e39f6a461f6944f00a692cb30831517954d1aa29eef680470c9a4d6d8",
     "hashes": {
       "Art/Cultures/Russians/Ships/Napoleonic/Warship/Idle.png": "5c1e5684795498cba5cd6cd7b1e8a2025edc2f29584fa7652bdd5233147a7e84",
       "Art/Cultures/Russians/Ships/Napoleonic/Warship/Sailing.png": "2fdbed4fa662a7a5b233c2a4dd98a4ac0821609fb7bd28668e31c3c8b45bd77f",
@@ -1453,7 +1453,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/Napoleonic/Transport/animations.json",
-    "metadataHash": "78eb1df1a87d7d1d8f698edecd5598a4411e6d42ff4d9062227edb090e231fed",
+    "metadataHash": "345d66cf0e56c28763062ea27c61c0857233156a307e7a55ff4f422acacbbc6d",
     "hashes": {
       "Art/Cultures/Russians/Ships/Napoleonic/Transport/Idle.png": "5d9da1eea26ca487dda783312c293772d571f67c335f4c170ff0f1891969db2f",
       "Art/Cultures/Russians/Ships/Napoleonic/Transport/Sailing.png": "309b73901562de96d09df9d112ef1cf61e3fabe86ba3d1490eee65ae00b10922"
@@ -1504,7 +1504,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/Napoleonic/Trade/animations.json",
-    "metadataHash": "d0556a1b5daf83be5ccae4745491a6d8d427700fca7f3352e6724a78398c338b",
+    "metadataHash": "b92e7033f299c09ca99c1ffbb8dec780512b34eb72fdd346b2e9c75c5ae7bb96",
     "hashes": {
       "Art/Cultures/Russians/Ships/Napoleonic/Trade/Idle.png": "67e4045dd8134a604e9c71f77cc3e7fe2737022ce43e3bd0ed64280561d0a244",
       "Art/Cultures/Russians/Ships/Napoleonic/Trade/Sailing.png": "9b115f169028f5d34b8fffb42ed47bbf3086a3b95e7248078aff3d1689cf2cb7"
@@ -1568,7 +1568,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/EarlyModern/Warship/animations.json",
-    "metadataHash": "46fa2e829f0e56607e6b1f682b25bdd1ac64189be7f8be23a61c8905da9cbfd0",
+    "metadataHash": "cbbb53776eb25e37b4f3dc34640dba8922c329289fc18f3bb45468ba8f832230",
     "hashes": {
       "Art/Cultures/Russians/Ships/EarlyModern/Warship/Idle.png": "9e4f7ac4f20c469e70482359fbd0c1de1b48ee744d8a3dd17afcaaf9bd036b31",
       "Art/Cultures/Russians/Ships/EarlyModern/Warship/Sailing.png": "6f81cc8cb7234b4df0bca749a10ea6de6967a710d8a8635f91fc31fe6f7d106a",
@@ -1620,7 +1620,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/EarlyModern/Transport/animations.json",
-    "metadataHash": "5af49040a1430e8797527df51201fdebbcf6824f83c381620681cfa8bb04a17f",
+    "metadataHash": "ec0082344cc78c6a3817b0ee2891cc414208364a6383efdca8050cfebb3e4ae8",
     "hashes": {
       "Art/Cultures/Russians/Ships/EarlyModern/Transport/Idle.png": "f2b2debc16defb7e4ddc7c7fd9328d8de955203d94c78d71ffa33a9c9e18442a",
       "Art/Cultures/Russians/Ships/EarlyModern/Transport/Sailing.png": "ea667ce493daa34159e50d1ed08039bb71211781368695c0bbf7d2b012657921"
@@ -1671,7 +1671,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/EarlyModern/Trade/animations.json",
-    "metadataHash": "5022a490ac3bf8bb33047dec14dd643aee220682a95cd39aaefdad2d1f788223",
+    "metadataHash": "554dd9e8a8cb9e0bea0bc422e6fd55055c423fb42ecf8ec1c4c45e3d34f462b0",
     "hashes": {
       "Art/Cultures/Russians/Ships/EarlyModern/Trade/Idle.png": "06fd404f2054fa6d4fbfb67d43a229dc561620af6a6ed5de6c026d99e7399d42",
       "Art/Cultures/Russians/Ships/EarlyModern/Trade/Sailing.png": "6ed12d43fa2574031f9bf32e72cd318185c2e537eb3182ff6080d4530a9b7dec"
@@ -1735,7 +1735,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/EarlyModern/Submarine/animations.json",
-    "metadataHash": "51848b5615c182f85622374853cf5f8f096571a087e81ba7b301bbb9a11bb042",
+    "metadataHash": "04edaed1eb9881b98bb11e675b112ccb2a09e5644228b2028547f05bc0611981",
     "hashes": {
       "Art/Cultures/Russians/Ships/EarlyModern/Submarine/Idle.png": "c604859a3dc5031681eec4ffbe92baf70e2fa7cbc95c83a2a1f438f10bc4c4d1",
       "Art/Cultures/Russians/Ships/EarlyModern/Submarine/Sailing.png": "564ea3a8b213fb1a0ac8c7e0a2c137abaee86619997ee4ea56be411dfbfd8c9d",
@@ -1800,7 +1800,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/Modern/Warship/animations.json",
-    "metadataHash": "002a400324edda6c3f0357e42eed1d92d0f6615500078b43cae75b2e2a6152aa",
+    "metadataHash": "647820018c113ac5c113166f771c2a5bfad8c424cfd353407b6b8c48ab83be47",
     "hashes": {
       "Art/Cultures/Russians/Ships/Modern/Warship/Idle.png": "ecd1f557daae2f998be0b9e7caec30e3acf39dc566b24af0fc41a692baa63829",
       "Art/Cultures/Russians/Ships/Modern/Warship/Sailing.png": "053637e1a7a04e79c63ff7fe83cdc5e67f41668ab03a0230d44aa43aec2c34a5",
@@ -1852,7 +1852,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/Modern/Transport/animations.json",
-    "metadataHash": "a32de739ac02a70f261123822aae3cdb275092ff13add4f87fce46c0472381f7",
+    "metadataHash": "89ffe80a8365cad34a532d1b940729a4fe9bb58cf449de3db22572fa4f8e8fe7",
     "hashes": {
       "Art/Cultures/Russians/Ships/Modern/Transport/Idle.png": "81ad6e254da8b687abf0a7dfd1ebd0c8fe7a90f50c728aaffebbd8388c1f7e30",
       "Art/Cultures/Russians/Ships/Modern/Transport/Sailing.png": "7b808fd0e19f257b55bbdd5a1b6e7612f2ec432e3379fc7e2304ea1fa25ed918"
@@ -1903,7 +1903,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/Modern/Trade/animations.json",
-    "metadataHash": "c23a5342a039b01a74844025b059cff4a4aff87b5690762217eb8af1a71174f8",
+    "metadataHash": "bc08aea72457f20ac2805063e7a1a7dd2736068a95665923a96dd7c0d0a9016a",
     "hashes": {
       "Art/Cultures/Russians/Ships/Modern/Trade/Idle.png": "ef843d82743c723e8def209755f59483dc874dc758387e02e8a6ebaa17bd21d0",
       "Art/Cultures/Russians/Ships/Modern/Trade/Sailing.png": "e7e9ea22dbfb672c9433c522acdd9b33b9ba2b6de87337bb95e597893fc5db28"
@@ -1967,7 +1967,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Ships/Modern/Submarine/animations.json",
-    "metadataHash": "89b4fb03a5cc2b74892ee82c7fb446b91ebe217d4125e583b9399242219ac622",
+    "metadataHash": "7d25717bd6287b33caea86315eaa9672b0349e7522e44199fad9aed6fc878c96",
     "hashes": {
       "Art/Cultures/Russians/Ships/Modern/Submarine/Idle.png": "e4292cb67ec79557d41d663667bbdd2bf222e7a16c18febd8839266f38101822",
       "Art/Cultures/Russians/Ships/Modern/Submarine/Sailing.png": "7792e91be88df9aa93765447911adb21feec9d2010683ec4686053e5dc111021",
@@ -2172,7 +2172,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Traders/EarlyMedieval/animations.json",
-    "metadataHash": "f651d8e2eaee63a4c8dcb28cfb5cdbc0d8c938aaef78afa1d9299b4c43f9393f",
+    "metadataHash": "22e1e8611512f98208eb27c14973f010cb70ca40e6dd696bd2fb4a5848d15e17",
     "hashes": {
       "Art/Cultures/Russians/Traders/EarlyMedieval/Idle.png": "5b0b19d53a0e5b7bdd35bdc340c203dff0e56ad26cd826c71804c9a28a1087f3",
       "Art/Cultures/Russians/Traders/EarlyMedieval/Travel.png": "294d5ac83fb5915432baae93c6769bcdb53351ec53b7d30da791c998d3c5f7f6"
@@ -2223,7 +2223,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Traders/LateMedieval/animations.json",
-    "metadataHash": "d5e3d429555001c181de5fc4dd53b8091c6c08fd8b97f46dec247f46fb9587d7",
+    "metadataHash": "cabf367237c22f73404ae70ad7a1b76f19bdc1d80eafc22883b9a850657c39aa",
     "hashes": {
       "Art/Cultures/Russians/Traders/LateMedieval/Idle.png": "1fbf34f7aea7eacbeb641210122b781aa8c5881387013b02025c85bcc1d86ffd",
       "Art/Cultures/Russians/Traders/LateMedieval/Travel.png": "fed09591f8fd16845a925034a9f9c29b288fbe47dc49b6b1114cf5b4722d3ad9"
@@ -2274,7 +2274,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Traders/Napoleonic/animations.json",
-    "metadataHash": "99bc609e93173ead4ff9603b03875461405c7fa8b40cd9a8864cbacd3dfde114",
+    "metadataHash": "014d43dfb929ac012f5c3478c40677d53c5563a0acddbfb1f9e9a112a14ff287",
     "hashes": {
       "Art/Cultures/Russians/Traders/Napoleonic/Idle.png": "eedc1a65d5286f3dfbc1a372643fdcaf707407b90d6002d1503e1b1f0e63d3b5",
       "Art/Cultures/Russians/Traders/Napoleonic/Travel.png": "38e82592197bd20537e4ca300361c36757895f90f91a56e446935978c5b1dbee"
@@ -2325,7 +2325,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Traders/EarlyModern/animations.json",
-    "metadataHash": "1cb408a6fe93614c6ebcb3b5a4a6ba0efb56ea67c2a207554a6fea26155b3cbe",
+    "metadataHash": "2368d41da71f7f14a19f3d531d58f06d8a59703f3bf204fcd3b420cf073dad19",
     "hashes": {
       "Art/Cultures/Russians/Traders/EarlyModern/Idle.png": "928edb2afc4c74c4e638172852e98de7adc6e246749bb8c1d3ee688cabab9100",
       "Art/Cultures/Russians/Traders/EarlyModern/Travel.png": "9c1c7e2777bdabaa82d13e1b7567bfc0e3a77cac78f8aebae25758703c1cd2b0"
@@ -2376,7 +2376,7 @@
     },
     "facing": "screen-down",
     "source": "Art/Cultures/Russians/Traders/Modern/animations.json",
-    "metadataHash": "e274d9841ffded3c060bbfeff1942387291d2f5f59981625ccd747d9ebe4a17e",
+    "metadataHash": "e0ea4f7195b5bb7f8ce7897a31bb670a6c10af7538cc1d237d1e2edd76654e62",
     "hashes": {
       "Art/Cultures/Russians/Traders/Modern/Idle.png": "ec48a4a9d8b2080b64e15db660042c78a7ff6562bdfe585a5cae2bec011659f7",
       "Art/Cultures/Russians/Traders/Modern/Travel.png": "fee599b1d6f6cadadb7162fee277cfe514dcdafb2d5700e66441850b79ba3fdd"
@@ -2440,7 +2440,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Aircraft/EarlyModern/Fighter/Animations/animations.json",
-    "metadataHash": "dde366e964c37291cfc21e78d00cb9d89a254d4687aa210a8b8f33e8125ecdbf",
+    "metadataHash": "e319fe61fdda0a46af07ee312f88fbbf2bc01f7b2d2e6b5a84ca4127e8e2305e",
     "hashes": {
       "Art/Cultures/Russians/Aircraft/EarlyModern/Fighter/Animations/Parked.png": "40ea48121da8724452d9e4ca91cd38c2d6cde1a16a6100b9bb04c5942d203c55",
       "Art/Cultures/Russians/Aircraft/EarlyModern/Fighter/Animations/Flight.png": "fd8878e804ef239afa0d93b02948a5266265947d8d77c69ad73a2f1fdddd2d27"
@@ -2504,7 +2504,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Aircraft/EarlyModern/Bomber/Animations/animations.json",
-    "metadataHash": "0fc2ca4d1ff4754748c03479d7597ec8a029fd680459210b5bd49a58b8861156",
+    "metadataHash": "69e55b944e6566b5809f6f37302a38a64d84fd77ecd2bae979e67b79bc01b8b3",
     "hashes": {
       "Art/Cultures/Russians/Aircraft/EarlyModern/Bomber/Animations/Parked.png": "4bdd16be42192540f7a4c7113d712ec6ddad06704ca5aab8abc5e242301cd087",
       "Art/Cultures/Russians/Aircraft/EarlyModern/Bomber/Animations/Flight.png": "175a82136ad13c2cee03d78aa11f206c534910decf76327503ac5e6a5def3917"
@@ -2568,7 +2568,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Aircraft/Modern/Fighter/Animations/animations.json",
-    "metadataHash": "f2c2e8505a7071360f7e53d7b77ad58da4820b738fb817aae0deb06746399077",
+    "metadataHash": "aa12770c2061e8079971355b27e56ac0379abd1013fc9636c53d8e27f21f90ea",
     "hashes": {
       "Art/Cultures/Russians/Aircraft/Modern/Fighter/Animations/Parked.png": "7f3dcdb728ea89c8df1367f4745cd93aaf4030dbd719f2a46c1c133e63e266ca",
       "Art/Cultures/Russians/Aircraft/Modern/Fighter/Animations/Flight.png": "221919e3801761cfc2e0f5e3d02b61bddca4e188a951982aa0d13100d3dfe979"
@@ -2632,7 +2632,7 @@
     },
     "facing": "screen-up",
     "source": "Art/Cultures/Russians/Aircraft/Modern/Bomber/Animations/animations.json",
-    "metadataHash": "acd7ac8c4ea9897620364dd0b436d1de2aa46ac0e6aa5bfa638c0aa7da77d9c5",
+    "metadataHash": "f5dc4495665768f96a10e044a075119b9585df5397ea88ae3d8075eacc689946",
     "hashes": {
       "Art/Cultures/Russians/Aircraft/Modern/Bomber/Animations/Parked.png": "f7829d28ac44dd65662778a82f07889b60acd13167962ccfc130722ee35adc6c",
       "Art/Cultures/Russians/Aircraft/Modern/Bomber/Animations/Flight.png": "829703ed62c06bb31b0939cd506ffd7e06fb9370d37646adc8320bf49416e036"
@@ -2663,7 +2663,7 @@
     },
     "facing": "N",
     "source": "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/N/animations.json",
-    "metadataHash": "19a52a3ffab123c7046bdf01ee8adb3709198158b0f3a02ff6d0ca1a1b75d7f4",
+    "metadataHash": "8684b0e66730950894c400b45c76e1e0b77e936e7e8dcc3b343b6e5910d08f28",
     "hashes": {
       "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/N/Firing.png": "3b9a3314345569358835d1944e3387e087f5f2d30e77953b97f2b575eb93e677"
     },
@@ -2699,7 +2699,7 @@
     },
     "facing": "E",
     "source": "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/E/animations.json",
-    "metadataHash": "6fddaba8d56a8407d45f5b2b6eaca3a31af02a3339b28f9fbf27d2cb567e1b92",
+    "metadataHash": "517edc7366b5260ef9fb2e3c69b441512429d0268e91a1bdfe1b60666f0d9d12",
     "hashes": {
       "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/E/Firing.png": "2df92900e585f25ed4af29b672a703ee232d5bd496ffcaaf045f3476a8ddba5e"
     },
@@ -2735,7 +2735,7 @@
     },
     "facing": "S",
     "source": "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/S/animations.json",
-    "metadataHash": "43c06f9cdb1e478a92905b3058d1250106b3d96fd68eda067ebd34cddd520e04",
+    "metadataHash": "73723ccd1e933c9ddac76c0d436147848212b391ebe04e7323a4412709fa5cfd",
     "hashes": {
       "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/S/Firing.png": "267de109e608f0900ac656d69b974af312233d3708ab5cf7581141488388ccf4"
     },
@@ -2771,7 +2771,7 @@
     },
     "facing": "W",
     "source": "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/W/animations.json",
-    "metadataHash": "8fc26498c89e53153b5e2df4614da12771749fd21566450cb10ccc70bee2fc17",
+    "metadataHash": "d3549e1dd010d7c201fdf0eec74116d9dfcc28ac3ef9c715e0d27c3b5f452191",
     "hashes": {
       "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/W/Firing.png": "8b4db29baa97c51eb4eda976d2d4c6de49ffd66ada0a08d5c7e29d777299e2f3"
     },
@@ -2807,7 +2807,7 @@
     },
     "facing": "N",
     "source": "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/N/animations.json",
-    "metadataHash": "4d04fc5159935d269e31f4b5c996edf1b50bb8f2a31fa64efff221b3441758a0",
+    "metadataHash": "c24eccc1d7779b3c7caf7b30b6442eb84ea3438d6b2216932d75958f07dc533a",
     "hashes": {
       "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/N/Firing.png": "8a615f374be88265c4651734361008b56da93652f1ef05cca71db0ab5c38be9a"
     },
@@ -2843,7 +2843,7 @@
     },
     "facing": "E",
     "source": "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/E/animations.json",
-    "metadataHash": "1f344e0f16acc426428316fd7aeae962b6d840c9dc3b4df8385653a0850d0935",
+    "metadataHash": "d24a53a45a00c093ae6cc2fd505acbb746062c2792d15c8a2ea867f2ffd6c1a2",
     "hashes": {
       "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/E/Firing.png": "a2659b6dc8b22316a309cde7620884d279b9a36bbc744abf5cc57b77a723f204"
     },
@@ -2879,7 +2879,7 @@
     },
     "facing": "S",
     "source": "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/S/animations.json",
-    "metadataHash": "1630401ca4a3c6042103951c2237b727ba3affc5ea67328175d06691c1122f1e",
+    "metadataHash": "4e30d3f5a772705670e81205bc7fac5745faa8c91f58c8a8c3188c7f6bfe422f",
     "hashes": {
       "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/S/Firing.png": "0a20f8e3b75df15f104670670511e92f3cb0926c4573758685d8a36de55b647c"
     },
@@ -2915,7 +2915,7 @@
     },
     "facing": "W",
     "source": "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/W/animations.json",
-    "metadataHash": "d5570987ab31dc97e6fd399461119c6e4834de55d0f40a11b956773dba9941c0",
+    "metadataHash": "594c6c87c95fa5cf7da37a07a60ed77a76db73273000f390ee3c5718b99718fb",
     "hashes": {
       "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/W/Firing.png": "25c0bb0d010d7361e2542e8fd57f8a361ae22bb9e226996f146cc8cf62bf5d3b"
     },
@@ -2951,7 +2951,7 @@
     },
     "facing": "N",
     "source": "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/N/animations.json",
-    "metadataHash": "da4b83fffcf318c512652ff1bf80ab4cfcf56fdc36cf11e545f7c1a61442cd5f",
+    "metadataHash": "d8086963aa1469f1d823545f5ad4df886dbd14c2aebea1b7b97f53398c8a5e02",
     "hashes": {
       "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/N/Firing.png": "6f0f208738e42c5b5c78bcc18cb24616e7864c172b994217e8efdbeca7840223"
     },
@@ -2987,7 +2987,7 @@
     },
     "facing": "E",
     "source": "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/E/animations.json",
-    "metadataHash": "55ca1a77934a4ffbb24c17d83e5816494f118b23657b44d197fe9aa9bf8ddc48",
+    "metadataHash": "94d22fc66e9d4f5c469ee55fb1cc8d0f9f73ba01ffded588372ed3c544b7325f",
     "hashes": {
       "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/E/Firing.png": "acd53a0e93d2f987573558f0bd04b5b730f9556f5862a19382a6a3e6e1d97817"
     },
@@ -3023,7 +3023,7 @@
     },
     "facing": "S",
     "source": "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/S/animations.json",
-    "metadataHash": "16d8183ecc4c4d4981d1b78dcdefc8f977a26dcc9f4ae8ed5274b0f5ad5354a7",
+    "metadataHash": "652235bb3c613550332ea0c3d10c39a5335f1e9af3aba4ae61e8d064ae30ab80",
     "hashes": {
       "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/S/Firing.png": "2aee1e764ae927f1072ca6a833e0834e668eefd547320d5394f9c178c739e10d"
     },
@@ -3059,7 +3059,7 @@
     },
     "facing": "W",
     "source": "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/W/animations.json",
-    "metadataHash": "bc277445985c69d0f9a9d7fc5103973dde855e54c80e04964bb9a6dc44bfe9ed",
+    "metadataHash": "2dc9b15712171d3d5565e5d8603b1806a6384f90c8e6b57a19cb1fd859368319",
     "hashes": {
       "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/W/Firing.png": "acff5db13eec817bb92e01a8b84ee36daded309dafaa60b7658b10f43db6e5a5"
     },
@@ -3095,7 +3095,7 @@
     },
     "facing": "N",
     "source": "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/N/animations.json",
-    "metadataHash": "9cda79558e3102bdec4b1ab554c44904812ac89a1aa28ef7a4618cd37307c2b8",
+    "metadataHash": "ed755f092327d86c5b1a2b64ec3e849c1342cf7be8512d3e8247ce7b6c3d9b45",
     "hashes": {
       "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/N/Firing.png": "6bfea9021f572578d726630fb79adf1b6821ea4aafd2559593bd9d5a3e4b29b9"
     },
@@ -3131,7 +3131,7 @@
     },
     "facing": "E",
     "source": "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/E/animations.json",
-    "metadataHash": "bc987769ed695bde7eeeae509e56e2587735911d1adb9897b97c14d291604463",
+    "metadataHash": "5229acb140b3411ecdb614b14fd94d5e067353ca73d4922bc4edb9b9acc00f33",
     "hashes": {
       "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/E/Firing.png": "6aca3bd3fbc742be8319ea5022d6220a1ee12982a9052aa024aabfc9434f70f2"
     },
@@ -3167,7 +3167,7 @@
     },
     "facing": "S",
     "source": "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/S/animations.json",
-    "metadataHash": "aac1b3600cb983609a09ef36773d1d1d7e75e2ab92fd1ef554ad3a11235c6b42",
+    "metadataHash": "593e70926443950fcedadbd9da8dd2a9d063acc18f84c18e5669f9c974008d3a",
     "hashes": {
       "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/S/Firing.png": "f31c5e7d7e9a9ec29702bcf9dda7ae17154836e7f5508da4c6544b5809c244d3"
     },
@@ -3203,7 +3203,7 @@
     },
     "facing": "W",
     "source": "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/W/animations.json",
-    "metadataHash": "edf49fa60cb11fb78eb13c1f19f0d0a6a87012e8da1973729eb2b77abcd303de",
+    "metadataHash": "18d95ec8452d731c661cae25dd5c55b88d7cdd37be7114fcce3bb7c21fb56dae",
     "hashes": {
       "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/W/Firing.png": "6326cf0b8892352f5be4ac425cdd6dbb74e4970423a2cc8fea05d73e90402feb"
     },

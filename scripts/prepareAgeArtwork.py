@@ -29,7 +29,7 @@ def build(key,meta_path):
    poster=f'{key}-portrait.png';atlas.crop((0,0,128,128)).save(OUT/poster,optimize=True)
   filename=f'{key}-{name}.png';atlas.save(OUT/filename,optimize=True)
   clips[name]={'file':filename,'frames':len(frames),'columns':columns,'fps':clip.get('suggestedFramesPerSecond',8),'loop':clip.get('loop',True)}
- manifest[key]={'clips':clips,'facing':d.get('facing','screen-down'),'source':str(meta_path.relative_to(ROOT)).replace('\\','/'),'metadataHash':hashlib.sha256(meta_path.read_bytes()).hexdigest(),'hashes':source_hashes}
+ manifest[key]={'clips':clips,'facing':d.get('facing','screen-down'),'source':str(meta_path.relative_to(ROOT)).replace('\\','/'),'metadataHash':hashlib.sha256(meta_path.read_bytes().replace(b'\r\n',b'\n')).hexdigest(),'hashes':source_hashes}
  if 'idle' in clips:manifest[key]['poster']=f'{key}-portrait.png'
 for age in ages:
  for folder,line in [('Melee','infantry'),('Ranged','archer'),('Cavalry','cavalry')]:
