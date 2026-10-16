@@ -4,6 +4,12 @@ import { AGES, type Age } from "../domain/Definitions";
 export const STARTING_AGE_TROOPS = 6_000;
 export const LAND_TRADE_CAPACITIES = [20, 30, 40, 50, 60, 80, 120, 160] as const;
 export const tradeStockPerSecond = (age: Age) => 2 * (AGES.indexOf(age) + 1);
+/** Owner decision OD-5 (05 issue 4 / rec 3, RoN-style commerce cap): a faction's
+ * completed factories and ports produce trade stock only up to this many per
+ * faction, 3 + age index (3 at Stone, 10 at Modern), giving goods/s =
+ * 2 x (age + 1) x min(producers, 3 + age). Producers beyond it stay idle. */
+export const COMMERCE_PRODUCER_BASE = 3;
+export const commerceProducerLimit = (age: Age) => COMMERCE_PRODUCER_BASE + AGES.indexOf(age);
 export const extractionYieldMultiplier = (age: Age) => 1 + Math.floor(AGES.indexOf(age) / 2);
 export const TRADE_RULES = {
   actorCap: 48,
