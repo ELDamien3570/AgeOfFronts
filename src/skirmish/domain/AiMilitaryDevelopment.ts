@@ -161,7 +161,7 @@ export class AiModernization {
       const lease = this.leases.get(squad.id);
       const target = lease && UNIT.get(lease.targetId);
       if (!target || squad.refit) continue;
-      const cost = unitRefitCost(target,undefined,recruitmentVariant(target.id,research));
+      const cost = unitRefitCost(target,UNIT.get(squad.definitionId ?? "stoneage-" + squad.kind) ?? null,1,recruitmentVariant(target.id,research));
       gold -= cost.gold ?? 0;
       for (const [id,n] of Object.entries(cost.items ?? {})) remaining[id] = (remaining[id] ?? 0)-n;
     }
@@ -179,11 +179,11 @@ export class AiModernization {
       const current = UNIT.get(squad.definitionId ?? "stoneage-" + squad.kind)!;
       if (!current) continue;
       const target = modernizationTarget(current, research, u => {
-        const cost = unitRefitCost(u,undefined,recruitmentVariant(u.id,research));
+        const cost = unitRefitCost(u,current,1,recruitmentVariant(u.id,research));
         return gold >= (cost.gold ?? 0) && Object.entries(cost.items ?? {}).every(([id,n]) => (remaining[id] ?? 0) >= n);
       });
       if (!target) continue;
-      const cost = unitRefitCost(target,undefined,recruitmentVariant(target.id,research));
+      const cost = unitRefitCost(target,current,1,recruitmentVariant(target.id,research));
       if (
         gold < cost.gold! ||
         Object.entries(cost.items ?? {}).some(

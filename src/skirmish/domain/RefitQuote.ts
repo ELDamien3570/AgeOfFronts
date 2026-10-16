@@ -9,7 +9,7 @@ import {
   type UnitDefinition,
   type VesselDefinition,
 } from "./Definitions";
-import { unitRefitCost } from "./Refitting";
+import { refitBaseGold, refitFloorGold, unitRefitCost } from "./Refitting";
 import { costRejection } from "./Supply";
 
 export function affordableRefitCount(
@@ -25,9 +25,41 @@ export function affordableRefitCount(
     if (n > 0) count = Math.min(count, Math.floor((inventory[id] ?? 0) / n));
   return Math.max(0, count);
 }
-export function vesselRefitCost(target: VesselDefinition, count = 1): Cost {
+/** How many leading entries of a per-unit cost list the stock pays for, in
+ * order. A refit selection can mix source tiers, which price differently. */
+export function affordableRefitPrefix(
+  costs: readonly Cost[],
+  gold: number,
+  inventory: Readonly<Inventory>,
+): number {
+  let spentGold = 0;
+  const spentItems: Record<string, number> = {};
+  for (let i = 0; i < costs.length; i++) {
+    spentGold += costs[i].gold ?? 0;
+    if (spentGold > gold) return i;
+    for (const [id, n] of Object.entries(costs[i].items ?? {})) {
+      spentItems[id] = (spentItems[id] ?? 0) + n;
+      if (n > 0 && spentItems[id] > (inventory[id] ?? 0)) return i;
+    }
+  }
+  return costs.length;
+}
+export function sumCosts(costs: readonly Cost[]): Cost {
+  const items: Record<string, number> = {};
+  let gold = 0;
+  for (const cost of costs) {
+    gold += cost.gold ?? 0;
+    for (const [id, n] of Object.entries(cost.items ?? {})) items[id] = (items[id] ?? 0) + n;
+  }
+  return { gold, items };
+}
+export function vesselRefitCost(target: VesselDefinition, source: VesselDefinition | null, count = 1): Cost {
+  const base = Math.max(
+    refitBaseGold(target.age),
+    source ? refitFloorGold(target.cost.gold ?? 0, source.cost.gold ?? 0) : 0,
+  );
   return {
-    gold: (500 + AGES.indexOf(target.age) * 300) * count,
+    gold: base * count,
     items: Object.fromEntries(
       Object.entries(target.cost.items ?? {}).map(([id, n]) => [id, n * count]),
     ),
@@ -76,7 +108,7 @@ function choose<T extends { id: number }, D>(
   group: (s: T) => string,
   upgrade: (s: T) => D | undefined,
   eligible: (s: T) => boolean,
-  price: (d: D, n: number) => Cost,
+  price: (d: D, n: number, source: T) => Cost,
   context: Context,
   noUpgrade: string,
   ineligibleReason: string,
@@ -113,18 +145,18 @@ function choose<T extends { id: number }, D>(
       reason: noUpgrade,
     };
   const count = affordableRefitCount(
-    price(target, 1),
+    price(target, 1, row[0]),
     availableGold(context.player),
     context.inventory,
     valid.length,
   );
   const affordable = valid.slice(0, count),
-    cost = price(target, count);
+    cost = price(target, count, row[0]);
   const reason = count
     ? null
     : !valid.length
       ? ineligibleReason
-      : (costRejection(context.player, context.inventory, price(target, 1)) ??
+      : (costRejection(context.player, context.inventory, price(target, 1, row[0])) ??
         "No eligible refit");
   return {
     selected: affordable,
@@ -160,7 +192,7 @@ export function quoteLandRefits<T extends RefitSquad>(
           context.research.includes(u.technologyId),
       ).sort((a, b) => AGES.indexOf(b.age) - AGES.indexOf(a.age));
       return targets.find((u) =>
-        affordableRefitCount(unitRefitCost(u,1,recruitmentVariant(u.id,context.research)), availableGold(context.player),
+        affordableRefitCount(unitRefitCost(u,current,1,recruitmentVariant(u.id,context.research)), availableGold(context.player),
           context.inventory, 1) > 0,
       ) ?? targets[0];
     },
@@ -172,7 +204,7 @@ export function quoteLandRefits<T extends RefitSquad>(
       !s.fighting &&
       owners[Math.floor(s.y / 256) * width + Math.floor(s.x / 256)] ===
         context.player.id,
-    (d,n)=>unitRefitCost(d,n,recruitmentVariant(d.id,context.research)),
+    (d,n,s)=>unitRefitCost(d,definition(s),n,recruitmentVariant(d.id,context.research)),
     context,
     selected.every((s) => AGES.indexOf(definition(s).age) === AGES.length - 1)
       ? "Maximum tier reached"
@@ -205,7 +237,7 @@ export function quoteShipRefits<T extends RefitShip>(
       s.playerId === context.player.id &&
       !s.refit &&
       !s.fighting,
-    vesselRefitCost,
+    (d,n,s)=>vesselRefitCost(d,definition(s),n),
     context,
     "Research the next vessel tier",
     "Needs no combat or active refit",

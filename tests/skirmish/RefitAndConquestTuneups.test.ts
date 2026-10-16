@@ -44,7 +44,7 @@ function fixture() {
     }),
   );
   const target = UNITS.find((u) => u.id === "bronzeage-infantry")!,
-    cost = unitRefitCost(target);
+    cost = unitRefitCost(target, null);
   e.supply.inventories[1] = {
     ...cost.items,
     ...Object.fromEntries(
@@ -61,7 +61,7 @@ describe("mass refit and completed-asset survival", () => {
       !t.optional && ["StoneAge", "BronzeAge", "ClassicalAge", "EarlyMedieval"].includes(t.age),
     ).map((t) => t.id);
     const target = UNITS.find((u) => u.id === "earlymedieval-infantry")!;
-    const cost = unitRefitCost(target);
+    const cost = unitRefitCost(target, null);
     f.player.gold = 10000;
     f.e.supply.inventories[1] = { ...cost.items };
     f.game.updateSquad(f.squads[0].id, { troops: 5, xp: 7000 });

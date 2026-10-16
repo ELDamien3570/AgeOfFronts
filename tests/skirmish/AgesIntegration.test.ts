@@ -273,7 +273,7 @@ describe("integrated shipments and military progression", () => {
     complete(m);
     const s = ship(m, 10), target = VESSEL.get("bronzeage-warship")!;
     m.owners.fill(owner);
-    m.expansion!.supply.inventories[1] = { ...vesselRefitCost(target).items };
+    m.expansion!.supply.inventories[1] = { ...vesselRefitCost(target, null).items };
     const destination = m.map.ref(20, 30);
     m.updateShip(s.id, { destination, waypoints: [destination], path: [destination], nextPathIndex: 1, attackTargetId: 999, fighting: true });
     const quote = () => quoteShipRefits([s], undefined, {

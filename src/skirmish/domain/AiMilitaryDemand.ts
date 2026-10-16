@@ -109,13 +109,13 @@ export function militaryDemand(
     const current = UNIT.get(squad.definitionId ?? `stoneage-${squad.kind}`);
     if (!current) continue;
       const target = modernizationTarget(current, snapshot.research, (u) =>
-          Object.entries(unitRefitCost(u,undefined,recruitmentVariant(u.id,snapshot.research)).items ?? {}).every(([id, n]) =>
+          Object.entries(unitRefitCost(u,current,1,recruitmentVariant(u.id,snapshot.research)).items ?? {}).every(([id, n]) =>
             dependencies.available(id, n),
           ),
       );
     if (!target) continue;
     upgrades--;
-    for (const [id, n] of Object.entries(unitRefitCost(target,undefined,recruitmentVariant(target.id,snapshot.research)).items ?? {}))
+    for (const [id, n] of Object.entries(unitRefitCost(target,current,1,recruitmentVariant(target.id,snapshot.research)).items ?? {}))
       result.equipment[id] = (result.equipment[id] ?? 0) + n;
     }
     if (snapshot.age === "Modern") {
