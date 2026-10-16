@@ -10793,6 +10793,24 @@
           "researchSeconds": 50
         },
         {
+          "id": "rus-earlymodern-aircraft-carriers",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 6,
+          "name": "Aircraft Carriers",
+          "prerequisites": [
+            "rus-earlymodern-ship-improvements",
+            "rus-earlymodern-bombers"
+          ],
+          "description": "Unlock aircraft carriers with six shared fighter and bomber berths, onboard recruitment, transfers and air missions.",
+          "buildingUnlocks": [],
+          "kind": "unlock",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
+          "decision": "proposed",
+          "gold": 30000,
+          "researchSeconds": 80
+        },
+        {
           "id": "rus-earlymodern-cities",
           "age": "EarlyModern",
           "tree": "economic",

@@ -71,6 +71,7 @@ const implemented = new Set([
   "sea-traders",
   "ship-improvements",
   "submarines",
+  "aircraft-carriers",
   "naval-missiles-air-defence",
   "factories-mines",
   "roads",
