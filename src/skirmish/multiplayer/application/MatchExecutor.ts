@@ -51,6 +51,9 @@ export interface MatchAdvance {
   packet?: EncodedState;
   rejectedCommands: { id: string; playerId: number; message: string }[];
   commandOutcomes?: CommandOutcome[];
+  /** A player command committed visible state during this advance. The
+   * coordinator's publication gate publishes it at its next gate tick. */
+  commandVisible?: boolean;
 }
 export interface MatchPublication { tick: number; packet: EncodedState }
 export interface ClientBaseline {tick:number;winner:number|null;baseline:EncodedState;}

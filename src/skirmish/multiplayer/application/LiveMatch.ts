@@ -39,7 +39,11 @@ export const EMPTY_MATCH_GRACE_MS = 120_000;
  * (never refused: the flow is already recovering and must receive a baseline). */
 export const CLIENT_RESYNC_COOLDOWN_MS = 2_000;
 const TICK_MS = 1000 / TICKS_PER_SECOND;
-const SNAPSHOT_MS = 200;
+/** N6: the single publication gate. Every state publication (background or a
+ * committed command's) is at most one per 200 ms of both wall and simulation
+ * time, i.e. at most 5 publications per simulated second. */
+export const PUBLICATION_MIN_INTERVAL_MS = 200;
+const SNAPSHOT_MS = PUBLICATION_MIN_INTERVAL_MS;
 interface Seat {
   playerId: number;
   guestId: string;
@@ -79,7 +83,8 @@ export class LiveMatch {
   runtimeDiagnostics() {
     return { matchId: this.reservation.id, runtimeId: this.runtimeId, tick: this.tick,
       publicationSequence: this.publicationSequence, timings: this.diagnostics.snapshot(), lifetimeTimings: this.diagnostics.lifetimeSnapshot(),
-      retainedBytes: this.diagnostics.retainedBytes, progress: this.cadence.snapshot(), worker: this.latestDiagnostics };
+      retainedBytes: this.diagnostics.retainedBytes, progress: this.cadence.snapshot(), worker: this.latestDiagnostics,
+      commandPublication: { ...this.commandPublication } };
   }
   private loaded = new Set<string>();
   private seats = new Map<number, Seat>();
@@ -110,6 +115,9 @@ export class LiveMatch {
   private spawnDeadline?: number;
   private nextSpawnAt = 0;
   private publicationSequence = 0;
+  /** Tick of the oldest committed command not yet covered by a gate publication. */
+  private pendingCommandTick?: number;
+  private readonly commandPublication = { count: 0, totalWaitTicks: 0, maxWaitTicks: 0 };
   private syncCounter = 0;
   private sync?: Sync;
   private syncTimer?: ReturnType<typeof setTimeout>;
@@ -746,8 +754,9 @@ export class LiveMatch {
         : this.nextTickAt + TICK_MS;
     // Background replication is at most 5 Hz in both wall and game time.
     // Under overload, publishing every 200 wall ms despite less than 200 ms
-    // of simulation progress steals CPU from an already late simulation. Executed
-    // commands still trigger their immediate publication inside the worker.
+    // of simulation progress steals CPU from an already late simulation. This
+    // is the only publication decision: a committed command is published at
+    // the next gate tick (Design B), so the total stays at most 5 Hz.
     const publish = now >= this.nextSnapshotAt && (this.tick + ticks) * TICK_MS >= this.nextSnapshotSimulationMs;
     if (publish) {
       this.nextSnapshotAt +=
@@ -771,6 +780,14 @@ export class LiveMatch {
     this.cadence.record(this.tick, this.now());
     if (result.diagnostics) this.latestDiagnostics = result.diagnostics;
     if (result.seats) this.runtimeSeats = result.seats;
+    if (result.commandVisible && this.pendingCommandTick === undefined) this.pendingCommandTick = result.tick;
+    if (publish && this.pendingCommandTick !== undefined) {
+      const wait = Math.max(0, result.tick - this.pendingCommandTick);
+      this.commandPublication.count++;
+      this.commandPublication.totalWaitTicks += wait;
+      this.commandPublication.maxWaitTicks = Math.max(this.commandPublication.maxWaitTicks, wait);
+      this.pendingCommandTick = undefined;
+    }
     if (result.packet) {
       this.publicationSequence++;
       this.broadcast(this.state(result.packet));

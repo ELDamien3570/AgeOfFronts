@@ -30,7 +30,7 @@ const advance = (ticks: number, publish = true) => ({
 });
 
 describe("reserved authoritative worker", () => {
-  it("publishes committed human movement before the background snapshot deadline", async () => {
+  it("reports committed human movement and publishes it only at the coordinator's gate tick (N6 Design B)", async () => {
     const worker = new ReservedMatchWorker(), publications: {tick:number;packet:EncodedState}[] = [];
     const unsubscribe=worker.onPublication(publication=>publications.push(publication));
     try {
@@ -47,6 +47,11 @@ describe("reserved authoritative worker", () => {
       for(let at=0;at<100&&!update.commandOutcomes?.some(o=>o.id==="prompt-move"&&o.status==="executed");at++)
         update=await worker.request<MatchAdvance>(advance(1,false));
       expect(update.commandOutcomes).toContainEqual(expect.objectContaining({id:"prompt-move",status:"executed"}));
+      expect(update.commandVisible).toBe(true);
+      // No uncapped command publication: the worker waits for the gate.
+      await new Promise(resolve=>setTimeout(resolve,50));
+      expect(publications).toHaveLength(0);
+      update=await worker.request<MatchAdvance>(advance(1,true));
       await vi.waitFor(()=>expect(publications).toHaveLength(1));
       const visible=decoder.decode(await decodeState<SnapshotPacket>(publications[0].packet));
       expect(visible.tick).toBe(update.tick);

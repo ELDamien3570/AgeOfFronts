@@ -276,13 +276,15 @@ parentPort.on(
               ...(outcomes.length ? {commandOutcomes: outcomes} : {}),
               seats: seats(),
             } satisfies MatchAdvance;
-            // A committed player command should be visible in its authoritative
-            // result tick, rather than waiting for the 5 Hz background cadence.
-            // Deferred/rejected commands do not expose uncommitted intentions;
-            // a committed lead cohort of a deferred selection is published.
-            // Offer once per advance through the same bounded, ordered queue.
-            const publish = request.publish || commandProgress || outcomes.some(outcome => outcome.status === "executed");
+            // N6 (Design B): the coordinator's single 5 Hz gate decides every
+            // publication. A committed command (or the committed lead cohort of
+            // a deferred selection) is reported so the coordinator can account
+            // for it; it is published at the next gate tick (at most one tick
+            // later), never as an extra uncapped publication.
+            const commandVisible = commandProgress || outcomes.some(outcome => outcome.status === "executed");
             commandProgress = false;
+            if (commandVisible) (result as MatchAdvance).commandVisible = true;
+            const publish = request.publish;
             if (publish || match.winner !== null) {
               if (streamPublications && match.winner === null) publications.offer(match.tick, capture);
               else {
