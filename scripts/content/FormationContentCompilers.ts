@@ -110,7 +110,7 @@ const weaponEntry = z
     chargeRecoveryTicks: z.number().int().min(1).max(1200).optional(),
   })
   .strict()
-  .refine((value) => value.melee || value.ranged, "Soldier requires at least one weapon");
+  .refine((value) => value.melee !== null || value.ranged !== null, "Soldier requires at least one weapon");
 const weaponsSchema = z
   .object({
     schemaVersion: z.literal(2),
