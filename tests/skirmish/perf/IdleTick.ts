@@ -22,6 +22,10 @@
  * with perSeat injected squads each (480) and no commands (the Next #2 gate
  * configuration); "hold" = idle plus an explicit hold order per seat.
  * The gate window is ticks 1,200 to 6,000 (measure 4,800).
+ * Behaviour equality: windows[].squadDigest of two builds run from the same
+ * CKPT must match window by window (Mig 500 idle at aof/next-1 da24feff:
+ * tick 1600 f8470043..., tick 2000 e28594b7...). Do not combine with
+ * --cpu-prof: the profiler makes the thread CPU clock under-read.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
