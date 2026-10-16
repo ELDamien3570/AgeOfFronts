@@ -21,7 +21,7 @@ describe("restore clears derived caches", () => {
     const cleared = (rows: number[]) => {
       const a = new Uint16Array(W * H);
       for (const y of rows) for (let x = 0; x < 32; x++) a[y * W + x] = 1;
-      return { cleared: a, sites: [] as never[] };
+      return { cleared: a, sites: new Map() };
     };
     const cost = (topo: PathTopology, start: number, path: number[]) => {
       let total = 0, previous = start;
