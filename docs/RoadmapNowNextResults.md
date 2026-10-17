@@ -49,9 +49,7 @@ Not run because the hardware isn't here: the Oracle A1 runs (routing, idle tick,
 **Decided by the owner**
 - **Rollback checkpoint cost: rollback is off by default.** An operator turns it on with `SKIRMISH_ROLLBACK=1` in the coordinator's environment. With it off, a tick fault ends the match cleanly (the Now #1 path) and no checkpoint is taken. Turn it back on once the checkpoint is incremental or runs off-thread. When on, `CHECKPOINT_INTERVAL_TICKS = 80`, and one tick in 80 pays about 121 ms extra on Med 500 with 8 humans.
 - **I-1 tribe march: no cap.** The 58 ms idle target came from a desktop-to-ARM factor of 2.4, which was estimated, not measured (notes 22:327). It is superseded: the CPU per tick measured here (about 28 ms idle; 43–59 ms with 8 humans) fits the 125 ms budget of an 8 Hz tick on the desktop. The Oracle A1 run is still what settles the real ARM factor.
-
-**Needs you soon**
-- **OD11 start protection**: 8 minutes. Seats die at minutes 9–10. 12 minutes gives 8/8 at minute 12 but 5/6/5 at minute 14.
+- **OD11 start protection: off by default.** It stays a lobby choice (0/5/8/12 min). The owner will decide after a human playtest. The probe numbers (seats die at minutes 9–10 with 8 min; 12 min moves the cliff to minute 14) were all measured with protection on. The tribe changes have not yet been probed with protection off: `npm run probe:playtest -- --out tmp/playtest-probe/p0`.
 - **Mixed army moves**: the server rejects them; the client splits them.
 
 **Balance and content** (recorded in BalanceContract.md)

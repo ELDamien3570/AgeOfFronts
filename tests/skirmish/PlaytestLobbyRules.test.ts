@@ -18,9 +18,9 @@ const create = (settings: object) => clientMessageSchema.safeParse({
 });
 
 describe("playtest lobby rules (13 A1)", () => {
-  it("defaults new lobbies to 8 min protection, 90 min limit and standard AI", () => {
-    expect(base).toMatchObject({ startProtectionMinutes: 8, timeLimitMinutes: 90, aiDifficulty: "standard" });
-    expect(validateLobbySettings(base)).toMatchObject({ startProtectionMinutes: 8 });
+  it("defaults new lobbies to no start protection, 90 min limit and standard AI", () => {
+    expect(base).toMatchObject({ startProtectionMinutes: 0, timeLimitMinutes: 90, aiDifficulty: "standard" });
+    expect(validateLobbySettings(base)).toMatchObject({ startProtectionMinutes: 0 });
   });
 
   it("accepts only the offered choices, and lobbies saved without them", () => {
@@ -35,7 +35,7 @@ describe("playtest lobby rules (13 A1)", () => {
 
   it("maps the lobby rules into the match options, and omits them for legacy lobbies", () => {
     const options = lobbyMatchOptions(base, [{ name: "A" }, { name: "B" }], 7);
-    expect(options).toMatchObject({ seed: 7, humanNames: ["A", "B"], startProtectionMinutes: 8, timeLimitMinutes: 90,
+    expect(options).toMatchObject({ seed: 7, humanNames: ["A", "B"], startProtectionMinutes: 0, timeLimitMinutes: 90,
       aiDifficulty: "standard", tribeOpening: "playtest-v1", diplomacyRules: "raids-v1" });
     const { startProtectionMinutes: _p, timeLimitMinutes: _t, aiDifficulty: _a, ...legacy } = base;
     const old = lobbyMatchOptions(legacy as LobbySettings, [{ name: "A" }], 7);
@@ -45,8 +45,8 @@ describe("playtest lobby rules (13 A1)", () => {
   it("renders translated selects and preview rows", () => {
     const fields = playtestRuleFields();
     expect(fields).toContain('name="startProtectionMinutes"');
-    expect(fields).toContain('<option value="8" selected>8 min</option>');
-    expect(fields).toContain('<option value="0">None</option>');
+    expect(fields).toContain('<option value="8">8 min</option>');
+    expect(fields).toContain('<option value="0" selected>None</option>');
     expect(fields).toContain('<option value="standard" selected>Standard</option>');
     expect(playtestRuleRows(base)).toContain("<dt>Time limit</dt><dd>90 min</dd>");
     for (const key of ["start_protection", "time_limit", "ai_difficulty", "minutes", "protection_none", "difficulty_relaxed",

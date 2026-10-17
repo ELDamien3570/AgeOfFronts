@@ -52,10 +52,11 @@ export const START_PROTECTION_CHOICES = [0, 5, 8, 12] as const;
 export type StartProtectionMinutes = (typeof START_PROTECTION_CHOICES)[number];
 export const TIME_LIMIT_CHOICES = [60, 90, 120] as const;
 export type TimeLimitMinutes = (typeof TIME_LIMIT_CHOICES)[number];
-/** New lobbies' playtest defaults (13 OD4, OD11, OD12). Standard AI is a
+/** New lobbies' playtest defaults (13 OD4, OD11, OD12). Start protection is
+ * off by default (owner decision, pending playtest); 5/8/12 stay lobby choices. Standard AI is a
  * deliberate change from today's (hard) AI for new lobbies only. */
 export const PLAYTEST_LOBBY_DEFAULTS = Object.freeze({
-  startProtectionMinutes: 8 as StartProtectionMinutes,
+  startProtectionMinutes: 0 as StartProtectionMinutes,
   timeLimitMinutes: 90 as TimeLimitMinutes,
   aiDifficulty: "standard" as AiDifficulty,
 });
