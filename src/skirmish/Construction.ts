@@ -16,15 +16,14 @@ import { constructionAvailabilityRejection } from "./content/ConstructionAvailab
 // Shared domain validation also drives placement previews. A preview is advisory;
 // applyCommand checks again against the current authoritative simulation state.
 export const MAX_BUILDING_STACK = 15;
-/** Owner decision OD-7 (05 issue 5 / rec 4): economic buildings stack less
- * deeply than military ones, so one deposit or site cannot carry a whole
- * economy. Types not listed keep MAX_BUILDING_STACK. Restore never re-runs
- * this validator, so older over-stacked saves still load. */
+/** Owner decision OD-7 (05 issue 5 / rec 4): mines and cities stack less
+ * deeply than other buildings, so one deposit or city site cannot carry a
+ * whole economy. Factories and ports keep MAX_BUILDING_STACK (owner: trade
+ * scales with infrastructure). Types not listed keep MAX_BUILDING_STACK.
+ * Restore never re-runs this validator, so older over-stacked saves still load. */
 export const STACK_LIMITS: Readonly<Partial<Record<BuildingType, number>>> = {
   mine: 1,
   city: 3,
-  factory: 5,
-  port: 5,
 };
 export function stackLimit(type: BuildingType): number {
   return STACK_LIMITS[type] ?? MAX_BUILDING_STACK;

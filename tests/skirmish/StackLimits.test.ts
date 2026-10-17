@@ -24,11 +24,12 @@ const stackOf = (type: BuildingType, tile: number, n: number, playerId: number):
 
 describe("per-type stack limits", () => {
   it("records the owner-decision caps (OD-7)", () => {
-    expect(STACK_LIMITS).toEqual({ mine: 1, city: 3, factory: 5, port: 5 });
+    expect(STACK_LIMITS).toEqual({ mine: 1, city: 3 });
     expect(stackLimit("barracks")).toBe(MAX_BUILDING_STACK);
+    expect(stackLimit("port")).toBe(MAX_BUILDING_STACK);
     expect(stackLimit("oil-well")).toBe(MAX_BUILDING_STACK);
   });
-  it.each([["city", 3], ["factory", 5], ["barracks", 15]] as const)(
+  it.each([["city", 3], ["factory", 15], ["barracks", 15]] as const)(
     "accepts a %s stack below %i and rejects the next one",
     (type, limit) => {
       const { game, map, player } = fixture(), tile = map.ref(20, 20);
