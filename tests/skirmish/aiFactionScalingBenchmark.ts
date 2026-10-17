@@ -42,7 +42,7 @@ for (let t = 0; t < seconds * TICKS_PER_SECOND; t++) {
     if (mission && !firstMission.has(p.id)) firstMission.set(p.id, now);
     if (mission && !mission.assessment && mission.port !== undefined && !firstAssessment.has(p.id)) firstAssessment.set(p.id, now);
     const goal = economy.coasts.goals.get(p.id);
-    if (goal && (goal.phase === "complete" || goal.phase === "abort") && !coast.has(p.id)) coast.set(p.id, `${goal.phase}@${now.toFixed(0)}s`);
+    if (goal && (goal.phase === "complete" || goal.phase === "abort") && !coast.has(p.id)) coast.set(p.id, `${goal.phase}@${now.toFixed(0)}s: ${goal.reason}`);
   }
 }
 const assessment = enabled.filter((p) => firstMission.has(p.id)).map((p) => +((firstAssessment.get(p.id) ?? Infinity) - firstMission.get(p.id)!).toFixed(1));
