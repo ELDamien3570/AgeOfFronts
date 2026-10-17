@@ -155,6 +155,18 @@ The Chrome gates U4 (strategic draw p95 < 12 ms at 1,000 squads) and U5
 
 at 1600x900, device pixel ratio 1, on an idle machine.
 
+## Next #5: I9 coast goals
+
+`node --import tsx tests/skirmish/aiFactionScalingBenchmark.ts 320 heightmap-test1 1272661902`
+still completes no coast goal on Mediterranean 500 (gate: at least one).
+The probe now records each goal's reason: 12 of 14 goals wait from the
+opening for an acquisition force (two to four idle squads beyond two home
+reserves; other AI work holds every idle squad) and abort at about 180 s
+with "No funded, reachable coastal market opportunity"; the other two reach
+"fund" and miss the 300 s deadline while saving for the port. Naval
+assessments complete within 2.8 s. Squad priority for coast goals is an AI
+design choice left open.
+
 ## Next #8: map generation on the A1 host
 
 Not run (no ARM host). Desktop genMs at 1000 / seed 1: Black Forest 4,697,
