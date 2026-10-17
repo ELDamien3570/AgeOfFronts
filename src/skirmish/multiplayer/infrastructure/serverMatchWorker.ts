@@ -70,6 +70,9 @@ const testFaultTick = (workerData as { testFaultTick?: number } | undefined)?.te
 // generations throw, to exercise the real prepare retry (R2-L7).
 let testPrepareFailures = (workerData as { testPrepareFailures?: number } | undefined)?.testPrepareFailures ?? 0;
 let testFaultInjected = false;
+// Rollback containment only when the operator opted in (SKIRMISH_ROLLBACK=1):
+// without it the runner holds no checkpoint and a fault ends the match.
+const rollback = (workerData as { rollback?: boolean } | undefined)?.rollback === true;
 const attach = (target: Skirmish) => {
   if (testFaultTick !== undefined) {
     const step = target.step.bind(target);
@@ -86,7 +89,7 @@ const startMatch = (map: RuntimeMap, options: ConstructorParameters<typeof Skirm
   runtime = { map, options };
   match = new Skirmish(makeMap(map), options);
   attach(match);
-  runner = new MatchAdvanceRunner(match, () => ({ ...diagnosticContext, source: process.env.GIT_COMMIT ?? "unknown" }), undefined, {
+  runner = new MatchAdvanceRunner(match, () => ({ ...diagnosticContext, source: process.env.GIT_COMMIT ?? "unknown" }), undefined, !rollback ? undefined : {
     create: () => new Skirmish(makeMap(runtime!.map), runtime!.options),
     attach,
     installed: (recovered) => {

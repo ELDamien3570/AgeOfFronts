@@ -35,7 +35,7 @@ The publication and client-cost increases come from the last 34 commits, and the
 | Next 6 Naval, 7 Combat | All met. The FormationPerformance C3 test is now a normal passing test |
 | Next 8 Map gen | Met. The A1 timing was not run |
 | Next 10 Restore / rollback | Met. R2-M11 (the bug that disconnected every online client) is fixed. Rollback containment exists. The checkpoint costs about 121 ms every 80 ticks (see the owner decisions) |
-| Next 2 Idle tick | I-0, I-2, I-3 done. I-1 needs your choice. The idle target is missed |
+| Next 2 Idle tick | I-0, I-2, I-3 done. I-1: no cap (owner decision). The old 58 ms target is superseded by the 8 Hz budget |
 | Next 5 AI | 15/21. AiBattleCompetence is green. Coast goals still complete 0 times (pre-existing). Parts of T-a and T-c are left |
 | Next 9 Balance | Rows, BalanceMatrix and BalanceContract are done. Pacing seeds 9001/47 and the 60-minute run are not done |
 | Next 3 Playtest | 2 of 3 seeds pass ≥ 6/8 (6/6/3). Depends on OD11 |
@@ -46,9 +46,11 @@ Not run because the hardware isn't here: the Oracle A1 runs (routing, idle tick,
 
 ## Owner decisions taken by default (each is a named constant)
 
+**Decided by the owner**
+- **Rollback checkpoint cost: rollback is off by default.** An operator turns it on with `SKIRMISH_ROLLBACK=1` in the coordinator's environment. With it off, a tick fault ends the match cleanly (the Now #1 path) and no checkpoint is taken. Turn it back on once the checkpoint is incremental or runs off-thread. When on, `CHECKPOINT_INTERVAL_TICKS = 80`, and one tick in 80 pays about 121 ms extra on Med 500 with 8 humans.
+- **I-1 tribe march: no cap.** The 58 ms idle target came from a desktop-to-ARM factor of 2.4, which was estimated, not measured (notes 22:327). It is superseded: the CPU per tick measured here (about 28 ms idle; 43–59 ms with 8 humans) fits the 125 ms budget of an 8 Hz tick on the desktop. The Oracle A1 run is still what settles the real ARM factor.
+
 **Needs you soon**
-- **Rollback checkpoint cost**: `CHECKPOINT_INTERVAL_TICKS = 80`. One tick in 80 pays about 121 ms extra on Med 500 with 8 humans. Options: keep it, make the checkpoint incremental or off-thread, or turn rollback off by default.
-- **I-1 tribe march**: K = 4, K = 8 or border growth. Not implemented.
 - **OD11 start protection**: 8 minutes. Seats die at minutes 9–10. 12 minutes gives 8/8 at minute 12 but 5/6/5 at minute 14.
 - **Mixed army moves**: the server rejects them; the client splits them.
 

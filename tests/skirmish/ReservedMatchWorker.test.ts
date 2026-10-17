@@ -7,6 +7,7 @@ import { mapIdentity } from "../../src/skirmish/multiplayer/application/MapIdent
 import { loadServerMap } from "../../src/skirmish/multiplayer/infrastructure/ServerMap";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import type { MatchAdvance, PreparedMatch } from "../../src/skirmish/multiplayer/application/MatchExecutor";
+import { MATCH_FAULT_CODE } from "../../src/skirmish/multiplayer/application/MatchExecutor";
 import { ReservedMatchWorker } from "../../src/skirmish/multiplayer/infrastructure/ReservedMatchWorker";
 import type { EncodedState } from "../../src/skirmish/multiplayer/StateCodec";
 import { decodeState } from "../../src/skirmish/multiplayer/StateCodec";
@@ -180,7 +181,7 @@ describe("reserved authoritative worker", () => {
     }
   });
   it("rolls back a real worker fault: drops the advance's commands, publishes a baseline, keeps advancing (Next #10)", async () => {
-    const worker = new ReservedMatchWorker({ testFaultTick: 6 });
+    const worker = new ReservedMatchWorker({ testFaultTick: 6, rollback: true });
     try {
       const initial = await worker.request<MatchAdvance>(initialize);
       const decoder = new SnapshotDecoder();
@@ -208,6 +209,18 @@ describe("reserved authoritative worker", () => {
       expect(delta.reset).toBe(false);
       expect(rebased.decode(delta).tick).toBe(10);
     } finally {
+      await worker.close();
+    }
+  }, 60_000);
+  it("ends the match on a real worker fault when rollback is off (the default)", async () => {
+    vi.stubEnv("SKIRMISH_ROLLBACK", "");
+    const worker = new ReservedMatchWorker({ testFaultTick: 6 });
+    try {
+      await worker.request<MatchAdvance>(initialize);
+      await worker.request<MatchAdvance>(advance(4, false));
+      await expect(worker.request<MatchAdvance>(advance(4, false))).rejects.toThrow(MATCH_FAULT_CODE);
+    } finally {
+      vi.unstubAllEnvs();
       await worker.close();
     }
   }, 60_000);
@@ -264,10 +277,10 @@ describe("reserved authoritative worker", () => {
       expect(update.diagnostics!.memory.heapUsed).toBeGreaterThan(0);
       // I-0: thread CPU of the simulation step rides with the wall timings.
       expect(update.diagnostics!.timings.simulate!.samples).toBe(2);
-      // "commands" and the rollback "checkpoint" are timed apart from the ticks:
-      // only the first advance took a checkpoint (interval 20 ticks).
+      // "commands" are timed apart from the ticks. Rollback is off by default,
+      // so no advance pays for a checkpoint.
       expect(update.diagnostics!.timings.commands!.samples).toBe(2);
-      expect(update.diagnostics!.timings.checkpoint!.samples).toBe(1);
+      expect(update.diagnostics!.timings.checkpoint?.samples ?? 0).toBe(0);
       expect(update.diagnostics!.cpu).toMatchObject({ windowTicks: 400, ticks: 4, samples: 2, complete: false });
       expect(update.diagnostics!.memory.liveHeapBytes).toBeUndefined();
       expect(update.diagnostics!.payloadBytes).toBe(update.packet!.binary!.byteLength);

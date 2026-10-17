@@ -10,6 +10,15 @@ import type {
 } from "../application/MatchExecutor";
 import { RequestDeadlines, requestTimeoutMs } from "./RequestDeadlines";
 import { liveHeapRequested } from "./WorkerRuntimeDiagnostics";
+
+/** Operator opt-in for rollback containment (Next #10): set to "1" in the
+ * coordinator's environment and every match worker it starts holds a
+ * checkpoint every CHECKPOINT_INTERVAL_TICKS and rolls a faulting advance back.
+ * Off by default (owner decision): a checkpoint costs about one tick's budget
+ * on Med 500 with 8 humans, so a fault ends the match cleanly instead until
+ * the checkpoint is incremental or off-thread. */
+export const ROLLBACK_ENV = "SKIRMISH_ROLLBACK";
+export const rollbackRequested = (env: NodeJS.ProcessEnv = process.env) => env[ROLLBACK_ENV] === "1";
 import { prepareAttemptSeeds } from "../application/PreparePlan";
 
 const workerPath = resolve(
@@ -67,14 +76,15 @@ export class ReservedMatchWorker implements MatchExecutor {
   /** Tests only: `testFaultTick` makes the worker's simulation throw once
    * when it steps from that tick (the real rollback path);
    * `testPrepareFailures` makes the first N map generations throw (the real
-   * prepare retry). */
-  constructor(options: { testFaultTick?: number; testPrepareFailures?: number } = {}) {
+   * prepare retry). `rollback` overrides SKIRMISH_ROLLBACK. */
+  constructor(options: { testFaultTick?: number; testPrepareFailures?: number; rollback?: boolean } = {}) {
     this.worker = new Worker(
       workerPath,
       {
         execArgv: ["--import", "tsx"],
         resourceLimits: { maxOldGenerationSizeMb: 384 },
         workerData: { publicationPort: this.channel.port2, liveHeap: liveHeapRequested(),
+          rollback: options.rollback ?? rollbackRequested(),
           ...(options.testFaultTick === undefined ? {} : { testFaultTick: options.testFaultTick }),
           ...(options.testPrepareFailures === undefined ? {} : { testPrepareFailures: options.testPrepareFailures }) },
         transferList: [this.channel.port2],
