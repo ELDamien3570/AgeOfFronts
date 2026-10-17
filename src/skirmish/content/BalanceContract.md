@@ -190,7 +190,7 @@ commit messages and in the tests that pin it.
 | Age-up time | Advancement takes 90, 105, 120, 135, 150, 165, 180 s (was 50-85 s). Gold unchanged. | `ADVANCES` (`content/Technology.ts`) | OD-2 |
 | Trade tariff | A foreign market owner earns 75% of the trader's payout (was 100%; 25% before the owner's change). The trader keeps the full payout. | `RECEIVER_TARIFF_PERCENT = 75` (`content/Economy.ts`) | OD-3 (owner) |
 | Market intake | A market accepts at most one largest foreign visit (sea, foreign acceptance) of foreign goods per 5 s (owner; was 20 s), refilled continuously. Domestic deliveries are exempt; per-visit limits are unchanged. | `MARKET_INTAKE_WINDOW_SECONDS = 5` (`domain/TradeReceiving.ts`) | OD-4 (owner) |
-| Commerce cap | Only 3 + age-index completed factories and ports per faction produce trade stock: goods/s = 2 x (age + 1) x min(producers, 3 + age). | `COMMERCE_PRODUCER_BASE = 3` (`content/Economy.ts`) | OD-5 |
+| Commerce cap | Removed by the owner: every completed factory and port produces trade stock (more infrastructure means more trade). | none | OD-5 (owner: removed) |
 | Land income | `20 x (age + 1) / 2 + land / 40` gold per second: 10 at Stone, 20 at Bronze ... 80 at Modern, plus the land term (was a flat 20 + land / 40). The notes' default (05 rec 3). | `LAND_INCOME_BASE_GOLD = 20`, `landGoldIncome` (`content/Economy.ts`) | OD-6 |
 | Stacking | Mine 1 per deposit for every faction, city 3, factory 5, port 5; every other type 15. | `STACK_LIMITS`, `MAX_BUILDING_STACK` (`Construction.ts`) | OD-7 |
 | Refit price | Gold per squad or hull is max(per-age price, ceil(60% x (target recruit gold - source recruit gold))). A Stone warship's Modern refit is 2,940 (was 2,600); squad refits are unchanged for current content. | `REFIT_FLOOR_PERCENT = 60` (`domain/Refitting.ts`) | OD-8 |
@@ -202,7 +202,7 @@ OD-4 deviates from the notes' example (`marketDropCapacity(stack)` goods per
 20 s for all intake), which is smaller than the authored foreign and sea
 per-visit allowances and would have cut every first delivery and the domestic
 economy. Tests: `AgeUpGate`, `ResearchPacing`, `TradeFleet`, `TradeReceiving`,
-`CommerceCap`, `StackLimits`, `RefitQuote`, `TribeOpening`, `AiTribeExpansion`,
+`StackLimits`, `RefitQuote`, `TribeOpening`, `AiTribeExpansion`,
 `LandIncome`.
 
 ## Content decisions

@@ -59,7 +59,7 @@ Not run because the hardware isn't here: the Oracle A1 runs (routing, idle tick,
 - Age-up rule: 3 trees, or 2 trees plus warfare.
 - Advance times 90–180 s.
 - Receiver tariff 75 % (owner); market intake window 5 s (owner).
-- Commerce cap 3 + age.
+- Commerce cap: removed by the owner (not a performance item; every factory and port produces trade stock).
 - Stack limits: mine 1, city 3, factory 5, port 5.
 - Refit floor 60 %.
 - Tribe opening: cap 6 + 4 per age, 3 starting squads, campaign gate at minute 8 / Bronze.

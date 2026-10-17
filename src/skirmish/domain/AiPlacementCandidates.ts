@@ -14,7 +14,7 @@ import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { Expansion } from "./Expansion";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
-import { TRADE_RULES, commerceProducerLimit, marketDropCapacity } from "../content/Economy";
+import { TRADE_RULES, marketDropCapacity } from "../content/Economy";
 import { tradeSupplyLimited } from "./AiTradeOpportunities";
 import { militaryPosture } from "./AiMilitaryPosture";
 import { personalityOf } from "../content/AiPersonalities";
@@ -217,7 +217,7 @@ export class AiPlacementCandidates {
       const growth = (naval: boolean) => {
         const evidence = naval ? productiveSea : productiveLand;
         const source = evidence && this.expansion.trade.sourceStatus(evidence.source);
-        return safeGrowth && factories + ports < Math.min(TRADE_RULES.actorCap, commerceProducerLimit(snapshot.age)) &&
+        return safeGrowth && factories + ports < TRADE_RULES.actorCap &&
           !snapshot.buildings.some(b=>b.type===(naval?"port":"factory") && b.remainingTicks>0) &&
           !!evidence && tradeSupplyLimited(evidence.quote,source);
       };
