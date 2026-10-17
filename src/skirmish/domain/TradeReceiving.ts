@@ -7,7 +7,7 @@ import { marketDropCapacity, marketDropLimit, TRADE_RULES } from "../content/Eco
  * 20 s, which is below the authored foreign and sea per-visit allowances and
  * would cut every first visit; domestic deliveries are exempt (issue 4 is
  * about foreign income). Per-visit limits still apply. */
-export const MARKET_INTAKE_WINDOW_SECONDS = 20;
+export const MARKET_INTAKE_WINDOW_SECONDS = 5;
 const WINDOW_TICKS = secondsToTicks(MARKET_INTAKE_WINDOW_SECONDS);
 
 // Legacy units/tick fields are accepted on restore but ignored (they belonged

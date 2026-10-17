@@ -58,7 +58,7 @@ Not run because the hardware isn't here: the Oracle A1 runs (routing, idle tick,
 - Modern MG crew HP 200 → 1000.
 - Age-up rule: 3 trees, or 2 trees plus warfare.
 - Advance times 90–180 s.
-- Receiver tariff 25 %.
+- Receiver tariff 75 % (owner); market intake window 5 s (owner).
 - Commerce cap 3 + age.
 - Stack limits: mine 1, city 3, factory 5, port 5.
 - Refit floor 60 %.

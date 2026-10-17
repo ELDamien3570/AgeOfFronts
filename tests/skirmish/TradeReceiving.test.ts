@@ -29,7 +29,7 @@ describe("per-trip market limits and multi-stop trade", () => {
     expect(cold.checkpoint()).toEqual(r.checkpoint());
   });
   it("saturates a market's foreign intake within the window and refills it continuously (OD-4)", () => {
-    expect(MARKET_INTAKE_WINDOW_SECONDS).toBe(20);
+    expect(MARKET_INTAKE_WINDOW_SECONDS).toBe(5);
     const r = new TradeReceiving(); r.configure("1:10",10,0);
     const budget = marketDropLimit(10,true,true,false);
     expect(budget).toBe(150);
@@ -50,7 +50,9 @@ describe("per-trip market limits and multi-stop trade", () => {
     expect(r.checkpoint()).toEqual(saved);
     // Frequent small deliveries never lose partial refill.
     let taken = 0;
-    for (let t = 1; t <= secondsToTicks(MARKET_INTAKE_WINDOW_SECONDS); t++) taken += r.take("1:10",t,1,false,true,false);
+    const windowTicks = secondsToTicks(MARKET_INTAKE_WINDOW_SECONDS);
+    const small = Math.ceil(budget / windowTicks) + 1;
+    for (let t = 1; t <= windowTicks; t++) taken += r.take("1:10",t,small,false,true,false);
     expect(taken).toBe(budget);
     expect(r.available("1:10",3*secondsToTicks(MARKET_INTAKE_WINDOW_SECONDS),true,true,false)).toBe(150);
     const cold = new TradeReceiving(); cold.restore(r.checkpoint());

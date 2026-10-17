@@ -32,7 +32,7 @@ export const TRADE_RULES = {
 /** Owner decision OD-3 (05 issue 4 / rec 3): a foreign market owner earns this
  * share of the trader's payout instead of the whole payout. The trader keeps
  * the full payout. */
-export const RECEIVER_TARIFF_PERCENT = 25;
+export const RECEIVER_TARIFF_PERCENT = 75;
 /** Owner decision OD-6 (05 rec 3, the notes' default): land income scales
  * with age, `20 x (age + 1) / 2 + land / 40` gold per second, so territory
  * stays relevant in Modern: 10 at Stone, 20 at Bronze ... 80 at Modern, plus

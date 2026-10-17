@@ -188,8 +188,8 @@ commit messages and in the tests that pin it.
 | --- | --- | --- | --- |
 | Age-up gate | A nation advances with all three current-age trees, or two trees with warfare at most one technology short. Tribes keep any two trees (plus the 75% rule). | `ADVANCE_WARFARE_SHORTFALL = 1` (`domain/Progression.ts`) | OD-1 |
 | Age-up time | Advancement takes 90, 105, 120, 135, 150, 165, 180 s (was 50-85 s). Gold unchanged. | `ADVANCES` (`content/Technology.ts`) | OD-2 |
-| Trade tariff | A foreign market owner earns 25% of the trader's payout (was 100%). The trader keeps the full payout. | `RECEIVER_TARIFF_PERCENT = 25` (`content/Economy.ts`) | OD-3 |
-| Market intake | A market accepts at most one largest foreign visit (sea, foreign acceptance) of foreign goods per 20 s, refilled continuously. Domestic deliveries are exempt; per-visit limits are unchanged. | `MARKET_INTAKE_WINDOW_SECONDS = 20` (`domain/TradeReceiving.ts`) | OD-4 |
+| Trade tariff | A foreign market owner earns 75% of the trader's payout (was 100%; 25% before the owner's change). The trader keeps the full payout. | `RECEIVER_TARIFF_PERCENT = 75` (`content/Economy.ts`) | OD-3 (owner) |
+| Market intake | A market accepts at most one largest foreign visit (sea, foreign acceptance) of foreign goods per 5 s (owner; was 20 s), refilled continuously. Domestic deliveries are exempt; per-visit limits are unchanged. | `MARKET_INTAKE_WINDOW_SECONDS = 5` (`domain/TradeReceiving.ts`) | OD-4 (owner) |
 | Commerce cap | Only 3 + age-index completed factories and ports per faction produce trade stock: goods/s = 2 x (age + 1) x min(producers, 3 + age). | `COMMERCE_PRODUCER_BASE = 3` (`content/Economy.ts`) | OD-5 |
 | Land income | `20 x (age + 1) / 2 + land / 40` gold per second: 10 at Stone, 20 at Bronze ... 80 at Modern, plus the land term (was a flat 20 + land / 40). The notes' default (05 rec 3). | `LAND_INCOME_BASE_GOLD = 20`, `landGoldIncome` (`content/Economy.ts`) | OD-6 |
 | Stacking | Mine 1 per deposit for every faction, city 3, factory 5, port 5; every other type 15. | `STACK_LIMITS`, `MAX_BUILDING_STACK` (`Construction.ts`) | OD-7 |

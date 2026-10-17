@@ -197,7 +197,7 @@ describe("bounded civilian trade", () => {
     expect(expansion.supply.goods.get(sources[0].id)).toBe(1000 - trade.actors.reduce((n, a) => n + a.cargo, 0));
     expect(isDeepStrictEqual(clone.checkpoint(), game.checkpoint())).toBe(true);
   });
-  it.each([[false,false],[false,true],[true,false],[true,true]])("pays the trader in full, the market owner a 25% tariff, and publishes the recipient's income label (naval=%s, allied=%s)",(naval,allied)=>{
+  it.each([[false,false],[false,true],[true,false],[true,true]])("pays the trader in full, the market owner a 75% tariff, and publishes the recipient's income label (naval=%s, allied=%s)",(naval,allied)=>{
     const {game,trade,step}=fleet(naval?0:1,naval?1:0);
     if(allied){
       game.expansion!.diplomacy.action(game.players[0],game.players[1],"offer",0);
@@ -212,7 +212,7 @@ describe("bounded civilian trade", () => {
     step();
     const income=game.players[0].gold-before[0];
     const tariff=Math.floor(income*RECEIVER_TARIFF_PERCENT/100);
-    expect(RECEIVER_TARIFF_PERCENT).toBe(25);
+    expect(RECEIVER_TARIFF_PERCENT).toBe(75);
     expect(income).toBeGreaterThan(0);
     expect(tariff).toBeGreaterThan(0);
     expect(game.players[1].gold-before[1]).toBe(tariff);
