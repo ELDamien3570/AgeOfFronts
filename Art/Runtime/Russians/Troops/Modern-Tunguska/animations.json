@@ -1,5 +1,35 @@
 {
   "actorCount": 1,
+  "source": "Art/Cultures/Russians/Units/Modern/Tunguska/animations.json",
+  "metadataHash": "c97445bb15a9ff7b3ffe5ecfa44656e4031c5c219a06f65939e87fb614b0bfee",
+  "hashes": {
+    "Art/Cultures/Russians/Units/Modern/Tunguska/Idle-v3.png": "37084efa05e29168d63a7845a057e9139fafe67d91c5f70db12c01122be2749b",
+    "Art/Runtime/Ages/impact-shell-detonate.png": "127922ca7c346d1a691618076a2ec4373f1b4d42d8b183afa481df6eebcd31b4",
+    "Art/Cultures/Russians/Units/Modern/Tunguska/GunFire-v3.png": "d2ea1d04cebe9be557f8acaeb78f1f805366719e086b84bcb8c9c4d542cf94cd"
+  },
+  "rigidBody": {
+    "version": 1,
+    "file": "audit/body.png",
+    "surfaceMask": "audit/surface-mask.png",
+    "bounds": [
+      55,
+      16,
+      200,
+      240
+    ],
+    "pivot": {
+      "x": 128,
+      "y": 128
+    },
+    "sourceFrame": 0,
+    "sourceClip": "idle",
+    "sourceBounds": [
+      214,
+      83,
+      454,
+      454
+    ]
+  },
   "animations": [
     {
       "id": "idle",
@@ -16,7 +46,7 @@
         250,
         250
       ],
-      "description": "Stationary hull and guns with the search radar scanning.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -24,8 +54,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 167.0,
-            "y": 143.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -34,8 +64,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.5,
-            "y": 143.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -44,8 +74,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 93.25,
-            "y": 143.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -54,8 +84,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 167.0,
-            "y": 126.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -64,8 +94,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 129.0,
-            "y": 125.75
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -74,8 +104,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 94.0,
-            "y": 126.75
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -87,9 +117,6 @@
         4,
         5
       ],
-      "sha256": "37084efa05e29168d63a7845a057e9139fafe67d91c5f70db12c01122be2749b",
-      "scaleX": 0.982906,
-      "scaleY": 1.021021,
       "releaseFrame": 3
     },
     {
@@ -107,7 +134,7 @@
         100,
         100
       ],
-      "description": "Tracks cycle while the vehicle holds its forward heading.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -115,8 +142,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 148.0,
-            "y": 132.75
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -125,8 +152,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 127.75,
-            "y": 132.5
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -135,8 +162,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 108.75,
-            "y": 132.75
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -145,8 +172,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 147.5,
-            "y": 126.5
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -155,8 +182,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 126.5
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -165,8 +192,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 108.0,
-            "y": 126.5
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -178,9 +205,6 @@
         4,
         5
       ],
-      "sha256": "b0b1ac52d4b99ba3458a1d4ec10b2434085abcb5d3d3d455c7cceb923228f2f5",
-      "scaleX": 0.7705193,
-      "scaleY": 0.8607595,
       "releaseFrame": 3
     },
     {
@@ -198,7 +222,7 @@
         100,
         200
       ],
-      "description": "Paired autocannons fire from their four forward muzzle tips.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -206,8 +230,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 132.75,
-            "y": 150.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -216,8 +240,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.25,
-            "y": 150.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -226,8 +250,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 123.0,
-            "y": 150.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -236,8 +260,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 133.0,
-            "y": 132.5
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -246,8 +270,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.25,
-            "y": 132.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -256,8 +280,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 123.0,
-            "y": 132.5
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -269,9 +293,6 @@
         4,
         5
       ],
-      "sha256": "d2ea1d04cebe9be557f8acaeb78f1f805366719e086b84bcb8c9c4d542cf94cd",
-      "scaleX": 1.0244989,
-      "scaleY": 1.0932476,
       "releaseFrame": 3
     },
     {
@@ -289,7 +310,7 @@
         300,
         500
       ],
-      "description": "Damage, localized fire and collapse into a settled wreck.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -297,8 +318,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 153.0,
-            "y": 134.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -307,8 +328,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 134.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -317,8 +338,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 103.75,
-            "y": 134.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -327,8 +348,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 152.75,
-            "y": 129.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -337,8 +358,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 127.75,
-            "y": 129.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -347,8 +368,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 103.75,
-            "y": 129.25
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -360,10 +381,6 @@
         4,
         5
       ],
-      "sha256": "b1a00b5699a48d8dec8e5a7df798f231b9673e4e7602cc6e638049ae35d2d3bd",
-      "wreckFile": "Wreck-v3.png",
-      "scaleX": 0.8812261,
-      "scaleY": 0.8923885,
       "releaseFrame": 3
     },
     {
@@ -381,7 +398,7 @@
         180,
         260
       ],
-      "description": "Localized armor impact, brief recoil and recovery.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -389,8 +406,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 154.75,
-            "y": 139.75
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -399,8 +416,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 134.0,
-            "y": 140.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -409,8 +426,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 112.0,
-            "y": 140.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -419,8 +436,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 155.5,
-            "y": 135.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -429,8 +446,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 133.5,
-            "y": 135.25
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -439,8 +456,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 112.5,
-            "y": 135.25
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -452,19 +469,7 @@
         4,
         5
       ],
-      "sha256": "a4458ba04c3ab8f3cbe305ea257ced8aa7acb2738a16573294e89fe649b3a50e",
-      "scaleX": 0.7603306,
-      "scaleY": 0.7718502,
       "releaseFrame": 3
     }
-  ],
-  "source": "Art/Cultures/Russians/Units/Modern/Tunguska/animations.json",
-  "metadataHash": "c97445bb15a9ff7b3ffe5ecfa44656e4031c5c219a06f65939e87fb614b0bfee",
-  "hashes": {
-    "Art/Cultures/Russians/Units/Modern/Tunguska/Idle-v3.png": "37084efa05e29168d63a7845a057e9139fafe67d91c5f70db12c01122be2749b",
-    "Art/Cultures/Russians/Units/Modern/Tunguska/Running-v3.png": "b0b1ac52d4b99ba3458a1d4ec10b2434085abcb5d3d3d455c7cceb923228f2f5",
-    "Art/Cultures/Russians/Units/Modern/Tunguska/GunFire-v3.png": "d2ea1d04cebe9be557f8acaeb78f1f805366719e086b84bcb8c9c4d542cf94cd",
-    "Art/Cultures/Russians/Units/Modern/Tunguska/Death-v3.png": "b1a00b5699a48d8dec8e5a7df798f231b9673e4e7602cc6e638049ae35d2d3bd",
-    "Art/Cultures/Russians/Units/Modern/Tunguska/Hit-v3.png": "a4458ba04c3ab8f3cbe305ea257ced8aa7acb2738a16573294e89fe649b3a50e"
-  }
+  ]
 }

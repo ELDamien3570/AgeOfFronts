@@ -1845,12 +1845,18 @@
     },
     "facing": "screen-up",
     "source": "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/animations.json",
+    "metadataHash": "de986597e43f5ebca0bd8d62c5ffb37b3e7b5a6072ed280cc326c189d0fa924d",
     "hashes": {
       "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/Idle-Sheet_00.png": "eca1d1e5b8eed2b6fe934e797e412015a44d1908371cc00f12e714778909dc2b",
-      "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/Movement-Sheet_00.png": "915b579a5069a346f0db8c09e325c4ac4bbc297aa37bd3ceb27bb980d481b884",
+      "Art/Runtime/Ages/impact-shell-detonate.png": "127922ca7c346d1a691618076a2ec4373f1b4d42d8b183afa481df6eebcd31b4",
       "Art/Weapon Icons/Modern Defense/Vehicles/WheeledSAM_Modern/Attack-Sheet_00.png": "756cf606bb686abf134fb13c8defce663145e074496a3bcc006ec1ef43e0de0f"
     },
-    "poster": "modern-anti-air-portrait.png"
+    "poster": "modern-anti-air-portrait.png",
+    "rigidBody": {
+      "version": 1,
+      "file": "audit/modern-anti-air/body.png",
+      "surfaceMask": "audit/modern-anti-air/surface-mask.png"
+    }
   },
   "building-stoneage-city": {
     "file": "building-stoneage-city.png",

@@ -1,4 +1,3 @@
-import {TICKS_PER_SECOND} from "../Protocol";
 import {secondsToTicks} from '../Protocol';
 import { recruitmentVariant } from '../content/FormationRecipes';
 import { scaledRecipeCost } from './Manpower';
@@ -10,7 +9,9 @@ import {
   buildingTechnology,
   buildingTicks,
 } from "../content/Buildings";
-import { cityReserveIncome } from "../content/Economy";
+import { manpowerCapacity } from "./AiManpowerCapacity";
+import { landRecruitmentTicks } from "./Recruitment";
+import { AI_CAPACITY_SECONDS } from "./AiInfrastructureCapacity";
 import { ADVANCES, TECHNOLOGIES } from "../content/Technology";
 import { UNITS } from "../content/Units";
 import type { AiPriority } from "./AiBudgetLedger";
@@ -25,7 +26,7 @@ import {
   researchTerms,
 } from "./Progression";
 import { PRODUCTION_RECIPES } from "./Supply";
-import { militaryPosture } from "./AiMilitaryPosture";
+import { recruitmentTierAllowed } from "./AiRecruitmentPolicy";
 
 export interface AiEconomicIntent {
   id: string;
@@ -40,12 +41,38 @@ export interface AiEconomicIntent {
   earliestTick: number;
   expiresTick: number;
   prerequisites: string[];
+  /** A finite first producer chain, versus repeatable throughput expansion. */
+  bottleneck?: "bootstrap" | "capacity";
 }
 export interface AiInvestment {
   type: BuildingType;
   tile: number;
   objective: number;
   reason: string;
+  bottleneck?: "bootstrap" | "capacity";
+}
+
+/** Placement supplies these reasons only for an unmet production or trade
+ * bottleneck. Ordinary capacity proposals must not interrupt research savings.
+ * Prerequisite research inherits the investment's bottleneck classification.
+ */
+export function isEconomicBottleneck(
+  intent: Pick<AiEconomicIntent, "reason">,
+): boolean {
+  return [
+    "production-prerequisite:",
+    "production-capacity:",
+    "production-ready:",
+    "trade-capacity:",
+  ].some((reason) => intent.reason.includes(reason));
+}
+
+export function economicBottleneckRank(
+  intent: Pick<AiEconomicIntent, "reason" | "bottleneck">,
+): number {
+  return intent.reason.includes("production-ready:")
+    ? 2
+    : Number(isEconomicBottleneck(intent));
 }
 
 // A bounded event-horizon policy. It scores relative utility, never treats
@@ -70,6 +97,7 @@ export function economicCandidates(
     reason: string,
     delay = 0,
     prerequisites: string[] = [],
+    bottleneck?: AiEconomicIntent["bottleneck"],
   ) => {
     if (candidates.length >= 24) return;
     // Development utility uses the same scale across ages. Normalize its gold
@@ -97,27 +125,13 @@ export function economicCandidates(
       earliestTick: snapshot.tick,
       expiresTick: snapshot.tick + (kind === "research" || kind === "advance" ? secondsToTicks(600) : secondsToTicks(120)),
       prerequisites,
+      bottleneck,
     });
   };
-  const coreMissing = Object.entries(demand.units).reduce(
-    (n, [role, count]) =>
-      n +
-      Math.max(
-        0,
-        count! -
-          snapshot.force.role(
-            role as Parameters<typeof snapshot.force.role>[0],
-          ),
-      ),
-    0,
-  );
   const availableKits = Object.entries(snapshot.liquid.items ?? {})
     .filter(([id]) => id.startsWith("equipment:"))
     .reduce((n, [, count]) => n + count, 0);
-  const reserveShortage = Math.max(
-    0,
-    Math.min(8, coreMissing) * 12 - (snapshot.liquid.reserves ?? 0),
-  );
+  const reserveShortage = manpowerCapacity(snapshot,demand).shortage;
   const materialShortage = Object.entries(demand.equipment).some(
     ([id, n]) =>
       (snapshot.liquid.items?.[id] ?? 0) + (snapshot.incoming[id] ?? 0) < n,
@@ -132,10 +146,7 @@ export function economicCandidates(
     if (site.type === "city")
       value +=
         reserveShortage > 0
-          ? Math.floor(
-              (Math.max(0, secondsToTicks(120) - ticks) * cityReserveIncome(snapshot.age)) /
-                TICKS_PER_SECOND,
-            ) + Math.min(4000, reserveShortage)
+          ? 6000 + Math.min(4000, reserveShortage * 25)
           : 0;
     if (site.type === "factory") {
       const ore = [
@@ -190,6 +201,7 @@ export function economicCandidates(
           `prerequisite:${site.reason}`,
           researchTerms(research, speed).ticks,
           [technology],
+          site.bottleneck,
         );
       continue;
     }
@@ -214,6 +226,8 @@ export function economicCandidates(
       value,
       site.reason,
       ticks,
+      [],
+      site.bottleneck,
     );
   }
   for (const role of [
@@ -236,6 +250,7 @@ export function economicCandidates(
         (u) =>
           u.role === role &&
           snapshot.research.includes(u.technologyId) &&
+          recruitmentTierAllowed(snapshot, u) &&
           Object.entries(scaledRecipeCost(u,recruitmentVariant(u.id,snapshot.research)).items ?? {}).every(
             ([id, n]) => (snapshot.liquid.items?.[id] ?? 0) >= n,
           ) &&
@@ -263,6 +278,10 @@ export function economicCandidates(
               .filter((j) => j.buildingId === b.id)
               .reduce((n, j) => n + j.remainingTicks, 0) || a.id - b.id,
       )[0];
+    const training=landRecruitmentTicks(unit,recruitmentVariant(unit.id,snapshot.research));
+    const completion=training+snapshot.recruitment.filter(j=>j.buildingId===producer.id)
+      .reduce((ticks,job)=>ticks+job.remainingTicks,0);
+    if(completion>Math.max(secondsToTicks(AI_CAPACITY_SECONDS),training))continue;
     emit(
       "recruit",
       unit.id,
@@ -275,7 +294,7 @@ export function economicCandidates(
       scaledRecipeCost(unit,recruitmentVariant(unit.id,snapshot.research)),
       snapshot.threatTroops > 0 ? 10000 : snapshot.invasion ? 7000 : 4000,
       snapshot.invasion ? `invasion-force:${snapshot.invasion.target}:${role}` : `force-deficit:${role}`,
-      400,
+      completion,
     );
   }
   // Finish the two cheapest remaining trees, with personality as a stable tie
@@ -339,9 +358,10 @@ export function economicCandidates(
   // current liquid stock; gold here never grants forecast purchasing credit.
   const ordered = candidates.filter(c => c.score > 0).sort(
     (a,b) => Number(b.priority === "emergency") - Number(a.priority === "emergency") ||
+      Number(b.bottleneck === "bootstrap") - Number(a.bottleneck === "bootstrap") ||
       Number(b.kind === "advance") - Number(a.kind === "advance") ||
       Number(b.reason.includes("progression-race:")) - Number(a.reason.includes("progression-race:")) ||
-      Number(b.reason.includes("production-prerequisite:")) - Number(a.reason.includes("production-prerequisite:")) ||
+      economicBottleneckRank(b) - economicBottleneckRank(a) ||
       (snapshot.readyTroops >= 48 && snapshot.threatTroops <= snapshot.readyTroops / 2 ?
         Number(b.priority === "committed") - Number(a.priority === "committed") : 0) ||
       b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
@@ -350,7 +370,10 @@ export function economicCandidates(
   // A reserve-starved recruit must not hide every gold-only development option.
   const development = ordered.find(c => c.kind === "research" || c.kind === "advance");
   if (development && !choices.includes(development)) choices[choices.length-1] = development;
-  if (militaryPosture(snapshot,personality,speed).wealthy)
-    for (const recruit of ordered.filter(c=>c.kind==="recruit").slice(0,3)) if (!choices.includes(recruit)) choices.push(recruit);
+  // Independent paid lanes need their best measured options even when the
+  // ordinary four-way arbitration selects development or prerequisites.
+  for (const recruit of ordered.filter(c=>c.kind==="recruit").slice(0,3)) if (!choices.includes(recruit)) choices.push(recruit);
+  const construction=ordered.find(c=>c.kind==="construct"&&isEconomicBottleneck(c));
+  if(construction&&!choices.includes(construction))choices.push(construction);
   return choices;
 }

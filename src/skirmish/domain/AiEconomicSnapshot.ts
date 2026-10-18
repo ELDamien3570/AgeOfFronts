@@ -16,6 +16,9 @@ export interface AiEconomicSnapshot {
   generation: number;
   age: Age;
   research: readonly string[];
+  technologySpeed?: 1 | 2 | 3;
+  paidResearch?: readonly string[];
+  advancing?: boolean;
   liquid: Cost;
   incoming: Inventory;
   buildings: readonly Building[];
@@ -40,6 +43,9 @@ export function economicSnapshot(input: {
   generation: number;
   age: Age;
   research: readonly string[];
+  technologySpeed?: 1 | 2 | 3;
+  paidResearch?: readonly string[];
+  advancing?: boolean;
   inventory: Inventory;
   buildings: readonly Building[];
   squads: readonly Squad[];
@@ -77,6 +83,9 @@ export function economicSnapshot(input: {
     generation: input.generation,
     age,
     research: [...input.research],
+    technologySpeed: input.technologySpeed,
+    paidResearch: input.paidResearch,
+    advancing: input.advancing,
     liquid: {
       gold: player.gold,
       reserves: player.reserves,

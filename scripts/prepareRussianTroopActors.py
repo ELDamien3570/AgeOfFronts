@@ -9,6 +9,7 @@ import hashlib
 import json
 from PIL import Image
 from io import BytesIO
+from rigidVehicleArtwork import prepare_vehicle
 
 def atomic_text(path, text):
     if path.exists() and path.read_text(encoding="utf-8") == text:
@@ -94,7 +95,7 @@ for binding, folder in bindings.items():
     target.mkdir(exist_ok=True)
     runtime = {"actorCount": 1, "animations": [], "source": source.relative_to(ROOT).as_posix(),
                "metadataHash": text_digest(source), "hashes": {}}
-    for name in ("idle", "running", "attack", "death", "reload", "charge", "charge-attack", "hit"):
+    for name in (() if calibration.get("vehicle") else ("idle", "running", "attack", "death", "reload", "charge", "charge-attack", "hit")):
         if name not in clips:
             continue
         clip = clips[name]
@@ -143,26 +144,16 @@ for binding, folder in bindings.items():
         runtime["animations"].append({**clip, "id": name, "file": name + ".png", "frames": baked,
                                       **({"mask": name + ".mask.png"} if has_mask else {}),
                                       "releaseFrame": min(clip.get("releaseFrame", 3), len(baked)-1)})
-    atomic_text(target / "animations.json", json.dumps(runtime, indent=2)+"\n")
+    if not calibration.get("vehicle"):
+        atomic_text(target / "animations.json", json.dumps(runtime, indent=2)+"\n")
     calibration = calibrations.get(folder, {})
     member_scale = 0.24*340/widths.get(folder, 164 if mounted else 340)
     if binding in approved and not calibration.get("vehicle"):
         member_scale = approved[binding]["memberScale"]
     width_world = length_world = 0
     if calibration.get("vehicle"):
-        # One fixed idle envelope per asset, never per-frame silhouette fitting.
-        # Clubman's 0.425-tile shoulder span represents about 0.65m; preserve this
-        # stylized metres-to-world ratio for hulls rather than shrinking six tanks.
-        idle = clips["idle"]
-        frame = idle["frames"][0]
-        image = Image.open(source.parent / frame.get("sheet", idle["file"])).convert("RGBA")
-        crop = image.crop((frame["x"], frame["y"], frame["x"]+frame["width"], frame["y"]+frame["height"]))
-        bounds = crop.getchannel("A").point(lambda alpha: 255 if alpha > 96 else 0).getbbox()
-        if not bounds:
-            raise ValueError(f"No opaque vehicle hull: {source}")
-        width_world = calibration["widthMetres"] * (0.24*340/512*(2/0.75)/0.65)
-        length_world = calibration["lengthMetres"] * (0.24*340/512*(2/0.75)/0.65)
-        member_scale = width_world / ((2/0.75)*(bounds[2]-bounds[0])/frame["width"])
+        member_scale, width_world, length_world, vehicle_release_points = prepare_vehicle(
+            ROOT, source, data, clips, target, calibration, atomic_image, atomic_text)
     catalogue[binding] = {"key": key, "assetRoot": f"/Art/Runtime/Russians/Troops/{key}/",
                           "memberScale": member_scale,
                           "sizeAudited": folder in widths,
@@ -170,7 +161,7 @@ for binding, folder in bindings.items():
                           "vehicle": calibration.get("vehicle", False),
                           "members": calibration.get("members", 6 if mounted else 12),
                           "widthWorld": width_world, "lengthWorld": length_world,
-                          "releasePoints": calibration.get("releasePoints", [{"x": .5, "y": .7}]),
+                          "releasePoints": vehicle_release_points if calibration.get("vehicle") else calibration.get("releasePoints", [{"x": .5, "y": .7}]),
                           **({"bakedMuzzleSmoke": True} if calibration.get("bakedMuzzleSmoke") else {}),
                           "facingOffset": approved.get(binding, {}).get("facingOffset", calibration.get("facingOffset", 0))}
 atomic_text(ROOT / "src/skirmish/content/RussianTroopActors.json", json.dumps(catalogue, indent=2)+"\n")

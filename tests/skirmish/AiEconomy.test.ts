@@ -82,9 +82,10 @@ describe("coordinated AI economy", () => {
       for(const b of factories)expansion.supply.goods.set(b.id,0);
       expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,snapshot)).flat()
         .some(c=>c.type==="factory"&&c.objective>=3000)).toBe(true);
-      // Construction already paid for must finish before funding its remedy again.
-      const pendingSnapshot={...snapshot,buildings:snapshot.buildings.map(b=>
-        b.id===factories[1].id?{...b,remainingTicks:secondsToTicks(5)}:b)};
+      // Paid sources count toward the throughput target; a larger measured
+      // shortage can justify more than one simultaneous construction job.
+      const pendingSnapshot={...snapshot,buildings:[...snapshot.buildings,...Array.from({length:48},(_,n)=>
+        ({...factories[1],id:10000+n,tile:tiles[10]+n,remainingTicks:secondsToTicks(5)}))]};
       expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,pendingSnapshot)).flat()
         .some(c=>c.type==="factory"&&c.objective>=3000)).toBe(false);
     } finally {best.mockRestore();}
@@ -387,7 +388,7 @@ describe("coordinated AI economy", () => {
     ).not.toBeNull();
     expect(player.gold).toBe(0);
   });
-  it("uses only compatible completed producers and never requests equipment for unbuildable Modern units", () => {
+  it("retains intended equipment demand while recruitment still requires a compatible completed producer", () => {
     const { game, player, expansion } = fixture();
     const snapshot = economicSnapshot({
       player,
@@ -414,9 +415,10 @@ describe("coordinated AI economy", () => {
       threatTroops: 0,
     });
     const demand = militaryDemand(snapshot, personalityOf(player), new Set());
-    expect(
-      Object.keys(demand.equipment).every((id) => id.includes("stoneage")),
-    ).toBe(true);
+    expect(demand.equipment["equipment:modern"]).toBeGreaterThan(0);
+    const state = { ...expansion.progression.states[player.id], age: snapshot.age, completed: [...snapshot.research] };
+    expect(economicCandidates(snapshot, state, personalityOf(player), demand, 1, [])
+      .some(candidate => candidate.kind === "recruit")).toBe(false);
     expect(expansion.economy.enabled(player)).toBe(true);
     expect(game.options.aiEconomy).toBe(true);
   });

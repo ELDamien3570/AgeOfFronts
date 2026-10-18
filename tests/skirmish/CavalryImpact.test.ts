@@ -344,6 +344,12 @@ describe('bounded cavalry impact prototype',()=>{
     expect(chargeReactions(fact,fact.tick+6,[...members].reverse())).toEqual(first);
     expect(new Set([...first.values()].map(r=>r.time)).size).toBeGreaterThan(1);
     expect(new Set([...first.values()].map(r=>r.angle)).size).toBeGreaterThan(1);
+    // A rigid vehicle may be displaced by the presentation, but must never
+    // inherit the human defender's airborne scale pulse at any impact phase.
+    for(let age=0;age<CHARGE_IMPACT.duration;age++) {
+      for(const reaction of chargeReactions(fact,fact.tick+age,members,undefined,true).values())
+        expect(reaction.scale).toBe(.12);
+    }
     const selected=new Set(first.keys()),survivors=members.filter(member=>member.id!==[...selected][0]);
     expect(chargeReactions(fact,fact.tick+7,survivors,selected).size).toBe(selected.size-1);
     expect(chargeReactions(fact,fact.tick+CHARGE_IMPACT.duration,members).size).toBe(0);

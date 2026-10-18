@@ -216,7 +216,7 @@ describe("persistent concentrated port defense", () => {
   });
 
   it("uses sea dominance to raid loaded foreign trade outside capture contact",()=>{
-    const f=fixture(),own=f.addShip();f.game.options.aiWarPolicy=true;f.addShip(f.player.id,12);
+    const f=fixture(),own=f.addShip();f.game.options.aiWarPolicy=true;f.addShip(f.player.id,12);f.addShip(f.player.id,14);
     const cargo={id:f.game.allocateId(),playerId:1,factoryId:f.port.id,originPortId:f.port.id,
       definitionId:"stoneage-trade",naval:true,x:35.5*FIXED,y:21.5*FIXED,cargo:20,loaded:20,delivered:0,lost:0,returned:0,
       valuePerGood:10,originTile:f.port.tile,capacity:20,shipmentId:1,stops:[],visited:[],destination:null,
@@ -466,7 +466,7 @@ describe("persistent concentrated port defense", () => {
     expect(f.facts.readSea("ships", sea, cursor).id).toBe(f.game.ships[1].id);
     expect(f.facts.checkpoint()).toEqual(before);
   });
-  it("pays a same-sea ship once and counts its training job instead of buying again", () => {
+  it("pays the coverage target and counts training jobs before ordering replacements", () => {
     const f = fixture();
     f.refresh();
     const definition = VESSEL.get("stoneage-warship")!;
@@ -481,12 +481,13 @@ describe("persistent concentrated port defense", () => {
       f.game.recruitment.jobs.filter((j) => j.category === "ship"),
     ).toHaveLength(1);
     expect(f.player.gold).toBe(gold - definition.cost.gold!);
-    f.game.tick += secondsToTicks(5);
-    f.assess();
-    expect(mission.purchases).toBe(1);
-    expect(
-      f.game.recruitment.jobs.filter((j) => j.category === "ship"),
-    ).toHaveLength(1);
+    for(let n=1;n<mission.desiredHulls!;n++){f.game.tick+=secondsToTicks(5);f.assess();}
+    const paid=mission.purchases;
+    expect(paid).toBe(mission.desiredHulls);
+    f.game.tick+=secondsToTicks(5);f.assess();
+    expect(mission.purchases).toBe(paid);
+    expect(f.game.recruitment.jobs.filter(j=>j.category==="ship")).toHaveLength(paid);
+    expect(f.player.gold).toBe(gold-paid*definition.cost.gold!);
   });
   it("does not send isolated defenders into a stronger fleet or reset dock recovery", () => {
     const f = fixture(),

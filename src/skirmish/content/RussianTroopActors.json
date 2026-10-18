@@ -544,7 +544,7 @@
   "EarlyModern:lightCavalry": {
     "key": "Modern-MachineGunTruck",
     "assetRoot": "/Art/Runtime/Russians/Troops/Modern-MachineGunTruck/",
-    "memberScale": 1.7812889812889812,
+    "memberScale": 1.2674556213017751,
     "sizeAudited": false,
     "projectile": "bullet",
     "vehicle": true,
@@ -554,7 +554,7 @@
     "releasePoints": [
       {
         "x": 0.5,
-        "y": 0.52
+        "y": 0.5390625
       }
     ],
     "facingOffset": 0
@@ -617,7 +617,7 @@
   "EarlyModern:heavyCavalry": {
     "key": "Modern-TsarTank",
     "assetRoot": "/Art/Runtime/Russians/Troops/Modern-TsarTank/",
-    "memberScale": 1.4491468316519542,
+    "memberScale": 1.5117196939186464,
     "sizeAudited": false,
     "projectile": "shell",
     "vehicle": true,
@@ -626,8 +626,8 @@
     "lengthWorld": 3.596153846153846,
     "releasePoints": [
       {
-        "x": 0.57,
-        "y": 0.62
+        "x": 0.56640625,
+        "y": 0.62109375
       }
     ],
     "facingOffset": 0
@@ -635,7 +635,7 @@
   "EarlyModern:rangedCavalry": {
     "key": "PreModern-T34-85",
     "assetRoot": "/Art/Runtime/Russians/Troops/PreModern-T34-85/",
-    "memberScale": 1.975578947368421,
+    "memberScale": 1.7377777777777776,
     "sizeAudited": false,
     "projectile": "shell",
     "vehicle": true,
@@ -644,8 +644,8 @@
     "lengthWorld": 3.9884615384615376,
     "releasePoints": [
       {
-        "x": 0.51,
-        "y": 0.87
+        "x": 0.5,
+        "y": 0.9375
       }
     ],
     "facingOffset": 0
@@ -689,7 +689,7 @@
   "Modern:lightCavalry": {
     "key": "Modern-Bumerang",
     "assetRoot": "/Art/Runtime/Russians/Troops/Modern-Bumerang/",
-    "memberScale": 1.3324148488327592,
+    "memberScale": 2.049607535321821,
     "sizeAudited": false,
     "projectile": "shell",
     "vehicle": true,
@@ -698,8 +698,8 @@
     "lengthWorld": 5.753846153846154,
     "releasePoints": [
       {
-        "x": 0.53,
-        "y": 0.79
+        "x": 0.5,
+        "y": 0.8125
       }
     ],
     "facingOffset": 0
@@ -707,7 +707,7 @@
   "Modern:heavyCavalry": {
     "key": "Modern-T14",
     "assetRoot": "/Art/Runtime/Russians/Troops/Modern-T14/",
-    "memberScale": 2.3247863247863245,
+    "memberScale": 1.9615384615384617,
     "sizeAudited": false,
     "projectile": "shell",
     "vehicle": true,
@@ -717,7 +717,7 @@
     "releasePoints": [
       {
         "x": 0.5,
-        "y": 0.88
+        "y": 0.9375
       }
     ],
     "facingOffset": 0
@@ -725,7 +725,7 @@
   "Modern:rangedCavalry": {
     "key": "Modern-Tunguska",
     "assetRoot": "/Art/Runtime/Russians/Troops/Modern-Tunguska/",
-    "memberScale": 1.6999999999999997,
+    "memberScale": 1.4068965517241379,
     "sizeAudited": false,
     "projectile": "shell",
     "vehicle": true,
@@ -734,12 +734,12 @@
     "lengthWorld": 5.165384615384615,
     "releasePoints": [
       {
-        "x": 0.38,
-        "y": 0.8
+        "x": 0.4140625,
+        "y": 0.83984375
       },
       {
-        "x": 0.64,
-        "y": 0.8
+        "x": 0.57421875,
+        "y": 0.83984375
       }
     ],
     "facingOffset": 0

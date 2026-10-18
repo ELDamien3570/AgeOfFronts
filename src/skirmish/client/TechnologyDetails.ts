@@ -9,7 +9,8 @@ import {
   cityReserveIncome,
   extractionYieldMultiplier,
   LAND_TRADE_CAPACITIES,
-  tradeStockPerSecond,
+  PORT_CARGO_REPLENISH_SECONDS,
+  FACTORY_CARGO_REPLENISH_SECONDS,
 } from "../content/Economy";
 import { supplyItemName } from "../content/Equipment";
 import { FLIGHT_RULES, flightTicks } from "../content/FlightOperations";
@@ -144,10 +145,12 @@ export function technologyDetails(technology: Technology): string[] {
     lines.push(
       `Extraction: ${extractionYieldMultiplier(age)}× deposit yield per completed extractor of this tier`,
     );
-  if (buildings.includes("factory") || buildings.includes("port"))
+  if (buildings.includes("factory"))
     lines.push(
-      `Trade stock: ${tradeStockPerSecond(age)} goods/s per completed factory or port of this tier`,
+      `Factory cargo: empty to full in ${FACTORY_CARGO_REPLENISH_SECONDS}s per completed factory at current trader capacity; stacked factories replenish independently`,
     );
+  if (buildings.includes("port") || VESSELS.some(v => v.kind === "trade" && v.technologyId === id))
+    lines.push(`Port cargo: empty to full in ${PORT_CARGO_REPLENISH_SECONDS}s per completed port at current cargo capacity; stacked ports replenish independently`);
   const role = id.replace(`rus-${age.toLowerCase()}-`, "");
   if (role === "factories-mines") {
     const percent = throughputPercent([id]);

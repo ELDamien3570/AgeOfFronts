@@ -319,6 +319,20 @@
   text-shadow: 0 1px 2px #000, 0 0 5px #0008;
   color: inherit;
 }
+.faction-resources {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid currentColor;
+  font-variant-numeric: tabular-nums;
+}
+.faction-resources-note { font-size: 11px; opacity: .75; }
+.faction-resources dl { margin: 6px 0; }
+.faction-resources dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.faction-resources dd { margin: 0; font-weight: 700; white-space: nowrap; }
+.faction-resource-group { margin-top: 10px; }
+.faction-resource-group h4 { display: flex; justify-content: space-between; margin: 0; font-size: 12px; }
+.faction-resource-group dl, .faction-resource-group > p { font-size: 11px; }
+
 .diplomacy-identity[data-faction-kind="tribe"] {
   color: #ff9a91;
 }

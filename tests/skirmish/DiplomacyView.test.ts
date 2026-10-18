@@ -57,3 +57,61 @@ it("counts afloat land squads, living warships only, and ready plus deployed pla
   const vm=new EmpireViewModel(state,{selected:new Set(),selectedShips:new Set(),selectedBuilding:null});
   expect(vm.militaryCounts(2)).toEqual({squads:1,boats:1,planes:2});
 });
+
+function resourceCardFixture(localInspection?: () => boolean) {
+  const cells = new Uint8Array(48 * 48).fill(133);
+  const game = new Skirmish(new GameMapImpl(48, 48, cells, cells.length), { seed: 42, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" });
+  const state = game.snapshot();
+  const root = document.createElement("div");
+  root.innerHTML = `${empireMarkup()}<main class="battlefield">${hudMarkup()}</main>`;
+  document.body.replaceChildren(root);
+  const view = new EmpireView(root, {
+    canInspectFactionResources: localInspection,
+    refresh: () => {}, command: () => {}, build: () => {}, notify: () => {}, focusedRef: () => null, target: () => {},
+  });
+  const show = (id = 2) => {
+    view.update(new EmpireViewModel(state, { selected: new Set(), selectedShips: new Set(), selectedBuilding: null }));
+    view.inspectPlayer(id);
+    return root.querySelector<HTMLElement>(".faction-resources");
+  };
+  return { state, root, show };
+}
+
+it("shows exact local faction stock counts after diplomacy and trade controls, including legacy and unknown items", () => {
+  const { state, root, show } = resourceCardFixture(() => true);
+  state.players[1].gold = 12345;
+  state.players[1].reserves = 6789;
+  state.expansion!.inventories[2] = { stone: 1234, sulphur: 2, iron: 99, oil: 88, horses: 7, "equipment:bronzeage": 6, "payload:atomic": 5, "future-item": 4 };
+  const card = show()!;
+  expect(root.querySelector("#empire-content")!.lastElementChild).toBe(card);
+  expect(card.querySelector(".faction-treasury")!.textContent).toBe("Gold12,345Reserves6,789");
+  for (const text of ["Raw materials 1,236", "Metals 99", "Fuel & powder 88", "Horses 7", "Equipment 6", "Payloads 5", "future-item4"])
+    expect(card.textContent).toContain(text);
+  expect(card.textContent).toContain("Bronze Age equipment6");
+  state.expansion!.inventories[2].stone = 4321;
+  expect(show()!.textContent).toContain("stone4,321");
+  expect(show(1)).not.toBeNull(); // The local human card supports comparison.
+});
+
+it("distinguishes a visible empty inventory from an unavailable inventory", () => {
+  const { state, show } = resourceCardFixture(() => true);
+  state.expansion!.inventories[2] = {};
+  const empty = show()!;
+  expect(empty.textContent).toContain("Raw materials 0");
+  expect(empty.textContent).toContain("No stock · 0");
+  expect(empty.textContent).not.toContain("unavailable");
+  delete state.expansion!.inventories[2];
+  expect(show()!.textContent).toContain("Inventory unavailable");
+  expect(show()!.textContent).not.toContain("No stock · 0");
+});
+
+it("hides the new inspection display by default and when multiplayer mode denies it, even with inventory data present", () => {
+  const denied = resourceCardFixture();
+  expect(denied.show()).toBeNull();
+  let local = true;
+  const current = resourceCardFixture(() => local);
+  expect(current.show()).not.toBeNull();
+  local = false;
+  expect(current.show()).toBeNull();
+  expect(current.state.expansion!.inventories[2]).toBeDefined();
+});

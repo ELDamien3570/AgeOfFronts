@@ -19,10 +19,15 @@ export const IDLE_TICK_FIXTURE_TICKS = 400;
  * from dcf33c01... for planner scheduling version 6 (its version field); the
  * squad digest is unchanged by it. OD-10 (tribes start with 3 squads) then
  * moved them from d6b6d993... / 45c688d7..., and OD-6 (land income scaled
- * by age) from ad84c0cb... / d5a36cb1.... */
+ * by age) from ad84c0cb... / d5a36cb1.... AI infrastructure capacity,
+ * intended equipment demand and persistent placement checkpoints now move
+ * them from e85f6612... / 25da28ca.... Re-recorded after two fresh 400-tick
+ * runs matched, each preserving exact checkpoint restoration and 30-tick
+ * continuation. Spatial-grid and clearance equivalence assertions remain
+ * independent of these intentional AI behaviour and checkpoint changes. */
 export const IDLE_TICK_GOLDEN = Object.freeze({
-  squads: "e85f66129596c7cec4af0bc8bffd908104b372f8838b9d6dba1f9b15c5dfb038",
-  checkpoint: "25da28caaceb87c72b1f876482eeac1e872966be46612bf1bf624147c48af615",
+  squads: "6d313fe09f509de5dc20505bb1c7fb8059d874a80d9a334a934b6942ca82cac0",
+  checkpoint: "13925232604ad8a08e8756d699738aa0a556f2d18e5fc49f995a20c3cedee21c",
 });
 
 export function idleTickFixture(): Skirmish {

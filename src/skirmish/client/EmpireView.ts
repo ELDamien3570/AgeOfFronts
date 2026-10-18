@@ -13,7 +13,7 @@ import { PeaceOfferView } from "./PeaceOfferView";
 import { AgeThemeView } from "./AgeThemeView";
 import { AGE_UI_THEMES } from "./AgeUiTheme";
 import { advanceStatusText } from "./ProgressionText";
-import { EmpireHudView } from "./EmpireHudView";
+import { EmpireHudView, RESOURCE_STOCK_GROUPS } from "./EmpireHudView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { COLORS } from "./FactionColors";
 import { productionText } from "./ProductionText";
@@ -37,6 +37,8 @@ export function empireMarkup(): string {
 }
 
 export interface EmpireActions {
+  /** Enabled only by a local simulation transport; never by a UI preference. */
+  canInspectFactionResources?(): boolean;
   recruitmentBatch?(shift: boolean): number;
   refresh(): void;
   command(command: Command): void;
@@ -552,7 +554,7 @@ export class EmpireView {
         ? this.technologyContent()
         : this.panel === "supplies"
           ? this.supplyContent()
-          : this.diplomacyContent() + this.tradeDiplomacyControl();
+          : this.diplomacyContent() + this.tradeDiplomacyControl() + this.factionResourcesContent();
 
     const footer =
       this.panel === "technology"
@@ -738,6 +740,26 @@ export class EmpireView {
       return `<button data-trade-faction="${p.id}" data-trade-partner-mode="${mode}" aria-pressed="${blocked}" ${atWar ? "disabled" : ""}>${mode === "sea" ? "Sea" : "Overland"} trade · ${atWar ? "Unavailable during war" : blocked ? "Resume" : "Stop"}</button>`;
     }).join("");
   }
+  private factionResourcesContent(): string {
+    const vm = this.vm!, player = vm.faction(this.inspectedPlayer)?.player;
+    if (!this.actions.canInspectFactionResources?.() || !player) return "";
+    const inventory = vm.expansion.inventories[player.id];
+    const heading = '<h3>Resources</h3><p class="faction-resources-note">Local playtest · current stockpiles</p>';
+    if (inventory === undefined)
+      return `<section class="faction-resources" aria-label="Faction resources">${heading}<p>Inventory unavailable</p></section>`;
+    const entries = Object.entries(inventory);
+    const classified = new Set<string>();
+    const itemRows = (items: [string, number][]) => `<dl>${items.map(([id, count]) => `<div><dt>${escape(vm.itemName(id))}</dt><dd>${fmt(count)}</dd></div>`).join("")}</dl>`;
+    const rows = RESOURCE_STOCK_GROUPS.map(group => {
+      const items = entries.filter(([id]) => "prefix" in group ? id.startsWith(group.prefix) : group.items.includes(id as never) || group.id === "ores" && (id === "sulphur" || id === "nitrate"));
+      for (const [id] of items) classified.add(id);
+      const total = items.reduce((sum, [, count]) => sum + count, 0);
+      return `<div class="faction-resource-group"><h4>${escape(group.name)} <b>${fmt(total)}</b></h4>${items.length ? itemRows(items) : '<p>No stock · 0</p>'}</div>`;
+    }).join("");
+    const other = entries.filter(([id]) => !classified.has(id));
+    return `<section class="faction-resources" aria-label="Faction resources">${heading}<dl class="faction-treasury"><div><dt>Gold</dt><dd>${fmt(player.gold)}</dd></div><div><dt>Reserves</dt><dd>${fmt(player.reserves)}</dd></div></dl>${rows}${other.length ? `<div class="faction-resource-group"><h4>Other stock</h4>${itemRows(other)}</div>` : ""}</section>`;
+  }
+
   private diplomacyContent(): string {
     const vm = this.vm!,
       faction = vm.faction(this.inspectedPlayer);

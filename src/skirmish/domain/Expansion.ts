@@ -58,7 +58,7 @@ import {
   productionBuildingType,
 } from "../content/Buildings";
 import { startingEconomy } from "../content/StartingEconomy";
-import { TRIBE_BUILDING_ORDER, TRIBE_MILITARY_BUILDING_ORDER, tribeBuildingLimit, tribeAdvanceRejection } from "./TribeDevelopment";
+import { TRIBE_BUILDING_ORDER, TRIBE_MILITARY_BUILDING_ORDER, tribeBuildingLimit, tribeBuildingRejection, tribeMineCounts, tribeAdvanceRejection } from "./TribeDevelopment";
 import { resourceVisibleAtAge } from "../content/Resources";
 import { CONTENT_HASH } from "../content/Catalog";
 import { TECHNOLOGIES, technologyAt } from "../content/Technology";
@@ -208,7 +208,7 @@ export class Expansion {
   readonly winners: number[] = [];
   readonly events: MatchEvent[] = [];
   private nextEvent = 1;
-  private readonly tribePlans = new Map<number, { nextType: number; tiles: Partial<Record<BuildingType, number>> }>();
+  private readonly tribePlans = new Map<number, { nextType: number; tiles: Partial<Record<BuildingType, number>>; landAfter?:Partial<Record<BuildingType,number>> }>();
   announce(event: Omit<MatchEvent, "id" | "tick">): void {
     this.events.push({ ...event, id: this.nextEvent++, tick: this.world.tick });
     if (this.events.length > 80) this.events.shift();
@@ -246,6 +246,7 @@ export class Expansion {
       (a,b)=>this.diplomacy.raids?this.diplomacy.declaredWar(a,b):this.relations.atWar(a,b),
       owner=>this.relations.signatureFor(owner),
     );
+    this.trade.onCapture = (captor, victim, value) => this.operations.rememberGrievance(victim, captor, "raid", value > 100 ? 2 : 1);
     this.battle = new Battle(
       world,
       world.map.width(),
@@ -379,6 +380,9 @@ export class Expansion {
   ): string | null {
     const availability = constructionAvailabilityRejection(type);
     if (availability) return availability;
+    const tribal = tribeBuildingRejection(player,type,tile,this.progression.states[player.id].age,
+      this.world.buildingFacts().byOwner(player.id), t => this.supply.resourceSites.at(t)?.resource);
+    if (tribal) return tribal;
     const technology = buildingTechnology(type, age);
     if (!technology || (!placementOnly && !this.progression.has(player.id, technology)))
       return "Research this building's technology first";
@@ -1150,13 +1154,13 @@ export class Expansion {
         ],
         projectile: {
           diameter: FIXED / 2,
-          speed: FIXED,
+          speed: STRATEGIC_RULES.speed,
           blastRadius: definition.blastRadius,
         },
       },
       definition.damage,
       payload === "mirv" ? "mirv" : "icbm",
-      720,
+      undefined,
       definition.warheads,
       payload,
       targetBuildingId,
@@ -1166,9 +1170,12 @@ export class Expansion {
   private thinkPeace(player:Player):void {
     const {world,diplomacy}=this;
     const own=world.squadFacts().aliveByOwner(player.id).reduce((n,s)=>n+s.troops,0);
+    const operation = this.operations.state(player.id);
+    const campaignContext = `${operation?.phase}:${operation?.since}:${operation?.intent?.motive}:${operation?.intent?.goal}`;
+    const willingness = new Map<number, boolean>();
     const willing=(other:Player)=>{
-      const hostile=world.squadFacts().aliveByOwner(other.id).reduce((n,s)=>n+s.troops,0);
-      return !diplomacy.declaredWar(player.id,other.id)||this.operations.state(player.id)?.phase!=="war"||own<hostile;
+      if (!willingness.has(other.id)) willingness.set(other.id, this.operations.willingPeace(player, other));
+      return willingness.get(other.id)!;
     };
     for(const offer of [...diplomacy.state.offers])if(offer.kind==="peace"&&offer.recipient===player.id){
       const other=world.players.find(p=>p.id===offer.proposer);if(!other)continue;
@@ -1176,7 +1183,7 @@ export class Expansion {
     }
     for(const other of world.players)if(other.id!==player.id&&!other.eliminated&&diplomacy.hostile(player.id,other.id)&&willing(other)){
       const enemy=world.squadFacts().aliveByOwner(other.id).reduce((n,s)=>n+s.troops,0);
-      const context=`${diplomacy.declaredWar(player.id,other.id)}:${Math.floor(own/100)}:${Math.floor(enemy/100)}:${Math.floor(player.land/100)}:${Math.floor(other.land/100)}`;
+      const context=`${campaignContext}:${diplomacy.declaredWar(player.id,other.id)}:${Math.floor(own/100)}:${Math.floor(enemy/100)}:${Math.floor(player.land/100)}:${Math.floor(other.land/100)}`;
       const result=diplomacy.action(player,other,"offer-peace",world.tick,context);
       if(!result)this.announce({kind:"diplomacy",actorId:player.id,otherId:other.id,action:"offer-peace"});
     }
@@ -1678,6 +1685,7 @@ export class Expansion {
       !researchRejection(state, developmentGold(), t.id, this.progression.technologySpeed));
     if (next) this.world.applyCommand({ type: "research", playerId: player.id, technologyId: next.id });
     const own = this.world.buildingFacts().byOwner(player.id);
+    const mined = tribeMineCounts(own,t => this.supply.resourceSites.at(t)?.resource);
     // Coastal tribes fund one useful sea entrance before additional land capacity.
     const coastal = this.economy.placements.coasts(player.id);
     if(!militarizing && coastal.length && !own.some(b=>b.type==="port") && state.completed.includes(buildingTechnology("port",state.age)!)) {
@@ -1685,7 +1693,7 @@ export class Expansion {
         this.world.buildingSite(player.id,"port",tile,state.age)===null);
       if(site!==undefined && this.world.applyCommand({type:"build",playerId:player.id,buildingType:"port",tile:site,age:state.age})===null)return;
     }
-    const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {} };
+    const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {}, landAfter: {} as Partial<Record<BuildingType,number>> };
     this.tribePlans.set(player.id, plan);
     // One type and at most sixteen legal site attempts per strategic pass.
     const order = militarizing ? TRIBE_MILITARY_BUILDING_ORDER : TRIBE_BUILDING_ORDER;
@@ -1694,22 +1702,34 @@ export class Expansion {
       plan.nextType %= order.length;
       const count = own.filter(b => b.type === type).length;
       const technology = buildingTechnology(type, state.age);
-      if (count >= tribeBuildingLimit(type, state.age) || !technology ||
+      if ((type !== "mine" && count >= tribeBuildingLimit(type, state.age)) || !technology ||
           !state.completed.includes(technology) ||
           costRejection({ ...player, gold: developmentGold() }, this.supply.inventories[player.id], buildingCost(type, state.age, count))) continue;
       const extraction = type === "mine" || type === "oil-well" || type === "oil-rig";
+      // Tribes use distinct extractor sites and share the authoritative
+      // per-resource mine cap, including already-paid foundations.
       const candidates = type === "port" ? this.economy.placements.coasts(player.id) : extraction
         ? this.supply.deposits.filter(d => this.world.owners[d.tile] === player.id && resourceVisibleAtAge(d.resource, state.age) &&
-          (d.resource !== "stone" || stoneExtractionAllowed(own)))
+          (d.resource !== "stone" || stoneExtractionAllowed(own)) && !own.some(b => b.tile === d.tile) &&
+          (type === "mine" ? !["oil","horses"].includes(d.resource) && (mined.get(d.resource)??0) < tribeBuildingLimit("mine",state.age) : d.resource === "oil"))
           .sort((a,b) => extractionPriority(a.resource) - extractionPriority(b.resource) || a.tile - b.tile).map(d => d.tile)
-        : this.world.ownedLandNearest(player.id, player.base, 256);
-      if (!candidates.length) continue;
+        : this.world.ownedLandNearest(player.id, player.base, 256, plan.landAfter?.[type]);
+      if (!candidates.length) {
+        // Restart a completed traversal so newly acquired nearer land is not
+        // permanently skipped. Older checkpoints begin with the first page.
+        if (type !== "port" && !extraction && plan.landAfter) { delete plan.landAfter[type]; plan.tiles[type]=0; }
+        continue;
+      }
       for (let i = 0; i < Math.min(16, candidates.length); i++) {
         const cursor = plan.tiles[type] ?? 0;
         plan.tiles[type] = (cursor + 1) % candidates.length;
-        if (!this.economy.recovery.canBuild(player.id,type,candidates[cursor % candidates.length])) continue;
-        if (this.world.applyCommand({ type: "build", playerId: player.id,
-          buildingType: type, tile: candidates[cursor % candidates.length], age: state.age }) === null) return;
+        const finishedPage = type !== "port" && !extraction && plan.tiles[type] === 0;
+        if (finishedPage) (plan.landAfter ??= {})[type] = candidates[candidates.length-1];
+        const tile = candidates[cursor % candidates.length];
+        if (this.economy.recovery.canBuild(player.id,type,tile) &&
+          this.world.applyCommand({ type: "build", playerId: player.id,
+            buildingType: type, tile, age: state.age }) === null) return;
+        if (finishedPage) break;
       }
       return;
     }

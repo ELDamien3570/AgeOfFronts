@@ -23,8 +23,8 @@ const stackOf = (type: BuildingType, tile: number, n: number, playerId: number):
   Array.from({ length: n }, (_, i) => ({ id: 1000 + i, tile, playerId, type, remainingTicks: 0 }));
 
 describe("per-type stack limits", () => {
-  it("records the owner-decision caps (OD-7)", () => {
-    expect(STACK_LIMITS).toEqual({ mine: 1, city: 3 });
+  it("records capped mineral scarcity and city limits", () => {
+    expect(STACK_LIMITS).toEqual({ mine: 10, city: 3 });
     expect(stackLimit("barracks")).toBe(MAX_BUILDING_STACK);
     expect(stackLimit("port")).toBe(MAX_BUILDING_STACK);
     expect(stackLimit("oil-well")).toBe(MAX_BUILDING_STACK);
@@ -40,11 +40,13 @@ describe("per-type stack limits", () => {
         .toBe(`A single site can support at most ${limit} stacked buildings`);
     },
   );
-  it("rejects a second mine on a deposit for a nation", () => {
+  it("permits a second mine and rejects an eleventh on the same deposit", () => {
     const { game, map, player } = fixture(), tile = map.ref(20, 20);
     expect(player.kind).toBe("regular");
     expect(constructionRejection(map, game.owners, stackOf("mine", tile, 1, player.id), player, "mine", tile, false))
-      .toContain("cannot stack mines");
+      .toBeNull();
+    expect(constructionRejection(map, game.owners, stackOf("mine", tile, 10, player.id), player, "mine", tile, false))
+      .toContain("at most 10");
   });
   it("rejects a fourth city through the command path without spending gold", () => {
     const { game, map, player } = fixture(), tile = map.ref(30, 30);

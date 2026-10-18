@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { secondsToTicks, type MatchOptions } from "../../src/skirmish/Protocol";
+import { ARMY_TECHNOLOGY } from "../../src/skirmish/content/Armies";
 import { AI_DIFFICULTY, aiRaidAfterTicks } from "../../src/skirmish/content/AiDifficulty";
 import { aiDifficultyOf, playtestCampaignAllowed } from "../../src/skirmish/domain/PlaytestRules";
 
@@ -50,8 +51,13 @@ function retaliation(options: Partial<MatchOptions>, seconds: number) {
     for (let i = 0; i < 12; i++) game.addSquad({ ...structuredClone(template), id: game.allocateId(), x: template.x + i * 256, y: template.y });
   }
   game.players[2].eliminated = true;
+  // The retaliation gate compares an actual army after its home reserve:
+  // fifteen available squads leave eleven deployable against eleven raiders.
+  game.expansion!.progression.states[b.id].age = "BronzeAge";
+  game.expansion!.progression.states[b.id].completed.push(ARMY_TECHNOLOGY);
+  for (const squad of game.squadFacts().aliveByOwner(1).slice(-4)) game.removeSquad(squad.id);
   const eligible = vi.spyOn(game.expansion!.geography, "eligible").mockReturnValue(true);
-  const forces = new Map(game.players.map(p => [p.id, 15]));
+  const forces = new Map(game.players.map(p => [p.id, game.squadFacts().aliveByOwner(p.id).length]));
   game.tick = secondsToTicks(seconds);
   game.expansion!.operations.step(forces);
   d.recordTheft(1, b.id, game.tick);

@@ -57,14 +57,15 @@ describe("late-game AI development",()=>{
     expect(accepted.length).toBeGreaterThan(0);expect(f.player.gold).toBeLessThan(gold);expect(f.player.reserves).toBeLessThan(reserves);
     expect(f.game.recruitment.byOwner(f.player.id).length).toBeGreaterThan(0);
   });
-  it("adds city-centered missile stacks and gives anti-air a city guard lease",()=>{
+  it("adds distinct city-centered missile defenses and gives anti-air a city guard lease",()=>{
     const f=fixture();f.player.gold=20000000;f.game.options.aiDefenses=true;
     const city=f.add("city",60),sam=f.add("missile-defence",67);
     const squad=f.game.squadFacts().aliveByOwner(f.player.id)[0];f.game.updateSquad(squad.id,{definitionId:"modern-anti-air"});
     f.expansion.supply.inventories[f.player.id].steel=10000;
     let candidate:ReturnType<typeof f.expansion.economy.placements.candidates>[number]|undefined;
     for(let i=0;i<40&&!candidate;i++)candidate=f.expansion.economy.placements.candidates(f.player,f.snapshot()).find(c=>c.type==="missile-defence");
-    expect(candidate?.tile).toBe(sam.tile);
+    expect(candidate).toBeDefined();expect(candidate!.tile).not.toBe(sam.tile);
+    expect(f.map.euclideanDistSquared(candidate!.tile,city.tile)).toBeLessThanOrEqual(8**2);
     for(let i=0;i<10&&!f.expansion.economy.assets.held(`squad:${squad.id}`);i++){f.game.tick+=60;f.expansion.economy.decide(f.player);}
     expect(f.expansion.economy.assets.owns(`squad:${squad.id}`,`city-air:${f.player.id}`)).toBe(true);
     expect(f.game.squad(squad.id)!.order).toMatchObject({type:"move"});
@@ -85,11 +86,11 @@ describe("late-game AI development",()=>{
     f.expansion.supply.inventories[f.player.id].oil=0;
     let found=false;
     for(let i=0;i<100 && !found;i++)found=f.expansion.economy.placements.candidates(f.player,f.snapshot(),
-      {equipment:{oil:200},materials:{oil:200},units:{}}).some(c=>c.type==="oil-well" && c.tile===f.map.ref(60,50) && c.objective===12000);
+      {equipment:{oil:20000},materials:{oil:20000},units:{}}).some(c=>c.type==="oil-well" && c.tile===f.map.ref(60,50) && c.objective===12000);
     expect(found).toBe(true);
   });
-  it("grows the proven profitable factory stack instead of losing it behind the site cursor",()=>{
-    const f=fixture(),factory=f.add("factory",50),market=f.add("factory",100,50,1);
+  it("grows profitable trade on distinct factory sites while suitable land remains",()=>{
+    const f=fixture(),factory=f.add("factory",50),market=f.add("city",100,50,1);
     const template=f.game.squadFacts().aliveByOwner(f.player.id)[0];
     for(let i=0;i<5;i++)f.game.addSquad({...structuredClone(template),id:f.game.allocateId()});
     const quote=tradeCycleQuote({naval:false,stock:100,capacity:40,valuePerGood:10,supplyTicks:400,
@@ -98,7 +99,9 @@ describe("late-game AI development",()=>{
       source:factory.id,market:market.id,quote,tick:f.game.tick,generation:f.game.aiGeneration(f.player.id)}]]});
     f.expansion.economy.placements.restore({types:[[f.player.id,1]],sites:[[`${f.player.id}:factory`,40]],
       lands:[[`${f.player.id}:factory`,{anchor:f.player.base,tiles:f.game.ownedLandNearest(f.player.id,f.player.base,64),cursor:40}]]});
-    expect(f.expansion.economy.placements.candidates(f.player,f.snapshot()).some(c=>c.type==="factory" && c.tile===factory.tile)).toBe(true);
+    const candidates=Array.from({length:40},()=>f.expansion.economy.placements.candidates(f.player,f.snapshot())).flat();
+    expect(candidates.some(c=>c.type==="factory" && c.tile!==factory.tile && c.reason==="trade-capacity:factory")).toBe(true);
+    expect(candidates.some(c=>c.type==="factory" && c.tile===factory.tile)).toBe(false);
   });
   it("uses a small defensive detachment for border harassment and preserves the offensive army",()=>{
     const f=fixture();f.game.options.aiWarPolicy=true;f.add("city",20);f.add("city",40);

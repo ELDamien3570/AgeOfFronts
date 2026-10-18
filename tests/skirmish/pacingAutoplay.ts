@@ -93,6 +93,15 @@ for (const seed of [47, 72]) {
       age: game.expansion!.progression.states[p.id].age,
       squads: game.squadFacts().byOwner(p.id).length,
       ships: game.shipFacts().byOwner(p.id).length,
+      buildings: Object.fromEntries([...new Set(game.buildingFacts().byOwner(p.id).map(b => b.type))]
+        .map(type => [type, game.buildingFacts().byOwner(p.id).filter(b => b.type === type).length])),
+      distinctTradeSites: new Set(game.buildingFacts().byOwner(p.id)
+        .filter(b => b.type === "port" || b.type === "factory")
+        .map(b => `${b.type}:${b.tile}`)).size,
+      traders: game.expansion!.trade.actors.filter(a => a.playerId === p.id).length,
+      seaTraders: game.expansion!.trade.actors.filter(a => a.playerId === p.id && a.naval).length,
+      equipment: Object.fromEntries(Object.entries(game.expansion!.supply.inventories[p.id] ?? {})
+        .filter(([id]) => id.startsWith("equipment:"))),
     })),
     checkpointContinuation:
       firstDivergence === undefined

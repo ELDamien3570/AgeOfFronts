@@ -1,6 +1,8 @@
 import { EntityCollection } from "../EntityCollection";
 import type { Building } from "../Protocol";
-import type { RecruitmentJob } from "./Definitions";
+import type { RecruitmentJob, UnitDefinition } from "./Definitions";
+import { TICKS_PER_SECOND } from "../Protocol";
+import { recipeCapacity, type RecipeVariant } from "./Manpower";
 /** Mobile producers are validated by ownership and hull health, without a territory tile. */
 export type CarrierRecruitmentProducer = Pick<Building,'id'|'playerId'|'remainingTicks'|'health'> & {kind:'carrier'};
 
@@ -15,6 +17,12 @@ export const RECRUITMENT_SECONDS = Object.freeze({
   warship: 20,
   carrier: 60,
 });
+/** Shared authored training duration; planning never invents a parallel timer. */
+export function landRecruitmentTicks(unit:UnitDefinition,variant:RecipeVariant):number {
+  const seconds=unit.trainingSeconds??(unit.tags.includes("vehicle")?RECRUITMENT_SECONDS.vehicle:
+    unit.tags.includes("siege")?RECRUITMENT_SECONDS.siege:RECRUITMENT_SECONDS[unit.line]);
+  return Math.ceil(seconds*TICKS_PER_SECOND*recipeCapacity(unit,variant)/unit.formationRecipe!.capacity);
+}
 type Job = Readonly<Omit<RecruitmentJob, "cost">> & {
   readonly cost: Readonly<RecruitmentJob["cost"]> & {
     readonly items?: Readonly<NonNullable<RecruitmentJob["cost"]["items"]>>;

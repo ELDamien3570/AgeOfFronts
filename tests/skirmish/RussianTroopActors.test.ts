@@ -30,7 +30,7 @@ describe("normal skirmish individual artwork", () => {
         );
     }
   });
-  it("publishes complete bounded clips and preserves normalized pivots and authored pose scales", () => {
+  it("publishes bounded clips with rigid vehicle registration and authored soldier registration", () => {
     for (const [binding,entry] of Object.entries(catalogue)) {
       const root = `Art/Runtime/Russians/Troops/${entry.key}/`;
       const data = JSON.parse(readFileSync(root + "animations.json", "utf8"));
@@ -53,7 +53,14 @@ describe("normal skirmish individual artwork", () => {
               candidate.id ===
               (clip.id === "running" ? "moving" : "moving-shooting"),
           );
-        expect(clip.scale).toBe(original.scale);
+        expect(clip.scale).toBe(entry.vehicle ? 1 : original.scale);
+        if (entry.vehicle) {
+          expect(data.rigidBody.version).toBe(1);
+          expect(clip.scaleX).toBeUndefined();
+          expect(clip.scaleY).toBeUndefined();
+          expect(clip.durations).toEqual(original.durations);
+          expect(clip.releaseFrame).toBe(Math.min(original.releaseFrame ?? 3, original.frames.length - 1));
+        }
         expect(clip.frames).toHaveLength(original.frames.length);
         clip.frames.forEach(
           (
@@ -67,10 +74,10 @@ describe("normal skirmish individual artwork", () => {
             expect(frame.width).toBe(entry.vehicle ? 256 : 128);
             expect(frame.height).toBe(entry.vehicle ? 256 : 128);
             expect(frame.pivot.x / frame.width).toBeCloseTo(
-              (approved as any)[binding]?.bodyAnchorsPx128?.[clip.id]?.x / 128 || original.frames[i].pivot.x / original.frames[i].width,
+              entry.vehicle ? .5 : (approved as any)[binding]?.bodyAnchorsPx128?.[clip.id]?.x / 128 || original.frames[i].pivot.x / original.frames[i].width,
             );
             expect(frame.pivot.y / frame.height).toBeCloseTo(
-              (approved as any)[binding]?.bodyAnchorsPx128?.[clip.id]?.y / 128 || original.frames[i].pivot.y / original.frames[i].height,
+              entry.vehicle ? .5 : (approved as any)[binding]?.bodyAnchorsPx128?.[clip.id]?.y / 128 || original.frames[i].pivot.y / original.frames[i].height,
             );
           },
         );

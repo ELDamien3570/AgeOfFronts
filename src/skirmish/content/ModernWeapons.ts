@@ -32,7 +32,12 @@ export const BOMBER_ATTACK: AttackProfile = {
   ],
   projectile: { diameter: FIXED / 3, speed: 20 * FIXED / TICKS_PER_SECOND, blastRadius: 4 * FIXED },
 };
-export const STRATEGIC_RULES = { gold: 10000, reloadTicks: secondsToTicks(60) } as const;
+export const STRATEGIC_RULES = {
+  gold: 10000,
+  reloadTicks: secondsToTicks(60),
+  // Fixed world speed: 45 seconds along the largest selectable map's 1,000-tile edge.
+  speed: 1000 * FIXED / secondsToTicks(45),
+} as const;
 export const STRATEGIC_PAYLOADS = {
   icbm: { damage: 24000, blastRadius: 5 * FIXED, warheads: 0 },
   hydrogen: { damage: 40000, blastRadius: 28 * FIXED, warheads: 0 },

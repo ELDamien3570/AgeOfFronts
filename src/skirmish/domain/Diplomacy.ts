@@ -83,16 +83,21 @@ export class Diplomacy {
     else {rows.push({initiator:a,victim:b,lastTheftTick:tick});this.revision++;}
     if(!active){this.permissionsChanged(a,b);this.onAutomaticAction?.(a,b,"raid");}
   }
-  /** An explicit AI raid mission opens combat permission before interception.
-   * Mission selection stays with the AI; humans start raids through actual theft. */
-  beginAiRaid(player: Player, other: Player | undefined, tick: number): string | null {
+  /** Read-only authority check shared by bounded opportunity selection and commit. */
+  aiRaidRejection(player: Player, other: Player | undefined, tick: number): string | null {
     if (!this.raids || !player.ai || player.eliminated || !other || other.eliminated || !this.nonAllied(player.id, other.id))
       return "Choose a living non-allied faction for an AI raid";
     if (this.protected(player.id, other.id, tick)) return "Peace protection is still active";
     if (this.declaredWar(player.id, other.id)) return "This faction is already at war";
     if (this.state.dontEmbargo?.some(e => e.playerId === player.id && e.otherId === other.id)) return "Trade interception is disabled for this faction";
-    if (this.embargo(player.id, other.id, tick)) return null;
-    this.recordTheft(player.id, other.id, tick);
+    return null;
+  }
+  /** A committed AI interception opens a temporary raid, never territorial war. */
+  beginAiRaid(player: Player, other: Player | undefined, tick: number): string | null {
+    const rejection = this.aiRaidRejection(player, other, tick);
+    if (rejection) return rejection;
+    if (this.embargo(player.id, other!.id, tick)) return null;
+    this.recordTheft(player.id, other!.id, tick);
     return null;
   }
   establishWar(a:number,b:number,tick:number,cause:"declaration"|"entry"|"invasion"="invasion"):string|null {

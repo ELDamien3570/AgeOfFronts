@@ -1,6 +1,7 @@
 import {TICKS_PER_SECOND} from '../Protocol';
 import { ARTWORK_CATALOG, type ArtworkAsset } from "./ArtworkCatalog";
 import type { ArtworkFrame } from "./UnitArtwork";
+import { artworkCanRetry, artworkFailure, type ArtworkFailure } from "./ArtworkLoading";
 const catalog = ARTWORK_CATALOG;
 const urls = import.meta.glob<string>("../../../Art/Runtime/Ages/*.png", {
   eager: true,
@@ -28,16 +29,29 @@ export function eraPortrait(id: string): string | undefined {
 // Shared, lazy image storage. Tactical zoom never downloads full source sheets.
 export class EraArtwork {
   private readonly images = new Map<string, HTMLImageElement>();
-  private readonly requested = new Set<string>();
+  private readonly pending = new Set<string>();
+  private readonly failures = new Map<string, ArtworkFailure>();
   private load(file: string, root?: ArtworkAsset["runtimeRoot"]): HTMLImageElement | undefined {
     const key = `${root ?? "auto"}:${file}`;
-    if (!this.requested.has(key)) {
-      this.requested.add(key);
+    if (!this.images.has(key) && !this.pending.has(key) && artworkCanRetry(this.failures.get(key))) {
+      this.pending.add(key);
+      const failed = () => {
+        this.pending.delete(key);
+        const failure = artworkFailure(this.failures.get(key));
+        this.failures.set(key, failure);
+        console.warn("Era artwork unavailable", { file, root, attempt: failure.attempts });
+      };
       const image = new Image();
       image.decoding = "async";
-      image.onload = () => this.images.set(key, image);
+      image.onload = () => {
+        this.pending.delete(key);
+        this.failures.delete(key);
+        this.images.set(key, image);
+      };
+      image.onerror = failed;
       const source = url(file, root);
       if (source) image.src = source;
+      else failed();
     }
     return this.images.get(key);
   }

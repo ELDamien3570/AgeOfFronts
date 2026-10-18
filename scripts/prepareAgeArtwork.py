@@ -11,6 +11,9 @@ manifest=json.loads((OUT/'manifest.json').read_text()) if only and (OUT/'manifes
 ages=['StoneAge','BronzeAge','ClassicalAge','EarlyMedieval','LateMedieval','EarlyModern','Modern']
 def build(key,meta_path):
  if only and key not in only:return
+ if key == 'modern-anti-air':
+  build_rigid_sam(key, meta_path)
+  return
  d=json.loads(meta_path.read_text());clips={};source_hashes={}
  for name,clip in d.get('animations',{}).items():
   frames=clip.get('frames',[])
@@ -31,6 +34,29 @@ def build(key,meta_path):
   clips[name]={'file':filename,'frames':len(frames),'columns':columns,'fps':clip.get('suggestedFramesPerSecond',8),'loop':clip.get('loop',True)}
  manifest[key]={'clips':clips,'facing':d.get('facing','screen-down'),'source':str(meta_path.relative_to(ROOT)).replace('\\','/'),'metadataHash':hashlib.sha256(meta_path.read_bytes().replace(b'\r\n',b'\n')).hexdigest(),'hashes':source_hashes}
  if 'idle' in clips:manifest[key]['poster']=f'{key}-portrait.png'
+
+def build_rigid_sam(key, meta_path):
+ # Legacy EraArtwork vehicles use the same rigid-body bake as cohort vehicles,
+ # downsampled once to this renderer's 128px atlas contract.
+ from rigidVehicleArtwork import prepare_vehicle
+ d=json.loads(meta_path.read_text());authored=d['animations']
+ clips={**authored,'running':authored['movement']}
+ staging=ROOT/'build/rigid-vehicle-bake'/key;staging.mkdir(parents=True,exist_ok=True)
+ def save_image(path,image):image.save(path,optimize=True)
+ def save_text(path,text):path.write_text(text,encoding='utf-8')
+ prepare_vehicle(ROOT,meta_path,d,clips,staging,{},save_image,save_text)
+ baked=json.loads((staging/'animations.json').read_text());runtime={}
+ audit=OUT/'audit'/key;audit.mkdir(parents=True,exist_ok=True)
+ for file in (staging/'audit').glob('*.png'):
+  with Image.open(file) as image:
+   image.resize((image.width//2,image.height//2),Image.Resampling.LANCZOS).save(audit/file.name,optimize=True)
+ for c in baked['animations']:
+  name='movement' if c['id']=='running' else c['id']
+  image=Image.alpha_composite(Image.open(audit/f"{c['id']}.body.png").convert('RGBA'),Image.open(audit/f"{c['id']}.effects.png").convert('RGBA'))
+  filename=f'{key}-{name}.png';image.save(OUT/filename,optimize=True)
+  runtime[name]={'file':filename,'frames':len(c['frames']),'columns':min(6,len(c['frames'])),'fps':authored[name].get('suggestedFramesPerSecond',8),'loop':authored[name].get('loop',True)}
+  if name=='idle':image.crop((0,0,128,128)).save(OUT/f'{key}-portrait.png',optimize=True)
+ manifest[key]={'clips':runtime,'facing':d.get('facing','screen-down'),'source':meta_path.relative_to(ROOT).as_posix(),'metadataHash':baked['metadataHash'],'hashes':baked['hashes'],'poster':f'{key}-portrait.png','rigidBody':{'version':1,'file':f'audit/{key}/body.png','surfaceMask':f'audit/{key}/surface-mask.png'}}
 for age in ages:
  for folder,line in [('Melee','infantry'),('Ranged','archer'),('Cavalry','cavalry')]:
   meta=ROOT/f'Art/Soldier Icons/{folder}/{age}/animations.json'

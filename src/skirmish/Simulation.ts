@@ -46,7 +46,6 @@ import { CapturePressure } from "./CapturePressure";
 import { UnitIndex, type UnitQueries } from "./UnitIndex";
 import type { RuntimePhase } from "./RuntimeDiagnostics";
 import { startingEconomy } from "./content/StartingEconomy";
-import { tribeBuildingLimit } from "./domain/TribeDevelopment";
 import { navalLocalRoute, navalInterceptTile } from "./NavalLocalRoute";
 import type { Aircraft, RecruitmentJob } from "./domain/Definitions";
 import { MatchLifecycle, type EntityKind } from "./MatchLifecycle";
@@ -89,7 +88,7 @@ import { Expansion } from "./domain/Expansion";
 import { Occupation } from "./domain/Occupation";
 import { TerritoryAbsorption } from "./domain/TerritoryAbsorption";
 import { CoastalTerritory } from "./domain/CoastalTerritory";
-import { Recruitment, RECRUITMENT_SECONDS } from "./domain/Recruitment";
+import { Recruitment, RECRUITMENT_SECONDS, landRecruitmentTicks } from "./domain/Recruitment";
 import { costRejection, spend } from "./domain/Supply";
 import {
   squadCap,
@@ -321,7 +320,7 @@ export class Skirmish {
     bus.on("tileOwner", (tile, old) => this.expansion?.economy.boundaries?.changed(tile, old, this.tick));
     bus.on("tileOwner", tile => this.territoryAbsorption.changed(tile));
     bus.on("tileOwner", tile => this.coastalTerritory.changed(tile));
-    bus.on("tileOwner", (tile, _old, owner) => this.expansion?.economy.placements.changed(tile, owner));
+    bus.on("tileOwner", (tile, old, owner) => this.expansion?.economy.placements.changed(tile, owner, old));
     bus.on("controller", playerId => { for (const squad of this.squadIndex.byOwner(playerId)) this.playerAttacks.forget(squad.id); });
     bus.on("controller", playerId => this.controlGenerations.set(playerId, (this.controlGenerations.get(playerId) ?? 0) + 1));
     bus.on("controller", (playerId, ai) => {
@@ -764,9 +763,15 @@ export class Skirmish {
     }
     return allowed;
   }
-  notifyHostileAction(victim: number, attacker: number, tile: number): void {
+  notifyHostileAction(victim: number, attacker: number, tile: number, actualDamage = false): void {
     this.expansion?.relations.threatened(victim, attacker);
-    if (this.options.aiWarPolicy) this.expansion?.operations.threatened(victim, attacker, tile);
+    if (this.options.aiWarPolicy) {
+      this.expansion?.operations.threatened(victim, attacker, tile);
+      if (actualDamage) {
+        this.expansion?.operations.rememberGrievance(victim, attacker, "attack");
+        this.expansion?.operations.enemyDamaged(attacker, victim);
+      }
+    }
   }
   private pathsWarm = false;
   private warmGraph: "land"|"water"|"amphibious"|"done" = "land";
@@ -1493,12 +1498,6 @@ export class Skirmish {
         job => this.refundRecruitment(job))) { /* Apply the ordinary paid-job cancellation policy. */ }
       return null;
     }
-    if (player.kind === "tribe" && this.expansion && command.type === "build") {
-      const limit = tribeBuildingLimit(command.buildingType, this.expansion.progression.states[player.id].age);
-      if (!limit) return "Tribes cannot build this structure in their current age";
-      const count = this.buildingIndex.countOfType(player.id, command.buildingType);
-      if (count >= limit) return `Tribes can only build ${limit} ${command.buildingType}`;
-    }
     if (player.kind === "tribe" && !this.expansion) {
       if (command.type === "recruit-ship")
         return "Tribes defend their camp without building an economy or navy";
@@ -2077,10 +2076,8 @@ export class Skirmish {
     if (this.expansion && mode === "queue") {
       const cost = recruitCost;
       spend(player, this.expansion.supply.inventories[player.id], cost);
-      const seconds = definition!.trainingSeconds ?? (definition!.tags.includes("vehicle") ? RECRUITMENT_SECONDS.vehicle
-        : definition!.tags.includes("siege") ? RECRUITMENT_SECONDS.siege : RECRUITMENT_SECONDS[kind]);
       this.recruitment.enqueue({ playerId: player.id, buildingId: building.id, category: "land", kind,
-        definitionId: definition!.id, recipeVariant:variant,capacity:recipeCapacity(definition!,variant),cost: paidCost(player, cost), totalTicks: Math.ceil(seconds * TICKS_PER_SECOND * recipeCapacity(definition!,variant)/definition!.formationRecipe!.capacity) });
+        definitionId: definition!.id, recipeVariant:variant,capacity:recipeCapacity(definition!,variant),cost: paidCost(player, cost), totalTicks: landRecruitmentTicks(definition!,variant) });
       return null;
     }
     const candidates: number[] = [];
@@ -3243,7 +3240,7 @@ export class Skirmish {
       this.shipEntities.setOwned(ship.id, "health", Math.max(0, ship.health - damage));
       if (damage) {
         for (const [attacker, amount] of hits.contributions(ship.id))
-          if (amount > 0) this.notifyHostileAction(ship.playerId, attacker, this.tileOf(ship));
+          if (amount > 0) this.notifyHostileAction(ship.playerId, attacker, this.tileOf(ship), true);
         this.shipEntities.setOwned(ship.id, "fighting", true);
         this.shipEntities.setOwned(ship.id, "lastCombatTick", this.tick);
       }
@@ -4940,7 +4937,7 @@ export class Skirmish {
           this.squadEntities.setOwned(squad.id, "troops", squad.troops - losses);
         }
         for (const [attacker, amount] of damage.contributions(squad.id))
-          if (amount > 0) this.notifyHostileAction(squad.playerId, attacker, this.tileOf(squad));
+          if (amount > 0) this.notifyHostileAction(squad.playerId, attacker, this.tileOf(squad), true);
       } else {
         if(squad.manpower){
           const resolved=damageManpower(squad,Math.round(dealt*HEALTH_SCALE));losses=resolved.losses;
@@ -4955,7 +4952,7 @@ export class Skirmish {
       if (dealt > 0 && !squad.afloat) {
         this.squadEntities.setOwned(squad.id, "fighting", true);
         for (const [attacker, amount] of damage.contributions(squad.id))
-          if (amount > 0) this.notifyHostileAction(squad.playerId, attacker, this.tileOf(squad));
+          if (amount > 0) this.notifyHostileAction(squad.playerId, attacker, this.tileOf(squad), true);
       }
       this.recordSoldierCasualties(squad.playerId, manpowerCount(UNIT.get(squad.definitionId??""),squad.manpower?.model,losses), squad.id, damage);
     }

@@ -1,7 +1,7 @@
 import { DRONE_SWARM } from './DroneSwarms';
 import { TRENCH, SKIRMISH } from "./TacticalRules";
 import formationDoctrines from "./formation-doctrines.json";
-import { AIRCRAFT_RULES,ATOMIC_ATTACK,DRONE_ATTACK,NAVAL_AIR_ATTACK } from "./ModernWeapons";
+import { AIRCRAFT_RULES,ATOMIC_ATTACK,DRONE_ATTACK,NAVAL_AIR_ATTACK,STRATEGIC_RULES,STRATEGIC_PAYLOADS } from "./ModernWeapons";
 import { FLIGHT_RULES } from "./FlightOperations";
 import { buildingFootprint } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
@@ -112,6 +112,7 @@ export const CONTENT_HASH = hash({
   formationDoctrines,
   formationScale: { soldier: SOLDIER_SCALE, cavalryBody: CAVALRY_SCALE, cavalrySpacing: CAVALRY_SPACING, cavalryTravelPitch: CAVALRY_PITCH },
   flights:{swarm:DRONE_SWARM,aircraft:AIRCRAFT_RULES,basingRevision:2,rules:FLIGHT_RULES,atomic:ATOMIC_ATTACK,drone:DRONE_ATTACK,navalAir:NAVAL_AIR_ATTACK},
+  strategic: { rules: STRATEGIC_RULES, payloads: STRATEGIC_PAYLOADS },
   nuclearLand:{reserveLossPerCell:NUCLEAR_RESERVE_LOSS_PER_CELL,troopLossPerCell:FALLOUT_TROOP_LOSS_PER_CELL},
   shoreTransportRevision: 1,
   navalAutonomyRevision: 3,

@@ -1,4 +1,5 @@
-import {TICKS_PER_SECOND} from '../Protocol';
+import { FIXED, TICKS_PER_SECOND } from '../Protocol';
+import { STRATEGIC_RULES } from "../content/ModernWeapons";
 import { flightPercent, missionKind, FLIGHT_RULES, type AirMission } from "../content/FlightOperations";
 import type { BuildingType, ShipType, SquadType } from "../Protocol";
 import { BUILDING_RULES } from "../Rules";
@@ -21,7 +22,7 @@ const esc = (s: string) =>
       ]!,
   );
 const fmt = (n: number) => Math.floor(n).toLocaleString("en-US");
-const groups = [
+export const RESOURCE_STOCK_GROUPS = [
   {
     id: "ores",
     name: "Raw materials",
@@ -262,7 +263,7 @@ export class EmpireHudView {
       const image = button.querySelector<HTMLImageElement>(".hud-art");
       if (art && image && image.getAttribute("src") !== art) image.src = art;
     }
-    const stock = groups
+    const stock = RESOURCE_STOCK_GROUPS
       .map((group) => {
         const entries = Object.entries(vm.resources.stocks).filter(([id]) =>
           "prefix" in group
@@ -422,7 +423,7 @@ export class EmpireHudView {
       "launch",
       "icbm",
       icbm.reason,
-      `10,000 gold · 1 ICBM payload\nResearch: Strategic Weapons\nLauncher: Missile silo\n36s flight · 60s launcher reload`,
+      `10,000 gold · 1 ICBM payload\nResearch: Strategic Weapons\nLauncher: Missile silo\n${1000 * FIXED / STRATEGIC_RULES.speed / TICKS_PER_SECOND}s flight per 1,000 tiles · 60s launcher reload`,
       "icbm",
     );
     const btnMirv = this.button(
@@ -430,7 +431,7 @@ export class EmpireHudView {
       "launch",
       "mirv",
       mirv.reason,
-      `10,000 gold · 1 MIRV payload\nResearch: Strategic Weapons\nLauncher: MIRV launch complex or deployed mobile launcher\n36s flight · 60s launcher reload · 8 warheads · Right-click a building to focus all eight`,
+      `10,000 gold · 1 MIRV payload\nResearch: Strategic Weapons\nLauncher: MIRV launch complex or deployed mobile launcher\n${1000 * FIXED / STRATEGIC_RULES.speed / TICKS_PER_SECOND}s flight per 1,000 tiles · 60s launcher reload · 8 warheads · Right-click a building to focus all eight`,
       "mirv",
     );
     const btnHbomb = this.button(
@@ -438,7 +439,7 @@ export class EmpireHudView {
       "launch",
       "hydrogen",
       hbomb.reason,
-      `10,000 gold · 1 HYDROGEN payload\nResearch: Strategic Weapons\nLauncher: Missile silo\n36s flight · 60s launcher reload`,
+      `10,000 gold · 1 HYDROGEN payload\nResearch: Strategic Weapons\nLauncher: Missile silo\n${1000 * FIXED / STRATEGIC_RULES.speed / TICKS_PER_SECOND}s flight per 1,000 tiles · 60s launcher reload`,
       "hydrogen",
     );
 

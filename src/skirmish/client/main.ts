@@ -239,6 +239,7 @@ const recruitmentFeed = new RecruitmentQueueView(element("recruitment-feed"), el
   });
 });
 const empire = new EmpireView(element("app"), {
+  canInspectFactionResources: () => !onlineMatchId && worker instanceof Worker,
   recruitmentBatch: (shift) => recruitmentControls.batch(shift, cameraPan.enabled),
   refresh: updateHud,
   command,

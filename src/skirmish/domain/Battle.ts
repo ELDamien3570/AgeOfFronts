@@ -97,7 +97,7 @@ export interface BattleWorld {
   ships: readonly Ship[];
   volleys: ArcherVolley[];
   allocateId(): number;
-  notifyHostileAction?(victim: number, attacker: number, tile: number): void;
+  notifyHostileAction?(victim: number, attacker: number, tile: number, actualDamage?: boolean): void;
   resolveLandDamage(damage: DamageLedger): void;
   resolveNavalDamage(damage: DamageLedger): void;
   nuclearBlast?(x:number,y:number,radius:number):void;
@@ -558,7 +558,7 @@ export class Battle {
     const health = (target.health ?? target.maxHealth ?? 1200) - applied;
     if ("tile" in target) this.world.updateBuilding(target.id, { health });
     else this.forts.updateBarrier(target.id, { health });
-    if (applied > 0) this.world.notifyHostileAction?.(target.playerId, attacker, "tile" in target ? target.tile : target.tiles[0]);
+    if (applied > 0) this.world.notifyHostileAction?.(target.playerId, attacker, "tile" in target ? target.tile : target.tiles[0], true);
     const s =
       kind === "squad"
         ? this.world.squad(source)

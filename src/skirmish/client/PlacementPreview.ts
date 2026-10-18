@@ -18,6 +18,7 @@ import { resourceVisibleAtAge } from "../content/Resources";
 import type { Age } from "../domain/Definitions";
 import { Diplomacy } from "../domain/Diplomacy";
 import { availableGold } from "../domain/Gold";
+import { tribeBuildingRejection } from "../domain/TribeDevelopment";
 import { ResourceSiteIndex } from "../domain/ResourceSiteIndex";
 import { costRejection } from "../domain/Supply";
 import { quoteTowerPlan } from "../domain/TowerPlacement";
@@ -199,7 +200,12 @@ export class PlacementPreview {
       JSON.stringify(
         snapshot.expansion?.diplomacy.alliances.map((t) => [t.a, t.b]) ?? [],
       );
-    const globalChange = geometry !== this.geometry || resourceChanged;
+    // Tribal copy limits affect distant sites of the same type/resource, not
+    // just cells beside a changed building. Foundations count immediately.
+    const tribalCounts = snapshot.players.find(p => p.id === this.playerId)?.kind === "tribe"
+      ? JSON.stringify(snapshot.buildings.filter(b => b.playerId === this.playerId).map(b => [b.type, b.type === "mine" ? b.tile : 0])) : "";
+    const capGeometry = geometry + "/" + tribalCounts;
+    const globalChange = capGeometry !== this.geometry || resourceChanged;
     if (globalChange || changedBuildings.length) {
       this.buildings.rebuild(snapshot.buildings);
       this.blocked.clear();
@@ -238,7 +244,7 @@ export class PlacementPreview {
         }
       this.diagnostics.invalidations++;
     }
-    this.geometry = geometry;
+    this.geometry = capGeometry;
     this.buildingGeometry = nextBuildings;
     // Compare ownership only inside retained chunks, including full
     // solo snapshots without changedTiles. Never reset the grid every packet.
@@ -396,6 +402,10 @@ export class PlacementPreview {
     if (reason) return { reason, wallGold: 0 };
     let wallGold = 0;
     if (snapshot.expansion) {
+      const player = snapshot.players.find(p => p.id === this.playerId)!;
+      const tribal = tribeBuildingRejection(player,type,tile,snapshot.expansion.progression[this.playerId].age,
+        this.buildings.byOwner(this.playerId), t => this.resources.at(t)?.resource);
+      if (tribal) return { reason: tribal, wallGold: 0 };
       const exclusion = this.resources.rejection(type, tile);
       if (exclusion) return { reason: exclusion, wallGold: 0 };
       const node = this.resources.at(tile);

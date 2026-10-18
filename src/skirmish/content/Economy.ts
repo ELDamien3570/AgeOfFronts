@@ -3,11 +3,16 @@ import { AGES, type Age } from "../domain/Definitions";
 // Shared opening and growth rules used by simulation and presentation.
 export const STARTING_AGE_TROOPS = 6_000;
 export const LAND_TRADE_CAPACITIES = [20, 30, 40, 50, 60, 80, 120, 160] as const;
-export const tradeStockPerSecond = (age: Age) => 2 * (AGES.indexOf(age) + 1);
+/** Each producer replenishes one current unstacked trader load. */
+export const PORT_CARGO_REPLENISH_SECONDS = 13;
+export const FACTORY_CARGO_REPLENISH_SECONDS = 10;
 export const extractionYieldMultiplier = (age: Age) => 1 + Math.floor(AGES.indexOf(age) / 2);
+/** Per source tile: age allowance plus one slot per additional completed producer. */
+export const tradeSourceActorCap = (age: Age, stack = 1): number =>
+  4 + 2 * AGES.indexOf(age) + Math.max(0, stack - 1);
 export const TRADE_RULES = {
-  actorCap: 48,
-  reservedLandActors: 8,
+  actorCap: 128,
+  reservedLandActors: 24,
   maximumStack: 10,
   baseCargoPercent: 100,
   maximumCargoPercent: 300,

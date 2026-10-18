@@ -34,6 +34,7 @@ import { FormationSoldierMotion } from "../FormationSoldierMotion";
 import { SoldierDrawQueue } from "../SoldierDrawQueue";
 import { SoldierSelectionIndex } from "../SoldierSelectionIndex";
 import { troopAssetUrl } from "./TroopAssetUrls";
+import { artworkCanRetry, artworkFailure, type ArtworkFailure } from "../ArtworkLoading";
 import { TroopChoreography } from "./TroopChoreography";
 import { committedMeleeActors } from "./TroopMeleeStrike";
 import { cavalryCohort,cavalryWaves,type CavalryCohort } from './CavalryMeleePresentation';
@@ -95,11 +96,15 @@ const sharedImages = new Map<string, Promise<HTMLImageElement>>();
 function loadSharedImage(src: string): Promise<HTMLImageElement> {
   let pending = sharedImages.get(src);
   if (!pending) {
-    const image = new Image();
-    image.src = src;
-    pending = image
-      .decode()
-      .then(() => image)
+    // Construction, URL assignment and decode can all throw synchronously
+    // (including headless contexts). Keep them inside the cached promise so
+    // background effect loading reaches the same handled failure path.
+    pending = Promise.resolve().then(async () => {
+      const image = new Image();
+      image.src = src;
+      await image.decode();
+      return image;
+    })
       .catch((error) => {
         sharedImages.delete(src);
         throw error;
@@ -386,8 +391,10 @@ export class TroopActors {
   private effects?: Promise<void>;
   private readonly loaded = new Set<string>();
   private readonly loading = new Map<string, Promise<void>>();
-  private readonly failed = new Set<string>();
+  private readonly failures = new Map<string, ArtworkFailure>();
+  private effectsFailure?: ArtworkFailure;
   private async loadEffects(): Promise<void> {
+    if (!artworkCanRetry(this.effectsFailure)) return;
     return (this.effects ??= Promise.all([
       loadSharedImage(
         new URL("./assets/StoneAgeJavelin-v1.png", import.meta.url).href,
@@ -399,6 +406,11 @@ export class TroopActors {
       this.javelin = javelin;
       this.blood = blood;
       this.ready = true;
+      this.effectsFailure = undefined;
+    }).catch((error) => {
+      this.effects = undefined;
+      this.effectsFailure = artworkFailure(this.effectsFailure);
+      console.warn("Troop effects unavailable", { attempt: this.effectsFailure.attempts, error });
     }));
   }
   /** Fixtures may preload; normal skirmish requests only visible detailed actors. */
@@ -410,17 +422,17 @@ export class TroopActors {
     return !!troop && this.loaded.has(troop.name);
   }
   private loadActor(troop: TroopActorDefinition): Promise<void> {
+    // Effects may recover independently after the actor has become drawable.
+    void this.loadEffects();
     if (this.loaded.has(troop.name)) return Promise.resolve();
     const pending = this.loading.get(troop.name);
     if (pending) return pending;
+    if (!artworkCanRetry(this.failures.get(troop.name))) return Promise.resolve();
     const task = (async () => {
       const { name } = troop;
       const root =
         troop.assetRoot ?? `/Art/Cultures/Russians/Units/${troop.age}/${name}/`;
-      const [manifestResponse] = await Promise.all([
-        fetch(troopAssetUrl(root + "animations.json")),
-        this.loadEffects(),
-      ]);
+      const manifestResponse = await fetch(troopAssetUrl(root + "animations.json"));
       if (!manifestResponse.ok) throw new Error(`Missing ${name} assets`);
       const manifest: ActorManifest = await manifestResponse.json();
       if (manifest.actorCount !== 1)
@@ -430,7 +442,7 @@ export class TroopActors {
         : troop.ranged
           ? rangedLayout
           : footLayout;
-      const assets = await Promise.all(
+      const assets = await Promise.allSettled(
         manifest.animations.map(async (clip) => {
           const id = clip.id;
           const image = await loadSharedImage(troopAssetUrl(root + clip.file));
@@ -445,11 +457,28 @@ export class TroopActors {
           };
         }),
       );
-      // Publish atomically: a partially loaded unit never reaches the draw path.
+      // Idle and attack are essential: attack metadata owns release timing.
+      // A failed authored mask rejects its clip, preserving faction identity.
+      const available = assets.flatMap((result, index) => {
+        if (result.status === "fulfilled") return [result.value];
+        console.warn("Troop clip unavailable", { name, clip: manifest.animations[index].id, error: result.reason });
+        return [];
+      });
+      const idle = available.find((asset) => asset.id === "idle");
+      if (!idle || !available.some((asset) => asset.id === "attack"))
+        throw new Error(`Missing essential idle or attack artwork for ${name}`);
+      if (!available.some((asset) => asset.id === "running"))
+        available.push({ ...idle, id: "running" });
       this.layouts.set(name, layout);
-      for (const asset of assets) this.assets.set(`${name}:${asset.id}`, asset);
+      for (const asset of available) this.assets.set(`${name}:${asset.id}`, asset);
       this.loaded.add(name);
-    })();
+      this.failures.delete(name);
+    })().catch((error) => {
+      const failure = artworkFailure(this.failures.get(troop.name));
+      this.failures.set(troop.name, failure);
+      console.warn("Individual troop artwork unavailable", { name: troop.name, attempt: failure.attempts, error });
+      throw error;
+    }).finally(() => this.loading.delete(troop.name));
     this.loading.set(troop.name, task);
     return task;
   }
@@ -643,7 +672,7 @@ export class TroopActors {
       const length = 15;
       // Slightly exaggerate width for readability at gameplay resolution.
       const thickness = 2;
-      if (troop.projectile === "javelin" || troop.name === "Javelinist") {
+      if (this.ready && (troop.projectile === "javelin" || troop.name === "Javelinist")) {
         ctx.drawImage(
           this.javelin,
           38,
@@ -805,10 +834,10 @@ export class TroopActors {
           footprint,
       angle: state.angle + (soldier.angle ?? 0),
     };
-    const clip = this.assets.get(`${state.name}:death`)!.clip;
+    const clip = this.assets.get(`${state.name}:death`)?.clip;
     const fallDuration =
-      clip.durations?.reduce((sum, duration) => sum + duration, 0) ??
-      (clip.frameCount * 1000) / (clip.fps ?? 6);
+      clip?.durations?.reduce((sum, duration) => sum + duration, 0) ??
+      (clip ? (clip.frameCount * 1000) / (clip.fps ?? 6) : 0);
     this.remains.add({
       key: `${id}:${soldier.id}:${started}`,
       artwork: state.name,
@@ -833,7 +862,7 @@ export class TroopActors {
     width: number,
     height: number,
   ): void => {
-    if (!this.detailed || !this.ready) return;
+    if (!this.detailed) return;
     this.impacts.ground(ctx,this.clock(),tileSize,project);
     this.frameProject = project;
     const records = this.remains
@@ -851,6 +880,7 @@ export class TroopActors {
     // The existing radius controls footprint; opacity changes independently.
     ctx.imageSmoothingEnabled = true;
     for (const { record, p } of records) {
+      if (!this.ready) continue;
       if (this.vehicles.has(record.artwork)) continue;
       if (!record.bloodGrowth) continue;
       const radius = record.size * tileSize * 0.24 * record.bloodGrowth;
@@ -882,7 +912,7 @@ export class TroopActors {
       const asset = this.assets.get(`${record.artwork}:death`);
       if(!asset){
         const troop=this.troops.find(t=>t.name===record.artwork);
-        if(troop&&!this.failed.has(troop.name))void this.loadActor(troop).catch(()=>this.failed.add(troop.name));
+        if(troop)void this.loadActor(troop).catch(()=>undefined);
         continue;
       }
       const { clip } = asset;
@@ -923,17 +953,10 @@ export class TroopActors {
     const troop = this.byDefinitionId.get(squad.definitionId ?? "");
     if (!this.detailed || !troop) return false;
     if (!this.loaded.has(troop.name)) {
-      if (!this.failed.has(troop.name) && !this.loading.has(troop.name))
-        void this.loadActor(troop).catch((error) => {
-          this.failed.add(troop.name);
-          console.error(
-            "Individual troop artwork unavailable",
-            troop.name,
-            error,
-          );
-        });
+      void this.loadActor(troop).catch(() => undefined);
       return false;
     }
+    if (!this.ready) void this.loadEffects();
     const name: Name = troop.name;
     this.detailedInFrame.add(squad.id);
     this.frameScale = tileSize;
@@ -1103,7 +1126,7 @@ export class TroopActors {
     const pose = squadArtworkPose(squad, tick);
     const footprint = 2 / 0.75,
       extent = tileSize * footprint;
-    let drawnClip = "";
+    let drawnClip: string;
     const draw = (
       position: { id: number; x: number; y: number; angle: number },
       scale: number,
@@ -1234,7 +1257,7 @@ export class TroopActors {
     const waves=cavalryWaves(squad.cavalryMelee,tick,meleeClip,soldiers,cohorts??new Map());
     const impact=squad.chargeImpact?.role==='rider' && squad.cavalryEngagement?undefined:squad.chargeImpact,cohort=this.chargeCohorts.get(squad.id);
     const sameImpact=impact && cohort?.tick===impact.tick && cohort.sourceId===impact.sourceId && cohort.role===impact.role;
-    const chargeActors=chargeReactions(impact,tick,soldiers,sameImpact?cohort.ids:undefined);
+    const chargeActors=chargeReactions(impact,tick,soldiers,sameImpact?cohort.ids:undefined,troop.vehicle);
     if(impact && !sameImpact && chargeActors.size)this.chargeCohorts.set(squad.id,{tick:impact.tick,sourceId:impact.sourceId,role:impact.role,ids:new Set(chargeActors.keys())});
     const assaultState=squad.cavalryEngagement?.phase==='withdrawing'?undefined:squad.cavalryEngagement?.assault;
     let assaultMotion=this.cavalryAssaults.get(squad.id);

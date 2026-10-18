@@ -1,5 +1,35 @@
 {
   "actorCount": 1,
+  "source": "Art/Cultures/Russians/Units/PreModern/T34-85/animations.json",
+  "metadataHash": "32249716d94debfc6a74a3ab4fef3c90af3b9507bc4fe90a11d98036ffb42eae",
+  "hashes": {
+    "Art/Cultures/Russians/Units/PreModern/T34-85/idle-Registered-v1.png": "acd1f046846517fbd86b686a51b7a8831d2f42eae83472b4d2ecd7662eb74ca3",
+    "Art/Runtime/Ages/impact-shell-detonate.png": "127922ca7c346d1a691618076a2ec4373f1b4d42d8b183afa481df6eebcd31b4",
+    "Art/Cultures/Russians/Units/PreModern/T34-85/moving-shooting-Registered-v1.png": "a0ea4ade4cc8aa3041ee75aeb06936a277dc697045619ed0efbd4b670c22f585"
+  },
+  "rigidBody": {
+    "version": 1,
+    "file": "audit/body.png",
+    "surfaceMask": "audit/surface-mask.png",
+    "bounds": [
+      74,
+      16,
+      182,
+      240
+    ],
+    "pivot": {
+      "x": 128,
+      "y": 128
+    },
+    "sourceFrame": 0,
+    "sourceClip": "idle",
+    "sourceBounds": [
+      161,
+      82,
+      351,
+      476
+    ]
+  },
   "animations": [
     {
       "id": "idle",
@@ -7,15 +37,11 @@
       "file": "idle.png",
       "loop": true,
       "scale": 1,
-      "sheetSize": {
-        "width": 512,
-        "height": 512
-      },
       "durations": [
         1000
       ],
       "frameCount": 1,
-      "description": "Approved stationary idle. Hull, turret, gun and tracks remain still.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -23,12 +49,11 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
-      "sha256": "acd1f046846517fbd86b686a51b7a8831d2f42eae83472b4d2ecd7662eb74ca3",
       "releaseFrame": 0
     },
     {
@@ -46,7 +71,7 @@
         150
       ],
       "frameCount": 6,
-      "description": "Rolling track tread phases; motion stays in place.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -54,8 +79,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -64,8 +89,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -74,8 +99,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -84,8 +109,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -94,8 +119,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -104,12 +129,11 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
-      "sha256": "ac9d1d0187d0738f6660029ad0f2b29055fdd505d910c3015790180cf36da22e",
       "releaseFrame": 3
     },
     {
@@ -127,7 +151,7 @@
         250
       ],
       "frameCount": 6,
-      "description": "Rolling tracks with one cannon flash, dissipating muzzle smoke, and recovery.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -135,8 +159,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -145,8 +169,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -155,8 +179,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -165,8 +189,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -175,8 +199,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -185,12 +209,11 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
-      "sha256": "a0ea4ade4cc8aa3041ee75aeb06936a277dc697045619ed0efbd4b670c22f585",
       "releaseFrame": 3
     },
     {
@@ -208,7 +231,7 @@
         1200
       ],
       "frameCount": 6,
-      "description": "Ignition, explosion, smoke clearing, then a charred wreck; holds the final frame.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -216,8 +239,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -226,8 +249,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -236,8 +259,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -246,8 +269,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -256,8 +279,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -266,21 +289,12 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
-      "sha256": "5e4ea5d1526cf5c49e6c6577003f160ece820a667414b6bd02e76c799b5e6194",
       "releaseFrame": 3
     }
-  ],
-  "source": "Art/Cultures/Russians/Units/PreModern/T34-85/animations.json",
-  "metadataHash": "32249716d94debfc6a74a3ab4fef3c90af3b9507bc4fe90a11d98036ffb42eae",
-  "hashes": {
-    "Art/Cultures/Russians/Units/PreModern/T34-85/idle-Registered-v1.png": "acd1f046846517fbd86b686a51b7a8831d2f42eae83472b4d2ecd7662eb74ca3",
-    "Art/Cultures/Russians/Units/PreModern/T34-85/moving-Registered-v1.png": "ac9d1d0187d0738f6660029ad0f2b29055fdd505d910c3015790180cf36da22e",
-    "Art/Cultures/Russians/Units/PreModern/T34-85/moving-shooting-Registered-v1.png": "a0ea4ade4cc8aa3041ee75aeb06936a277dc697045619ed0efbd4b670c22f585",
-    "Art/Cultures/Russians/Units/PreModern/T34-85/death-Registered-v1.png": "5e4ea5d1526cf5c49e6c6577003f160ece820a667414b6bd02e76c799b5e6194"
-  }
+  ]
 }

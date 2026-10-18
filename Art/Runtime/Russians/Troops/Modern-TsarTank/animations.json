@@ -1,17 +1,46 @@
 {
   "actorCount": 1,
+  "source": "Art/Cultures/Russians/Units/Modern/TsarTank/animations.json",
+  "metadataHash": "dbb04b25fd72de90d0912603da374b0ee8c784f7ac808afa0805f1da52ee0375",
+  "hashes": {
+    "Art/Cultures/Russians/Units/Modern/TsarTank/Idle-v1.png": "0024317c0cb77943296e8194b8b26904d9b9e8248521187c45b4e3a71f20c241",
+    "Art/Runtime/Ages/impact-shell-detonate.png": "127922ca7c346d1a691618076a2ec4373f1b4d42d8b183afa481df6eebcd31b4",
+    "Art/Cultures/Russians/Units/Modern/TsarTank/attack-Registered-v1.png": "b92acd890fdc715e99da879daafcfa5fa1fb261541c4d07b2ed2eb7ee0218a47"
+  },
+  "rigidBody": {
+    "version": 1,
+    "file": "audit/body.png",
+    "surfaceMask": "audit/surface-mask.png",
+    "bounds": [
+      32,
+      16,
+      223,
+      240
+    ],
+    "pivot": {
+      "x": 128,
+      "y": 128
+    },
+    "sourceFrame": 0,
+    "sourceClip": "idle",
+    "sourceBounds": [
+      138,
+      54,
+      1114,
+      1199
+    ]
+  },
   "animations": [
     {
       "id": "idle",
       "file": "idle.png",
-      "sha256": "0024317c0cb77943296e8194b8b26904d9b9e8248521187c45b4e3a71f20c241",
       "label": "Idle - single frame",
       "loop": true,
-      "scale": 1.0,
+      "scale": 1,
       "durations": [
         1000
       ],
-      "description": "Tsar Tank-inspired tricycle: two giant upright steel wheels, a broad riveted hull, and a small rear steering roller on a long tail boom.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frameCount": 1,
       "sourceFrameOrder": [
         0
@@ -23,24 +52,19 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
-      "sheetSize": {
-        "width": 1254,
-        "height": 1254
-      },
       "releaseFrame": 0
     },
     {
       "id": "running",
       "file": "running.png",
-      "sha256": "d56e28ccba84870fa7e087bb8ed55cd7fdd43ad651f6edb164e813a2fbd687d7",
       "label": "Moving",
       "loop": true,
-      "scale": 1.5375375375375375,
+      "scale": 1,
       "durations": [
         200,
         200,
@@ -58,7 +82,7 @@
         4,
         5
       ],
-      "description": "Slow heavy driving IN PLACE, six consecutive seamless-loop frames. Steel rim/tread surface patterns cycle along the two huge upright wheels, small rear roller rolls. Tiny mechanical suspension vibration and axle settling only. Central hull star and geometry fixed, no lateral wandering, no whole-vehicle translation. Wheel lengths, wheel spacing, rear boom and guns remain exactly identical. No flashes or smoke.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -66,8 +90,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -76,8 +100,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -86,8 +110,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -96,8 +120,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -106,8 +130,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -116,8 +140,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -126,10 +150,9 @@
     {
       "id": "attack",
       "file": "attack.png",
-      "sha256": "b92acd890fdc715e99da879daafcfa5fa1fb261541c4d07b2ed2eb7ee0218a47",
       "label": "Twin cannon volley",
       "loop": false,
-      "scale": 1.5375375375375375,
+      "scale": 1,
       "durations": [
         160,
         120,
@@ -147,7 +170,7 @@
         4,
         5
       ],
-      "description": "Stationary twin-cannon firing sequence, six consecutive frames: 1 ready; 2 left short cannon recoils with compact bright orange flash at LEFT BARREL TIP toward bottom; 3 left recovers with a little dissipating muzzle smoke; 4 right short cannon recoils with orange flash at RIGHT BARREL TIP toward bottom; 5 right recovers with little smoke; 6 both cannons at rest. Sequential left/right volley. Recoil only the barrels, not whole tank. No long barrel extension, no extra guns. Fully fixed wheel/hull/boom geometry.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -155,8 +178,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -165,8 +188,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -175,8 +198,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -185,8 +208,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -195,8 +218,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -205,8 +228,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -215,10 +238,9 @@
     {
       "id": "death",
       "file": "death.png",
-      "sha256": "3dfdf09229009a1627dbf7ab6294a59f50332249849ceca188a64cbf20acaa92",
       "label": "Explosion / death",
       "loop": false,
-      "scale": 1.5375375375375375,
+      "scale": 1,
       "durations": [
         160,
         200,
@@ -236,7 +258,7 @@
         4,
         5
       ],
-      "description": "Blast tears the center free of both giant wheels. Detached hull crashes down as the wheels topple flat, exposing their spokes; scattered wreck settles.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -244,8 +266,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -254,8 +276,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -264,8 +286,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -274,8 +296,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -284,8 +306,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -294,20 +316,12 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
       "releaseFrame": 3
     }
-  ],
-  "source": "Art/Cultures/Russians/Units/Modern/TsarTank/animations.json",
-  "metadataHash": "dbb04b25fd72de90d0912603da374b0ee8c784f7ac808afa0805f1da52ee0375",
-  "hashes": {
-    "Art/Cultures/Russians/Units/Modern/TsarTank/Idle-v1.png": "0024317c0cb77943296e8194b8b26904d9b9e8248521187c45b4e3a71f20c241",
-    "Art/Cultures/Russians/Units/Modern/TsarTank/moving-Registered-v1.png": "d56e28ccba84870fa7e087bb8ed55cd7fdd43ad651f6edb164e813a2fbd687d7",
-    "Art/Cultures/Russians/Units/Modern/TsarTank/attack-Registered-v1.png": "b92acd890fdc715e99da879daafcfa5fa1fb261541c4d07b2ed2eb7ee0218a47",
-    "Art/Cultures/Russians/Units/Modern/TsarTank/death-Registered-v2.png": "3dfdf09229009a1627dbf7ab6294a59f50332249849ceca188a64cbf20acaa92"
-  }
+  ]
 }

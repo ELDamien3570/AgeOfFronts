@@ -4,7 +4,7 @@ import { CHARGE_IMPACT, type ChargeImpact } from '../../domain/ChargeImpact';
 interface Member {id:number;x:number;y:number;angle:number;scale:number}
 export interface ChargeReaction {x:number;y:number;angle:number;scale:number;time:number;role:ChargeImpact['role']}
 /** A small, deterministic cosmetic cohort; no individual combat state. */
-export function chargeReactions(impact:ChargeImpact|undefined,tick:number,members:readonly Member[],selected?:ReadonlySet<number>):Map<number,ChargeReaction> {
+export function chargeReactions(impact:ChargeImpact|undefined,tick:number,members:readonly Member[],selected?:ReadonlySet<number>,rigid=false):Map<number,ChargeReaction> {
   const result=new Map<number,ChargeReaction>();
   if(!impact)return result;
   const elapsed=tick-impact.tick;if(elapsed<0||elapsed>=CHARGE_IMPACT.duration)return result;
@@ -29,7 +29,7 @@ export function chargeReactions(impact:ChargeImpact|undefined,tick:number,member
     result.set(member.id,{x:member.x+impact.dx/FIXED*travel*carryWeight,
       y:member.y+impact.dy/FIXED*travel*carryWeight-flight*(.09+weight*.08),
       angle:member.angle+(impact.role==='defender'?Math.sin(Math.PI*p)*spin:0),
-      scale:member.scale*(1+flight*.12),time:Math.max(0,elapsed-delay)*TICK_MS,role:impact.role});
+      scale:rigid?member.scale:member.scale*(1+flight*.12),time:Math.max(0,elapsed-delay)*TICK_MS,role:impact.role});
     if(impact.role==='defender'){const reaction=result.get(member.id)!;reaction.x+=sideX*length/FIXED*lateral*travel;reaction.y+=sideY*length/FIXED*lateral*travel;}
   }
   return result;

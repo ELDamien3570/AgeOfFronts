@@ -6,6 +6,7 @@ import { researchUtility } from "./AiResearchUtility";
 import { AiCoastPlanner } from "./AiCoastPlanner";
 import { AiTradeOpportunities, tradeSupplyLimited } from "./AiTradeOpportunities";
 import { AiRouteQuotes } from "./AiRouteQuotes";
+import { aiResourcePressures } from "./AiResourcePressure";
 import { AiFrontRecords } from "./AiFrontRecords";
 import { AiModernFronts } from "./AiModernFronts";
 import type { Player } from "../Protocol";
@@ -17,7 +18,7 @@ import { AiBoundaryIndex } from "./AiBoundaryIndex";
 import { AiBudgetLedger, affordableAiCost } from "./AiBudgetLedger";
 import { AiCityRecords } from "./AiCityRecords";
 import { AiDefenseDirector } from "./AiDefenseDirector";
-import { economicCandidates, type AiEconomicIntent } from "./AiEconomicPlanner";
+import { economicCandidates, economicBottleneckRank, isEconomicBottleneck, type AiEconomicIntent } from "./AiEconomicPlanner";
 import { economicSnapshot } from "./AiEconomicSnapshot";
 import { AiLossWindow } from "./AiLossWindow";
 import { militaryDemand, type AiProductionDemand } from "./AiMilitaryDemand";
@@ -30,6 +31,10 @@ import type { Expansion } from "./Expansion";
 import { militaryPosture } from "./AiMilitaryPosture";
 import { UNIT } from "../content/Units";
 import { FIXED } from "../Protocol";
+import { AiForceInventory } from "./AiForceInventory";
+import { landRecruitmentTicks } from "./Recruitment";
+import { recruitmentVariant } from "../content/FormationRecipes";
+import { AI_CAPACITY_SECONDS } from "./AiInfrastructureCapacity";
 
 interface Saving {
   intent: AiEconomicIntent;
@@ -108,6 +113,9 @@ export class AiEconomicDirector {
       player.kind === "regular" &&
       !player.eliminated
     );
+  }
+  resourcePressures(playerId: number) {
+    return this.demands.get(playerId)?.resourcePressures ?? [];
   }
   checkpoint() {
     return structuredClone({
@@ -287,6 +295,9 @@ export class AiEconomicDirector {
       generation,
       age: state.age,
       research: state.completed,
+      technologySpeed: progression.technologySpeed,
+      paidResearch: Object.values(state.research).map(job => job.technologyId),
+      advancing: !!state.advancement,
       inventory: supply.inventories[player.id],
       buildings: world.buildingFacts().byOwner(player.id),
       squads: world.squadFacts().byOwner(player.id),
@@ -309,7 +320,7 @@ export class AiEconomicDirector {
         )
         .reduce((n, s) => n + s.troops, 0),
       isolated: this.placements.coasts(player.id).length > 0 && !world.players.some(p =>
-        p.id !== player.id && !p.eliminated && world.hostile(player.id,p.id) && world.squadPaths(player.id).connected(player.base,p.base)),
+        p.id !== player.id && !p.eliminated && this.expansion.diplomacy.nonAllied(player.id,p.id) && world.squadPaths(player.id).connected(player.base,p.base)),
     });
     // Planning may invest in an owned, researched deposit before its mine is
     // built. Execution still spends only liquid stock through normal commands.
@@ -343,15 +354,22 @@ export class AiEconomicDirector {
     if(demand.planning)this.demandPlanning.set(player.id,{key:demandKey,state:demand.planning});else this.demandPlanning.delete(player.id);
     // An inconclusive equipment quote must not suspend unrelated decisions.
     // Retain the last complete demand for production while bounded work resumes.
-    if (!demand.deferred) this.demands.set(player.id, demand);
+    if (!demand.deferred) {
+      demand.resourcePressures = aiResourcePressures(this.expansion, snapshot, demand, this.demands.get(player.id)?.resourcePressures);
+      this.demands.set(player.id, demand);
+    }
     const decisionDemand = demand.deferred
-      ? { ...(this.demands.get(player.id) ?? { equipment: {}, materials: {} }), units: demand.units }
+      ? { ...(this.demands.get(player.id) ?? { equipment: {}, materials: {} }), units: demand.units, manpower:demand.manpower }
       : demand;
     const opportunity = {
       progressionRace: state.age !== progression.maximumAge && progressionRaceStarted(progression.states, state.age),
       resources: supply.deposits.filter(d => world.owners[d.tile] === player.id).map(d => d.resource),
       usableCoast: this.placements.coasts(player.id).length > 0,
       seaThreat: this.naval.missions.get(player.id)?.assessment?.enemyPower ?? 0,
+      navalDemand: this.naval.enabled(player) ? Math.max(
+        this.naval.missions.get(player.id)?.desiredHulls ?? 0,
+        snapshot.buildings.some(b => b.type === "port" && !b.remainingTicks && (b.health ?? 1) > 0) ? 1 : 0,
+      ) : 0,
       goods: snapshot.buildings.reduce((n, b) => n + (supply.goods.get(b.id) ?? 0), 0),
       protectedItems: this.ledger.protected(player.id).items ?? {},
     };
@@ -369,31 +387,59 @@ export class AiEconomicDirector {
       opportunity,
       progression.maximumAge,
     );
-    if (posture.wealthy) {
-      // A separate bounded lane prevents research/refits starving recruitment.
-      // Re-read liquid stock after every accepted command, respecting leases.
-      let admitted=0;
-      const paid=new Set<string>();
-      for (const candidate of candidates.filter(c=>c.kind==="recruit")) {
-        if (admitted>=3) break;
+    const parallel=(primary?:AiEconomicIntent)=>{
+      const paid=new Set(primary?[primary.id]:[]);
+      const pay=(candidate:AiEconomicIntent)=>{
+        if(paid.has(candidate.id))return false;
         const liquid={gold:player.gold,reserves:player.reserves,items:supply.inventories[player.id]};
-        const available=this.ledger.spendable(player.id,liquid,candidate.id,candidate.priority);
-        if ((available.gold??0)-(candidate.cost.gold??0)<posture.protectedGold || !affordableAiCost(available,candidate.cost)) continue;
+        // This is optional surplus admission even when the ordinary quote is
+        // urgent: only the primary emergency path may preempt commitments.
+        const available=this.ledger.spendable(player.id,liquid,candidate.id);
+        const currentPosture=militaryPosture({...snapshot,liquid,paidResearch:Object.values(state.research).map(job=>job.technologyId),advancing:!!state.advancement},personalityOf(player),progression.technologySpeed);
+        const saving=this.saving.get(player.id),savedTechnology=saving?.intent.command.type==="research"?TECHNOLOGY.get(saving.intent.command.technologyId):undefined;
+        const protectsSaving=saving?.intent.kind==="advance" || (savedTechnology&&!savedTechnology.optional&&savedTechnology.age===state.age);
+        const protectedAlreadyHeld=protectsSaving&&saving?this.ledger.reservations.get(saving.intent.id)?.amounts.gold??0:0;
+        const floor=Math.max(0,currentPosture.protectedGold-protectedAlreadyHeld);
+        if((available.gold??0)-(candidate.cost.gold??0)<floor||!affordableAiCost(available,candidate.cost))return false;
+        if(!this.ledger.tryReserve({id:candidate.id,claimant:candidate.id,playerId:player.id,generation,
+          priority:"growth",amounts:candidate.cost,createdTick:world.tick,progressTick:world.tick,expiresTick:candidate.expiresTick},liquid))return false;
         this.diagnostics.commands++;
-        if (world.applyCommand(candidate.command)) this.diagnostics.rejected++; else {admitted++;paid.add(candidate.id);}
+        const rejection=world.applyCommand(candidate.command);
+        this.ledger.release(candidate.id);
+        if(rejection){this.diagnostics.rejected++;return false;}
+        paid.add(candidate.id);
+        if(this.saving.get(player.id)?.intent.id===candidate.id)this.saving.delete(player.id);
+        return true;
+      };
+      let recruits=0;
+      for(const candidate of candidates.filter(c=>c.kind==="recruit")){
+        if(recruits>=3)break;
+        if(candidate.command.type!=="recruit")continue;
+        const unit=UNIT.get(candidate.command.definitionId??""),squads=world.squadFacts().aliveByOwner(player.id),jobs=world.recruitment.byOwner(player.id);
+        const force=new AiForceInventory(player.id,squads,jobs);
+        if(!unit||squads.length+jobs.filter(j=>j.category==="land").length>=world.squadCapacity(player)||
+          force.role(unit.role)>=(decisionDemand.units?.[unit.role]??0))continue;
+        const training=landRecruitmentTicks(unit,recruitmentVariant(unit.id,state.completed));
+        const completion=training+world.recruitment.byProducer(candidate.command.buildingId).reduce((ticks,job)=>ticks+job.remainingTicks,0);
+        if(completion>Math.max(secondsToTicks(AI_CAPACITY_SECONDS),training))continue;
+        if(pay(candidate))recruits++;
       }
-      // Quotes below must use current liquid funds, not pre-recruitment credit.
-      snapshot.liquid={gold:player.gold,reserves:player.reserves,items:{...supply.inventories[player.id]}};
-      for (let i=candidates.length-1;i>=0;i--) if (paid.has(candidates[i].id)) candidates.splice(i,1);
-    }
+      // At most one extra measured infrastructure purchase accompanies funded
+      // development. Ordinary construction already used that physical lane.
+      if(primary?.kind==="construct"||!(state.advancement||Object.values(state.research).some(Boolean)))return;
+      const construction=candidates.find(c=>c.kind==="construct"&&isEconomicBottleneck(c)&&!paid.has(c.id));
+      if(construction?.command.type==="build"&&world.buildingSite(player.id,construction.command.buildingType,construction.command.tile,state.age)===null)
+        pay(construction);
+    };
     // Refitting existing troops must not consume each development slot while
     // the workshop needed for the remaining troops is still missing.
     const developing = candidates[0]?.kind === "research" || candidates[0]?.kind === "advance" ||
       this.saving.get(player.id)?.intent.kind === "research" || this.saving.get(player.id)?.intent.kind === "advance";
-    if (!developing && !candidates.some(c => c.reason.includes("production-prerequisite:")) &&
-      snapshot.threatTroops <= snapshot.readyTroops / 2 && this.military.decide(player) && !posture.wealthy) return;
+    if (!developing && !candidates.some(isEconomicBottleneck) &&
+      snapshot.threatTroops <= snapshot.readyTroops / 2 && this.military.decide(player)) {parallel();return;}
     snapshot.liquid={gold:player.gold,reserves:player.reserves,items:{...supply.inventories[player.id]}};
     this.diagnostics.candidates += candidates.length;
+    const primary=():AiEconomicIntent|undefined=>{
     let goal = this.saving.get(player.id);
     if (
       goal &&
@@ -413,12 +459,17 @@ export class AiEconomicDirector {
       goal &&
       challenger &&
       (challenger.priority === "emergency" ||
-        (challenger.reason.includes("production-prerequisite:") && goal.intent.kind !== "advance" && !goal.intent.reason.includes("progression-race:")) ||
-        (challenger.kind === "advance" && goal.intent.kind !== "advance") ||
-        (challenger.reason.includes("progression-race:") && !goal.intent.reason.includes("progression-race:") && goal.intent.kind !== "advance") ||
-        (challenger.priority === "committed" && goal.intent.priority === "growth" &&
-          !goal.intent.reason.includes("production-prerequisite:")) ||
-        (goal.intent.kind !== "research" && goal.intent.kind !== "advance" && challenger.score * 5 > goal.intent.score * 6))
+        (challenger.bottleneck === "bootstrap" && goal.intent.bottleneck !== "bootstrap") ||
+        (economicBottleneckRank(challenger) > economicBottleneckRank(goal.intent) &&
+          (challenger.bottleneck === "bootstrap" || goal.intent.kind !== "advance" && goal.intent.kind !== "research" && goal.intent.bottleneck !== "bootstrap")) ||
+        ((!isEconomicBottleneck(goal.intent) || goal.intent.bottleneck !== "bootstrap") && (
+          (challenger.kind === "advance" && goal.intent.kind !== "advance") ||
+          (challenger.reason.includes("progression-race:") && !goal.intent.reason.includes("progression-race:") && goal.intent.kind !== "advance") ||
+          (challenger.priority === "committed" && goal.intent.priority === "growth"))) ||
+        (goal.intent.kind !== "research" && goal.intent.kind !== "advance" &&
+          (goal.intent.bottleneck !== "bootstrap" || challenger.bottleneck === "bootstrap") &&
+          (!isEconomicBottleneck(goal.intent) || isEconomicBottleneck(challenger)) &&
+          challenger.score * 5 > goal.intent.score * 6))
     ) {
       this.ledger.release(goal.intent.id);
       this.saving.delete(player.id);
@@ -490,6 +541,9 @@ export class AiEconomicDirector {
     this.ledger.release(chosen.id);
     this.saving.delete(player.id);
     if (rejection) this.diagnostics.rejected++;
+    return rejection?undefined:chosen;
+    };
+    parallel(primary());
   }
   private ownershipTick = -1;
   private guardCities(player: Player): void {

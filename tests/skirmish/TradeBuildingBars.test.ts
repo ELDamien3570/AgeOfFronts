@@ -20,7 +20,7 @@ it("replicates live stack cargo and port receiving bars without changing simulat
   const factories=[add("factory",10,15),add("factory",10,15)];
   const port=add("port",10,19);
   const city=add("city",30,15);
-  factories.forEach((b,i)=>e.supply.goods.set(b.id,100+i*50));
+  factories.forEach((b,i)=>e.supply.goods.set(b.id,10+i*5));
   e.supply.goods.set(port.id,20);
   e.trade.step();
   const before=game.checkpoint();
@@ -36,8 +36,8 @@ it("replicates live stack cargo and port receiving bars without changing simulat
     show(factories.map(b=>b.id));
     const bars=()=>root.querySelectorAll<HTMLElement>("#selection-trade-meters [role=progressbar]");
     expect(bars()).toHaveLength(1);
-    expect(bars()[0].getAttribute("aria-valuenow")).toBe("250");
-    expect(bars()[0].getAttribute("aria-valuemax")).toBe("2000");
+    expect(bars()[0].getAttribute("aria-valuenow")).toBe("25");
+    expect(bars()[0].getAttribute("aria-valuemax")).toBe("40");
     show([port.id]);
     expect(bars()).toHaveLength(2);
     expect(bars()[0].getAttribute("aria-valuenow")).toBe("20");

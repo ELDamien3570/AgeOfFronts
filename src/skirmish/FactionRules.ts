@@ -91,8 +91,8 @@ export function tribeMayCampaignAgainstRegular(opening: TribeOpening, age: Age, 
   return !opening || AGES.indexOf(age) >= AGES.indexOf(PLAYTEST_TRIBE_OPENING.campaignAge) &&
     tick >= secondsToTicks(PLAYTEST_TRIBE_OPENING.campaignAfterSeconds);
 }
-export const TRIBE_TRADER_CAP = 16;
-export const TRIBE_TRADERS_PER_AGE = 2;
+export const TRIBE_TRADER_CAP = 48;
+export const TRIBE_TRADERS_PER_AGE = 0;
 
 export function tradeActorCap(player: Pick<Player, "kind">, age?: Age): number {
   return player.kind === "tribe" ? TRIBE_TRADER_CAP + TRIBE_TRADERS_PER_AGE * (age ? AGES.indexOf(age) : 0) : TRADE_RULES.actorCap;

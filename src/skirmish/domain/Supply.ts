@@ -3,7 +3,7 @@ import { availableGold, spendGold } from "./Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import { producerCompatible } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
-import { extractionYieldMultiplier, tradeStockPerSecond } from "../content/Economy";
+import { extractionYieldMultiplier, PORT_CARGO_REPLENISH_SECONDS, FACTORY_CARGO_REPLENISH_SECONDS } from "../content/Economy";
 import { resourceTechnology } from "../content/Resources";
 import type { LandPaths } from "../Pathfinding";
 import type { Building, BuildingType, Player, Squad } from "../Protocol";
@@ -36,6 +36,10 @@ export function productionTicks(
 }
 export { PRODUCTION_RECIPES, REFINING } from "../content/Production";
 const RECIPES = new Map(PRODUCTION_RECIPES.map(recipe => [recipe.id, recipe]));
+const gcd = (a: number, b: number): number => b ? gcd(b, a % b) : a;
+// A common integer scale preserves fractions for both rates and legacy 160-tick saves.
+const GOODS_REFILL_DENOMINATOR = [secondsToTicks(PORT_CARGO_REPLENISH_SECONDS),
+  secondsToTicks(FACTORY_CARGO_REPLENISH_SECONDS), 160].reduce((a, b) => a / gcd(a, b) * b);
 export function costRejection(
   player: Pick<Player, "gold" | "reserves"> & Partial<Pick<Player, "ai" | "infiniteGold">>,
   inventory: Inventory,
@@ -64,11 +68,16 @@ export class Supply {
       deposits: this.deposits,
       goods: this.goods,
       goodsOwners: this.goodsOwners,
+      goodsRefillRemainders: this.goodsRefillRemainders,
+      goodsRefillDenominator: GOODS_REFILL_DENOMINATOR,
       selectedRecipes: this.selectedRecipes,
       priorities: this.priorities,
     });
   }
-  restore(saved: ReturnType<Supply["checkpoint"]>): void {
+  restore(saved: Omit<ReturnType<Supply["checkpoint"]>, "goodsRefillRemainders" | "goodsRefillDenominator"> & {
+    goodsRefillRemainders?: Map<number, number>;
+    goodsRefillDenominator?: number;
+  }): void {
     this.controlRevision++;
     const state = structuredClone(saved);
     restoreRecord(this.inventories, state.inventories);
@@ -76,6 +85,10 @@ export class Supply {
     this.depositEntities.restoreOwned(state.deposits);
     restoreMap(this.goods, state.goods);
     restoreMap(this.goodsOwners, state.goodsOwners);
+    const denominator = GOODS_REFILL_DENOMINATOR;
+    restoreMap(this.goodsRefillRemainders, new Map([...(state.goodsRefillRemainders ?? [])].map(([id, fraction]) =>
+      [id, Math.floor(fraction * denominator / (state.goodsRefillDenominator ?? 20))])));
+    this.goodsResearch.clear();
     restoreMap(this.selectedRecipes, state.selectedRecipes);
     restoreRecord(this.priorities, state.priorities ?? {});
   }
@@ -87,7 +100,7 @@ export class Supply {
   forgetProducer(id: number): void {
     delete this.jobs[id];
     if (this.selectedRecipes.delete(id)) this.controlRevision++;
-    this.goods.delete(id); this.goodsOwners.delete(id);
+    this.goods.delete(id); this.goodsOwners.delete(id); this.goodsRefillRemainders.delete(id);
   }
   private readonly depositFacts = new Map<number, Pick<Deposit, "tile" | "resource" | "owner" | "yieldPerSecond">>();
   readonly resourceChanges = new EntityChangeJournal();
@@ -135,13 +148,23 @@ export class Supply {
     if (node) this.depositEntities.updateOwned(node.id, {owner});
   }
   readonly goods = new Map<number, number>();
-  /** Each port stores one unstacked shipload at its owner's current research. */
+  /** Each producer stores one unstacked trader load at current owner research. */
+  private readonly goodsResearch = new Map<number, {research: readonly string[]; count: number; revision: number; land: number; sea: number}>();
   goodsCapacity(building: Building): number {
-    return building.type === "port"
-      ? tradeCargoCapacity(tradeCargoEffects(this.progression.states[building.playerId].completed), true)
+    const research = this.progression.states[building.playerId]?.completed ?? [];
+    let cached = this.goodsResearch.get(building.playerId);
+    if (!cached || cached.research !== research || cached.count !== research.length || cached.revision !== this.progression.revision) {
+      const effects = tradeCargoEffects(research);
+      cached = { research, count: research.length, revision: this.progression.revision, land: tradeCargoCapacity(effects, false), sea: tradeCargoCapacity(effects, true) };
+      this.goodsResearch.set(building.playerId, cached);
+    }
+    return building.type === "port" || building.type === "factory"
+      ? building.type === "port" ? cached.sea : cached.land
       : 1000;
   }
   private readonly goodsOwners = new Map<number, number>();
+  /** Integer fractions of a good, denominator GOODS_REFILL_DENOMINATOR. */
+  private readonly goodsRefillRemainders = new Map<number, number>();
   private readonly selectedRecipes = new Map<
     number,
     { owner: number; recipeId: string }
@@ -275,6 +298,7 @@ export class Supply {
       if (!live.has(id) || live.get(id)!.playerId !== owner) {
         this.goods.delete(id);
         this.goodsOwners.delete(id);
+        this.goodsRefillRemainders.delete(id);
       }
     for (const [id, selected] of this.selectedRecipes)
       if (!live.has(id) || live.get(id)!.playerId !== selected.owner) {
@@ -297,6 +321,11 @@ export class Supply {
     const activeIds = tick % secondsToTicks(1) === 0 || !facts ? undefined : new Set(Object.keys(this.jobs).map(Number));
     if (activeIds) for (const [id, selection] of this.selectedRecipes)
       if (selection.recipeId !== "paused") activeIds.add(id);
+    // Cargo is passive per-tick work even when a producer has no paid recipe.
+    // Keep these indexed producers in the reduced pass between income ticks.
+    if (activeIds) for (const player of players)
+      for (const type of ["factory", "port"] as const)
+        for (const building of facts!.buildings.completed(player.id, type)) activeIds.add(building.id);
     const activeBuildings = activeIds ? facts!.buildings.byIds(activeIds) : buildings;
     for (const b of activeBuildings) {
       const player = byPlayer.get(b.playerId);
@@ -344,15 +373,21 @@ export class Supply {
           };
         }
       }
-      if (tick % secondsToTicks(1) !== 0) continue;
-      const age = b.age ?? "StoneAge";
       if (b.type === "factory" || b.type === "port") {
         this.goodsOwners.set(b.id, player.id);
-        this.goods.set(
-          b.id,
-          Math.min(this.goodsCapacity(b), (this.goods.get(b.id) ?? 0) + tradeStockPerSecond(age)),
-        );
+        const capacity = this.goodsCapacity(b), stock = this.goods.get(b.id) ?? 0;
+
+        const denominator = GOODS_REFILL_DENOMINATOR;
+        const period = secondsToTicks(b.type === "port" ? PORT_CARGO_REPLENISH_SECONDS : FACTORY_CARGO_REPLENISH_SECONDS);
+        const accrued = capacity * (denominator / period) + (this.goodsRefillRemainders.get(b.id) ?? 0);
+        const next = Math.min(capacity, stock + Math.floor(accrued / denominator));
+        const remainder = next < capacity ? accrued % denominator : 0;
+        this.goods.set(b.id, next);
+        if (remainder) this.goodsRefillRemainders.set(b.id, remainder);
+        else this.goodsRefillRemainders.delete(b.id);
       }
+      if (tick % secondsToTicks(1) !== 0) continue;
+      const age = b.age ?? "StoneAge";
       if (
         b.type === "stables" &&
         this.progression.has(player.id, resourceTechnology("horses").id)

@@ -77,6 +77,74 @@ Legacy individual `produce` commands remain readable for existing replays, but
 the Production panel now sends per-type priorities and reset commands. Applying a
 type preference clears legacy plans on that player's matching buildings.
 
+## AI development
+
+AI equipment demand describes the intended researched force separately from
+today's recruitable units. Missing workshops or temporarily empty materials must
+not erase that demand. Recruitment and refit costs feed a bounded replacement
+reserve, including when recruitment capacity is full; paid output is counted by
+the existing automatic allocator. An attainable older pattern may bridge missing
+resources while the newest researched tier retains its own equipment demand.
+
+Recruitment considers relative obsolescence across every age. Units more than
+one tier behind the nation's age are reserved for survival when observed enemy
+troops exceed ready troops by more than 50 percent. This is an AI purchasing
+policy, not a content unlock restriction or a prohibition on human recruitment.
+
+The economic planner sizes industrial and extraction capacity over a five-minute
+horizon in every age, including paid construction and existing stocks. Missing
+core production chains and first productive trade sources are finite bootstrap
+needs. They can interrupt committed research or advancement savings; repeatable
+capacity growth spends unreserved surplus. A first trade source needs a lawful
+receiving opportunity and a useful paid capacity quote, rather than merely a
+coastline. Disabled trade modes cannot claim this bootstrap priority. Existing cities, duplicate producers, extra trade sites and ordinary
+siege equipment buffers do not acquire bootstrap priority. Emergency defenders
+remain first. The planner and automatic allocator share the same equipment reserve
+targets. After bootstrapping a missing input source, extra extraction must serve
+the throughput of already-funded downstream processing rather than the entire
+unfilled equipment reserve. Within growth spending, workshops with usable inputs take priority over
+additional extraction.
+
+Placement searches separate sites before considering stacks. Search progress
+survives ordinary development and territory changes; stacking requires an
+exhausted search for suitable free sites under current placement constraints.
+Each completed producer stores one current unstacked trader load. Ports refill
+it in 104 ticks (13 seconds); factories refill it in 80 ticks (10 seconds). Fractional progress is checkpointed
+while tradable goods remain whole units. Stacked producers replenish
+independently; separate sites and stacked shipment bonuses keep their existing
+roles. Refill runs on simulation ticks, so dispatching between second boundaries
+cannot shorten the next load's replenishment interval. Older per-second refill
+fractions are migrated when restoring saves. Indexed simulation passes include
+completed factories and ports every tick, even without a paid production job.
+
+Trade development compares replenishment with useful fleet throughput and
+accessible market intake. Initial travel estimates allow investment before the
+first completed voyage; completed trips refine those estimates. Individual
+source sites, receiving budgets, actor limits, and investment payback constrain
+growth. A stocked sea source can reclaim an empty, idle land courier slot above
+the guaranteed land reserve when the fleet is full; loaded voyages keep their
+slots until they return.
+
+Players and nations have 128 courier slots; tribes have a fixed 48. While land
+trade is enabled, 24 slots are reserved for it. Explicitly pausing land trade
+releases that reservation for sea trade; a lack of land routes alone does not.
+Each factory or port tile has a spawn limit of 4 in Stone Age, plus 2 per age
+and 1 per additional completed producer in its stack. Foundations do not add
+slots. The limit counts loading, outbound and returning couriers; captured
+prizes occupy their new owner's faction allowance without using a source slot.
+Existing loaded voyages are preserved when limits fall. AI investment considers
+both goods generation and source courier capacity, so long routes can justify
+additional separate producers. A port footprint may serve disconnected basins;
+new couriers retain the first berth preference but try other basins when it has no
+productive market. An exploratory port with no reachable foreign receiver can
+remain full without launching trade. Captured prizes require an owned receiver
+in their current basin before redemption.
+
+Regular nations can use up to ten paid mines per deposit after useful free
+mineral sites are exhausted. Refinery shortages remain separate from ore
+shortages. See [AI conflict and mineral development](AiConflictPolicy.md) for
+resource campaign, naval protection and piracy policy.
+
 ## Suggested playtest
 
 1. Build a factory and relevant equipment producer after researching a pattern;

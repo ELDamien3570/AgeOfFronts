@@ -9,9 +9,16 @@ import type { AiPersonality } from "./AiPersonality";
 import { AiProductionDependencies } from "./AiProductionDependencies";
 import { AGES, type Inventory, type UnitDefinition } from "./Definitions";
 import { unitRefitCost } from "./Refitting";
+import { preferredRecruitmentUnit } from "./AiRecruitmentPolicy";
+import { equipmentReserveKind, productionReserveTargets } from "./ProductionReservePolicy";
+import { PRODUCTION_RECIPES } from "../content/Production";
+import { TECHNOLOGY } from "../content/Technology";
 
-export interface AiDemandPreparation {equipment:Inventory;units:Partial<Record<UnitDefinition["role"],number>>;quote:import("./AiProductionDependencies").AiDependencyQuote;availabilityDeferred:boolean;}
+export interface AiDemandPreparation {equipment:Inventory;units:Partial<Record<UnitDefinition["role"],number>>;reserveCosts?:Partial<Record<UnitDefinition["role"],number>>;quote:import("./AiProductionDependencies").AiDependencyQuote;availabilityDeferred:boolean;}
 export interface AiProductionDemand {
+  /** Exact unpaid reserves for intended role deficits; paid recruitment is already force. */
+  manpower?: number;
+  resourcePressures?: readonly import("./AiResourcePressure").AiResourcePressure[];
   planning?:AiDemandPreparation;
   equipment: Inventory;
   materials: Inventory;
@@ -35,6 +42,7 @@ export function militaryDemand(
     materials: {},
     units: {},
   };
+  const reserveCosts: Partial<Record<UnitDefinition["role"],number>> = {};
   if (!saved) {
   const posture=militaryPosture(snapshot,personality);
     const antiAir =snapshot.age === "Modern"
@@ -46,7 +54,7 @@ export function militaryDemand(
         : 0;
   const total = Math.min(
     snapshot.cap,
-    snapshot.isolated && !snapshot.invasion && snapshot.threatTroops === 0 && !posture.wealthy ? Math.max(personality.minimumRaidSquads,12) : Infinity,
+    snapshot.isolated && !snapshot.invasion && snapshot.threatTroops === 0 ? Math.max(personality.minimumRaidSquads,12,posture.target) : Infinity,
     Math.max(
       personality.minimumRaidSquads,
       snapshot.invasion?.squads ?? 0,
@@ -64,44 +72,52 @@ export function militaryDemand(
     ["artillery", personality.siegeCopies],
     ["anti-air", antiAir],
   ] as const).flatMap(([role, weight]) => {
-    const unit = [...UNITS]
-      .reverse()
-      .find(
-        (u) =>
-          u.role === role &&
-          snapshot.research.includes(u.technologyId) &&
-          ((snapshot.age === "Modern" && snapshot.research.includes(buildingTechnology(u.building,snapshot.age) ?? "")) || snapshot.buildings.some(
-            (b) =>
-              b.type === u.building &&
-              !b.remainingTicks &&
-              (b.health ?? 1) > 0 &&
-              AGES.indexOf(b.age ?? "StoneAge") >= AGES.indexOf(u.age),
-          )) &&
-          Object.entries(scaledRecipeCost(u,recruitmentVariant(u.id,snapshot.research)).items ?? {}).every(([id, n]) =>
-            dependencies.available(id, n),
-          ),
-      );
-    return unit && weight ? [{ role, weight, unit }] : [];
+    const candidates = [...UNITS]
+        .reverse()
+        .filter(
+          (u) =>
+            u.role === role &&
+            snapshot.research.includes(u.technologyId) &&
+            AGES.indexOf(u.age) <= AGES.indexOf(snapshot.age),
+        );
+      // Workshops are consequences of intended demand, not prerequisites for
+      // expressing it. Keep attainable alternatives when a raw resource is absent.
+      const unit =
+        candidates.find((u) =>
+          Object.entries(
+            scaledRecipeCost(u, recruitmentVariant(u.id, snapshot.research))
+              .items ?? {},
+          ).every(([id, n]) => dependencies.available(id, n)),
+        ) ?? candidates[0];
+      return unit && weight ? [{ role, weight, unit }] : [];
   });
   // A planned army must still be buildable when cavalry or archery is locked.
   // Redistribute its core demand across the available personality-weighted roles.
-  const weights = snapshot.invasion
-    ? availableRoles.reduce((sum, r) => sum + (["frontline", "ranged", "mounted"].includes(r.role) ? r.weight : 0), 0)
-    : personality.recruitment.reduce((sum, weight) => sum + weight, 0);
+  const weights = availableRoles.reduce((sum, r) => sum + (["frontline", "ranged", "mounted"].includes(r.role) ? r.weight : 0), 0);
   for (const { role, weight, unit } of availableRoles) {
+    reserveCosts[role] = scaledRecipeCost(unit, recruitmentVariant(unit.id, snapshot.research)).reserves ?? 0;
     const desired = ["frontline", "ranged", "mounted"].includes(role)
       ? Math.ceil((total * weight) / Math.max(1, weights))
       : weight;
     result.units[role] = desired;
     const missing = Math.max(0, desired - snapshot.force.role(role));
     // A paid recruit is already in force.role; its equipment is not requested again.
-    const buffer = Math.min(
-      8,
-      Math.min(snapshot.headroom, missing) +
-        (snapshot.headroom > 0 ? (snapshot.threatTroops > 0 ? 2 : 1) : 0),
-    );
+    const reserve = Math.max(2, Math.min(8, Math.ceil(desired / 3) + replacements));
+    const buffer = Math.min(12, Math.min(snapshot.headroom, missing) + reserve);
     for (const [id, n] of Object.entries(scaledRecipeCost(unit,recruitmentVariant(unit.id,snapshot.research)).items ?? {}))
       result.equipment[id] = (result.equipment[id] ?? 0) + buffer * n;
+    // Preserve a ready reserve of the intended tier even if today's attainable
+      // alternative is older. Temporary starvation must not erase modern demand.
+      const preferred = preferredRecruitmentUnit(snapshot, role);
+      if (preferred && preferred.id !== unit.id)
+        for (const [id, n] of Object.entries(
+          scaledRecipeCost(
+            preferred,
+            recruitmentVariant(preferred.id, snapshot.research),
+          ).items ?? {},
+        ))
+          if (id.startsWith("equipment:"))
+            result.equipment[id] = (result.equipment[id] ?? 0) + reserve * n;
   }
   let upgrades = Math.max(1, Math.ceil(snapshot.squads.length / 4));
     for (const squad of snapshot.squads) {
@@ -143,8 +159,41 @@ export function militaryDemand(
   }
   if (snapshot.buildings.some((b) =>b.type==="nuclear-facility") && snapshot.research.includes(packageTechnology("EarlyModern","nuclear-weapons"))
   ) result.equipment["payload:atomic"]=2;
-  const preparation=saved??{equipment:result.equipment,units:result.units,quote:dependencies.beginMaterials(result.equipment),availabilityDeferred:dependencies.deferred};
+  if (!saved) {
+    // Capacity must replenish the allocator's actual ready reserve, rather than
+    // sizing a single workshop for only the next few paid recruit orders.
+    const reserves = productionReserveTargets(
+      snapshot.buildings.filter((b) => (b.health ?? 1) > 0),
+      snapshot.squads.length,
+    );
+    for (const kind of ["troop", "siege", "vehicle"] as const) {
+      const recipes = PRODUCTION_RECIPES.filter(
+        (r) =>
+          !r.manualOnly &&
+          equipmentReserveKind(r) === kind &&
+          snapshot.research.includes(r.technologyId) &&
+          Object.keys(r.outputs).some((id) => (result.equipment[id] ?? 0) > 0),
+      ).sort(
+        (a, b) =>
+          AGES.indexOf(TECHNOLOGY.get(b.technologyId)!.age) -
+          AGES.indexOf(TECHNOLOGY.get(a.technologyId)!.age),
+      );
+      const recipe = recipes[0];
+      if (recipe)
+        for (const id of Object.keys(recipe.outputs))
+          result.equipment[id] = Math.max(
+            result.equipment[id] ?? 0,
+            reserves[kind] + replacements,
+          );
+    }
+  }
+  const preparation=saved??{equipment:result.equipment,units:result.units,reserveCosts,quote:dependencies.beginMaterials(result.equipment),availabilityDeferred:dependencies.deferred};
   result.equipment=preparation.equipment; result.units=preparation.units;
+  result.manpower = Object.entries(result.units).reduce((sum, [role, desired]) => {
+    const key = role as UnitDefinition["role"], unit = preferredRecruitmentUnit(snapshot, key);
+    const reserves = preparation.reserveCosts?.[key] ?? (unit ? scaledRecipeCost(unit, recruitmentVariant(unit.id,snapshot.research)).reserves ?? 0 : 0);
+    return sum + Math.max(0, desired! - snapshot.force.role(key)) * reserves;
+  }, 0);
   dependencies.stepMaterials(preparation.quote,allowance);
   result.materials=preparation.quote.materials; result.bottlenecks=preparation.quote.reasons; result.timeToOutput=preparation.quote.ticks;
   if(preparation.quote.phase!=="done"){result.planning=preparation;result.deferred=true;}

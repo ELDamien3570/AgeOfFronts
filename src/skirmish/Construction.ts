@@ -16,13 +16,13 @@ import { constructionAvailabilityRejection } from "./content/ConstructionAvailab
 // Shared domain validation also drives placement previews. A preview is advisory;
 // applyCommand checks again against the current authoritative simulation state.
 export const MAX_BUILDING_STACK = 15;
-/** Owner decision OD-7 (05 issue 5 / rec 4): mines and cities stack less
+/** Mines have a capped scarcity fallback; cities stack less
  * deeply than other buildings, so one deposit or city site cannot carry a
  * whole economy. Factories and ports keep MAX_BUILDING_STACK (owner: trade
  * scales with infrastructure). Types not listed keep MAX_BUILDING_STACK.
  * Restore never re-runs this validator, so older over-stacked saves still load. */
 export const STACK_LIMITS: Readonly<Partial<Record<BuildingType, number>>> = {
-  mine: 1,
+  mine: 10,
   city: 3,
 };
 export function stackLimit(type: BuildingType): number {
@@ -57,10 +57,10 @@ export function constructionRejection(
     : "at" in buildings && typeof buildings.at === "function"
       ? (buildings.at(tile) ?? [])
       : [];
+  if (player.kind === "tribe" && stack.length > 0)
+    return "Tribes cannot stack buildings";
   if (stack.length > 0 && stack[0].type !== type)
     return "Only buildings of the same type can share a tile";
-  if (type === "mine" && stack.length >= stackLimit("mine"))
-    return "Factions cannot stack mines on the same deposit";
   if (stack.length >= stackLimit(type))
     return `A single site can support at most ${stackLimit(type)} stacked buildings`;
   const bounds = buildingReservationBounds(map, tile, type);

@@ -14,6 +14,8 @@ export interface ResearchOpportunity {
   resources: readonly Resource[];
   usableCoast: boolean;
   seaThreat: number;
+  /** Planned coastal protection or trade interception, even during peace. */
+  navalDemand?: number;
   goods: number;
   protectedItems: Readonly<Record<string, number>>;
 }
@@ -123,8 +125,14 @@ export function researchUtility(
   }
   if (technology.tree === "naval" && opportunity.usableCoast) {
     const fleet = VESSELS.filter((v) => v.technologyId === technology.id);
-    if (fleet.some((v) => v.kind === "warship") && opportunity.seaThreat > 0)
+    const warshipUse = VESSELS.some(v => v.kind === "warship" &&
+      AGES.indexOf(v.age) <= AGES.indexOf(snapshot.age) &&
+      !snapshot.research.includes(v.technologyId) &&
+      prerequisiteIds(v.technologyId).has(technology.id));
+    if (warshipUse && (opportunity.seaThreat > 0 || (opportunity.navalDemand ?? 0) > 0)) {
       benefit += 8000;
+      reasons.push("fleet-development");
+    }
     if (fleet.some((v) => v.kind === "transport") && opportunity.goods >= 10)
       benefit += 5000;
     if (

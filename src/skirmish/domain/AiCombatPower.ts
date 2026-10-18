@@ -20,6 +20,9 @@ export interface Cohort {
   xp: number;
   contributors: number;
   health: number;
+  /** Actual hybrid contact budgets for strategic estimates (including enlarged formations). */
+  troops?: number;
+  meleeContributors?: number;
 }
 /** Advisory comparisons use the combat resolver, never a second damage rule.
  * Aggregate by authored definition so evaluation scales with army composition. */
@@ -41,10 +44,12 @@ export function combatCohorts(
       xp: XP_THRESHOLDS[level - 1],
       contributors: 0,
       health: 0,
-      shape,deployed,count:0,width:0,
+      shape,deployed,count:0,width:0,troops:0,meleeContributors:0,
     };
     cohort.strength += readyFraction(squad);
     cohort.count++;
+    cohort.troops = (cohort.troops ?? 0) + squad.troops;
+    cohort.meleeContributors = (cohort.meleeContributors ?? 0) + (unit.meleeAttack ? attackContributors(squad, unit.meleeAttack) : 0);
     cohort.width+=layoutGrid(squad.troops,shape,formationDoctrine(squad.definitionId),squad.formation?.frontage).columns;
     cohort.contributors += attackContributors(squad,unit.attack);
     cohort.health += squad.manpower ? remainingHealth(squad)/HEALTH_SCALE : squad.troops;

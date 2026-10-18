@@ -4,7 +4,7 @@ import { TICKS_PER_SECOND } from "../Protocol";
 import { AGES } from "./Definitions";
 import { cargoHandlingPercent, landTraderTier, portCargoPercent, vesselEffects, type Research } from "./ResearchEffects";
 
-/** Shared research facts for shipment sizes and per-port cargo storage. */
+/** Shared research facts for shipment sizes and per-producer cargo storage. */
 export function tradeCargoEffects(research: Research) {
   const tier = landTraderTier(research);
   const vessel = VESSELS.filter(v => v.kind === "trade" && research.includes(v.technologyId)).slice(-1)[0];

@@ -4,6 +4,7 @@ import { PRODUCTION_RECIPES } from "../content/Production";
 import { TECHNOLOGY } from "../content/Technology";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import { AGES, type Inventory, type ProductionRecipe } from "./Definitions";
+import { equipmentReserveKind as equipmentKind, productionReserveTargets } from "./ProductionReservePolicy";
 
 export interface ProductionPlan {
   owner: number;
@@ -38,16 +39,6 @@ export const automaticProducer = (building: Building) =>
     "depot",
   ].includes(building.type);
 
-const equipmentKind = (recipe: ProductionRecipe) => {
-  const item = Object.keys(recipe.outputs)[0];
-  return !item.startsWith("equipment:")
-    ? null
-    : item.endsWith("-vehicle")
-      ? "vehicle"
-      : item.endsWith("-siege")
-        ? "siege"
-        : "troop";
-}
 const rank = (recipe: ProductionRecipe) =>
   AGES.indexOf(TECHNOLOGY.get(recipe.technologyId)!.age)
 const compareId = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
@@ -196,13 +187,9 @@ export function automaticProduction(
 
   const targets = new Map<ProductionRecipe, number>()
   const continuous = new Set<ProductionRecipe>()
-  const troopCapacity = automatic.filter((b) => ["blacksmith", "armory", "arms-factory"].includes(b.type),
-  ).length;
   // Shared ready reserves: placement grows capacity without another AI planner.
   // Count busy producers too; paid output below already counts toward stock.
-  const troopTarget = Math.min(600, Math.max(100, troopCapacity * 3, Math.ceil(squadCount / 3)))
-  const vehicleTarget = Math.min(24, Math.max(2, automatic.filter(b => b.type === "depot").length * 2, Math.ceil(squadCount / 12)))
-  const siegeTarget = Math.min(16, Math.max(2, automatic.filter(b => b.type === "siege-workshop").length * 2, Math.ceil(squadCount / 16)))
+  const reserves = productionReserveTargets(automatic, squadCount);
   for (const kind of ["troop", "vehicle", "siege"] as const) {
     const candidates = automaticRecipes
       .filter((r) => equipmentKind(r) === kind)
@@ -219,12 +206,7 @@ export function automaticProduction(
     );
     const preferred = defaults[0];
     const chosen = [...new Set([...manual, ...(preferred ? [preferred] : [])])];
-    const baseTarget =
-      kind === "troop"
-        ? troopTarget
-        : kind === "vehicle"
-          ? vehicleTarget
-          : siegeTarget;
+    const baseTarget = reserves[kind];
     for (const recipe of chosen) {
       // Retain category weights for allocation even when an explicit order
       // continues beyond its reserve. These are stock ratios, not rate quotas.

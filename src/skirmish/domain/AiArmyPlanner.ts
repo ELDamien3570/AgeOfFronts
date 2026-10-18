@@ -1,3 +1,4 @@
+import { armyMissionCapacity, campaignSquadOrder } from "./AiCampaignPolicy";
 import { secondsToTicks } from '../Protocol';
 import { TrenchPositioning,validateTrenchMission,type TrenchMissionState } from "./TrenchPositioning";
 import { HillPositioning, validateHillState, type HillState } from "./HillPositioning";
@@ -143,7 +144,15 @@ export class AiArmyPlanner {
     for(const [id,rows] of structuredClone(saved?.byPlayer??[])){if(rows.length>4||new Set(rows).size!==rows.length||rows.some(key=>this.missions.get(key)?.playerId!==id))throw Error("Invalid army mission index");this.byPlayer.set(id,rows);}
     if([...this.missions.values()].some(p=>!(this.byPlayer.get(p.playerId)??[]).includes(p.id)))throw Error("Missing army mission index");
   }
-  missionCap(player:Player):number{return Math.min(this.expansion.armies.capacity(player.id),1+Math.floor(this.expansion.world.squadFacts().byOwner(player.id).filter(s=>s.troops>0).length/40),4);}
+  missionCap(player:Player):number{return armyMissionCapacity(this.expansion.armies.capacity(player.id),this.expansion.world.squadFacts().byOwner(player.id).filter(s=>s.troops>0).length);}
+  /** Small read-only commitment quote; strategy never reads private mission state. */
+  nonOffensiveCommitment(playerId:number){
+    let defenseSlots=0,coastSlots=0,defenseSquads=0,coastSquads=0;
+    for(const id of this.byPlayer.get(playerId)??[]){const plan=this.missions.get(id);if(!plan||plan.phase==="complete"||plan.purpose===undefined||plan.purpose==="combat")continue;
+      if(plan.purpose==="coast"){coastSlots++;coastSquads+=plan.members.length;}else{defenseSlots++;defenseSquads+=plan.members.length;}
+    }
+    return {defenseSlots,coastSlots,defenseSquads,coastSquads};
+  }
   private addMission(plan:ArmyObjective):void {this.missions.set(plan.id,plan);this.byPlayer.set(plan.playerId,[...(this.byPlayer.get(plan.playerId)??[]),plan.id]);}
   private refreshRoster(plan:ArmyObjective):void {
     plan.rosterIds=this.expansion.world.squadFacts().byOwner(plan.playerId).map(s=>s.id);
@@ -287,11 +296,7 @@ export class AiArmyPlanner {
         plan.reason = "Retaining mobile reserve while filling role shortfalls";
         return this.diagnostics.work;
       }
-      available.sort((a, b) => {
-        const ar = doctrine.preferredRoles.indexOf(this.expansion.unit(a).role),
-          br = doctrine.preferredRoles.indexOf(this.expansion.unit(b).role);
-        return (ar < 0 ? 99 : ar) - (br < 0 ? 99 : br) || a.id - b.id;
-      });
+      available.sort((a, b) => campaignSquadOrder(this.expansion, player!, a, b));
       plan.members = available.slice(0, maximum).map((s) => s.id);
       plan.initialTroops = plan.members.reduce(
         (n, id) => { const squad=world.squad(id)!;return n+manpowerCount(this.expansion.unit(squad),squad.manpower?.model,squad.troops); },
@@ -569,7 +574,8 @@ export class AiArmyPlanner {
             .sort((a,b) => world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),world.tileOf(a)) -
               world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),world.tileOf(b)) || a.id-b.id)[0]
           : undefined;
-        const objective = remaining[0] ?? (lastSquad ? {tile:world.tileOf(lastSquad)} : undefined);
+        const resourceGoal = operations.resourceObjective(player.id);
+        const objective = resourceGoal !== undefined ? { tile: resourceGoal } : remaining[0] ?? (lastSquad ? {tile:world.tileOf(lastSquad)} : undefined);
         // I4: one order per objective change. The theatre pass rewrites targetTile,
         // so the objective lives in its own field; identical or pending orders are skipped.
         const settled = !!army && (this.expansion.armies.admissionPending(army.id) ||

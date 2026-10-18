@@ -1,13 +1,42 @@
 {
   "actorCount": 1,
+  "source": "Art/Cultures/Russians/Units/Modern/MachineGunTruck/animations.json",
+  "metadataHash": "c75d9b0867785809a353e7e5f310fc5f331fe6634161b4a9455572afe982cc10",
+  "hashes": {
+    "Art/Cultures/Russians/Units/Modern/MachineGunTruck/idle-Registered-v1.png": "9f2537875bc6be8278292e03023260ef2d152d11b7c3d64fa492ad14accb1177",
+    "Art/Runtime/Ages/impact-shell-detonate.png": "127922ca7c346d1a691618076a2ec4373f1b4d42d8b183afa481df6eebcd31b4",
+    "Art/Cultures/Russians/Units/Modern/MachineGunTruck/moving-shooting-Registered-v1.png": "1f73e00c097f716b123afbccb0a62e4a855f92fda3f642d602a2bc0bf2e0365d"
+  },
+  "rigidBody": {
+    "version": 1,
+    "file": "audit/body.png",
+    "surfaceMask": "audit/surface-mask.png",
+    "bounds": [
+      76,
+      16,
+      180,
+      240
+    ],
+    "pivot": {
+      "x": 128,
+      "y": 128
+    },
+    "sourceFrame": 0,
+    "sourceClip": "idle",
+    "sourceBounds": [
+      182,
+      98,
+      330,
+      417
+    ]
+  },
   "animations": [
     {
       "id": "idle",
       "file": "idle.png",
-      "sha256": "9f2537875bc6be8278292e03023260ef2d152d11b7c3d64fa492ad14accb1177",
       "label": "Idle",
       "loop": true,
-      "scale": 1.5375375375375375,
+      "scale": 1,
       "durations": [
         500,
         500,
@@ -25,7 +54,7 @@
         4,
         5
       ],
-      "description": "Quiet engine idle: six barely different consecutive poses. Truck body and all four wheels stationary and geometrically unchanged. Only tiny gunner breathing and subtle hand settling. No chassis sway, gun aiming sweep, wheel motion, smoke or muzzle flash. Seamless loop returning to initial pose.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -33,8 +62,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -43,8 +72,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -53,8 +82,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -63,8 +92,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -73,8 +102,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -83,8 +112,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -93,10 +122,9 @@
     {
       "id": "running",
       "file": "running.png",
-      "sha256": "587f1c6e6afda0ce596d69341939c69857aa32196c85c9badd43670639d87696",
       "label": "Moving",
       "loop": true,
-      "scale": 1.5375375375375375,
+      "scale": 1,
       "durations": [
         150,
         150,
@@ -114,7 +142,7 @@
         4,
         5
       ],
-      "description": "Driving forward IN PLACE, six consecutive loop poses: tire tread patterns rotate, tiny suspension vibration vertically, gunner braces with tiny movements. No whole-truck translation, lateral weave, turns or chassis deformation. Barrel stays forward. No muzzle flashes.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -122,8 +150,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -132,8 +160,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -142,8 +170,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -152,8 +180,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -162,8 +190,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -172,8 +200,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -182,10 +210,9 @@
     {
       "id": "attack",
       "file": "attack.png",
-      "sha256": "1f73e00c097f716b123afbccb0a62e4a855f92fda3f642d602a2bc0bf2e0365d",
       "label": "Moving and shooting",
       "loop": true,
-      "scale": 1.5375375375375375,
+      "scale": 1,
       "durations": [
         100,
         100,
@@ -203,7 +230,7 @@
         4,
         5
       ],
-      "description": "Driving and firing forward IN PLACE, six consecutive loop poses: rolling tire treads with tiny suspension vibration, gunner braced behind weapon; alternating short sharp orange muzzle flashes at barrel TIP aimed bottom, visible recoil and small brass ejected beside receiver. Frames 1,3,5 firing pulse, 2,4,6 recoil recovery without flash. Truck body fixed shape; no lateral weaving; no turning, no big recoil movement of chassis.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -211,8 +238,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -221,8 +248,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -231,8 +258,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -241,8 +268,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -251,8 +278,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -261,8 +288,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
@@ -271,10 +298,9 @@
     {
       "id": "death",
       "file": "death.png",
-      "sha256": "4237aeec0339235b6579e992e6b89ebb7215c414c95c9149ccf52ba5dd0c2ace",
       "label": "Explosion / death",
       "loop": false,
-      "scale": 1.5375375375375375,
+      "scale": 1,
       "durations": [
         120,
         120,
@@ -292,7 +318,7 @@
         4,
         5
       ],
-      "description": "Explosion destruction sequence SIX frames: 1 intact truck with small bright ignition in cargo bed; 2 orange blast expanding from engine and bed; 3 peak orange-yellow fireball viewed directly from ABOVE, truck still recognizable below, a few small debris pieces; 4 fireball contracts, dark smoke spreads, chassis scorched; 5 smoke fades revealing charred wreck, collapsed roof and damaged bed; 6 settled blackened wreck with small dying embers, no bright fireball. Finish on wreck, never return to intact truck. No gore. SAME fixed truck position orientation scale all frames; plume and debris fully inside frame. No side-view mushroom cloud, all effects viewed vertically down.",
+      "description": "Shared rigid body; only wheel/track surfaces, authored muzzle effects and destruction lighting animate.",
       "frames": [
         {
           "x": 0,
@@ -300,8 +326,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -310,8 +336,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -320,8 +346,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -330,8 +356,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -340,8 +366,8 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         },
         {
@@ -350,20 +376,12 @@
           "width": 256,
           "height": 256,
           "pivot": {
-            "x": 128.0,
-            "y": 128.0
+            "x": 128,
+            "y": 128
           }
         }
       ],
       "releaseFrame": 3
     }
-  ],
-  "source": "Art/Cultures/Russians/Units/Modern/MachineGunTruck/animations.json",
-  "metadataHash": "c75d9b0867785809a353e7e5f310fc5f331fe6634161b4a9455572afe982cc10",
-  "hashes": {
-    "Art/Cultures/Russians/Units/Modern/MachineGunTruck/idle-Registered-v1.png": "9f2537875bc6be8278292e03023260ef2d152d11b7c3d64fa492ad14accb1177",
-    "Art/Cultures/Russians/Units/Modern/MachineGunTruck/moving-Registered-v1.png": "587f1c6e6afda0ce596d69341939c69857aa32196c85c9badd43670639d87696",
-    "Art/Cultures/Russians/Units/Modern/MachineGunTruck/moving-shooting-Registered-v1.png": "1f73e00c097f716b123afbccb0a62e4a855f92fda3f642d602a2bc0bf2e0365d",
-    "Art/Cultures/Russians/Units/Modern/MachineGunTruck/death-Registered-v1.png": "4237aeec0339235b6579e992e6b89ebb7215c414c95c9149ccf52ba5dd0c2ace"
-  }
+  ]
 }

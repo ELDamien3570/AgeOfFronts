@@ -7,6 +7,7 @@ import {SnapshotEncoder,SnapshotDecoder} from '../../src/skirmish/SnapshotCodec'
 import {commandSchema} from '../../src/skirmish/multiplayer/CommandSchema';
 import {FIXED} from '../../src/skirmish/Protocol';
 import {defaultUnit,VESSELS} from '../../src/skirmish/content/Units';
+import {ARMY_TECHNOLOGY} from '../../src/skirmish/content/Armies';
 import {remainingHealth} from '../../src/skirmish/domain/Manpower';
 import type {TradeActor} from '../../src/skirmish/domain/Definitions';
 function fixture(){const cells=new Uint8Array(96*64).fill(133);const game=new Skirmish(new GameMapImpl(96,64,cells,cells.length),{seed:47,aiCount:2,tribes:false,runAi:false,ruleset:'ages-v1',aiWarPolicy:true,diplomacyRules:'raids-v1'});return {game,d:game.expansion!.diplomacy,a:game.players[0],b:game.players[1]};}
@@ -30,8 +31,13 @@ describe('raid diplomacy permissions',()=>{
   for(const player of game.players){player.reserves=2000;const template=game.squads.find(s=>s.playerId===player.id)!;
     for(let i=0;i<12;i++)game.addSquad({...structuredClone(template),id:game.allocateId(),x:template.x+i*FIXED,y:template.y});}
   game.players[2].eliminated=true;
+  // Parity is the actual deployable force after retaining four home squads,
+  // rather than parity only before the invader's reserve is withheld.
+  game.expansion!.progression.states[b.id].age='BronzeAge';
+  game.expansion!.progression.states[b.id].completed.push(ARMY_TECHNOLOGY);
+  for(const s of game.squadFacts().aliveByOwner(a.id).slice(-4))game.removeSquad(s.id);
   const eligible=vi.spyOn(game.expansion!.geography,'eligible').mockReturnValue(true);
-  const forces=new Map(game.players.map(p=>[p.id,15]));game.tick=secondsToTicks(150);game.expansion!.operations.step(forces);
+  const forces=new Map(game.players.map(p=>[p.id,game.squadFacts().aliveByOwner(p.id).length]));game.tick=secondsToTicks(150);game.expansion!.operations.step(forces);
   expect(game.hasUnclaimedFrontier(b.id)).toBe(true);expect(game.expansion!.operations.state(b.id)?.phase).toBe('peace');
   d.recordTheft(a.id,b.id,game.tick);game.tick+=secondsToTicks(15);game.expansion!.operations.step(forces);
   expect(game.expansion!.operations.state(b.id)).toMatchObject({phase:'preparing',target:a.id});
