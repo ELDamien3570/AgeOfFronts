@@ -25,7 +25,8 @@ RUN test -n "$SOURCE_REVISION" && mkdir -p build/skirmish && \
     VITE_SKIRMISH_SOURCE_URL="https://github.com/ELDamien3570/AgeOfFronts/tree/$SOURCE_REVISION" \
     npm run build:skirmish && test -s build/skirmish/index.html
 # Run the coordinator and its workers as a plain-node bundle (no tsx loader).
-RUN npm run build:multiplayer && test -s build/multiplayer/server.mjs && \n    test -s build/multiplayer/serverMatchWorker.mjs && test -s build/multiplayer/snapshotEncoderThread.mjs
+RUN npm run build:multiplayer && test -s build/multiplayer/server.mjs && \
+    test -s build/multiplayer/serverMatchWorker.mjs && test -s build/multiplayer/snapshotEncoderThread.mjs
 
 FROM node:24.18.0-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d AS runtime
 WORKDIR /usr/src/app
