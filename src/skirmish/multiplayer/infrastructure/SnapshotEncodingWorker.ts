@@ -3,6 +3,7 @@ import type { SnapshotPacket } from "../../Protocol";
 import type { EncodedState } from "../StateCodec";
 import { RuntimeDiagnostics, type RuntimePhase, type TimingSummary } from "../../RuntimeDiagnostics";
 import { snapshotTransfers } from "../../SnapshotCodec";
+import { workerEntry } from "./WorkerEntry";
 
 /** Owns pure immutable snapshot encoding, never authoritative game state. */
 export class SnapshotEncodingWorker {
@@ -14,13 +15,16 @@ export class SnapshotEncodingWorker {
   retainedBytes = 0;
   encodedTick?: number;
   failureCause?: "timeout" | "exit" | "error" | "closed";
+  /** The worker 'error' event's code, e.g. ERR_WORKER_OUT_OF_MEMORY. */
+  failureCode?: string;
   private nextId = 1;
   private failure?: Error;
   /** With `publicationPort`, encode(packet, publication) posts the encoded
    * publication on that port (N6b) and resolves without a packet. */
   constructor(readonly publicationPort?: MessagePort) {
-    this.worker = new Worker(new URL("./snapshotEncoderThread.ts", import.meta.url), {
-      execArgv: ["--import", "tsx"], resourceLimits: { maxOldGenerationSizeMb: 256 },
+    const entry = workerEntry("snapshotEncoderThread", import.meta.url);
+    this.worker = new Worker(entry.url, {
+      execArgv: entry.execArgv, resourceLimits: { maxOldGenerationSizeMb: 256 },
       ...(publicationPort ? { workerData: { publicationPort }, transferList: [publicationPort] } : {}),
     });
     this.worker.on("message", (message: { id: number; packet?: EncodedState; tick?: number; error?: string; timings?: Partial<Record<RuntimePhase, TimingSummary>>; retainedBytes?: number; memory?: { heapUsed: number; external: number; arrayBuffers: number } }) => {
@@ -32,8 +36,16 @@ export class SnapshotEncodingWorker {
       this.retainedBytes = message.retainedBytes ?? 0;
       if (message.error) task.reject(new Error(message.error)); else task.resolve(message.packet);
     });
-    this.worker.on("error", error => this.fail(error, "error"));
-    this.worker.on("exit", code => this.fail(new Error(`Snapshot encoder stopped (exit ${code})`), "exit"));
+    this.worker.on("error", error => {
+      this.failureCode ??= (error as NodeJS.ErrnoException).code;
+      this.fail(error, "error");
+    });
+    this.worker.on("exit", code => {
+      if (this.failureCause !== "closed")
+        console.error(JSON.stringify({ event: "snapshot-encoder-exited", exitCode: code, cause: this.failureCause ?? "exit",
+          ...(this.failureCode ? { errorCode: this.failureCode } : {}), ...(this.failure ? { errorMessage: this.failure.message } : {}) }));
+      this.fail(new Error(`Snapshot encoder stopped (exit ${code})`), "exit");
+    });
   }
   encode(packet: SnapshotPacket): Promise<EncodedState>;
   encode(packet: SnapshotPacket, publication: { tick: number; sequence: number }): Promise<undefined>;

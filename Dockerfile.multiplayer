@@ -17,6 +17,10 @@ COPY src ./src
 # Build static skirmish frontend into build/skirmish
 RUN npm run build:skirmish
 
+# Bundle the multiplayer coordinator and its workers into build/multiplayer
+COPY scripts/buildMultiplayer.ts ./scripts/buildMultiplayer.ts
+RUN npm run build:multiplayer
+
 # Production runtime image
 FROM node:24-slim AS runner
 WORKDIR /usr/src/app
@@ -29,8 +33,10 @@ RUN npm ci --ignore-scripts
 
 # Copy compiled frontend build from builder
 COPY --from=builder /usr/src/app/build/skirmish ./build/skirmish
+COPY --from=builder /usr/src/app/build/multiplayer ./build/multiplayer
 
-# Copy application runtime files
+# Copy application runtime files. The bundled coordinator still hashes src/
+# at startup to compute the runtime identity clients must match.
 COPY tsconfig.json ./
 COPY resources ./resources
 COPY src ./src
@@ -45,4 +51,4 @@ ENV STATIC_DIR=/usr/src/app/build/skirmish
 
 EXPOSE 8080
 
-CMD ["npm", "run", "start:multiplayer"]
+CMD ["npm", "run", "start:multiplayer:built"]

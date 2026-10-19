@@ -6,6 +6,7 @@ RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY tsconfig.json vite.skirmish.config.ts index.html ./
 COPY scripts/technologyPlanDevPlugin.ts ./scripts/
 COPY scripts/verifyRuntimeAssets.mjs ./scripts/
+COPY scripts/buildMultiplayer.ts ./scripts/
 COPY resources ./resources
 COPY skirmish ./skirmish
 COPY src ./src
@@ -23,11 +24,14 @@ ARG SOURCE_REVISION
 RUN test -n "$SOURCE_REVISION" && mkdir -p build/skirmish && \
     VITE_SKIRMISH_SOURCE_URL="https://github.com/ELDamien3570/AgeOfFronts/tree/$SOURCE_REVISION" \
     npm run build:skirmish && test -s build/skirmish/index.html
+# Run the coordinator and its workers as a plain-node bundle (no tsx loader).
+RUN npm run build:multiplayer && test -s build/multiplayer/server.mjs && \n    test -s build/multiplayer/serverMatchWorker.mjs && test -s build/multiplayer/snapshotEncoderThread.mjs
 
 FROM node:24.18.0-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d AS runtime
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/build/skirmish ./build/skirmish
+COPY --from=build /usr/src/app/build/multiplayer ./build/multiplayer
 COPY --from=build /usr/src/app/resources ./resources
 COPY --from=build /usr/src/app/src ./src
 COPY --from=build /usr/src/app/tsconfig.json ./tsconfig.json
@@ -40,4 +44,5 @@ USER node
 EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=4 \
     CMD node -e "fetch('http://127.0.0.1:8080/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
-CMD ["node", "node_modules/tsx/dist/cli.mjs", "src/skirmish/multiplayer/server.ts"]
+# src/ stays in the image: the coordinator hashes it for the runtime identity.
+CMD ["node", "build/multiplayer/server.mjs"]

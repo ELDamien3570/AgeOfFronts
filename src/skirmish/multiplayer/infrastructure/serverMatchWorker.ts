@@ -24,7 +24,7 @@ import {
   SNAPSHOT_PUBLICATION_FAILED_MESSAGE,
 } from "../application/TerminalMessages";
 import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
-import { secondsToTicks } from "../../Protocol";
+import { secondsToTicks, TICKS_PER_SECOND } from "../../Protocol";
 import type { SnapshotPacket } from "../../Protocol";
 import type { EncodedState } from "../StateCodec";
 import { loadServerMap } from "./ServerMap";
@@ -129,8 +129,13 @@ const makeMap = (map: RuntimeMap) =>
     map.forest,
     map.resourceTerrain,
   );
+// Borrowed traders: the encoder skips unchanged rows by detail revision and
+// copies the rest synchronously, so live actors never outlive this call. The
+// packets are byte-identical to the projected path (scripts/fixtureParityPair.ts
+// --candidate-borrowed).
+const replicationSource = () => match!.replicationSource(true);
 const capture = () => {
-  const state = diagnostics.measure("extraction", () => match!.replicationSource());
+  const state = diagnostics.measure("extraction", replicationSource);
   const packet = diagnostics.measure("snapshot", () => encoder.encode(state, match!.tileChanges, match!.replicationFacts()));
   capturedTick = packet.tick;
   captureSequence++;
@@ -139,7 +144,7 @@ const capture = () => {
 const encodePacket = (packet: SnapshotPacket) => diagnostics.measureAsync("encoding", () => encoding.encode(packet));
 const snapshot = () => encodePacket(capture());
 const recoveryBaseline = () => baselines.get(canonicalVersion, () => {
-  const state = diagnostics.measure("extraction", () => match!.replicationSource());
+  const state = diagnostics.measure("extraction", replicationSource);
   const packet = diagnostics.measure("snapshot", () => encoder.encodeBaseline(state, match!.tileChanges, match!.replicationFacts()));
   capturedTick = state.tick; captureSequence++;
   return encodePacket(packet);
@@ -157,6 +162,15 @@ const publications = new PublicationQueue<StreamedCapture, { sequence: number; p
     console.error("Snapshot publication failed", error);
     parentPort!.postMessage({ fatal: SNAPSHOT_PUBLICATION_FAILED_MESSAGE });
   });
+// Path residency walks every cached search tree; refresh it at most once per
+// simulated second instead of on every publication. Diagnostics only.
+let pathResidency: { tick: number; value: MatchDiagnostics["paths"] } | undefined;
+const pathResidencyFor = (m: Skirmish): MatchDiagnostics["paths"] => {
+  if (!pathResidency || m.tick < pathResidency.tick || m.tick - pathResidency.tick >= TICKS_PER_SECOND)
+    pathResidency = { tick: m.tick, value: { land: m.paths.residency, water: m.waterPaths.residency,
+      ...(m.amphibiousPaths ? { amphibious: m.amphibiousPaths.residency } : {}) } };
+  return pathResidency.value;
+};
 const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadBytes: number): MatchDiagnostics => {
   const m = match!, memory = process.memoryUsage(), planning = m.routePlanner.diagnostics;
   return { tick: m.tick, timings: diagnostics.snapshot(), lifetimeTimings: diagnostics.lifetimeSnapshot(), retainedBytes: diagnostics.retainedBytes,
@@ -168,8 +182,7 @@ const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadByte
       encoderRetainedBytes: encoding.retainedBytes + encoding.diagnostics.retainedBytes, encoderFailureCause: encoding.failureCause,
       baselineCache: {...baselines.diagnostics, retainedBytes: baselines.retainedBytes},
       extraction: {...encoder.diagnostics} },
-    paths: { land: m.paths.residency, water: m.waterPaths.residency,
-      ...(m.amphibiousPaths ? { amphibious: m.amphibiousPaths.residency } : {}) },
+    paths: pathResidencyFor(m),
     domainWork: { spatial: m.spatialDiagnostics && { ...m.spatialDiagnostics },
       trade: m.expansion && { ...m.expansion.trade.diagnostics } },
     entities: { squads: m.squads.length, ships: m.ships.length, buildings: m.buildings.length,
@@ -299,7 +312,7 @@ parentPort.on(
             runner!.setController(player.id, false);
             // Both packets describe exactly S. Advancing the shared cursor here is
             // essential: a tile that changes back after this barrier must be sent.
-            const state = diagnostics.measure("extraction", () => match!.replicationSource());
+            const state = diagnostics.measure("extraction", replicationSource);
             const aligned = diagnostics.measure("snapshot", () => encoder.encodeJoinBarrier(state, match!.tileChanges, match!.replicationFacts()));
             capturedTick = state.tick; captureSequence++;
             const packet = await encodePacket(aligned.shared);

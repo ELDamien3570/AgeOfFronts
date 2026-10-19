@@ -184,6 +184,17 @@ import { AI_DIFFICULTY, aiRaidAfterTicks } from "./content/AiDifficulty";
 import { SIMULATION_STREAM_SALT } from "./SeedStreams";
 
 const STARTING_TROOPS = 12_000;
+/** True when resolving zero damage for this squad would change nothing: the
+ * same troops, wounds, hull and revision, and no recorded losses. */
+function undamagedNoOp(squad: Pick<Squad, "troops" | "manpower">): boolean {
+  const m = squad.manpower;
+  if (!m) return squad.troops >= 0;
+  if (m.model === "hull") return m.hullHealth! > 0;
+  if (squad.troops > 0) return m.hp > 0 && Math.floor(m.wounds / m.hp) === 0;
+  return m.wounds === 0;
+}
+/** Ranked shapes whose travel speed scales with heading against facing. */
+const STRAFING_SHAPES: readonly string[] = ["line", "shield-wall", "square"];
 const BASE_RADIUS = 6;
 // Capture uses radius three on every active squad, every tick. Preserve the
 // original row-major disk while avoiding repeated corner tests/map bounds.
@@ -606,6 +617,9 @@ export class Skirmish {
   private readonly heldSpatial: SpatialGrid<Squad>;
   private readonly landScratch: Squad[] = [];
   private readonly heldScratch: Squad[] = [];
+  // Per-tick scratch collections, cleared before each use; never checkpointed.
+  private readonly activeTileScratch = new Set<number>();
+  private readonly requestedScratch = new Map<number, MovementIntent>();
   private landMembership = -1;
   private landCargo = -1;
   private movementSpatialRevision = -1;
@@ -690,7 +704,7 @@ export class Skirmish {
   /** The same crossed-cell policy applies to connectors, shortcuts and commits.
    * Humans retain automatic invasion; protected entry is still forbidden.
    * Existing occupants may leave forbidden land toward their home. */
-  private movementPolicyClear(squad:Squad,end:WorldPoint):boolean {
+  private movementPolicyClear(squad:Pick<Squad,"x"|"y"|"playerId"|"aiWithdrawal">,end:WorldPoint):boolean {
     const expansion=this.expansion;if(!expansion)return true;
     const start=this.tileOf(squad),finish=this.tileOf(end),startOwner=this.owners[start],home=tilePoint(this.map,this.player(squad.playerId)!.base);
     const grace=squad.aiWithdrawal?.phase==='withdrawing'&&startOwner===squad.aiWithdrawal.owner;
@@ -2435,8 +2449,8 @@ export class Skirmish {
     if(!this.expansion)return;
     for(const s of land){
       if(!s.formation || s.troops<=0)continue;
-      const old=s.formation,n=formationDoctrine(s.definitionId).hull?1:Math.min(s.troops,s.manpower?.capacity??144);
-      const previous=old.layoutTroops??(formationDoctrine(s.definitionId).hull?1:s.manpower?.capacity??s.troops);
+      const old=s.formation,hull=formationDoctrine(s.definitionId).hull,n=hull?1:Math.min(s.troops,s.manpower?.capacity??144);
+      const previous=old.layoutTroops??(hull?1:s.manpower?.capacity??s.troops);
       if(previous===n)continue;
       if(s.afloat || s.embarkedOn!==null){
         // Passenger casualties change the remembered land body even at sea.
@@ -3276,7 +3290,7 @@ export class Skirmish {
     if (!this.waterPaths.walkable(shipTile)) return null;
     const shipComp = this.waterPaths.component[shipTile];
 
-    const friendlyPorts = this.buildings.filter(
+    const friendlyPorts = this.buildingIndex.byType(ship.playerId, "port").filter(
       (b) =>
         b.type === "port" &&
         b.playerId === ship.playerId &&
@@ -3322,7 +3336,7 @@ export class Skirmish {
     if (!this.waterPaths.walkable(shipTile)) return null;
     const shipComp = this.waterPaths.component[shipTile];
 
-    const friendlyPorts = this.buildings.filter(
+    const friendlyPorts = this.buildingIndex.byType(ship.playerId, "port").filter(
       (b) =>
         b.type === "port" &&
         b.playerId === ship.playerId &&
@@ -3385,6 +3399,12 @@ export class Skirmish {
     );
   }
 
+  /** The living friendly port a ship's repair claim names. Ids are unique, so
+   * the indexed row is the one a scan of all buildings would find. */
+  private claimedRepairPort(ship: Ship): Building | undefined {
+    const b = ship.repairPortId === null || ship.repairPortId === undefined ? undefined : this.buildingIndex.byId(ship.repairPortId);
+    return b && b.type === "port" && b.playerId === ship.playerId && (b.health ?? 1) > 0 ? b : undefined;
+  }
   private releaseRepairClaim(ship: Ship, occupiedPorts: Set<number>): void {
     const portId = ship.repairPortId;
     if (portId !== null && portId !== undefined &&
@@ -3508,13 +3528,7 @@ export class Skirmish {
 
       // 1. Repairing state
       if (ship.repairState === "repairing") {
-        const port = this.buildings.find(
-          (b) =>
-            b.id === ship.repairPortId &&
-            b.type === "port" &&
-            b.playerId === ship.playerId &&
-            (b.health ?? 1) > 0,
-        );
+        const port = this.claimedRepairPort(ship);
         if (!port) {
           this.shipEntities.updateOwned(ship.id, { repairPortId: null });
           this.shipEntities.updateOwned(ship.id, { repairState: "patrolling" });
@@ -3563,13 +3577,7 @@ export class Skirmish {
 
       // 2. Returning to dock state
       if (ship.repairState === "returning-to-dock") {
-        const port = this.buildings.find(
-          (b) =>
-            b.id === ship.repairPortId &&
-            b.type === "port" &&
-            b.playerId === ship.playerId &&
-            (b.health ?? 1) > 0,
-        );
+        const port = this.claimedRepairPort(ship);
         if (!port) {
           this.shipEntities.updateOwned(ship.id, { repairPortId: null });
           this.shipEntities.updateOwned(ship.id, { repairState: "patrolling" });
@@ -3723,7 +3731,8 @@ export class Skirmish {
       this.tick - this.volleys[0].tick > ARCHER_ARROW_TICKS
     )
       this.volleys.shift();
-    const activeTiles = new Set<number>();
+    const activeTiles = this.activeTileScratch;
+    activeTiles.clear();
     for (const building of this.buildings) {
       if (building.remainingTicks > 0) {
         if (!activeTiles.has(building.tile)) {
@@ -3810,7 +3819,9 @@ export class Skirmish {
     }
     const plannedMotion = new Map<number, NonNullable<Squad["locomotion"]>>();
     if (this.options.formationLocomotion) {
-      const requested = new Map(intents.map(intent => [intent.squad.id, intent]));
+      const requested = this.requestedScratch;
+      requested.clear();
+      for (const intent of intents) requested.set(intent.squad.id, intent);
       intents.length = 0;
       for (const squad of land) {
         if (squad.afloat) {
@@ -3827,7 +3838,7 @@ export class Skirmish {
         const settled=settledFormationLocomotion(squad,request,this.options.formationFreeTravel);
         if(settled){intents.push(settled.intent);continue;}
         let maximum=this.movementSpeed(squad);if(squad.formation?.transition && !movingFormationReform(squad))maximum*=COLUMN_TRAVEL.transitionSpeedBp/10000;
-        if(squad.formation && ["line","shield-wall","square"].includes(squad.formation.shape) && request){const direction=Math.atan2(request.goal.y-squad.y,request.goal.x-squad.x)-Math.PI/2;maximum*=Math.max(MOTION.strafeFloor,Math.cos(direction-radians(squad.formation.facing)));}
+        if(squad.formation && STRAFING_SHAPES.includes(squad.formation.shape) && request){const direction=Math.atan2(request.goal.y-squad.y,request.goal.x-squad.x)-Math.PI/2;maximum*=Math.max(MOTION.strafeFloor,Math.cos(direction-radians(squad.formation.facing)));}
         const result = formationLocomotion(squad, request, maximum, this.options.formationReorientation, this.options.formationFreeTravel);
         plannedMotion.set(squad.id, result.motion);
         intents.push(result.intent);
@@ -4427,9 +4438,15 @@ export class Skirmish {
     const join = Math.min(squad.path.length - 1, squad.nextPathIndex + 7),
       localGoal = distanceSquared(squad, destination) > (8 * FIXED) ** 2 && join >= 0
         ? tilePoint(this.map, squad.path[join]) : destination;
+    // One reused probe instead of a squad copy per lattice edge: the policy
+    // reads only position, owner and withdrawal.
+    const probe = { x: squad.x, y: squad.y, playerId: squad.playerId, aiWithdrawal: squad.aiWithdrawal };
     const detour = this.localDetours.find(squad, localGoal, (other) =>
       this.holding(other),
-      (from,to)=>this.movementPolicyClear({...squad,...from},to)&&(!this.expansion||this.expansion.fortifications.clearMovement(from,to,squad.playerId,squadRadius(squad.kind))),
+      (from,to)=>{
+        probe.x=from.x;probe.y=from.y;
+        return this.movementPolicyClear(probe,to)&&(!this.expansion||this.expansion.fortifications.clearMovement(from,to,squad.playerId,squadRadius(squad.kind)));
+      },
     );
     if (detour) {
       this.detours.set(squad.id, detour);
@@ -4916,6 +4933,10 @@ export class Skirmish {
     // earned at the start of this combat step; iteration order cannot win a duel.
     for (const squad of this.squads) {
       const dealt = damage.damage(squad.id);
+      // Without damage the resolution below writes nothing and records no
+      // loss unless stored wounds already amount to a death, a hull is already
+      // spent or a destroyed squad still carries wounds; those still resolve.
+      if (dealt === 0 && undamagedNoOp(squad)) continue;
       // An afloat squad's hull takes every hit; when it fails, all aboard are lost.
       let losses: number;
       if (squad.afloat && dealt > 0) {
@@ -5318,12 +5339,13 @@ export class Skirmish {
             Math.round(Math.min(this.map.width(), this.map.height()) * 0.06),
           ) * personality.homeRadiusPercent) / 100,
         ),
+        // Cheapest test first; the remaining tests only read or memoize.
         homeNeedsLand = frontier.some(
           (tile) =>
+            this.map.euclideanDistSquared(player.base, tile) <= homeRadius ** 2 &&
             this.owners[tile] !== player.id &&
             (!this.owners[tile] || this.hostile(player.id, this.owners[tile])) &&
-            this.aiFootprintAllowed(player.id, tile) &&
-            this.map.euclideanDistSquared(player.base, tile) <= homeRadius ** 2,
+            this.aiFootprintAllowed(player.id, tile),
         ),
         reserved = new Set(
           own.flatMap((s) => (s.order.type === "move" ? [s.order.tile] : [])),

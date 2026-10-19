@@ -99,6 +99,26 @@ interface Admission {
 
 /** Bounded multi-stop couriers. Markets share lifecycle indexes, route pairs
  * share bounded corridors, and cargo changes hands only at authoritative commits. */
+/** `rows.find(row => row.id === id)` for arrays mutated elsewhere, whose ids
+ * are unique. A hit is verified against the live array; a miss falls back to
+ * the scan, so it costs no more than find and never returns a stale row. */
+class IdLookup<T extends { readonly id: number }> {
+  private readonly positions = new Map<number, number>();
+  find(rows: readonly T[], id: number): T | undefined {
+    const at = this.positions.get(id);
+    if (at !== undefined && rows[at]?.id === id) return rows[at];
+    const index = rows.findIndex(row => row.id === id);
+    if (index < 0) return undefined;
+    this.positions.clear();
+    for (let i = rows.length - 1; i >= 0; i--) this.positions.set(rows[i].id, i);
+    return rows[index];
+  }
+}
+/** The first building on each tile, in input order (linear, not findIndex per row). */
+function firstPerTile<T extends { tile: number }>(rows: readonly T[]): T[] {
+  const seen = new Set<number>();
+  return rows.filter(row => !seen.has(row.tile) && (seen.add(row.tile), true));
+}
 export class Trade {
   readonly receipts = new Map<string,TradeReceipt>();
   receiptRevision=0;
@@ -139,6 +159,13 @@ export class Trade {
   private readonly landShortlists = new Map<string,{epoch:number;permission:string;rows:Building[]}>();
   private readonly routeLengths = new Map<string,{revision:string;tiles:number}>();
   private readonly admissions = new Map<number, Admission>();
+  // Loading admissions per source, maintained with `admissions` so begin()
+  // need not scan every admission. Admissions saved without an origin tile
+  // fall back to the scan.
+  private readonly loadingAdmissions = new Map<string, number>();
+  private legacyLoadingAdmissions = 0;
+  private readonly actorLookup = new IdLookup<TradeActor>();
+  private readonly playerLookup = new IdLookup<Player>();
   private readonly retries = new Map<
     number,
     { attempts: number; retryAt: number }
@@ -255,7 +282,9 @@ export class Trade {
     this.cycleQuotes.clear();
     for (const [id, q] of s.cycleQuotes ?? []) this.cycleQuotes.set(id, q);
     this.admissions.clear();
-    for (const [id, a] of s.admissions ?? []) this.admissions.set(id, a);
+    this.loadingAdmissions.clear();
+    this.legacyLoadingAdmissions = 0;
+    for (const [id, a] of s.admissions ?? []) this.setAdmission(id, a);
     this.retries.clear();
     for (const [id, r] of s.retries ?? []) this.retries.set(id, r);
     this.spawnCursor.clear();
@@ -450,7 +479,7 @@ export class Trade {
   ): boolean {
     if (
       !this.ready(b) ||
-      this.world.players.find((p) => p.id === b.playerId)?.eliminated
+      this.playerLookup.find(this.world.players, b.playerId)?.eliminated
     )
       return false;
     if (a.state === "prize" || returning) return b.playerId === a.playerId;
@@ -476,7 +505,7 @@ export class Trade {
     const saved=this.landShortlists.get(key);
     if(saved?.epoch===epoch && saved.permission===permission)return saved.rows;
     const rows=(this.landComponents.get(this.world.paths.component[a.originTile])??[])
-      .filter(b=>!this.world.players.find(p=>p.id===b.playerId)?.eliminated &&
+      .filter(b=>!this.playerLookup.find(this.world.players,b.playerId)?.eliminated &&
         this.permitted(a.playerId,b.playerId,false) && !this.enemy(a.playerId,b.playerId));
     this.diagnostics.marketReads+=rows.length;
     const nearest=(foreign:boolean)=>rows.filter(b=>(b.playerId!==a.playerId)===foreign).sort((x,y)=>
@@ -621,11 +650,32 @@ export class Trade {
     const p = this.admissions.get(id);
     if (!p) return;
     this.world.domainRoutes?.cancel(this.task(p));
+    this.deleteAdmission(id);
+  }
+  private loadingKey(playerId: number, naval: boolean, originTile: number): string {
+    return `${playerId}:${naval ? 1 : 0}:${originTile}`;
+  }
+  private countLoading(p: Admission, change: 1 | -1): void {
+    if (!p.loading) return;
+    if (p.originTile === undefined) { this.legacyLoadingAdmissions += change; return; }
+    const key = this.loadingKey(p.playerId, p.naval, p.originTile), count = (this.loadingAdmissions.get(key) ?? 0) + change;
+    if (count > 0) this.loadingAdmissions.set(key, count); else this.loadingAdmissions.delete(key);
+  }
+  private setAdmission(id: number, p: Admission): void {
+    const old = this.admissions.get(id);
+    if (old) this.countLoading(old, -1);
+    this.admissions.set(id, p);
+    this.countLoading(p, 1);
+  }
+  private deleteAdmission(id: number): void {
+    const old = this.admissions.get(id);
+    if (!old) return;
+    this.countLoading(old, -1);
     this.admissions.delete(id);
   }
   validRoute(task: DomainRouteTask): boolean {
     const p = this.admissions.get(task.admissionId),
-      a = this.actors.find((a) => a.id === task.admissionId),
+      a = this.actorLookup.find(this.actors, task.admissionId),
       market = this.building(task.memberId);
     return (
       !!p &&
@@ -660,9 +710,13 @@ export class Trade {
       return;
     // Reserve one full-load admission per source. Other idle couriers reuse it
     // after commit instead of requesting routes for the same unspent stock.
-    if (loading) for (const p of this.admissions.values())
-      if (p.loading && p.playerId === a.playerId && p.naval === a.naval &&
-        (p.originTile ?? this.actors.find(other => other.id === p.id)?.originTile) === a.originTile) return;
+    if (loading) {
+      if (this.legacyLoadingAdmissions > 0) {
+        for (const p of this.admissions.values())
+          if (p.loading && p.playerId === a.playerId && p.naval === a.naval &&
+            (p.originTile ?? this.actorLookup.find(this.actors, p.id)?.originTile) === a.originTile) return;
+      } else if (a.originTile !== undefined && this.loadingAdmissions.has(this.loadingKey(a.playerId, a.naval, a.originTile))) return;
+    }
     tradeDetailsChanged(a);
     let returning =
         !loading &&
@@ -681,7 +735,7 @@ export class Trade {
       return;
     }
     a.waitingReason = "planning";
-    this.admissions.set(a.id, {
+    this.setAdmission(a.id, {
       ...(this.world.domainRoutes?.deadlineTicks?.(a.playerId,"trade",a.id) === undefined ? {} :
         {deadline:planningDeadline(this.world.tick,this.world.domainRoutes.deadlineTicks!(a.playerId,"trade",a.id))}),
       id: a.id,
@@ -725,7 +779,7 @@ export class Trade {
       p.deadline??=planningDeadline(this.world.tick,limit);
       if(this.world.tick<p.deadline!)continue;
       this.cancel(p.id);
-      const actor=this.actors.find(a=>a.id===p.id);
+      const actor=this.actorLookup.find(this.actors,p.id);
       // Capacity does not disprove this market/route. Preserve cargo and state,
       // retire the logical attempt and retry after the existing idle interval.
       if(actor)actor.waitTicks=Math.max(actor.waitTicks,100);
@@ -754,7 +808,7 @@ export class Trade {
       const [id, p] = this.admissions.entries().next().value!;
       this.admissions.delete(id);
       this.admissions.set(id, p);
-      const a = this.actors.find((a) => a.id === id);
+      const a = this.actorLookup.find(this.actors, id);
       if (!a || !this.validRoute(this.task(p))) {
         this.cancel(id);
         used++;
@@ -816,7 +870,7 @@ export class Trade {
             AGES[logisticsTier(this.progression.states[a.playerId].completed)],
           );
         this.retries.delete(id);
-        this.admissions.delete(id);
+        this.deleteAdmission(id);
         continue;
       }
       if (p.outcome !== undefined) {
@@ -899,14 +953,10 @@ export class Trade {
     }
     return used;
   }
-  private readonly cargoResearch = new Map<number, { tick: number; revision: number; research: readonly string[]; count: number; landCapacity: number; landDefinition: string; seaCapacity: number; seaDefinition: string; seaSpeed: number; handling: number }>();
+  /** Completed research is append-only or replaced, so its identity and length
+   * key the effects exactly; tick and progression revision are not inputs. */
   private cargoEffects(owner: number) {
-    const research = this.progression.states[owner].completed;
-    const cached = this.cargoResearch.get(owner);
-    if (cached && cached.tick === this.world.tick && cached.revision === this.progression.revision && cached.research === research && cached.count === research.length) return cached;
-    const value = { tick: this.world.tick, revision: this.progression.revision, research, count: research.length,
-      ...tradeCargoEffects(research) };
-    this.cargoResearch.set(owner, value); return value;
+    return tradeCargoEffects(this.progression.states[owner].completed);
   }
   private capacity(site: Site): { value: number; definition: string } {
     const effects = this.cargoEffects(site.source.playerId);
@@ -1041,7 +1091,7 @@ export class Trade {
       maxCargo: site.buildings.reduce((n,b) => n + this.supply.goodsCapacity(b), 0),
       shipmentCapacity: this.capacity(site).value,
       ...(site.naval ? { receiving: this.receiving.status(TradeReceiving.key(site.source.playerId, site.source.tile), this.world.tick) } : {}),
-    })), ...m.cities.filter((b,i,all) => all.findIndex(other => other.tile === b.tile) === i).map(b => ({
+    })), ...firstPerTile(m.cities).map(b => ({
       kind: "city" as const, playerId: b.playerId, tile: b.tile, naval: false,
       cargo: 0, maxCargo: 0, shipmentCapacity: 0,
       receiving: this.receiving.status(TradeReceiving.key(b.playerId,b.tile),this.world.tick),

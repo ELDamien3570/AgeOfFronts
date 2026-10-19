@@ -13,6 +13,8 @@
     "compile:content": "tsx scripts/compileContent.ts",
     "probe:playtest": "tsx scripts/playtestProbe.ts",
     "start:multiplayer": "tsx src/skirmish/multiplayer/server.ts",
+    "build:multiplayer": "tsx scripts/buildMultiplayer.ts",
+    "start:multiplayer:built": "node build/multiplayer/server.mjs",
     "source:skirmish": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/packageSkirmishSource.ps1",
     "build-dev": "concurrently \"tsc --noEmit\" \"vite build --mode development\"",
     "build-prod": "concurrently --kill-others-on-fail \"tsc --noEmit\" \"vite build\" && tsx scripts/buildAssetHashes.ts",

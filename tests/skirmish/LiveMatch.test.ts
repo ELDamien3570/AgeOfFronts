@@ -486,6 +486,27 @@ describe("server-authoritative live match", () => {
       .toMatchObject({ type: "match-ended", completed: false, message: NO_LIVING_HUMAN_MESSAGE });
   });
 
+  it("logs an intentional end once with its reason, not as a failure of the advance it interrupted", async () => {
+    const f = await fixture();
+    const errors = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const infos = vi.spyOn(console, "info").mockImplementation(() => undefined);
+    try {
+      f.setTime(10_125);
+      await f.match.advance();
+      // end() closes the executor, which rejects the advance still in flight.
+      await f.match.end(NO_LIVING_HUMAN_MESSAGE);
+      await f.match.endAfterFailure(new Error("Match executor stopped"));
+      expect(errors.mock.calls.some(call => call[0] === "Match stopped")).toBe(false);
+      const ended = infos.mock.calls.map(call => String(call[0])).filter(line => line.includes("\"match-ended\""));
+      expect(ended).toHaveLength(1);
+      expect(JSON.parse(ended[0])).toMatchObject({ event: "match-ended", matchId: "test", completed: false, message: NO_LIVING_HUMAN_MESSAGE });
+      expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
+    } finally {
+      errors.mockRestore();
+      infos.mockRestore();
+    }
+  });
+
   it("keeps running while a living human stays connected", async () => {
     const f = await fixture();
     f.eliminate(1);

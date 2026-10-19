@@ -35,6 +35,32 @@ const advance = (ticks: number, publish = true) => ({
 });
 
 describe("reserved authoritative worker", () => {
+  it("records and logs the worker error code when the executor dies, and stays quiet on a requested close", async () => {
+    const errors = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    try {
+      const quiet = new ReservedMatchWorker();
+      await quiet.close();
+      await vi.waitFor(() => expect(quiet.lifecycle.exitCode).toBeDefined());
+      expect(errors.mock.calls.some(call => String(call[0]).includes("match-executor-exited"))).toBe(false);
+
+      // Node reports a resourceLimits termination as an 'error' event with
+      // this code, followed by the thread's exit.
+      const worker = new ReservedMatchWorker();
+      const oom = Object.assign(new Error("Worker terminated due to reaching memory limit: JS heap out of memory"),
+        { code: "ERR_WORKER_OUT_OF_MEMORY" });
+      (worker as unknown as { worker: { emit(event: string, error: Error): void } }).worker.emit("error", oom);
+      await worker.close();
+      await vi.waitFor(() => expect(worker.lifecycle.exitCode).toBeDefined());
+      expect(worker.lifecycle).toMatchObject({ state: "stopped", cause: "error",
+        errorCode: "ERR_WORKER_OUT_OF_MEMORY", errorMessage: oom.message });
+      const logged = errors.mock.calls.map(call => String(call[0])).filter(line => line.includes("match-executor-exited"));
+      expect(logged).toHaveLength(1);
+      expect(JSON.parse(logged[0])).toMatchObject({ cause: "error", errorCode: "ERR_WORKER_OUT_OF_MEMORY" });
+    } finally {
+      errors.mockRestore();
+    }
+  });
+
   it("reports committed human movement and publishes it only at the coordinator's gate tick (N6 Design B)", async () => {
     const worker = new ReservedMatchWorker(), publications: {tick:number;packet:EncodedState}[] = [];
     const unsubscribe=worker.onPublication(publication=>publications.push(publication));

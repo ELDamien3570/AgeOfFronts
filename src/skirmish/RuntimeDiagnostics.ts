@@ -116,7 +116,8 @@ export class RuntimeDiagnostics {
   snapshot(): Partial<Record<RuntimePhase, TimingSummary>> {
     const result: Partial<Record<RuntimePhase, TimingSummary>> = {};
     for (const [phase, window] of this.windows) {
-      const values = Array.from(window.values.subarray(0, window.count)).sort((a, b) => a - b);
+      // Typed-array sort is numeric without a comparator; record() admits only finite values.
+      const values = window.values.slice(0, window.count).sort();
       result[phase] = { samples: values.length, mean: values.reduce((n, v) => n + v, 0) / values.length,
         p95: values[Math.ceil(values.length * 0.95) - 1], p99: values[Math.ceil(values.length * 0.99) - 1], maximum: values[values.length - 1] };
     }

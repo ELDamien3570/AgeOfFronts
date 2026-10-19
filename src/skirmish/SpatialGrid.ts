@@ -288,11 +288,17 @@ export class IncrementalSpatialGrid<T extends WorldPoint & { readonly id: number
     this.work.updates++;
     const dirty = this.dirty;
     dirty.length = 0;
+    // The maximum only needs a full rescan when an item that held it shrank.
+    const previousMaximum = this.maximumExtent;
+    let maximum = previousMaximum, rescan = false;
     for (const item of changed) {
       const slot = this.slots.get(item);
       if (!slot) throw new Error("Unindexed spatial item");
       this.work.rows++;
+      const before = slot.extent;
       slot.extent = this.extent?.(item) ?? 0;
+      if (slot.extent > maximum) maximum = slot.extent;
+      else if (before === previousMaximum && slot.extent < before) rescan = true;
       const key = this.keyOf(item);
       if (key !== slot.key) {
         this.work.moves++;
@@ -311,8 +317,10 @@ export class IncrementalSpatialGrid<T extends WorldPoint & { readonly id: number
       for (let at = 1; at < bucket.length && owner !== -1; at++) if (this.partition(bucket[at]) !== owner) owner = -1;
       this.partitions[key] = owner;
     }
-    let maximum = 0;
-    for (const slot of this.slots.values()) if (slot.extent > maximum) maximum = slot.extent;
+    if (rescan) {
+      maximum = 0;
+      for (const slot of this.slots.values()) if (slot.extent > maximum) maximum = slot.extent;
+    }
     this.maximumExtent = maximum;
   }
 

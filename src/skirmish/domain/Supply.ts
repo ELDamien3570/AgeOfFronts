@@ -36,6 +36,7 @@ export function productionTicks(
 }
 export { PRODUCTION_RECIPES, REFINING } from "../content/Production";
 const RECIPES = new Map(PRODUCTION_RECIPES.map(recipe => [recipe.id, recipe]));
+const NO_RESEARCH: readonly string[] = Object.freeze([]);
 const gcd = (a: number, b: number): number => b ? gcd(b, a % b) : a;
 // A common integer scale preserves fractions for both rates and legacy 160-tick saves.
 const GOODS_REFILL_DENOMINATOR = [secondsToTicks(PORT_CARGO_REPLENISH_SECONDS),
@@ -149,13 +150,14 @@ export class Supply {
   }
   readonly goods = new Map<number, number>();
   /** Each producer stores one unstacked trader load at current owner research. */
-  private readonly goodsResearch = new Map<number, {research: readonly string[]; count: number; revision: number; land: number; sea: number}>();
+  // Completed research is append-only or replaced: identity and length key it exactly.
+  private readonly goodsResearch = new Map<number, {research: readonly string[]; count: number; land: number; sea: number}>();
   goodsCapacity(building: Building): number {
-    const research = this.progression.states[building.playerId]?.completed ?? [];
+    const research = this.progression.states[building.playerId]?.completed ?? NO_RESEARCH;
     let cached = this.goodsResearch.get(building.playerId);
-    if (!cached || cached.research !== research || cached.count !== research.length || cached.revision !== this.progression.revision) {
+    if (!cached || cached.research !== research || cached.count !== research.length) {
       const effects = tradeCargoEffects(research);
-      cached = { research, count: research.length, revision: this.progression.revision, land: tradeCargoCapacity(effects, false), sea: tradeCargoCapacity(effects, true) };
+      cached = { research, count: research.length, land: tradeCargoCapacity(effects, false), sea: tradeCargoCapacity(effects, true) };
       this.goodsResearch.set(building.playerId, cached);
     }
     return building.type === "port" || building.type === "factory"

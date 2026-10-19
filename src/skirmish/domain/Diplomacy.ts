@@ -3,6 +3,8 @@ import { restoreRecord } from "../StateTransfer";
 import { TICKS_PER_SECOND, type Player, type Command } from "../Protocol";
 import type { DiplomacyState } from "./Definitions";
 import {validateRaidDiplomacy} from './DiplomacyValidation';
+/** Owner ids at or above this bound skip the hostility table (at most 1 MiB). */
+const HOSTILE_MEMO_LIMIT = 1024;
 export interface AiDiplomacyPolicy {maximumOutgoing:number;proposerTicks:number;recipientTicks:number;declinedPairTicks:number;brokenPairTicks:number;}
 const DEFAULT_AI_CONTACT:AiDiplomacyPolicy={maximumOutgoing:6,proposerTicks:secondsToTicks(120),recipientTicks:secondsToTicks(60),declinedPairTicks:secondsToTicks(180),brokenPairTicks:secondsToTicks(300)};
 export class Diplomacy {
@@ -170,7 +172,40 @@ export class Diplomacy {
     );
   }
   hostile(a: number, b: number): boolean {
+    if (!Number.isInteger(a) || !Number.isInteger(b) || a < 0 || b < 0 || a >= HOSTILE_MEMO_LIMIT || b >= HOSTILE_MEMO_LIMIT)
+      return this.computeHostile(a, b);
+    if (Math.max(a, b) >= this.hostileWidth) this.growHostileMemo(Math.max(a, b) + 1);
+    const memo = this.hostileMemo(), at = a * this.hostileWidth + b, known = memo[at];
+    if (known) return known === 2;
+    const value = this.computeHostile(a, b);
+    memo[at] = value ? 2 : 1;
+    return value;
+  }
+  private computeHostile(a: number, b: number): boolean {
     return this.nonAllied(a,b)&&(!this.raids||!this.protected(a,b)&&(this.declaredWar(a,b)||this.embargo(a,b)));
+  }
+  // hostile() is read in the innermost avoidance and combat loops. Its inputs
+  // change only by appending rows (length), reassigning filtered arrays
+  // (identity) or bumping `revision` (in-place theft ticks, start protection),
+  // and its expiries read `tick`; any change to these clears the table.
+  private hostileWidth = 0;
+  private hostileValues = new Uint8Array(0);
+  private readonly hostileKey: unknown[] = [];
+  private hostileMemo(): Uint8Array {
+    const s = this.state, key = this.hostileKey;
+    if (key[0] !== this.revision || key[1] !== this.tick || key[2] !== s.alliances || key[3] !== s.alliances.length ||
+      key[4] !== s.wars || key[5] !== s.wars?.length || key[6] !== s.embargoes || key[7] !== s.embargoes?.length ||
+      key[8] !== s.peaceProtection || key[9] !== s.peaceProtection?.length) {
+      key[0] = this.revision; key[1] = this.tick; key[2] = s.alliances; key[3] = s.alliances.length;
+      key[4] = s.wars; key[5] = s.wars?.length; key[6] = s.embargoes; key[7] = s.embargoes?.length;
+      key[8] = s.peaceProtection; key[9] = s.peaceProtection?.length;
+      this.hostileValues.fill(0);
+    }
+    return this.hostileValues;
+  }
+  private growHostileMemo(width: number): void {
+    this.hostileWidth = Math.min(HOSTILE_MEMO_LIMIT, Math.max(width, this.hostileWidth * 2, 64));
+    this.hostileValues = new Uint8Array(this.hostileWidth * this.hostileWidth);
   }
   declaredWar(a: number, b: number): boolean {
     return (this.state.wars ?? []).some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a));

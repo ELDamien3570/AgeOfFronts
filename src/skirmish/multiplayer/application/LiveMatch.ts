@@ -892,6 +892,9 @@ export class LiveMatch {
   /** End after a failed advance. A simulation fault ends with fixed text and
    * a reason code; its internal error details stay in the server log. */
   endAfterFailure(error: unknown): Promise<void> {
+    // end() closing the executor rejects the advance still in flight; that
+    // rejection is the intentional stop, not a failure to log.
+    if (this.stopped) return Promise.resolve();
     const message = error instanceof Error ? error.message : String(error);
     return message === MATCH_FAULT_CODE
       ? this.end(MATCH_FAULT_MESSAGE, false, MATCH_FAULT_CODE)
@@ -900,6 +903,8 @@ export class LiveMatch {
   async end(message: string, completed = false, reason?: typeof MATCH_FAULT_CODE): Promise<void> {
     if (this.stopped) return;
     this.stopped = true;
+    console.info(JSON.stringify({ event: "match-ended", matchId: this.reservation.id, tick: this.tick,
+      completed, ...(reason ? { reason } : {}), message }));
     this.tickTimer?.cancel();
     this.tickTimer = undefined;
     this.unsubscribePublication?.();

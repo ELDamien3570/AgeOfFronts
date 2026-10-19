@@ -1,5 +1,3 @@
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { MessageChannel, Worker } from "node:worker_threads";
 import { PublicationSequencer } from "../application/PublicationSequencer";
 import type {
@@ -10,6 +8,7 @@ import type {
 } from "../application/MatchExecutor";
 import { RequestDeadlines, requestTimeoutMs } from "./RequestDeadlines";
 import { liveHeapRequested } from "./WorkerRuntimeDiagnostics";
+import { workerEntry } from "./WorkerEntry";
 
 /** Operator opt-in for rollback containment (Next #10): set to "1" in the
  * coordinator's environment and every match worker it starts holds a
@@ -21,10 +20,7 @@ export const ROLLBACK_ENV = "SKIRMISH_ROLLBACK";
 export const rollbackRequested = (env: NodeJS.ProcessEnv = process.env) => env[ROLLBACK_ENV] === "1";
 import { prepareAttemptSeeds } from "../application/PreparePlan";
 
-const workerPath = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "serverMatchWorker.ts",
-);
+const matchWorker = workerEntry("serverMatchWorker", import.meta.url);
 
 /** Empty listings never construct this adapter. Each admitted match owns one reserved worker. */
 export class ReservedMatchWorker implements MatchExecutor {
@@ -41,7 +37,9 @@ export class ReservedMatchWorker implements MatchExecutor {
   }
   private nextId = 1;
   private closed = false;
-  readonly lifecycle: { state: "running" | "stopped"; cause?: "closed" | "error" | "exit" | "timeout" | "publication" | "recovery"; operation?: string; exitCode?: number } = { state: "running" };
+  readonly lifecycle: { state: "running" | "stopped"; cause?: "closed" | "error" | "exit" | "timeout" | "publication" | "recovery"; operation?: string; exitCode?: number;
+    /** The worker 'error' event's code and message, e.g. ERR_WORKER_OUT_OF_MEMORY. */
+    errorCode?: string; errorMessage?: string } = { state: "running" };
   private pending = new Map<
     number,
     {
@@ -79,9 +77,9 @@ export class ReservedMatchWorker implements MatchExecutor {
    * prepare retry). `rollback` overrides SKIRMISH_ROLLBACK. */
   constructor(options: { testFaultTick?: number; testPrepareFailures?: number; rollback?: boolean } = {}) {
     this.worker = new Worker(
-      workerPath,
+      matchWorker.url,
       {
-        execArgv: ["--import", "tsx"],
+        execArgv: matchWorker.execArgv,
         resourceLimits: { maxOldGenerationSizeMb: 384 },
         workerData: { publicationPort: this.channel.port2, liveHeap: liveHeapRequested(),
           rollback: options.rollback ?? rollbackRequested(),
@@ -103,10 +101,19 @@ export class ReservedMatchWorker implements MatchExecutor {
         this.sequencer.result(message.publicationsIssued ?? 0, message);
       },
     );
-    this.worker.on("error", (error) => this.fail(error, "error"));
-    this.worker.on("exit", (code) =>
-      { this.lifecycle.exitCode = code; this.fail(new Error(`Match executor stopped (exit ${code})`), "exit"); },
-    );
+    this.worker.on("error", (error) => {
+      this.lifecycle.errorCode ??= (error as NodeJS.ErrnoException).code;
+      this.lifecycle.errorMessage ??= error.message;
+      this.fail(error, "error");
+    });
+    this.worker.on("exit", (code) => {
+      this.lifecycle.exitCode = code;
+      // An exit after close() is the requested stop; anything else is logged
+      // once with its cause, so an out-of-memory termination is identifiable.
+      if (this.lifecycle.cause !== "closed")
+        console.error(JSON.stringify({ event: "match-executor-exited", ...this.lifecycle, state: undefined }));
+      this.fail(new Error(`Match executor stopped (exit ${code})`), "exit");
+    });
   }
   request<T extends ExecutorResult>(request: ExecutorRequest): Promise<T> {
     if (this.closed) return Promise.reject(new Error("Match executor stopped"));
