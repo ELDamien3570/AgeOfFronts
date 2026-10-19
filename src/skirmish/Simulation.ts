@@ -5236,6 +5236,27 @@ export class Skirmish {
     ) this.conquest.capture(owner, id);
   }
 
+  private readonly aiControlWorld = {
+    armyOf: (id: number) => this.expansion?.armies.armyOf(id),
+    directArmyAction: (id: number) => this.expansion?.armies.directArmyAction(id) ?? false,
+  };
+  /** Whether unclaimed or hostile land lies within the home radius. The tests
+   * run cheapest first and only read or memoize. A frontier sorted from this
+   * base has every later tile farther away, so the scan stops at the first
+   * tile beyond the radius; any other order is scanned in full. */
+  private homeNeedsLand(player: Player, frontier: readonly number[], homeRadius: number): boolean {
+    const limit = homeRadius ** 2, sorted = this.homeTerritory.sortedFrom(frontier) === player.base;
+    for (const tile of frontier) {
+      if (this.map.euclideanDistSquared(player.base, tile) > limit) {
+        if (sorted) break;
+        continue;
+      }
+      if (this.owners[tile] !== player.id &&
+        (!this.owners[tile] || this.hostile(player.id, this.owners[tile])) &&
+        this.aiFootprintAllowed(player.id, tile)) return true;
+    }
+    return false;
+  }
   private thinkAi(): void {
     const decisionInterval=this.options.autonomousDecisionInterval ?? secondsToTicks(.75);
     const armies = new Map<number, Squad[]>();
@@ -5339,17 +5360,9 @@ export class Skirmish {
             Math.round(Math.min(this.map.width(), this.map.height()) * 0.06),
           ) * personality.homeRadiusPercent) / 100,
         ),
-        // Cheapest test first; the remaining tests only read or memoize.
-        homeNeedsLand = frontier.some(
-          (tile) =>
-            this.map.euclideanDistSquared(player.base, tile) <= homeRadius ** 2 &&
-            this.owners[tile] !== player.id &&
-            (!this.owners[tile] || this.hostile(player.id, this.owners[tile])) &&
-            this.aiFootprintAllowed(player.id, tile),
-        ),
-        reserved = new Set(
-          own.flatMap((s) => (s.order.type === "move" ? [s.order.tile] : [])),
-        );
+        homeNeedsLand = this.homeNeedsLand(player, frontier, homeRadius),
+        reserved = new Set<number>();
+      for (const s of own) if (s.order.type === "move") reserved.add(s.order.tile);
       const raids = new Map<number, Squad[]>();
       const marches=new Map<string,Squad[]>();
       // P6: enemies with no raidable squad this think. The predicate below
@@ -5361,9 +5374,10 @@ export class Skirmish {
       if(!recovering && (this.tick+player.id)%secondsToTicks(3)===0)this.expandAcrossRiver(player,own);
       for (let i = 0; i < own.length; i++) {
         const squad = own[i];
-        if(controllerOf({armyOf:id=>this.expansion?.armies.armyOf(id),directArmyAction:id=>this.expansion?.armies.directArmyAction(id)??false},squad)!=="none")continue;
-        // IDs distribute autonomous decisions across the bounded cadence.
+        // IDs distribute autonomous decisions across the bounded cadence. Both
+        // tests only skip, and controllerOf only reads, so the cheap one runs first.
         if ((this.tick + squad.id) % decisionInterval !== 1) continue;
+        if(controllerOf(this.aiControlWorld,squad)!=="none")continue;
         if (
           squad.refit ||
           this.expansion?.modernization.holds(squad.id) ||

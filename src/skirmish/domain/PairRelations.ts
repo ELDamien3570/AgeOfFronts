@@ -11,7 +11,10 @@ const key = (a:number,b:number) => `${Math.min(a,b)}:${Math.max(a,b)}`;
  * Recent aggression is authoritative; lookup tables are disposable projections. */
 export class PairRelations {
   private readonly recent = new Map<string,{a:number;b:number;until:number}>();
-  private stamp = "";
+  // The projection's inputs at the last refresh. Comparing the numbers is the
+  // same test as comparing their ":"-joined string; `dirty` forces a refresh.
+  private readonly stamp = [NaN, NaN, NaN, NaN, NaN, NaN];
+  private dirty = true;
   private rows: PairRelationRow[] = [];
   private readonly pairs = new Map<string,PairRelation>();
   private content = "";
@@ -21,19 +24,22 @@ export class PairRelations {
     private readonly diplomacy:Diplomacy,private readonly operations:AiOperations) {}
   checkpoint() { return structuredClone([...this.recent]); }
   restore(saved?:ReturnType<PairRelations["checkpoint"]>):void {
-    this.recent.clear();for(const [k,row] of saved??[])this.recent.set(k,structuredClone(row));this.stamp="";
+    this.recent.clear();for(const [k,row] of saved??[])this.recent.set(k,structuredClone(row));this.dirty=true;
   }
   threatened(a:number,b:number):void {
     if(!this.diplomacy.hostile(a,b))return;
     this.recent.set(key(a,b),{a:Math.min(a,b),b:Math.max(a,b),until:this.world.tick+secondsToTicks(30)});
-    this.stamp="";
+    this.dirty=true;
   }
   private refresh():void {
     const {world,diplomacy,operations}=this;
-    const stamp=`${world.tick}:${diplomacy.revision}:${operations.revision}:${operations.permissionRevision}:`+
-      `${diplomacy.state.alliances.length}:${diplomacy.state.wars?.length??0}`;
-    if(stamp===this.stamp)return;
-    this.stamp=stamp;this.pairs.clear();
+    const stamp=this.stamp,wars=diplomacy.state.wars?.length??0;
+    if(!this.dirty && stamp[0]===world.tick && stamp[1]===diplomacy.revision && stamp[2]===operations.revision &&
+      stamp[3]===operations.permissionRevision && stamp[4]===diplomacy.state.alliances.length && stamp[5]===wars)return;
+    this.dirty=false;
+    stamp[0]=world.tick;stamp[1]=diplomacy.revision;stamp[2]=operations.revision;
+    stamp[3]=operations.permissionRevision;stamp[4]=diplomacy.state.alliances.length;stamp[5]=wars;
+    this.pairs.clear();
     const live=new Set(world.players.filter(p=>!p.eliminated).map(p=>p.id));
     const set=(a:number,b:number,state:PairRelation)=>{
       if(a!==b && live.has(a) && live.has(b))this.pairs.set(key(a,b),state);
@@ -51,7 +57,9 @@ export class PairRelations {
       const [a,b]=k.split(":").map(Number);return {a,b,state:state as PairRelationRow["state"]};
     }).sort((x,y)=>x.a-y.a||x.b-y.b);
     const content=this.rows.map(r=>`${r.a}:${r.b}:${r.state}`).join(",");
-    if(content!==this.content)this.projectionRevision++;
+    // Owner signatures are a function of the rows, which content encodes.
+    if(content===this.content)return;
+    this.projectionRevision++;
     this.content=content;
     this.ownerSignatures.clear();
     for(const r of this.rows)for(const id of [r.a,r.b])this.ownerSignatures.set(id,
@@ -66,5 +74,5 @@ export class PairRelations {
   signatureFor(owner:number):string {
     this.refresh();return this.ownerSignatures.get(owner)??"";
   }
-  snapshot():PairRelationRow[] {this.stamp="";this.refresh();return this.rows;}
+  snapshot():PairRelationRow[] {this.dirty=true;this.refresh();return this.rows;}
 }

@@ -178,7 +178,11 @@ export class Trade {
   private nextEpoch = 1;
   private corridorTiles = 0;
   private tickStartWork = 0;
+  // Interception queries every non-embarked squad (the shared phase "ground"
+  // view) and skips troops <= 0 first, which is exactly the alive-only view's
+  // inclusion without rebuilding a second grid. The alive view stays lazy.
   private land: SpatialQueries<Squad>;
+  private landAlive: () => SpatialQueries<Squad> = () => this.land;
   private sea: SpatialQueries<Ship>;
   private readonly nearby: (Squad | Ship)[] = [];
   constructor(
@@ -483,6 +487,9 @@ export class Trade {
     )
       return false;
     if (a.state === "prize" || returning) return b.playerId === a.playerId;
+    // Sea couriers only ever accept foreign ports (the final test below); every
+    // test in this conjunction is a pure read, so reject those first.
+    if (a.naval && (b.type !== "port" || b.playerId === a.playerId)) return false;
     const committedSeaLeg = a.naval && a.state === "outbound" && a.destination === b.id;
     if (!committedSeaLeg && (
       !this.permitted(a.playerId, b.playerId, a.naval) ||
@@ -519,15 +526,18 @@ export class Trade {
     if(this.landShortlists.size>=4096 && !this.landShortlists.has(key))this.landShortlists.delete(this.landShortlists.keys().next().value!);
     this.landShortlists.set(key,{epoch,permission,rows:result});return result;
   }
-  private routeDistance(owner:number,start:number,goal:number):number {
+  private routeDistance(owner:number,start:number,goal:number,revision=this.revision(owner)):number {
     const row=this.routeLengths.get(`${owner}:${start}:${goal}`);
-    return row?.revision===this.revision(owner)?row.tiles:Math.sqrt(this.world.map.euclideanDistSquared(start,goal));
+    return row?.revision===revision?row.tiles:Math.sqrt(this.world.map.euclideanDistSquared(start,goal));
   }
   private candidates(a: TradeActor, returning = false): Building[] {
     const tile = this.tile(a),
       own = this.markets.get(a.playerId),
-      source = this.source(a);
-    if (returning && source) return (this.routeFailures.get(this.failureKey(a, source.source, true))?.retryAt ?? 0) <= this.world.tick ? [source.source] : [];
+      source = this.source(a),
+      // Everything below only reads trade, relation and route state, so the
+      // owner's land revision is the same for every row of this call.
+      revision = a.naval ? undefined : this.revision(a.playerId);
+    if (returning && source) return (this.routeFailures.get(this.failureKey(a, source.source, true, revision))?.retryAt ?? 0) <= this.world.tick ? [source.source] : [];
     const rows = a.naval
       ? (this.seaMarkets.get(this.world.waterPaths.component[tile]) ?? [])
       : this.landCandidates(a);
@@ -537,7 +547,7 @@ export class Trade {
         (b) =>
           this.allowedMarket(a, b, returning) &&
           !seen.has(b.tile) && !!seen.add(b.tile) &&
-          (this.routeFailures.get(this.failureKey(a, b, returning))?.retryAt ?? 0) <= this.world.tick &&
+          (this.routeFailures.get(this.failureKey(a, b, returning, revision))?.retryAt ?? 0) <= this.world.tick &&
           (a.naval || this.world.paths.connected(tile, b.tile)),
       )
       .map((b) => ({
@@ -549,7 +559,7 @@ export class Trade {
     // No path searches here: exact routes enter the existing bounded planner.
     const rates = new Map<number, number>();
     const speed = a.naval ? this.seaPricing(a.playerId).seaSpeed : 1000 / TICKS_PER_SECOND;
-    const originDistance = this.routeDistance(a.playerId,tile,a.originTile);
+    const originDistance = this.routeDistance(a.playerId,tile,a.originTile,revision);
     const stock = a.cargo > 0 ? a.cargo : source?.buildings.reduce((n,b)=>n+(this.supply.goods.get(b.id) ?? 0),0) ?? 0;
     const availableCargo = Math.min(stock, a.cargo > 0 ? a.cargo : a.capacity);
     if (!returning && a.state !== "prize") for (const row of result) {
@@ -557,8 +567,8 @@ export class Trade {
       const quantity = Math.min(availableCargo, this.receiving.available(TradeReceiving.key(row.b.playerId,row.b.tile),
         this.world.tick, a.naval, foreign, allied));
       const distance = Math.sqrt(this.world.map.euclideanDistSquared(a.originTile,row.b.tile));
-      const extraTravel = Math.max(0, this.routeDistance(a.playerId,tile,row.b.tile) +
-        this.routeDistance(a.playerId,row.b.tile,a.originTile) - originDistance);
+      const extraTravel = Math.max(0, this.routeDistance(a.playerId,tile,row.b.tile,revision) +
+        this.routeDistance(a.playerId,row.b.tile,a.originTile,revision) - originDistance);
       rates.set(row.b.id, tradePayout({ naval:a.naval,quantity,valuePerGood:a.valuePerGood,distance,foreign,allied,
         mapWidth:this.world.map.width() }) / (TICKS_PER_SECOND + extraTravel * FIXED / speed));
     }
@@ -577,8 +587,8 @@ export class Trade {
       ((rates.get(r.b.id) ?? 0)>0 && (rates.get(r.b.id) ?? 0)>=minimumRate))
       .slice(0, 8).map((r) => r.b);
   }
-  private failureKey(a: TradeActor, market: Building, returning: boolean): string {
-    return `${a.playerId}:${a.naval ? 1 : 0}:${this.tile(a)}:${market.id}:${market.playerId}:${returning ? 1 : 0}:${a.naval ? this.controlRevision : this.revision(a.playerId)}`;
+  private failureKey(a: TradeActor, market: Building, returning: boolean, revision?: string): string {
+    return `${a.playerId}:${a.naval ? 1 : 0}:${this.tile(a)}:${market.id}:${market.playerId}:${returning ? 1 : 0}:${a.naval ? this.controlRevision : revision ?? this.revision(a.playerId)}`;
   }
   private deferMarket(a: TradeActor, market: Building, returning: boolean, limited = false): void {
     const key = this.failureKey(a, market, returning), previous = this.routeFailures.get(key);
@@ -1201,7 +1211,7 @@ export class Trade {
     naval: boolean,
     point: { x: number; y: number },
   ): number {
-    return (naval ? this.sea : this.land).mayContain(
+    return (naval ? this.sea : this.landAlive()).mayContain(
       point.x,
       point.y,
       2 * FIXED,
@@ -1316,7 +1326,7 @@ export class Trade {
     this.diagnostics.waitingReceivers = 0;
     if (this.actors.length) {
       const facts = this.world.spatialFacts("trade");
-      this.land = facts.groundAlive; this.sea = facts.warshipsAlive;
+      this.land = facts.ground; this.landAlive = () => facts.groundAlive; this.sea = facts.warshipsAlive;
     }
     for (const a of this.actors) {
       if (this.retired.has(a.id)) continue;
@@ -1341,6 +1351,7 @@ export class Trade {
           (s) =>
             // Sea piracy requires only a non-allied owner. Market access and
             // land interception retain their separate war/conflict rules.
+            (a.naval || (s as Squad).troops > 0) &&
             (this.diplomacy.raids?this.diplomacy.canSteal(s.playerId,a.playerId,this.world.tick,!players.get(s.playerId)?.ai):
               (a.naval ? this.diplomacy.hostile(a.playerId, s.playerId) : this.enemy(a.playerId, s.playerId))) &&
             (s.x - a.x) ** 2 + (s.y - a.y) ** 2 <= (1.2 * FIXED) ** 2 &&

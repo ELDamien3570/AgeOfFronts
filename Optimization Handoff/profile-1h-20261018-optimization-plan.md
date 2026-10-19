@@ -333,6 +333,53 @@ times per selection). `PathTopology.neighbors` ran 24,000 times.
 - **Full suite:** 3,270 passed. The one failure is `RussianAssetIntegration`, which also fails on clean
   HEAD.
 
+### AI decision and trade (19 October 2026, uncommitted)
+
+**Late-game profile (bundled, 60 min).** AI decision work is 16.3% of the tick: `thinkAi` 10.2%, plus
+the economic, progression, tribe, air and naval directors inside `Expansion.beforeStep`. Trade is 7.8%.
+
+**Kept (all parity-identical):**
+
+| Change | Where | Isolated effect (bundled, 60-min fixture) |
+|---|---|---|
+| Frontier BFS via `neighbors4` (same N,S,W,E order), packed numeric distance sort (exact), `homeNeedsLand` stops at the first tile beyond the radius when the frontier was sorted from this base (non-checkpointed `sortedFrom`), decision-cadence check before `controllerOf`, `reserved` built with a loop | `HomeTerritory.ts`, `Simulation.ts` | AI phase −16%; tick +2.7% |
+| `cohortDps` builds one slim `Defence` per enemy cohort (exactly the fields `damageAmount` reads) instead of a full definition spread per pair | `TacticalEstimate.ts` | AI phase −5%; tick within noise (kept: simple, exhaustively tested) |
+| Interception queries the shared `ground` grid with `troops > 0` tested first (no second alive-only grid); `revision(owner)` computed once per `candidates()` call; naval couriers reject own and non-port markets before permission checks | `Trade.ts` | Trade phases −1.7 ms; tick +2.8% |
+| `PairRelations.refresh` compares a numeric stamp tuple and rebuilds owner signatures only when the content changes | `PairRelations.ts` | Trade phase −0.8 ms; tick +1.0% |
+
+**Combined on `checkpoint-sim60.v8` (bundled, 200 + 400 ticks): 5.5% faster per tick, parity identical.**
+AI phase 10.65 → 8.67 ms; "combat" (with trade) 21.2 → 19.6 ms.
+
+**Tests:**
+
+- `AiEstimateEquivalence.test.ts` checks `frontier` (tiles, order, shores) against the verbatim original
+  BFS/sort.
+- The same file checks `cohortDps` against the original per-pair spread, with `Object.is`, over random
+  pairings of every unit.
+- Full suite: 3,272 passed. The one failure is `RussianAssetIntegration`, which also fails on HEAD.
+
+**Not done (from the studies):**
+
+| Item | Why not |
+|---|---|
+| Frontier clean-skip | Needs complete tile-owner invalidation |
+| Combat-advantage memo across ticks | Medium risk |
+| `aiTradeCapacity` source cache | Medium risk |
+| Placement revision memo | Small; not attempted |
+| Planner decorate-sort | Small; not attempted |
+| Lazy `sleepKey` | Small; not attempted |
+| `threatTroops` spatial query | Medium risk |
+| `HomeTerritory.goal` failure-key change | Would alter a checkpointed key format |
+
+**Harness fixes made along the way:**
+
+- **False-positive divergences.** The digest no longer hashes `v8.serialize` bytes. V8 encodes the same
+  number as a small integer or a heap double depending on JIT state, which made two identical trees
+  "diverge" at tick 29,180. It now hashes a canonical walk with numbers compared by value.
+- **`--bundled`.** Runs each tree as a production-style esbuild bundle, so measurements match how the
+  server runs.
+- **Divergence dumps.** The first divergence of each kind is saved as `.v8` files for diffing.
+
 ### Phase 3: combat and movement scaling (estimated 6–10%, plus investigation)
 
 - **C1: find the root cause of super-linear combat scaling.** Instrument per tick:

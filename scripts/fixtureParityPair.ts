@@ -6,7 +6,7 @@
 // ticks.
 //
 // Parity: every publication packet and, every --hash-every ticks, the
-// canonical checkpoint (sha256 of v8.serialize(checkpoint())) must be
+// checkpoint (canonical sha256, see digest(): numbers by value) must be
 // byte-identical. Any difference is reported with its first tick and the
 // process exits 1. Timings exclude hashing.
 //
@@ -15,6 +15,8 @@
 //     [--control-ref HEAD | --control <dir>/src/skirmish] [--candidate src/skirmish] \
 //     [--warmup 200] [--ticks 400] [--publish-every 2] [--hash-every 50] [--out out/parity/<name>]
 //     [--candidate-borrowed]   candidate publishes borrowed traders (replicationSource(true))
+//     [--bundled]              run each tree as an esbuild bundle without keepNames,
+//                              as the production server does (scripts/buildMultiplayer.ts)
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -51,12 +53,28 @@ function controlTree(): string {
 
 const saved = readFileSync(fixture);
 type Run = Awaited<ReturnType<typeof load>>;
+/** The four entry points a run needs, from source (tsx) or a production-style bundle. */
+async function entryPoints(source: string) {
+  const files = { loadServerMap: "multiplayer/infrastructure/ServerMap.ts", createSkirmishMap: "Elevation.ts",
+    Skirmish: "Simulation.ts", SnapshotEncoder: "SnapshotCodec.ts" } as const;
+  if (!args.includes("--bundled")) {
+    const at = (file: string) => import(pathToFileURL(resolve(source, file)).href);
+    return { loadServerMap: (await at(files.loadServerMap)).loadServerMap, createSkirmishMap: (await at(files.createSkirmishMap)).createSkirmishMap,
+      Skirmish: (await at(files.Skirmish)).Skirmish, SnapshotEncoder: (await at(files.SnapshotEncoder)).SnapshotEncoder };
+  }
+  const { build } = await import("esbuild");
+  const id = createHash("sha256").update(source).digest("hex").slice(0, 12), dir = resolve("out/parity/bundles");
+  mkdirSync(dir, { recursive: true });
+  const entry = `${dir}/${id}-entry.ts`, outfile = `${dir}/${id}.mjs`;
+  writeFileSync(entry, Object.entries(files).map(([name, file]) =>
+    `export { ${name} } from ${JSON.stringify(resolve(source, file).split("\\").join("/"))};`).join("\n"));
+  await build({ entryPoints: [entry], outfile, bundle: true, platform: "node", format: "esm", packages: "external",
+    target: `node${process.versions.node}`, keepNames: false, logLevel: "warning" });
+  // A query string keeps the two bundles distinct module instances.
+  return await import(`${pathToFileURL(outfile).href}?tree=${id}`);
+}
 async function load(source: string, borrowedTraders = false) {
-  const at = (file: string) => import(pathToFileURL(resolve(source, file)).href);
-  const { loadServerMap } = await at("multiplayer/infrastructure/ServerMap.ts");
-  const { createSkirmishMap } = await at("Elevation.ts");
-  const { Skirmish } = await at("Simulation.ts");
-  const { SnapshotEncoder } = await at("SnapshotCodec.ts");
+  const { loadServerMap, createSkirmishMap, Skirmish, SnapshotEncoder } = await entryPoints(source);
   const state = deserialize(saved);
   const loaded = await loadServerMap(state.settings, undefined, state.seed);
   const m = loaded.map;
@@ -87,7 +105,42 @@ async function load(source: string, borrowedTraders = false) {
     },
   };
 }
-const digest = (value: unknown) => createHash("sha256").update(serialize(value)).digest("hex");
+/** sha256 of a canonical encoding. v8.serialize writes a small integer and the
+ * same number held as a heap double differently, and which one V8 uses depends
+ * on JIT state, so equal checkpoints from two module instances can differ in
+ * bytes. Every number is hashed as its float64 value instead (-0 stays
+ * distinct); strings, key order, Map/Set order and typed-array contents count. */
+function digest(value: unknown): string {
+  const hash = createHash("sha256"), scratch = Buffer.alloc(1 << 16);
+  let used = 0;
+  const flush = () => { if (used) { hash.update(scratch.subarray(0, used)); used = 0; } };
+  const tag = (t: number) => { if (used + 9 > scratch.length) flush(); scratch[used++] = t; };
+  const number = (n: number) => { tag(1); scratch.writeDoubleLE(n, used); used += 8; };
+  const text = (s: string) => { tag(2); number(s.length); flush(); hash.update(s); };
+  const walk = (v: unknown): void => {
+    if (v === undefined) return tag(3);
+    if (v === null) return tag(4);
+    switch (typeof v) {
+      case "number": return number(v);
+      case "string": return text(v);
+      case "boolean": return tag(v ? 5 : 6);
+      case "bigint": return text(`n${v}`);
+      case "object": break;
+      default: throw new Error(`Cannot digest ${typeof v}`);
+    }
+    if (ArrayBuffer.isView(v)) { text(v.constructor.name); flush(); hash.update(new Uint8Array(v.buffer, v.byteOffset, v.byteLength)); return; }
+    if (v instanceof Map) { tag(7); number(v.size); for (const [k, x] of v) { walk(k); walk(x); } return; }
+    if (v instanceof Set) { tag(8); number(v.size); for (const x of v) walk(x); return; }
+    if (Array.isArray(v)) { tag(9); number(v.length); for (let i = 0; i < v.length; i++) walk(v[i]); return; }
+    tag(10);
+    const keys = Object.keys(v as object);
+    number(keys.length);
+    for (const key of keys) { text(key); walk((v as Record<string, unknown>)[key]); }
+  };
+  walk(value);
+  flush();
+  return hash.digest("hex");
+}
 
 const controlSource = controlTree();
 const candidateSource = resolve(value("--candidate", "src/skirmish"));
@@ -96,7 +149,15 @@ const control = await load(controlSource);
 const candidate = await load(candidateSource, args.includes("--candidate-borrowed"));
 const divergence: { kind: string; tick: number }[] = [];
 const compare = (kind: string, a: unknown, b: unknown) => {
-  if (divergence.length < 20 && digest(a) !== digest(b)) divergence.push({ kind, tick: control.game.tick });
+  if (divergence.length < 20 && digest(a) !== digest(b)) {
+    // The first divergence of each kind is saved for diffing (out/<name>/diverged-*.v8).
+    if (!divergence.some((d) => d.kind === kind)) {
+      mkdirSync(output, { recursive: true });
+      writeFileSync(`${output}/diverged-${kind}-control.v8`, serialize(a));
+      writeFileSync(`${output}/diverged-${kind}-candidate.v8`, serialize(b));
+    }
+    divergence.push({ kind, tick: control.game.tick });
+  }
 };
 compare("restore", control.game.checkpoint(), candidate.game.checkpoint());
 let publications = 0, checkpoints = 1;

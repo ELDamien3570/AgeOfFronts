@@ -60,6 +60,21 @@ export class HomeTerritory {
   constructor(private readonly map: GameMap) {
     this.visited = new Uint32Array(map.width() * map.height());
   }
+  private readonly adjacent: number[] = [0, 0, 0, 0];
+  // The base each computed frontier array was sorted from. Not checkpointed:
+  // after a restore the arrays are new and callers fall back to a full scan.
+  private readonly sortedBases = new WeakMap<readonly number[], number>();
+  /** The base `tiles` is sorted by distance from, when it came from frontier(). */
+  sortedFrom(tiles: readonly number[]): number | undefined { return this.sortedBases.get(tiles); }
+  /** Ascending squared distance from base, ties by tile id: the comparator
+   * order, via exact packed keys d2 * size + tile (below 2^53 for maps up to
+   * 4096 x 4096) sorted numerically instead of two distance calls per compare. */
+  private sortByDistance(tiles: number[], base: number): void {
+    const size = this.map.width() * this.map.height(), keys = new Float64Array(tiles.length);
+    for (let i = 0; i < tiles.length; i++) keys[i] = this.map.euclideanDistSquared(base, tiles[i]) * size + tiles[i];
+    keys.sort();
+    for (let i = 0; i < tiles.length; i++) tiles[i] = keys[i] % size;
+  }
   frontier(
     playerId: number,
     base: number,
@@ -85,8 +100,12 @@ export class HomeTerritory {
       frontier: number[] = [], shores:number[]=[];
     for(const tile of queue)this.visited[tile]=this.stamp;
     this.visited[base] = this.stamp;
+    // neighbors4 visits in the same N, S, W, E order as neighbors(), without
+    // allocating an array per expanded tile.
+    const adjacent = this.adjacent;
     for (let at = 0; at < queue.length; at++)
-      for (const tile of this.map.neighbors(queue[at])) {
+      for (let n = this.map.neighbors4(queue[at], adjacent), i = 0; i < n; i++) {
+        const tile = adjacent[i];
         if (this.visited[tile] === this.stamp) continue;
         this.visited[tile] = this.stamp;
         if (!this.map.isLand(tile)) {shores.push(queue[at]);continue;}
@@ -94,11 +113,8 @@ export class HomeTerritory {
         if (owners[tile] === playerId) queue.push(tile);
         else frontier.push(tile);
       }
-    frontier.sort(
-      (a, b) =>
-        this.map.euclideanDistSquared(base, a) -
-          this.map.euclideanDistSquared(base, b) || a - b,
-    );
+    this.sortByDistance(frontier, base);
+    this.sortedBases.set(frontier, base);
     this.cache.set(playerId, { tick, baseOwned, tiles: frontier,shores:[...new Set(shores)],anchors:anchorKey });
     return frontier;
   }
