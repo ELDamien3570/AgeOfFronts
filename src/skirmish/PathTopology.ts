@@ -1,5 +1,5 @@
 import {TICKS_PER_SECOND} from './Protocol';
-import type { GameMap } from "../core/game/GameMap";
+import { GameMapImpl, type GameMap } from "../core/game/GameMap";
 import { forestOf } from "./Forest";
 import { terrainSpeed } from "./Terrain";
 
@@ -25,10 +25,16 @@ export class PathTopology {
   readonly medium: PathMedium;
   readonly water: boolean;
   private readonly amphibious: boolean;
+  private readonly indexed: boolean;
+  private readonly width: number;
+  private readonly height: number;
   constructor(
     readonly map: GameMap,
     medium: PathMedium | boolean,
   ) {
+    this.indexed = map instanceof GameMapImpl;
+    this.width = map.width();
+    this.height = map.height();
     this.medium = typeof medium === "string" ? medium : medium ? "water" : "land";
     this.water = this.medium === "water";
     this.amphibious = this.medium === "amphibious";
@@ -71,6 +77,22 @@ export class PathTopology {
       tile >= 0 && tile < this.passable.length && this.passable[tile] !== 0
     );
   }
+  // Side tiles whose `blocked` result the last neighbors() call established
+  // as clear, so a search need not ask its pure blocked predicate again.
+  private readonly clearSides = new Int32Array(4).fill(-1);
+  private clearSidesFor?: (tile: number) => boolean;
+  /** True when the previous neighbors() call, made with this same blocked
+   * predicate, already found `tile` walkable and not blocked. */
+  knownClear(tile: number, blocked: (tile: number) => boolean): boolean {
+    if (blocked !== this.clearSidesFor) return false;
+    const sides = this.clearSides;
+    return sides[0] === tile || sides[1] === tile || sides[2] === tile || sides[3] === tile;
+  }
+  /** cost(a, b) when the caller already knows whether the step is diagonal. */
+  stepCost(a: number, b: number, diagonal: boolean): number {
+    const step = diagonal ? this.diagonal[b] : this.cardinal[b];
+    return this.amphibious && this.map.isLand(a) !== this.map.isLand(b) ? step + EMBARK_COST : step;
+  }
   neighbors(
     tile: number,
     output: number[],
@@ -78,6 +100,7 @@ export class PathTopology {
   ): number {
     let count = this.map.neighbors4(tile, output);
     if (this.water) return count;
+    if (this.indexed && Number.isInteger(tile)) return this.diagonalNeighbors(tile, output, count, blocked);
     const x = this.map.x(tile),
       y = this.map.y(tile);
     for (const [dx, dy] of DIAGONALS) {
@@ -102,11 +125,55 @@ export class PathTopology {
     }
     return count;
   }
+  /** The loop above with row-major index arithmetic (GameMapImpl: ref =
+   * y * width + x) and each side's blocked result asked at most once. The
+   * output order and every walkable/blocked outcome are unchanged. */
+  private diagonalNeighbors(
+    tile: number,
+    output: number[],
+    count: number,
+    blocked?: (tile: number) => boolean,
+  ): number {
+    const w = this.width, h = this.height, passable = this.passable, x = tile % w, y = (tile / w) | 0;
+    const sides = this.clearSides;
+    sides[0] = sides[1] = sides[2] = sides[3] = -1;
+    this.clearSidesFor = blocked;
+    // Side states for this call: 0 unknown, 1 clear, 2 blocked.
+    let left = 0, right = 0, up = 0, down = 0;
+    for (let i = 0; i < 4; i++) {
+      // DIAGONALS order: (-1,-1), (-1,1), (1,-1), (1,1).
+      const dx = i < 2 ? -1 : 1, dy = i & 1 ? 1 : -1, nx = x + dx, ny = y + dy;
+      if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+      const sideX = y * w + nx, sideY = ny * w + x;
+      if (passable[sideX] === 0 || passable[sideY] === 0) continue;
+      if (blocked) {
+        let stateX = dx < 0 ? left : right;
+        if (stateX === 0) {
+          stateX = blocked(sideX) ? 2 : 1;
+          if (dx < 0) { left = stateX; if (stateX === 1) sides[0] = sideX; }
+          else { right = stateX; if (stateX === 1) sides[1] = sideX; }
+        }
+        if (stateX === 2) continue;
+        let stateY = dy < 0 ? up : down;
+        if (stateY === 0) {
+          stateY = blocked(sideY) ? 2 : 1;
+          if (dy < 0) { up = stateY; if (stateY === 1) sides[2] = sideY; }
+          else { down = stateY; if (stateY === 1) sides[3] = sideY; }
+        }
+        if (stateY === 2) continue;
+      }
+      const corner = ny * w + nx;
+      if (this.amphibious) {
+        const land = this.map.isLand(tile);
+        if (this.map.isLand(sideX) !== land || this.map.isLand(sideY) !== land ||
+          this.map.isLand(corner) !== land) continue;
+      }
+      output[count++] = corner;
+    }
+    return count;
+  }
   cost(a: number, b: number): number {
-    const step = this.map.x(a) !== this.map.x(b) && this.map.y(a) !== this.map.y(b)
-      ? this.diagonal[b]
-      : this.cardinal[b];
-    return this.amphibious && this.map.isLand(a) !== this.map.isLand(b) ? step + EMBARK_COST : step;
+    return this.stepCost(a, b, this.map.x(a) !== this.map.x(b) && this.map.y(a) !== this.map.y(b));
   }
   estimate(a: number, b: number): number {
     const dx = Math.abs(this.map.x(a) - this.map.x(b)),

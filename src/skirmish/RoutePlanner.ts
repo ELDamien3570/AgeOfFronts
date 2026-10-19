@@ -387,6 +387,9 @@ export class RoutePlanner<T> {
   }
   private readonly eligibleJobs: Job<T>[] = [];
   private readonly eligiblePriorities: boolean[] = [];
+  // Each job's classification facts for this selection: one lookup per job
+  // rather than one per priority/reservation/urgency test.
+  private readonly eligibleFacts: ({ priority: boolean; committed?: boolean } | undefined)[] = [];
   private selectJob(eligible: (job: Job<T>) => boolean = () => true): [string, Job<T>] | undefined {
     if (this.schedulingVersion < 3) {
       for (const job of this.jobs.values()) if (eligible(job)) return this.nextJob(eligible);
@@ -395,11 +398,12 @@ export class RoutePlanner<T> {
     // A quantum selects before processing any job or invoking its completion
     // callback. Eligibility and priority are stable during this selection only;
     // refresh both next quantum, including after domain mutations/completions.
-    const available = this.eligibleJobs, priorities = this.eligiblePriorities;
+    const available = this.eligibleJobs, priorities = this.eligiblePriorities, facts = this.eligibleFacts;
     let humanPending = false;
     for (const job of this.jobs.values()) if (eligible(job)) {
-      const priority = this.priorityOf(job);
-      priorities.push(priority); available.push(job);
+      const known = this.ports.classificationRevision ? this.classification(job) : undefined;
+      const priority = known ? known.priority : !!this.ports.priority?.(job);
+      priorities.push(priority); available.push(job); facts.push(known);
       if (!job.discard && priority) humanPending = true;
     }
     try {
@@ -415,18 +419,18 @@ export class RoutePlanner<T> {
         exclusive.resumeExclusiveAfterRelease = true;
       }
       this.exclusiveKey = undefined;
-      const canReserve = (job: Job<T>) => !!job.waitingForWorkspace && !job.discard &&
-        (!humanPending || this.priorityOf(job));
+      const canReserve = (job: Job<T>, at: number) => !!job.waitingForWorkspace && !job.discard &&
+        (!humanPending || priorities[at]);
       let waiting = false;
-      for (const job of available)
-        if (canReserve(job)) {
+      for (let at = 0; at < available.length; at++)
+        if (canReserve(available[at], at)) {
           waiting = true;
           break;
         }
-      if (!waiting) return this.nextJob(job => !job.waitingForWorkspace || job.releasing !== undefined || !!job.discard, available, priorities);
+      if (!waiting) return this.nextJob(job => !job.waitingForWorkspace || job.releasing !== undefined || !!job.discard, available, priorities, facts);
       if (!this.workspace.used) {
         const next = this.nextJob(
-          canReserve, available, priorities,
+          canReserve, available, priorities, facts,
         );
         next[1].waitingForWorkspace = false;
         this.exclusiveKey = next[0];
@@ -442,18 +446,19 @@ export class RoutePlanner<T> {
       let held = false;
       for (const job of available) if (holder(job)) { held = true; break; }
       if (!held) return undefined;
-      return this.nextJob(holder, available, priorities);
+      return this.nextJob(holder, available, priorities, facts);
     } finally {
       // Scratch must not retain retired jobs and their search arenas.
-      available.length = 0; priorities.length = 0;
+      available.length = 0; priorities.length = 0; facts.length = 0;
     }
   }
   private readonly selectionCandidates: Job<T>[] = [];
   private readonly selectionClasses: number[] = [];
   private nextJob(
-    eligible: (job: Job<T>) => boolean = () => true,
+    eligible: (job: Job<T>, ordinal: number) => boolean = () => true,
     available?: readonly Job<T>[],
     priorities?: readonly boolean[],
+    facts?: readonly ({ priority: boolean; committed?: boolean } | undefined)[],
   ): [string, Job<T>] {
     if (this.schedulingVersion === 1) return this.jobs.entries().next().value!;
     // Classify each eligible job once. Priority/committed queries are derived
@@ -464,10 +469,13 @@ export class RoutePlanner<T> {
     let ordinal = -1;
     for (const job of available ?? this.jobs.values()) {
       ordinal++;
-      if (!eligible(job)) continue;
+      if (!eligible(job, ordinal)) continue;
       const interactive = priorities?.[ordinal] ?? this.priorityOf(job);
+      const known = facts?.[ordinal];
+      // committedOf(job) on the facts already read for this selection.
       const urgent = this.schedulingVersion >= 4 && !!this.ports.committed &&
-        (this.committedOf(job) || this.currentTick - job.createdTick >= secondsToTicks(5));
+        ((known ? known.committed ??= !!this.ports.committed(job) : this.committedOf(job)) ||
+          this.currentTick - job.createdTick >= secondsToTicks(5));
       const at = candidates.length;
       candidates.push(job); classes[at] = Number(interactive) | (Number(urgent) << 1);
       if (interactive) human = true;

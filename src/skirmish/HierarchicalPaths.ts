@@ -748,7 +748,9 @@ export class HierarchicalPaths {
       runtime.closed![index] = 1;
       tree.settled++;
       const tile = this.tile(c, index),
-        count = this.topology.neighbors(tile, this.neighbors);
+        count = this.topology.neighbors(tile, this.neighbors),
+        tileX = map.x(tile),
+        tileY = map.y(tile);
       for (let i = 0; i < count; i++) {
         const next = this.neighbors[i],
           x = map.x(next),
@@ -761,8 +763,9 @@ export class HierarchicalPaths {
           !this.topology.walkable(next)
         )
           continue;
+        // topology.cost() with the tile's coordinates computed once per expansion.
         const at = x - c.x + (y - c.y) * c.width,
-          cost = tree.cost[index] + this.topology.cost(tile, next);
+          cost = tree.cost[index] + this.topology.stepCost(tile, next, x !== tileX && y !== tileY);
         if (runtime.closed![at] || cost >= tree.cost[at]) continue;
         tree.cost[at] = cost;
         tree.parent[at] = index;

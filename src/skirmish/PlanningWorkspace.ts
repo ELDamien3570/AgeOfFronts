@@ -274,7 +274,8 @@ export class PlanningPath {
         const count = this.topology.neighbors(tile, this.neighbors, blocked);
         for (let i = 0; i < count; i++) {
           const next = this.neighbors[i];
-          if (!this.topology.walkable(next) || blocked?.(next)) continue;
+          // Cardinal sides of an accepted diagonal were already tested clear.
+          if (!this.topology.walkable(next) || blocked && !this.topology.knownClear(next, blocked) && blocked(next)) continue;
           const cost = w.cost[slot] + this.topology.cost(tile, next);
           let child = s.nodes.get(next);
           if (child !== undefined && cost >= w.cost[child]) continue;

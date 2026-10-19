@@ -250,6 +250,89 @@ rejected routing reservation experiment (`late-game-performance-results-20261013
 | S5 | **Trade shortlist key.** Key on a revision covering only war, embargo and block inputs instead of the global `diplomacy.revision`, which thefts and offers bump | `Trade.ts:475` | 0.5–1% | Medium risk; an assertion mode rebuilds and compares |
 | S6 | **Dead-squad cache eviction.** Delete `approachShapes`, `physicalBodies` and `envelopeHistory` entries in the `entityRemoved` hook | `FormationContact.ts:297,497`, `CombatGeometry.ts:29` | Memory: 10–60 MB | Cache-only, but eviction can change hit/miss, so verify hashes (geometry is recomputed identically) |
 
+### C1 findings (19 October 2026): no pairwise algorithmic bug; C2 deprioritized
+
+Measured on `checkpoint-sim60.v8` after Phases 0–2, with a 0.5 ms CPU profile over 300 ticks plus
+per-tick counters, using `out/parity/combat-profile.mts`, `combat-counts.mts` and `subtree.mjs`.
+
+**The "combat" phase is not only combat.** The span `diagnosticPhase("combat")` measures in
+`performTick` (`Simulation.ts:3956-3979`) also runs `Expansion.afterMovement` (trade and supply),
+`advanceFormationStates`, `replenish` and `syncFormationCounts`. Its 60-minute breakdown:
+
+| Part | Share of phase |
+|---|---:|
+| `Battle.fight` | 38% |
+| `afterMovement` | 36% (of which `Trade.step` 26%) |
+| `advanceFormationStates` | 11% |
+| `resolveLandDamage` | 6% |
+| `fightShips` | 6% |
+| `syncFormationCounts` | 5% |
+
+**The growth is engagement density, not O(n²).** From 45 to 60 minutes squads grew 1.4× (1,044 →
+1,470), while acquisition searches grew 5.7× (19 → 109 per tick) and hybrid ranged contacts 2.8×.
+Spatial queries return about 0.2 candidates each. The work per engaged squad is flat; more squads are
+engaged.
+
+**`Battle.fight` has no single hotspot.**
+
+| Part of `Battle.fight` | Share |
+|---|---:|
+| Per-squad loop (about 1.3 µs per squad) | 26% self |
+| Ground-grid rebuilds | 22% |
+| `resolveLandDamage` | 9% |
+| `updateSquad` | 6% |
+
+`Battle.definition()` is cheap: `unitEffects` is an identity function.
+
+**Three micro-fixes were tried and reverted.** A `permissionSignature` memo, hoisted keys in
+`Trade.candidates`, and skipping the dead-squad roster copy all kept parity, but saved +0.5% and −1.0%
+(noise). They were not kept.
+
+**C2 is not worth its risk yet.** All `PhaseSpatialViews` rebuilds across the tick total **2.8%**, over
+half of it the per-squad extent callback. A fully incremental ground grid caps out near 2.8%, with real
+invariant risk.
+
+**Revised order:** routing inner loops (C4; routing is about 16% inclusive late), AI (about 12%,
+including `HomeTerritory.frontier` and `AiEconomicDirector`), then the trade parts that remain in
+`afterMovement` (S5 shortlist key, `Trade.step` self). Combat itself is mostly irreducible useful work
+at this engagement density.
+
+### C4 routing inner loops (19 October 2026, uncommitted)
+
+**Where the time went (60 min).** Routing was 12.1% of the tick. Per tick the scheduler ran 152
+selections over about 107 jobs, making 39,000 classification lookups (each job classified about 2.4
+times per selection). `PathTopology.neighbors` ran 24,000 times.
+
+**Changes:**
+
+- **`PathTopology.neighbors`.** Direct row-major index arithmetic for diagonals on `GameMapImpl`, with
+  each side's `blocked` result asked at most once per call. Other maps and non-integer tiles keep the
+  original code.
+- **`knownClear()`.** Lets `PlanningPath.step` skip re-asking `blocked` for cardinal sides the same call
+  already proved clear. Every `blocked` predicate is a read or memo-only.
+- **`stepCost()`.** `advanceLocal` computes the expanding tile's coordinates once instead of four
+  div/mods per neighbour.
+- **`RoutePlanner` selection.** Classifies each job once and reuses those facts for reservation and
+  urgency tests.
+
+**Evidence:**
+
+- **New test.** `PathTopologyNeighbors.test.ts` checks identical output and order against the verbatim
+  original, across land/water/amphibious, random terrain and blocked masks. It also checks each side is
+  asked at most once and that `knownClear` never vouches for a blocked tile.
+
+| Change, isolated (`checkpoint-sim60.v8`) | Routing | Whole tick | Parity |
+|---|---:|---:|---|
+| Scheduler | −3% | +1.8% | identical |
+| Kernels (`neighbors`, `advanceLocal`) | −5% | +2.2% | identical |
+| Kernels + `knownClear` | −10.5% | +4.5% | identical |
+| All of C4 together | −8% | +1.5% | identical |
+
+- **One version was rejected.** A first version allocated a closure per `neighbors` call and ran about
+  5–9% slower. It was replaced with the closure-free loop before these measurements.
+- **Full suite:** 3,270 passed. The one failure is `RussianAssetIntegration`, which also fails on clean
+  HEAD.
+
 ### Phase 3: combat and movement scaling (estimated 6–10%, plus investigation)
 
 - **C1: find the root cause of super-linear combat scaling.** Instrument per tick:
