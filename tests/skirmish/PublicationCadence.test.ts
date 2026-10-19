@@ -60,26 +60,22 @@ async function fixture(options: { faultAtTick?: number } = {}) {
   return { match, requests, published, messages, setTime: (value: number) => { now = value; }, now: () => now };
 }
 
-describe("N6 single publication gate (Design B)", () => {
-  it("publishes at most 5 times per simulated second even with a command on every tick", async () => {
+describe("publication gate with immediate order publication", () => {
+  it("keeps background publications without orders within 5 per simulated second", async () => {
     const f = await fixture();
     expect(PUBLICATION_MIN_INTERVAL_MS).toBe(200);
     for (let step = 1; step <= 40; step++) {
-      f.match.command(step % 2 ? "a" : "b", `c${step}`, { type: "advance-age" });
       f.setTime(10_000 + step * TICK_MS);
       await f.match.advance();
     }
-    const advances = f.requests.filter(r => r.type === "advance");
-    expect(advances).toHaveLength(40);
+    expect(f.requests.filter(r => r.type === "advance")).toHaveLength(40);
     // 40 ticks = 5 simulated seconds.
     expect(f.published.length).toBeLessThanOrEqual(25);
     expect(f.published.length).toBeGreaterThanOrEqual(24);
-    const states = f.messages.filter(m => m.type === "match-state");
-    expect(states.length).toBe(f.published.length * 2);
-    // Each publication takes its own 200 ms gate slot in simulation time. The
-    // slots are phase-locked to 125 ms ticks, so one gap may be a single tick,
-    // but any k gaps span more than k slots minus one tick. Publishing on every
-    // command (every tick) breaks this for k >= 2.
+    expect(f.messages.filter(m => m.type === "match-state").length).toBe(f.published.length * 2);
+    // Each background publication takes its own 200 ms slot in simulation time;
+    // slots are phase-locked to 125 ms ticks, so any k gaps span more than k
+    // slots minus one tick.
     expect(PUBLICATION_MIN_INTERVAL_MS).toBeGreaterThan(TICK_MS);
     for (let i = 0; i < f.published.length; i++)
       for (let j = i + 1; j < f.published.length; j++)
@@ -87,16 +83,34 @@ describe("N6 single publication gate (Design B)", () => {
     await f.match.end("cadence tested");
   });
 
-  it("publishes a committed command at the first gate tick after its execution", async () => {
+  it("publishes an order on the tick it takes effect, at most once per tick", async () => {
     const f = await fixture();
-    // Tick 1 is not a gate tick (the first gate opens after 200 ms).
+    for (let step = 1; step <= 40; step++) {
+      f.match.command(step % 2 ? "a" : "b", `c${step}`, { type: "advance-age" });
+      f.setTime(10_000 + step * TICK_MS);
+      await f.match.advance();
+    }
+    // Every tick carried an order, so every tick published exactly once.
+    expect(f.published).toEqual(Array.from({ length: 40 }, (_, i) => f.published[0] + i));
+    expect(f.messages.filter(m => m.type === "match-state").length).toBe(80);
+    expect(f.match.runtimeDiagnostics().commandPublication).toEqual({ count: 40, totalWaitTicks: 0, maxWaitTicks: 0 });
+    await f.match.end("cadence tested");
+  });
+
+  it("publishes a committed command without waiting for the gate and restarts the background window", async () => {
+    const f = await fixture();
+    // Tick 1 is not a gate tick (the first gate opens after 200 ms), but the
+    // order applied on it is published immediately.
     f.match.command("a", "move", { type: "advance-age" });
     f.setTime(10_000 + TICK_MS); await f.match.advance();
-    expect(f.published).toEqual([]);
+    expect(f.published).toEqual([1]);
+    expect(f.match.runtimeDiagnostics().commandPublication).toEqual({ count: 1, totalWaitTicks: 0, maxWaitTicks: 0 });
+    // The background window restarts from that publication: tick 2 (+125 ms)
+    // stays quiet, tick 3 (+250 ms) publishes.
     f.setTime(10_000 + 2 * TICK_MS); await f.match.advance();
-    expect(f.published).toEqual([2]);
-    const diagnostics = f.match.runtimeDiagnostics().commandPublication;
-    expect(diagnostics).toEqual({ count: 1, totalWaitTicks: 1, maxWaitTicks: 1 });
+    expect(f.published).toEqual([1]);
+    f.setTime(10_000 + 3 * TICK_MS); await f.match.advance();
+    expect(f.published).toEqual([1, 3]);
     await f.match.end("cadence tested");
   });
 

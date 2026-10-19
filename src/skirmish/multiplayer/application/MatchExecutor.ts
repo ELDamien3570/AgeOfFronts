@@ -55,8 +55,11 @@ export interface MatchAdvance {
    * `packet` is then a complete baseline that every seat must rebase onto. */
   rolledBack?: boolean;
   /** A player command committed visible state during this advance. The
-   * coordinator's publication gate publishes it at its next gate tick. */
+   * executor publishes such an advance immediately (see `published`). */
   commandVisible?: boolean;
+  /** This advance produced a publication (streamed or as `packet`), including
+   * one the executor added because a command became visible. */
+  published?: boolean;
 }
 export interface MatchPublication { tick: number; packet: EncodedState }
 export interface ClientBaseline {tick:number;winner:number|null;baseline:EncodedState;}

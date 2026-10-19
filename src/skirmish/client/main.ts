@@ -20,6 +20,7 @@ import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
 let localPlayerId = 1;
 let diagnosticSeed: number | undefined;
 import { OnlineMatchSession } from "./OnlineMatchSession";
+import type { PendingOrderTarget } from "./PendingOrderPresentation";
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
 const browserDiagnostics = new RuntimeDiagnostics();
 const onlineQuery = new URLSearchParams(window.location.search);
@@ -381,24 +382,65 @@ const format = (value: number) => value.toLocaleString("en-US");
 let nextDiagnosticCommand = 0;
 const diagnosticCommands = new Map<number, number>();
 let lastDiagnosticCommand: { tick: number; rejected: boolean; admissionMs: number } | undefined;
-function post(message: WorkerRequest): void {
+/** Returns the online request id, or "local" once posted to the local worker. */
+function post(message: WorkerRequest): string | undefined {
   if (worker && !onlineMatchId && onlineQuery.has("diagnostics") && message.type === "command") {
     const diagnosticId = ++nextDiagnosticCommand;
     diagnosticCommands.set(diagnosticId, performance.now());
     if (diagnosticCommands.size > 256) diagnosticCommands.delete(diagnosticCommands.keys().next().value!);
     message = { ...message, diagnosticId };
   }
+  if (worker instanceof OnlineMatchSession) return worker.postMessage(message);
   worker?.postMessage(message);
+  return worker ? "local" : undefined;
 }
 
-function command(message: Command): void {
+// Pending-order presentation: online outcomes correlate by request id; the
+// local worker reports rejections in order, without an id.
+const pendingOrderRequests = new Map<string, number>();
+let lastLocalOrder: { token: number; at: number } | undefined;
+function pendingOrder(message: Command, requestId: string, aim?: { point?: { x: number; y: number }; slots?: ReadonlyMap<number, { x: number; y: number }> }): void {
+  if (!snapshot || message.type !== "order" || message.playerId !== localPlayerId) return;
+  const order = message.order;
+  const target: PendingOrderTarget | undefined =
+    order.type === "attack" ? { type: "attack", targetId: order.targetId }
+    : order.type === "move" ? { type: "move", slots: aim?.slots, point: aim?.point ?? {
+        x: order.x ?? ((order.tile % snapshot.width) + 0.5) * FIXED,
+        y: order.y ?? (Math.floor(order.tile / snapshot.width) + 0.5) * FIXED } }
+    : undefined;
+  const ids = new Set(message.squadIds);
+  const squads = snapshot.squads.filter(s => ids.has(s.id) && s.playerId === localPlayerId);
+  if (!target || !squads.length) return;
+  const token = renderer.pendingOrders.issue(performance.now(), squads, target, !!message.append);
+  if (requestId === "local") lastLocalOrder = { token, at: performance.now() };
+  else {
+    lastLocalOrder = undefined;
+    pendingOrderRequests.set(requestId, token);
+    if (pendingOrderRequests.size > 64) pendingOrderRequests.delete(pendingOrderRequests.keys().next().value!);
+  }
+}
+
+function command(message: Command, aim?: Parameters<typeof pendingOrder>[2]): void {
   if (snapshot && "squadIds" in message) {
     const ids = new Set(message.squadIds);
     limitSquadSelection(ids, snapshot.squads, localPlayerId);
     message = { ...message, squadIds: [...ids] };
   }
   orderGesture.cancel();
-  post({ type: "command", command: message });
+  const requestId = post({ type: "command", command: message });
+  // Any later local command makes a following rejection ambiguous.
+  lastLocalOrder = undefined;
+  if (requestId) pendingOrder(message, requestId, aim);
+}
+function rejectPendingOrder(requestId?: string): void {
+  if (requestId !== undefined) {
+    const token = pendingOrderRequests.get(requestId);
+    pendingOrderRequests.delete(requestId);
+    if (token !== undefined) renderer.pendingOrders.reject(token, performance.now());
+  } else if (lastLocalOrder && performance.now() - lastLocalOrder.at < 1000) {
+    renderer.pendingOrders.reject(lastLocalOrder.token, performance.now());
+    lastLocalOrder = undefined;
+  }
 }
 
 function notify(message: string): void {
@@ -613,6 +655,7 @@ async function start(): Promise<void> {
       }
 
       if (message.type === "rejected") {
+        rejectPendingOrder();
         notify(serverText(message.message));
 
         return;
@@ -842,6 +885,10 @@ async function startOnlineMatch(): Promise<void> {
   };
   syncControls(false);
   session.oncommandsavailable = syncControls;
+  session.oncommandoutcome = (outcome) => {
+    if (outcome.status === "rejected") rejectPendingOrder(outcome.id);
+    else if (outcome.status !== "accepted" && outcome.status !== "deferred") pendingOrderRequests.delete(outcome.id);
+  };
   session.onerror = (event) => {
     failure = true;
     showOnlineLoading(event.message, true);
@@ -1832,7 +1879,7 @@ canvas.addEventListener("pointerup", (event) => {
         if(!deployment.valid) { notify("Keep the deployment positions on land inside the map"); return; }
         const midpoint={x:Math.round((deployment.line.start.x+deployment.line.end.x)/2),y:Math.round((deployment.line.start.y+deployment.line.end.y)/2)};
         const tile=currentMap!.map.ref(Math.floor(midpoint.x/FIXED),Math.floor(midpoint.y/FIXED));
-        command({type:"order",playerId:localPlayerId,squadIds:deployment.ids,append:start.shift,order:{type:"move",tile},deploymentLine:{start:start.lineStart,end:{x:Math.round(renderer.world(p.x,p.y).x*FIXED),y:Math.round(renderer.world(p.x,p.y).y*FIXED)}}});
+        command({type:"order",playerId:localPlayerId,squadIds:deployment.ids,append:start.shift,order:{type:"move",tile},deploymentLine:{start:start.lineStart,end:{x:Math.round(renderer.world(p.x,p.y).x*FIXED),y:Math.round(renderer.world(p.x,p.y).y*FIXED)}}},{point:midpoint,slots:deployment.line.slots});
         return;
       }
     }
@@ -1946,6 +1993,7 @@ canvas.addEventListener("pointerup", (event) => {
         ? { type: "attack", targetId: target.id }
         : { type: "move", tile: tile! },
     };
+    const aim = { point: { x: Math.round(position.x * FIXED), y: Math.round(position.y * FIXED) } };
     const context = `${matchSequence}:${ids.sort((a,b)=>a-b).join(",")}`;
     orderGesture.submit({time:performance.now(),...p,context,single:()=>{
       if (snapshot?.winner === null && context === `${matchSequence}:${[...renderer.selected].sort((a,b)=>a-b).join(",")}`) {
@@ -1954,11 +2002,11 @@ canvas.addEventListener("pointerup", (event) => {
         if (ordinary.type === "order" && ordinary.order.type === "move" && !ordinary.append) {
           const split = splitMoveSelection(ordinary.squadIds, snapshot.expansion?.armies.filter(a => a.playerId === localPlayerId) ?? [], snapshot.squads);
           if (split.groups.length + (split.partial.length ? 1 : 0) > 1) {
-            for (const squadIds of [...split.groups, ...(split.partial.length ? [split.partial] : [])]) command({ ...ordinary, squadIds });
+            for (const squadIds of [...split.groups, ...(split.partial.length ? [split.partial] : [])]) command({ ...ordinary, squadIds }, aim);
             return;
           }
         }
-        command(ordinary);
+        command(ordinary, aim);
       }
     }}, !start.shift && !structureOrder ? ()=>{
       // The first click's order is already under way. The second click charges

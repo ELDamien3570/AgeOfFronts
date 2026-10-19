@@ -36,6 +36,7 @@ export function installTroopPresentation(
   });
   actors.isSelected = (id) =>
     renderer.selected.has(id) || renderer.inspectedSquadId === id;
+  actors.facingOverride = (id, authoritative) => renderer.pendingFacing(id, authoritative);
   // U5: chosen once per frame before any squad is drawn ("12 px AND in budget").
   let detailed: Set<number> | undefined;
   renderer.squadArtworkDetailed = (squad, scale) =>

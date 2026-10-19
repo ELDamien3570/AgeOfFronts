@@ -1,9 +1,10 @@
 import {TICK_MS,TICKS_PER_SECOND} from '../Protocol';
 import { effectiveRange, rangedElevation } from "../domain/ElevationAdvantage";
 import type { BattleLineDeployment } from "../domain/BattleLineLayout";
-import { facingOf, formationSlots, formationDoctrine } from "../domain/FormationGeometry";
+import { facingOf, formationSlots, formationDoctrine, formationEnvelope } from "../domain/FormationGeometry";
+import { PendingOrderPresentation, type PendingOrderSquad } from "./PendingOrderPresentation";
 import { FormationAngleSamples } from "./FormationAngleSamples";
-import { CombatPresentationTimeline, COMBAT_PRESENTATION_DELAY_TICKS } from './CombatPresentationTimeline';
+import { SplitPresentationTimeline, type PresentationFrame } from './PresentationComposition';
 import { FormationPoseMemo, formationRenderPose, formationPoseContains, strategicFormationBox, strategicFormationContains, type FormationRenderPose } from "./FormationRenderPose";
 import { strengthFraction, legacyWeaponStrength } from '../domain/Manpower';
 
@@ -301,6 +302,9 @@ export class Renderer {
   deploymentPreview?: {line:LineDeployment; color:string; valid:boolean};
   selectionBox?: { x1: number; y1: number; x2: number; y2: number };
   marker?: { x: number; y: number; until: number; attack: boolean };
+  /** Local orders not yet visible in the presented snapshot. */
+  readonly pendingOrders = new PendingOrderPresentation();
+  private frameNow = 0;
 
   constructor(
     readonly canvas: HTMLCanvasElement,
@@ -381,6 +385,7 @@ export class Renderer {
     this.receivedAt = 0;
     this.squadSamples.clear();
     this.formationAngles.clear();
+    this.pendingOrders.clear();
     this.presentation.reset();
     this.boats.reset();
     this.impacts.reset();
@@ -410,8 +415,9 @@ export class Renderer {
     this.home();
   }
 
-  private readonly combatTimeline=new CombatPresentationTimeline(COMBAT_PRESENTATION_DELAY_TICKS);
-  private presentedCombat?: import('./CombatPresentationTimeline').CombatPresentationFrame;
+  /** Combat facts keep the presentation delay; movement and picking use the latest snapshot. */
+  private readonly combatTimeline=new SplitPresentationTimeline();
+  private presentedCombat?: PresentationFrame;
   combatFrame(now:number,speed:number,paused:boolean) {
     return this.presentedCombat=this.combatTimeline.sample(now,speed,paused);
   }
@@ -691,10 +697,53 @@ export class Renderer {
     );
   }
 
+  /** The facing TroopActors gives soldiers: travel heading under a move or
+   * charge, otherwise the formation body. */
+  private authoritativeFacing(squad:Snapshot["squads"][number],tick:number):number {
+    if(squad.locomotion && (squad.order.type==='move' || squad.charge))
+      return squad.locomotion.speed>0?squad.locomotion.heading:squad.locomotion.targetHeading;
+    return squad.formation?formationEnvelope(squad,tick).angle:squad.locomotion?.heading??0;
+  }
+  /** Predicted soldier facing for a pending local order, blended into `authoritative`. */
+  pendingFacing(id:number,authoritative:number):number|undefined {
+    return this.pendingOrders.angle(id,this.frameNow,authoritative);
+  }
+  /** Rotates the drawn body only where the simulation turns it as a body:
+   * columns and hulls, or a reorienting formation drawn as a strategic box.
+   * Detailed deployed soldiers keep their places and turn individually. */
+  private pendingFormationPose(squad:Snapshot["squads"][number],tick:number,root:{x:number;y:number},detailed:boolean):FormationRenderPose {
+    const pose=this.poseMemo.pose(squad,tick,root);
+    if(!this.pendingOrders.active)return pose;
+    const rigid=pose.geometry.shape==='column' || formationDoctrine(squad.definitionId).hull;
+    if(!rigid && (detailed || !this.pendingOrders.reorients(squad.id)))return pose;
+    const angle=this.pendingOrders.bodyAngle(squad.id,this.frameNow,pose.geometry.angle);
+    return angle===undefined?pose:formationRenderPose(squad,tick,root,angle);
+  }
+  private drawPendingOrders(ctx:CanvasRenderingContext2D,squads:ReadonlyMap<number,PendingOrderSquad>):void {
+    const destinations=new Map<string,{x:number;y:number;attack:boolean}>();
+    ctx.save();
+    ctx.lineWidth=1;
+    ctx.setLineDash([4,5]);
+    for(const marker of this.pendingOrders.markers()){
+      const squad=squads.get(marker.squadId);
+      if(!squad)continue;
+      const from=this.screen(squad.x/FIXED,squad.y/FIXED),to=this.screen(marker.point.x/FIXED,marker.point.y/FIXED);
+      ctx.strokeStyle=marker.attack?"#ef9c8e99":"#dffbf66e";
+      ctx.beginPath();ctx.moveTo(from.x,from.y);ctx.lineTo(to.x,to.y);ctx.stroke();
+      destinations.set(`${Math.round(to.x)}:${Math.round(to.y)}`,{...to,attack:marker.attack});
+    }
+    ctx.setLineDash([]);
+    ctx.lineWidth=2;
+    for(const point of destinations.values()){
+      ctx.strokeStyle=point.attack?"#ffc5b3":"#e2fff9";
+      ctx.beginPath();ctx.arc(point.x,point.y,5,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.restore();
+  }
   private currentFormationPose(squad:Snapshot["squads"][number]):FormationRenderPose {
     const cached=this.formationPoses.get(squad.id);
     // Interaction follows the last completed draw, including its living ranks.
-    return cached??formationRenderPose(squad,this.presentedCombat?.tick??this.snapshot?.tick??0);
+    return cached??formationRenderPose(squad,this.presentedCombat?.movementTick??this.snapshot?.tick??0);
   }
   private spriteSize(troops: number): number {
     return squadSpriteSize(this.scale, troops);
@@ -1297,6 +1346,8 @@ export class Renderer {
       speed,
       paused || snapshot.winner !== null,
     );
+    // Formation records come from the movement playhead; so do their transitions.
+    const poseTick = combatFrame?.movementTick ?? visualTick;
     for (const {
       building,
       count,
@@ -1445,6 +1496,12 @@ export class Renderer {
         this.combatEffects.target(ctx, target, p, visualTick);
     }
     this.formationPoses.clear();
+    this.frameNow = now;
+    const pendingSquads = this.pendingOrders.active ? new Map(snapshot.squads.map(s => [s.id, s])) : undefined;
+    if (pendingSquads)
+      this.pendingOrders.reconcile(now, snapshot.width, id => pendingSquads.get(id),
+        squad => this.authoritativeFacing(squad as Snapshot["squads"][number], poseTick),
+        squad => { const s = squad as Snapshot["squads"][number]; return s.formation ? formationEnvelope(s, poseTick).angle : this.authoritativeFacing(s, poseTick); });
     const renderedSquads = snapshot.squads
       .filter((squad) => squad.embarkedOn === null)
       .map((squad) => {
@@ -1456,7 +1513,7 @@ export class Renderer {
           this.selected.has(squad.id) || this.inspectedSquadId === squad.id;
         const viewRadius = Math.max(squadViewRadius(this.scale, legacyWeaponStrength(squad), selected),
           this.squadArtworkViewRadius?.(squad, this.scale) ?? 0,
-          squad.formation && !squad.afloat ? (this.poseMemo.broadRadius(squad,visualTick)/FIXED+1)*this.scale : 0);
+          squad.formation && !squad.afloat ? (this.poseMemo.broadRadius(squad,poseTick)/FIXED+1)*this.scale : 0);
         if (!visibleInViewport(p, viewRadius, this.width, this.height))
           return undefined;
         // Afloat, a squad is drawn as its faction's transport for this age.
@@ -1494,7 +1551,7 @@ export class Renderer {
           ? UNIT.get(squad.definitionId)
           : undefined;
         const image = symbol.artwork ? activeImage : undefined;
-        const formationPose=squad.formation && !squad.afloat ? this.poseMemo.pose(squad,visualTick,this.world(p.x,p.y)) : undefined;
+        const formationPose=squad.formation && !squad.afloat ? this.pendingFormationPose(squad,poseTick,this.world(p.x,p.y),customArtwork===true) : undefined;
         if(formationPose)this.formationPoses.set(squad.id,formationPose);
         return { squad, p, selected, symbol, image, definition, formationType, customArtwork, formationPose };
       })
@@ -1593,6 +1650,7 @@ export class Renderer {
         ctx.stroke();
       }
     }
+    if (pendingSquads) this.drawPendingOrders(ctx, pendingSquads);
     let deferredArtwork: Set<number> | undefined;
     if (this.squadArtworkFlush && this.squadArtworkOverride) {
       deferredArtwork = this.deferredSquadArtwork;
@@ -1658,7 +1716,7 @@ export class Renderer {
       // units without a charge attack, and while afloat.
       const charge = squad.afloat ? undefined : chargeReadiness(squad, snapshot.tick);
       const individualArtwork = deferredArtwork ? deferredArtwork.has(squad.id) : !squad.afloat && this.squadArtworkOverride?.(
-        ctx, squad, p, this.presentation.angle(squad.id), this.scale, visualTick, this.world(p.x, p.y),
+        ctx, squad, p, this.presentation.angle(squad.id), this.scale, visualTick, this.world(p.x, p.y), formationPose,
       );
       const showStatus = selected || this.hoveredSquadId === squad.id;
       const actorPose = individualArtwork ? this.squadLabelPose?.(squad.id) : undefined;

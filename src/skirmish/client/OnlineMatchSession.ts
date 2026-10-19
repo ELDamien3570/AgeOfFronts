@@ -167,8 +167,9 @@ export class OnlineMatchSession {
       commandOutcomeEntries: this.commandOutcomes.size,
       timings: this.timings.snapshot(), retainedBytes: this.timings.retainedBytes };
   }
-  postMessage(message: WorkerRequest): void {
-    if (this.stopped) return;
+  /** Returns the request id of an accepted-for-sending command, for outcome correlation. */
+  postMessage(message: WorkerRequest): string | undefined {
+    if (this.stopped) return undefined;
     if (message.type === "select-spawn")
       void this.request({
         type: "select-spawn",
@@ -187,7 +188,7 @@ export class OnlineMatchSession {
             ? "Synchronizing your empire… Commands unlock when synchronization completes."
             : "Waiting for the match to resume. Commands are temporarily unavailable.",
         );
-        return;
+        return undefined;
       }
       const requestId = crypto.randomUUID();
       void this.connection.request({
@@ -206,7 +207,9 @@ export class OnlineMatchSession {
           playerId: this.manifest?.playerId ?? message.command.playerId,
           tick: this.lastTick, status: "rejected", reason: error.message});
       });
+      return requestId;
     }
+    return undefined;
   }
   terminate(): void {
     if (this.stopped) return;

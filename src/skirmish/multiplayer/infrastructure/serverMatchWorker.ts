@@ -376,15 +376,18 @@ parentPort.on(
               ...(rolledBack ? {rolledBack: true} : {}),
               seats: seats(),
             } satisfies MatchAdvance;
-            // N6 (Design B): the coordinator's single 5 Hz gate decides every
-            // publication. A committed command (or the committed lead cohort of
-            // a deferred selection) is reported so the coordinator can account
-            // for it; it is published at the next gate tick (at most one tick
-            // later), never as an extra uncapped publication.
+            // The coordinator's 5 Hz gate decides background publications. A
+            // committed command (or the committed lead cohort of a deferred
+            // selection) is published on the advance that made it visible, so a
+            // player's order reaches clients without waiting for the gate; at
+            // most one publication per tick.
             const commandVisible = commandProgress || outcomes.some(outcome => outcome.status === "executed");
             commandProgress = false;
             if (commandVisible) (result as MatchAdvance).commandVisible = true;
-            const publish = rolledBack || request.publish;
+            // A command that became visible publishes on this advance instead
+            // of waiting for the coordinator's background gate.
+            const publish = rolledBack || request.publish || commandVisible;
+            if (publish) (result as MatchAdvance).published = true;
             if (publish || match.winner !== null) {
               // After a rollback the reply carries the new encoder's first,
               // complete packet; the host sends it to every seat as a rebase.

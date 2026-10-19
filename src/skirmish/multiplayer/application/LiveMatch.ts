@@ -768,19 +768,27 @@ export class LiveMatch {
         : this.nextTickAt + TICK_MS;
     // Background replication is at most 5 Hz in both wall and game time.
     // Under overload, publishing every 200 wall ms despite less than 200 ms
-    // of simulation progress steals CPU from an already late simulation. This
-    // is the only publication decision: a committed command is published at
-    // the next gate tick (Design B), so the total stays at most 5 Hz.
-    const publish = now >= this.nextSnapshotAt && (this.tick + ticks) * TICK_MS >= this.nextSnapshotSimulationMs;
-    if (publish) {
+    // of simulation progress steals CPU from an already late simulation.
+    const gate = now >= this.nextSnapshotAt && (this.tick + ticks) * TICK_MS >= this.nextSnapshotSimulationMs;
+    const commands = this.commands
+      .splice(0)
+      .filter((item) => !this.disconnected.has(item.command.playerId));
+    // Orders publish on the tick they take effect instead of waiting for the
+    // gate: the tick applying a player's command, or the tick after a deferred
+    // selection's first cohort commits. Any publication restarts the background
+    // window, so ordinary play stays near 5 Hz; continuous orders reach at most
+    // one publication per tick.
+    const commandPublication = commands.length > 0 || this.pendingCommandTick !== undefined;
+    const publish = gate || commandPublication;
+    if (gate) {
       this.nextSnapshotAt +=
         (Math.floor((now - this.nextSnapshotAt) / SNAPSHOT_MS) + 1) *
         SNAPSHOT_MS;
       this.nextSnapshotSimulationMs += (Math.floor(((this.tick+ticks)*TICK_MS-this.nextSnapshotSimulationMs)/SNAPSHOT_MS)+1)*SNAPSHOT_MS;
+    } else if (publish) {
+      this.nextSnapshotAt = now + SNAPSHOT_MS;
+      this.nextSnapshotSimulationMs = (this.tick + ticks) * TICK_MS + SNAPSHOT_MS;
     }
-    const commands = this.commands
-      .splice(0)
-      .filter((item) => !this.disconnected.has(item.command.playerId));
     const result = await this.executor.request<MatchAdvance>({
       type: "advance",
       ticks,
@@ -798,7 +806,13 @@ export class LiveMatch {
       this.reviewLiveness();
     }
     if (result.commandVisible && this.pendingCommandTick === undefined) this.pendingCommandTick = result.tick;
-    if (publish && this.pendingCommandTick !== undefined) {
+    const published = publish || result.published === true;
+    // An executor publication the gate did not ask for also restarts the window.
+    if (published && !publish) {
+      this.nextSnapshotAt = now + SNAPSHOT_MS;
+      this.nextSnapshotSimulationMs = this.tick * TICK_MS + SNAPSHOT_MS;
+    }
+    if (published && this.pendingCommandTick !== undefined) {
       const wait = Math.max(0, result.tick - this.pendingCommandTick);
       this.commandPublication.count++;
       this.commandPublication.totalWaitTicks += wait;

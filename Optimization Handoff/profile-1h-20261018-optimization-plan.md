@@ -380,6 +380,65 @@ AI phase 10.65 → 8.67 ms; "combat" (with trade) 21.2 → 19.6 ms.
   server runs.
 - **Divergence dumps.** The first divergence of each kind is saved as `.v8` files for diffing.
 
+### Order responsiveness (19 October 2026)
+
+**The complaint.** A delay before units start turning after an order, on production (`b1.6.0`). The live
+server was healthy:
+
+- pace 1.000;
+- ticks of 31–50 ms against a 125 ms budget;
+- orders visible within one tick;
+- about 30 ms network round trip.
+
+**Not caused by the optimizations.** A human-seat A/B (`out/parity/human-command-ab.mts`) of `b1.5.8`
+against the deployed code gave identical start latencies and identical checkpoints across 68 orders.
+Every order changes the simulation on its first tick. The "formation hold" (D) is just the turn in
+place.
+
+**The wait before the turn was:**
+
+| Stage | Time |
+|---|---|
+| Next tick | 0–125 ms |
+| 5 Hz publication gate | 0–200 ms |
+| Network | ~30–90 ms |
+| Global client presentation delay | **500 ms** (`COMBAT_PRESENTATION_DELAY_TICKS`) |
+
+**Changes:**
+
+- **A, client.** `PendingOrderPresentation` draws a destination ring and dashed squad-to-target lines on
+  the click frame. It starts the drawn turn toward the target at the sim's reform turn rate, and blends
+  to the authoritative facing when the order shows up (cancelled on rejection or timeout). Presentation
+  only; `OnlineMatchSession.postMessage` now returns the request id so rejections match.
+- **B, server.** An order is published on the advance that applies it, or that commits its first
+  deferred cohort. The worker reports `published`, and any publication restarts the 200 ms background
+  window.
+  - Background cadence stays at most 5 Hz.
+  - Continuous orders can reach one publication per tick (8 Hz).
+  - The cadence and worker tests were updated to this contract.
+- **C11, client.** `SplitPresentationTimeline` (`PresentationComposition.ts`):
+  - **Latest snapshot:** squad movement (position, formation pose and facing, locomotion, orders) and
+    picking.
+  - **500 ms delay kept:** combat facts (volleys, projectiles, wind-ups, headcounts, combat state).
+  - **Squads killed in the last 500 ms** stay at their last drawn position until their death plays.
+  - **New squads** appear at once.
+
+**Verification:**
+
+- Full suite: 3,312 passed. The one failure is `RussianAssetIntegration`, which also fails on HEAD.
+- New tests: `PendingOrderPresentation` (30), `PresentationComposition` (12), plus cadence and worker
+  tests.
+- Headless Edge runs (`out/parity/cdp-check.mjs`) of four staged battles and a real game order: no
+  runtime errors. The marker and lines are drawn 100 ms after the click, and the units are "Moving" at
+  1 s.
+
+**Still to judge in play:**
+
+- Movement smoothness without the buffer on jittery connections.
+- Reshapes after casualties.
+- Cavalry choreography offsets.
+- Ships, aircraft and buildings are still on the delayed playhead.
+
 ### Phase 3: combat and movement scaling (estimated 6–10%, plus investigation)
 
 - **C1: find the root cause of super-linear combat scaling.** Instrument per tick:

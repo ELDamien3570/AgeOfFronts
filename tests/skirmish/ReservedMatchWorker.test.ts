@@ -61,7 +61,7 @@ describe("reserved authoritative worker", () => {
     }
   });
 
-  it("reports committed human movement and publishes it only at the coordinator's gate tick (N6 Design B)", async () => {
+  it("publishes committed human movement on the advance that makes it visible, without waiting for the gate", async () => {
     const worker = new ReservedMatchWorker(), publications: {tick:number;packet:EncodedState}[] = [];
     const unsubscribe=worker.onPublication(publication=>publications.push(publication));
     try {
@@ -71,23 +71,21 @@ describe("reserved authoritative worker", () => {
       const squad=state.squads.find(s=>s.playerId===1)!;
       let update=await worker.request<MatchAdvance>({...advance(1,false),commands:[{id:"prompt-move",
         command:{type:"order",playerId:1,squadIds:[squad.id],order:{type:"move",tile:80*160+120}}}]});
-      if(!update.commandOutcomes?.some(o=>o.id==="prompt-move"&&o.status==="executed")) {
-        expect(update.commandOutcomes).toContainEqual(expect.objectContaining({id:"prompt-move",status:"deferred"}));
+      // Nothing publishes while the order is still being admitted; the advance
+      // that makes it visible publishes at once, although the gate did not ask.
+      for(let at=0;at<100&&!update.commandVisible;at++) {
+        expect(update.published).toBeUndefined();
+        await new Promise(resolve=>setTimeout(resolve,10));
         expect(publications).toHaveLength(0);
-      }
-      for(let at=0;at<100&&!update.commandOutcomes?.some(o=>o.id==="prompt-move"&&o.status==="executed");at++)
         update=await worker.request<MatchAdvance>(advance(1,false));
-      expect(update.commandOutcomes).toContainEqual(expect.objectContaining({id:"prompt-move",status:"executed"}));
+      }
       expect(update.commandVisible).toBe(true);
-      // No uncapped command publication: the worker waits for the gate.
-      await new Promise(resolve=>setTimeout(resolve,50));
-      expect(publications).toHaveLength(0);
-      update=await worker.request<MatchAdvance>(advance(1,true));
+      expect(update.published).toBe(true);
       await vi.waitFor(()=>expect(publications).toHaveLength(1));
       const visible=decoder.decode(await decodeState<SnapshotPacket>(publications[0].packet));
       expect(visible.tick).toBe(update.tick);
       expect(visible.squads.find(s=>s.id===squad.id)!.order.type).toBe("move");
-      expect(visible.squads.find(s=>s.id===squad.id)!.x===squad.x&&visible.squads.find(s=>s.id===squad.id)!.y===squad.y).toBe(false);
+      // Later advances without a gate or a new order stay quiet.
       await worker.request(advance(1,false));
       await worker.request({type:"baseline"});
       expect(publications).toHaveLength(1);
@@ -320,6 +318,7 @@ describe("reserved authoritative worker", () => {
       expect(Object.keys(update).sort()).toEqual([
         "diagnostics",
         "packet",
+        "published",
         "rejectedCommands",
         "seats",
         "tick",

@@ -11,6 +11,7 @@ import {
   COMBAT_PRESENTATION_DELAY_TICKS,
   CombatPresentationTimeline,
 } from "../../src/skirmish/client/CombatPresentationTimeline";
+import { SplitPresentationTimeline } from "../../src/skirmish/client/PresentationComposition";
 import { RangedAttackPresentation } from "../../src/skirmish/client/troops/RangedAttackPresentation";
 import type { ActorClip } from "../../src/skirmish/client/troops/TroopFormationModel";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
@@ -379,11 +380,15 @@ describe("authoritative ranged preparation", () => {
     expect(playback.sample(f.source, 32, clip, 4000, preparation)).toBe(0);
     expect(playback.permitsRelease(f.source.id)).toBe(true);
   });
-  it("shows complete preparation and releases projectiles on their own ticks through sparse snapshots", () => {
+  // C11: the renderer's split timeline keeps the delayed combat playhead for
+  // wind-ups and releases while movement follows the latest snapshot.
+  for (const [name, makeTimeline] of [
+    ["combat timeline", () => new CombatPresentationTimeline(COMBAT_PRESENTATION_DELAY_TICKS)],
+    ["split movement/combat timeline", () => new SplitPresentationTimeline(COMBAT_PRESENTATION_DELAY_TICKS)],
+  ] as const)
+  it(`shows complete preparation and releases projectiles on their own ticks through sparse snapshots (${name})`, () => {
     const f = scene("stoneage-archer");
-    const timeline = new CombatPresentationTimeline(
-      COMBAT_PRESENTATION_DELAY_TICKS,
-    );
+    const timeline = makeTimeline();
     const snapshots = [structuredClone(f.game.snapshot())];
     for (let t = 1; t <= 12; t++) {
       f.at(t);

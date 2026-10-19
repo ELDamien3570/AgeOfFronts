@@ -186,6 +186,8 @@ export class TroopActors {
   private readonly selectionIndex = new SoldierSelectionIndex();
   private detailed = true;
   isSelected: (squadId: number) => boolean = () => false;
+  /** Presentation-only soldier facing for a pending local order. */
+  facingOverride?: (squadId: number, authoritative: number) => number | undefined;
   get detailedEnabled(): boolean {
     return this.detailed;
   }
@@ -1048,9 +1050,12 @@ export class TroopActors {
       state.assignmentTransition=squad.formation;
     }
     const presentedMembers=()=>sharedPose?state!.motion.formationSoldiers(now):state!.motion.soldiers(now);
-    const travelFacing = sharedPose && !troop.vehicle && squad.locomotion && (squad.order.type==='move' || !!squad.charge)
+    const authoritativeFacing = sharedPose && !troop.vehicle && squad.locomotion && (squad.order.type==='move' || !!squad.charge)
       ? squad.locomotion.speed>0?squad.locomotion.heading:squad.locomotion.targetHeading
       : sharedPose?.geometry.angle ?? this.headings.angle(squad.id, now);
+    const travelFacing = sharedPose && !troop.vehicle
+      ? this.facingOverride?.(squad.id, authoritativeFacing) ?? authoritativeFacing
+      : authoritativeFacing;
     angle = sharedPose?.geometry.angle ?? (mobile ? 0 : laneTravel ? state.angle : travelFacing);
     const contact = this.contacts.get(squad.id);
     const preparation = squad.weaponState?.rangedAction;
