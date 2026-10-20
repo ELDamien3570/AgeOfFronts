@@ -1,6 +1,6 @@
 // Render a small atlas image from the same baked terrain/elevation as the game.
 // Run: node scripts/generateLobbyMapPreview.mjs (no additional dependencies).
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { deflateSync } from "node:zlib";
 import { createServer } from "vite";
 
@@ -8,13 +8,24 @@ const assetRoot = process.argv[2] ?? "heightmap-test1";
 if (!/^[a-z0-9-]+$/.test(assetRoot))
   throw new Error("Invalid map asset directory");
 const root = new URL(`../resources/maps/${assetRoot}/`, import.meta.url);
-const manifest = JSON.parse(
-  await readFile(new URL("manifest.json", root), "utf8"),
-);
-const { width, height } = manifest.variants[500];
-const terrain = await readFile(new URL("500.terrain.bin", root));
-const heights = await readFile(new URL("500.heights.f32", root));
-if (terrain.length !== width * height || heights.length !== width * height * 4)
+// Continents uses a representative large seeded world, not baked heightmaps.
+const procedural = assetRoot === "continents";
+const manifest = procedural
+  ? undefined
+  : JSON.parse(await readFile(new URL("manifest.json", root), "utf8"));
+const { width, height } = procedural
+  ? { width: 1000, height: 1000 }
+  : manifest.variants[500];
+const terrain = procedural
+  ? undefined
+  : await readFile(new URL("500.terrain.bin", root));
+const heights = procedural
+  ? undefined
+  : await readFile(new URL("500.heights.f32", root));
+if (
+  !procedural &&
+  (terrain.length !== width * height || heights.length !== width * height * 4)
+)
   throw new Error(
     "Heightmap preview input dimensions do not match the manifest",
   );
@@ -38,27 +49,35 @@ try {
       server.ssrLoadModule("/src/skirmish/client/PaintedTerrain.ts"),
       server.ssrLoadModule("/src/skirmish/client/TerrainEnvironment.ts"),
     ]);
-  const environmentBytes = manifest.environment
-    ? new Uint8Array(await readFile(new URL("500.environment.bin", root)))
-    : undefined;
-  loaded = decoder.decodeHeightmap(
-    manifest,
-    500,
-    new Uint8Array(terrain),
-    heights.buffer.slice(
-      heights.byteOffset,
-      heights.byteOffset + heights.length,
-    ),
-    environmentBytes,
-  );
-  const forest = forests.generateForestCover(loaded.map, loaded.environment);
-  map = elevation.createSkirmishMap(
-    width,
-    height,
-    loaded.terrain,
-    loaded.elevation,
-    forest,
-  );
+  if (procedural) {
+    const { generateContinents } = await server.ssrLoadModule(
+      "/src/skirmish/ContinentsMap.ts",
+    );
+    loaded = generateContinents(width, 42);
+    map = loaded.map;
+  } else {
+    const environmentBytes = manifest.environment
+      ? new Uint8Array(await readFile(new URL("500.environment.bin", root)))
+      : undefined;
+    loaded = decoder.decodeHeightmap(
+      manifest,
+      500,
+      new Uint8Array(terrain),
+      heights.buffer.slice(
+        heights.byteOffset,
+        heights.byteOffset + heights.length,
+      ),
+      environmentBytes,
+    );
+    const forest = forests.generateForestCover(loaded.map, loaded.environment);
+    map = elevation.createSkirmishMap(
+      width,
+      height,
+      loaded.terrain,
+      loaded.elevation,
+      forest,
+    );
+  }
   environment = new presentation.TerrainEnvironment(
     map,
     loaded.geography,
@@ -108,7 +127,8 @@ const png = Buffer.concat([
   chunk("IDAT", deflateSync(pixels, { level: 9 })),
   chunk("IEND", Buffer.alloc(0)),
 ]);
+await mkdir(root, { recursive: true });
 await writeFile(new URL("lobby-preview.png", root), png);
 console.log(
-  `${manifest.name} lobby preview: ${width}×${height}, ${png.length} bytes`,
+  `${procedural ? "Continents (seed 42)" : manifest.name} lobby preview: ${width}×${height}, ${png.length} bytes`,
 );
