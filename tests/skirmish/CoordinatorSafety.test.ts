@@ -2,7 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { WebSocket } from "ws";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import type { ExecutorRequest, MatchExecutor } from "../../src/skirmish/multiplayer/application/MatchExecutor";
-import { MATCH_INITIALIZATION_FAILED_MESSAGE, MATCH_STOPPED_MESSAGE } from "../../src/skirmish/multiplayer/application/TerminalMessages";
+import { HOST_UNAVAILABLE_MESSAGE, MATCH_INITIALIZATION_FAILED_MESSAGE, MATCH_STOPPED_MESSAGE } from "../../src/skirmish/multiplayer/application/TerminalMessages";
+import { LOBBY_MAP_IDS } from "../../src/skirmish/lobby/LobbyRules";
+import { HostExecutor } from "../../src/skirmish/multiplayer/infrastructure/HostExecutor";
 import { createCoordinatorServer, type CoordinatorServerOptions } from "../../src/skirmish/multiplayer/infrastructure/CoordinatorServer";
 import { CoordinatorStore } from "../../src/skirmish/multiplayer/infrastructure/CoordinatorStore";
 import type { ServerMessage } from "../../src/skirmish/multiplayer/Protocol";
@@ -69,13 +71,20 @@ const baseExecutor = (override: (request: ExecutorRequest) => unknown = () => un
   },
   async close() {},
 });
-/** Two guests in one custom room vote to start; returns once the match is reserved. */
-async function reserveCustomMatch(url: string, socket: string) {
+/** Two guests in the public lobby (server simulated) or a custom room (hosted
+ * by its creator) vote to start; returns once the match is reserved. */
+async function reserveMatch(url: string, socket: string, kind: "public" | "custom" = "public") {
   const a = await guest(url), b = await guest(url);
   const first = await client(socket, a.token), second = await client(socket, b.token);
-  first.ws.send(JSON.stringify({ type: "create", requestId: "room", title: "Safety", settings: defaultLobbySettings("africa"), willingToWait: false }));
-  const created = await first.next((m) => m.type === "ack" && m.requestId === "room");
-  const roomId = created.type === "ack" ? created.roomId! : "";
+  let roomId = `default-${LOBBY_MAP_IDS[0]}`;
+  if (kind === "custom") {
+    first.ws.send(JSON.stringify({ type: "create", requestId: "room", title: "Safety", settings: defaultLobbySettings("africa") }));
+    const created = await first.next((m) => m.type === "ack" && m.requestId === "room");
+    roomId = created.type === "ack" ? created.roomId! : "";
+  } else {
+    first.ws.send(JSON.stringify({ type: "join", requestId: "first-join", roomId }));
+    await first.next((m) => m.type === "ack" && m.requestId === "first-join");
+  }
   second.ws.send(JSON.stringify({ type: "join", requestId: "join", roomId }));
   await second.next((m) => m.type === "ack" && m.requestId === "join");
   for (const [i, peer] of [first, second].entries())
@@ -221,7 +230,7 @@ describe("coordinator terminal messages (L11)", () => {
     cleanups.push(() => log.mockRestore());
     const executor = baseExecutor((request) => request.type === "advance" ? Promise.reject(new TypeError(raw)) : undefined);
     const { url, socket } = await start({ now: () => clock, matchCapacity: 1, createExecutor: () => executor });
-    const { first, second } = await reserveCustomMatch(url, socket);
+    const { first, second } = await reserveMatch(url, socket);
     await readyBoth(first, second);
     await first.next((m) => m.type === "match-spawn");
     clock += 10_000;
@@ -237,16 +246,32 @@ describe("coordinator terminal messages (L11)", () => {
 });
 
 describe("failed match initialization (M7 / B-2)", () => {
-  it("returns every member to the original custom room with a visible, fixed error", async () => {
+  it("returns every member to the public lobby with a visible, fixed error", async () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     cleanups.push(() => log.mockRestore());
     const executor = baseExecutor((request) => request.type === "prepare"
       ? Promise.reject(new Error("ENOENT: /srv/maps/africa.bin")) : undefined);
     const { url, socket, server } = await start({ matchCapacity: 1, createExecutor: () => executor });
-    const { a, b, first, second, roomId } = await reserveCustomMatch(url, socket);
+    const { a, b, first, second, roomId } = await reserveMatch(url, socket);
     const errors = await Promise.all([first, second].map((peer) =>
       peer.next((m) => m.type === "error" && m.requestId === undefined, 3000)));
     for (const message of errors) expect(message.type === "error" && message.message).toBe(MATCH_INITIALIZATION_FAILED_MESSAGE);
+    for (const message of errors) expect(JSON.stringify(message)).not.toContain("ENOENT");
+    await vi.waitFor(() => expect(server.rooms.snapshot().reservations).toHaveLength(0));
+    const room = server.rooms.snapshot().rooms.find((candidate) => candidate.id === roomId)!;
+    expect(room.members.map((member) => member.guestId).sort()).toEqual([a.guestId, b.guestId].sort());
+    expect(room.members.every((member) => member.connected && !member.votedToStart)).toBe(true);
+    // The failed start released capacity: no next-battlefield vote replaced the lobby.
+    expect(server.rooms.snapshot().mapVote).toBeUndefined();
+  });
+  it("returns every member to the original custom room when the host's browser never opens the match", async () => {
+    const { url, socket, server } = await start({ createHostExecutor: (hostId) => new HostExecutor(hostId, { attachTimeoutMs: 200 }) });
+    const { a, b, first, second, roomId } = await reserveMatch(url, socket, "custom");
+    // The owner is asked to host; nothing opens the /host connection.
+    expect((await first.next((m) => m.type === "host-match")).type).toBe("host-match");
+    const errors = await Promise.all([first, second].map((peer) =>
+      peer.next((m) => m.type === "error" && m.requestId === undefined, 3000)));
+    for (const message of errors) expect(message.type === "error" && message.message).toBe(HOST_UNAVAILABLE_MESSAGE);
     await vi.waitFor(() => expect(server.rooms.snapshot().reservations).toHaveLength(0));
     const room = server.rooms.snapshot().rooms.find((candidate) => candidate.id === roomId);
     expect(room).toBeDefined();

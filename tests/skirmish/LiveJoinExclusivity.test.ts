@@ -75,6 +75,8 @@ it("fences one socket to one pending or claimed match and releases admission on 
     origins: [],
     now: () => now,
     matchCapacity: 2,
+    // Live join is the server executor's protocol; custom rooms run it here.
+    hostCustomRooms: false,
     createExecutor: executor,
     liveMatch: { cooldownMs: 0 },
   });

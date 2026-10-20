@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { WebSocket } from "ws";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
+import { LOBBY_MAP_IDS } from "../../src/skirmish/lobby/LobbyRules";
+
+const PUBLIC = `default-${LOBBY_MAP_IDS[0]}`;
 import { createCoordinatorServer } from "../../src/skirmish/multiplayer/infrastructure/CoordinatorServer";
 import { CoordinatorStore } from "../../src/skirmish/multiplayer/infrastructure/CoordinatorStore";
 import type { ServerMessage } from "../../src/skirmish/multiplayer/Protocol";
@@ -77,8 +80,9 @@ describe("durable authenticated lobby transport", () => {
     },async close(){}};
     const {url,socket,store}=await start(undefined,()=>clock,executor);cleanups.unshift(()=>store.close());
     const a=await guest(url),b=await guest(url),first=await client(socket,a.token,true),second=await client(socket,b.token);
-    first.ws.send(JSON.stringify({type:"create",requestId:"binary-room",title:"Binary compatibility",settings:defaultLobbySettings("africa"),willingToWait:false}));
-    const created=await first.next(m=>m.type==="ack"&&m.requestId==="binary-room"),roomId=created.type==="ack"?created.roomId!:"";
+    // The public lobby runs on the server executor (custom rooms are hosted by their creator).
+    const roomId=PUBLIC;
+    first.ws.send(JSON.stringify({type:"join",requestId:"binary-room",roomId}));await first.next(m=>m.type==="ack"&&m.requestId==="binary-room");
     second.ws.send(JSON.stringify({type:"join",requestId:"binary-join",roomId}));await second.next(m=>m.type==="ack"&&m.requestId==="binary-join");
     for(const [i,peer] of [first,second].entries())peer.ws.send(JSON.stringify({type:"voteStart",requestId:`vote-${i}`,roomId}));
     const manifests=await Promise.all([first.next(m=>m.type==="match"),second.next(m=>m.type==="match")]);
@@ -122,7 +126,7 @@ describe("durable authenticated lobby transport", () => {
       expect(receipt.type === "error" && receipt.message).toContain("This match is no longer available");
     }
     clock += 1001;
-    peer.ws.send(JSON.stringify({ type: "join", requestId: "after-cooldown", roomId: "default-africa" }));
+    peer.ws.send(JSON.stringify({ type: "join", requestId: "after-cooldown", roomId: PUBLIC }));
     expect((await peer.next(m => m.type === "ack" && m.requestId === "after-cooldown")).type).toBe("ack");
     expect(peer.ws.readyState).toBe(WebSocket.OPEN);
   });
@@ -208,12 +212,12 @@ describe("durable authenticated lobby transport", () => {
         .snapshot()
         .rooms.filter((room) => room.kind === "custom"),
     ).toHaveLength(0);
-    returned.ws.send(JSON.stringify({type:"join",requestId:"explicit-return",roomId:"default-africa"}));
+    returned.ws.send(JSON.stringify({type:"join",requestId:"explicit-return",roomId:PUBLIC}));
     await returned.next(message=>message.type==="ack"&&message.requestId==="explicit-return");
     expect(
       restarted.server.rooms
         .snapshot()
-        .rooms.find((room) => room.id === "default-africa")!.members[0].connected,
+        .rooms.find((room) => room.id === PUBLIC)!.members[0].connected,
     ).toBe(true);
   });
 

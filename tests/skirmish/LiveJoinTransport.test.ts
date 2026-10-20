@@ -21,6 +21,8 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
     matchCapacity: 1,
     now: () => now,
     liveMatch: { cooldownMs: 0 },
+    // Live join is the server executor's protocol; custom rooms run it here.
+    hostCustomRooms: false,
     createExecutor: () => {
       const worker = new ReservedMatchWorker();
       return {
@@ -380,6 +382,7 @@ it("drops stale persisted match reservations on server restart without advertisi
     store,
     origins: [],
     matchCapacity: 1,
+    hostCustomRooms: false,
   });
   try {
     expect(coordinator.rooms.snapshot().reservations).toEqual([]);

@@ -3,36 +3,19 @@ import { MAX_HUMAN_PLAYERS } from "../../src/skirmish/FactionRules";
 import { LobbyViewModel } from "../../src/skirmish/client/lobby/LobbyViewModel";
 
 describe("local lobby preview", () => {
-  it("rotates featured cards every minute without mutating custom rooms, queue or an entered roster", () => {
-    const vm = new LobbyViewModel(undefined, 0);
+  it("lists every custom room and leaves an entered roster alone on directory ticks", () => {
+    const vm = new LobbyViewModel();
     for (const id of ["one", "two", "three", "four"])
-      vm.createRoom(id, id, vm.rules, true);
-    const original = vm.featuredMaps.map((map) => map.id);
-    vm.tickDirectory(59_000);
-    expect(vm.rotationSeconds).toBe(1);
-    expect(vm.featuredMaps.map((map) => map.id)).toEqual(original);
-    vm.tickDirectory(60_000);
-    expect(vm.rotationSeconds).toBe(60);
-    expect(vm.featuredMaps.map((map) => map.id)).toEqual([
-      "old-world",
-      "new-world",
-      "valles-kairulia",
-    ]);
-    expect(vm.directory.visible.map((room) => room.id)).toEqual([
-      "one",
-      "two",
-      "three",
-    ]);
-    expect(vm.directory.queue[0].id).toBe("four");
+      vm.createRoom(id, id, vm.rules);
+    expect(vm.directory.visible.map((room) => room.id)).toEqual(["one", "two", "three", "four"]);
+    // A local preview has no server lobby: its public card is the first battlefield.
+    expect(vm.publicMapId).toBe(vm.maps[0].id);
+    expect(vm.mapVote).toBeUndefined();
     vm.showLobby("africa");
     vm.addSample(60_000);
-    expect(vm.tickDirectory(120_000)).toBe(false);
+    expect(vm.tickDirectory()).toBe(false);
     expect(vm.humanCount).toBe(2);
     expect(vm.phase).toBe("countdown");
-    vm.showHome();
-    vm.tickDirectory(180_000);
-    expect(vm.featuredMaps).toHaveLength(3);
-    expect(new Set(vm.featuredMaps.map((map) => map.id)).size).toBe(3);
   });
   it("offers only the agreed maps and safely rejects unknown map links", () => {
     const vm = new LobbyViewModel();

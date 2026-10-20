@@ -11,9 +11,10 @@ import {
   type CustomLobby,
   type LobbySettings,
 } from "../../lobby/LobbyDirectory";
-import { isLobbyMapId, type LobbyMapId } from "../../lobby/LobbyRules";
+import { isLobbyMapId, LOBBY_MAP_IDS, type LobbyMapId } from "../../lobby/LobbyRules";
 import type {
   CoordinatorState,
+  MapVote,
   OnlineRoom,
 } from "../../multiplayer/domain/RoomCoordinator";
 import type { LiveMatchSummary } from "../../multiplayer/Protocol";
@@ -51,31 +52,54 @@ export class LobbyViewModel {
   get directory() {
     if (!this.onlineState)
       return this.online ? this.disconnectedDirectory : this.previewDirectory;
-    const rooms = this.onlineState.rooms.filter(
-      (room) => room.kind === "custom",
-    );
-    const entries = (listing: OnlineRoom["listing"]) =>
-      rooms
-        .filter((room) => room.listing === listing)
-        .map((room) => ({
-          id: room.id,
-          title: room.title,
-          settings: room.settings,
-          owner:
-            room.members.find((member) => member.guestId === room.ownerId)
-              ?.profile ?? DEFAULT_EMPIRE_PROFILE,
-        }));
-    const visible = entries("visible"),
-      queue = entries("queued");
+    const visible = this.onlineState.rooms
+      .filter((room) => room.kind === "custom")
+      .map((room) => ({
+        id: room.id,
+        title: room.title,
+        settings: room.settings,
+        owner:
+          room.members.find((member) => member.guestId === room.ownerId)
+            ?.profile ?? DEFAULT_EMPIRE_PROFILE,
+      }));
     return {
       visible,
-      queue,
-      full: visible.length === 3,
-      find: (id: string) =>
-        [...visible, ...queue].find((room) => room.id === id),
+      find: (id: string) => visible.find((room) => room.id === id),
       create: this.previewDirectory.create.bind(this.previewDirectory),
       remove: this.previewDirectory.remove.bind(this.previewDirectory),
     };
+  }
+  /** The single public lobby; a local preview has none. */
+  get publicLobby(): OnlineRoom | undefined {
+    return this.onlineState?.rooms.find((room) => room.kind === "default");
+  }
+  get publicMapId(): LobbyMapId {
+    return this.publicLobby?.settings.mapId ?? LOBBY_MAP_IDS[0];
+  }
+  /** Open while a public match holds the server: the next public battlefield. */
+  get mapVote(): MapVote | undefined {
+    return this.onlineState?.mapVote;
+  }
+  get myMapVote(): LobbyMapId | undefined {
+    return this.guestId === undefined ? undefined : this.mapVote?.votes[this.guestId];
+  }
+  mapVotes(mapId: LobbyMapId): number {
+    return Object.values(this.mapVote?.votes ?? {}).filter((vote) => vote === mapId).length;
+  }
+  /** Running public matches, joinable as an unclaimed AI nation. */
+  get publicMatches(): LiveMatchSummary[] {
+    return this.activeMatches.filter((match) => !match.hosted);
+  }
+  /** Started custom matches this guest plays in (only they can see them). */
+  get hostedMatches(): LiveMatchSummary[] {
+    return this.activeMatches.filter((match) => match.hosted);
+  }
+  /** Time until the public lobby starts, once enough humans have joined. */
+  get publicCountdown(): string | undefined {
+    const deadline = this.publicLobby?.deadline;
+    if (deadline === undefined) return undefined;
+    const remaining = Math.max(0, Math.ceil((deadline - Date.now() - this.serverOffset) / 1000));
+    return `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;
   }
   applyOnlineState(
     state: CoordinatorState,
@@ -151,48 +175,20 @@ export class LobbyViewModel {
   private deadline: number | undefined;
   private remaining: number = this.rules.countdownSeconds;
   private currentPhase: LobbyPreviewPhase = "waiting";
-  private featuredOffset = 0;
-  private rotationDeadline: number;
-  private rotationRemaining = 60;
+  private shownPublicCountdown: string | undefined;
 
-  constructor(
-    private store?: LobbyPreviewStore,
-    now = 0,
-  ) {
-    this.rotationDeadline = now + 60_000;
+  constructor(private store?: LobbyPreviewStore) {
     this.restore(store?.read());
     this.draftEmpireName = this.profile.name;
   }
 
-  get featuredMaps() {
-    return Array.from(
-      { length: Math.min(3, this.maps.length) },
-      (_, index) => this.maps[(this.featuredOffset + index) % this.maps.length],
-    );
-  }
-
-  get rotationSeconds(): number {
-    return this.rotationRemaining;
-  }
-
-  /** Rotate presentation only; room identity, roster, rules and queue are unchanged. */
-  tickDirectory(now: number): boolean {
+  /** True when the home page's public countdown text changed. */
+  tickDirectory(): boolean {
     if (this.page !== "home") return false;
-    let changed = false;
-    if (now >= this.rotationDeadline) {
-      const steps = Math.floor((now - this.rotationDeadline) / 60_000) + 1;
-      this.featuredOffset =
-        (this.featuredOffset + steps * 3) % this.maps.length;
-      this.rotationDeadline += steps * 60_000;
-      changed = true;
-    }
-    const remaining = Math.max(
-      0,
-      Math.ceil((this.rotationDeadline - now) / 1_000),
-    );
-    if (remaining !== this.rotationRemaining) changed = true;
-    this.rotationRemaining = remaining;
-    return changed;
+    const countdown = this.publicCountdown;
+    if (countdown === this.shownPublicCountdown) return false;
+    this.shownPublicCountdown = countdown;
+    return true;
   }
 
   get rules(): LobbySettings {
@@ -207,11 +203,9 @@ export class LobbyViewModel {
   get selectedFlag() {
     return empireFlag(this.profile.flagCode);
   }
-  get queuePosition(): number | undefined {
-    const index = this.directory.queue.findIndex(
-      (room) => room.id === this.customRoomId,
-    );
-    return index < 0 ? undefined : index + 1;
+  /** The open lobby is a custom room: its owner's browser hosts the match. */
+  get customRoom(): boolean {
+    return this.customRoomId !== undefined;
   }
   get flagMatches() {
     const search = this.flagSearch.trim().toLocaleLowerCase();
@@ -225,7 +219,8 @@ export class LobbyViewModel {
 
   get colorChoices() {
     return FACTION_PALETTE.map((entry, index) => ({ ...entry, index,
-      reserved: this.onlineRoom?.members.some(member => member.guestId !== this.guestId && member.profile.colorIndex === index) ?? false,
+      // Shown for information only: several players may share a color.
+      inUse: this.onlineRoom?.members.some(member => member.guestId !== this.guestId && member.profile.colorIndex === index) ?? false,
     }));
   }
   get selectedColorIndex(): number | null {
@@ -251,8 +246,6 @@ export class LobbyViewModel {
     try {
       if (flagCode !== null && !empireFlag(flagCode))
         throw new Error("Choose a flag from the local catalog.");
-      if (typeof colorIndex === "number" && this.colorChoices[colorIndex]?.reserved)
-        throw new Error("That faction color is reserved by another player.");
       this.profile = createEmpireProfile(name, flagCode, colorIndex);
       this.draftEmpireName = this.profile.name;
       this.persist("Empire customization saved in this browser.");
@@ -267,19 +260,11 @@ export class LobbyViewModel {
     id: string,
     title: string,
     settings: LobbySettings,
-    willingToWait: boolean,
   ): boolean {
     try {
-      const result = this.directory.create(
-        { id, title, owner: this.profile, settings },
-        willingToWait,
-      );
+      this.directory.create({ id, title, owner: this.profile, settings });
       this.dialog = null;
-      this.persist(
-        result === "visible"
-          ? "Your lobby is now in the custom lobby holder."
-          : `Your lobby joined the waiting queue at position ${this.directory.queue.length}.`,
-      );
+      this.persist("Your lobby is now listed under custom lobbies.");
       return true;
     } catch (error) {
       this.message = (error as Error).message;
@@ -289,9 +274,7 @@ export class LobbyViewModel {
 
   removeRoom(id: string): void {
     if (this.directory.remove(id))
-      this.persist(
-        "Lobby removed. The first waiting lobby fills any released custom space.",
-      );
+      this.persist("Lobby removed.");
   }
 
   showCustomRoom(id: string, now: number): boolean {
@@ -310,7 +293,6 @@ export class LobbyViewModel {
       version: 1,
       profile: this.profile,
       visible: this.previewDirectory.visible,
-      queue: this.previewDirectory.queue,
     });
     this.message =
       saved === false
@@ -378,7 +360,6 @@ export class LobbyViewModel {
                   : room.settings.startingAge,
             }),
           },
-          true,
         );
       } catch {
         /* Ignore invalid/duplicate persisted rooms without breaking the page. */
@@ -446,7 +427,6 @@ export class LobbyViewModel {
     if (this.online) {
       if (!this.connected) return "Reconnecting to the lobby server";
       if (this.onlineRoom?.capacityWaiting) return "Waiting for match capacity";
-      if (this.queuePosition) return "Waiting for a display space";
       if (this.phase === "countdown") return "Match countdown";
       if (this.hasVotedToStart && this.startVotes === this.humanCount)
         return "Starting match…";
@@ -464,8 +444,10 @@ export class LobbyViewModel {
   get statusDetail(): string {
     if (this.online)
       return this.onlineRoom?.capacityWaiting
-        ? "Match starts are closed while the executor and recovery checks are being installed. Your room remains open."
-        : "The server owns the roster and timer. Disconnected guests have 60 seconds to reconnect.";
+        ? "Another public match is running on the server. This lobby starts when it ends."
+        : this.customRoom
+          ? "When the match starts, the lobby owner's browser runs it for everyone, so the owner must keep the match tab open. Disconnected guests have 60 seconds to reconnect."
+          : "The server owns the roster and timer. Disconnected guests have 60 seconds to reconnect.";
     if (this.phase === "complete")
       return `${this.humans} humans + ${this.aiCount} AI opponents + ${this.rules.tribeCount} tribes. No online match has started.`;
     if (this.phase === "countdown")

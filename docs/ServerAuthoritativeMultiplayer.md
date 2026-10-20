@@ -30,6 +30,38 @@ transfer that history between worker and coordinator. Legacy serialization
 helpers may still be exercised by their existing tests; the online runtime
 neither imports nor calls them.
 
+## Hosted custom matches
+
+The public lobby runs on server workers. A custom room's match runs in its
+owner's browser instead, so the server only coordinates and relays it:
+
+- When a custom room starts, the coordinator reserves the match with
+  `hostId` set to the owner and sends that browser `host-match`. The owner's
+  lobby opens `/skirmish/index.html?match=…&host=1`.
+- That page starts `hostMatchWorker` (the same `createMatchRuntime` that
+  `serverMatchWorker` wraps, with an inline encoder and the browser map
+  loader) and opens `/host`. The first frame is a JSON `host-authenticate`
+  (guest token, match id, runtime id); later frames are `HostWire` binary,
+  carrying the worker protocol's requests, results, publications and fatal
+  notices with raw `Uint8Array` sections.
+- On the server, `HostExecutor` implements `MatchExecutor` over that socket.
+  `LiveMatch` is unchanged apart from advancing a remote executor's clock debt
+  in one request (up to four ticks), so a round trip longer than a tick does
+  not slow the match. Fan-out, flow control, joins and command validation stay
+  on the server; the host's own view arrives through its ordinary match socket.
+- Hosted matches use no `MULTIPLAYER_MATCH_CAPACITY`. If the host's browser
+  does not attach within 60 s, the members return to their room. When its
+  socket closes, the match ends for everyone ("The host left the match").
+  There is no host migration and the host is trusted with the simulation.
+- A started custom match is not listed on the home page except to its own
+  players (to rejoin). `MULTIPLAYER_HOSTED_CUSTOM=0` puts custom matches back
+  on server workers under the shared capacity.
+
+The public side shows one lobby. While server capacity is full of public
+matches, the running match is listed for joining as an AI nation and the lobby
+becomes a vote between three other battlefields; when capacity frees, the most
+voted map (ties to the earlier offer) becomes the next public lobby.
+
 ## Deliberate limits
 
 There is no player reconnect, host migration, replay history, durable match

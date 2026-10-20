@@ -20,6 +20,8 @@ it("runs two thin clients from one server simulation, enforces ownership and con
     origins: [origin],
     matchCapacity: 1,
     now: () => now,
+    // This test covers the server worker; HostedMatchTransport covers hosting.
+    hostCustomRooms: false,
   });
   await new Promise<void>((resolve) =>
     coordinator.http.listen(0, "127.0.0.1", resolve),

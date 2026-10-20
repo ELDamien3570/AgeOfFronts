@@ -956,8 +956,9 @@ export class Skirmish {
     const humanCount = options.humanNames?.length ?? 1;
     if (options.humanColors) {
       const chosen = options.humanColors.filter(color => color !== null);
-      if (options.humanColors.length !== humanCount || chosen.some(color => !validFactionColor(color)) || new Set(chosen).size !== chosen.length)
-        throw new Error("Human faction colors must be valid, unique palette choices for the human seats.");
+      // Several humans may choose the same color; AI and tribes avoid every chosen one.
+      if (options.humanColors.length !== humanCount || chosen.some(color => !validFactionColor(color)))
+        throw new Error("Human faction colors must be valid palette choices for the human seats.");
     }
     if (humanCount < 1 || humanCount > MAX_HUMAN_PLAYERS || options.humanNames?.some(name => typeof name !== "string" || !name.trim() || Array.from(name).length > 20))
       throw new Error("Invalid human faction roster");

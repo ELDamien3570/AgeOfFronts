@@ -23,6 +23,9 @@ export interface LiveMatchSummary {
   freeAiSeats: { playerId: number; name: string }[];
   rejoinPlayerId?: number;
   publicTakeover: boolean;
+  /** A custom room's match, simulated in its owner's browser. Only its own
+   * players see it in the directory (to rejoin). */
+  hosted?: boolean;
   status: "running" | "syncing" | "paused";
   graceRemainingMs?: number;
 }
@@ -33,6 +36,8 @@ export interface MatchManifest {
   runtimeId: string;
   mapHash: string;
   playerId: number;
+  /** Empire name of the player whose browser simulates this custom match. */
+  hostedBy?: string;
 }
 const profile = z
   .object({
@@ -136,7 +141,15 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
       requestId,
       title: z.string().max(160),
       settings,
-      willingToWait: z.boolean(),
+      // Retired display queue; still accepted from cached pages.
+      willingToWait: z.boolean().optional(),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("voteMap"),
+      requestId,
+      mapId: z.enum(LOBBY_MAP_IDS),
     })
     .strict(),
   z
@@ -155,10 +168,24 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
     .strict(),
 ]);
 export type ClientMessage = z.infer<typeof clientMessageSchema>;
+/** First (text) frame on a /host socket: the room owner's browser offers to
+ * run the match it was asked to host. Later frames are HostWire binary. */
+export const hostAuthenticateSchema = z
+  .object({
+    type: z.literal("host-authenticate"),
+    token: z.string().length(43),
+    matchId: z.string().min(1).max(80),
+    runtimeId: z.string().max(80),
+  })
+  .strict();
+export type HostAuthenticate = z.infer<typeof hostAuthenticateSchema>;
 export type ServerMessage =
   | { type: "match-command-outcome"; matchId: string; outcome: import("../CommandApplications").CommandOutcome }
   | { type: "match-spawn"; matchId: string; state: SpawnState }
   | { type: "match"; manifest: MatchManifest }
+  /** Sent to a custom room's owner when its match is reserved: open the match
+   * page and run the simulation for everyone. */
+  | { type: "host-match"; matchId: string }
   | {
       type: "match-state";
       matchId: string;

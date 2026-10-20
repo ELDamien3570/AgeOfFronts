@@ -65,6 +65,10 @@ export class OnlineMatchSession {
   private awaitingReconnectBaseline=false;
   private matchPaused = false;
   private pendingSync?: { id: string; publicationSequence: number };
+  private get liveStatus(): string {
+    const host = this.manifest?.hostedBy;
+    return host === undefined ? "Online match · server hosted" : `Online match · hosted by ${host}`;
+  }
   constructor(
     endpoint: string,
     private matchId: string,
@@ -483,7 +487,7 @@ export class OnlineMatchSession {
         this.status(
           message.paused
             ? "Match paused · waiting for players"
-            : "Online match · server hosted",
+            : this.liveStatus,
         );
       }
     } else if (message.type === "match-sync-complete") {
@@ -492,7 +496,7 @@ export class OnlineMatchSession {
       // The completion event is the server's barrier-release authorization.
       this.matchPaused = false;
       this.setCommandsAvailable(true);
-      this.status("Online match · server hosted");
+      this.status(this.liveStatus);
     } else if (message.type === "match-status") {
       this.matchPaused = message.paused;
       this.setCommandsAvailable(

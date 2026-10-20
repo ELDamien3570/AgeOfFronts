@@ -134,6 +134,16 @@ export class LiveMatch {
   private readonly recoveredAt=new Map<string,number>();
   private readonly deferredRecoveries=new Map<string,ReturnType<typeof setTimeout>>();
   readonly options: MatchOptions;
+  /** Empire name of the browser simulating a custom match. */
+  private get hostName(): string | undefined {
+    const hostId = this.reservation.hostId;
+    return hostId === undefined ? undefined
+      : this.reservation.members.find((member) => member.guestId === hostId)?.profile.name;
+  }
+  private get hostedStatus(): string {
+    const host = this.hostName;
+    return host === undefined ? "Online match · server hosted" : `Online match · hosted by ${host}`;
+  }
   constructor(
     readonly reservation: MatchReservation,
     readonly executor: MatchExecutor,
@@ -307,6 +317,7 @@ export class LiveMatch {
       runtimeId: this.runtimeId,
       mapHash: this.mapHash,
       playerId: admission?.playerId ?? this.playerId(guest),
+      ...(this.hostName === undefined ? {} : { hostedBy: this.hostName }),
     };
     this.send(guest, { type: "match", manifest });
   }
@@ -504,7 +515,7 @@ export class LiveMatch {
     if (!this.stopped)
       this.status(
         this.emptyDeadline === undefined
-          ? "Online match · server hosted"
+          ? this.hostedStatus
           : "Waiting for a player to return",
         this.emptyDeadline !== undefined,
       );
@@ -645,7 +656,7 @@ export class LiveMatch {
     // no request would ever observe the failure (L13).
     if (this.executor.lifecycle?.state === "stopped") {
       console.error("Match executor stopped", this.reservation.id, this.executor.lifecycle);
-      await this.end(MATCH_STOPPED_MESSAGE);
+      await this.end(this.executor.lifecycle.message ?? MATCH_STOPPED_MESSAGE);
       return;
     }
     if (this.emptyExpired()) {
@@ -757,7 +768,10 @@ export class LiveMatch {
     if (now < this.nextTickAt) return;
     this.diagnostics.record("scheduler", now - this.nextTickAt);
     const due = Math.floor((now - this.nextTickAt) / TICK_MS) + 1,
-      ticks = 1;
+      // A hosting browser is a network round trip away: one request per tick
+      // would run the match slower than real time whenever the round trip
+      // exceeds a tick, so its clock debt is advanced in one request.
+      ticks = this.executor.remote ? Math.min(due, MAX_ADVANCE_TICKS) : 1;
     // Return to the coordinator after every canonical tick. A four-tick
     // synchronous catch-up request delayed new orders, command receipts and
     // completed encoder publications behind the whole batch. Keep at most
@@ -765,7 +779,7 @@ export class LiveMatch {
     this.nextTickAt =
       due > MAX_ADVANCE_TICKS
         ? now - (MAX_ADVANCE_TICKS - 2) * TICK_MS
-        : this.nextTickAt + TICK_MS;
+        : this.nextTickAt + ticks * TICK_MS;
     // Background replication is at most 5 Hz in both wall and game time.
     // Under overload, publishing every 200 wall ms despite less than 200 ms
     // of simulation progress steals CPU from an already late simulation.
@@ -851,6 +865,9 @@ export class LiveMatch {
   }
   summary(guest: string): LiveMatchSummary | undefined {
     const owner = this.seat(guest);
+    const hosted = this.reservation.hostId !== undefined;
+    // A started custom match is private: only its own players see it, to rejoin.
+    if (hosted && !owner) return;
     if (
       this.stopped ||
       !this.initialized ||
@@ -892,6 +909,7 @@ export class LiveMatch {
       rejoinPlayerId:
         liveOwner && !owner!.connected ? owner!.playerId : undefined,
       publicTakeover: Boolean(this.reservation.settings.publicAiTakeover),
+      ...(hosted ? { hosted: true } : {}),
       status: this.sync
         ? "syncing"
         : this.emptyDeadline !== undefined

@@ -111,7 +111,10 @@ export type ExecutorResult =
 export interface MatchExecutor {
   /** Becomes "stopped" when the executor can no longer serve requests (exit,
    * fatal error, timeout or close), even if no request was in flight. */
-  readonly lifecycle?: { readonly state: "running" | "stopped" };
+  readonly lifecycle?: { readonly state: "running" | "stopped"; readonly message?: string };
+  /** Requests cross a network (a hosting browser): the coordinator batches
+   * clock debt into multi-tick advances instead of one round trip per tick. */
+  readonly remote?: boolean;
   onPublication?(listener: (publication: MatchPublication) => void): () => void;
   request<T extends ExecutorResult>(request: ExecutorRequest): Promise<T>;
   close(): Promise<void>;

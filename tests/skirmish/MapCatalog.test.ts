@@ -6,7 +6,8 @@ import {
 import { PLAYABLE_MAPS } from "../../src/skirmish/content/Maps";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import { clientMessageSchema } from "../../src/skirmish/multiplayer/Protocol";
-import { RoomCoordinator } from "../../src/skirmish/multiplayer/domain/RoomCoordinator";
+import { LOBBY_MAP_IDS } from "../../src/skirmish/lobby/LobbyRules";
+import { validateLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 
 describe("heightmap registration", () => {
   it("presents Old World with matching preview and 4:3 map sizes", () => {
@@ -57,14 +58,9 @@ describe("heightmap registration", () => {
         height: size,
       });
     }
-    expect(
-      new RoomCoordinator(0, 1)
-        .snapshot()
-        .rooms.find((room) => room.id === "default-valles-kairulia"),
-    ).toMatchObject({
-      kind: "default",
-      settings: defaultLobbySettings("valles-kairulia"),
-    });
+    // Offered as a public battlefield (the lobby rotates through votes).
+    expect(LOBBY_MAP_IDS).toContain("valles-kairulia");
+    expect(validateLobbySettings(defaultLobbySettings("valles-kairulia"))).toMatchObject({ mapId: "valles-kairulia" });
   });
 
   it("accepts every registered map in multiplayer creation messages", () => {
@@ -88,22 +84,9 @@ describe("heightmap registration", () => {
     }
   });
 
-  it("creates default rooms for Old World and New World alongside all other maps", () => {
-    const rooms = new RoomCoordinator(0, 1).snapshot().rooms;
-    expect(rooms.map((room) => room.settings.mapId)).toEqual(
-      PLAYABLE_MAPS.map((map) => map.id),
-    );
-    expect(rooms.find((room) => room.id === "default-new-world")).toMatchObject(
-      {
-        kind: "default",
-        settings: defaultLobbySettings("new-world"),
-      },
-    );
-    expect(rooms.find((room) => room.id === "default-old-world")).toMatchObject(
-      {
-        kind: "default",
-        settings: defaultLobbySettings("old-world"),
-      },
-    );
+  it("offers Old World, New World and every other map as public battlefields", () => {
+    expect(LOBBY_MAP_IDS).toEqual(PLAYABLE_MAPS.map((map) => map.id));
+    for (const mapId of ["new-world", "old-world"] as const)
+      expect(validateLobbySettings(defaultLobbySettings(mapId))).toMatchObject({ mapId });
   });
 });

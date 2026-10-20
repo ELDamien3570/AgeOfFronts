@@ -16,7 +16,9 @@ import {
 } from "../application/TerminalMessages";
 import type { MatchExecutor } from "../application/MatchExecutor";
 import { RoomCoordinator, type CoordinatorState } from "../domain/RoomCoordinator";
-import { clientMessageSchema, type ServerMessage } from "../Protocol";
+import { clientMessageSchema, hostAuthenticateSchema, type ServerMessage } from "../Protocol";
+import { decodeHostFrame, MAX_HOST_FRAME_BYTES } from "../HostWire";
+import { HostExecutor, type HostLink } from "./HostExecutor";
 import { CoordinatorStore } from "./CoordinatorStore";
 import { ReservedMatchWorker } from "./ReservedMatchWorker";
 import { computeRuntimeBuild } from "./RuntimeBuild";
@@ -32,6 +34,11 @@ export interface CoordinatorServerOptions {
   liveMatch?: LiveMatchOptions;
   /** Injectable executor for deterministic integration tests; production uses one reserved worker. */
   createExecutor?: () => MatchExecutor;
+  /** Injectable hosted executor for tests; production waits for the owner's browser on /host. */
+  createHostExecutor?: (hostGuestId: string) => HostExecutor;
+  /** Custom matches run in their owner's browser (default true). False runs
+   * them on server workers under matchCapacity, like the public lobby. */
+  hostCustomRooms?: boolean;
   /** Heartbeat ping interval (default 5000 ms). Two missed pongs are tolerated. */
   heartbeatMs?: number;
   /** Concurrent WebSockets per client address; 0 (default) disables the cap.
@@ -131,9 +138,12 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   const capacity = options.matchCapacity ?? 0;
   const staticDir = options.staticDir ?? resolve("build/skirmish");
   const matches = new Map<string, LiveMatch>();
+  /** Custom matches simulated in their owner's browser, by match id. */
+  const hostedExecutors = new Map<string, HostExecutor>();
   const runtimeId = computeRuntimeBuild();
   const diagnostics = new RuntimeDiagnostics();
-  let rooms = new RoomCoordinator(now(), capacity, options.store.read());
+  const roomOptions = { hostCustomRooms: options.hostCustomRooms !== false };
+  let rooms = new RoomCoordinator(now(), capacity, options.store.read(), roomOptions);
   const restored = rooms.snapshot();
   for (const room of [...restored.rooms, ...restored.reservations])
     for (const member of room.members) rooms.disconnect(member.guestId, now());
@@ -235,7 +245,17 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     maxPayload: MAX_FRAME_BYTES,
     perMessageDeflate: false,
   });
+  // A hosting browser uploads snapshots and baselines, far larger than orders.
+  const hostWs = new WebSocketServer({
+    noServer: true,
+    maxPayload: MAX_HOST_FRAME_BYTES,
+    perMessageDeflate: false,
+  });
   http.on("upgrade", (req, socket, head) => {
+    if (req.url === "/host" && trustedOrigin(req)) {
+      hostWs.handleUpgrade(req, socket, head, (client) => hostWs.emit("connection", client));
+      return;
+    }
     if (req.url !== "/socket" || !trustedOrigin(req)) {
       socket.destroy();
       return;
@@ -304,6 +324,52 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     options.store.write(rooms.snapshot());
     publish();
   };
+  hostWs.on("connection", (client) => {
+    client.binaryType = "nodebuffer";
+    let executor: HostExecutor | undefined;
+    const link: HostLink = {
+      send: (frame) => {
+        if (client.readyState === WebSocket.OPEN) client.send(frame);
+      },
+      close: () => client.close(1000, "Match finished"),
+    };
+    const deadline = setTimeout(() => client.close(1008, "Authentication required"), 10_000);
+    client.on("message", (data, isBinary) => {
+      if (!executor) {
+        try {
+          if (isBinary || frameBytes(data) > MAX_UNAUTHENTICATED_FRAME_BYTES) throw new Error("Authenticate first");
+          const message = hostAuthenticateSchema.parse(JSON.parse(data.toString()));
+          const guestId = options.store.authenticate(message.token);
+          const candidate = hostedExecutors.get(message.matchId);
+          if (!guestId || !candidate || candidate.hostGuestId !== guestId)
+            throw new Error("This browser is not the host of that match");
+          if (message.runtimeId !== runtimeId)
+            throw new Error("Game versions differ. Reload after deployment.");
+          candidate.attach(link);
+          executor = candidate;
+          clearTimeout(deadline);
+          console.info(JSON.stringify({ event: "host-attached", matchId: message.matchId }));
+        } catch (error) {
+          client.close(1008, error instanceof Error && error.name !== "ZodError" ? error.message.slice(0, 120) : "Invalid host request");
+        }
+        return;
+      }
+      if (!isBinary) { client.close(1008, "Host frames are binary"); return; }
+      let decoded: unknown;
+      try {
+        decoded = decodeHostFrame(Array.isArray(data) ? Buffer.concat(data) : data as Buffer);
+      } catch {
+        client.close(1008, "Invalid host frame");
+        return;
+      }
+      executor.receive(decoded);
+    });
+    client.on("close", () => {
+      clearTimeout(deadline);
+      executor?.detach(link);
+    });
+    client.on("error", () => client.terminate());
+  });
   ws.on("connection", (client) => {
     const authenticationDeadline = setTimeout(
       () => client.close(1008, "Authentication required"),
@@ -513,7 +579,6 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
               profile,
               message.title,
               message.settings,
-              message.willingToWait,
               now(),
             ).id;
             break;
@@ -526,6 +591,9 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
             break;
           case "voteStart":
             rooms.voteToStart(message.roomId, session.guestId);
+            break;
+          case "voteMap":
+            rooms.voteMap(session.guestId, message.mapId);
             break;
           case "close":
             rooms.close(message.roomId, session.guestId);
@@ -546,7 +614,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         send(client, reply);
       } catch (error) {
         if (!matchRequest && previousState)
-          rooms = new RoomCoordinator(now(), capacity, previousState);
+          rooms = new RoomCoordinator(now(), capacity, previousState, roomOptions);
         send(client, {
           type: "error",
           requestId,
@@ -570,13 +638,18 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     const before = JSON.stringify(rooms.snapshot());
     const starts = rooms.advance(now());
     for (const reservation of starts) {
+      const hostId = reservation.hostId;
+      const hosted = hostId === undefined ? undefined
+        : options.createHostExecutor?.(hostId) ?? new HostExecutor(hostId);
+      if (hosted) hostedExecutors.set(reservation.id, hosted);
       const match = new LiveMatch(
         reservation,
-        options.createExecutor?.() ?? new ReservedMatchWorker(),
+        hosted ?? options.createExecutor?.() ?? new ReservedMatchWorker(),
         runtimeId,
         sendGuest,
         () => {
           matches.delete(reservation.id);
+          hostedExecutors.delete(reservation.id);
           rooms.releaseMatch(reservation.id);
           options.store.write(rooms.snapshot());
           publish();
@@ -588,6 +661,8 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         options.liveMatch,
       );
       matches.set(reservation.id, match);
+      // The owner's lobby page opens the match page, which runs the simulation.
+      if (hostId !== undefined) sendGuest(hostId, { type: "host-match", matchId: reservation.id });
       void match.initialize().catch(async (error) => {
         // The match never started: put its current members (live state, not
         // the start-time copy) back in their room before releasing capacity.
@@ -651,7 +726,9 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         ),
       );
       for (const client of ws.clients) client.terminate();
+      for (const client of hostWs.clients) client.terminate();
       await new Promise<void>((resolve) => ws.close(() => resolve()));
+      await new Promise<void>((resolve) => hostWs.close(() => resolve()));
       if (http.listening)
         await new Promise<void>((resolve) => http.close(() => resolve()));
     },

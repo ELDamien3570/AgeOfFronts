@@ -16,10 +16,7 @@ for (const [name, value] of Object.entries(theme.palette))
   lobbyRoot.style.setProperty(`--age-${name}`, value);
 lobbyRoot.style.setProperty("--age-texture", `url("${theme.texture}")`);
 
-const vm = new LobbyViewModel(
-  new BrowserLobbyPreviewStore(),
-  performance.now(),
-);
+const vm = new LobbyViewModel(new BrowserLobbyPreviewStore());
 const coordinatorUrl =
   // Empty configuration uses the coordinator on this origin.
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -89,6 +86,12 @@ const view = new LobbyView(
             roomId: vm.onlineRoom.id,
           })
           .catch(reportError);
+    },
+    voteMap: (mapId) => {
+      if (!connection || !isLobbyMapId(mapId)) return;
+      void connection
+        .request({ type: "voteMap", requestId: requestId(), mapId })
+        .catch(reportError);
     },
     openCreate: () => {
       vm.dialog = "create";
@@ -186,7 +189,6 @@ const view = new LobbyView(
             requestId: requestId(),
             title: String(data.get("title") ?? ""),
             settings,
-            willingToWait: data.has("willingToWait"),
           })
           .then((id) => {
             vm.dialog = null;
@@ -201,7 +203,6 @@ const view = new LobbyView(
           crypto.randomUUID(),
           String(data.get("title") ?? ""),
           settings,
-          data.has("willingToWait"),
         )
       ) {
         view.closeDialog();
@@ -243,7 +244,7 @@ function route(): void {
         .request({ type: "leave", requestId: requestId() })
         .catch(reportError);
   }
-  vm.tickDirectory(performance.now());
+  vm.tickDirectory();
   document.title = lobby
     ? `${vm.roomTitle}${vm.online ? "" : " — Preview"} · Age of Fronts`
     : "Age of Fronts — Lobbies";
@@ -259,7 +260,7 @@ window.addEventListener("popstate", route);
 window.setInterval(() => {
   const now = performance.now();
   if (vm.tick(now)) view.refreshPreview(vm);
-  if (vm.tickDirectory(now)) view.refreshDirectory(vm);
+  if (vm.tickDirectory()) view.refreshDirectory(vm);
 }, 250);
 route();
 if (coordinatorUrl) {
@@ -300,6 +301,9 @@ if (coordinatorUrl) {
     (message) => {
       if (message.type === "match") { connection?.stop();
         window.location.href = `/skirmish/index.html?match=${encodeURIComponent(message.manifest.id)}`; }
+      // This browser owns the custom room: it runs the match for everyone.
+      else if (message.type === "host-match") { connection?.stop();
+        window.location.href = `/skirmish/index.html?match=${encodeURIComponent(message.matchId)}&host=1`; }
       else {
         // Unsolicited failures, e.g. a reserved match that could not start (M7).
         const notice = unsolicitedErrorText(message);

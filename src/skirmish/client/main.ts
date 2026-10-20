@@ -20,6 +20,7 @@ import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
 let localPlayerId = 1;
 let diagnosticSeed: number | undefined;
 import { OnlineMatchSession } from "./OnlineMatchSession";
+import { MatchHostConnection } from "./MatchHostConnection";
 import type { PendingOrderTarget } from "./PendingOrderPresentation";
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
 const browserDiagnostics = new RuntimeDiagnostics();
@@ -130,7 +131,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
       .join(
         "",
-      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option><option value="2000">2000 cells · procedural maps only</option></select></label><label>Starting age<select id="starting-age">${STARTING_AGES.map(a => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${startingAgeName(a)}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button><button id="controls-toggle" type="button" aria-expanded="false">Controls</button></div>
+      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${STARTING_AGES.map(a => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${startingAgeName(a)}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button><button id="controls-toggle" type="button" aria-expanded="false">Controls</button></div>
 
     <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD</button><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button></div>
 
@@ -531,8 +532,6 @@ async function start(): Promise<void> {
       element<HTMLSelectElement>("starting-age").value = replay.checkpoint.options.startingAge ?? "StoneAge";
     }
     const mapId = element<HTMLSelectElement>("map").value;
-    if (element<HTMLSelectElement>("world-size").value === "2000" && !isProceduralMap(mapId))
-      element<HTMLSelectElement>("world-size").value = "1000";
 
     const requestedSeed = (onlineQuery.has("diagnostics") || isProceduralMap(mapId)) && onlineQuery.has("seed")
       ? Number(onlineQuery.get("seed")) : NaN;
@@ -828,7 +827,9 @@ async function startOnlineMatch(): Promise<void> {
     });
     loading.append(title, detail, cancel);
   };
-  document.querySelector(".brand p")!.textContent = "Online match · server hosted";
+  // The lobby sends a custom room's owner here with host=1: this browser runs the match.
+  const hostingMatch = onlineQuery.get("host") === "1";
+  document.querySelector(".brand p")!.textContent = hostingMatch ? "Online match · you are hosting" : "Online match";
   if (onlineSeat !== undefined && (!Number.isSafeInteger(onlineSeat) || onlineSeat < 1)) {
     showOnlineLoading("This empire link is invalid. Choose an available empire from the lobby.", true);
     return;
@@ -875,6 +876,13 @@ async function startOnlineMatch(): Promise<void> {
     browserDiagnostics,
   );
   worker = session;
+  const hosting = hostingMatch
+    ? new MatchHostConnection(endpoint, onlineMatchId!, import.meta.env.VITE_SKIRMISH_RUNTIME_ID, (message) => {
+        failure = true;
+        session.terminate();
+        showOnlineLoading(message, true);
+      })
+    : undefined;
   for (const control of document.querySelectorAll<HTMLInputElement>(".match-settings select,.match-settings button,#speed,#pause,#play-again")) control.disabled = true;
   const syncControls = (available: boolean) => {
     for (const control of document.querySelectorAll<HTMLElement>(".command-dock,#selection-card,#empire-panel,#recruitment-feed,#refit-actions")) {
@@ -918,7 +926,8 @@ async function startOnlineMatch(): Promise<void> {
       window.location.assign("/");
     });
   };
-  window.addEventListener("pagehide", () => session.terminate(), { once: true });
+  window.addEventListener("pagehide", () => { hosting?.stop(); session.terminate(); }, { once: true });
+  hosting?.start();
   session.connect();
 }
 
@@ -2247,7 +2256,7 @@ const launchMap = new URLSearchParams(window.location.search).get("map");
 if (MAPS.some((map) => map.id === launchMap))
   element<HTMLSelectElement>("map").value = launchMap!;
 const launchSize = onlineQuery.get("size");
-if (["250", "500", "1000", "2000"].includes(launchSize ?? ""))
+if (["250", "500", "1000"].includes(launchSize ?? ""))
   element<HTMLSelectElement>("world-size").value = launchSize!;
 
 localProfile?.initializeControls();

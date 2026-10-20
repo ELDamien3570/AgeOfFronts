@@ -42,12 +42,17 @@ describe("opening economy and troop catalogue", () => {
         game.squads
           .filter((s) => s.playerId === p.id)
           .reduce((n, s) => n + s.troops, 0),
-    ).toBe(Math.floor(STARTING_AGE_TROOPS*12/1000) + 36);
+    ).toBe(Math.floor((STARTING_AGE_TROOPS * 12) / 1000) + 36);
     const before = p.reserves;
-    expect(game.buildings.filter(b => b.playerId === p.id && b.type === "city")).toHaveLength(1);
+    expect(
+      game.buildings.filter((b) => b.playerId === p.id && b.type === "city"),
+    ).toHaveLength(1);
     for (let i = 0; i < 20; i++) game.step();
     expect(p.reserves - before).toBe(
-      Math.floor((baseReserveIncome("StoneAge") + cityReserveIncome("StoneAge"))*12/1000),
+      Math.floor(
+        ((baseReserveIncome("StoneAge") + cityReserveIncome("StoneAge")) * 12) /
+          1000,
+      ),
     );
   });
   it("rejects unaffordable recruitment in both AI choice and the domain without spending reserves", () => {
@@ -85,16 +90,46 @@ describe("opening economy and troop catalogue", () => {
     expect(vm.cards.length).toBe(UNITS.length);
     const stat = (label: string) =>
       vm.card("stoneage-infantry").stats.find(([name]) => name === label)![1];
-    const baseline = Number(stat("Damage / attack").split(" ")[0]);
-    vm.upgraded = true;
+    const baseline = Number(stat("Melee damage / soldier"));
     vm.level = 7;
-    expect(Number(stat("Damage / attack").split(" ")[0])).toBeGreaterThan(
-      baseline,
-    );
+    expect(Number(stat("Melee damage / soldier"))).toBeGreaterThan(baseline);
     for (const u of UNITS.slice(0, 4)) vm.compare(u.id);
     expect(vm.comparison.length).toBe(3);
     vm.search = "does not exist";
     expect(vm.cards).toHaveLength(0);
     expect(vm.comparison).toHaveLength(3);
+  });
+  it("presents real squad manpower instead of legacy 1,000-troop strength", () => {
+    const vm = new TroopCatalogViewModel();
+    const stats = (id: string) => new Map(vm.card(id).stats);
+    for (const unit of UNITS) {
+      const card = stats(unit.id);
+      const recipe = unit.formationRecipe!;
+      expect(card.get("Squad size")).toBe(
+        recipe.model === "soldiers"
+          ? `${recipe.capacity} soldiers`
+          : "1 vehicle",
+      );
+      expect(card.get("Reserves")!.split(" ")[0]).toBe(
+        String(recipe.reserveCost),
+      );
+      expect([...card.values()].join(" ")).not.toMatch(/1,?000[- ]troop/);
+      if (recipe.model === "soldiers" && unit.rangedAttack)
+        expect(card.get("Ranged shots per minute")).toBe(
+          String(unit.rangedAttack.rpm),
+        );
+    }
+    const clubmen = UNITS.find(
+      (u) => u.id === "stoneage-infantry",
+    )!.formationRecipe!;
+    vm.upgraded = true;
+    const larger = stats("stoneage-infantry");
+    expect(larger.get("Squad size")).toBe(
+      `${clubmen.enlargedCapacity} soldiers`,
+    );
+    expect(larger.get("Reserves")!.split(" ")[0]).toBe(
+      String(clubmen.enlargedCapacity),
+    );
+    expect(larger.get("Larger formation")).toContain("Applied");
   });
 });

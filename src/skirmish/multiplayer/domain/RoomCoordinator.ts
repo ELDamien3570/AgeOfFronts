@@ -8,9 +8,11 @@ import {
   validateLobbySettings,
   type LobbySettings,
 } from "../../lobby/LobbyDirectory";
-import { LOBBY_MAP_IDS } from "../../lobby/LobbyRules";
+import { isLobbyMapId, LOBBY_MAP_IDS, type LobbyMapId } from "../../lobby/LobbyRules";
 
 export const RECONNECT_GRACE_MS = 60_000;
+/** Battlefields offered for the next public lobby while a public match runs. */
+export const MAP_VOTE_CHOICES = 3;
 export interface RoomMember {
   guestId: string;
   profile: EmpireProfile;
@@ -27,7 +29,6 @@ export interface OnlineRoom {
   ownerMissingSince?: number;
   settings: LobbySettings;
   members: RoomMember[];
-  listing: "visible" | "queued";
   deadline?: number;
   capacityWaiting: boolean;
   createdAt: number;
@@ -38,16 +39,35 @@ export interface MatchReservation {
   roomId: string;
   /** Custom-room owner at reservation, so a failed start can restore the room. */
   ownerId?: string;
+  /** A custom room's match runs in its owner's browser and uses no server capacity. */
+  hostId?: string;
   settings: LobbySettings;
   members: RoomMember[];
   createdAt: number;
 }
+/** While public capacity is full, guests choose the next public battlefield. */
+export interface MapVote {
+  candidates: LobbyMapId[];
+  /** One choice per guest identity; a guest may change it. */
+  votes: Record<string, LobbyMapId>;
+}
 export interface CoordinatorState {
   version: 1;
+  /** Custom rooms and the single public ("default") room. */
   rooms: OnlineRoom[];
   reservations: MatchReservation[];
   nextSequence: number;
+  mapVote?: MapVote;
 }
+export interface RoomCoordinatorOptions {
+  /** Shuffles the next-battlefield candidates (tests pass a fixed source). */
+  random?: () => number;
+  /** Custom matches run in their owner's browser (default). False puts them
+   * on server workers under the shared match capacity. */
+  hostCustomRooms?: boolean;
+}
+const PUBLIC_MATCH_IN_PROGRESS =
+  "A public match is in progress. Vote for the next battlefield instead.";
 
 /** Room lifecycle aggregate. Wall time and capacity are supplied by application ports. */
 export class RoomCoordinator {
@@ -57,6 +77,7 @@ export class RoomCoordinator {
     now: number,
     private readonly matchCapacity: number,
     restored?: CoordinatorState,
+    private readonly options: RoomCoordinatorOptions = {},
   ) {
     if (!Number.isInteger(matchCapacity) || matchCapacity < 0)
       throw new Error("Match capacity must be a measured nonnegative integer.");
@@ -68,20 +89,91 @@ export class RoomCoordinator {
     // Rooms saved before AI and tribe counts existed gain their map size's base.
     for (const room of [...this.state.rooms, ...this.state.reservations])
       room.settings = migrateLobbySettings(room.settings);
-    for (const mapId of LOBBY_MAP_IDS) {
-      if (!this.state.rooms.some((room) => room.id === `default-${mapId}`)) {
-        this.state.rooms.push({
-          id: `default-${mapId}`,
-          title: `${mapId} lobby`,
-          kind: "default",
-          settings: defaultLobbySettings(mapId),
-          members: [],
-          listing: "visible",
-          createdAt: now,
-          capacityWaiting: false,
-        });
-      }
+    // Rooms saved before custom rooms became unlimited carried a display listing.
+    for (const room of this.state.rooms) delete (room as { listing?: unknown }).listing;
+    // One public room. Older saves listed one default room per battlefield:
+    // keep the one people are in (or the first), drop the rest.
+    const defaults = this.state.rooms.filter(
+      (room) => room.kind === "default" && isLobbyMapId(room.settings.mapId),
+    );
+    const kept = defaults.find((room) => room.members.length) ?? defaults[0];
+    this.state.rooms = this.state.rooms.filter(
+      (room) => room.kind !== "default" || room === kept,
+    );
+    if (!kept) this.state.rooms.unshift(this.publicRoom(LOBBY_MAP_IDS[0], now));
+    if (this.state.mapVote) {
+      const candidates = this.state.mapVote.candidates.filter(isLobbyMapId);
+      if (candidates.length) {
+        const votes: Record<string, LobbyMapId> = {};
+        for (const [guest, mapId] of Object.entries(this.state.mapVote.votes))
+          if (candidates.includes(mapId)) votes[guest] = mapId;
+        this.state.mapVote = { candidates, votes };
+      } else delete this.state.mapVote;
     }
+  }
+
+  private publicRoom(mapId: LobbyMapId, now: number): OnlineRoom {
+    return {
+      id: `default-${mapId}`,
+      title: `${mapId} lobby`,
+      kind: "default",
+      settings: defaultLobbySettings(mapId),
+      members: [],
+      createdAt: now,
+      capacityWaiting: false,
+    };
+  }
+
+  /** The single public lobby. */
+  get publicLobby(): OnlineRoom {
+    return this.state.rooms.find((room) => room.kind === "default")!;
+  }
+
+  /** Server-simulated matches hold capacity; hosted custom matches do not. */
+  private get serverReservations(): number {
+    return this.state.reservations.filter((match) => match.hostId === undefined).length;
+  }
+
+  /** A public match is running and no other can start: the lobby becomes a map vote. */
+  private get publicCapacityFull(): boolean {
+    return this.state.reservations.some((match) => match.roomId.startsWith("default-")) &&
+      this.serverReservations >= this.matchCapacity;
+  }
+
+  /** Choose the next public battlefield. Only offered maps count. */
+  voteMap(guestId: string, mapId: string): void {
+    const vote = this.state.mapVote;
+    if (!vote) throw new Error("Map voting opens while a public match is in progress.");
+    if (!isLobbyMapId(mapId) || !vote.candidates.includes(mapId))
+      throw new Error("Choose one of the offered battlefields.");
+    vote.votes[guestId] = mapId;
+  }
+
+  /** Open the vote when public capacity fills; when it frees, the most voted
+   * battlefield becomes the public lobby (ties go to the earlier offer). */
+  private rotatePublicLobby(now: number): void {
+    const current = this.publicLobby;
+    if (this.publicCapacityFull) {
+      if (this.state.mapVote) return;
+      const pool = LOBBY_MAP_IDS.filter((mapId) => mapId !== current.settings.mapId);
+      for (let index = pool.length - 1; index > 0; index--) {
+        const swap = Math.floor((this.options.random ?? Math.random)() * (index + 1));
+        [pool[index], pool[swap]] = [pool[swap], pool[index]];
+      }
+      this.state.mapVote = { candidates: pool.slice(0, MAP_VOTE_CHOICES), votes: {} };
+      return;
+    }
+    const vote = this.state.mapVote;
+    if (!vote) return;
+    delete this.state.mapVote;
+    // A failed start returned players to the current room: keep its map.
+    if (current.members.length || !vote.candidates.length) return;
+    const tally = new Map<LobbyMapId, number>();
+    for (const mapId of Object.values(vote.votes)) tally.set(mapId, (tally.get(mapId) ?? 0) + 1);
+    let winner = vote.candidates[0];
+    for (const mapId of vote.candidates)
+      if ((tally.get(mapId) ?? 0) > (tally.get(winner) ?? 0)) winner = mapId;
+    this.state.rooms[this.state.rooms.indexOf(current)] = this.publicRoom(winner, now);
   }
 
   snapshot(): CoordinatorState {
@@ -93,7 +185,6 @@ export class RoomCoordinator {
     profile: EmpireProfile,
     title: string,
     settings: LobbySettings,
-    willingToWait: boolean,
     now: number,
   ): OnlineRoom {
     if (
@@ -110,11 +201,6 @@ export class RoomCoordinator {
       /[\u0000-\u001f\u007f]/u.test(title)
     )
       throw new Error("Use a lobby name of 1–40 characters.");
-    const listing = this.customListed() < 3 ? "visible" : "queued";
-    if (listing === "queued" && !willingToWait)
-      throw new Error(
-        "All custom spaces are occupied. Opt into the queue to wait.",
-      );
     settings = validateLobbySettings(settings);
     profile = createEmpireProfile(profile.name, profile.flagCode, profile.colorIndex);
     this.assertNotInMatch(guestId);
@@ -126,7 +212,6 @@ export class RoomCoordinator {
       ownerId: guestId,
       settings,
       members: [{ guestId, profile, joinedAt: now, connected: true }],
-      listing,
       createdAt: now,
       capacityWaiting: false,
     };
@@ -138,8 +223,9 @@ export class RoomCoordinator {
   join(id: string, guestId: string, profile: EmpireProfile, now: number): void {
     this.assertNotInMatch(guestId);
     const room = this.room(id);
+    if (room.kind === "default" && this.state.mapVote)
+      throw new Error(PUBLIC_MATCH_IN_PROGRESS);
     profile = createEmpireProfile(profile.name, profile.flagCode, profile.colorIndex);
-    this.assertColorAvailable(room, guestId, profile);
     const existing = room.members.find((member) => member.guestId === guestId);
     if (existing) {
       existing.connected = true;
@@ -169,7 +255,6 @@ export class RoomCoordinator {
       this.updateCountdown(room, now);
     }
     this.removeEmptyCustoms();
-    this.promote();
   }
 
   close(id: string, guestId: string): void {
@@ -179,7 +264,6 @@ export class RoomCoordinator {
     this.state.rooms = this.state.rooms.filter(
       (candidate) => candidate.id !== id,
     );
-    this.promote();
   }
 
   voteToStart(id: string, guestId: string): void {
@@ -213,7 +297,6 @@ export class RoomCoordinator {
       }
     }
     this.removeEmptyCustoms();
-    this.promote();
     return [];
   }
 
@@ -262,16 +345,9 @@ export class RoomCoordinator {
     }
   }
 
-  private assertColorAvailable(room: OnlineRoom, guestId: string, profile: EmpireProfile): void {
-    if (typeof profile.colorIndex === "number" && room.members.some(member =>
-      member.guestId !== guestId && member.profile.colorIndex === profile.colorIndex))
-      throw new Error("That faction color is reserved by another player. Choose another color or Automatic.");
-  }
-
+  /** Faction colors are a cosmetic preference: several players may share one. */
   updateProfile(guestId: string, profile: EmpireProfile): void {
     profile = createEmpireProfile(profile.name, profile.flagCode, profile.colorIndex);
-    for (const room of this.state.rooms)
-      if (room.members.some(member => member.guestId === guestId)) this.assertColorAvailable(room, guestId, profile);
     for (const room of this.state.rooms)
       for (const member of room.members)
         if (member.guestId === guestId) member.profile = profile;
@@ -280,6 +356,7 @@ export class RoomCoordinator {
   /** Only this aggregate reserves match capacity; starts cannot race between rooms. */
   advance(now: number): MatchReservation[] {
     const started: MatchReservation[] = [];
+    this.rotatePublicLobby(now);
     for (const room of this.state.rooms) {
       room.members = room.members.filter(
         (member) =>
@@ -298,7 +375,6 @@ export class RoomCoordinator {
         this.transferOwner(room);
     }
     this.removeEmptyCustoms();
-    this.promote();
     for (const room of this.state.rooms) {
       this.updateCountdown(room, now);
       const connected = room.members.filter((member) => member.connected);
@@ -308,8 +384,14 @@ export class RoomCoordinator {
         (connected.length >= room.settings.minimumHumans &&
           (connected.length === room.settings.slots ||
             (room.deadline !== undefined && now >= room.deadline)));
-      if (room.listing === "queued" || !ready) continue;
-      if (this.state.reservations.length >= this.matchCapacity) {
+      if (!ready) continue;
+      // A custom room's owner hosts its match, so it starts only with them present.
+      const hosted = room.kind === "custom" && this.options.hostCustomRooms !== false;
+      const host = hosted
+        ? connected.find((member) => member.guestId === room.ownerId)
+        : undefined;
+      if (hosted && !host) continue;
+      if (!hosted && this.serverReservations >= this.matchCapacity) {
         room.capacityWaiting = true;
         continue;
       }
@@ -318,6 +400,7 @@ export class RoomCoordinator {
         roomId: room.id,
         title: room.title,
         ...(room.ownerId === undefined ? {} : { ownerId: room.ownerId }),
+        ...(host ? { hostId: host.guestId } : {}),
         settings: room.settings,
         members: structuredClone(connected),
         createdAt: now,
@@ -329,7 +412,7 @@ export class RoomCoordinator {
       room.capacityWaiting = false;
     }
     this.removeEmptyCustoms();
-    this.promote();
+    this.rotatePublicLobby(now);
     return started;
   }
 
@@ -353,7 +436,9 @@ export class RoomCoordinator {
         delete restored.votedToStart;
         return restored;
       });
-    let room = this.state.rooms.find((candidate) => candidate.id === match.roomId);
+    // Public players return to the public lobby even if its battlefield rotated.
+    let room = this.state.rooms.find((candidate) => candidate.id === match.roomId) ??
+      (match.hostId === undefined && match.roomId.startsWith("default-") ? this.publicLobby : undefined);
     if (!room && returning.some((member) => member.connected)) {
       room = {
         id: match.roomId,
@@ -361,7 +446,6 @@ export class RoomCoordinator {
         kind: "custom",
         settings: match.settings,
         members: [],
-        listing: this.customListed() < 3 ? "visible" : "queued",
         createdAt: now,
         capacityWaiting: false,
       };
@@ -380,7 +464,8 @@ export class RoomCoordinator {
       this.updateCountdown(room, now);
     }
     this.removeEmptyCustoms();
-    this.promote();
+    // Capacity is free again: close a vote the failed start opened.
+    this.rotatePublicLobby(now);
     return match.members.map((member) => member.guestId);
   }
 
@@ -398,20 +483,6 @@ export class RoomCoordinator {
     const room = this.state.rooms.find((candidate) => candidate.id === id);
     if (!room) throw new Error("This lobby no longer exists.");
     return room;
-  }
-  private customListed(): number {
-    return this.state.rooms.filter(
-      (room) => room.kind === "custom" && room.listing === "visible",
-    ).length;
-  }
-  private promote(): void {
-    for (const room of this.state.rooms)
-      if (
-        room.kind === "custom" &&
-        room.listing === "queued" &&
-        this.customListed() < 3
-      )
-        room.listing = "visible";
   }
   private removeEmptyCustoms(): void {
     this.state.rooms = this.state.rooms.filter(
@@ -437,7 +508,7 @@ export class RoomCoordinator {
   }
   private updateCountdown(room: OnlineRoom, now: number): void {
     const connected = room.members.filter((member) => member.connected).length;
-    if (connected < room.settings.minimumHumans || room.listing === "queued") {
+    if (connected < room.settings.minimumHumans) {
       delete room.deadline;
       room.capacityWaiting = false;
     } else room.deadline ??= now + room.settings.countdownSeconds * 1000;

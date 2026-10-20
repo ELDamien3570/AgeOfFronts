@@ -5,7 +5,8 @@ export interface LobbyPreviewData {
   version: 1;
   profile: EmpireProfile;
   visible: readonly CustomLobby[];
-  queue: readonly CustomLobby[];
+  /** Retired display queue; older saves may still hold rooms here. */
+  queue?: readonly CustomLobby[];
 }
 
 export interface LobbyPreviewStore {

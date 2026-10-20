@@ -1,17 +1,31 @@
-import { soldierWeaponStats } from "../WeaponStats";
+import { supplyItemName } from "../../content/Equipment";
+import { recruitmentVariant } from "../../content/FormationRecipes";
 import { TECHNOLOGIES, TECHNOLOGY } from "../../content/Technology";
 import { UNITS } from "../../content/Units";
-import { supplyItemName } from "../../content/Equipment";
 import { scaledAttack, XP_THRESHOLDS } from "../../domain/Combat";
-import { AGE_NAMES, AGES, type Age } from "../../domain/Definitions";
+import {
+  AGE_NAMES,
+  AGES,
+  type Age,
+  type AttackProfile,
+} from "../../domain/Definitions";
+import { recipeCapacity, scaledRecipeCost } from "../../domain/Manpower";
+import { landRecruitmentTicks } from "../../domain/Recruitment";
 import { unitEffects } from "../../domain/ResearchEffects";
-import { FIXED, SQUAD_TROOPS, TICKS_PER_SECOND } from "../../Protocol";
+import { FIXED, TICKS_PER_SECOND } from "../../Protocol";
 import { BUILDING_RULES } from "../../Rules";
+
+const numberFormat = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 2,
+});
+const fmt = (n: number) => numberFormat.format(n);
+const seconds = (ticks: number) => `${fmt(ticks / TICKS_PER_SECOND)}s`;
 
 export class TroopCatalogViewModel {
   search = "";
   age: Age | "" = "";
   role = "";
+  /** Applies the unit's own-age research, i.e. its Larger formations recipe. */
   upgraded = false;
   level = 1;
   readonly compared = new Set<string>();
@@ -37,6 +51,7 @@ export class TroopCatalogViewModel {
     else if (this.compared.size < 3 && UNITS.some((u) => u.id === id))
       this.compared.add(id);
   }
+  /** The first nine stats are the card headline; the rest sit under details. */
   card(id: string) {
     const base = UNITS.find((u) => u.id === id)!;
     const research = this.upgraded
@@ -45,14 +60,84 @@ export class TroopCatalogViewModel {
         ).map((t) => t.id)
       : [];
     const unit = unitEffects(base, research);
-    const attack = scaledAttack(
-      unit.attack,
-      SQUAD_TROOPS,
-      SQUAD_TROOPS,
-      XP_THRESHOLDS[this.level - 1] ?? 0,
-    );
+    const recipe = unit.formationRecipe!;
+    const soldiers = recipe.model === "soldiers";
+    const variant = recruitmentVariant(unit.id, research);
+    const capacity = recipeCapacity(unit, variant);
+    const cost = scaledRecipeCost(unit, variant);
+    const xp = XP_THRESHOLDS[this.level - 1] ?? 0;
+    // Full strength: every soldier (or the single hull) contributes.
+    const resolve = (profile: AttackProfile | undefined) =>
+      profile && scaledAttack(profile, capacity, capacity, xp);
+    const attack = resolve(unit.attack)!;
+    const melee = resolve(unit.meleeAttack);
+    const ranged = resolve(unit.rangedAttack);
     const armour = (n: number) =>
-      unit.armourKind === "points" ? `${n} points` : `${n / 100}%`;
+      unit.armourKind === "points" ? `${fmt(n)} points` : `${n / 100}%`;
+    const largerTechnology = recipe.technologyId
+      ? (TECHNOLOGY.get(recipe.technologyId)?.name ?? recipe.technologyId)
+      : undefined;
+    const headline: [string, string][] = [
+      ["Squad size", soldiers ? `${capacity} soldiers` : "1 vehicle"],
+      [
+        "Health",
+        soldiers
+          ? `${fmt(recipe.soldierHp)} per soldier · ${fmt(recipe.soldierHp * capacity)} squad`
+          : `${fmt(recipe.soldierHp)} hull`,
+      ],
+      ["Gold", fmt(cost.gold ?? 0)],
+      [
+        "Reserves",
+        soldiers
+          ? `${fmt(cost.reserves ?? 0)} (1 per soldier)`
+          : `${fmt(cost.reserves ?? 0)} crew`,
+      ],
+      ["Training time", seconds(landRecruitmentTicks(unit, variant))],
+      ...((soldiers
+        ? [
+            ["Melee damage / soldier", melee ? fmt(melee.damage) : "—"],
+            ["Ranged damage / soldier", ranged ? fmt(ranged.damage) : "—"],
+          ]
+        : [
+            ["Damage / attack", `${fmt(attack.damage)} ${attack.channel}`],
+            ["Reload", seconds(attack.reloadTicks)],
+          ]) as [string, string][]),
+      ["Range", `${fmt(attack.range / FIXED)} cells`],
+      ["Speed", `${unit.speedPercent}%`],
+    ];
+    const weapons: [string, string][] = soldiers
+      ? [
+          ["Melee attacks per minute", melee?.rpm ? String(melee.rpm) : "—"],
+          ["Ranged shots per minute", ranged?.rpm ? String(ranged.rpm) : "—"],
+          ["Shots per reload", ranged ? String(ranged.shotsPerReload) : "—"],
+          [
+            "Reload time",
+            ranged ? `${fmt((ranged.reloadMs ?? 0) / 1000)}s` : "—",
+          ],
+          ...(ranged?.accuracy
+            ? ([
+                [
+                  "Accuracy (contact / maximum range)",
+                  `${ranged.accuracy.near}% / ${ranged.accuracy.far}%`,
+                ],
+              ] as [string, string][])
+            : []),
+          ["Attack interval", seconds(attack.reloadTicks)],
+          [
+            "Moving attack interval",
+            seconds((attack.reloadTicks * attack.movingReloadPercent) / 100),
+          ],
+          [
+            "Formation tactics",
+            "Flank/rear raise melee damage; shield wall protects its front; square resists cavalry; loose reduces ranged hits",
+          ],
+        ]
+      : [
+          [
+            "Moving reload",
+            seconds((attack.reloadTicks * attack.movingReloadPercent) / 100),
+          ],
+        ];
     return {
       id,
       name: unit.name,
@@ -60,22 +145,24 @@ export class TroopCatalogViewModel {
       role: unit.role,
       selected: this.compared.has(id),
       stats: [
-        ['Soldiers / base recipe',unit.formationRecipe!.model==='soldiers'?String(unit.formationRecipe!.capacity):'Vehicle / support'],
-        ['Health per soldier',unit.formationRecipe!.model==='soldiers'?String(unit.formationRecipe!.soldierHp):'Hull'],
-        ['Larger recipe',String(unit.formationRecipe!.enlargedCapacity)],
-        ["Gold", String(unit.cost.gold ?? 0)],
-        ["Reserves", String(unit.cost.reserves ?? 0)],
-        ...soldierWeaponStats(unit,XP_THRESHOLDS[this.level - 1] ?? 0).filter(()=>!!unit.meleeAttack),
-        ["Damage / attack", `${attack.damage} ${attack.channel}`],
-        [unit.meleeAttack ? "Shot cadence" : "Reload", `${attack.reloadTicks / TICKS_PER_SECOND}s`],
+        ...headline,
         [
-          unit.meleeAttack ? "Moving cadence" : "Moving reload",
-          `${(attack.reloadTicks * attack.movingReloadPercent) / (100 * TICKS_PER_SECOND)}s`,
+          "Larger formation",
+          !soldiers || recipe.enlargedCapacity <= recipe.capacity
+            ? "Not available"
+            : variant === "enlarged"
+              ? `Applied · base recipe ${recipe.capacity} soldiers`
+              : `${recipe.enlargedCapacity} soldiers with ${largerTechnology}`,
         ],
-        ["Range", `${attack.range / FIXED} cells`],
+        [
+          "Supplies",
+          Object.entries(cost.items ?? {})
+            .map(([item, n]) => `${n} ${supplyItemName(item)}`)
+            .join(" · ") || "None",
+        ],
+        ...weapons,
         ["Melee armour", armour(unit.meleeArmour)],
         ["Ranged armour", armour(unit.rangedArmour)],
-        ["Speed", `${unit.speedPercent}%`],
         [
           "Research",
           TECHNOLOGY.get(unit.technologyId)?.name ?? unit.technologyId,
@@ -84,69 +171,63 @@ export class TroopCatalogViewModel {
           "Building",
           `${BUILDING_RULES[unit.building].name} · ${AGE_NAMES[AGES.indexOf(unit.age)]} or later`,
         ],
-        [
-          "Supplies",
-          Object.entries(unit.cost.items ?? {})
-            .map(([item, n]) => `${n} ${supplyItemName(item)}`)
-            .join(" · ") || "None",
-        ],
         ["Target classes", attack.targets.join(", ")],
         ["Unit classes", unit.tags.join(", ")],
         [
           "Bonuses",
           Object.entries(attack.bonuses)
-            .map(([tag, n]) => `+${n} vs ${tag}`)
+            .map(([tag, n]) => `+${fmt(n)} vs ${tag}`)
             .join(" · ") || "None",
         ],
         [
           "Bonus resistance",
           Object.entries(unit.bonusResistance)
-            .map(([tag, n]) => `${n} vs ${tag}`)
+            .map(([tag, n]) => `${fmt(n)} vs ${tag}`)
             .join(" · ") || "None",
         ],
-        ["Penetration", String(attack.penetration)],
+        ["Armour penetration", `${fmt(attack.penetration / 100)}%`],
         [
           "Projectile size",
-          `${(attack.projectile?.diameter ?? 0) / FIXED} cells`,
+          `${fmt((attack.projectile?.diameter ?? 0) / FIXED)} cells`,
         ],
         [
           "Projectile speed",
           attack.projectile
-            ? `${(attack.projectile.speed * TICKS_PER_SECOND) / FIXED} cells/sec`
+            ? `${fmt((attack.projectile.speed * TICKS_PER_SECOND) / FIXED)} cells/sec`
             : "Not applicable",
         ],
         [
           "Blast radius",
-          `${(attack.projectile?.blastRadius ?? 0) / FIXED} cells`,
+          `${fmt((attack.projectile?.blastRadius ?? 0) / FIXED)} cells`,
         ],
         [
           "Capture",
           unit.canCapture
             ? unit.undefendedCaptureTicks
-              ? `${unit.undefendedCaptureTicks / TICKS_PER_SECOND}s undefended`
+              ? `${seconds(unit.undefendedCaptureTicks)} undefended`
               : "Local occupation"
             : "Cannot capture",
         ],
-        ...(unit.charge
+        ...((unit.charge
           ? [
               [
                 "Charge",
-                `${unit.meleeAttack ? `${unit.chargeMultiplier}× melee` : `${unit.charge.damage} damage`} · ${unit.charge.cooldownTicks / TICKS_PER_SECOND}s cooldown`,
+                `${unit.meleeAttack ? `${unit.chargeMultiplier ?? 1}× melee${unit.charge.bonusDurationTicks !== undefined ? ` for ${seconds(unit.charge.bonusDurationTicks)} after contact` : " at impact"}` : `${fmt(unit.charge.damage)} damage`} · ${seconds(unit.charge.cooldownTicks)} cooldown`,
               ],
               ["Charge speed", `${unit.charge.speedPercent}%`],
-              ["Charge radius", `${unit.charge.radius / FIXED} cells`],
-              [
-                "Charge run-up",
-                `${unit.charge.runupTicks / TICKS_PER_SECOND}s`,
-              ],
+              ["Charge radius", `${fmt(unit.charge.radius / FIXED)} cells`],
+              ["Charge run-up", seconds(unit.charge.runupTicks)],
               [
                 "Charge travel",
-                `${unit.charge.maximumDistance / FIXED} cells maximum`,
+                `${fmt(unit.charge.maximumDistance / FIXED)} cells maximum`,
               ],
-              ["Charge penetration", String(unit.charge.penetration)],
+              [
+                "Charge armour penetration",
+                `${fmt(unit.charge.penetration / 100)}%`,
+              ],
             ]
-          : []),
-      ],
+          : []) as [string, string][]),
+      ] as [string, string][],
     };
   }
 }

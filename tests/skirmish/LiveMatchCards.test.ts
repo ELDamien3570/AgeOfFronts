@@ -83,31 +83,27 @@ describe("live match directory", () => {
     expect(root.querySelector("#empire-name")).not.toBe(input);
   });
 
-  it("has an honest empty/loading state without invented matches", () => {
+  it("has an honest empty state: the public lobby and no invented matches", () => {
     view.render(vm);
     expect(root.querySelectorAll("[data-live-match]")).toHaveLength(0);
-    expect(root.textContent).toContain("No active matches right now");
-    vm.connected = false;
-    view.render(vm);
-    expect(root.textContent).toContain(
-      "Connecting to the live match directory",
-    );
+    expect(root.querySelectorAll("[data-public-holder] [data-default]")).toHaveLength(1);
     vm.online = false;
     view.render(vm);
-    expect(root.querySelector(".live-match-section")).toBeNull();
+    expect(root.querySelectorAll("[data-live-match]")).toHaveLength(0);
   });
-  it("shows real matches above waiting lobbies and only their eligible AI choices", () => {
+  it("shows a running public match at the top of the public column with its nation choices", () => {
     vm.activeMatches = [match()];
     view.render(vm);
-    expect(
-      root.querySelector("main")!.textContent!.indexOf("Live matches"),
-    ).toBeLessThan(
-      root.querySelector("main")!.textContent!.indexOf("Default lobbies"),
-    );
-    const card = root.querySelector("[data-live-match]")!;
+    const holder = root.querySelector("[data-public-holder]")!;
+    const card = holder.querySelector("[data-live-match]")!;
+    expect(card).not.toBeNull();
+    // The match is listed before the lobby below it.
+    const lobby = holder.querySelector("[data-default]")!;
+    expect(card.compareDocumentPosition(lobby) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(card.textContent).toContain("12:03 elapsed");
     expect(card.textContent).toContain("2 connected humans");
     expect(card.textContent).toContain("1 away / reserved");
+    expect(card.textContent).toContain("Join as a nation");
     const links = card.querySelectorAll(".live-seat-link");
     expect(links).toHaveLength(1);
     expect(links[0].getAttribute("href")).toBe(
@@ -115,6 +111,18 @@ describe("live match directory", () => {
     );
     expect(root.textContent).toContain("never an empire name");
     expect(root.textContent).toContain("Tribes cannot be taken over");
+  });
+  it("titles a public match by its battlefield instead of the room's internal name", () => {
+    vm.activeMatches = [match({ title: "africa lobby" })];
+    view.render(vm);
+    expect(root.querySelector(".live-match-copy h3")!.textContent).toBe("Africa public match");
+  });
+  it("lists a started custom match only in the custom column, for its own players", () => {
+    vm.activeMatches = [match({ hosted: true, rejoinPlayerId: 2, freeAiSeats: [] })];
+    view.render(vm);
+    expect(root.querySelector("[data-public-holder] [data-live-match]")).toBeNull();
+    const card = root.querySelector(".custom-room-holder .hosted-matches [data-live-match]")!;
+    expect(card.querySelector("#rejoin-match-one")).not.toBeNull();
   });
   it("offers a browser-identity rejoin instead of a stranger takeover", () => {
     vm.profile = { name: "Same as someone else", flagCode: null };

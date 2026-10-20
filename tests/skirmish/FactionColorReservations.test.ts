@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { createEmpireProfile } from "../../src/skirmish/lobby/EmpireProfile";
 import { RoomCoordinator } from "../../src/skirmish/multiplayer/domain/RoomCoordinator";
+import { LOBBY_MAP_IDS } from "../../src/skirmish/lobby/LobbyRules";
 import { clientMessageSchema } from "../../src/skirmish/multiplayer/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import {
@@ -9,31 +10,22 @@ import {
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
 
-describe("faction color reservations", () => {
-  it("rejects duplicate joins and profile changes atomically, retains disconnected reservations, releases departed ones", () => {
+describe("faction color choices", () => {
+  it("lets several players join and play with the same color", () => {
     const rooms = new RoomCoordinator(0, 1),
-      id = "default-africa";
+      id = `default-${LOBBY_MAP_IDS[0]}`;
     const a = createEmpireProfile("A", null, 1),
       b = createEmpireProfile("B", null, 2);
     rooms.join(id, "a", a, 0);
     rooms.join(id, "b", b, 0);
-    rooms.disconnect("a", 1);
-    expect(() => rooms.join(id, "c", a, 2)).toThrow(/reserved/);
-    expect(() => rooms.updateProfile("b", { ...b, colorIndex: 1 })).toThrow(
-      /reserved/,
-    );
-    expect(
-      rooms
-        .snapshot()
-        .rooms.find((r) => r.id === id)!
-        .members.find((m) => m.guestId === "b")!.profile.colorIndex,
-    ).toBe(2);
-    rooms.join(id, "a", a, 3);
-    rooms.leave("a", 4);
+    // A third player with A's color joins; B switches to it as well.
+    rooms.join(id, "c", createEmpireProfile("C", null, 1), 1);
     rooms.updateProfile("b", { ...b, colorIndex: 1 });
-    const restored = new RoomCoordinator(5, 1, rooms.snapshot());
-    restored.voteToStart(id, "b");
-    expect(restored.advance(6)[0].members[0].profile.colorIndex).toBe(1);
+    const members = rooms.snapshot().rooms.find((r) => r.id === id)!.members;
+    expect(members.map((m) => m.profile.colorIndex)).toEqual([1, 1, 1]);
+    const restored = new RoomCoordinator(2, 1, rooms.snapshot());
+    for (const guest of ["a", "b", "c"]) restored.voteToStart(id, guest);
+    expect(restored.advance(3)[0].members.map((m) => m.profile.colorIndex)).toEqual([1, 1, 1]);
   });
   it("accepts legacy profiles and Automatic but rejects invalid palette indices at both boundaries", () => {
     expect(createEmpireProfile("Old", null)).toEqual({
@@ -84,12 +76,18 @@ describe("faction color reservations", () => {
     );
     restored.restore(match.checkpoint());
     expect(restored.players[0].colorIndex).toBe(4);
+    // Two humans may share a color; an invalid palette index still fails.
+    const shared = new Skirmish(new GameMapImpl(64, 40, data, data.length), {
+      ...options,
+      humanColors: [4, 4],
+    });
+    expect(shared.players.slice(0, 2).map((p) => p.colorIndex)).toEqual([4, 4]);
     expect(
       () =>
         new Skirmish(new GameMapImpl(64, 40, data, data.length), {
           ...options,
-          humanColors: [4, 4],
+          humanColors: [4, 99],
         }),
-    ).toThrow(/unique/);
+    ).toThrow(/palette/);
   });
 });

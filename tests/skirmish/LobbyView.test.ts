@@ -1,4 +1,5 @@
 import { RoomCoordinator } from "../../src/skirmish/multiplayer/domain/RoomCoordinator";
+import { LOBBY_MAP_IDS } from "../../src/skirmish/lobby/LobbyRules";
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
 import { LobbyView } from "../../src/skirmish/client/lobby/LobbyView";
@@ -14,6 +15,7 @@ function fixture() {
     removeSample: vi.fn(),
     reset: vi.fn(),
     voteStart: vi.fn(),
+    voteMap: vi.fn(),
     customPreview: vi.fn(),
     openCreate: vi.fn(),
     openFlags: vi.fn(),
@@ -110,34 +112,32 @@ describe("lobby page", () => {
     expect(actions.chooseColor).toHaveBeenCalledExactlyOnceWith(5);
   });
 
-  it("disables colors reserved by other guests while showing the server-owned selection", () => {
+  it("keeps colors other guests chose selectable, marks them in use, and keeps the live selector mounted", () => {
     const { root, view, vm } = fixture();
     const rooms = new RoomCoordinator(0, 1);
-    rooms.join("default-africa", "a", { name: "A", flagCode: null, colorIndex: 1 }, 0);
-    rooms.join("default-africa", "b", { name: "B", flagCode: null, colorIndex: 3 }, 0);
-    vm.online = true; vm.connected = true; vm.showLobby("africa");
+    const publicLobby = `default-${LOBBY_MAP_IDS[0]}`;
+    rooms.join(publicLobby, "a", { name: "A", flagCode: null, colorIndex: 1 }, 0);
+    rooms.join(publicLobby, "b", { name: "B", flagCode: null, colorIndex: 3 }, 0);
+    vm.online = true; vm.connected = true; vm.showLobby(LOBBY_MAP_IDS[0]);
     vm.applyOnlineState(rooms.snapshot(), "a", Date.now());
     view.render(vm);
     const select = root.querySelector<HTMLSelectElement>("#faction-color")!;
     expect(select.value).toBe("1");
-    expect(select.querySelector<HTMLOptionElement>('[value="3"]')!.disabled).toBe(true);
-    const reservedOption = select.querySelector<HTMLOptionElement>('[value="3"]')!;
+    const shared = select.querySelector<HTMLOptionElement>('[value="3"]')!;
+    expect(shared.disabled).toBe(false);
+    expect(shared.textContent).toContain("in use");
     rooms.leave("b", Date.now());
     vm.applyOnlineState(rooms.snapshot(), "a", Date.now());
     view.render(vm);
     expect(root.querySelector("#faction-color")).toBe(select);
-    expect(select.querySelector('[value="3"]')).toBe(reservedOption);
-    expect(reservedOption.disabled).toBe(false);
-    rooms.join("default-africa", "b", { name: "B", flagCode: null, colorIndex: 3 }, Date.now());
+    expect(select.querySelector('[value="3"]')).toBe(shared);
+    expect(shared.textContent).not.toContain("in use");
+    rooms.join(publicLobby, "b", { name: "B", flagCode: null, colorIndex: 3 }, Date.now());
     vm.applyOnlineState(rooms.snapshot(), "a", Date.now());
+    expect(vm.chooseColor(3)).toBe(true);
     view.render(vm);
-    expect(reservedOption.disabled).toBe(true);
-    expect(vm.chooseColor(3)).toBe(false);
-    expect(vm.message).toContain("reserved");
-    view.render(vm);
-    expect(root.querySelector(".faction-color-error")!.textContent).toContain("reserved");
+    expect(root.querySelector(".faction-color-error")).toBeNull();
   });
-
   it("provides an accessible color selector on both lobby pages and routes changes through actions", () => {
     const { root, view, vm, actions } = fixture();
     let select = root.querySelector<HTMLSelectElement>("#faction-color")!;
@@ -159,48 +159,70 @@ describe("lobby page", () => {
     expect(actions.chooseColor).toHaveBeenCalledWith(null);
   });
 
-  it("rotates only featured cards, preserves draft identity, and defers replacement of a focused link", () => {
+  it("shows one public lobby beside a scrollable list of every custom room", () => {
     const { root, view, vm } = fixture();
-    const holder = root.querySelector<HTMLElement>("[data-featured-maps]")!;
-    const link = holder.querySelector<HTMLAnchorElement>("[data-preview]")!;
-    const name = root.querySelector<HTMLInputElement>("#empire-name")!;
-    name.value = "Unsaved empire";
-    link.focus();
-    vm.tickDirectory(60_000);
-    view.refreshDirectory(vm);
-    expect(document.activeElement).toBe(link);
-    expect(holder.firstElementChild?.getAttribute("data-default")).toBe(
-      "heightmap-test1",
-    );
-    name.focus();
-    view.refreshDirectory(vm);
-    expect(holder.firstElementChild?.getAttribute("data-default")).toBe(
-      "old-world",
-    );
-    expect(
-      holder
-        .querySelector<HTMLAnchorElement>('[aria-label="Play Old World vs AI"]')
-        ?.getAttribute("href"),
-    ).toBe("/skirmish/index.html?map=old-world");
-    expect(name.value).toBe("Unsaved empire");
-    expect(document.activeElement).toBe(name);
-  });
-  it("shows available default rooms beside three custom spaces and queues the overflow", () => {
-    const { root, view, vm } = fixture();
-    for (const id of ["one", "two", "three", "four"])
-      vm.createRoom(id, id, { ...vm.rules, mapId: "heightmap-test1" }, true);
+    const ids = ["one", "two", "three", "four", "five"];
+    for (const id of ids)
+      vm.createRoom(id, id, { ...vm.rules, mapId: "heightmap-test1" });
     view.render(vm);
-    expect(root.querySelectorAll("[data-default]")).toHaveLength(3);
-    expect(root.querySelectorAll("[data-custom-id]")).toHaveLength(3);
-    expect(root.querySelectorAll(".queue-list li")).toHaveLength(1);
-    expect(root.querySelector(".queue-list")?.textContent).toContain("four");
-    expect(root.querySelector('.queue-list [data-room="four"]')).not.toBeNull();
+    expect(root.querySelectorAll("[data-default]")).toHaveLength(1);
+    const list = root.querySelector(".custom-room-scroll")!;
+    expect(Array.from(list.querySelectorAll("[data-custom-id]"), (card) => card.getAttribute("data-custom-id"))).toEqual(ids);
+    expect(root.querySelector(".queue-list")).toBeNull();
+    expect(root.textContent).not.toContain("DISPLAY SPACES");
+    expect(root.textContent).toContain("5 OPEN");
   });
-
+  it("counts down the public lobby in place without stealing focus", () => {
+    const { root, view, vm } = fixture();
+    const rooms = new RoomCoordinator(0, 1);
+    const publicLobby = `default-${LOBBY_MAP_IDS[0]}`;
+    const now = Date.now();
+    rooms.join(publicLobby, "a", { name: "A", flagCode: null }, now);
+    rooms.join(publicLobby, "b", { name: "B", flagCode: null }, now);
+    vm.online = true; vm.connected = true;
+    vm.applyOnlineState(rooms.snapshot(), "a", now);
+    view.render(vm);
+    const clock = root.querySelector("[data-public-countdown]")!;
+    expect(clock.textContent).toBe("1:00");
+    const link = root.querySelector<HTMLAnchorElement>("[data-public-holder] [data-preview]")!;
+    link.focus();
+    // Two seconds later on the server clock.
+    vm.applyOnlineState(rooms.snapshot(), "a", now + 2_000);
+    expect(vm.tickDirectory()).toBe(true);
+    view.refreshDirectory(vm);
+    expect(root.querySelector("[data-public-countdown]")).toBe(clock);
+    expect(clock.textContent).toBe("0:58");
+    expect(document.activeElement).toBe(link);
+  });
+  it("turns the public lobby into a three-map vote while a public match runs", () => {
+    const { root, view, vm, actions } = fixture();
+    const rooms = new RoomCoordinator(0, 1);
+    const publicLobby = `default-${LOBBY_MAP_IDS[0]}`;
+    rooms.join(publicLobby, "a", { name: "A", flagCode: null }, 0);
+    rooms.voteToStart(publicLobby, "a");
+    expect(rooms.advance(1)).toHaveLength(1);
+    const [first, second] = rooms.snapshot().mapVote!.candidates;
+    rooms.voteMap("c", second);
+    rooms.voteMap("d", second);
+    rooms.voteMap("me", first);
+    vm.online = true; vm.connected = true;
+    vm.applyOnlineState(rooms.snapshot(), "me", Date.now());
+    view.render(vm);
+    const holder = root.querySelector("[data-public-holder]")!;
+    expect(holder.querySelector("[data-default]")).toBeNull(); // No lobby that cannot start.
+    expect(holder.textContent).toContain("MATCH IN PROGRESS");
+    const choices = holder.querySelectorAll<HTMLElement>(".map-vote-choice");
+    expect(choices).toHaveLength(3);
+    expect(choices[0].dataset.selected).toBe("true");
+    expect(choices[0].textContent).toContain("1 vote");
+    expect(choices[1].textContent).toContain("2 votes");
+    holder.querySelector<HTMLButtonElement>(`[data-vote-map="${second}"]`)!.click();
+    expect(actions.voteMap).toHaveBeenCalledWith(second);
+  });
   it("renders empire and lobby names as text instead of allowing injected markup", () => {
     const { root, view, vm } = fixture();
     vm.saveProfile("<i>Empire</i>", "us");
-    vm.createRoom("custom", "<b>Friends</b>", vm.rules, false);
+    vm.createRoom("custom", "<b>Friends</b>", vm.rules);
     view.render(vm);
     expect(root.querySelector(".custom-room-holder h3")?.textContent).toBe(
       "<b>Friends</b>",
@@ -212,16 +234,17 @@ describe("lobby page", () => {
     ).toBe("/flags/us.svg");
   });
   it("separates map previews from the playable AI links", () => {
-    const { root, actions } = fixture();
+    const { root, actions, vm } = fixture();
+    const map = vm.maps[0];
     const preview = root.querySelector<HTMLAnchorElement>(
-      '.directory-card-actions [data-preview="africa"]',
+      `.directory-card-actions [data-preview="${map.id}"]`,
     )!;
     preview.click();
-    expect(actions.preview).toHaveBeenCalledWith("africa");
+    expect(actions.preview).toHaveBeenCalledWith(map.id);
     const play = root.querySelector<HTMLAnchorElement>(
-      '[aria-label="Play Africa vs AI"]',
+      `[aria-label="Play ${map.name} vs AI"]`,
     )!;
-    expect(play.getAttribute("href")).toBe("/skirmish/index.html?map=africa");
+    expect(play.getAttribute("href")).toBe(`/skirmish/index.html?map=${map.id}`);
     expect(root.textContent).toContain(
       "Online joining will be connected next.",
     );

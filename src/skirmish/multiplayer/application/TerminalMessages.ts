@@ -24,6 +24,14 @@ export const MATCH_EXECUTOR_FAILED_MESSAGE = "Match executor failed";
 export const SNAPSHOT_PUBLICATION_FAILED_MESSAGE = "Snapshot publication failed";
 export const SIMULATION_RECOVERY_FAILED_MESSAGE = "Simulation recovery failed";
 
+/** The browser hosting a custom match closed or lost its connection. */
+export const HOST_LEFT_MESSAGE = "The host left the match";
+/** The custom room owner's browser never opened the match it was to host. */
+export const HOST_UNAVAILABLE_MESSAGE =
+  "The host's browser did not start the match. You are back in your room";
+/** Hosting failures players can understand; anything else stays generic. */
+const PUBLIC_HOST_ERRORS: ReadonlySet<string> = new Set([HOST_LEFT_MESSAGE, HOST_UNAVAILABLE_MESSAGE]);
+
 /** Battlefield setup failures players can act on (change settings and retry). */
 export const PUBLIC_SETUP_ERRORS: ReadonlySet<string> = new Set([
   "Not enough room for these factions and tribes. Choose fewer opponents or a larger battlefield.",
@@ -47,14 +55,18 @@ const messageOf = (error: unknown): string | undefined =>
 
 /** Log the raw failure and return the fixed text for a stopped match. */
 export function publicStopMessage(error: unknown): string {
+  const message = messageOf(error);
+  if (message === HOST_LEFT_MESSAGE) return message;
   console.error("Match stopped", error);
   return MATCH_STOPPED_MESSAGE;
 }
 
 /** Log the raw failure and return text safe to show the reserved members. */
 export function publicInitializationMessage(error: unknown): string {
-  console.error("Match initialization failed", error);
   const message = messageOf(error);
+  if (message === HOST_LEFT_MESSAGE) return HOST_UNAVAILABLE_MESSAGE;
+  if (message !== undefined && PUBLIC_HOST_ERRORS.has(message)) return message;
+  console.error("Match initialization failed", error);
   return message !== undefined && PUBLIC_SETUP_ERRORS.has(message)
     ? message
     : MATCH_INITIALIZATION_FAILED_MESSAGE;

@@ -30,13 +30,15 @@ const coordinator = createCoordinatorServer({
   liveMatch: { graceMs },
   maxSocketsPerAddress,
   trustProxy: process.env.MULTIPLAYER_TRUST_PROXY === "1",
+  // Custom matches run in their creator's browser; 0 simulates them here instead.
+  hostCustomRooms: process.env.MULTIPLAYER_HOSTED_CUSTOM !== "0",
 });
 coordinator.http.listen(
   Number(process.env.PORT ?? 9011),
   process.env.HOST ?? "127.0.0.1",
   () =>
     console.log(
-      `Age of Fronts coordinator listening; maximum ${matchCapacity} active matches.`,
+      `Age of Fronts coordinator listening; maximum ${matchCapacity} server-simulated matches.`,
     ),
 );
 let shuttingDown = false;

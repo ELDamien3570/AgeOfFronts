@@ -14,7 +14,6 @@ import {
   type LobbyMapId,
 } from "./LobbyRules";
 
-export const CUSTOM_LOBBY_LIMIT = 3;
 export const MAX_LOBBY_TITLE_LENGTH = 40;
 export const RESOURCE_MULTIPLIERS = [1, 2, 3, 5] as const;
 export type ResourceMultiplier = (typeof RESOURCE_MULTIPLIERS)[number];
@@ -195,22 +194,16 @@ export interface CustomLobby {
   readonly settings: LobbySettings;
 }
 
-/** Directory invariants, independent of presentation, persistence or transport. */
+/** Directory invariants, independent of presentation, persistence or transport.
+ * Custom rooms are unlimited: each is hosted by its owner's browser. */
 export class LobbyDirectory {
   private listed: CustomLobby[] = [];
-  private waiting: CustomLobby[] = [];
 
   get visible(): readonly CustomLobby[] {
     return [...this.listed];
   }
-  get queue(): readonly CustomLobby[] {
-    return [...this.waiting];
-  }
-  get full(): boolean {
-    return this.listed.length === CUSTOM_LOBBY_LIMIT;
-  }
 
-  create(room: CustomLobby, willingToWait: boolean): "visible" | "queued" {
+  create(room: CustomLobby): void {
     const title = room.title.trim().normalize("NFC");
     if (
       !title ||
@@ -225,40 +218,22 @@ export class LobbyDirectory {
       throw new Error(
         "This lobby already exists or has an invalid identifier.",
       );
-    const entry = Object.freeze({
+    this.listed.push(Object.freeze({
       ...room,
       title,
       owner: createEmpireProfile(room.owner.name, room.owner.flagCode, room.owner.colorIndex),
       settings: validateLobbySettings(room.settings),
-    });
-    if (!this.full) {
-      this.listed.push(entry);
-      return "visible";
-    }
-    if (!willingToWait)
-      throw new Error(
-        "All three custom spaces are occupied. Opt into the waiting queue to create this lobby.",
-      );
-    this.waiting.push(entry);
-    return "queued";
+    }));
   }
 
   find(id: string): CustomLobby | undefined {
-    return [...this.listed, ...this.waiting].find((room) => room.id === id);
+    return this.listed.find((room) => room.id === id);
   }
 
-  /** Close a listed room or cancel its queue entry; promote the earliest waiter. */
   remove(id: string): boolean {
-    const listedIndex = this.listed.findIndex((room) => room.id === id);
-    if (listedIndex >= 0) {
-      this.listed.splice(listedIndex, 1);
-      const promoted = this.waiting.shift();
-      if (promoted) this.listed.push(promoted);
-      return true;
-    }
-    const queuedIndex = this.waiting.findIndex((room) => room.id === id);
-    if (queuedIndex < 0) return false;
-    this.waiting.splice(queuedIndex, 1);
+    const index = this.listed.findIndex((room) => room.id === id);
+    if (index < 0) return false;
+    this.listed.splice(index, 1);
     return true;
   }
 }

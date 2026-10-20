@@ -24,54 +24,29 @@ const room = (id: string) => ({
   settings: defaultLobbySettings("heightmap-test1"),
 });
 
-describe("custom lobby holder and waiting queue", () => {
-  it("requires opt-in when all three display spaces are occupied", () => {
+describe("custom lobby directory", () => {
+  it("lists any number of custom rooms in creation order", () => {
     const directory = new LobbyDirectory();
-    for (const id of ["one", "two", "three"]) directory.create(room(id), false);
-    expect(() => directory.create(room("four"), false)).toThrow("Opt into");
-    expect(directory.visible).toHaveLength(3);
-    expect(directory.queue).toHaveLength(0);
-    expect(directory.create(room("four"), true)).toBe("queued");
-    expect(directory.queue.map((entry) => entry.id)).toEqual(["four"]);
-  });
-
-  it("promotes FIFO and preserves queue order when an entry is cancelled", () => {
-    const directory = new LobbyDirectory();
-    for (const id of ["one", "two", "three", "four", "five", "six"])
-      directory.create(room(id), true);
+    const ids = ["one", "two", "three", "four", "five", "six"];
+    for (const id of ids) directory.create(room(id));
+    expect(directory.visible.map((entry) => entry.id)).toEqual(ids);
     directory.remove("five");
     directory.remove("two");
-    expect(directory.visible.map((entry) => entry.id)).toEqual([
-      "one",
-      "three",
-      "four",
-    ]);
-    expect(directory.queue.map((entry) => entry.id)).toEqual(["six"]);
-    directory.remove("one");
-    expect(directory.visible.map((entry) => entry.id)).toEqual([
-      "three",
-      "four",
-      "six",
-    ]);
-    expect(directory.queue).toHaveLength(0);
+    expect(directory.visible.map((entry) => entry.id)).toEqual(["one", "three", "four", "six"]);
     expect(directory.remove("missing")).toBe(false);
   });
 
-  it("rejects duplicate identifiers and invalid rules without occupying a space", () => {
+  it("rejects duplicate identifiers and invalid rules", () => {
     const directory = new LobbyDirectory();
-    directory.create(room("one"), false);
-    expect(() => directory.create(room("one"), true)).toThrow("already exists");
+    directory.create(room("one"));
+    expect(() => directory.create(room("one"))).toThrow("already exists");
     expect(() =>
-      directory.create(
-        {
-          ...room("two"),
-          settings: { ...defaultLobbySettings("heightmap-test1"), slots: 21 },
-        },
-        false,
-      ),
+      directory.create({
+        ...room("two"),
+        settings: { ...defaultLobbySettings("heightmap-test1"), slots: 21 },
+      }),
     ).toThrow("20 human seats");
     expect(directory.visible).toHaveLength(1);
-    expect(directory.queue).toHaveLength(0);
   });
 
   it("uses each map size's base AI and tribe counts and allows 0–14 AI and 0–30 tribes", () => {
@@ -124,7 +99,6 @@ describe("custom lobby holder and waiting queue", () => {
     expect(() =>
       directory.create(
         { ...room("big"), settings: defaultLobbySettings("continents", 2000) },
-        false,
       ),
     ).toThrow("world size");
     expect(directory.visible).toHaveLength(0);
@@ -209,7 +183,6 @@ describe("custom settings and empire identity in preview", () => {
         countdownSeconds: 15,
         aiCount: 0,
       },
-      false,
     );
     expect(vm.showCustomRoom("custom", 1000)).toBe(true);
     expect(vm.phase).toBe("countdown");
@@ -222,14 +195,15 @@ describe("custom settings and empire identity in preview", () => {
     expect(vm.seats.filter((seat) => seat.kind === "ai")).toHaveLength(0);
   });
 
-  it("allows review of a queued room while keeping it out of the custom holder", () => {
+  it("previews any listed room, including after another is removed", () => {
     const vm = new LobbyViewModel();
     for (const id of ["one", "two", "three", "four"])
-      vm.createRoom(id, id, defaultLobbySettings("heightmap-test1"), true);
-    expect(vm.directory.visible.some((room) => room.id === "four")).toBe(false);
+      vm.createRoom(id, id, defaultLobbySettings("heightmap-test1"));
+    expect(vm.directory.visible.map((room) => room.id)).toEqual(["one", "two", "three", "four"]);
     expect(vm.showCustomRoom("four", 0)).toBe(true);
     vm.removeRoom("one");
     expect(vm.showCustomRoom("four", 0)).toBe(true);
+    expect(vm.showCustomRoom("one", 0)).toBe(false);
   });
 
   it("saves identity and the directory through a port and restores them after reload", () => {
@@ -252,15 +226,13 @@ describe("custom settings and empire identity in preview", () => {
           resourceDensity: 3,
           resourceOutput: 5,
         },
-        true,
       );
     const restored = new LobbyViewModel(store);
     expect(restored.profile.name).toBe("Golden Eagles");
     expect(restored.profile.flagCode).toBe("us");
     expect(restored.profile.colorIndex).toBe(4);
     expect(restored.directory.visible[0].owner.colorIndex).toBe(4);
-    expect(restored.directory.visible).toHaveLength(3);
-    expect(restored.directory.queue[0].id).toBe("four");
+    expect(restored.directory.visible.map((room) => room.id)).toEqual(["one", "two", "three", "four"]);
     restored.showCustomRoom("one", 0);
     expect(restored.seats[0].name).toBe("Golden Eagles");
     expect(restored.rules).toMatchObject({
@@ -274,7 +246,7 @@ describe("custom settings and empire identity in preview", () => {
     });
   });
 
-  it("restores older saved rooms at 1× without discarding identity, rules or queue order", () => {
+  it("restores older saved rooms at 1×, including the retired queue, without discarding identity or rules", () => {
     // Destructured only to drop the fields older saves did not have.
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { resourceDensity, resourceOutput, ...legacySettings } =
@@ -293,12 +265,13 @@ describe("custom settings and empire identity in preview", () => {
       write: () => true,
     });
     expect(vm.profile.name).toBe("Eagles");
+    // Rooms that waited in the retired display queue are listed after the rest.
     expect(vm.directory.visible.map((entry) => entry.id)).toEqual([
       "one",
       "two",
       "three",
+      "four",
     ]);
-    expect(vm.directory.queue[0].id).toBe("four");
     vm.showCustomRoom("four", 0);
     expect(vm.rules).toMatchObject({
       mapId: "africa",
