@@ -16,7 +16,7 @@ import { SnapshotDecoder } from "../../src/skirmish/SnapshotCodec";
 import type { SnapshotPacket } from "../../src/skirmish/Protocol";
 
 /** The custom room owner's "browser": the shared match runtime behind a /host socket. */
-function hostBrowser(port: number, origin: string, token: string, matchId: string) {
+function hostBrowser(port: number, origin: string, token: string, matchId: string, seaTradeRouting?: "lanes-v1") {
   const socket = new WebSocket(`ws://127.0.0.1:${port}/host`, { origin });
   const runtime = createMatchRuntime({
     post: (message) => { if (socket.readyState === WebSocket.OPEN) socket.send(encodeHostFrame(message)); },
@@ -35,13 +35,16 @@ function hostBrowser(port: number, origin: string, token: string, matchId: strin
     socket.send(JSON.stringify({ type: "host-authenticate", token, matchId, runtimeId: computeRuntimeBuild() })));
   socket.on("message", (data) => {
     frames.received++;
-    runtime.handle(decodeHostFrame(data as Buffer) as { id: number; request: ExecutorRequest });
+    const frame = decodeHostFrame(data as Buffer) as { id: number; request: ExecutorRequest };
+    if (seaTradeRouting && (frame.request.type === "prepare" || frame.request.type === "initialize"))
+      frame.request = { ...frame.request, options: { ...frame.request.options, seaTradeRouting } };
+    runtime.handle(frame);
   });
   const closed = new Promise<number>((resolve) => socket.on("close", (code) => { runtime.close(); resolve(code); }));
   return { socket, frames, closed };
 }
 
-it("runs a custom match in its owner's browser: states reach every player, the server simulates nothing, and the match ends with the host", async () => {
+it.each([undefined, "lanes-v1"] as const)("runs a custom match in its owner's browser: states reach every player, the server simulates nothing, and the match ends with the host (%s)", async (seaTradeRouting) => {
   const origin = "http://localhost:9010";
   const store = new CoordinatorStore(":memory:");
   let now = 0;
@@ -82,7 +85,7 @@ it("runs a custom match in its owner's browser: states reach every player, the s
         try {
           const message = JSON.parse(raw.toString()) as ServerMessage;
           all[index].push(message);
-          if (message.type === "host-match") host = hostBrowser(port, origin, tokens[index], message.matchId);
+          if (message.type === "host-match") host = hostBrowser(port, origin, tokens[index], message.matchId, seaTradeRouting);
           if (message.type === "match") {
             manifest = message.manifest;
             send(socket, { type: "match-ready", matchId: message.manifest.id, runtimeId: message.manifest.runtimeId });

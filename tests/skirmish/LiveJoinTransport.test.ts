@@ -11,7 +11,7 @@ import type {
 import { decodeState } from "../../src/skirmish/multiplayer/StateCodec";
 import type { SnapshotPacket } from "../../src/skirmish/Protocol";
 
-it("joins and reclaims through real WebSockets with one atomic authoritative snapshot and bounded grace", async () => {
+it.each([undefined, "lanes-v1"] as const)("joins and reclaims through real WebSockets with one atomic authoritative snapshot and bounded grace (%s)", async (seaTradeRouting) => {
   const store = new CoordinatorStore(":memory:");
   let now = 0,
     sequence = 0;
@@ -32,6 +32,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
             request.type === "prepare"
               ? {
                   ...request,
+                  options: { ...request.options, ...(seaTradeRouting ? { seaTradeRouting } : {}) },
                   map: {
                     width: 240,
                     height: 160,

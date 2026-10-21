@@ -690,7 +690,7 @@ export class EmpireView {
       .slice(0, 16)
       .map(
         (a) =>
-          `<div class="shipment">Shipment ${a.shipmentId}: ${a.state}${a.waitingReason ? ` · ${escape({ cargo: "Waiting for a full load", planning: "Finding a route", "no-receiver": "Needs a reachable owned port", unreachable: "No route available", handling: "Loading or unloading", capacity: "Waiting for routing capacity" }[a.waitingReason])}` : ""} · ${a.cargo}/${a.loaded} cargo · ${a.visited.length} stops paid</div>`,
+          `<div class="shipment">Shipment ${a.shipmentId}: ${a.state}${a.waitingReason ? ` · ${escape(a.waitDetail === "market-intake" ? "Waiting for market capacity" : a.waitDetail === "no-market" ? "No eligible trading port" : { cargo: "Waiting for a full load", planning: "Finding a route", "no-receiver": "Needs a reachable owned port", unreachable: "No route available", handling: "Loading or unloading", capacity: "Waiting for routing capacity" }[a.waitingReason])}` : ""} · ${a.cargo}/${a.loaded} cargo · ${a.visited.length} stops paid</div>`,
       )
       .join(
         "",

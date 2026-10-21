@@ -1,3 +1,4 @@
+import { validateSeaTradeEnvelope } from "./domain/SeaTradeVoyages";
 import { secondsToTicks } from './Protocol';
 import { validateOccupancy } from "./domain/TrenchOccupancy";
 import {stepDiplomaticWithdrawal,validateAiWithdrawal} from './domain/AiDiplomaticWithdrawal';
@@ -77,7 +78,7 @@ import {
 } from "./domain/AiPersonality";
 import { FactionRoster } from "./domain/FactionRoster";
 import { AiForceInventory } from "./domain/AiForceInventory";
-import { canPromoteTribe, MAX_PLAYER_ID, tribeReserveIncome } from "./FactionRules";
+import { canPromoteTribe, MAX_PLAYER_ID, tribeReserveIncome, tradeActorCap } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
 import { DEFAULT_NAVAL_PRIORITY, PASSENGER_DAMAGE_PERCENT, incomingNavalDamage, navalHealth, navalRank, navalStrengthPermille, navalVelocity, validateTransportDamage, type NavalTarget } from "./domain/NavalCombat";
 import { vesselEffects } from "./domain/ResearchEffects";
@@ -380,6 +381,8 @@ export class Skirmish {
     if (saved.version !== 11 || saved.width !== this.map.width() || saved.height !== this.map.height() ||
       JSON.stringify(saved.options) !== JSON.stringify(this.options) || Boolean(saved.expansion) !== Boolean(this.expansion))
       throw new Error("Checkpoint does not match this simulation");
+    validateSeaTradeEnvelope(saved.expansion?.trade.seaTrade, this.options.seaTradeRouting === "lanes-v1", this.map.width() * this.map.height(),
+      saved.players.reduce((n, player) => n + tradeActorCap(player, "Modern"), 0), saved.buildings.length);
     for (const tiles of [saved.owners, saved.claims, saved.progress])
       if (!(tiles instanceof Uint8Array) || tiles.length !== this.owners.length) throw new Error("Invalid checkpoint tile array");
     const players = new Set<number>();
@@ -483,6 +486,7 @@ export class Skirmish {
     if (state.forest) { const field=forestOf(this.map); if (!field) throw new Error("Missing forest field"); field.restore(state.forest); }
     this.random=PseudoRandom.fromState(state.random); this.routeWork.restore(state.routeWork); if (state.expansion) this.expansion!.restore(state.expansion);
     this.routePlanner.restore(state.planning ?? {landRevision:this.paths.revision,waterRevision:this.waterPaths.revision,jobs:[]});
+    this.expansion?.trade.seaRouteConsumer?.validatePlannerLinks(this.routePlanner.requests());
     this.movementAdmission.restore(state.admission ?? {pending:[],nextId:1,events:[]});
     this.shipAdmission.restore(state.shipAdmission ?? {pending:[],nextId:1,events:[]});
     // Permission generations are derived restore fences. Rebase saved waits
@@ -582,7 +586,7 @@ export class Skirmish {
   /** Human-commanded route work, which takes the planner's interactive share. */
   private interactiveRoute(task: { playerId?: number; kind: string; owner?: string }): boolean {
     return !this.player(task.playerId ?? 0)?.ai && task.playerId !== 0 &&
-      (task.kind !== "domain" || !["trade", "strategy"].includes(task.owner ?? ""));
+      (task.kind !== "domain" || !["trade", "strategy", "sea-trade"].includes(task.owner ?? ""));
   }
   /** Whether a faction's squads may move onto water. */
   amphibious(playerId: number): boolean {
@@ -814,7 +818,8 @@ export class Skirmish {
     // background admission and route budgets remain unchanged.
     const interactiveWork = this.options.deferredPlanning
       ? this.movementAdmission.stepInteractive(this.tick, 2560/TICKS_PER_SECOND) : 0;
-    this.routePlanner.step(this.tick,81920/TICKS_PER_SECOND);
+    const seaCopies = this.expansion?.trade.stepSeaCopies(81920/TICKS_PER_SECOND) ?? 0;
+    this.routePlanner.step(this.tick,81920/TICKS_PER_SECOND - seaCopies);
     if(this.options.deferredPlanning) {
       this.movementAdmission.stepInteractive(this.tick,2560/TICKS_PER_SECOND-interactiveWork);
       const landWork = this.movementAdmission.step(this.tick, 640/TICKS_PER_SECOND);
@@ -832,16 +837,17 @@ export class Skirmish {
   readonly movementAdmission: MovementAdmission;
   readonly shipAdmission: ShipMovementAdmission;
   private domainConsumer(owner: DomainRouteOwner): DomainRouteConsumer | undefined {
-    return owner === "army" ? this.expansion?.armies : owner === "strategy" ? this.expansion?.economy.routes : this.expansion?.trade;
+    return owner === "sea-trade" ? this.expansion?.trade.seaRouteConsumer : owner === "army" ? this.expansion?.armies : owner === "strategy" ? this.expansion?.economy.routes : owner === "trade" ? this.expansion?.trade : undefined;
   }
   get domainRoutes(): DomainRoutePorts | undefined {
     if (!this.options.deferredPlanning) return undefined;
     return this.domainRoutePorts;
   }
   private readonly domainRoutePorts: DomainRoutePorts = {
-    deadlineTicks:(playerId,owner,admissionId)=>this.interactiveRoute({playerId,kind:"domain",owner}) ||
+    deadlineTicks:(playerId,owner,admissionId)=>owner === "sea-trade" ? undefined : this.interactiveRoute({playerId,kind:"domain",owner}) ||
       (owner === "trade" && admissionId !== undefined && this.expansion?.trade.routeCommitted({ admissionId })) ?
       undefined : this.options.autonomousRouteDeadlineTicks,
+    has: key => this.routePlanner.has(key),
     hostile: this.collisionHostile,
     priority:id=>!this.player(id)?.ai,
     // Caravans keep to land; every military owner moves squads amphibiously.
@@ -859,7 +865,7 @@ export class Skirmish {
       return true;
     },
     event:(owner,event)=>{
-      if(owner!=="strategy")this.commandApplications.observe(owner,event);
+      if(owner!=="strategy" && owner!=="sea-trade")this.commandApplications.observe(owner,event);
     },
   };
   private routingKeys = new Map<number, { policy: string | number; version: number; alliances: string; value: string }>();
@@ -951,6 +957,8 @@ export class Skirmish {
       throw new Error("Invalid autonomous routing deadline");
     if(options.autonomousDecisionInterval!==undefined && options.autonomousDecisionInterval!==secondsToTicks(1.5))
       throw new Error("Invalid autonomous decision cadence");
+    if (options.seaTradeRouting !== undefined && (options.seaTradeRouting !== "lanes-v1" ||
+      options.ruleset !== "ages-v1" || options.deferredPlanning !== true)) throw Error("Invalid sea trade routing mode");
     this.territoryAbsorption = new TerritoryAbsorption(map);
     this.coastalTerritory = new CoastalTerritory(map);
     const humanCount = options.humanNames?.length ?? 1;
@@ -1010,21 +1018,23 @@ export class Skirmish {
       // player preparation reserve when no interactive route is waiting;
       // otherwise busy trade fleets leave that capacity idle for minutes.
       lendIdlePreparation: true,
-      deadlineTicks: request => this.interactiveRoute(request.context) ||
+      balancedActiveAdmission: options.seaTradeRouting === "lanes-v1",
+      deadlineTicks: request => request.context.kind === "domain" && request.context.owner === "sea-trade" ? undefined : this.interactiveRoute(request.context) ||
         (request.context.kind === "domain" && request.context.owner === "trade" && this.expansion?.trade.routeCommitted(request.context)) ?
         undefined : this.options.autonomousRouteDeadlineTicks,
-      allowExclusiveRetry: request => request.context.kind !== "domain" || request.context.owner !== "trade",
+      allowExclusiveRetry: request => request.context.kind !== "domain" || !["trade", "sea-trade"].includes(request.context.owner),
       // Interactive orders and trade use a warmed corridor. Long trade legs
       // (sea lanes, caravans heading home across a continent) otherwise exceed
       // the bounded arena, fail as "limited" and strand couriers in backoff.
-      corridorReady: request => (this.interactiveRoute(request.context) || request.context.kind === "domain" && request.context.owner === "trade" ||
+      corridorReady: request => (this.interactiveRoute(request.context) || request.context.kind === "domain" && ["trade", "sea-trade"].includes(request.context.owner) ||
         this.options.autonomousRouteDeadlineTicks===secondsToTicks(2) && this.map.euclideanDistSquared(request.start,request.goal)>=128**2) &&
         this.tick >= (request.water ? this.corridorTicks.water : request.amphibious ? this.corridorTicks.amphibious : this.corridorTicks.land),
       priority: request => this.interactiveRoute(request.context),
-      committed: request => request.context.kind === "domain" && request.context.owner === "trade" &&
-        (this.expansion?.trade.routeCommitted(request.context) ?? false),
+      committed: request => request.context.kind === "domain" && (request.context.owner === "sea-trade" ?
+        this.expansion?.trade.seaRouteConsumer?.committed(request.context) ?? false : request.context.owner === "trade" &&
+        (this.expansion?.trade.routeCommitted(request.context) ?? false)),
       identity:request=>({playerId:request.context.playerId ?? 0,
-        caller:request.context.kind === "domain" ? request.context.owner : request.context.kind}),
+        caller:request.context.kind === "domain" ? request.context.owner === "sea-trade" ? "trade" : request.context.owner : request.context.kind}),
       prepare:(request,budget,rays)=>{
         const task=request.context;
         if(task.kind!=="navigation")return {work:1,failed:true};

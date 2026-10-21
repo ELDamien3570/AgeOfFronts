@@ -1,3 +1,7 @@
+import { SeaTradeRoutes } from "./SeaTradeRoutes";
+import { SeaTradePorts } from "./SeaTradePorts";
+import { SeaTradeVoyages } from "./SeaTradeVoyages";
+import { SEA_TRADE_LIMITS } from "./SeaTradeTypes";
 import { secondsToTicks } from '../Protocol';
 import { ownTradePublication, tradeDetailsChanged } from "./TradePublication";
 import { portWaterTiles } from "../PortWaterAccess";
@@ -35,8 +39,10 @@ import {
 } from "./TradeQuote";
 
 export interface TradeWorld {
+  readonly options?: { seaTradeRouting?: "lanes-v1" };
   spatialFacts(phase: SpatialPhase): PhaseSpatialFacts;
   readonly domainRoutes?: DomainRoutePorts;
+  /** Authoritative indexed lookup, including absence; required by shared sea lanes. */
   building?(id: number): Building | undefined;
   buildingFacts?(): BuildingQueries;
   factionAdjacent?(a: number, b: number): boolean;
@@ -120,6 +126,8 @@ function firstPerTile<T extends { tile: number }>(rows: readonly T[]): T[] {
   return rows.filter(row => !seen.has(row.tile) && (seen.add(row.tile), true));
 }
 export class Trade {
+  readonly seaTrade?: SeaTradeVoyages;
+  get seaRouteConsumer() { return this.seaTrade?.routes; }
   readonly receipts = new Map<string,TradeReceipt>();
   receiptRevision=0;
   private nextReceipt=1;
@@ -140,7 +148,7 @@ export class Trade {
   readonly cycleQuotes = new Map<number, TradeCycleQuote>();
   controlRevision = 0;
   readonly diagnostics = {
-    planningLimits: 0,
+    planningLimits: 0, seaLoads: 0, seaArrivals: 0, seaCycles: 0, seaSalvages: 0,
     marketReads: 0,
     routeRequests: 0,
     routeHits: 0,
@@ -153,7 +161,10 @@ export class Trade {
   };
   private readonly markets = new Map<number, OwnerMarkets>();
   private marketGeometry = -1;
+  private restoredSeaMarkets = false;
+  private seaProducerRevision = -1;
   private readonly seaMarkets = new Map<number, Building[]>();
+  private readonly seaMarketOwners = new Map<number, Set<number>>();
   private readonly landMarkets: Building[] = [];
   private readonly landComponents = new Map<number,Building[]>();
   private readonly landShortlists = new Map<string,{epoch:number;permission:string;rows:Building[]}>();
@@ -197,6 +208,30 @@ export class Trade {
     private readonly war: (a: number, b: number) => boolean = (a,b)=>diplomacy.declaredWar(a,b),
     private readonly relationRevision:(owner:number)=>string = ()=>String(diplomacy.revision),
   ) {
+    if (world.options?.seaTradeRouting === "lanes-v1") {
+      // Stale catalog IDs are normal after destruction. An indexed miss must
+      // stay O(1), rather than fall through to the legacy whole-world scan.
+      const building = world.building?.bind(world);
+      if (!building) throw Error("Shared sea lanes require indexed building lookup");
+      const routes = new SeaTradeRoutes(world.map, world.waterPaths, () => {
+        const ports = world.domainRoutes;
+        if (!ports?.has) throw Error("Shared sea lanes require planner ports");
+        return { request: (task, start, goal, water) => ports.request(task, start, goal, water),
+          cancel: task => ports.cancel(task), has: key => ports.has!(key) };
+      }, () => world.tick, () => (TRADE_RULES.maximumStops + 5) * world.players.reduce((n, p) => n + tradeActorCap(p, "Modern"), 0));
+      const ports = new SeaTradePorts(world.map, world.waterPaths, building,
+        (owner, b) => this.ready(b) && b.type === "port" && b.playerId !== owner &&
+          !this.playerLookup.find(world.players, b.playerId)?.eliminated && this.permitted(owner, b.playerId, true));
+      this.seaTrade = new SeaTradeVoyages(routes, ports, { map: world.map, water: world.waterPaths, tick: () => world.tick,
+        building, source: a => this.source(a)?.source,
+        allowed: (a, b, returning) => this.allowedMarket(a, b, returning),
+        intake: (a, b) => this.receiving.available(TradeReceiving.key(b.playerId, b.tile), world.tick, true,
+          b.playerId !== a.playerId, this.diplomacy.allied(a.playerId, b.playerId)),
+        allied: (a, b) => this.diplomacy.allied(a, b),
+        commitLoad: (a, receiver) => this.commitLoad(a, this.source(a), receiver),
+        ownedPorts: owner => this.markets.get(owner)?.ports ?? [],
+      });
+    }
     this.seaActors = new SpatialGrid(world.map.width()*FIXED,world.map.height()*FIXED,8*FIXED,a=>a.playerId);
     this.blastActors = new SpatialGrid(world.map.width()*FIXED,world.map.height()*FIXED,8*FIXED,a=>a.playerId);
   }
@@ -245,6 +280,8 @@ export class Trade {
   onCapture?: (captorId:number,victimId:number,value:number)=>void;
   checkpoint() {
     return structuredClone({
+      ...(this.seaTrade ? { seaTrade: this.seaTrade.checkpoint(),
+        seaMarketDirty: this.world.buildingFacts?.().producerRevision !== this.seaProducerRevision } : {}),
       actors: this.actors,
       receipts: [...this.receipts],receiptRevision:this.receiptRevision,nextReceipt:this.nextReceipt,
       deliveredGold: this.deliveredGold,
@@ -307,6 +344,27 @@ export class Trade {
     this.seaMarkets.clear();
     this.landMarkets.length = 0;
     this.marketGeometry = -1;
+    this.restoredSeaMarkets = !!this.seaTrade && !s.seaMarketDirty;
+    this.seaProducerRevision = s.seaMarketDirty ? -1 : this.world.buildingFacts?.().producerRevision ?? -1;
+    if (this.seaTrade) {
+      if (!s.seaTrade) throw Error("Missing sea trade checkpoint");
+      this.seaTrade.restore(s.seaTrade, this.actors);
+    }
+  }
+  /** Offline fixture conversion reads the same completed-market authority. */
+  seaFixtureCatalogs(): [number, number[]][] {
+    const facts = this.world.buildingFacts?.(), result = new Map<number, number[]>();
+    for (const player of this.world.players) {
+      const ports = this.currentMarkets(player.id, facts, true).ports, seen = new Set<number>();
+      for (const port of ports) {
+        if (seen.has(port.tile)) continue; seen.add(port.tile);
+        const components = new Set(portWaterTiles(this.world.map, port.tile).map(tile => this.world.waterPaths.component[tile]).filter(id => id > 0));
+        for (const component of components) {
+          const rows = result.get(component) ?? []; rows.push(port.id); result.set(component, rows);
+        }
+      }
+    }
+    return [...result];
   }
   setPaused(playerId: number, naval: boolean, paused: boolean): void {
     const c = this.control(playerId);
@@ -359,7 +417,9 @@ export class Trade {
     );
   }
   private redirect(owner: number, naval?: boolean, other?: number): void {
-    for (const a of this.actors)
+    for (const a of this.actors) {
+      if (this.seaTrade && a.naval && a.playerId === owner && a.state !== "prize" &&
+        (naval === undefined || naval) && a.destination === null) { this.seaTrade.redirect(a, other); continue; }
       if (
         a.playerId === owner &&
         a.state !== "prize" &&
@@ -374,6 +434,7 @@ export class Trade {
         a.path = [];
         if (a.cargo) a.state = "returning";
       }
+    }
   }
   private building(id: number): Building | undefined {
     return (
@@ -426,6 +487,7 @@ export class Trade {
       changed = true;
     }
     this.marketGeometry = facts?.geometryRevision ?? -1;
+    if (this.seaTrade) this.seaProducerRevision = facts?.producerRevision ?? -1;
     if (!changed) return;
     const receivers = new Map<string, number>();
     const receivingPercent=new Map<string,number>();
@@ -447,7 +509,7 @@ export class Trade {
       const rows=this.landComponents.get(component)??[];rows.push(b);this.landComponents.set(component,rows);
     }
     for(const rows of this.landComponents.values())rows.sort((a,b)=>a.id-b.id);
-    this.seaMarkets.clear();
+    this.seaMarkets.clear(); this.seaMarketOwners.clear();
     for (const owner of this.markets.values()) {
       const tiles = new Set<number>();
       for (const port of owner.ports) {
@@ -462,9 +524,15 @@ export class Trade {
           const list = this.seaMarkets.get(sea) ?? [];
           list.push(port);
           this.seaMarkets.set(sea, list);
+          if (this.seaTrade) {
+            let owners = this.seaMarketOwners.get(sea); if (!owners) { owners = new Set(); this.seaMarketOwners.set(sea, owners); }
+            owners.add(port.playerId);
+          }
         }
       }
     }
+    if (this.restoredSeaMarkets) this.restoredSeaMarkets = false;
+    else this.seaTrade?.ports.marketsChanged(this.seaMarkets);
     // A newly completed/captured port wakes stranded prizes immediately. The
     // receiver index, rather than a timer, owns this dependency change.
     for (const actor of this.actors) if (actor.naval && actor.state === "prize" && actor.waitingReason === "no-receiver" &&
@@ -657,6 +725,7 @@ export class Trade {
     return naval ? "water" : `${this.controlRevision}:${this.relationRevision(owner)}`;
   }
   private cancel(id: number): void {
+    this.seaTrade?.releaseActor(id);
     const p = this.admissions.get(id);
     if (!p) return;
     this.world.domainRoutes?.cancel(this.task(p));
@@ -783,6 +852,22 @@ export class Trade {
     }
   }
   stepPlanning(budget: number): number {
+    if (!this.seaTrade) return this.stepLegacyPlanning(budget);
+    this.refreshMarkets();
+    const legacyContext = this.prepareLegacyPlanning();
+    let used = 0;
+    for (; used < budget; used++) {
+      const sea = this.seaTrade.mixedTurn === 0;
+      this.seaTrade.mixedTurn = 1 - this.seaTrade.mixedTurn;
+      const work = sea ? this.seaTrade.stepManagement(1) || this.stepLegacyPlanning(1, legacyContext) :
+        this.stepLegacyPlanning(1, legacyContext) || this.seaTrade.stepManagement(1);
+      if (!work) break;
+    }
+    this.seaTrade.ports.step(SEA_TRADE_LIMITS.discovery, this.seaMarkets);
+    return used;
+  }
+  stepSeaCopies(budget: number): number { return this.seaTrade?.routes.stepCopies(Math.min(SEA_TRADE_LIMITS.copies, budget)) ?? 0; }
+  private prepareLegacyPlanning() {
     for(const p of this.admissions.values()) {
       const limit=this.world.domainRoutes?.deadlineTicks?.(p.playerId,"trade",p.id);
       if(limit===undefined)continue;
@@ -812,6 +897,10 @@ export class Trade {
         p.requested = false;
       } else pendingCorridors.set(key, p.id);
     }
+    return { pendingCorridors, pendingKey };
+  }
+  private stepLegacyPlanning(budget: number, context = this.prepareLegacyPlanning()): number {
+    const { pendingCorridors, pendingKey } = context;
     let used = 0,
       idle = 0;
     while (this.admissions.size && used < budget) {
@@ -825,6 +914,7 @@ export class Trade {
         continue;
       }
       if (p.requested || p.retryAt > this.world.tick) {
+        if (this.seaTrade) used++;
         if (++idle >= this.admissions.size) break;
         continue;
       }
@@ -979,8 +1069,12 @@ export class Trade {
     return { seaSpeed: this.cargoEffects(owner).seaSpeed };
   }
   private load(a: TradeActor): boolean {
+    // Legacy admissions retain their exact load timing and publication behavior.
+    const plan = this.admissions.get(a.id)!;
+    return this.commitLoad(a, this.source(a), plan.candidates[plan.index]);
+  }
+  private commitLoad(a: TradeActor, site: Site | undefined, receiverId: number): boolean {
     tradeDetailsChanged(a);
-    const site = this.source(a);
     if (
       !site ||
       site.source.playerId !== a.playerId ||
@@ -1019,14 +1113,14 @@ export class Trade {
       this.supply.goods.set(b.id, goods - take);
       remaining -= take;
     }
-    const plan = this.admissions.get(a.id)!;
-    a.stops = [plan.candidates[plan.index]];
+    a.stops = [receiverId];
     a.quoteAllies = this.world.players
       .filter(
         (p) => p.id !== a.playerId && this.diplomacy.allied(a.playerId, p.id),
       )
       .map((p) => p.id);
     a.waitTicks = TICKS_PER_SECOND;
+    if (a.naval) this.diagnostics.seaLoads++;
     return true;
   }
   private actorCap(player: Player): number {
@@ -1108,6 +1202,11 @@ export class Trade {
     }))];
     });
   }
+  private seaBasinViable(owner: number, water: number): boolean {
+    for (const other of this.seaMarketOwners.get(this.world.waterPaths.component[water]) ?? [])
+      if (other !== owner && !this.playerLookup.find(this.world.players, other)?.eliminated && this.permitted(owner, other, true)) return true;
+    return false;
+  }
   private spawn(): void {
     // Prizes are transferred couriers, not new actors. Their brief arrival
     // overflow never lifts the world's total cap, including all prizes.
@@ -1130,6 +1229,7 @@ export class Trade {
       if (actor.naval) seaTally.set(actor.playerId, (seaTally.get(actor.playerId) ?? 0) + 1);
       if (actor.state === "loading") idleSites.add(this.siteKey(actor.playerId,actor.naval,actor.originTile));
     }
+    this.seaTrade?.maintainSources(new Set(sourceCounts.keys()), idleSites);
     this.releaseIdleCouriers(new Map(eligible.map(player => [player.id, player])), seaTally, tally, idleSites, sourceCounts);
     for (const player of eligible) {
       const cap = this.actorCap(player), sites = this.markets.get(player.id)?.sites ?? [];
@@ -1173,7 +1273,7 @@ export class Trade {
             quoteAllies: [],
           };
         // Cheap candidates first; exact reachability still uses the shared bounded planner.
-        let viable = this.candidates(actor).length > 0;
+        let viable = site.naval && this.seaTrade ? this.seaBasinViable(actor.playerId, origin) : this.candidates(actor).length > 0;
         if (!viable && site.naval) {
           // A footprint can touch disconnected basins. Prefer its historical
           // berth, but do not strand new couriers in an unproductive pond.
@@ -1185,7 +1285,7 @@ export class Trade {
             tried.add(basin);
             actor.x = (this.world.map.x(berth) + 0.5) * FIXED;
             actor.y = (this.world.map.y(berth) + 0.5) * FIXED;
-            if (this.candidates(actor).length) { viable = true; break; }
+            if (this.seaTrade ? this.seaBasinViable(actor.playerId, berth) : this.candidates(actor).length) { viable = true; break; }
           }
         }
         if (!viable) continue;
@@ -1339,11 +1439,14 @@ export class Trade {
         continue;
       }
       if (a.waitTicks > 0) {
+        if (a.naval && this.seaTrade) this.seaTrade.setWait(a, "handling");
         a.waitTicks--;
         continue;
       }
-      if (a.waitingReason !== undefined) tradeDetailsChanged(a);
-      a.waitingReason = undefined;
+      if (!a.naval || !this.seaTrade) {
+        if (a.waitingReason !== undefined) tradeDetailsChanged(a);
+        a.waitingReason = undefined;
+      }
       if (a.naval) this.sea.query(a.x, a.y, 1.2 * FIXED, this.nearby as Ship[]);
       else this.land.query(a.x, a.y, 1.2 * FIXED, this.nearby as Squad[]);
       const captor = this.nearby
@@ -1377,6 +1480,7 @@ export class Trade {
         a.path = [];
         a.waitTicks = TICKS_PER_SECOND;
         a.waitingReason = "handling";
+        if (a.naval) this.seaTrade?.setWait(a, "handling");
         continue;
       }
       const site = this.source(a);
@@ -1392,6 +1496,20 @@ export class Trade {
         a.state = "prize";
         a.destination = null;
         a.path = [];
+      }
+      if (a.naval && this.seaTrade && a.state === "loading") {
+        if (this.modeEnabled(a.playerId, true)) {
+          if (site!.buildings.reduce((n, b) => n + (this.supply.goods.get(b.id) ?? 0), 0) >= this.capacity(site!).value) {
+            if (a.supplyWaitStartedTick !== undefined) {
+              tradeDetailsChanged(a); a.supplyWaitTicks = (a.supplyWaitTicks ?? 0) + tick - a.supplyWaitStartedTick;
+              a.supplyWaitStartedTick = undefined;
+            }
+            this.seaTrade.begin(a, true);
+          } else {
+            a.supplyWaitStartedTick ??= tick; this.seaTrade.setWait(a, "cargo");
+          }
+        } else this.seaTrade.setWait(a);
+        continue;
       }
       if (a.state === "loading") {
         if (this.modeEnabled(a.playerId,a.naval)) {
@@ -1409,7 +1527,7 @@ export class Trade {
       }
       if (this.admissions.has(a.id)) { if (a.waitingReason !== "planning") tradeDetailsChanged(a); a.waitingReason = "planning"; continue; }
       if (a.destination === null) {
-        this.begin(a, false);
+        if (a.naval && this.seaTrade) this.seaTrade.begin(a, false); else this.begin(a, false);
         continue;
       }
       const b = this.building(a.destination);
@@ -1417,11 +1535,17 @@ export class Trade {
         tradeDetailsChanged(a);
         a.destination = null;
         a.path = [];
-        if (a.state !== "prize") a.state = "returning";
-        this.begin(a, false);
+        if (a.naval && this.seaTrade) {
+          if (a.state === "prize") { this.seaTrade.releaseActor(a.id); this.seaTrade.begin(a, false); }
+          else this.seaTrade.startReturn(a);
+        } else {
+          if (a.state !== "prize") a.state = "returning";
+          this.begin(a, false);
+        }
         continue;
       }
-      const tile = a.path[a.nextPathIndex];
+      if (a.naval && this.seaTrade) this.seaTrade.setWait(a);
+      const tile = this.nextWaypoint(a);
       if (tile !== undefined) {
         const goal = {
           x: (map.x(tile) + 0.5) * FIXED,
@@ -1452,7 +1576,7 @@ export class Trade {
         if (distance <= speed) {
           a.x = goal.x;
           a.y = goal.y;
-          a.nextPathIndex++;
+          this.reachedWaypoint(a);
         } else {
           a.x += Math.round((dx * speed) / distance);
           a.y += Math.round((dy * speed) / distance);
@@ -1461,13 +1585,15 @@ export class Trade {
       }
       tradeDetailsChanged(a);
       if (a.state === "returning") {
+        if (a.naval) this.diagnostics.seaCycles++;
         const supplyTicks = a.tripSupplyTicks ?? 0;
-        const cycleTicks = Math.max(1, this.world.tick - (a.tripStartedTick ?? this.world.tick) + supplyTicks);
-        const handlingTicks = (2 + a.visited.length) * TICKS_PER_SECOND;
+        const seaQuote = a.naval ? this.seaTrade?.quote(a) : undefined;
+        const cycleTicks = seaQuote?.cycleTicks ?? Math.max(1, this.world.tick - (a.tripStartedTick ?? this.world.tick) + supplyTicks);
+        const handlingTicks = seaQuote?.handlingTicks ?? (2 + a.visited.length) * TICKS_PER_SECOND;
         const goldPer1000Ticks = Math.floor((a.tripGold ?? 0) * 1000 / cycleTicks);
         this.cycleQuotes.set(a.id, { completedTick:this.world.tick,marketId:a.visited[0],sourceId:a.factoryId,quantity:a.loaded,delivered:a.delivered,returned:a.cargo,
           guaranteedGold:a.tripGold ?? 0,supplyTicks,handlingTicks,travelTicks:Math.max(0,cycleTicks-handlingTicks-supplyTicks),
-          cycleTicks,goldPer1000Ticks,observedRisk:0,riskAdjustedGoldPer1000Ticks:goldPer1000Ticks });
+          ...(seaQuote ?? {}), cycleTicks,goldPer1000Ticks,observedRisk:0,riskAdjustedGoldPer1000Ticks:goldPer1000Ticks });
         if (a.cargo && site) {
           this.supply.goods.set(
             site.source.id,
@@ -1476,12 +1602,15 @@ export class Trade {
           a.returned += a.cargo;
           a.cargo = 0;
         }
+        if (a.naval) this.seaTrade?.home(a);
         a.state = "loading";
         a.destination = null;
         a.waitTicks = TICKS_PER_SECOND;
         a.waitingReason = "handling";
+        if (a.naval) this.seaTrade?.setWait(a, "handling");
         continue;
       }
+      if (a.naval) { if (a.state === "prize") this.diagnostics.seaSalvages++; else this.diagnostics.seaArrivals++; }
       const distance = Math.sqrt(map.euclideanDistSquared(a.originTile, b.tile)),
         foreign = b.playerId !== a.playerId,
         allied =
@@ -1513,15 +1642,23 @@ export class Trade {
       // delivery must never pay the same owner twice.
       const recipient = foreign && a.state !== "prize" ? players.get(b.playerId) : undefined;
       if (recipient && !recipient.eliminated) this.creditDelivery(recipient, b.tile, receiverTariff(gold));
+      if (a.naval && a.state !== "prize") this.seaTrade?.outwardArrival(a, b);
       a.destination = null;
       a.path = [];
       a.waitTicks = TICKS_PER_SECOND;
       a.waitingReason = "handling";
+      if (a.naval) this.seaTrade?.setWait(a, "handling");
       if (a.state === "prize") this.retired.add(a.id);
       else a.state = a.cargo && a.visitedTiles.length < TRADE_RULES.maximumStops ? "outbound" : "returning";
     }
     if (!this.world.domainRoutes) this.stepPlanning(32);
     this.removeRetired();
+  }
+  private nextWaypoint(a: TradeActor): number | undefined {
+    return a.naval && this.seaTrade ? this.seaTrade.nextWaypoint(a) : a.path[a.nextPathIndex];
+  }
+  private reachedWaypoint(a: TradeActor): void {
+    if (a.naval && this.seaTrade) this.seaTrade.reachedWaypoint(a); else a.nextPathIndex++;
   }
   /** One cleanup per phase, rather than an actor-array scan per warhead. */
   removeRetired(): void {

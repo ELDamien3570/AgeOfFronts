@@ -54,9 +54,11 @@ export interface RoutePlannerPorts<T> {
   classificationRevision?(request: ExactRouteRequest<T>): string | number | boolean;
   /** False only for explicitly qualified legacy scheduling/profiles. */
   sharedPreparation?: boolean;
+  /** Version 7: reserve active progress for paid and unpaid background work. */
+  balancedActiveAdmission?: boolean;
   /** Loaded civilian cargo is already committed economic work. */
   committed?(request: ExactRouteRequest<T>): boolean;
-  /** Loan unused preparation capacity only while no interactive request waits. */
+  /** Loan idle corridor preparation; v7 checks actual interactive preparation demand. */
   lendIdlePreparation?: boolean;
   priority?(request: ExactRouteRequest<T>): boolean;
   /** Canonical autonomous planning deadline; omitted for exhaustive/player work. */
@@ -167,6 +169,8 @@ export class RoutePlanner<T> {
   private priorityTurn = 0;
   private backgroundTurn = 0;
   private currentTick = 0;
+  private admissionDemandUntil: [number, number] = [-1, -1];
+  private admissionClassUntil: [number, number, number, number] = [-1, -1, -1, -1];
   private readonly lastCaller = new Map<number, number>();
   private readonly selection = new Array<Job<T> | undefined>(256 * PLANNER_CALLERS.length);
   private readonly selectionKeys: number[] = [];
@@ -190,6 +194,7 @@ export class RoutePlanner<T> {
     workspaceCapacity = 65_536,
     private readonly amphibious?: LandPaths,
   ) {
+    if (ports.balancedActiveAdmission) this.schedulingVersion = 7;
     if (ports.sharedPreparation === false) this.schedulingVersion = 3;
     if (!Number.isInteger(jobLimit) || jobLimit < 1 || jobLimit > 128)
       throw new Error("Invalid route queue limit");
@@ -209,6 +214,7 @@ export class RoutePlanner<T> {
       workspace: this.workspace.checkpoint(),
       scheduling: {
         version: this.schedulingVersion,
+        ...(this.schedulingVersion >= 7 ? { admissionDemandUntil: [...this.admissionDemandUntil] as [number, number], admissionTick: this.currentTick, admissionClassUntil: [...this.admissionClassUntil] as [number, number, number, number] } : {}),
         lastPlayer: this.lastPlayer,
         priorityTurn: this.priorityTurn,
         ...(this.schedulingVersion >= 4 ? { backgroundTurn: this.backgroundTurn } : {}),
@@ -240,7 +246,10 @@ export class RoutePlanner<T> {
     const scheduling = saved.scheduling;
     if (
       scheduling &&
-      (![1, 2, 3, 4, 5, 6].includes(scheduling.version) ||
+      (![1, 2, 3, 4, 5, 6, 7].includes(scheduling.version) ||
+        (scheduling.admissionDemandUntil !== undefined && (!Array.isArray(scheduling.admissionDemandUntil) || scheduling.admissionDemandUntil.length !== 2 || scheduling.admissionDemandUntil.some(value => !Number.isSafeInteger(value) || value < -1))) ||
+        (scheduling.admissionClassUntil !== undefined && (!Array.isArray(scheduling.admissionClassUntil) || scheduling.admissionClassUntil.length !== 4 || scheduling.admissionClassUntil.some(value => !Number.isSafeInteger(value) || value < -1))) ||
+        (scheduling.admissionTick !== undefined && (!Number.isSafeInteger(scheduling.admissionTick) || scheduling.admissionTick < 0)) ||
         (scheduling.backgroundTurn !== undefined && (!Number.isSafeInteger(scheduling.backgroundTurn) || scheduling.backgroundTurn < 0)) ||
         (scheduling.priorityTurn !== undefined && (!Number.isSafeInteger(scheduling.priorityTurn) || scheduling.priorityTurn < 0)) ||
         !Number.isInteger(scheduling.lastPlayer) ||
@@ -272,8 +281,12 @@ export class RoutePlanner<T> {
         new PlanningWorkspace(this.workspace.capacity).checkpoint(),
     );
     this.schedulingVersion = saved.scheduling?.version ?? 1;
-    if (![1, 2, 3, 4, 5, 6].includes(this.schedulingVersion))
+    if (![1, 2, 3, 4, 5, 6, 7].includes(this.schedulingVersion))
       throw new Error("Unknown planner scheduling version");
+    this.admissionDemandUntil = saved.scheduling?.admissionDemandUntil ? [...saved.scheduling.admissionDemandUntil] : [-1, -1];
+    this.currentTick = saved.scheduling?.admissionTick ?? 0;
+    this.admissionClassUntil = saved.scheduling?.admissionClassUntil ? [...saved.scheduling.admissionClassUntil] : [-1, -1, -1, -1];
+    if ([...this.admissionDemandUntil, ...this.admissionClassUntil].some(until => until > this.currentTick + secondsToTicks(2))) throw Error("Invalid planner admission demand lease");
     this.exclusiveKey = saved.scheduling?.exclusiveKey;
     this.retiredJobs = saved.scheduling?.retired ?? 0;
     if (!Number.isSafeInteger(this.retiredJobs) || this.retiredJobs < 0)
@@ -323,6 +336,19 @@ export class RoutePlanner<T> {
   has(key: string): boolean {
     const job = this.jobs.get(key);
     return !!job && (!job.discard || !!job.replacement);
+  }
+  /** Detached immutable identities for restore/debug cross-validation. */
+  requests(): readonly ExactRouteRequest<T>[] {
+    const requests: ExactRouteRequest<T>[] = [];
+    for (const job of this.jobs.values()) {
+      if (job.replacement) { requests.push(structuredClone(job.replacement)); continue; }
+      if (job.discard || job.retired) continue;
+      requests.push(structuredClone({ key: job.key, start: job.start, goal: job.goal,
+        alternatives: job.alternatives, prepare: job.prepare, water: job.water,
+        amphibious: job.amphibious, createdTick: job.createdTick,
+        obstacleRevision: job.obstacleRevision, context: job.context }));
+    }
+    return requests;
   }
   /** Actual bounded queue occupancy; never derived from timing telemetry. */
   get pendingCount():number{return this.jobs.size;}
@@ -556,28 +582,57 @@ export class RoutePlanner<T> {
   private partitionRefuses(request: ExactRouteRequest<T>): boolean {
     const priority = this.priorityOf(request), playerId = priority ? this.playerOf(request) : -1;
     const v6 = this.schedulingVersion >= 6, navigation = v6 && priority && this.callerOf(request) !== "admission";
-    let interactive = 0, player = 0, playerNavigation = 0, background = 0;
+    let interactive = 0, player = 0, playerNavigation = 0, background = 0, uncommitted = 0;
+    const mediumJobs = [0, 0], mediumUncommitted = [0, 0];
     for (const job of this.jobs.values()) {
       // Rec 5 (v6): a superseded or finished job only reclaims its arena
       // slots; it no longer holds its seat's share, so a replacement order
       // gets the slot on the tick the old one is cancelled. (Reclaiming
       // entries still count toward the whole table's jobLimit.)
       if (v6 && (job.retired || (job.discard && !job.replacement))) continue;
-      if (this.priorityOf(job)) {
+      const live = this.schedulingVersion >= 7 && job.replacement ? job.replacement : job;
+      if (this.priorityOf(live)) {
         interactive++;
-        if (priority && this.playerOf(job) === playerId) {
+        if (priority && this.playerOf(live) === playerId) {
           player++;
-          if (navigation && this.callerOf(job) !== "admission") playerNavigation++;
+          if (navigation && this.callerOf(live) !== "admission") playerNavigation++;
         }
-      } else background++;
+      } else {
+        background++;
+        if (this.schedulingVersion >= 7) {
+          const medium = Number(live.water); mediumJobs[medium]++;
+          if (!this.committedOf(live)) { uncommitted++; mediumUncommitted[medium]++; }
+        }
+      }
     }
     if (priority)
       return interactive >= PLANNER_PARTITION.interactiveTotal || player >= PLANNER_PARTITION.interactivePerPlayer ||
         navigation && playerNavigation >= PLANNER_PARTITION.interactivePerPlayer - PLANNER_PARTITION.admissionReserve;
     const share = this.jobLimit - PLANNER_PARTITION.interactiveTotal, size = this.jobs.size;
+    if (this.schedulingVersion >= 7) {
+      const medium = Number(request.water), other = 1 - medium;
+      const split = mediumJobs[other] > 0 || this.admissionDemandUntil[other] >= this.currentTick;
+      // Existing searches retain progress. Overrepresented inherited work may
+      // finish, but cannot refill ahead of the medium/class waiting outside.
+      const backgroundLimit = Math.min(this.jobLimit - 8, this.jobLimit - interactive);
+      const ordinaryLimit = Math.max(share - PLANNER_PARTITION.committedReserve, this.jobLimit - 24 - interactive);
+      const mediumLimit = split ? Math.ceil(backgroundLimit / 2) : backgroundLimit;
+      const ordinaryMediumLimit = split ? Math.ceil(ordinaryLimit / 2) : ordinaryLimit;
+      const paid = this.committedOf(request);
+      const oppositeClass = medium * 2 + Number(!paid);
+      const classWaiting = this.admissionClassUntil[oppositeClass] >= this.currentTick;
+      if (mediumJobs[medium] >= mediumLimit || !paid && mediumUncommitted[medium] >= ordinaryMediumLimit ||
+        classWaiting && (paid ? mediumJobs[medium] - mediumUncommitted[medium] >= Math.floor(mediumLimit * 3 / 4)
+          : mediumUncommitted[medium] >= Math.ceil(mediumLimit / 4))) return true;
+    }
     if (background >= share && size >= this.jobLimit - 8) return true;
+    // v7: paid jobs already occupy the paid reserve. Counting them again
+    // against the unpaid allowance needlessly left 16 usable slots empty
+    // whenever a mixed fleet had 104 total background jobs.
+    const ordinary = this.schedulingVersion >= 7 ? uncommitted : background;
     return !!this.ports.committed && !this.committedOf(request) &&
-      background >= share - PLANNER_PARTITION.committedReserve && size >= this.jobLimit - 24;
+      ordinary >= share - PLANNER_PARTITION.committedReserve &&
+      (this.schedulingVersion >= 7 ? uncommitted + interactive : size) >= this.jobLimit - 24;
   }
   cancel(key: string): void {
     const job = this.jobs.get(key);
@@ -596,6 +651,13 @@ export class RoutePlanner<T> {
       previous.releasing = "superseded";
       previous.replacement = request;
       return true;
+    }
+    if (this.schedulingVersion >= 7) {
+      this.currentTick = Math.max(this.currentTick, request.createdTick);
+      if (!this.priorityOf(request)) {
+        this.admissionDemandUntil[Number(request.water)] = this.currentTick + secondsToTicks(2);
+        this.admissionClassUntil[Number(request.water) * 2 + Number(this.committedOf(request))] = this.currentTick + secondsToTicks(2);
+      }
     }
     if (!this.jobs.has(request.key) && this.jobs.size >= this.jobLimit) {
       this.diagnostics.admissionDeferred++;
@@ -629,6 +691,10 @@ export class RoutePlanner<T> {
       ...(this.schedulingVersion >= 4 && request.water && !request.prepare && !this.ports.blocked(request) ?
         { shortcut: paths.beginWaterShortcut(request.start, request.goal) } : {}),
     });
+    if (this.schedulingVersion >= 7 && !this.priorityOf(request)) {
+      this.admissionDemandUntil[Number(request.water)] = -1;
+      this.admissionClassUntil[Number(request.water) * 2 + Number(this.committedOf(request))] = -1;
+    }
     this.diagnostics.pending = this.jobs.size;
     return true;
   }
@@ -685,7 +751,17 @@ export class RoutePlanner<T> {
     let humanWaiting = false;
     if (this.ports.lendIdlePreparation && this.ports.priority) for (const job of this.jobs.values()) {
       const live=job.discard?job.replacement:job.retired?undefined:job;
-      if (live && this.priorityOf(live)) { humanWaiting = true; break; }
+      if (live && this.priorityOf(live)) {
+        // A human exact search waiting for the arena cannot spend corridor
+        // preparation. Let existing holders drain with that idle allowance;
+        // keeping it reserved here makes the human wait behind cold sea trees.
+        // v6 retains its historical any-interactive-request reservation.
+        const canPrepare = job.discard ? (this.ports.corridorReady?.(live) ?? true) :
+          !!job.corridor || !job.waitingForWorkspace && !job.exclusiveRetry && !job.corridorTried &&
+          job.nextCandidate === 0 && !job.search.nodes.size && job.search.phase === "search" &&
+          (this.ports.corridorReady?.(live) ?? true);
+        if (this.schedulingVersion < 7 || canPrepare) { humanWaiting = true; break; }
+      }
     }
     let preparationBudget = Math.min(Math.ceil(budget/16), budget),
       // At most 16,384 local dequeues, with 12,288 reserved for human work.
@@ -697,9 +773,29 @@ export class RoutePlanner<T> {
     // Exclude it once instead of rescanning it between every runnable quantum.
     // Human requests retain the existing priority/idle circuit breaker.
     const deferred = new Set<Job<T>>();
+    const preparationUsed = [0, 0], preparationBlocked = new Set<number>();
+    const preparationDemand = [false, false];
+    if (this.schedulingVersion >= 7) for (const job of this.jobs.values())
+      if (!job.retired && !job.discard && !job.prepare && !this.priorityOf(job) &&
+        (job.corridor || !job.corridorTried && !job.search.nodes.size && !!this.ports.corridorReady?.(job))) preparationDemand[Number(job.water)] = true;
+    const splitPreparation = preparationDemand[0] && preparationDemand[1];
+    const preparationShare = backgroundCorridorPreparationBudget / 2;
+    let preparationBorrowed = false;
     while (this.jobs.size && used < budget) {
       const selected = this.selectJob(job => !deferred.has(job));
-      if (!selected) break;
+      if (!selected) {
+        // Loan a genuinely unused half after its medium had a complete pass.
+        // At most one extra pass; never manufacture new preparation allowance.
+        if (!preparationBorrowed && splitPreparation && backgroundCorridorPreparationBudget > 0 && preparationBlocked.size === 1) {
+          const medium = preparationBlocked.values().next().value!;
+          if (preparationUsed[1 - medium] < preparationShare) {
+            preparationBorrowed = true;
+            for (const job of deferred) if (job.corridor && Number(job.water) === medium) deferred.delete(job);
+            continue;
+          }
+        }
+        break;
+      }
       const [key, job] = selected;
       this.jobs.delete(key);
       const cohort = this.cohort(job),
@@ -784,12 +880,39 @@ export class RoutePlanner<T> {
             const split = this.schedulingVersion >= 6,
               corridorNext = split && !job.corridorTried && !job.exclusiveRetry && job.nextCandidate === 0 &&
                 !!this.ports.corridorReady?.(job);
-            let active = 0;
-            for (const other of this.jobs.values()) if (!other.retired && !other.discard &&
-              !this.priorityOf(other) && (other.corridor || other.search.nodes.size) &&
-              (!split || !!other.corridor === corridorNext)) active++;
-            const limit = this.ports.committed && !this.committedOf(job) ? 12 : 16;
-            if (active >= limit) {
+            const balanced = this.schedulingVersion >= 7 && !!this.ports.committed;
+            let active = 0, paidActive = 0, unpaidActive = 0;
+            let paidWaiting = 0, unpaidWaiting = 0;
+            let mediumActive = 0, otherMediumDemand = 0;
+            const paid = !!this.ports.committed && this.committedOf(job);
+            for (const other of this.jobs.values()) {
+              if (other.retired || other.discard || this.priorityOf(other)) continue;
+              const otherPaid = balanced && this.committedOf(other);
+              if ((other.corridor || other.search.nodes.size) && (!split || !!other.corridor === corridorNext)) {
+                active++;
+                if (other.water !== job.water) { otherMediumDemand++; continue; }
+                mediumActive++;
+                if (otherPaid) paidActive++; else unpaidActive++;
+              } else if (balanced && !other.prepare && !other.corridor && !other.search.nodes.size && other.search.phase === "search") {
+                const otherCorridor = !other.corridorTried && !other.exclusiveRetry && other.nextCandidate === 0 &&
+                  !!this.ports.corridorReady?.(other);
+                if (otherCorridor === corridorNext) {
+                  if (other.water !== job.water) { otherMediumDemand++; continue; }
+                  if (otherPaid) paidWaiting++; else unpaidWaiting++;
+                }
+              }
+            }
+            // v7 shares the unchanged 16 active slots between land/water
+            // while both need them (8 each), then reserves 3/4 paid and 1/4
+            // unpaid within each medium while both classes need admission.
+            // Idle classes/mediums lend their share. Existing holders finish;
+            // no search progress is discarded to rebalance.
+            const limit = balanced ? 16 : this.ports.committed && !paid ? 12 : 16;
+            const mediumLimit = 16 - Math.min(8, otherMediumDemand);
+            const otherClassDemand = paid ? unpaidActive + unpaidWaiting : paidActive + paidWaiting;
+            const classLimit = mediumLimit - Math.min(paid ? Math.ceil(mediumLimit / 4) : Math.floor(mediumLimit * 3 / 4), otherClassDemand);
+            const classFull = balanced && (mediumActive >= mediumLimit || (paid ? paidActive : unpaidActive) >= classLimit);
+            if (active >= limit || classFull) {
               this.jobs.set(key, job); deferred.add(job); used++; continue;
             }
           }
@@ -833,18 +956,23 @@ export class RoutePlanner<T> {
             }
           } else if (job.corridor) {
             const priority = this.priorityOf(job);
+            const medium = Number(job.water);
+            const mediumAllowance = this.schedulingVersion >= 7 && splitPreparation && !preparationBorrowed && !priority
+              ? Math.max(0, preparationShare - preparationUsed[medium]) : backgroundCorridorPreparationBudget;
             const preparation = { used: 0 }, work = paths.stepCorridor(
               job.corridor, this.workspace, slice, this.ports.blocked(job),
-              priority ? corridorPreparationBudget : Math.min(corridorPreparationBudget, backgroundCorridorPreparationBudget),
+              priority ? corridorPreparationBudget : Math.min(corridorPreparationBudget, backgroundCorridorPreparationBudget, mediumAllowance),
               preparation,
               this.schedulingVersion >= 4,
             );
             corridorPreparationBudget -= preparation.used;
-            if (!priority) backgroundCorridorPreparationBudget -= preparation.used;
+            if (!priority) { backgroundCorridorPreparationBudget -= preparation.used; preparationUsed[medium] += preparation.used; }
             if (!work) {
               this.jobs.set(key, job);
-              if (!this.priorityOf(job)) deferred.add(job);
-              else if (++idle >= this.jobs.size) break;
+              if (!this.priorityOf(job)) {
+                deferred.add(job);
+                if (mediumAllowance <= 0 && splitPreparation && !preparationBorrowed) preparationBlocked.add(medium);
+              } else if (++idle >= this.jobs.size) break;
               continue;
             }
             idle = 0;

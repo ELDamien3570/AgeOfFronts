@@ -1,3 +1,4 @@
+import { restoreAiMinimum } from "./AiCheckpointMinimum";
 import {TICKS_PER_SECOND} from '../Protocol';
 import { secondsToTicks } from '../Protocol';
 import { remainingHealth,HEALTH_SCALE } from './Manpower';
@@ -49,7 +50,7 @@ export interface AiOperation {
   threats: { rival: number; tile: number; until: number }[];
   cursor: number;
   candidate?: number;
-  score: number;
+  score?: number;
   readiness?:import("./AiForceReadiness").AiForceReadiness;
   sleepKey?:string;
   territorialRevision?:number;
@@ -253,7 +254,7 @@ export class AiOperations {
   checkpoint() { return structuredClone({ records: [...this.records], revision: this.revision,territorialRevision:this.territorialRevision,theatres:[...this.theatreRecords] }); }
   restore(saved: Omit<ReturnType<AiOperations["checkpoint"]>,"theatres"> & Partial<Pick<ReturnType<AiOperations["checkpoint"]>,"theatres">>): void {
     this.theatreRecords.clear();for(const [id,rows] of saved.theatres??[])this.theatreRecords.set(id,structuredClone(rows));
-    this.records.clear(); for (const [id, record] of structuredClone(saved.records)) this.records.set(id, record);
+    this.records.clear(); for (const [id, record] of structuredClone(saved.records)) { record.score = restoreAiMinimum(record.score); this.records.set(id, record); }
     this.permissionRevision++;
     this.revision = saved.revision;this.territorialRevision=saved.territorialRevision??0;
   }
@@ -266,7 +267,7 @@ export class AiOperations {
     let record = this.records.get(playerId);
     if (!record) {
       record = { phase: "peace", since: this.expansion.world.tick, nextThink: this.expansion.world.tick + secondsToTicks((playerId % 60) / 20),
-        threats: [], cursor: 0, score: Infinity };
+        threats: [], cursor: 0, score: undefined };
       this.records.set(playerId, record);
     }
     return record;
@@ -391,7 +392,7 @@ export class AiOperations {
     if (phase !== "preparing" && phase !== "war") { record.tribe = undefined; record.intent = undefined; }
     record.finishCount = undefined; record.finishProgressAt = undefined;
     record.nextThink = tick + (phase === "war" ? TICKS_PER_SECOND : secondsToTicks(3) + player.id % TICKS_PER_SECOND);
-    record.cursor = 0; record.candidate = undefined; record.candidateIntent = undefined; record.score = Infinity; this.revision++;
+    record.cursor = 0; record.candidate = undefined; record.candidateIntent = undefined; record.score = undefined; this.revision++;
     if (phase === "war"&&!this.expansion.diplomacy.raids) this.expansion.announce({ kind: "war", actorId: player.id, otherId: target, action: "declare" });
     else if (previous === "war") this.expansion.announce({ kind: "war", actorId: player.id, otherId: oldTarget, action: "withdraw" });
   }
@@ -577,7 +578,7 @@ export class AiOperations {
         const grievance = this.grievance(player.id, rival.id);
         const opportunity = tribalActor ? (rival.kind === "tribe" ? 3 : 2) : tribeExpansion ? 3 : 1;
         const score = Math.floor(world.map.euclideanDistSquared(player.base, rival.base) / (Math.max(.25,advantage)*opportunity*(retaliating?2:1)*(1+grievance/8)*(resource ? resource.blocked ? 2 : 1.3 : 1))) + commitments * 4096;
-        if (score < r.score || (score === r.score && rival.id < (r.candidate ?? Infinity))) { r.score = score; r.candidate = rival.id;
+        if (score < (r.score ?? Infinity) || (score === (r.score ?? Infinity) && rival.id < (r.candidate ?? Infinity))) { r.score = score; r.candidate = rival.id;
           r.candidateIntent = { motive: resource ? "resource" : retaliating || grievance >= 2 ? "retaliation" : "dominance",
             goal: resource?.tile ?? conquestBuildings(world.buildingFacts().byOwner(rival.id), rival.ai)[0]?.tile ?? rival.base,
             resource: resource?.resource };
@@ -596,7 +597,7 @@ export class AiOperations {
             r.reason = `Preparing ${intent.motive} campaign`;
           }
         }
-        else { r.cursor = 0; r.score = Infinity;r.sleepKey=sleepKey; r.nextThink = tick + secondsToTicks(3) + player.id % TICKS_PER_SECOND; }
+        else { r.cursor = 0; r.score = undefined;r.sleepKey=sleepKey; r.nextThink = tick + secondsToTicks(3) + player.id % TICKS_PER_SECOND; }
       }
     }
   }

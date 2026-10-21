@@ -59,6 +59,8 @@ export interface TradeCycleQuote {
   returned: number;
   guaranteedGold: number;
   supplyTicks: number;
+  routeWaitTicks?: number;
+  receivingWaitTicks?: number;
   handlingTicks: number;
   travelTicks: number;
   cycleTicks: number;

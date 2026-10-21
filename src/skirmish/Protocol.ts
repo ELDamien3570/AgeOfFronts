@@ -476,6 +476,8 @@ export interface MatchOptions {
   diplomacyRules?: "raids-v1";
   /** Coordinated travel policy, recorded for checkpoint/replay compatibility. */
   armyTravel?: "corridors-v1";
+  /** Shared sea lanes; omission preserves historical trade and replay. */
+  seaTradeRouting?: "lanes-v1";
   victoryMode?: "solo" | "allied";
   technologySpeed?: TechnologySpeed;
   startingAge?: StartingAge;

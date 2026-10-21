@@ -222,7 +222,10 @@ export interface MatchDiagnostics {
     cohorts?: PlannerCohort[]; };
   paths?: { land: PathResidency; water: PathResidency; amphibious?: PathResidency };
   domainWork?: { spatial?: { rebuilds: number; rows: number; hits: number };
-    trade?: { spawnActorReads: number; quotaActorReads: number; playerReads: number; spawned: number; routeRequests: number; routeHits: number; marketReads: number } };
+    trade?: { spawnActorReads: number; quotaActorReads: number; playerReads: number; spawned: number; routeRequests: number; routeHits: number; marketReads: number;
+      sea?: { records: number; packedCells: number; stagingCells: number; subscriptions: number; victims: number; queued: number;
+        accepted: number; refused: number; completed: number; readyHits: number; reversedHits: number;
+        departures: number; arrivals: number; cycles: number; directReturns: number; retracedReturns: number } } };
   /** Thread CPU of the simulation step against its wall time (I-0). */
   cpu?: ThreadCpuWindowSummary;
   /** RSS is shared process memory; the other fields are current worker usage.

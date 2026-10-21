@@ -95,6 +95,7 @@ export class TraderDecoder {
         if (typeof row[key] !== "number" || !Number.isFinite(row[key])) fail();
       if (row.destination !== null && !Number.isSafeInteger(row.destination)) fail();
       if (row.waitingForCargo !== undefined && typeof row.waitingForCargo !== "boolean") fail();
+      if (row.waitDetail !== undefined && !["market-intake", "no-market"].includes(row.waitDetail)) fail();
       if (row.waitingReason !== undefined && !["cargo", "planning", "no-receiver", "unreachable", "handling", "capacity"].includes(row.waitingReason)) fail();
       updates.set(row.id, copy(row));
     }
