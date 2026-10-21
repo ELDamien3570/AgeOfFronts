@@ -337,9 +337,12 @@ export class Armies {
   private closeGap(army:Army):void {
     if(this.world.tick-(army.lastGapTick??-LINES.gapCheckTicks)<LINES.gapCheckTicks)return;
     const slots=army.slots??[],plan=this.engagements?.planFor(army.id),planKey=plan?`${plan.engagementId}:${plan.revision}`:undefined;
-    let weak=slots.find(r=>r.role==='frontline'&&(()=>{const s=this.world.squad(r.squadId);return !!s&&(strengthFraction(s)<LINES.gapStrength||s.order.type==='replenish');})());
+    // A casualty gap is vacant; replacing a weak member is a separate swap.
+    // Never displace a different frontline member while filling a queued gap.
+    const vacant=army.frontGaps?.[0];
+    let weak=vacant?undefined:slots.find(r=>r.role==='frontline'&&(()=>{const s=this.world.squad(r.squadId);return !!s&&(strengthFraction(s)<LINES.gapStrength||s.order.type==='replenish');})());
     if(!weak&&!army.frontGaps?.length&&plan?.reserveCommit&&army.reservePlan!==planKey)weak=slots.find(r=>r.role==='frontline'&&r.index===plan.reserveCommit!.slotIndex);
-    const gap=army.frontGaps?.[0]??(weak?{index:weak.index,lateral:weak.lateral,depth:weak.depth,width:weak.width}:undefined);
+    const gap=vacant??(weak?{index:weak.index,lateral:weak.lateral,depth:weak.depth,width:weak.width}:undefined);
     if(!gap)return;
     const reserve=slots.filter(r=>r.role==='reserve'&&(()=>{const s=this.world.squad(r.squadId);return !!s&&active(s)&&mayWrite(this.controls,s,'army')&&strengthFraction(s)>=LINES.gapStrength;})()).sort((a,b)=>Math.abs(a.lateral-gap.lateral)-Math.abs(b.lateral-gap.lateral)||a.index-b.index)[0];
     if(reserve){

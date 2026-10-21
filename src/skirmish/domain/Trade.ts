@@ -437,9 +437,9 @@ export class Trade {
     }
   }
   private building(id: number): Building | undefined {
-    return (
-      this.world.building?.(id) ?? this.world.buildings.find((b) => b.id === id)
-    );
+    // An indexed miss is authoritative. The array fallback supports small
+    // domain fixtures that do not provide an index, not deleted IDs.
+    return this.world.building ? this.world.building(id) : this.world.buildings.find((b) => b.id === id);
   }
   private tile(a: TradeActor): number {
     return this.world.map.ref(Math.floor(a.x / FIXED), Math.floor(a.y / FIXED));
@@ -1447,9 +1447,13 @@ export class Trade {
         if (a.waitingReason !== undefined) tradeDetailsChanged(a);
         a.waitingReason = undefined;
       }
-      if (a.naval) this.sea.query(a.x, a.y, 1.2 * FIXED, this.nearby as Ship[]);
-      else this.land.query(a.x, a.y, 1.2 * FIXED, this.nearby as Squad[]);
-      const captor = this.nearby
+      // Empty couriers cannot be captured. Do not query interception geometry
+      // while they are waiting for stock or their first shared lane.
+      if (a.cargo) {
+        if (a.naval) this.sea.query(a.x, a.y, 1.2 * FIXED, this.nearby as Ship[]);
+        else this.land.query(a.x, a.y, 1.2 * FIXED, this.nearby as Squad[]);
+      }
+      const captor = a.cargo ? this.nearby
         .filter(
           (s) =>
             // Sea piracy requires only a non-allied owner. Market access and
@@ -1460,7 +1464,7 @@ export class Trade {
             (s.x - a.x) ** 2 + (s.y - a.y) ** 2 <= (1.2 * FIXED) ** 2 &&
             this.fortifications.clear(a, s, s.playerId),
         )
-        .sort((a, b) => a.id - b.id)[0];
+        .sort((a, b) => a.id - b.id)[0] : undefined;
       if (captor && a.cargo) {
         this.diplomacy.recordTheft(captor.playerId,a.playerId,this.world.tick);
         tradeDetailsChanged(a);

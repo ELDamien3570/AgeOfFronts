@@ -82,6 +82,7 @@ const result = {
   speed: stats(windows.map((r) => r.speed)),
   tickMs: stats(measured.map((r) => r.ms)),
   over125ms: measured.filter((r) => r.ms > 125).length,
+  phaseMs: Object.fromEntries([...new Set(measured.flatMap(r => Object.keys(r.phases ?? {})))].map(phase => [phase, stats(measured.map(r => r.phases?.[phase]).filter(Number.isFinite))])),
   crashesOrClientFailures: client.failures,
   sampling: client.sampling,
   comparedFrames: client.comparedFrames,

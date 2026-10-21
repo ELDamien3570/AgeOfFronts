@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { ENGAGEMENT } from "../../src/skirmish/content/TacticalRules";
+import { ENGAGEMENT, LINES } from "../../src/skirmish/content/TacticalRules";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { UNIT } from "../../src/skirmish/content/Units";
 import { validateArmyRecords } from "../../src/skirmish/domain/ArmyState";
@@ -224,6 +224,35 @@ describe("phase 8 persistent battle lines", () => {
     expect(
       army.slots!.filter((r) => old.some((o) => o.squadId === r.squadId)),
     ).toEqual(old);
+  });
+  it("consumes a casualty gap before swapping an unrelated weak frontline member", () => {
+    const { game, e, map, options } = fixture(14);
+    const army = e.armies.armies[0];
+    const fronts = army.slots!.filter(r => r.role === "frontline");
+    const dead = { ...fronts[0] }, weak = fronts[1];
+    const reserves = army.slots!.filter(r => r.role === "reserve");
+    expect(reserves.length).toBeGreaterThanOrEqual(2);
+    game.updateSquad(weak.squadId, { order: { type: "replenish" } });
+    game.removeSquad(dead.squadId);
+    e.armies.reconcile();
+    e.armies.step();
+    expect(army.frontGaps).toHaveLength(0);
+    expect(army.slots!.find(r => r.squadId === weak.squadId)!.role).toBe("frontline");
+    expect(army.slots!.filter(r => r.index === dead.index)).toHaveLength(1);
+    const encoder = new SnapshotEncoder(false, { compactTraders: true, compactFormationSlots: true }), decoder = new SnapshotDecoder();
+    for (let pass = 0; pass < 3; pass++) {
+      // Exercise repeated public army updates, including the later weak-member swap.
+      game.tick += LINES.gapCheckTicks;
+      e.armies.step();
+      expect(() => validateArmyRecords(e.armies.armies)).not.toThrow();
+      expect(() => decoder.decodeLatest(encoder.encode(game.replicationSource(true), game.tileChanges, game.replicationFacts()))).not.toThrow();
+      const copy = new Skirmish(map, options);
+      expect(() => copy.restore(game.checkpoint())).not.toThrow();
+      copy.tick += LINES.gapCheckTicks;
+      copy.expansion!.armies.step();
+      expect(() => validateArmyRecords(copy.expansion!.armies.armies)).not.toThrow();
+    }
+    expect(army.slots!.find(r => r.squadId === weak.squadId)!.role).toBe("reserve");
   });
   it("restores every tick while two unequal armies plan across quantum boundaries (R2-M12)", () => {
     const { game, e, map, options } = fixture(14, false, 29);

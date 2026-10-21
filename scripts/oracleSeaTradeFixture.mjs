@@ -107,14 +107,40 @@ export function restoreProbeFixture(game) {
       2,
     ),
   );
+  // Log the actual authoritative application tick, including hold commands.
+  // This permits an exact input replay instead of inferring ticks from client receipts.
+  const apply = game.commandApplications.apply.bind(game.commandApplications);
+  game.commandApplications.apply = (id, command) => {
+    const result = apply(id, command);
+    appendFileSync(out + "/commands-applied.jsonl", JSON.stringify({ id, tick: game.tick, command, result }) + "\n");
+    return result;
+  };
   const step = game.step.bind(game);
   game.step = () => {
+    const phases = {}, observe = game.onPhase;
+    game.onPhase = (phase, ms) => { phases[phase] = ms; observe?.(phase, ms); };
     const at = performance.now();
-    step();
+    try { step(); } finally { game.onPhase = observe; }
     const ms = performance.now() - at;
+    // Test-only read views, once per game second. No checkpoint copies or
+    // simulation writes in the paced run; enough detail to locate a long wait.
+    if (game.tick % 8 === 0) {
+      const admissions = [...game.movementAdmission.pending.values()].filter(a => a.playerId === 1 || a.playerId === 2);
+      if (admissions.length) appendFileSync(out + "/movement-planning.jsonl", JSON.stringify({
+        tick: game.tick,
+        admissions: admissions.map(a => ({ id: a.id, playerId: a.playerId, phase: a.phase, formation: a.formation.phase,
+          routeCheck: a.routeCheck, placementRetries: a.placementRetries, connectorMisses: a.connectorMisses,
+          members: a.members.map(m => ({ id: m.id, requested: m.requested, pathLength: m.path?.length,
+            shared: m.shared?.stage, retryAt: m.retryAt, limitedAttempts: m.limitedAttempts })) })),
+        jobs: [...game.routePlanner.jobs.values()].filter(j => j.context.kind === "admission" && (j.context.playerId === 1 || j.context.playerId === 2))
+          .map(j => ({ key: j.key, createdTick: j.createdTick, nodes: j.search.nodes.size, phase: j.search.phase,
+            corridor: j.corridor?.phase, local: j.corridor?.local, waiting: j.waitingForWorkspace, exclusive: j.exclusiveRetry })),
+        workspace: game.routePlanner.diagnostics.workspaceUsed,
+      }) + "\n");
+    }
     appendFileSync(
       out + "/ticks.jsonl",
-      JSON.stringify({ tick: game.tick, at: Date.now(), ms }) + "\n",
+      JSON.stringify({ tick: game.tick, at: Date.now(), ms, phases }) + "\n",
     );
   };
 }

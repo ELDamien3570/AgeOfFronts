@@ -35,6 +35,10 @@ chown 1000:1000 "$result"
 sha256sum "$fixture" >"$result/input.sha256"
 uname -a >"$result/host.txt"
 docker image inspect "ageoffronts-test:$revision" --format '{{.Id}}' >"$result/image-id.txt"
+# Retain the exact mounted probe and production bundle identities per run.
+sha256sum "$root"/probe-build/*.mjs >"$result/probe-bundles.sha256"
+docker run --rm --network none --read-only --entrypoint sha256sum "ageoffronts-test:$revision" \
+ build/multiplayer/server.mjs build/multiplayer/serverMatchWorker.mjs build/multiplayer/snapshotEncoderThread.mjs >"$result/production-bundles.sha256"
 container=ageoffronts-sea-test-$label
 id=$(docker run -d --name "$container" --label ageoffronts.profile=1 --label "ageoffronts.test.source=$revision" \
  --cpus 2 --memory 4g --pids-limit 128 --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges \

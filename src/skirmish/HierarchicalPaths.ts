@@ -390,7 +390,8 @@ export class HierarchicalPaths {
       closed[index] = 1;
       settled++;
       const tile = this.tile(c, index),
-        count = this.topology.neighbors(tile, this.neighbors);
+        count = this.topology.neighbors(tile, this.neighbors),
+        tileX = map.x(tile), tileY = map.y(tile);
       for (let i = 0; i < count; i++) {
         const next = this.neighbors[i],
           x = map.x(next),
@@ -406,7 +407,7 @@ export class HierarchicalPaths {
         // Coordinates were already decoded for cluster bounds above. Reuse
         // them instead of decoding the tile again in this hot crossing loop.
         const nextIndex = x - c.x + (y - c.y) * c.width,
-          candidate = cost[index] + this.topology.cost(tile, next);
+          candidate = cost[index] + this.topology.stepCost(tile, next, x !== tileX && y !== tileY);
         if (closed[nextIndex] || candidate >= cost[nextIndex]) continue;
         cost[nextIndex] = candidate;
         parent[nextIndex] = index;

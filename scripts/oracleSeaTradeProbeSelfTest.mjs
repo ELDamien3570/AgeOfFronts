@@ -13,7 +13,7 @@ for (const stalled of [false, true]) {
     ticks = [];
   for (let tick = 1; tick <= (stalled ? 80 : 160); tick++) {
     rows.push({ at: 1000 + tick * 125, tick });
-    ticks.push({ at: 1000 + tick * 125, tick, ms: 25 });
+    ticks.push({ at: 1000 + tick * 125, tick, ms: 25, phases: { routing: 5 } });
   }
   writeFileSync(
     dir + "/advances.jsonl",
@@ -55,6 +55,7 @@ for (const stalled of [false, true]) {
   assert.equal(result.window.overallSpeed, stalled ? 0.5 : 1);
   assert.equal(result.qualification.passesMoreThan90Percent, !stalled);
   assert.equal(result.movement.short.unresolved, 1);
+  assert.equal(result.phaseMs.routing.mean, 5);
 }
 console.log(
   "PASS: exact 1x, wall-time stall detection, strict >90% gate, unresolved input retention",

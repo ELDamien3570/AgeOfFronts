@@ -20,6 +20,14 @@ describe("sea voyage lifecycle", () => {
     } finally { reads.mockRestore(); }
   });
 
+  it("treats indexed absence as authoritative for ordinary trade lookups too", () => {
+    const f = seaFleet();
+    const reads = vi.spyOn(f.game, "buildings", "get");
+    try {
+      expect((f.trade as unknown as { building(id: number): unknown }).building(9000001)).toBeUndefined();
+      expect(reads).not.toHaveBeenCalled();
+    } finally { reads.mockRestore(); }
+  });
   it("never starts cold geometry searches for optional extra stops", () => {
     const f = seaFleet(1, 2), acquisitions: boolean[] = [];
     f.trade.seaTrade!.routes.onEvent = event => {

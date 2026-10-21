@@ -1,6 +1,7 @@
-import { writeFileSync, mkdirSync } from "node:fs";
+import { appendFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 import WebSocket from "ws";
+import { serialize } from "node:v8";
 import { decodeState } from "../src/skirmish/multiplayer/StateCodec.ts";
 import { SnapshotDecoder } from "../src/skirmish/SnapshotCodec.ts";
 const args = process.argv.slice(2),
@@ -11,7 +12,7 @@ const base = get("--url", "http://127.0.0.1:18081"),
 if (!Number.isInteger(seconds) || seconds < 20 || seconds > 3600)
   throw Error("seconds 20..3600");
 if (!/^http:\/\/127\.0\.0\.1:\d+$/.test(base))
-  throw Error("Use an SSH-forwarded localhost probe");
+  throw Error("Use a localhost or SSH-forwarded probe");
 mkdirSync(out, { recursive: false });
 const probeUrl =
   get(
@@ -32,6 +33,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
   rid = () => "sea-probe-" + ++sequence,
   send = (p, m) => {
     const id = rid();
+    if (m.type === "match-command") appendFileSync(out + "/commands-sent.jsonl", JSON.stringify({ id, peer: p.index, at: Date.now(), observedTick: p.tick, command: m.command }) + "\n");
     p.ws.send(JSON.stringify({ requestId: id, ...m }));
     return id;
   };
@@ -104,7 +106,16 @@ async function connect(index) {
         const at = performance.now(),
           packet = await decodeState(m.packet);
         if (m.rebase) p.decoder = new SnapshotDecoder();
-        const snap = p.decoder.decode(packet, false, false);
+        let snap;
+        try { snap = p.decoder.decode(packet, false, false); }
+        catch (error) {
+          if (!p.failedPacketCaptured) {
+            p.failedPacketCaptured = true;
+            writeFileSync(out + `/failed-packet-peer-${index}.v8`, serialize(packet));
+            writeFileSync(out + `/failed-packet-peer-${index}.json`, JSON.stringify({ tick: m.tick, previousTick: p.tick, rebase: m.rebase, publicationSequence: m.publicationSequence, error: error.stack ?? error.message }, null, 2));
+          }
+          throw error;
+        }
         p.decodeMs.push(performance.now() - at);
         p.stationary ??= new Map();
         for (const s of snap.squads) {
@@ -130,6 +141,7 @@ async function connect(index) {
                 snap.ships,
                 snap.buildings,
                 snap.expansion?.traders,
+                snap.expansion?.armies,
                 snap.players,
               ]),
             )
@@ -340,6 +352,8 @@ try {
               (Math.floor(order.tile / peer.snapshot.width) + 0.5) * 256 - s.y,
             ) / 256;
           orders.push(order);
+          order.memberDistanceTiles = group.map(member => ({ id: member.id, distance: Math.hypot(((order.tile % peer.snapshot.width) + 0.5) * 256 - member.x, (Math.floor(order.tile / peer.snapshot.width) + 0.5) * 256 - member.y) / 256 }));
+          appendFileSync(out + "/commands-sent.jsonl", JSON.stringify({ id: order.id, peer: peer.index, at: order.sentAt, observedTick: peer.tick, command: { type: "order", playerId: s.playerId, squadIds: order.squadIds, order: { type: "move", tile: order.tile } } }) + "\n");
           peer.ws.send(
             JSON.stringify({
               type: "match-command",
@@ -450,7 +464,7 @@ try {
       publicationGapMs: stats(p.gaps),
     })),
     limitations:
-      "Two real WebSocket clients through SSH tunnel; production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is decoded authoritative state, not rendered pixels. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
+      "Two real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is the first decoded displacement over eight fixed units after the entire command executes, so earlier cohort motion may be hidden; not rendered pixels. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
   };
   writeFileSync(out + "/result.json", JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result.byKind));
