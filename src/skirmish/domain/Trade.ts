@@ -200,6 +200,12 @@ export class Trade {
     this.seaActors = new SpatialGrid(world.map.width()*FIXED,world.map.height()*FIXED,8*FIXED,a=>a.playerId);
     this.blastActors = new SpatialGrid(world.map.width()*FIXED,world.map.height()*FIXED,8*FIXED,a=>a.playerId);
   }
+  /** Read current couriers without warming the impact grid: courier movement
+   * can occur between order admission and impact within the same tick. */
+  *ownersInBlast(x:number,y:number,radius:number):Generator<number> {
+    for (const actor of this.actors)
+      if (!this.retired.has(actor.id) && (actor.x-x)**2+(actor.y-y)**2<=radius**2) yield actor.playerId;
+  }
   /** Build only on a blast tick, shared by all warheads. Cargo loss and actor
    * retirement use the existing lifecycle; wrecks cannot move, load or pay. */
   destroyInBlast(_attacker:number,x:number,y:number,radius:number):void {

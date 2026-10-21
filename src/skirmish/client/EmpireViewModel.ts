@@ -13,7 +13,7 @@ import {
   productionBuildingType,
 } from "../content/Buildings";
 import { supplyItemName } from "../content/Equipment";
-import { aircraftTechnology, FLIGHT_RULES } from "../content/FlightOperations";
+import { aircraftTechnology, aircraftRecruitmentAge, FLIGHT_RULES } from "../content/FlightOperations";
 import {
   ADVANCES,
   canonicalTechnologyId,
@@ -510,17 +510,15 @@ export class EmpireViewModel {
       );
     const selectedBases=new Set([...(this.selection.selectedBuildings??[]),...this.state.ships.filter(s=>s.kind==='carrier'&&this.selection.selectedShips.has(s.id)).map(s=>s.id)]);
     const building=airBases(this.state.buildings,this.state.ships,this.state.width,this.state.owners)
-      .filter(b=>b.playerId===this.playerId&&baseAccepts(b,kind)&&(!selectedBases.size||selectedBases.has(b.id))&&
+      .filter(b=>b.playerId===this.playerId&&baseAccepts(b,kind)&&aircraftRecruitmentAge(kind,b.age,t=>this.has(t))&&(!selectedBases.size||selectedBases.has(b.id))&&
         airfieldAircraftCount(this.expansion.aircraft,b.id)+(this.expansion.recruitment??[]).filter(j=>j.category==='aircraft'&&j.buildingId===b.id).length<b.capacity)
-      .sort((a,b)=>(workloads.get(a.id)??0)-(workloads.get(b.id)??0)||this.distance(a.tile)-this.distance(b.tile)||a.id-b.id)[0];
+      // Match recruitAircraft's authoritative queue choice, including ties.
+      .sort((a,b)=>(workloads.get(a.id)??0)-(workloads.get(b.id)??0)||a.id-b.id)[0];
     const cost=aircraftRecruitmentCost(kind);
-    const reason = !this.has(
-      aircraftTechnology(
-        kind,
-        building?.age ?? (kind === "drone" ? "Modern" : "EarlyModern"),
-      ),
-    )
-      ? `Research ${this.technologyName(aircraftTechnology(kind, building?.age ?? (kind === "drone" ? "Modern" : "EarlyModern")))}`
+    const age = building && aircraftRecruitmentAge(kind,building.age,t=>this.has(t));
+    const minimumAge = kind === "drone" ? "Modern" : "EarlyModern";
+    const reason = !age && !this.has(aircraftTechnology(kind,minimumAge))
+      ? `Research ${this.technologyName(aircraftTechnology(kind,minimumAge))}`
       : !building
         ? "Needs an operational launch site with a free slot"
         : aircraftSlots(this.expansion.aircraft,this.playerId) +
@@ -533,6 +531,7 @@ export class EmpireViewModel {
           : costRejection(this.player, this.inventory, cost);
     return {
       building,
+      age,
       cost,
       reason,
       buildingIds: selectedBases.size ? [...selectedBases] : undefined,

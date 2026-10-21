@@ -27,6 +27,16 @@ describe("world-space troop remains", () => {
     expect(remains.sample(20_999)[0].bodyVisible).toBe(true);
     expect(remains.sample(21_000)[0].bodyVisible).toBe(false);
   });
+  it("fades the body out over its last moments instead of popping", () => {
+    const remains = new TroopRemains();
+    remains.add(death);
+    const fadeStart = death.started + REMAINS.bodyLifetime - REMAINS.bodyFade;
+    expect(remains.sample(death.started + 1000)[0].bodyOpacity).toBe(1);
+    expect(remains.sample(fadeStart)[0].bodyOpacity).toBe(1);
+    expect(remains.sample(fadeStart + REMAINS.bodyFade / 2)[0].bodyOpacity).toBeCloseTo(0.5);
+    expect(remains.sample(death.started + REMAINS.bodyLifetime - 1)[0].bodyOpacity).toBeLessThan(0.01);
+    expect(remains.sample(death.started + REMAINS.bodyLifetime)[0].bodyOpacity).toBe(0);
+  });
   it("leaves blood after body removal and expires it independently", () => {
     const remains = new TroopRemains();
     remains.add(death);

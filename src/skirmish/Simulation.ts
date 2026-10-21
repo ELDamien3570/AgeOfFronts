@@ -4989,6 +4989,9 @@ export class Skirmish {
   destroyTradersInBlast(attacker:number,x:number,y:number,radius:number):void {
     this.expansion?.trade.destroyInBlast(attacker,x,y,radius);
   }
+  tradeOwnersInBlast(x:number,y:number,radius:number):Iterable<number> {
+    return this.expansion?.trade.ownersInBlast(x,y,radius) ?? [];
+  }
 
   private readonly captureFootprints = new Map<number, readonly number[]>();
   private readonly captureContributions = new Map<number, {

@@ -15,7 +15,7 @@ import { DRONE_SWARM, aircraftSlots, droneOffset, droneDamageShare } from '../co
 import { recruitmentVariant } from '../content/FormationRecipes';
 import { quoteEnlargement } from './Enlargement';
 import { SpatialGrid } from "../SpatialGrid";
-import { flightTicks, flightSpeed, flightReachable, aircraftTechnology, missionKind, FLIGHT_RULES, aircraftRecruitmentCost } from "../content/FlightOperations";
+import { flightTicks, flightSpeed, flightReachable, aircraftRecruitmentAge, missionKind, FLIGHT_RULES, aircraftRecruitmentCost } from "../content/FlightOperations";
 import { shoreTransportDefinition } from "../content/ShoreTransport";
 import { buildingGroundBounds } from "../BuildingFootprint";
 import { availableGold, paidCost } from "./Gold";
@@ -105,6 +105,7 @@ import { squadRadius, standable, tilePoint } from "../SquadGeometry";
 import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
 import type { NuclearWasteland } from "./NuclearWasteland";
+import { blastHitsAlly, blastOwners } from "./BlastDiplomacy";
 const TRIBE_MILITARY_TECHNOLOGIES = [...TECHNOLOGIES].sort((a, b) => Number(!!a.optional) - Number(!!b.optional) ||
   ["warfare", "economic", "naval"].indexOf(a.tree) - ["warfare", "economic", "naval"].indexOf(b.tree));
 
@@ -663,7 +664,7 @@ export class Expansion {
       )
         return "Select ready owned aircraft and a valid destination";
       if(mission === "bombing" || mission === "atomic") {
-        const blocked=this.strikeRejection(player.id,command.x,command.y,(mission === "atomic" ? ATOMIC_ATTACK : BOMBER_ATTACK).projectile!.blastRadius);
+        const blocked=this.strikeRejection(player.id,command.x,command.y,(mission === "atomic" ? ATOMIC_ATTACK : BOMBER_ATTACK).projectile!.blastRadius,mission === "atomic");
         if(blocked) return blocked;
       }
       if(mission === "atomic") {
@@ -960,28 +961,16 @@ export class Expansion {
     }
     return undefined;
   }
-  /** Strategic strikes and bombing hit every faction in the blast. Like a
-   * building strike they need the right to attack each faction there (R2-M4):
-   * its land, buildings, squads and ships. Neutral land never blocks. */
-  private strikeRejection(playerId: number, x: number, y: number, radius: number): string | null {
-    const { world } = this, map = world.map, d = this.diplomacy;
-    let denied = 0;
-    const deny = (owner: number) => {
-      if (!denied && owner !== 0 && owner !== playerId && !d.canAttackStructure(playerId, owner)) denied = owner;
-    };
-    const inside = (px: number, py: number) => (px - x) ** 2 + (py - y) ** 2 <= radius ** 2;
-    // The same tile footprint the blast scorches (Wasteland.scorch).
-    const left = Math.max(0, Math.ceil((x - radius) / FIXED - 0.5)), right = Math.min(map.width() - 1, Math.floor((x + radius) / FIXED - 0.5));
-    const top = Math.max(0, Math.ceil((y - radius) / FIXED - 0.5)), bottom = Math.min(map.height() - 1, Math.floor((y + radius) / FIXED - 0.5));
-    for (let cy = top; cy <= bottom && !denied; cy++)
-      for (let cx = left; cx <= right && !denied; cx++)
-        if (inside((cx + 0.5) * FIXED, (cy + 0.5) * FIXED)) deny(world.owners[map.ref(cx, cy)]);
-    for (const b of world.buildings)
-      if ((b.health ?? 1) > 0 && inside((map.x(b.tile) + 0.5) * FIXED, (map.y(b.tile) + 0.5) * FIXED)) deny(b.playerId);
-    for (const s of world.squads) if (s.troops > 0 && inside(s.x, s.y)) deny(s.playerId);
-    for (const s of world.ships) if (s.health > 0 && inside(s.x, s.y)) deny(s.playerId);
-    if (!denied) return null;
-    return d.protected(playerId, denied) ? "Peace protection is still active" : "Choose a hostile building or unit";
+  /** Nuclear orders protect allies without requiring war with every blast
+   * victim. Conventional bomber orders retain normal attack permissions. */
+  private strikeRejection(playerId: number, x: number, y: number, radius: number, nuclear = false): string | null {
+    const d = this.diplomacy;
+    if (nuclear) return blastHitsAlly(this.world, playerId, x, y, radius,
+      (a, b) => d.allied(a, b), this.fortifications.barriers) ? "Nuclear blast would hit an allied faction" : null;
+    for (const owner of blastOwners(this.world, x, y, radius))
+      if (owner !== 0 && owner !== playerId && !d.canAttackStructure(playerId, owner))
+        return d.protected(playerId, owner) ? "Peace protection is still active" : "Choose a hostile building or unit";
+    return null;
   }
   private validPosition(x: number, y: number): boolean {
     return (
@@ -1039,12 +1028,12 @@ export class Expansion {
   }
   private recruitAircraft(player:Player,id:number,kind:Aircraft['definitionId'],automatic=false,buildingIds?:readonly number[]):string|null {
     if(!['fighter','bomber','drone'].includes(kind))return 'Unknown aircraft type';
-    const bases=this.aviationBases().filter(b=>b.playerId===player.id && baseAccepts(b,kind));
+    const bases=this.aviationBases().filter(b=>b.playerId===player.id && baseAccepts(b,kind) && aircraftRecruitmentAge(kind,b.age,t=>this.progression.has(player.id,t)));
     const free=(b:AirBase)=>airfieldAircraftCount(this.aircraft,b.id)+this.world.recruitment.count(player.id,'aircraft',b.id)<b.capacity;
     let field=bases.find(b=>b.id===id);
     if(automatic||buildingIds) field=bases.filter(b=>(!buildingIds||buildingIds.includes(b.id))&&free(b))
       .sort((a,b)=>this.world.recruitment.byProducer(a.id).reduce((n,j)=>n+j.remainingTicks,0)-this.world.recruitment.byProducer(b.id).reduce((n,j)=>n+j.remainingTicks,0)||a.id-b.id)[0];
-    if(!field || !this.progression.has(player.id,aircraftTechnology(kind,field.age))) return 'Needs researched aviation and an operational owned launch site';
+    if(!field) return 'Needs researched aviation and an operational owned launch site';
     if(!free(field)||aircraftSlots(this.aircraft,player.id)+this.world.recruitment.count(player.id,'aircraft')>=AIRCRAFT_RULES.factionCapacity) return 'Launch site or aircraft capacity reached';
     const cost=aircraftRecruitmentCost(kind),rejection=costRejection(player,this.supply.inventories[player.id],cost);
     if(rejection)return rejection;
@@ -1055,7 +1044,9 @@ export class Expansion {
   completeAircraft(job:RecruitmentJob):boolean {
     const field=this.aviationBases().find(b=>b.id===job.buildingId&&b.playerId===job.playerId&&baseAccepts(b,job.kind as Aircraft['definitionId']));
     if(!field)return false;
-    this.aircraft.push({id:this.world.allocateId(),playerId:job.playerId,definitionId:job.kind as Aircraft['definitionId'],age:field.age,airfieldId:field.id,
+    const age=aircraftRecruitmentAge(job.kind as Aircraft['definitionId'],field.age,t=>this.progression.has(job.playerId,t));
+    if(!age)return false;
+    this.aircraft.push({id:this.world.allocateId(),playerId:job.playerId,definitionId:job.kind as Aircraft['definitionId'],age,airfieldId:field.id,
       x:field.x,y:field.y,...(field.kind==='carrier'?{baseKind:'carrier' as const}:{}),health:AIRCRAFT_RULES.health,target:null,state:'ready',reloadTick:0,fuelTicks:flightTicks(job.kind as Aircraft['definitionId'],field.age)});
     return true;
   }
@@ -1069,7 +1060,7 @@ export class Expansion {
   ): string | null {
     if (targetBuildingId !== undefined) {
       const target = this.world.building(targetBuildingId);
-      if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.canAttackStructure(player.id, target.playerId))
+      if (!target || (target.health ?? 1) <= 0 || target.playerId === 0 || this.diplomacy.allied(player.id, target.playerId))
         return "Choose an enemy building";
       x = ((target.tile % this.world.map.width()) + .5) * FIXED;
       y = (Math.floor(target.tile / this.world.map.width()) + .5) * FIXED;
@@ -1080,7 +1071,7 @@ export class Expansion {
       !this.progression.has(player.id, "modern-strategic-weapons")
     )
       return "Research Strategic Weapons and choose a valid target";
-    const blocked = this.strikeRejection(player.id, x, y, STRATEGIC_PAYLOADS[payload].blastRadius);
+    const blocked = this.strikeRejection(player.id, x, y, STRATEGIC_PAYLOADS[payload].blastRadius, true);
     if (blocked) return blocked;
     const building = this.world.buildings.find(
       (b) =>
@@ -1932,13 +1923,13 @@ export class Expansion {
       const airTargets=[...enemies.slice(0,16),...structures.slice(0,16).map(b=>this.battle.position(b))];
       const incoming=this.aircraft.filter(a=>a.health>0 && a.state!=="ready" && a.definitionId!=="drone" && atWar(a.playerId)).slice(0,16);
       const friendly=[...this.world.squads.filter(s=>s.troops>0&&!atWar(s.playerId)),...own.map(b=>this.battle.position(b))];
-      // A blast the order would refuse (R2-M4: an ally's or a non-war
-      // faction's land, units or buildings inside it) is skipped so the next
-      // candidate is tried. Memoised per pass: candidates repeat per aircraft.
+      // Skip refused blasts before choosing a target. Nuclear orders protect
+      // allies; conventional bombing also requires normal attack permission.
+      // Memoised per pass: candidates repeat per aircraft.
       const strikeChecks=new Map<string,boolean>();
-      const strikeAllowed=(t:{x:number;y:number},radius:number)=>{
-        const key=`${t.x},${t.y},${radius}`;let allowed=strikeChecks.get(key);
-        if(allowed===undefined){allowed=!this.strikeRejection(player.id,t.x,t.y,radius);strikeChecks.set(key,allowed);}
+      const strikeAllowed=(t:{x:number;y:number},radius:number,nuclear=false)=>{
+        const key=`${t.x},${t.y},${radius},${nuclear}`;let allowed=strikeChecks.get(key);
+        if(allowed===undefined){allowed=!this.strikeRejection(player.id,t.x,t.y,radius,nuclear);strikeChecks.set(key,allowed);}
         return allowed;
       };
       const bombRadius=BOMBER_ATTACK.projectile!.blastRadius,atomicRadius=ATOMIC_ATTACK.projectile!.blastRadius;
@@ -1950,7 +1941,7 @@ export class Expansion {
         if(!target)continue;
         let mission:import("../content/FlightOperations").AirMission=aircraft.definitionId==="fighter"?"patrol":aircraft.definitionId==="drone"?"drone":"bombing";
         if(bomber && this.progression.has(player.id,"rus-earlymodern-nuclear-weapons") && (stock["payload:atomic"]??0)>0) {
-          const atomic=targets.find(t=>flightReachable(aircraft,t.x,t.y)&&!friendly.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=(16*FIXED)**2)&&strikeAllowed(t,atomicRadius));
+          const atomic=targets.find(t=>flightReachable(aircraft,t.x,t.y)&&!friendly.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=(16*FIXED)**2)&&strikeAllowed(t,atomicRadius,true));
           if(atomic){target=atomic;mission="atomic";}
         }
         this.world.applyCommand({type:"sortie",mission,playerId:player.id,aircraftIds:[aircraft.id],x:target.x,y:target.y});
@@ -1970,7 +1961,7 @@ export class Expansion {
         const strike=payloads.flatMap(payload=>{
           if(!(stock[`payload:${payload}`]>0))return [];
           const radius=STRATEGIC_PAYLOADS[payload].blastRadius;
-          const target=strategicTargets.find(t=>!protectedPositions.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=radius**2)&&strikeAllowed(t,radius));
+          const target=strategicTargets.find(t=>!protectedPositions.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=radius**2)&&strikeAllowed(t,radius,true));
           return target ? [{payload,target}] : [];
         })[0];
         if(!strike)continue;

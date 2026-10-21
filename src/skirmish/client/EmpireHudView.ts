@@ -391,7 +391,7 @@ export class EmpireHudView {
       "fighter",
       fighter.reason,
       `${FLIGHT_RULES.fighter.gold.toLocaleString()} gold · ${FLIGHT_RULES.fighter.preModernSeconds}s flight time (${FLIGHT_RULES.fighter.modernSeconds}s Modern) · 6 per launch site / 32 per faction`,
-      aircraftArtworkId("fighter", fighter.building?.age ?? vm.progression.age),
+      aircraftArtworkId("fighter", fighter.age ?? vm.progression.age),
     );
     const btnDispatch = this.button("Dispatch","dispatch","",readyFor("patrol")?null:"No ready fighters","Patrol and engage hostile aircraft. Shortcut: I.");
     const btnBomber = this.button(
@@ -400,7 +400,7 @@ export class EmpireHudView {
       "bomber",
       bomber.reason,
       `${FLIGHT_RULES.bomber.gold.toLocaleString()} gold · ${FLIGHT_RULES.bomber.preModernSeconds}s flight time (${FLIGHT_RULES.bomber.modernSeconds}s Modern) · 6 per launch site / 32 per faction`,
-      aircraftArtworkId("bomber", bomber.building?.age ?? vm.progression.age),
+      aircraftArtworkId("bomber", bomber.age ?? vm.progression.age),
     );
     const btnBombingRun = this.button(
       "Bombing Run",
@@ -506,6 +506,14 @@ export class EmpireHudView {
             : `${name(event.actorId)} ${{ offer: "offered an alliance to", "offer-long-term": "offered a long-term alliance to", accept: "formed an alliance with", reject: "declined an alliance with", renew: "requested alliance renewal with", break: "broke the alliance with", "end-long-term": "gave three minutes' alliance notice to", expire: "ended its alliance with", declare: "declared war on", withdraw: "ended its offensive against", raid: "started a raid against", "raid-expire": "ended its raid against", peace: "made peace with", "offer-peace": "offered peace to", "accept-peace": "made peace with", "reject-peace": "declined peace with", "dont-embargo": "stopped peacetime trade interception against", "allow-embargo": "resumed peacetime trade interception against" }[event.action!]} ${name(event.otherId)}`;
       const item = document.createElement("div");
       item.className = "feed-event";
+      // Direction matters: outgoing offers and third-party attacks are not alerts to us.
+      const incoming = event.otherId === this.playerId && event.actorId !== this.playerId;
+      item.dataset.tone = incoming
+        ? event.action === "offer-peace" ? "peace"
+          : ["offer", "offer-long-term", "renew"].includes(event.action ?? "") ? "alliance"
+          : event.action === "declare" ? "war"
+          : event.action === "raid" ? "raid" : "neutral"
+        : "neutral";
       item.innerHTML = `<time>${Math.floor(event.tick / (60*TICKS_PER_SECOND))}:${String(Math.floor(event.tick / TICKS_PER_SECOND) % 60).padStart(2, "0")}</time><span>${esc(message)}</span>${event.kind === "diplomacy" ? `<button data-feed-player="${other}">Open</button>` : ""}`;
       const atBottom =
         this.log.scrollHeight - this.log.scrollTop - this.log.clientHeight < 20;

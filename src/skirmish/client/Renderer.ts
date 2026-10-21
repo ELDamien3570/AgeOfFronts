@@ -2445,12 +2445,26 @@ export class Renderer {
     }
     if (this.marker && now < this.marker.until) {
       const p = this.screen(this.marker.x, this.marker.y);
+      const remaining = this.marker.until - now;
+      const size = 5 + remaining / 80;
+      ctx.save();
       ctx.strokeStyle = this.marker.attack ? "#ffc5b3" : "#e2fff9";
       ctx.lineWidth = 2;
-      const size = 5 + (this.marker.until - now) / 80;
+      // Fade the shrinking ring out over its last 300 ms instead of cutting it.
+      ctx.globalAlpha = Math.min(1, remaining / 300);
       ctx.beginPath();
       ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
       ctx.stroke();
+      // A faint ripple expands outward during the first 400 ms of the order.
+      const ripple = 1 - (remaining - 400) / 400;
+      if (ripple >= 0 && ripple < 1) {
+        ctx.globalAlpha = 0.6 * (1 - ripple);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 15 + ripple * 14, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
     }
     if (paused) {
       ctx.fillStyle = "#07151e55";

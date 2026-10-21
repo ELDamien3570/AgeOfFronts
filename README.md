@@ -15,9 +15,9 @@ upright. This styling does not add ages.
 
 Left click or drag to select your dots. Right click land to move; right click
 an enemy dot to attack. **Shift + right click** queues waypoints (up to 32).
-A normal order replaces the queue; `X` holds and clears it. Recruitment is
+A normal order replaces the queue; `T` holds and clears it. Recruitment is
 always available from the left panel: `Q` infantry, `W` ranged, `E` cavalry,
-`T` transport, and `B` warship. Each needs a completed friendly matching
+and `B` warship. Each needs a completed friendly matching
 building; the nearest one to the selected force is used, or the nearest one
 to the camp if nothing is selected. Building inspection does not control
 recruitment. Land squads require 1,000 reserves; ships cost gold.

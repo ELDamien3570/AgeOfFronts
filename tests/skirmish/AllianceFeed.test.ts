@@ -64,6 +64,25 @@ function fixture() {
 }
 
 describe("world alliance logger", () => {
+  it("colours incoming diplomatic requests and attacks by direction for the local player", () => {
+    const f = fixture();
+    const events = [
+      {kind: "diplomacy", actorId: 2, otherId: 1, action: "offer"},
+      {kind: "diplomacy", actorId: 2, otherId: 1, action: "offer-long-term"},
+      {kind: "diplomacy", actorId: 2, otherId: 1, action: "renew"},
+      {kind: "diplomacy", actorId: 2, otherId: 1, action: "offer-peace"},
+      {kind: "war", actorId: 2, otherId: 1, action: "declare"},
+      {kind: "war", actorId: 2, otherId: 1, action: "raid"},
+      {kind: "diplomacy", actorId: 2, otherId: 3, action: "offer"},
+      {kind: "war", actorId: 1, otherId: 2, action: "declare"},
+      {kind: "war", actorId: 3, otherId: 2, action: "raid"},
+      {kind: "diplomacy", actorId: 2, otherId: 1, action: "accept-peace"},
+    ] as const;
+    for (const event of events) f.match.expansion!.announce(event);
+    f.update();f.update();
+    expect([...f.root.querySelectorAll<HTMLElement>(".feed-event")].map(e=>e.dataset.tone))
+      .toEqual(["alliance", "alliance", "alliance", "peace", "war", "raid", "neutral", "neutral", "neutral", "neutral"]);
+  });
   it("shows declared operations and withdrawal once without exposing preparation", () => {
     const f = fixture();
     f.match.expansion!.announce({kind: "war", actorId: 2, otherId: 3, action: "declare"});

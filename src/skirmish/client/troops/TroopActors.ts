@@ -921,6 +921,7 @@ export class TroopActors {
       const { image, frame } = this.factionFrames.get(`${record.artwork}:death`, asset.image, asset.mask, clip.frames[clipFrame(clip, record.age)], record.color ?? COLORS[this.playerId]);
       const size =
         record.size * tileSize * record.bodyScale * (clip.scale ?? 1);
+      ctx.globalAlpha = record.bodyOpacity;
       for(const shaft of record.embedded ?? []) {
         ctx.save();ctx.translate(p.x,p.y);ctx.rotate(record.angle);ctx.scale(tileSize/64*.65,tileSize/64*.65);drawPreviewProjectile(ctx,shaft.kind,2,0,shaft.angle,true);ctx.restore();
       }

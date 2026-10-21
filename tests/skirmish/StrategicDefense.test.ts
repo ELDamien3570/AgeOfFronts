@@ -186,8 +186,7 @@ describe("strategic defense and nuclear damage", () => {
     expect(f.game.building(edge.id)!.health).toBe(10000);
   });
 });
-// R2-M4 (review 12 Issue 1): a point-targeted launch needs the same right to
-// strike as a building-targeted one; neutral land never blocks it.
+// Nuclear launch permission protects allies without requiring declared wars.
 describe("strategic launch diplomacy", () => {
   const raid = () => {
     const w = 120, h = 80, data = new Uint8Array(w * h).fill(133);
@@ -204,29 +203,28 @@ describe("strategic launch diplomacy", () => {
     const launch = (x: number, y = 40) => game.applyCommand({ type: "launch", playerId: 1, launcherId: silo.id, payload: "icbm", x: (x + 0.5) * FIXED, y: (y + 0.5) * FIXED });
     return { game, e, launch };
   };
-  it("rejects a point launch into peace-protected land and changes nothing", () => {
+  it("allows a point launch into non-allied peace-protected land", () => {
     const { game, e, launch } = raid();
     e.diplomacy.state.peaceProtection = [{ a: 1, b: 2, untilTick: 1e7 }];
-    const owners = Array.from(game.owners).join(), gold = game.player(1)!.gold;
-    expect(launch(80)).toBe("Peace protection is still active");
+    const gold = game.player(1)!.gold;
+    expect(launch(80)).toBeNull();
+    expect(game.player(1)!.gold).toBe(gold-10000);
     for (let i = 0; i < 740; i++) game.step();
-    expect(Array.from(game.owners).join()).toBe(owners);
-    expect(game.wasteland.size).toBe(0);
+    expect(game.owners[game.map.ref(80,40)]).toBe(0);
+    expect(game.wasteland.size).toBeGreaterThan(0);
     expect(e.diplomacy.declaredWar(1, 2)).toBe(false);
-    expect(game.player(1)!.gold).toBeGreaterThanOrEqual(gold);
-    expect(e.supply.inventories[1]["payload:icbm"]).toBe(2);
+    expect(e.supply.inventories[1]["payload:icbm"]).toBe(1);
   });
-  it("rejects a point launch at a faction it is not at war with", () => {
+  it("allows collateral on a faction it is not at war with", () => {
     const { e, launch } = raid();
     expect(e.diplomacy.declaredWar(1, 2)).toBe(false);
-    expect(launch(80)).toBe("Choose a hostile building or unit");
-    // The blast edge alone is enough: 5 tiles from the border still reaches it.
-    expect(launch(104)).toBe("Choose a hostile building or unit");
-    expect(e.supply.inventories[1]["payload:icbm"]).toBe(2);
+    // The blast edge alone reaches faction 2's land from neutral territory.
+    expect(launch(104)).toBeNull();
+    expect(e.supply.inventories[1]["payload:icbm"]).toBe(1);
   });
-  it("never retargets MIRV warheads onto a faction it may not strike", () => {
+  it("can retarget MIRV warheads onto a hostile raider without declared war", () => {
     const { game, e } = raid();
-    // Embargo makes faction 2 hostile to units, but not a legal strike target.
+    // Embargo makes faction 2 hostile without a declared territorial war.
     e.diplomacy.state.embargoes = [{ initiator: 2, victim: 1, lastTheftTick: 1e7 }];
     expect(e.diplomacy.hostile(1, 2)).toBe(true);
     expect(e.diplomacy.canAttackStructure(1, 2)).toBe(false);
@@ -239,7 +237,7 @@ describe("strategic launch diplomacy", () => {
     const warheads = e.battle.projectiles.filter((p) => p.kind === "warhead");
     expect(warheads).toHaveLength(8);
     const at = e.battle.position(target);
-    expect(warheads.some((p) => p.toX === at.x && p.toY === at.y)).toBe(false);
+    expect(warheads.some((p) => p.toX === at.x && p.toY === at.y)).toBe(true);
   });
   it("allows a point launch at neutral land", () => {
     const { e, launch } = raid();

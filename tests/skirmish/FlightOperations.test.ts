@@ -291,7 +291,7 @@ describe("flight-time air operations", () => {
     e.supply.inventories[1]["payload:atomic"] = 1;
     e.diplomacy.state.alliances.push({ id: 999, a: 1, b: 2, expiresTick: 1e7, renewal: [] });
     const sortie = () => game.applyCommand({ type: "sortie", mission: "atomic", playerId: 1, aircraftIds: [a.id], x, y });
-    expect(sortie()).toBe("Choose a hostile building or unit");
+    expect(sortie()).toBe("Nuclear blast would hit an allied faction");
     expect(e.supply.inventories[1]["payload:atomic"]).toBe(1);
     expect(a.state).toBe("ready");
     e.diplomacy.state.alliances.length = 0;

@@ -279,6 +279,19 @@ and the pre-trade-row 290, so the trade rows (OD-3/4/5) remain unconfirmed.
 
 ## Authoring sources
 
+Early Modern and Modern howitzers and machine-gun crews have 4 melee / 8 ranged
+point armour. These exposed support weapons retain their 1,000 HP, firepower and
+range, but pre-modern soldiers can damage them in both channels. Hull armour is
+subtracted per contributing soldier before aggregation and has no minimum damage
+floor: their former 114 / 171 and 171 / 256 armour made ordinary pre-modern
+weapons deal zero damage regardless of army size. Ten Stone Age infantry now
+deal 60 HP per melee strike, ten Bronze Age infantry 100 HP, and ten Stone Age
+archers 240 HP per volley before accuracy and tactical modifiers. Protected
+vehicles retain their existing armour and damage rules. `ArtilleryVulnerability`
+checks both channel calculations and live melee/projectile destruction with
+return fire disabled; it does not qualify the balance of a ranged approach under
+fire.
+
 `skirmish/plans/formation-recipes.json` and `skirmish/plans/soldier-weapons.json`
 are compiled with their corresponding scripts into the runtime catalogues.
 `unit-tuning.json` is the direct authored source for movement and hull armour and

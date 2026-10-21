@@ -107,6 +107,7 @@ import type { MatchOptions, SpawnState } from "../Protocol";
 import { TerrainViewModel } from "./TerrainViewModel";
 import { serverText } from "./ServerText";
 import { localDefeated, showDefeatDialog } from "./DefeatDialog";
+import { resultText } from "./ResultText";
 import { controlsText } from "./ControlsText";
 
 import "./style.css";
@@ -1379,23 +1380,14 @@ function togglePause(): void {
 
 function showResult(winner: number): void {
   document.getElementById("defeat")?.remove();
-  const player = snapshot!.players.find((p) => p.id === winner);
-
-  element("result-title").textContent =
-    winner === localPlayerId
-      ? "Victory"
-      : winner === 0
-        ? "A hard-fought draw"
-        : `${player?.name ?? "An opponent"} wins`;
-
-  if (winner === -1)
-    element("result-title").textContent =
-      `Allied victory · ${snapshot!.expansion!.winners.map((id) => snapshot!.players.find((p) => p.id === id)!.name).join(", ")}`;
-
-  element("result-description").textContent =
-    winner === localPlayerId
-      ? "All hostile buildings and military forces have fallen."
-      : "The remaining enemy buildings and military forces have been defeated.";
+  const text = resultText(
+    winner,
+    localPlayerId,
+    snapshot!.players,
+    snapshot!.expansion?.winners ?? [],
+  );
+  element("result-title").textContent = text.title;
+  element("result-description").textContent = text.description;
 
   element("result").hidden = false;
 }

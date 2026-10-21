@@ -1,5 +1,7 @@
 export const REMAINS = {
   bodyLifetime: 20_000,
+  /** Bodies fade out over this window at the end of their lifetime. */
+  bodyFade: 3_000,
   bloodLifetime: 45_000,
   fallenScale: 1,
   bloodFadeStart: 5_000,
@@ -24,6 +26,8 @@ export interface FallenTroop {
 export interface PresentedRemains extends FallenTroop {
   age: number;
   bodyVisible: boolean;
+  /** 1 until the last `bodyFade` ms of the body lifetime, then eases to 0. */
+  bodyOpacity: number;
   bodyScale: number;
   bloodGrowth: number;
   bloodOpacity: number;
@@ -71,10 +75,18 @@ export class TroopRemains {
             (REMAINS.bloodLifetime - REMAINS.bloodFadeStart),
         ),
       );
+      const bodyFade = Math.max(
+        0,
+        Math.min(
+          1,
+          (age - (REMAINS.bodyLifetime - REMAINS.bodyFade)) / REMAINS.bodyFade,
+        ),
+      );
       result.push({
         ...troop,
         age,
         bodyVisible: age < REMAINS.bodyLifetime,
+        bodyOpacity: 1 - bodyFade * bodyFade * (3 - 2 * bodyFade),
         bodyScale: 1 - (1 - REMAINS.fallenScale) * eased,
         bloodGrowth: Math.max(0, Math.min(1, (age - 120) / 600)),
         bloodOpacity: 1 - fade * fade * (3 - 2 * fade),

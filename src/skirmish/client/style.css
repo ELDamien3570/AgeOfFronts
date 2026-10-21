@@ -2054,7 +2054,12 @@ footer span:last-child {
 }
 .feed-event span {
   flex: 1;
+  color: #aeb4bb;
 }
+.feed-event[data-tone="alliance"] span { color: #84e39a; }
+.feed-event[data-tone="peace"] span { color: #79e4ef; }
+.feed-event[data-tone="war"] span { color: #ff8585; }
+.feed-event[data-tone="raid"] span { color: #ffb36c; }
 .feed-event button {
   padding: 2px 4px;
   font-size: 9px;
@@ -2464,6 +2469,12 @@ footer span:last-child {
 .alliance-renewals[hidden] { display: none; }
 .diplomatic-notices { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 16; width: min(530px, calc(100% - 24px)); display: grid; gap: 8px; pointer-events: none; }
 .diplomatic-notices > .alliance-renewals { position: static; transform: none; width: 100%; }
+.diplomatic-notices > .peace-offers { width: min(340px, 100%); justify-self: center; max-height: 240px; overflow-y: auto; gap: 4px; pointer-events: auto; }
+.peace-offer-mute { display: flex; gap: 6px; align-items: center; padding: 5px 8px; font-size: 11px; pointer-events: auto; }
+.peace-offer { padding: 8px; pointer-events: auto; display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; }
+.peace-offer strong, .peace-offer > span { flex-basis: 100%; }
+.peace-offer > span { font-size: 11px; }
+.peace-offer button { padding: 4px 8px; font-size: 11px; }
 .alliance-renewal { padding: 12px 42px 12px 16px; position: relative; pointer-events: auto; display: grid; gap: 6px; border: 2px solid var(--age-rim, #c9ad70); background: #16252ef5; color: #fff2cf; box-shadow: 0 4px 20px #0009; }
 .alliance-renewal span { font-size: 12px; }
 .alliance-renewal [data-action="renew"] { justify-self: start; }

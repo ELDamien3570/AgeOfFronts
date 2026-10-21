@@ -47,5 +47,16 @@ export function flightPercent(
 }
 export const aircraftTechnology = (kind: AircraftKind, age: Age) =>
   `rus-${(kind === "drone" ? "Modern" : age === "Modern" ? "Modern" : "EarlyModern").toLowerCase()}-${kind === "fighter" ? "airfields" : kind === "bomber" ? "bombers" : "mirvs-drones"}`;
+/** An upgraded launch site retains older researched aircraft specializations. */
+export function aircraftRecruitmentAge(
+  kind: AircraftKind,
+  baseAge: Age,
+  has: (technology: string) => boolean,
+): "EarlyModern" | "Modern" | undefined {
+  if (baseAge === "Modern" && has(aircraftTechnology(kind, "Modern"))) return "Modern";
+  if (kind !== "drone" && (baseAge === "Modern" || baseAge === "EarlyModern") &&
+    has(aircraftTechnology(kind, "EarlyModern"))) return "EarlyModern";
+  return undefined;
+}
 export const missionKind = (mission: AirMission): AircraftKind =>
   mission === "patrol" ? "fighter" : mission === "drone" ? "drone" : "bomber";

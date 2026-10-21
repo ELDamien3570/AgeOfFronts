@@ -334,8 +334,8 @@
     },
     "earlymodern-field-support": {
       "speedPercent": 55,
-      "meleeArmour": 114,
-      "rangedArmour": 171,
+      "meleeArmour": 4,
+      "rangedArmour": 8,
       "armourKind": "points",
       "attack": {
         "range": 2304
@@ -343,8 +343,8 @@
     },
     "earlymodern-siege": {
       "speedPercent": 55,
-      "meleeArmour": 114,
-      "rangedArmour": 171,
+      "meleeArmour": 4,
+      "rangedArmour": 8,
       "armourKind": "points",
       "attack": {
         "range": 3840
@@ -388,8 +388,8 @@
     },
     "modern-field-support": {
       "speedPercent": 55,
-      "meleeArmour": 171,
-      "rangedArmour": 256,
+      "meleeArmour": 4,
+      "rangedArmour": 8,
       "armourKind": "points",
       "attack": {
         "range": 2304
@@ -403,8 +403,8 @@
     },
     "modern-siege": {
       "speedPercent": 55,
-      "meleeArmour": 171,
-      "rangedArmour": 256,
+      "meleeArmour": 4,
+      "rangedArmour": 8,
       "armourKind": "points",
       "attack": {
         "range": 3840

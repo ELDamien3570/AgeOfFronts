@@ -62,6 +62,7 @@ import { unitEffects } from "./ResearchEffects";
 import { structureAim } from "./StructureTargeting";
 import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS } from "../content/MissileDefense";
 import { interceptionPoint } from "./MissileInterception";
+import { blastHitsAlly } from "./BlastDiplomacy";
 import type { PhaseSpatialFacts, SpatialPhase, SpatialQueries } from "../PhaseSpatialViews";
 import type { UnitQueries } from '../UnitIndex';
 // Geometry-only reservation profile. This never becomes a unit weapon and never
@@ -78,6 +79,7 @@ export interface BattleWorld {
   cavalryRankLaunchSpacing?(squad: Squad): number;
   readonly combatGeometry?: CombatGeometry;
   map?: GameMap;
+  readonly owners?: Uint8Array;
   combatOrderRevision?(id:number):number;
   chargePresentationClear?(s:Squad,dx:number,dy:number,lateral?:number):boolean;
   squadFacts?():UnitQueries<Squad>;
@@ -102,6 +104,7 @@ export interface BattleWorld {
   resolveNavalDamage(damage: DamageLedger): void;
   nuclearBlast?(x:number,y:number,radius:number):void;
   destroyTradersInBlast?(attacker:number,x:number,y:number,radius:number):void;
+  tradeOwnersInBlast?(x:number,y:number,radius:number):Iterable<number>;
   recordMilitaryLosses(
     victims: { id: number; playerId: number }[],
     damage: DamageLedger,
@@ -1294,10 +1297,18 @@ export class Battle {
         this.reservedWarheads = Math.max(0,this.reservedWarheads-p.warheads);
         p.impacted = true;
         p.impactAt = tick;
-        const targets = p.targetBuildingId === undefined ? this.world.buildings
-          .filter(b => (b.health ?? 1) > 0 && this.diplomacy.hostile(p.playerId,b.playerId) && this.diplomacy.canAttackStructure(p.playerId,b.playerId))
+        const candidates = p.targetBuildingId === undefined ? this.world.buildings
+          .filter(b => (b.health ?? 1) > 0 && this.diplomacy.hostile(p.playerId,b.playerId))
           .sort((a,b) => this.distance(this.position(a), {x:p.toX,y:p.toY}) -
-            this.distance(this.position(b), {x:p.toX,y:p.toY}) || a.id-b.id).slice(0,8) : [];
+            this.distance(this.position(b), {x:p.toX,y:p.toY}) || a.id-b.id) : [];
+        const targets: Building[] = [];
+        for (const candidate of candidates) {
+          const point = this.position(candidate);
+          if (blastHitsAlly(this.world,p.playerId,point.x,point.y,p.blastRadius,
+            (a,b) => this.diplomacy.allied(a,b),this.forts.barriers)) continue;
+          targets.push(candidate);
+          if (targets.length === 8) break;
+        }
         for (let i = 0; i < p.warheads; i++) {
           this.fire(
             {

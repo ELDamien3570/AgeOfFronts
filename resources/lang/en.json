@@ -9,6 +9,18 @@
     "observe": "Observe",
     "leave": "Leave"
   },
+  "skirmish_result": {
+    "victory_title": "Victory",
+    "victory_description": "Your empire has prevailed over every rival.",
+    "allied_victory_title": "Allied victory · {names}",
+    "allied_victory_description": "Your alliance has prevailed over every rival.",
+    "allied_defeat_description": "Their alliance has prevailed. Your empire was not among the victors.",
+    "defeat_title": "{name} wins",
+    "defeat_description": "{name} has prevailed. Your empire was not among the victors.",
+    "unknown_winner": "An opponent",
+    "draw_title": "A hard-fought draw",
+    "draw_description": "No empire claimed victory."
+  },
   "skirmish_lobby_rules": {
     "start_protection": "Start protection",
     "time_limit": "Time limit",
