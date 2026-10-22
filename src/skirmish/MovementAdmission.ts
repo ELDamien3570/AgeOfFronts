@@ -40,6 +40,8 @@ interface Admission {
   /** Independent human intentions share layout and route families, never cancellation. */
   groupId?: number;
   interrupted?: string;
+  layout?: boolean;
+  placementFailure?: string;
   id: number;
   playerId: number;
   generation: number;
@@ -64,11 +66,11 @@ interface QueuedIntent {
   playerId: number;
   generation: number;
   order: Order;
-  members: { id: number; admissionId?: number }[];
+  members: { id: number; admissionId?: number; origin?: WorldPoint }[];
   revision: string;
   formation?: FormationPlanningState;
   travelLayout?: {
-    members: { id: number; admissionId?: number }[];
+    members: { id: number; admissionId?: number; origin?: WorldPoint }[];
     origins: Map<number, WorldPoint>; index: number; sumX: number; sumY: number;
   };
 }
@@ -218,7 +220,7 @@ export class MovementAdmission {
     private readonly map: GameMap,
     private readonly paths: LandPaths,
     private readonly ports: MovementAdmissionPorts,
-  ) { this.policyVersion = ports.responsive ? 2 : 1; }
+  ) { this.policyVersion = ports.responsive ? 3 : 1; }
   checkpoint() {
     return structuredClone({
       pending: [...this.pending],
@@ -230,7 +232,7 @@ export class MovementAdmission {
     });
   }
   restore(saved: ReturnType<MovementAdmission["checkpoint"]>): void {
-    if (![1,2].includes(saved.policyVersion ?? 1)) throw Error("Unknown movement policy");
+    if (![1,2,3].includes(saved.policyVersion ?? 1)) throw Error("Unknown movement policy");
     this.policyVersion = saved.policyVersion ?? 1;
     this.families.clear();
     const size=this.map.width()*this.map.height();
@@ -492,12 +494,7 @@ export class MovementAdmission {
     }
     admission.corridorId=familyId;
   }
-  private splitLayout(admission: Admission,tick:number): void {
-    if (admission.members.length === 1) { this.assignFamily(admission); admission.phase="queued"; return; }
-    this.pending.delete(admission.id);
-    for (const m of admission.members) this.pendingBySquad.delete(m.id);
-    const activate=()=>{
-      for (const member of admission.members) {
+  private spawnMember(admission:Admission,member:Member,tick:number):void {
         const squad=this.ports.squad(member.id)!;
         this.creatingGroup=admission.groupId;
         let id:number;
@@ -516,11 +513,54 @@ export class MovementAdmission {
           for (const m of intent.members) if(m.id===member.id && m.admissionId===admission.id) m.admissionId=id;
           this.addIntentReference(this.intentsByAdmission,id,intentId);
         }
-      }
-      this.intentsByAdmission.delete(admission.id);
+  }
+  private handoffMembers(admission:Admission,members:readonly Member[],tick:number):void {
+    const activate=()=>{
+      for(const member of members)this.spawnMember(admission,member,tick);
+      const refs=this.intentsByAdmission.get(admission.id);
+      if(refs)for(const intentId of refs)if(!this.intents.get(intentId)?.members.some(m=>m.admissionId===admission.id))refs.delete(intentId);
+      if(!refs?.size)this.intentsByAdmission.delete(admission.id);
     };
     if(this.ports.handoffStructure)this.ports.handoffStructure(admission.id,admission.playerId,activate);else activate();
-    this.event(admission,tick,admission.interrupted ? "superseded" : "executed",admission.interrupted);
+  }
+  private splitLayout(admission: Admission,tick:number): void {
+    if(admission.members.length===1){this.assignFamily(admission);admission.phase="queued";return;}
+    this.pending.delete(admission.id);
+    for(const m of admission.members)this.pendingBySquad.delete(m.id);
+    this.handoffMembers(admission,admission.members,tick);
+    this.event(admission,tick,admission.interrupted?"superseded":"executed",admission.interrupted);
+  }
+  /** Version 3 publishes each certified slot while its shared allocator keeps
+   * working. An impossible slot cannot hold or cancel already placed members. */
+  private publishLayout(admission:Admission,tick:number):void {
+    const ready=admission.members.filter(m=>admission.formation.result.has(m.id));
+    if(ready.length){
+      for(const m of ready){m.destination=admission.formation.result.get(m.id)!;this.onMemberProgress?.(m.id,tick,"layout");this.pendingBySquad.delete(m.id);}
+      admission.members=admission.members.filter(m=>!admission.formation.result.has(m.id));
+      this.handoffMembers(admission,ready,tick);
+    }
+    if(admission.formation.phase==="failed"){
+      const failed=admission.members.find(m=>m.id===admission.formation.member?.id);
+      if(!failed){this.finish(admission,tick,"rejected","There is no room for this formation at that destination");return;}
+      admission.placementFailure="A selected unit has no legal formation slot at that destination";
+      admission.members=admission.members.filter(m=>m!==failed);
+      this.pendingBySquad.delete(failed.id);this.ports.cancel(admission.id,failed.id);
+      this.onMemberProgress?.(failed.id,tick,"rejected");
+      this.cancel([failed.id],tick,admission.placementFailure);
+      const state=admission.formation;state.selected.delete(failed.id);
+      state.phase=state.result.size<state.selected.size?"slot":"done";
+    }
+    if(!admission.members.length)this.finish(admission,tick,admission.placementFailure?"rejected":"executed",admission.placementFailure);
+  }
+  /** Future Shift preparation may outlive the current member's route. Retain
+   * its planned origin and move its queue reference onto the live squad. */
+  private detachIntents(admission:Admission,member:Member):void {
+    if(this.policyVersion<3 || admission.groupId===undefined)return;
+    for(const intentId of this.intentsByAdmission.get(admission.id)??[]){
+      const intent=this.intents.get(intentId);if(!intent)continue;
+      for(const m of intent.members)if(m.id===member.id && m.admissionId===admission.id){m.origin=member.destination;m.admissionId=undefined;}
+    }
+    this.intentsByAdmission.delete(admission.id);
   }
 
   /** Re-admit an occupied destination while retaining later player intentions. */
@@ -591,7 +631,8 @@ export class MovementAdmission {
       ...(deadlineTicks === undefined ? {} : { deadline: this.handoffDeadline ?? tick + deadlineTicks }),
       id,
       corridorId,
-      ...(this.creatingGroup === undefined ? {} : {groupId:this.creatingGroup}),
+      ...(this.creatingGroup === undefined ? {} : {groupId:this.creatingGroup,
+        ...(this.policyVersion>=3 && squads.length>1 ? {layout:true} : {})}),
       playerId,
       generation: this.ports.generation(playerId),
       tile,
@@ -876,7 +917,7 @@ export class MovementAdmission {
             const orders = member?.queued ?? squad.queuedOrders;
             const last = orders[orders.length - 1] ?? (pending ? undefined : squad.order);
             const origin = last?.type === "move" ? last.x === undefined ? tilePoint(this.map,last.tile) : { x:last.x,y:last.y! }
-              : member?.destination ?? squad;
+              : member?.destination ?? m.origin ?? squad;
             layout.origins.set(m.id,{x:origin.x,y:origin.y});
             layout.sumX += origin.x; layout.sumY += origin.y;
           }
@@ -901,7 +942,7 @@ export class MovementAdmission {
               ? last.x === undefined
                 ? tilePoint(this.map, last.tile)
                 : { x: last.x, y: last.y! }
-              : (pending?.destination ?? squad);
+              : (pending?.destination ?? m.origin ?? squad);
           return { squad, origin };
         });
         // Include pending future slots in the occupancy snapshot seen by later
@@ -981,6 +1022,10 @@ export class MovementAdmission {
             .members.find((member) => member.id === m.id)!
             .queued.push(next);
         else this.ports.queue(this.ports.squad(m.id)!, next);
+        if(this.policyVersion>=3 && next.type==="move")for(const laterId of this.intentsBySquad.get(m.id)??[]){
+          const later=this.intents.get(laterId)?.members.find(member=>member.id===m.id);
+          if(later)later.origin=next.x===undefined?tilePoint(this.map,next.tile):{x:next.x,y:next.y!};
+        }
       }
       this.event(intent,tick,intent.interrupted?"superseded":"executed",intent.interrupted);
     }
@@ -1167,6 +1212,7 @@ export class MovementAdmission {
           this.ports.blocked(admission.playerId),
           this.ports.hostile,
         );
+        if(admission.layout){this.publishLayout(admission,tick);idle=0;continue;}
         if (formation.state.phase === "failed")
           this.finish(
             admission,
@@ -1188,7 +1234,7 @@ export class MovementAdmission {
         // Pending Shift intents gate only the commit (connectors phase): the
         // members' routes are planned meanwhile, so a move with queued legs
         // no longer waits for them before routing starts.
-        if (this.waitingIntent(admission.id) && admission.members.every((m) => !!m.path)) {
+        if (!(this.policyVersion>=3 && admission.groupId!==undefined) && this.waitingIntent(admission.id) && admission.members.every((m) => !!m.path)) {
           if (++idle >= this.pending.size) break;
         } else {
           admission.phase = "routes";
@@ -1276,7 +1322,7 @@ export class MovementAdmission {
           idle = 0;
         } else if (++idle >= this.pending.size) break;
       } else {
-        if (this.waitingIntent(admission.id)) {
+        if (!(this.policyVersion>=3 && admission.groupId!==undefined) && this.waitingIntent(admission.id)) {
           admission.phase = "queued";
           used++;
           continue;
@@ -1366,6 +1412,7 @@ export class MovementAdmission {
             continue;
           }
           for (const m of admission.members) {
+            this.detachIntents(admission,m);
             this.onMemberProgress?.(m.id,tick,"commit");
             this.ports.commit(
               this.ports.squad(m.id)!,

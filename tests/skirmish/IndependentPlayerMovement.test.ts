@@ -87,7 +87,8 @@ describe("independent player movement", () => {
     f.game.commandApplications.apply("move", f.command);
     steps(f.game, 10);
     expect(f.requests).toHaveLength(8);
-    for (const r of f.requests.slice(0, 7)) f.complete(r);
+    for (const r of f.requests.filter((r) => r.s !== f.squads[7].id))
+      f.complete(r);
     steps(f.game, 10);
     for (const s of f.squads.slice(0, 7)) {
       expect(f.game.movementAdmission.hasPending(s.id)).toBe(false);
@@ -95,7 +96,7 @@ describe("independent player movement", () => {
     }
     expect(f.game.movementAdmission.hasPending(f.squads[7].id)).toBe(true);
     expect(f.game.commandApplications.diagnostics.pending).toBe(1);
-    f.complete(f.requests[7]);
+    f.complete(f.requests.find((r) => r.s === f.squads[7].id)!);
     steps(f.game, 3);
     expect(f.game.commandApplications.diagnostics.pending).toBe(0);
   });
@@ -335,6 +336,86 @@ describe("independent player movement", () => {
     ).toBeGreaterThan(8);
     expect(f.game.tick).toBeLessThan(oldEnd);
   });
+  it("starts placed members while another destination is unplaceable", () => {
+    const f = fixture(3),
+      ids = f.squads.map((s) => s.id),
+      committed = new Set<number>(),
+      stages: { id: number; tick: number; stage: string }[] = [];
+    f.ports.blocked = () => (tile: number) => f.map.x(tile) >= 150;
+    f.game.movementAdmission.onMemberProgress = (id, tick, stage) => {
+      stages.push({ id, tick, stage });
+      if (stage === "commit") committed.add(id);
+    };
+    const points = new Map([
+      [ids[0], { x: 30.5 * FIXED, y: 30.5 * FIXED }],
+      [ids[1], { x: 180.5 * FIXED, y: 30.5 * FIXED }],
+      [ids[2], { x: 35.5 * FIXED, y: 30.5 * FIXED }],
+    ]);
+    const start = f.game.movementAdmission.start.bind(f.game.movementAdmission),
+      outcomes: any[] = [];
+    f.game.commandApplications.onOutcome = (o) => outcomes.push(o);
+    f.game.movementAdmission.start = (player, squads, tile, tick) =>
+      start(player, squads, tile, tick, points);
+    f.game.commandApplications.apply("placement", f.command);
+    let cursor = 0;
+    let tick = 0;
+    for (; tick < 80 && !committed.has(ids[0]); tick++) {
+      f.game.movementAdmission.step(tick, 16);
+      while (cursor < f.requests.length) f.complete(f.requests[cursor++]);
+    }
+    expect(committed.has(ids[0])).toBe(true);
+    expect(f.game.movementAdmission.hasPending(ids[1])).toBe(true);
+    expect(f.game.commandApplications.diagnostics.pending).toBe(1);
+    const saved = f.game.checkpoint();
+    f.game.restore(saved);
+    expect(f.game.checkpoint()).toEqual(saved);
+    for (; tick < 2000 && f.game.movementAdmission.pendingCount; tick++) {
+      f.game.movementAdmission.step(tick, 16);
+      while (cursor < f.requests.length) f.complete(f.requests[cursor++]);
+    }
+    expect(committed.has(ids[2])).toBe(true);
+    expect(committed.has(ids[1])).toBe(false);
+    expect(
+      stages.find((e) => e.id === ids[0] && e.stage === "commit")!.tick,
+    ).toBeLessThan(
+      stages.find((e) => e.id === ids[1] && e.stage === "rejected")!.tick,
+    );
+    expect(
+      f.game.movementAdmission.events.some((e) => e.status === "rejected"),
+    ).toBe(true);
+    expect(f.game.commandApplications.diagnostics.pending).toBe(0);
+    expect(outcomes[outcomes.length - 1].status).toBe("rejected");
+  });
+
+  it("commits current routes while a later Shift destination is still being placed", () => {
+    const f = fixture(2);
+    f.game.commandApplications.apply("move", f.command);
+    steps(f.game, 6);
+    f.ports.blocked = () => (tile: number) => f.map.x(tile) >= 150;
+    f.game.commandApplications.apply("shift", {
+      ...f.command,
+      append: true,
+      order: { type: "move", tile: f.map.ref(180, 30) },
+    });
+    for (const request of f.requests) f.complete(request);
+    steps(f.game, 3);
+    for (const squad of f.squads) {
+      expect(f.game.movementAdmission.hasPending(squad.id)).toBe(false);
+      expect(f.game.squad(squad.id)!.order.type).toBe("move");
+    }
+    expect(
+      f.game.movementAdmission.checkpoint().intents.length,
+    ).toBeGreaterThan(0);
+    const saved = f.game.checkpoint(),
+      copy = fixture(2);
+    copy.ports.blocked = f.ports.blocked;
+    copy.game.restore(saved);
+    steps(f.game, 50);
+    steps(copy.game, 50);
+    expect(copy.game.checkpoint()).toEqual(f.game.checkpoint());
+    expect(f.game.commandApplications.diagnostics.pending).toBe(0);
+  });
+
   it("retains historical movement behavior when restoring an unversioned policy", () => {
     const f = fixture(),
       saved = f.game.movementAdmission.checkpoint();

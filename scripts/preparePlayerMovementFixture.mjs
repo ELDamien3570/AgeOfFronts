@@ -43,7 +43,7 @@ const player = [...groups]
   .sort((a, b) => spread(b[1]) - spread(a[1]) || a[0] - b[0])[0]?.[0];
 if (!player) throw Error("No existing sixty-squad faction");
 next.checkpoint.planning.scheduling.version = 9;
-next.checkpoint.admission.policyVersion = 2;
+next.checkpoint.admission.policyVersion = 3;
 next.checkpoint.admission.families = [];
 const land = next.checkpoint.squads.filter((s) => s.embarkedOn === null).length;
 next.checkpoint.movementReadiness = {
@@ -76,7 +76,7 @@ const manifest = {
   deepEqualAfterRevertingPolicy: true,
   changes: [
     "planner scheduling -> 9",
-    "movement admission policy -> 2, empty route families",
+    "movement admission policy -> 3, empty route families",
     "empty urgent readiness, periodic cursor aligned to the next historical visit",
   ],
   sharedEnvelopeMetadata:

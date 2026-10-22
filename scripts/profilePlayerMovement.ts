@@ -53,7 +53,7 @@ for (const scenario of ["near1", "dispersed8", "compact60", "dispersed60"])
     const envelope = structuredClone(original),
       cp = envelope.checkpoint;
     if (mode === "responsive") {
-      cp.admission.policyVersion = 2;
+      cp.admission.policyVersion = 3;
       cp.admission.families = [];
       cp.planning.scheduling.version = 9;
       cp.movementReadiness = {

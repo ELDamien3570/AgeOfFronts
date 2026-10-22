@@ -260,7 +260,7 @@ try {
     const owned = p.snapshot.squads.filter(
       (s) => selected.has(s.id) && s.playerId === p.manifest.playerId,
     );
-    if(owned.length)send(p,{type:"match-command",matchId,command:{type:"order",playerId:p.manifest.playerId,squadIds:owned.map(s=>s.id),order:{type:"hold"}}});
+    for(let start=0;start<owned.length;start+=60)send(p,{type:"match-command",matchId,command:{type:"order",playerId:p.manifest.playerId,squadIds:owned.slice(start,start+60).map(s=>s.id),order:{type:"hold"}}});
   }
   await sleep(5000);
   startSample = await (await fetch(probeUrl)).json();
