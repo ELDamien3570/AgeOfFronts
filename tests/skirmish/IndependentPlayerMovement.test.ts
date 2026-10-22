@@ -7,6 +7,7 @@ import {
   TURN,
 } from "../../src/skirmish/domain/FormationGeometry";
 import { createManpower } from "../../src/skirmish/domain/Manpower";
+import { FormationPlanning } from "../../src/skirmish/FormationPlanning";
 import { MovementReadiness } from "../../src/skirmish/MovementReadiness";
 import { FIXED, type Squad } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -413,6 +414,58 @@ describe("independent player movement", () => {
     steps(f.game, 50);
     steps(copy.game, 50);
     expect(copy.game.checkpoint()).toEqual(f.game.checkpoint());
+    expect(f.game.commandApplications.diagnostics.pending).toBe(0);
+  });
+
+  it("preserves ready Shift legs when another member has no queued destination", () => {
+    const f = fixture(3),
+      ids = f.squads.map((s) => s.id);
+    f.game.commandApplications.apply("move", f.command);
+    steps(f.game, 6);
+    f.game.commandApplications.apply("shift", { ...f.command, append: true });
+    const intent = (f.game.movementAdmission as any).intents
+      .values()
+      .next().value;
+    const preferred = new Map([
+      [ids[0], { x: 30.5 * FIXED, y: 30.5 * FIXED }],
+      [ids[1], { x: 180.5 * FIXED, y: 30.5 * FIXED }],
+      [ids[2], { x: 35.5 * FIXED, y: 30.5 * FIXED }],
+    ]);
+    intent.formation = new FormationPlanning(
+      f.map,
+      f.game.paths,
+      f.map.ref(30, 30),
+      f.squads.map((squad) => ({ squad, origin: squad })),
+      () => f.game.squads,
+      Infinity,
+      preferred,
+    ).state;
+    f.ports.blocked = () => (tile: number) => f.map.x(tile) >= 150;
+    const queued = (id: number) =>
+      f.game.movementAdmission
+        .checkpoint()
+        .pending.flatMap(([, a]) => a.members)
+        .find((m) => m.id === id)!.queued;
+    let tick = f.game.tick;
+    for (; tick < 100 && queued(ids[0]).length === 0; tick++)
+      f.game.movementAdmission.step(tick, 16);
+    expect(queued(ids[0])).toHaveLength(1);
+    expect(f.game.movementAdmission.checkpoint().intents).toHaveLength(1);
+    const saved = f.game.checkpoint();
+    f.game.restore(saved);
+    expect(f.game.checkpoint()).toEqual(saved);
+    for (
+      ;
+      tick < 2000 && f.game.movementAdmission.checkpoint().intents.length;
+      tick++
+    )
+      f.game.movementAdmission.step(tick, 16);
+    expect(queued(ids[0])).toHaveLength(1);
+    expect(queued(ids[1])).toHaveLength(0);
+    expect(queued(ids[2])).toHaveLength(1);
+    expect(f.game.commandApplications.diagnostics.pending).toBe(1);
+    for (const request of f.requests) f.complete(request);
+    steps(f.game, 3);
     expect(f.game.commandApplications.diagnostics.pending).toBe(0);
   });
 

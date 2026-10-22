@@ -59,6 +59,7 @@ interface Admission {
   routeCheck?: { revision: string; member: number; stage: 0 | 1; cursor: number; dropped: boolean };
 }
 interface QueuedIntent {
+  placementFailure?: string;
   independent?: boolean;
   interrupted?: string;
   deadline?:number;
@@ -856,6 +857,23 @@ export class MovementAdmission {
   private waitingIntent(admissionId: number): boolean {
     return !!this.intentsByAdmission.get(admissionId)?.size;
   }
+  private queueIntentMember(intent:QueuedIntent,m:QueuedIntent["members"][number]):void {
+    const point=intent.formation?.result.get(m.id),order=intent.order;
+    const next:Order=order.type==="move"&&point?{type:"move",tile:pointTile(this.map,point),...point}:{...order};
+    if(m.admissionId!==undefined)this.pending.get(m.admissionId)!.members.find(member=>member.id===m.id)!.queued.push(next);
+    else this.ports.queue(this.ports.squad(m.id)!,next);
+    if(this.policyVersion>=3 && next.type==="move")for(const laterId of this.intentsBySquad.get(m.id)??[]){
+      const later=this.intents.get(laterId)?.members.find(member=>member.id===m.id);
+      if(later)later.origin=next.x===undefined?tilePoint(this.map,next.tile):{x:next.x,y:next.y!};
+    }
+  }
+  private releaseIntentMember(intent:QueuedIntent,m:QueuedIntent["members"][number]):void {
+    intent.members=intent.members.filter(member=>member!==m);
+    const own=this.intentsBySquad.get(m.id);own?.delete(intent.id);if(!own?.size)this.intentsBySquad.delete(m.id);
+    if(m.admissionId!==undefined && !intent.members.some(member=>member.admissionId===m.admissionId)){
+      const refs=this.intentsByAdmission.get(m.admissionId);refs?.delete(intent.id);if(!refs?.size)this.intentsByAdmission.delete(m.admissionId);
+    }
+  }
   private stepIntents(tick: number, budget: number, priorityOnly = false): number {
     let used = 0;
     // A single FIFO preserves the order of Shift commands across overlapping
@@ -998,6 +1016,21 @@ export class MovementAdmission {
           this.ports.hostile,
         );
       } else used++;
+      if(this.policyVersion>=3 && intent.independent && order.type==="move"){
+        const state=intent.formation!;
+        for(const m of [...intent.members])if(state.result.has(m.id)){
+          this.queueIntentMember(intent,m);this.releaseIntentMember(intent,m);
+        }
+        if(state.phase==="failed"){
+          const failed=intent.members.find(m=>m.id===state.member?.id);
+          if(!failed)throw Error("Queued placement lost its failed member");
+          intent.placementFailure="A selected unit has no legal queued formation slot";
+          this.releaseIntentMember(intent,failed);state.selected.delete(failed.id);
+          state.phase=state.result.size<state.selected.size?"slot":"done";
+        }
+        if(!intent.members.length){this.removeIntent(id);this.event(intent,tick,intent.placementFailure?"rejected":intent.interrupted?"superseded":"executed",intent.placementFailure??intent.interrupted);}
+        continue;
+      }
       if (intent.formation?.phase === "failed") {
         this.removeIntent(id);
         this.event(
@@ -1010,23 +1043,7 @@ export class MovementAdmission {
       }
       if (order.type === "move" && intent.formation?.phase !== "done") continue;
       this.removeIntent(id);
-      for (const m of intent.members) {
-        const point = intent.formation?.result.get(m.id),
-          next: Order =
-            order.type === "move" && point
-              ? { type: "move", tile: pointTile(this.map, point), ...point }
-              : { ...order };
-        if (m.admissionId !== undefined)
-          this.pending
-            .get(m.admissionId)!
-            .members.find((member) => member.id === m.id)!
-            .queued.push(next);
-        else this.ports.queue(this.ports.squad(m.id)!, next);
-        if(this.policyVersion>=3 && next.type==="move")for(const laterId of this.intentsBySquad.get(m.id)??[]){
-          const later=this.intents.get(laterId)?.members.find(member=>member.id===m.id);
-          if(later)later.origin=next.x===undefined?tilePoint(this.map,next.tile):{x:next.x,y:next.y!};
-        }
-      }
+      for(const m of intent.members)this.queueIntentMember(intent,m);
       this.event(intent,tick,intent.interrupted?"superseded":"executed",intent.interrupted);
     }
     return used;
