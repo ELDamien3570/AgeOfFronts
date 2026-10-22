@@ -159,7 +159,7 @@ async function connect(index) {
             const squad=snap.squads.find(s=>s.id===start.id),response=order.memberResponses.find(r=>r.id===start.id);
             if(!squad)continue;
             const elapsed=Date.now()-order.sentAt;
-            if(response.firstTurnMs===undefined && start.heading!==undefined && squad.locomotion?.heading!==undefined && Math.abs(squad.locomotion.heading-start.heading)>1e-6)
+            if(response.firstTurnMs===undefined && start.heading!==undefined && squad.locomotion?.heading!==undefined && Math.abs(Math.atan2(Math.sin(squad.locomotion.heading-start.heading),Math.cos(squad.locomotion.heading-start.heading)))>1e-6)
               response.firstTurnMs=elapsed;
             if(response.firstMotionMs===undefined && Math.hypot(squad.x-start.x,squad.y-start.y)>8){response.firstMotionMs=elapsed;response.motionTick=m.tick;}
           }
@@ -438,6 +438,7 @@ try {
               (r) => r.firstMotionMs === undefined && !r.terminal,
             ).length,
             rejected: rows.filter((r) => r.terminal).length,
+            pendingFullCommands: rows.filter(r=>r.executedMs===undefined && !r.terminal).length,
           },
         ];
       }),
@@ -460,6 +461,7 @@ try {
               (r) => r.firstMotionMs === undefined && !r.terminal,
             ).length,
             rejected: rows.filter((r) => r.terminal).length,
+            pendingFullCommands: rows.filter(r=>r.executedMs===undefined && !r.terminal).length,
           },
         ];
       }),

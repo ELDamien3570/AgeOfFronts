@@ -202,7 +202,7 @@ export function restoreProbeFixture(game) {
     const ms = performance.now() - at;
     for(const [squadId,watch] of movementWatch){
       const s=game.squad(squadId);if(!s){movementWatch.delete(squadId);continue;}
-      if(!watch.turn && watch.heading!==undefined && s.locomotion?.heading!==undefined && Math.abs(s.locomotion.heading-watch.heading)>1e-6){watch.turn=true;movementRow({squadId,id:watch.id,stage:"first-turn"});}
+      if(!watch.turn && watch.heading!==undefined && s.locomotion?.heading!==undefined && Math.abs(Math.atan2(Math.sin(s.locomotion.heading-watch.heading),Math.cos(s.locomotion.heading-watch.heading)))>1e-6){watch.turn=true;movementRow({squadId,id:watch.id,stage:"first-turn"});}
       const distance=Math.hypot(s.x-watch.x,s.y-watch.y);
       if(!watch.translation && distance>0){watch.translation=true;movementRow({squadId,id:watch.id,stage:"first-translation"});}
       if(!watch.threshold && distance>8){watch.threshold=true;movementRow({squadId,id:watch.id,stage:"first-threshold"});}
