@@ -35,8 +35,12 @@ export const IDLE_TICK_GOLDEN = Object.freeze({
 });
 
 export function idleTickFixture(policy: "legacy" | "responsive" = "responsive"): Skirmish {
+  const movement = { ...FORMATION_MOVEMENT };
+  // A historical hash fixture must omit newer match policies as well as
+  // restoring its historical admission/planner versions below.
+  if(policy === "legacy")delete movement.formationTravel;
   const game = new Skirmish(generateMigration(250, 3).map, {
-    ...DEFAULT_AI_POLICIES, ...FORMATION_MOVEMENT,
+    ...DEFAULT_AI_POLICIES, ...movement,
     seed: 3, aiCount: 4, tribes: true, tribeCount: 12, ruleset: "ages-v1",
     diplomacyRules: "raids-v1", armyTravel: "corridors-v1", startingAge: "Napoleonic",
   });
