@@ -58,6 +58,7 @@ await build({
     snapshotEncoderThread:
       "src/skirmish/multiplayer/infrastructure/snapshotEncoderThread.ts",
     client: "scripts/oracleSeaTradeProbeClient.mjs",
+    comparison: "scripts/oracleSeaTradeComparisonWorker.mjs",
     replay: "scripts/replayOracleSeaTradeProbe.ts",
   },
   outdir: out,
@@ -103,6 +104,7 @@ const hashes = Object.fromEntries(
     "serverMatchWorker",
     "snapshotEncoderThread",
     "client",
+    "comparison",
     "replay",
   ].map((name) => [
     name,

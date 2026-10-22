@@ -1,5 +1,5 @@
 import { appendFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { createHash } from "node:crypto";
+import { Worker } from "node:worker_threads";
 import WebSocket from "ws";
 import { serialize } from "node:v8";
 import { decodeState } from "../src/skirmish/multiplayer/StateCodec.ts";
@@ -25,11 +25,24 @@ writeFileSync(out + "/metadata.json", JSON.stringify(metadata, null, 2));
 const peers = [],
   orders = [],
   failures = [],
-  hashes = new Map(), comparisonStates=new Map();
+  observerDispatchMs = [];
 let sequence = 0,
   matchId,
   closing = false,
   comparedFrames = 0;
+const comparisonEvery = 8;
+let comparisonDrained = false, comparisonProcessed = 0;
+const comparisonWorker = new Worker(new URL("./comparison.mjs", import.meta.url));
+comparisonWorker.on("error", error => failures.push("Comparison worker: " + error.message));
+comparisonWorker.on("message", message => {
+  comparedFrames = message.comparedFrames ?? comparedFrames;
+  comparisonProcessed = message.processed ?? comparisonProcessed;
+  if(message.type === "drained") comparisonDrained = true;
+  if(message.type === "disagreement") {
+    if(!failures.length) writeFileSync(out+"/state-disagreement.json",JSON.stringify(message,null,2));
+    failures.push("Client state disagreement at " + message.key);
+  }
+});
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
   rid = () => "sea-probe-" + ++sequence,
   send = (p, m) => {
@@ -125,7 +138,8 @@ async function connect(index) {
           p.stationary.set(s.id, {
             x: s.x,
             y: s.y,
-            count: old && old.x === s.x && old.y === s.y ? old.count + 1 : 0,
+            count: old && old.x === s.x && old.y === s.y ? old.count + Number(old.tick !== m.tick) : 0,
+            tick: m.tick,
           });
         }
         p.snapshot = snap;
@@ -139,8 +153,9 @@ async function connect(index) {
             const squad=snap.squads.find(s=>s.id===start.id),response=order.memberResponses.find(r=>r.id===start.id);
             // Stop each response at its first translation or completed hold.
             // Later commands must not supply a heading/movement sample for it.
-            if(!squad || response.firstMotionMs!==undefined || response.completedWithoutObservedMotionMs!==undefined)continue;
             const elapsed=decodedAt-order.sentAt;
+            if(!squad){response.removedAtMs ??= elapsed;response.removedTick ??= m.tick;continue;}
+            if(response.firstMotionMs!==undefined || response.completedWithoutObservedMotionMs!==undefined || response.removedAtMs!==undefined)continue;
             if(response.firstTurnMs===undefined && start.heading!==undefined && squad.locomotion?.heading!==undefined && Math.abs(Math.atan2(Math.sin(squad.locomotion.heading-start.heading),Math.cos(squad.locomotion.heading-start.heading)))>1e-6)
               response.firstTurnMs=elapsed;
             if(response.firstMotionMs===undefined && Math.hypot(squad.x-start.x,squad.y-start.y)>8){response.firstMotionMs=elapsed;response.motionTick=m.tick;}
@@ -152,8 +167,8 @@ async function connect(index) {
           const moved=order.memberResponses.filter(r=>r.firstMotionMs!==undefined);
           if(moved.length && order.firstMotionMs===undefined){order.firstMotionMs=Math.min(...moved.map(r=>r.firstMotionMs));order.motionTick=m.tick;order.membersMovedAtFirstObservation=moved.length;}
           if(moved.length===order.starts.length)order.allMotionMs??=Math.max(...moved.map(r=>r.firstMotionMs));
-          const settled=order.memberResponses.filter(r=>r.firstMotionMs!==undefined || r.completedWithoutObservedMotionMs!==undefined);
-          if(settled.length===order.starts.length)order.allSettledMs??=Math.max(...settled.map(r=>r.firstMotionMs??r.completedWithoutObservedMotionMs));
+          const settled=order.memberResponses.filter(r=>r.firstMotionMs!==undefined || r.completedWithoutObservedMotionMs!==undefined || r.removedAtMs!==undefined);
+          if(settled.length===order.starts.length)order.allSettledMs??=Math.max(...settled.map(r=>r.firstMotionMs??r.completedWithoutObservedMotionMs??r.removedAtMs));
         }
         if (m.syncId)
           send(p, {
@@ -169,33 +184,17 @@ async function connect(index) {
             publicationSequence: m.publicationSequence,
             flowEpoch: m.flowEpoch,
           });
-        // State hash comparison uses the same publication; bounded to 32 frames.
-        const key = m.publicationSequence ?? m.tick,
-          hash = createHash("sha256")
-            .update(snap.owners)
-            .update(
-              JSON.stringify([
-                [...snap.squads].sort((a,b)=>a.id-b.id),
-                [...snap.ships].sort((a,b)=>a.id-b.id),
-                [...snap.buildings].sort((a,b)=>a.id-b.id),
-                snap.expansion?.traders && [...snap.expansion.traders].sort((a,b)=>a.id-b.id),
-                snap.expansion?.armies && [...snap.expansion.armies].sort((a,b)=>a.id-b.id),
-                [...snap.players].sort((a,b)=>a.id-b.id),
-              ],(_key,value)=>value && typeof value==="object" && !Array.isArray(value) && Object.getPrototypeOf(value)===Object.prototype ? Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])) : value),
-            )
-            .digest("hex");
-        const states=comparisonStates.get(key)??new Map();
-        states.set(index,{tick:m.tick,packetTick:snap.tick,ownersHash:createHash("sha256").update(snap.owners).digest("hex"),sections:[snap.squads,snap.ships,snap.buildings,snap.expansion?.traders,snap.expansion?.armies,snap.players].map(section=>JSON.stringify(section)??"null")});
-        comparisonStates.set(key,states);
-        const row = hashes.get(key) ?? new Map();
-        row.set(index, hash);
-        hashes.set(key, row);
-        if (row.size === 2) comparedFrames++;
-        if(new Set(row.values()).size>1){
-          if(!failures.length)writeFileSync(out+"/state-disagreement.json",JSON.stringify({key,states:[...states]},null,2));
-          failures.push("Client state disagreement at "+key);
+        // Observer-only comparison is sampled deterministically and runs on a
+        // separate event loop. Never sort/stringify whole worlds on the decode
+        // and response clock shared by the test clients.
+        const key = m.publicationSequence ?? m.tick;
+        if(key % comparisonEvery === 0){
+          const observerAt=performance.now();
+          comparisonWorker.postMessage({type:"state",key,index,tick:m.tick,snapshot:{tick:snap.tick,owners:snap.owners,
+            squads:snap.squads,ships:snap.ships,buildings:snap.buildings,traders:snap.expansion?.traders,
+            armies:snap.expansion?.armies,players:snap.players}});
+          observerDispatchMs.push(performance.now()-observerAt);
         }
-        while(hashes.size>32){const old=hashes.keys().next().value;hashes.delete(old);comparisonStates.delete(old);}
       })
       .catch((e) => failures.push(e.stack ?? e.message));
   });
@@ -374,13 +373,14 @@ try {
         if (!row.held && (row.terminal || row.executedMs !== undefined && row.allSettledMs !== undefined)) {
           row.held = true;
           row.heldAt = Date.now();
-          for(let start=0;start<row.squadIds.length;start+=MAX_ORDER_SQUADS)send(peers[row.peer], {
+          const heldIds=row.squadIds.filter(id=>peers[row.peer].snapshot.squads.some(s=>s.id===id));
+          for(let start=0;start<heldIds.length;start+=MAX_ORDER_SQUADS)send(peers[row.peer], {
             type: "match-command",
             matchId,
             command: {
               type: "order",
               playerId: row.playerId,
-              squadIds: row.squadIds.slice(start,start+MAX_ORDER_SQUADS),
+              squadIds: heldIds.slice(start,start+MAX_ORDER_SQUADS),
               order: { type: "hold" },
             },
           });
@@ -405,16 +405,19 @@ try {
   ended = Date.now();
 } finally {
   closing = true;
-  if (!comparedFrames)
-    failures.push("No matching client publications compared");
   for (const p of peers) p.ws?.close();
   await Promise.all(peers.map((p) => p.chain));
+  comparisonWorker.postMessage({type:"drain"});
+  try{await until(()=>comparisonDrained,"comparison worker drain");}catch(error){failures.push(error.message);}
+  await comparisonWorker.terminate();
+  if(!comparedFrames) failures.push("No matching client publications compared");
   const result = {
     source: metadata.source,
     startSample,
     endSample,
     sampling: { attempted: attempt, skipped },
     comparedFrames,
+    observer: {comparisonEvery,processed:comparisonProcessed,dispatchMs:stats(observerDispatchMs),location:"dedicated worker; credits and response timestamps precede observer dispatch"},
     initialTick: metadata.fixture.tick,
     started,
     ended,
@@ -433,7 +436,8 @@ try {
             firstMotionMs: stats(rows.map((r) => r.firstMotionMs)),
             allMotionMs: stats(rows.map((r) => r.allMotionMs)),
             completedWithoutObservedMotion: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.completedWithoutObservedMotionMs!==undefined).length,
-            unresolvedMembers: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.firstMotionMs===undefined && m.completedWithoutObservedMotionMs===undefined).length,
+            removedBeforeObservedMotion: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.firstMotionMs===undefined && m.removedAtMs!==undefined).length,
+            unresolvedMembers: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.firstMotionMs===undefined && m.completedWithoutObservedMotionMs===undefined && m.removedAtMs===undefined).length,
             memberMotionMs: stats(rows.flatMap(r=>(r.memberResponses??[]).map(m=>m.firstMotionMs))),
             memberTurnMs: stats(rows.flatMap(r=>(r.memberResponses??[]).map(m=>m.firstTurnMs))),
             unresolved: rows.filter(
@@ -456,7 +460,8 @@ try {
             firstMotionMs: stats(rows.map((r) => r.firstMotionMs)),
             allMotionMs: stats(rows.map((r) => r.allMotionMs)),
             completedWithoutObservedMotion: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.completedWithoutObservedMotionMs!==undefined).length,
-            unresolvedMembers: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.firstMotionMs===undefined && m.completedWithoutObservedMotionMs===undefined).length,
+            removedBeforeObservedMotion: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.firstMotionMs===undefined && m.removedAtMs!==undefined).length,
+            unresolvedMembers: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.firstMotionMs===undefined && m.completedWithoutObservedMotionMs===undefined && m.removedAtMs===undefined).length,
             memberMotionMs: stats(rows.flatMap(r=>(r.memberResponses??[]).map(m=>m.firstMotionMs))),
             memberTurnMs: stats(rows.flatMap(r=>(r.memberResponses??[]).map(m=>m.firstTurnMs))),
             unresolved: rows.filter(
@@ -476,7 +481,7 @@ try {
       publicationGapMs: stats(p.gaps),
     })),
     limitations:
-      "Selections above the 30-squad transport/UI limit are concurrent batches of legal orders; aggregate execution waits for every batch receipt. Two or three real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is each member's first decoded displacement over eight fixed units after the input; it is independent of the aggregate receipt. First turn and all-member motion are reported separately. Holds wait for full command execution and every member's motion, or a terminal failure; not rendered pixels. Credits and response timestamps precede observer-only state hashing; entity rosters are compared by ID and every field value remains included. State comparison retains at most 32 publications for a first-disagreement capture. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
+      "Selections above the 30-squad transport/UI limit are concurrent batches of legal orders; aggregate execution waits for every batch receipt. Two or three real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is each member's first decoded displacement over eight fixed units after the input; it is independent of the aggregate receipt. First turn and all-member motion are reported separately. Holds wait for full command execution and every member's motion, or a terminal failure; not rendered pixels. Credits and response timestamps precede observer-only state hashing; entity rosters are compared by ID and every field value remains included. Full-field state comparison samples every eighth publication on a separate worker, retains at most 32 sampled publications and captures the first disagreement. Removed members are reported separately; later commands cannot extend completed response samples. Stationarity requires distinct simulation ticks. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
   };
   writeFileSync(out + "/result.json", JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result.byKind));
