@@ -2548,6 +2548,13 @@ export class Skirmish {
         continue;
       }
       if(old.transition?.from==='column' && old.shape!=='column')old={...old,lastDeployTick:this.tick};
+      if(this.movementAdmission.responsive && old.transition){
+        // Completion is a lifecycle event, independent of the facing decision
+        // below. A small bearing change, retry or withdrawal must not keep an
+        // expired deployment attached and continue blocking translation.
+        old={...old,transition:undefined,blocked:false,blockedSince:undefined,layoutTroops:formationDoctrine(s.definitionId).hull?1:s.troops,revision:old.revision+1};
+        this.squadEntities.updateOwned(s.id,{formation:old});
+      }
       let facing=old.facing;
       // Translate out of the existing overlap before pivoting its body. A
       // rotating wedge can otherwise repeatedly create a fresh enemy overlap.

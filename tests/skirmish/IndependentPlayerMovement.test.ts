@@ -469,6 +469,59 @@ describe("independent player movement", () => {
     expect(f.game.commandApplications.diagnostics.pending).toBe(0);
   });
 
+  it("finishes a deployed transition even when its facing differs by less than the reorientation threshold", () => {
+    const f = fixture(1),
+      id = f.squads[0].id,
+      d = UNIT.get("modern-infantry")!;
+    const initial = {
+      ...createFormation(d.id),
+      shape: "mass" as const,
+      mode: "deployed" as const,
+      facing: 1000,
+      frontage: FIXED,
+      layoutTroops: 8,
+    };
+    f.game.updateSquad(id, {
+      definitionId: d.id,
+      troops: 8,
+      manpower: createManpower(d),
+      formation: initial,
+      locomotion: { heading: 0, targetHeading: 0, speed: 0 },
+    });
+    const source = formationSlots(f.game.squad(id)!, f.game.tick);
+    f.game.updateSquad(id, {
+      formation: {
+        ...initial,
+        frontage: 192,
+        transition: {
+          from: "mass",
+          fromFacing: 1000,
+          fromSlots: source,
+          startTick: f.game.tick,
+          duration: 4,
+        },
+      },
+    });
+    f.game.commandApplications.apply("move", f.command);
+    steps(f.game, 2);
+    for (const request of f.requests) f.complete(request);
+    const before = { x: f.game.squad(id)!.x, y: f.game.squad(id)!.y };
+    expect(f.game.squad(id)!.formation!.transition).toBeDefined();
+    steps(f.game, 4);
+    expect(f.game.squad(id)!.formation!.transition?.startTick).not.toBe(0);
+    expect(
+      f.game.squad(id)!.formation!.transition === undefined ||
+        f.game.squad(id)!.formation!.transition!.reorientation,
+    ).toBe(true);
+    steps(f.game, 8);
+    expect(
+      Math.hypot(
+        f.game.squad(id)!.x - before.x,
+        f.game.squad(id)!.y - before.y,
+      ),
+    ).toBeGreaterThan(8);
+  });
+
   it("retains historical movement behavior when restoring an unversioned policy", () => {
     const f = fixture(),
       saved = f.game.movementAdmission.checkpoint();
