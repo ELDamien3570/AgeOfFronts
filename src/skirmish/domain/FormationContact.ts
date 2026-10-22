@@ -587,6 +587,7 @@ export function certifyFootprint(
   blocked: (tile: number) => boolean,
   amphibious = false,
   softDepth = 0,
+  mapBoundary: "strict" | "overhang" = "strict",
 ): boolean {
   if (!polygon.length) return false;
   const x0 = Math.floor(Math.min(...polygon.map((p) => p.x)) / FIXED),
@@ -594,8 +595,17 @@ export function certifyFootprint(
     y0 = Math.floor(Math.min(...polygon.map((p) => p.y)) / FIXED),
     y1 = Math.floor(Math.max(...polygon.map((p) => p.y)) / FIXED);
   if ((x1 - x0 + 1) * (y1 - y0 + 1) > 4096) return false;
-  for (let y = y0; y <= y1; y++)
-    for (let x = x0; x <= x1; x++) {
+  // Only ground formation callers opt in. Ignore the off-map body portion,
+  // while certifying every occupied in-map cell against the original polygon.
+  // Keep the work cap on the full envelope, before clipping the scan bounds.
+  const overhang = mapBoundary === "overhang",
+    left = overhang ? Math.max(0, x0) : x0,
+    right = overhang ? Math.min(map.width() - 1, x1) : x1,
+    top = overhang ? Math.max(0, y0) : y0,
+    bottom = overhang ? Math.min(map.height() - 1, y1) : y1;
+  if (left > right || top > bottom) return false;
+  for (let y = top; y <= bottom; y++)
+    for (let x = left; x <= right; x++) {
       const valid = map.isValidCoord(x, y);
       const ref = valid ? map.ref(x, y) : 0;
       if (valid && passableCell(map, ref, amphibious) && !blocked(ref))

@@ -2279,9 +2279,11 @@ export class Skirmish {
   private certifyFormationPolygon(s:Squad,polygon:readonly {x:number;y:number}[],purpose:"deploy"|"hold"="deploy"):boolean {
     if(!this.expansion || s.afloat || s.embarkedOn!==null)return true;
     const forts=this.expansion.fortifications;
-    // RTS ground bodies may straddle water, including small islands. The
-    // admitted root/carrier alone controls embarkation and land/water legality.
-    return certifyFootprint(this.map,polygon,tile=>forts.blocked(tile,s.playerId)||forts.intactWallAt(tile),true);
+    // Ground members may straddle water or (in new matches) a map edge.
+    // Root admission still controls map bounds and land/water legality; every
+    // occupied in-map cell remains subject to physical fortifications.
+    return certifyFootprint(this.map,polygon,tile=>forts.blocked(tile,s.playerId)||forts.intactWallAt(tile),true,0,
+      this.options.formationTravel === "fixed-v1" ? "overhang" : "strict");
   }
   canDeploy(s:Squad,troops:number,definitionId=s.definitionId):boolean {
     if(!s.formation || s.afloat || s.embarkedOn!==null)return true;
@@ -2348,9 +2350,16 @@ export class Skirmish {
     return this.facingGeometry.body(s, this.tick);
   }
   private columnCertificate(s:Squad){return {x:s.x,y:s.y,troops:s.troops,capacity:s.manpower?.capacity??s.troops,environment:this.routingObstacleRevision(s.playerId)};}
-  private emptyTerrainBounds(left:number,top:number,right:number,bottom:number):boolean {
+  private emptyTerrainBounds(left:number,top:number,right:number,bottom:number,mapBoundary:"strict"|"overhang"="strict"):boolean {
     const x0=Math.floor(left/FIXED),x1=Math.floor(right/FIXED),y0=Math.floor(top/FIXED),y1=Math.floor(bottom/FIXED);
-    if (!this.map.isValidCoord(x0,y0) || !this.map.isValidCoord(x1,y1) || (x1-x0+1)*(y1-y0+1)>4096) return false;
+    if ((x1-x0+1)*(y1-y0+1)>4096) return false;
+    if (!this.map.isValidCoord(x0,y0) || !this.map.isValidCoord(x1,y1)) {
+      if(mapBoundary!=="overhang" || !Number.isFinite(left+top+right+bottom) || x1<0 || y1<0 || x0>=this.map.width() || y0>=this.map.height())return false;
+      // The same body contract as certifyFootprint: only the in-map portion
+      // can contain obstacles. Keep the full-envelope work cap above.
+      left=Math.max(0,left);top=Math.max(0,top);
+      right=Math.min(this.map.width()*FIXED-1,right);bottom=Math.min(this.map.height()*FIXED-1,bottom);
+    }
     if (this.expansion && !this.expansion.fortifications.obstacleFreeArea(left,top,right,bottom)) return false;
     return true;
   }
@@ -2359,7 +2368,7 @@ export class Skirmish {
     const column=s.formation.shape==="column" || s.formation.transition?.from==="column";
     const radius=this.facingGeometry.envelope(s,tick).broadRadius+
       (column?columnLayout(formationDoctrine(s.definitionId)).radius:0)+2;
-    return this.emptyTerrainBounds(s.x-radius,s.y-radius,s.x+radius,s.y+radius);
+    return this.emptyTerrainBounds(s.x-radius,s.y-radius,s.x+radius,s.y+radius,this.options.formationTravel==="fixed-v1"?"overhang":"strict");
   }
   private emptyTransitionTerrain(s:Squad,start:number,end:number):boolean {
     if (!s.formation) return false;
@@ -2372,7 +2381,7 @@ export class Skirmish {
       skin=Math.ceil(from.broadRadius*(1-Math.cos(angle/2))+from.broadRadius*angle*angle/4)+2,
       radius=Math.max(from.broadRadius,to.broadRadius,completed.broadRadius)+2*skin+2+
         (s.formation.shape==="column" || s.formation.transition?.from==="column"?columnLayout(formationDoctrine(s.definitionId)).radius:0);
-    return this.emptyTerrainBounds(s.x-radius,s.y-radius,s.x+radius,s.y+radius);
+    return this.emptyTerrainBounds(s.x-radius,s.y-radius,s.x+radius,s.y+radius,this.options.formationTravel==="fixed-v1"?"overhang":"strict");
   }
   private emptyMovementSweep(s:Squad,end:WorldPoint):boolean {
     // Bent columns have row-specific motion checks beyond obstacle clearance.
@@ -2403,8 +2412,8 @@ export class Skirmish {
           enemy.y+body.halfY+2>=top && enemy.y-body.halfY-2<=bottom;
       },s.playerId)) return false;
     // Read terrain live: setMagnitude and restore can change impassability.
-    // Ground formation certification already permits water overlap.
-    return this.emptyTerrainBounds(left,top,right,bottom);
+    // Ground formation certification permits water and, in new matches, map-edge overlap.
+    return this.emptyTerrainBounds(left,top,right,bottom,this.options.formationTravel==="fixed-v1"?"overhang":"strict");
   }
   private formationMoveClear(s:Squad,end:WorldPoint):boolean {
     // An unchanged root introduces no new swept occupancy.
@@ -2600,9 +2609,11 @@ export class Skirmish {
     }
   }
   private readonly routeSuffixLengths=new WeakMap<readonly number[],Float64Array>();
-  /** Budgeted automatic travel; route admission and player orders are untouched. */
+  /** New matches preserve travel shapes. The bounded historical adapter also
+   * completes explicitly requested deployment-line layouts after arrival. */
   private advanceColumnTravel(land:readonly Squad[]):void {
     if(!this.expansion || !land.length)return;
+    const fixedTravel=this.options.formationTravel==="fixed-v1";
     const start=(this.tick*COLUMN_TRAVEL.decisionsPerTick)%land.length;
     const decisions=this.movementAdmission.responsive
       ? this.movementReadiness.select(land,id=>this.orderRevisions.get(id)??0,COLUMN_TRAVEL.decisionsPerTick,id=>this.squad(id))
@@ -2611,7 +2622,10 @@ export class Skirmish {
       const old=s.formation;
       if(!old)continue;
       if(s.cavalryEngagement)continue;
-      if(this.movementAdmission.responsive && s.order.type==="move" && !this.player(s.playerId)?.ai &&
+      // autoFrontage/automatic retain an explicit deployment-line request (or
+      // an existing migrated travel pose). Neither can initiate a new fold.
+      if(fixedTravel && !old.autoFrontage && !old.automatic)continue;
+      if(!fixedTravel && this.movementAdmission.responsive && s.order.type==="move" && !this.player(s.playerId)?.ai &&
         old.shape!=="column" && old.transition?.automaticTravel && !old.transition.reorientation){
         const source=formationSlots(s,this.tick),target={...old,shape:"column" as const,mode:"travel" as const,automatic:true,frontage:undefined,autoFrontage:false,preferredFrontage:old.preferredFrontage??old.frontage,
           deployedShape:old.deployedShape??old.shape,transition:undefined,trail:undefined};
@@ -2625,7 +2639,7 @@ export class Skirmish {
         continue;
       }
       let constrained=false;
-      if(old.shape!=='column' && s.nextPathIndex<s.path.length && !old.transition){
+      if(!fixedTravel && old.shape!=='column' && s.nextPathIndex<s.path.length && !old.transition){
         for(let probe=0;probe<COLUMN_TRAVEL.probeCount;probe++){
           const index=Math.min(s.path.length-1,s.nextPathIndex+probe*2),point=tilePoint(this.map,s.path[index]);
           if(!this.map.isLand(s.path[index]) && this.amphibious(s.playerId))continue;
@@ -2637,11 +2651,15 @@ export class Skirmish {
       const ended=!pending && (s.order.type!=='move'||s.nextPathIndex>=s.path.length);
       const settledSince=ended?(old.settledSince??this.tick):undefined;
       if(old.settledSince!==settledSince)this.squadEntities.updateOwned(s.id,{formation:{...old,settledSince}});
-      const last=s.path[s.path.length-1];
-      let suffix=this.routeSuffixLengths.get(s.path);if(!suffix){suffix=new Float64Array(s.path.length);for(let i=s.path.length-2;i>=0;i--){const a=tilePoint(this.map,s.path[i]),b=tilePoint(this.map,s.path[i+1]);suffix[i]=suffix[i+1]+Math.hypot(a.x-b.x,a.y-b.y);}this.routeSuffixLengths.set(s.path,suffix);}
-      const next=s.path[s.nextPathIndex],point=next===undefined?s:tilePoint(this.map,next),length=(suffix[s.nextPathIndex]??0)+Math.hypot(point.x-s.x,point.y-s.y);
-      const direct=last===undefined?0:Math.hypot(tilePoint(this.map,last).x-s.x,tilePoint(this.map,last).y-s.y);
-      const decision=columnDecision(s,this.tick,constrained,{complete:ended && this.tick-(settledSince??this.tick)>=COLUMN_TRAVEL.settleTicks,winding:direct>0 && length/direct>=COLUMN_TRAVEL.windingRatio});
+      let winding=false;
+      if(!fixedTravel){
+        const last=s.path[s.path.length-1];
+        let suffix=this.routeSuffixLengths.get(s.path);if(!suffix){suffix=new Float64Array(s.path.length);for(let i=s.path.length-2;i>=0;i--){const a=tilePoint(this.map,s.path[i]),b=tilePoint(this.map,s.path[i+1]);suffix[i]=suffix[i+1]+Math.hypot(a.x-b.x,a.y-b.y);}this.routeSuffixLengths.set(s.path,suffix);}
+        const next=s.path[s.nextPathIndex],point=next===undefined?s:tilePoint(this.map,next),length=(suffix[s.nextPathIndex]??0)+Math.hypot(point.x-s.x,point.y-s.y);
+        const direct=last===undefined?0:Math.hypot(tilePoint(this.map,last).x-s.x,tilePoint(this.map,last).y-s.y);
+        winding=direct>0 && length/direct>=COLUMN_TRAVEL.windingRatio;
+      }
+      const decision=columnDecision(s,this.tick,constrained,{complete:ended && this.tick-(settledSince??this.tick)>=COLUMN_TRAVEL.settleTicks,winding});
       if(decision==='keep')continue;
       let shape=decision==='fold'?'column':eligibleShape(s.troops,formationDoctrine(s.definitionId),deployedShape(s));
       let frontage=decision==='deploy'?frontageLayout(s.troops,formationDoctrine(s.definitionId),shape,old.preferredFrontage)?.width:undefined;
