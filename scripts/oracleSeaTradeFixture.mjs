@@ -80,11 +80,13 @@ export function restoreProbeFixture(game) {
       return pack();
     };
   }
+  const probePlayers=f.movementProbePlayer ? [1,2,f.movementProbePlayer] : [1,2];
+  if(probePlayers.some(id=>!Number.isInteger(id)||!game.player(id)||game.player(id).eliminated))throw Error("Invalid measurement faction");
   const targets = [];
-  const owned = new Map([1, 2].map((id) => [id, []]));
+  const owned = new Map(probePlayers.map((id) => [id, []]));
   for (let tile = 0; tile < game.owners.length; tile++)
     owned.get(game.owners[tile])?.push(tile);
-  for (const id of [1, 2])
+  for (const id of probePlayers)
     for (const s of game.squads
       .filter(
         (s) =>
@@ -95,7 +97,7 @@ export function restoreProbeFixture(game) {
           !s.afloat,
       )
       .sort((a, b) => a.id - b.id)
-      .slice(0, 8)) {
+      .slice(0, f.movementProbePlayer===id ? 200 : 8)) {
       const origin = game.tileOf(s),
         cx = game.map.x(origin),
         cy = game.map.y(origin),
@@ -152,6 +154,8 @@ export function restoreProbeFixture(game) {
         tick: game.tick,
         policy: f.options.seaTradeRouting ?? "legacy",
         humanIds: [1, 2],
+        movementProbePlayer:f.movementProbePlayer,
+        targetPlayers:probePlayers,
         squads: game.squads.length,
         traders: game.expansion.trade.actors.length,
         ships: game.ships.length,
@@ -163,9 +167,27 @@ export function restoreProbeFixture(game) {
   );
   // Log the actual authoritative application tick, including hold commands.
   // This permits an exact input replay instead of inferring ticks from client receipts.
+  const movementRows=[],movementWatch=new Map();
+  const movementRow=(row)=>movementRows.push({tick:game.tick,...row});
+  const commit=game.movementAdmission.ports.commit;
+  game.movementAdmission.ports.commit=(squad,...args)=>{
+    if(probePlayers.includes(squad.playerId))movementRow({squadId:squad.id,stage:"commit"});
+    return commit(squad,...args);
+  };
+  game.movementAdmission.onMemberProgress=(squadId,tick,stage)=>{
+    if(stage!=="commit" && probePlayers.includes(game.squad(squadId)?.playerId))movementRows.push({squadId,tick,stage});
+  };
   const apply = game.commandApplications.apply.bind(game.commandApplications);
   game.commandApplications.apply = (id, command) => {
     const action = {sequence: journal.sequence++, tick: game.tick, type: "command", id, command};
+    if(command.type==="order")for(const squadId of command.squadIds){
+      movementWatch.delete(squadId);
+      const s=game.squad(squadId);
+      if(s && command.order.type==="move"){
+        movementWatch.set(squadId,{id,x:s.x,y:s.y,heading:s.locomotion?.heading});
+        movementRow({squadId,id,stage:"applied"});
+      }
+    }
     const result = apply(id, command);
     appendFileSync(out + "/actions-applied.jsonl", JSON.stringify({...action, result}) + "\n");
     appendFileSync(out + "/commands-applied.jsonl", JSON.stringify({ id, tick: game.tick, command, result }) + "\n");
@@ -178,17 +200,26 @@ export function restoreProbeFixture(game) {
     const at = performance.now();
     try { step(); } finally { game.onPhase = observe; }
     const ms = performance.now() - at;
+    for(const [squadId,watch] of movementWatch){
+      const s=game.squad(squadId);if(!s){movementWatch.delete(squadId);continue;}
+      if(!watch.turn && watch.heading!==undefined && s.locomotion?.heading!==undefined && Math.abs(s.locomotion.heading-watch.heading)>1e-6){watch.turn=true;movementRow({squadId,id:watch.id,stage:"first-turn"});}
+      const distance=Math.hypot(s.x-watch.x,s.y-watch.y);
+      if(!watch.translation && distance>0){watch.translation=true;movementRow({squadId,id:watch.id,stage:"first-translation"});}
+      if(!watch.threshold && distance>8){watch.threshold=true;movementRow({squadId,id:watch.id,stage:"first-threshold"});}
+      if(watch.turn && watch.threshold)movementWatch.delete(squadId);
+    }
+    if(movementRows.length){appendFileSync(out+"/movement-events.jsonl",movementRows.map(row=>JSON.stringify(row)).join("\n")+"\n");movementRows.length=0;}
     // Test-only read views, once per game second. No checkpoint copies or
     // simulation writes in the paced run; enough detail to locate a long wait.
     if (game.tick % 8 === 0) {
-      const admissions = [...game.movementAdmission.pending.values()].filter(a => a.playerId === 1 || a.playerId === 2);
+      const admissions = [...game.movementAdmission.pending.values()].filter(a => probePlayers.includes(a.playerId));
       if (admissions.length) appendFileSync(out + "/movement-planning.jsonl", JSON.stringify({
         tick: game.tick,
         admissions: admissions.map(a => ({ id: a.id, playerId: a.playerId, phase: a.phase, formation: a.formation.phase,
           routeCheck: a.routeCheck, placementRetries: a.placementRetries, connectorMisses: a.connectorMisses,
           members: a.members.map(m => ({ id: m.id, requested: m.requested, pathLength: m.path?.length,
             shared: m.shared?.stage, retryAt: m.retryAt, limitedAttempts: m.limitedAttempts })) })),
-        jobs: [...game.routePlanner.jobs.values()].filter(j => j.context.kind === "admission" && (j.context.playerId === 1 || j.context.playerId === 2))
+        jobs: [...game.routePlanner.jobs.values()].filter(j => j.context.kind === "admission" && probePlayers.includes(j.context.playerId))
           .map(j => ({ key: j.key, createdTick: j.createdTick, nodes: j.search.nodes.size, phase: j.search.phase,
             corridor: j.corridor?.phase, local: j.corridor?.local, waiting: j.waitingForWorkspace, exclusive: j.exclusiveRetry })),
         workspace: game.routePlanner.diagnostics.workspaceUsed,

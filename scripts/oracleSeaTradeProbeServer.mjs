@@ -84,6 +84,7 @@ const probe = createServer(async (req, res) => {
         settings: f.settings,
         options: f.options,
         tick: f.checkpoint.tick,
+        movementProbePlayer:f.movementProbePlayer,
       },
       initial: (() => {
         try {

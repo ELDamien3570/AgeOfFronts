@@ -15,6 +15,7 @@ import { FRONTAGE } from "./content/TacticalRules";
 import { MOTION, CONTACT, TERRAIN } from "./content/TacticalRules";
 import { transportHandoff } from "./domain/TransportHandoff";
 import { certifyFootprint, convexHull, formationFootprint, formationFootprints, formationContact, formationWithinReach, formationApproach, transitionFootprint, CONTACT_TOLERANCE, polygonsOverlap, rotationFootprint } from "./domain/FormationContact";
+import { MovementReadiness } from "./MovementReadiness";
 import { COLUMN_TRAVEL, columnDecision, deployedShape } from "./domain/ColumnTravel";
 import { advanceColumnTrail, columnLayout } from "./domain/FormationGeometry";
 import { formationEnvelope } from "./domain/FormationGeometry";
@@ -359,7 +360,7 @@ export class Skirmish {
   checkpoint() {
     this.assertAvailable();
     const live = structuredClone({options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,reorientRetry:this.reorientRetry,queuedLegs:this.queuedLegs,moveContinuations:this.moveContinuations,routeApproaches:this.routeApproaches,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,endReason:this.endReason,combatTicks:this.combatTicks,producedTroops:this.producedTroops,random:this.random.getState()});
-    return this.normalizePolicyWaits({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:live.options,players:live.players,squads:live.squads,buildings:live.buildings,ships:live.ships,volleys:live.volleys,defenseZones:live.defenseZones,owners:live.owners,claims:live.claims,progress:live.progress,detours:live.detours,navigationProgress:live.navigationProgress,orderRevisions:live.orderRevisions,reorientRetry:live.reorientRetry,queuedLegs:live.queuedLegs,moveContinuations:live.moveContinuations,routeApproaches:live.routeApproaches,controlGenerations:live.controlGenerations,activeClaims:live.activeClaims,tick:this.tick,winner:this.winner,endReason:live.endReason,combatTicks:live.combatTicks,producedTroops:live.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:live.random,forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()});
+    return this.normalizePolicyWaits({playerAttacks:this.playerAttacks.checkpoint(),version:11 as const,width:this.map.width(),height:this.map.height(),options:live.options,players:live.players,squads:live.squads,buildings:live.buildings,ships:live.ships,volleys:live.volleys,defenseZones:live.defenseZones,owners:live.owners,claims:live.claims,progress:live.progress,detours:live.detours,navigationProgress:live.navigationProgress,orderRevisions:live.orderRevisions,reorientRetry:live.reorientRetry,queuedLegs:live.queuedLegs,moveContinuations:live.moveContinuations,routeApproaches:live.routeApproaches,controlGenerations:live.controlGenerations,activeClaims:live.activeClaims,tick:this.tick,winner:this.winner,endReason:live.endReason,combatTicks:live.combatTicks,producedTroops:live.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:live.random,forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),...(this.movementAdmission.responsive?{movementReadiness:this.movementReadiness.checkpoint()}:{}),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),attackApproaches:this.attackApproaches.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()});
   }
   /** A policy wait's revision embeds derived generations that a restore does
    * not reproduce. Save a wait that is current as POLICY_WAIT_CURRENT, which a
@@ -488,6 +489,7 @@ export class Skirmish {
     this.routePlanner.restore(state.planning ?? {landRevision:this.paths.revision,waterRevision:this.waterPaths.revision,jobs:[]});
     this.expansion?.trade.seaRouteConsumer?.validatePlannerLinks(this.routePlanner.requests());
     this.movementAdmission.restore(state.admission ?? {pending:[],nextId:1,events:[]});
+    this.movementReadiness.restore(state.movementReadiness);
     this.shipAdmission.restore(state.shipAdmission ?? {pending:[],nextId:1,events:[]});
     // Permission generations are derived restore fences. Rebase saved waits
     // against the restored world instead of inventing another route attempt.
@@ -834,6 +836,7 @@ export class Skirmish {
   private readonly routeWork = new RouteWork<Exclude<MatchRouteTask,{kind:"admission"|"ship-admission"}>>(task => this.executeRouteTask(task));
   private routeClassificationEpoch = 0;
   readonly routePlanner: RoutePlanner<Extract<MatchRouteTask,{kind:"navigation"|"admission"|"ship-admission"|"domain"}>>;
+  private readonly movementReadiness = new MovementReadiness();
   readonly movementAdmission: MovementAdmission;
   readonly shipAdmission: ShipMovementAdmission;
   private domainConsumer(owner: DomainRouteOwner): DomainRouteConsumer | undefined {
@@ -1020,6 +1023,7 @@ export class Skirmish {
       // otherwise busy trade fleets leave that capacity idle for minutes.
       lendIdlePreparation: true,
       balancedActiveAdmission: options.seaTradeRouting === "lanes-v1",
+      responsiveScheduling: true,
       deadlineTicks: request => request.context.kind === "domain" && request.context.owner === "sea-trade" ? undefined : this.interactiveRoute(request.context) ||
         (request.context.kind === "domain" && request.context.owner === "trade" && this.expansion?.trade.routeCommitted(request.context)) ?
         undefined : this.options.autonomousRouteDeadlineTicks,
@@ -1153,6 +1157,16 @@ export class Skirmish {
     });
     this.formations = new Formations(map, this.paths, this.collisionHostile, id => this.squadPaths(id));
     this.movementAdmission = new MovementAdmission(map,this.paths,{
+      responsive: true,
+      preview:(squad,point,path)=>{
+        this.activateOrder(squad,this.formationMove(point));
+        const nextPathIndex=path.length>1 && this.clearCorridor(squad,tilePoint(map,path[1])) ? 1 : 0;
+        this.squadEntities.updateOwned(squad.id,{path,nextPathIndex,lastPlanTick:this.tick,queuedOrders:[]});
+      },
+      abortPreview:(squad,queued)=>{
+        this.activateOrder(squad,{type:"hold"});
+        this.squadEntities.updateOwned(squad.id,{queuedOrders:queued.map(order=>({...order}))});
+      },
       deadlineTicks: playerId => !this.player(playerId)?.ai ? undefined : this.options.autonomousRouteDeadlineTicks,
       prepareStructure:(state,budget)=>this.expansion!.stepStructurePreparation(state,budget),
       activateStructure:(playerId,squads,points,target)=>this.admitStructureAttack(playerId,squads,points,target),
@@ -1195,6 +1209,8 @@ export class Skirmish {
       },
       commit:(squad,point,path,index,append,structureTarget)=>{
         this.activateOrder(squad,this.formationMove(point));
+        if(this.movementAdmission.responsive && !this.player(squad.playerId)?.ai)
+          for(let n=0;n<ROUTE_LOOKAHEAD && index+1<path.length && distanceSquared(squad,tilePoint(map,path[index]))<=ARRIVAL_TOLERANCE**2;n++)index++;
         this.squadEntities.updateOwned(squad.id, { path: path });this.squadEntities.updateOwned(squad.id, { nextPathIndex: index });this.squadEntities.setOwned(squad.id, "lastPlanTick", this.tick);
         this.squadEntities.updateOwned(squad.id, { queuedOrders: append.map(order=>({...order})) });this.squadEntities.updateOwned(squad.id, { charge: null });this.squadEntities.updateOwned(squad.id, { structureTarget: structureTarget ?? null });
       },
@@ -1461,6 +1477,7 @@ export class Skirmish {
     }
   }
   removeSquad(id: number): boolean {
+    this.movementReadiness.cancel(id);
     // A destroyed squad's pending admissions end now, while it still exists
     // for their events; a corridor follower then plans its own route.
     if(this.squadEntities.get(id))this.movementAdmission.cancel([id],this.tick,"Control or selected units changed");
@@ -1998,6 +2015,8 @@ export class Skirmish {
     }
     if(!continuingAttack&&!this.player(squad.playerId)?.ai)this.playerAttacks.observe(squad,order.type==="attack"?this.squad(order.targetId):undefined);
     this.orderRevisions.set(squad.id, (this.orderRevisions.get(squad.id) ?? 0) + 1);
+    if(this.movementAdmission.responsive && order.type==="move" && !this.player(squad.playerId)?.ai)
+      this.movementReadiness.request(squad,this.orderRevisions.get(squad.id)!);
     this.squadEntities.updateOwned(squad.id, { path: order.type === "move" ? [this.tileOf(squad), ...path] : path });
     this.squadEntities.updateOwned(squad.id, { nextPathIndex: 0 });
     this.squadEntities.setOwned(squad.id, "plannedTile", -1);
@@ -2005,6 +2024,9 @@ export class Skirmish {
   }
 
   private finishOrder(squad: Squad): void {
+    // A certified approach can exhaust its prefix while the independent full
+    // route still plans. Hold there without consuming later Shift intentions.
+    if(this.movementAdmission.previewEndpoint(squad.id))return;
     while (squad.queuedOrders.length) {
       const order = squad.queuedOrders[0];
       const continuation = this.readyMoveContinuation(squad);
@@ -2575,10 +2597,26 @@ export class Skirmish {
   private advanceColumnTravel(land:readonly Squad[]):void {
     if(!this.expansion || !land.length)return;
     const start=(this.tick*COLUMN_TRAVEL.decisionsPerTick)%land.length;
-    for(let offset=0;offset<Math.min(land.length,COLUMN_TRAVEL.decisionsPerTick);offset++){
-      const s=land[(start+offset)%land.length],old=s.formation;
+    const decisions=this.movementAdmission.responsive
+      ? this.movementReadiness.select(land,id=>this.orderRevisions.get(id)??0,COLUMN_TRAVEL.decisionsPerTick,id=>this.squad(id))
+      : Array.from({length:Math.min(land.length,COLUMN_TRAVEL.decisionsPerTick)},(_,offset)=>land[(start+offset)%land.length]);
+    for(const s of decisions){
+      const old=s.formation;
       if(!old)continue;
       if(s.cavalryEngagement)continue;
+      if(this.movementAdmission.responsive && s.order.type==="move" && !this.player(s.playerId)?.ai &&
+        old.shape!=="column" && old.transition?.automaticTravel && !old.transition.reorientation){
+        const source=formationSlots(s,this.tick),target={...old,shape:"column" as const,mode:"travel" as const,automatic:true,frontage:undefined,autoFrontage:false,preferredFrontage:old.preferredFrontage??old.frontage,
+          deployedShape:old.deployedShape??old.shape,transition:undefined,trail:undefined};
+        const destination=formationSlots({...s,formation:target},this.tick);
+        const distance=Math.max(...source.map((p,i)=>Math.hypot(p.x-destination[i].x,p.y-destination[i].y)));
+        const duration=Math.min(secondsToTicks(10),Math.max(1,Math.ceil(distance*TICKS_PER_SECOND/(FIXED*2.5))));
+        const formation={...target,revision:old.revision+1,transition:{automaticTravel:true,from:old.shape,fromFacing:old.facing,fromSlots:source,startTick:this.tick,duration}};
+        const proposed={...s,formation};
+        if(this.certifyFormationPolygon(proposed,transitionFootprint(proposed,this.tick,this.tick+duration)))
+          this.squadEntities.updateOwned(s.id,{formation});
+        continue;
+      }
       let constrained=false;
       if(old.shape!=='column' && s.nextPathIndex<s.path.length && !old.transition){
         for(let probe=0;probe<COLUMN_TRAVEL.probeCount;probe++){
@@ -2631,7 +2669,7 @@ export class Skirmish {
       const formation={...old,shape,frontage,facing,autoFrontage:decision==='fold' && shape!=='column',preferredFrontage:decision==='fold'?(old.autoFrontage||old.automatic?old.preferredFrontage:old.frontage):frontage,mode:shape==='column'?'travel' as const:'deployed' as const,
         deployedShape:decision==='fold'?(old.autoFrontage||old.automatic?old.deployedShape:old.shape):shape,deploymentFacing:decision==='fold'?old.deploymentFacing:undefined,automatic:decision==='fold' && shape==='column',trail:undefined,
         blocked:false,blockedSince:undefined,settledSince:undefined,retryTick:undefined,lastDeployTick:decision==='deploy'?this.tick:old.lastDeployTick,revision:old.revision+1,
-        transition:{from:old.shape,fromFacing:old.facing,fromSlots:source,startTick:this.tick,duration}};
+        transition:{...(this.movementAdmission.responsive?{automaticTravel:true}:{}),from:old.shape,fromFacing:old.facing,fromSlots:source,startTick:this.tick,duration}};
       const proposed={...s,formation};
       if(!this.certifyFormationPolygon(proposed,transitionFootprint(proposed,this.tick,this.tick+duration))){
         this.squadEntities.updateOwned(s.id,{formation:{...old,blocked:true,retryTick:this.tick+COLUMN_TRAVEL.retryTicks,revision:old.revision+1}});continue;
@@ -3911,6 +3949,8 @@ export class Skirmish {
           if(proof.candidates.length===8)proof.candidates.shift();
           proof.candidates.push({x:end.x,y:end.y,allowed});
         }
+        if(!allowed && this.movementAdmission.responsive && squad.order.type==="move" && !this.player(squad.playerId)?.ai)
+          this.movementReadiness.request(squad,this.orderRevisions.get(squad.id)??0,"blocked");
         proof.tick=this.tick;proof.spatialRevision=revision;proof.x=end.x;proof.y=end.y;proof.allowed=allowed;
         return allowed;
       },
@@ -4224,6 +4264,8 @@ export class Skirmish {
   }
 
   private navigationGoal(squad: Squad, index: number): WorldPoint {
+    const preview=this.movementAdmission.previewEndpoint(squad.id);
+    if(preview && index===squad.path.length-1)return preview;
     if (squad.order.type === "move" && index === squad.path.length - 1)
       return this.moveDestination(squad.order);
     return tilePoint(this.map, squad.path[index]);
@@ -4372,6 +4414,7 @@ export class Skirmish {
   }
 
   private recoverNavigation(squad: Squad): void {
+    if(this.movementAdmission.previewEndpoint(squad.id))return;
     // A deliberate pivot/charge preparation is progress, not a stalled route.
     if (this.options.formationLocomotion && squad.locomotion &&
       (squad.charge?.phase === "preparing" || ((!this.options.formationFreeTravel || !!squad.charge) && Math.abs(Math.atan2(
@@ -4416,6 +4459,7 @@ export class Skirmish {
   }
 
   private queueNavigation(squad: Squad, operation: Extract<MatchRouteTask, {kind:"navigation"}>["operation"], targetId?: number): void {
+    if(this.movementAdmission.previewEndpoint(squad.id))return;
     this.routeWork.request(`navigation:${squad.id}`, 1, {kind:"navigation", operation, squadId:squad.id, revision:this.orderRevisions.get(squad.id) ?? 0, targetId});
   }
 
@@ -4504,6 +4548,7 @@ export class Skirmish {
     if(squad.aiWithdrawal?.phase==='recovery')return null;
     if(squad.order.type==='move' && !squad.charge && !squad.fighting){
       const next=squad.path[squad.nextPathIndex],point=next===undefined?undefined:this.navigationGoal(squad,squad.nextPathIndex);
+      if(point && this.movementAdmission.previewEndpoint(squad.id) && !this.movementPolicyClear(squad,point))return null;
       if(point&&!this.movementPolicyClear(squad,point)||squad.aiWithdrawal&&next===undefined){
         this.detours.delete(squad.id);
         const progress=this.navigationProgress.get(squad.id)??{x:squad.x,y:squad.y,tick:this.tick,recovery:this.tick};
@@ -4835,7 +4880,7 @@ export class Skirmish {
     });
   }
   private requestNavigationRoute(squad:Squad,operation:"blocked"|"smooth"):boolean {
-    if(squad.order.type!=="move")return false;
+    if(squad.order.type!=="move" || this.movementAdmission.previewEndpoint(squad.id))return false;
     const key=`navigation:${squad.id}`;
     if(this.routePlanner.has(key))return true;
     return this.routePlanner.request({key,start:this.tileOf(squad),goal:squad.order.tile,water:false,amphibious:this.amphibious(squad.playerId),createdTick:this.tick,

@@ -153,24 +153,26 @@ async function connect(index) {
         if (new Set(row.values()).size > 1)
           failures.push("Client state disagreement at " + key);
         while (hashes.size > 32) hashes.delete(hashes.keys().next().value);
-        for (const order of orders)
-          if (
-            order.peer === index &&
-            order.firstMotionMs === undefined &&
-            !order.terminal &&
-            order.settled &&
-            order.executedMs !== undefined
-          ) {
-            const moved = order.starts.filter((start) => {
-              const s = snap.squads.find((s) => s.id === start.id);
-              return s && Math.hypot(s.x - start.x, s.y - start.y) > 8;
-            });
-            if (moved.length) {
-              order.firstMotionMs = Date.now() - order.sentAt;
-              order.motionTick = m.tick;
-              order.membersMovedAtFirstObservation = moved.length;
-            }
+        for(const order of orders)if(order.peer===index && order.settled && !order.terminal){
+          order.memberResponses ??= order.starts.map(start=>({id:start.id}));
+          for(const start of order.starts){
+            const squad=snap.squads.find(s=>s.id===start.id),response=order.memberResponses.find(r=>r.id===start.id);
+            if(!squad)continue;
+            const elapsed=Date.now()-order.sentAt;
+            if(response.firstTurnMs===undefined && start.heading!==undefined && squad.locomotion?.heading!==undefined && Math.abs(squad.locomotion.heading-start.heading)>1e-6)
+              response.firstTurnMs=elapsed;
+            if(response.firstMotionMs===undefined && Math.hypot(squad.x-start.x,squad.y-start.y)>8){response.firstMotionMs=elapsed;response.motionTick=m.tick;}
           }
+          if(order.executedMs!==undefined)for(const response of order.memberResponses){
+            const squad=snap.squads.find(s=>s.id===response.id);
+            if(response.firstMotionMs===undefined && squad?.order.type==="hold")response.completedWithoutObservedMotionMs??=Date.now()-order.sentAt;
+          }
+          const moved=order.memberResponses.filter(r=>r.firstMotionMs!==undefined);
+          if(moved.length && order.firstMotionMs===undefined){order.firstMotionMs=Math.min(...moved.map(r=>r.firstMotionMs));order.motionTick=m.tick;order.membersMovedAtFirstObservation=moved.length;}
+          if(moved.length===order.starts.length)order.allMotionMs??=Math.max(...moved.map(r=>r.firstMotionMs));
+          const settled=order.memberResponses.filter(r=>r.firstMotionMs!==undefined || r.completedWithoutObservedMotionMs!==undefined);
+          if(settled.length===order.starts.length)order.allSettledMs??=Math.max(...settled.map(r=>r.firstMotionMs??r.completedWithoutObservedMotionMs));
+        }
         if (m.syncId)
           send(p, {
             type: "match-sync-applied",
@@ -220,7 +222,7 @@ try {
     slots: 2,
     minimumHumans: 2,
     countdownSeconds: 15,
-    publicAiTakeover: false,
+    publicAiTakeover: Boolean(metadata.fixture.movementProbePlayer),
   };
   const create = send(a, {
     type: "create",
@@ -233,6 +235,11 @@ try {
     () => peers.every((p) => p.snapshot && p.tick >= metadata.fixture.tick),
     "late-game baseline",
   );
+  if(metadata.fixture.movementProbePlayer){
+    const c=await connect(2);
+    send(c,{type:"watch-match",matchId,playerId:metadata.fixture.movementProbePlayer});
+    await until(()=>c.snapshot && c.manifest?.playerId===metadata.fixture.movementProbePlayer,"existing large faction takeover");
+  }
   writeFileSync(
     out + "/manifests.json",
     JSON.stringify(
@@ -253,18 +260,7 @@ try {
     const owned = p.snapshot.squads.filter(
       (s) => selected.has(s.id) && s.playerId === p.manifest.playerId,
     );
-    for (const s of owned) {
-      send(p, {
-        type: "match-command",
-        matchId,
-        command: {
-          type: "order",
-          playerId: p.manifest.playerId,
-          squadIds: [s.id],
-          order: { type: "hold" },
-        },
-      });
-    }
+    if(owned.length)send(p,{type:"match-command",matchId,command:{type:"order",playerId:p.manifest.playerId,squadIds:owned.map(s=>s.id),order:{type:"hold"}}});
   }
   await sleep(5000);
   startSample = await (await fetch(probeUrl)).json();
@@ -289,7 +285,7 @@ try {
       attempt++;
       const busy = new Set(
         orders
-          .filter((r) => r.firstMotionMs === undefined && !r.terminal)
+          .filter((r) => !r.held && !r.terminal)
           .flatMap((r) => r.squadIds),
       );
       const goalsFor = (s) =>
@@ -319,13 +315,15 @@ try {
           (peer.stationary.get(s.id)?.count ?? 0) >= 3,
       );
       const s = eligible.find((s) => goalsFor(s).length),
-        selectionSize = [1, 4, 8][Math.floor((attempt - 1) / 4) % 3];
+        selectionSize = metadata.fixture.movementProbePlayer
+          ? peer.manifest.playerId===metadata.fixture.movementProbePlayer ? [8,60][Math.floor((attempt-1)/peers.length)%2] : [1,8][Math.floor((attempt-1)/peers.length)%2]
+          : [1, 4, 8][Math.floor((attempt - 1) / 4) % 3];
       if (s && eligible.length >= selectionSize) {
         const goals = goalsFor(s),
           group = eligible
             .sort(
               (a, b) =>
-                Math.hypot(a.x - s.x, a.y - s.y) -
+                selectionSize===60 ? a.id-b.id : Math.hypot(a.x - s.x, a.y - s.y) -
                   Math.hypot(b.x - s.x, b.y - s.y) || a.id - b.id,
             )
             .slice(0, selectionSize);
@@ -337,7 +335,7 @@ try {
             selectionSize,
             squadId: s.id,
             squadIds: group.map((s) => s.id),
-            starts: group.map((s) => ({ id: s.id, x: s.x, y: s.y })),
+            starts: group.map((s) => ({ id: s.id, x: s.x, y: s.y, heading:s.locomotion?.heading })),
             playerId: s.playerId,
             tile: goals[Math.floor(attempt / 4) % goals.length],
             start: { x: s.x, y: s.y },
@@ -372,7 +370,7 @@ try {
       if (orders.length === beforeCount) skipped++;
       // Completed samples return to hold before they are reused; don't supersede pending work.
       for (const row of orders)
-        if (!row.held && row.firstMotionMs !== undefined) {
+        if (!row.held && (row.terminal || row.executedMs !== undefined && row.allSettledMs !== undefined)) {
           row.held = true;
           send(peers[row.peer], {
             type: "match-command",
@@ -431,6 +429,11 @@ try {
             ackMs: stats(rows.map((r) => r.ackMs)),
             executedMs: stats(rows.map((r) => r.executedMs)),
             firstMotionMs: stats(rows.map((r) => r.firstMotionMs)),
+            allMotionMs: stats(rows.map((r) => r.allMotionMs)),
+            completedWithoutObservedMotion: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.completedWithoutObservedMotionMs!==undefined).length,
+            unresolvedMembers: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.firstMotionMs===undefined && m.completedWithoutObservedMotionMs===undefined).length,
+            memberMotionMs: stats(rows.flatMap(r=>(r.memberResponses??[]).map(m=>m.firstMotionMs))),
+            memberTurnMs: stats(rows.flatMap(r=>(r.memberResponses??[]).map(m=>m.firstTurnMs))),
             unresolved: rows.filter(
               (r) => r.firstMotionMs === undefined && !r.terminal,
             ).length,
@@ -440,7 +443,7 @@ try {
       }),
     ),
     bySelectionSize: Object.fromEntries(
-      [1, 4, 8].map((n) => {
+      [1, 4, 8, 60].map((n) => {
         const rows = orders.filter((r) => r.selectionSize === n);
         return [
           n,
@@ -448,6 +451,11 @@ try {
             sent: rows.length,
             executedMs: stats(rows.map((r) => r.executedMs)),
             firstMotionMs: stats(rows.map((r) => r.firstMotionMs)),
+            allMotionMs: stats(rows.map((r) => r.allMotionMs)),
+            completedWithoutObservedMotion: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.completedWithoutObservedMotionMs!==undefined).length,
+            unresolvedMembers: rows.flatMap(r=>r.memberResponses??[]).filter(m=>m.firstMotionMs===undefined && m.completedWithoutObservedMotionMs===undefined).length,
+            memberMotionMs: stats(rows.flatMap(r=>(r.memberResponses??[]).map(m=>m.firstMotionMs))),
+            memberTurnMs: stats(rows.flatMap(r=>(r.memberResponses??[]).map(m=>m.firstTurnMs))),
             unresolved: rows.filter(
               (r) => r.firstMotionMs === undefined && !r.terminal,
             ).length,
@@ -464,7 +472,7 @@ try {
       publicationGapMs: stats(p.gaps),
     })),
     limitations:
-      "Two real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is the first decoded displacement over eight fixed units after the entire command executes, so earlier cohort motion may be hidden; not rendered pixels. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
+      "Two or three real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is each member's first decoded displacement over eight fixed units after the input; it is independent of the aggregate receipt. First turn and all-member motion are reported separately. Holds wait for full command execution and every member's motion, or a terminal failure; not rendered pixels. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
   };
   writeFileSync(out + "/result.json", JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result.byKind));

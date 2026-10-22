@@ -30,10 +30,16 @@ interface Member {
   /** D2: the bounded synchronous search failed; use planner jobs. */
   plannerOnly?: boolean;
   structureTarget?: Squad["structureTarget"];
+  preview?: number[];
+  previewTried?: boolean;
+  join?: number;
 }
 interface Admission {
   deadline?:number;
   corridorId?: number;
+  /** Independent human intentions share layout and route families, never cancellation. */
+  groupId?: number;
+  interrupted?: string;
   id: number;
   playerId: number;
   generation: number;
@@ -51,6 +57,8 @@ interface Admission {
   routeCheck?: { revision: string; member: number; stage: 0 | 1; cursor: number; dropped: boolean };
 }
 interface QueuedIntent {
+  independent?: boolean;
+  interrupted?: string;
   deadline?:number;
   id: number;
   playerId: number;
@@ -68,11 +76,15 @@ export interface MovementAdmissionEvent {
   id: number;
   playerId: number;
   tick: number;
-  status: "deferred" | "executed" | "rejected" | "superseded";
+  status: "deferred" | "executed" | "rejected" | "superseded" | "progress";
+  independent?: boolean;
   reason?: string;
   tile?: number;
 }
 export interface MovementAdmissionPorts {
+  responsive?: boolean;
+  preview?(squad: Squad, destination: WorldPoint, path: number[]): void;
+  abortPreview?(squad: Squad, queued: readonly Order[]): void;
   deadlineTicks?(playerId:number):number|undefined;
   /** Experimental persistent group offsets for ordinary queued movement. */
   preserveQueuedLayout?: boolean;
@@ -135,9 +147,9 @@ export const COHORT_CONNECTORS = { expansionLimit: 1024, tickBudget: 4096, expan
  * admission's request because it is full: 2, 4, 8, then 16 ticks. */
 export const ADMISSION_REFUSAL_BACKOFF = { firstTicks: 2, maximumTicks: 16 } as const;
 
-/** Transactional land admission: current orders run until every replacement
- * has a live, short connector. No member is activated after a partial success.
- * Pending input and search continuations are checkpointed domain state.
+/** Version 1 retains transactional cohorts. Version 2 allocates shared layout
+ * then hands off to independently owned human intentions with reusable route
+ * families and certified approach segments. All continuations are checkpointed.
  */
 export class MovementAdmission {
   private readonly pending = new Map<number, Admission>();
@@ -149,12 +161,16 @@ export class MovementAdmission {
   onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
   private handoffDeadline?: number;
+  private creatingGroup?: number;
   /** Synchronous connector expansions spent in `connectorTick` (derived
    * per-tick scratch: it restarts every tick, so it is not checkpointed). */
   private connectorTick = -1;
   private connectorWork = 0;
   /** D2 diagnostics: connectors planned synchronously, and fallbacks. */
   readonly connectorDiagnostics = { synchronous: 0, fallbacks: 0, deferred: 0, work: 0 };
+  private policyVersion = 1;
+  get responsive(): boolean { return this.policyVersion >= 2; }
+  private readonly families = new Map<number, {groupId:number; kind:Squad["kind"]; start:number; goal:number}>();
   private readonly corridors = new Map<number, { path: number[]; kind: Squad["kind"]; revision: string }>();
   /** An order onto land keeps its formation ashore; squads become afloat
    * only on the way or when ordered onto water itself. */
@@ -164,6 +180,11 @@ export class MovementAdmission {
   private pathsOf(playerId: number): LandPaths {
     return this.ports.paths?.(playerId) ?? this.paths;
   }
+  previewEndpoint(squadId:number): WorldPoint | undefined {
+    const a=this.pending.get(this.pendingBySquad.get(squadId)??-1),m=a?.members.find(m=>m.id===squadId);
+    return m?.preview ? tilePoint(this.map,m.preview[m.preview.length-1]) : undefined;
+  }
+  onMemberProgress?: (squadId:number,tick:number,stage:"layout"|"prefix"|"route"|"commit"|"rejected")=>void;
   hasPending(squadId: number): boolean { return this.pendingBySquad.has(squadId); }
   get pendingCount(): number {
     return this.pending.size;
@@ -197,7 +218,7 @@ export class MovementAdmission {
     private readonly map: GameMap,
     private readonly paths: LandPaths,
     private readonly ports: MovementAdmissionPorts,
-  ) {}
+  ) { this.policyVersion = ports.responsive ? 2 : 1; }
   checkpoint() {
     return structuredClone({
       pending: [...this.pending],
@@ -205,15 +226,30 @@ export class MovementAdmission {
       nextId: this.nextId,
       events: this.events,
       corridors: [...this.corridors],
+      ...(this.responsive ? {policyVersion: this.policyVersion, families: [...this.families]} : {}),
     });
   }
   restore(saved: ReturnType<MovementAdmission["checkpoint"]>): void {
+    if (![1,2].includes(saved.policyVersion ?? 1)) throw Error("Unknown movement policy");
+    this.policyVersion = saved.policyVersion ?? 1;
+    this.families.clear();
+    const size=this.map.width()*this.map.height();
+    for (const [id,family] of structuredClone(saved.families??[])) {
+      if(!Number.isSafeInteger(id)||id<1||this.families.has(id)||!Number.isSafeInteger(family.groupId)||family.groupId<1||
+        !["infantry","archer","cavalry"].includes(family.kind)||![family.start,family.goal].every(t=>Number.isSafeInteger(t)&&t>=0&&t<size))
+        throw Error("Invalid movement route family");
+      this.families.set(id,family);
+    }
     this.pending.clear();
     this.corridors.clear();
     for (const [id, corridor] of structuredClone(saved.corridors ?? [])) this.corridors.set(id, corridor);
     this.pendingBySquad.clear();
     for (const [id, admission] of structuredClone(saved.pending)) {
       FormationPlanning.normalizeCheckpoint(admission.formation);
+      if(admission.groupId!==undefined && (!this.responsive || !Number.isSafeInteger(admission.groupId)||admission.groupId<1))throw Error("Invalid independent movement owner");
+      for(const member of admission.members)if(member.preview!==undefined &&
+        (admission.groupId===undefined || !Array.isArray(member.preview)||member.preview.length<2||member.preview.length>5||
+          member.preview.some(t=>!Number.isSafeInteger(t)||t<0||t>=size)))throw Error("Invalid movement prefix");
       this.pending.set(id, admission);
       for (const member of admission.members)
         this.pendingBySquad.set(member.id, id);
@@ -229,7 +265,7 @@ export class MovementAdmission {
     this.events.splice(0, this.events.length, ...structuredClone(saved.events));
   }
   private event(
-    admission: Pick<Admission, "id" | "playerId"> & {tile?:number},
+    admission: Pick<Admission, "id" | "playerId"> & {tile?:number;groupId?:number},
     tick: number,
     status: MovementAdmissionEvent["status"],
     reason?: string,
@@ -241,6 +277,7 @@ export class MovementAdmission {
       status,
       reason,
       ...(admission.tile===undefined?{}:{tile:admission.tile}),
+      ...(admission.groupId !== undefined || "independent" in admission && admission.independent ? {independent:true} : {}),
     });
     if (this.events.length > 128) this.events.shift();
     this.onEvent?.({ ...this.events[this.events.length - 1] });
@@ -256,24 +293,65 @@ export class MovementAdmission {
       this.preparationDiagnostics.discardedWork += admission.preparation?.consumed ?? 0;
     }
     this.pending.delete(admission.id);
-    if (admission.corridorId !== undefined && ![...this.pending.values()].some(a => a.corridorId === admission.corridorId)) this.corridors.delete(admission.corridorId);
+    if (admission.groupId !== undefined) {
+      const remaining = [...this.pending.values()].filter(a => a.groupId === admission.groupId);
+      if (!remaining.length) {
+        for (const [id, family] of this.families) if (family.groupId === admission.groupId) {
+          this.families.delete(id); this.corridors.delete(id);
+        }
+      } else if (this.families.has(admission.id) && !this.corridors.has(admission.id)) {
+        const next = remaining.find(a => a.corridorId === admission.id);
+        if (next) {
+          const family = this.families.get(admission.id)!;
+          this.families.delete(admission.id); this.families.set(next.id, family);
+          family.start = pointTile(this.map, this.ports.squad(next.members[0].id)!);
+          for (const a of remaining) if (a.corridorId === admission.id) a.corridorId = next.id;
+        }
+      }
+    }
+    if (admission.groupId === undefined && admission.corridorId !== undefined && ![...this.pending.values()].some(a => a.corridorId === admission.corridorId)) this.corridors.delete(admission.corridorId);
     for (const member of admission.members) {
       if (this.pendingBySquad.get(member.id) === admission.id)
         this.pendingBySquad.delete(member.id);
       this.ports.cancel(admission.id, member.id);
+      const squad = this.ports.squad(member.id);
+      if (status === "rejected") {
+        this.onMemberProgress?.(member.id,tick,"rejected");
+        if(member.preview && squad)this.ports.abortPreview?.(squad,member.queued);
+      }
     }
-    this.event(admission, tick, status, reason);
+    this.event(admission, tick, status === "executed" && admission.interrupted ? "superseded" : status, admission.interrupted ?? reason);
   }
   cancel(ids: readonly number[], tick: number, reason = "Replaced by a newer command"): void {
     const selected = new Set(ids);
     for (const [id, intent] of this.intents)
       if (intent.members.some((m) => selected.has(m.id))) {
+        if (this.responsive && this.ports.priority?.(intent.playerId) && intent.members.some(m => !selected.has(m.id))) {
+          const kept=intent.members.filter(m=>!selected.has(m.id));
+          for(const m of intent.members)if(selected.has(m.id)){
+            const refs=this.intentsBySquad.get(m.id);refs?.delete(id);if(!refs?.size)this.intentsBySquad.delete(m.id);
+            if(m.admissionId!==undefined && !kept.some(k=>k.admissionId===m.admissionId)){
+              const plans=this.intentsByAdmission.get(m.admissionId);plans?.delete(id);if(!plans?.size)this.intentsByAdmission.delete(m.admissionId);
+            }
+          }
+          intent.members=kept;intent.interrupted??=reason;
+          continue;
+        }
         this.removeIntent(id);
         this.event(intent, tick, "superseded", reason);
       }
     for (const admission of this.pending.values())
-      if (admission.members.some((m) => selected.has(m.id)))
-        this.finish(admission, tick, "superseded", reason);
+      if (admission.members.some((m) => selected.has(m.id))) {
+        if (admission.groupId !== undefined && admission.members.some(m => !selected.has(m.id))) {
+          for (const m of admission.members) if (selected.has(m.id)) { this.pendingBySquad.delete(m.id); this.ports.cancel(admission.id,m.id); }
+          admission.interrupted ??= reason;
+          admission.members = admission.members.filter(m => !selected.has(m.id));
+          const squads = admission.members.map(m => this.ports.squad(m.id)!);
+          admission.formation = new FormationPlanning(this.map,this.pathsOf(admission.playerId),admission.tile,
+            squads.map(squad=>({squad,origin:squad})),()=>this.ports.squads(),Infinity,admission.formation.preferred).state;
+          this.destination(admission.formation); admission.phase = "formation";
+        } else this.finish(admission, tick, "superseded", reason);
+      }
   }
   private deadline(playerId:number,tick:number):{deadline?:number} {
     const value=planningDeadline(tick,this.ports.deadlineTicks?.(playerId));
@@ -293,6 +371,7 @@ export class MovementAdmission {
       for (let start = 0; start < selected.length; start += 30) {
         const chunk = members.slice(start, start + 30), squad = this.ports.squad(chunk[0].id)!;
         const intent: QueuedIntent = { id: this.nextId++, playerId: squad.playerId,
+          ...(this.responsive && this.ports.priority?.(squad.playerId)?{independent:true}:{}),
           ...this.deadline(squad.playerId,tick),
           generation: this.ports.generation(squad.playerId), order: { ...order }, members: chunk, travelLayout,
           revision: this.ports.revision(squad.playerId) };
@@ -302,6 +381,7 @@ export class MovementAdmission {
     }
     const squad = this.ports.squad(selected[0])!;
     const intent: QueuedIntent = {
+      ...(this.responsive && this.ports.priority?.(squad.playerId)?{independent:true}:{}),
       ...this.deadline(squad.playerId,tick),
       id: this.nextId++,
       playerId: squad.playerId,
@@ -362,6 +442,14 @@ export class MovementAdmission {
       squads.map((s) => s.id),
       tick,
     );
+    const groupId = this.responsive && this.ports.priority?.(playerId) && !structureTarget ? this.nextId : undefined;
+    const create = (members: readonly Squad[], points?: Map<number,WorldPoint>, corridorId?: number) => {
+      this.creatingGroup = groupId;
+      let id: number;
+      try { id = this.create(playerId,members,tile,tick,points,structureTarget,corridorId); }
+      finally { this.creatingGroup = undefined; }
+      return id;
+    };
     // Small human cohorts can commit promptly while the rest of a large
     // selection prepares. AI keeps larger batches for corridor reuse.
     const cohortSize=this.ports.priority?.(playerId)?10:30;
@@ -383,16 +471,58 @@ export class MovementAdmission {
         for(let i=1;i<ordered.length;i++)if(distanceSquared(ordered[i],center)<distanceSquared(ordered[lead],center))lead=i;
         ordered.unshift(ordered.splice(lead,1)[0]);
         if(!preferred)points.set(ordered[0].id,center);
-        first=this.create(playerId,ordered.slice(0,1),tile,tick,points,structureTarget,corridorId);start=1;
+        first=create(ordered.slice(0,1),points,corridorId);start=1;
       }
       for (; start < ordered.length; start += cohortSize) {
-        const id = this.create(playerId, ordered.slice(start, start + cohortSize), tile, tick, points, structureTarget, corridorId);
+        const id = create(ordered.slice(start, start + cohortSize), points, corridorId);
         first ||= id;
       }
       return first;
     }
-    return this.create(playerId, squads, tile, tick, preferred, structureTarget);
+    return create(squads,preferred);
   }
+  private assignFamily(admission: Admission): void {
+    const member = admission.members[0], squad = this.ports.squad(member.id)!;
+    const start = pointTile(this.map,squad), goal = pointTile(this.map,member.destination!);
+    let familyId: number | undefined;
+    for (const [id,family] of this.families) if (family.groupId === admission.groupId && family.kind === squad.kind &&
+      this.map.euclideanDistSquared(start,family.start) <= 32**2 && this.map.euclideanDistSquared(goal,family.goal) <= 32**2) { familyId=id; break; }
+    if (familyId === undefined) {
+      familyId=admission.id; this.families.set(familyId,{groupId:admission.groupId!,kind:squad.kind,start,goal});
+    }
+    admission.corridorId=familyId;
+  }
+  private splitLayout(admission: Admission,tick:number): void {
+    if (admission.members.length === 1) { this.assignFamily(admission); admission.phase="queued"; return; }
+    this.pending.delete(admission.id);
+    for (const m of admission.members) this.pendingBySquad.delete(m.id);
+    const activate=()=>{
+      for (const member of admission.members) {
+        const squad=this.ports.squad(member.id)!;
+        this.creatingGroup=admission.groupId;
+        let id:number;
+        try { id=this.create(admission.playerId,[squad],admission.tile,tick,new Map([[member.id,member.destination!]])); }
+        finally { this.creatingGroup=undefined; }
+        const child=this.pending.get(id)!;
+        child.members[0]=member; child.deadline=admission.deadline;
+        child.formation.pending=child.formation.setup!.members;
+        child.formation.setup=undefined;child.formation.selected.add(member.id);
+        child.formation.consumed=new Set([member.id]);child.formation.index=1;
+        child.formation.phase="done"; child.formation.result.set(member.id,member.destination!);
+        child.phase="queued"; this.assignFamily(child);
+        // Existing Shift intents now refer to this member's new planning owner.
+        for (const intentId of this.intentsBySquad.get(member.id) ?? []) {
+          const intent=this.intents.get(intentId)!;
+          for (const m of intent.members) if(m.id===member.id && m.admissionId===admission.id) m.admissionId=id;
+          this.addIntentReference(this.intentsByAdmission,id,intentId);
+        }
+      }
+      this.intentsByAdmission.delete(admission.id);
+    };
+    if(this.ports.handoffStructure)this.ports.handoffStructure(admission.id,admission.playerId,activate);else activate();
+    this.event(admission,tick,admission.interrupted ? "superseded" : "executed",admission.interrupted);
+  }
+
   /** Re-admit an occupied destination while retaining later player intentions. */
   recoverDestination(squad: Squad, tile: number, tick: number): void {
     if (this.hasPending(squad.id)) return;
@@ -461,6 +591,7 @@ export class MovementAdmission {
       ...(deadlineTicks === undefined ? {} : { deadline: this.handoffDeadline ?? tick + deadlineTicks }),
       id,
       corridorId,
+      ...(this.creatingGroup === undefined ? {} : {groupId:this.creatingGroup}),
       playerId,
       generation: this.ports.generation(playerId),
       tile,
@@ -518,7 +649,9 @@ export class MovementAdmission {
       if (!member.shared && admission.corridorId === admission.id && member === admission.members[0])
         this.corridors.set(admission.id, { path, kind: this.ports.squad(member.id)!.kind, revision: admission.revision });
       member.shared = undefined;
+      this.onMemberProgress?.(squadId,tick,"route");
       member.cursor = 0;
+      member.join = undefined;
       member.connector = undefined;
     } else if (outcome === "unreachable" && member.shared) {
       // A shared corridor is an optimization, never proof that an individual
@@ -646,6 +779,7 @@ export class MovementAdmission {
     // The search work is charged; the planner request that follows adds its own unit.
     if (!entry.path || !exit?.path) { this.connectorDiagnostics.fallbacks++; return { units: units - 1, done: false }; }
     this.connectorDiagnostics.synchronous++;
+    this.onMemberProgress?.(member.id,tick,"route");
     member.path = spine ? [...entry.path, ...spine.slice(1), ...exit.path.slice(1)] : entry.path;
     // A corridor lead publishes its route for the other cohorts, as completed() does.
     if (!spine && admission.corridorId === admission.id && member === admission.members[0])
@@ -658,6 +792,26 @@ export class MovementAdmission {
     member.refusals = undefined;
     return { units, done: true };
   }
+  /** A locally certified approach is a partial execution, never proof that the
+   * destination is reachable. It stops within two tiles while discovery runs. */
+  private preview(admission:Admission,member:Member,tick:number):number {
+    if(admission.groupId===undefined || member.previewTried || !this.ports.preview || !this.ports.connector)return 0;
+    if(this.connectorTick!==tick){this.connectorTick=tick;this.connectorWork=0;}
+    if(this.connectorWork>=COHORT_CONNECTORS.tickBudget)return 0;
+    member.previewTried=true;
+    const squad=this.ports.squad(member.id)!,destination=member.destination!,start=pointTile(this.map,squad),goal=pointTile(this.map,destination);
+    if(this.map.euclideanDistSquared(start,goal)<=COHORT_CONNECTORS.directTiles**2)return 0;
+    const dx=destination.x-squad.x,dy=destination.y-squad.y,length=Math.hypot(dx,dy);
+    const end=pointTile(this.map,{x:Math.round(squad.x+dx/length*1.5*FIXED),y:Math.round(squad.y+dy/length*1.5*FIXED)});
+    const result=this.ports.connector(admission.playerId,member.id,start,end,Math.min(128,COHORT_CONNECTORS.tickBudget-this.connectorWork));
+    this.connectorWork+=result.work;this.connectorDiagnostics.work+=result.work;
+    if(result.path && result.path.length>1 && result.path.length<=5 && result.path.every(tile=>this.map.euclideanDistSquared(start,tile)<=3**2) &&
+      this.ports.clear(squad,tilePoint(this.map,end))){
+      member.preview=result.path;this.ports.preview(squad,destination,result.path);
+      this.onMemberProgress?.(member.id,tick,"prefix");this.event(admission,tick,"progress");
+    }
+    return 1+Math.floor(result.work/COHORT_CONNECTORS.expansionsPerUnit);
+  }
   private waitingIntent(admissionId: number): boolean {
     return !!this.intentsByAdmission.get(admissionId)?.size;
   }
@@ -666,7 +820,11 @@ export class MovementAdmission {
     // A single FIFO preserves the order of Shift commands across overlapping
     // replacement cohorts. One formation owns all slots of each Shift selection.
     while (this.intents.size && used < budget) {
-      const [id, intent] = this.intents.entries().next().value!;
+      const entry = priorityOnly && this.responsive
+        ? [...this.intents].find(([,intent])=>this.ports.priority?.(intent.playerId))
+        : this.intents.entries().next().value;
+      if(!entry)break;
+      const [id,intent]=entry;
       // The interactive pass serves the FIFO only while a human's intent is
       // at its head; order across players is unchanged.
       if (priorityOnly && !this.ports.priority?.(intent.playerId)) break;
@@ -824,7 +982,7 @@ export class MovementAdmission {
             .queued.push(next);
         else this.ports.queue(this.ports.squad(m.id)!, next);
       }
-      this.event(intent, tick, "executed");
+      this.event(intent,tick,intent.interrupted?"superseded":"executed",intent.interrupted);
     }
     return used;
   }
@@ -911,12 +1069,8 @@ export class MovementAdmission {
           admission.members.some((m) => !this.valid(id, m.id))) ||
         admission.members.some((m) => !this.ports.squad(m.id))
       ) {
-        this.finish(
-          admission,
-          tick,
-          "superseded",
-          "Control or selected units changed",
-        );
+        if(admission.groupId !== undefined && admission.members.length>1) this.cancel(admission.members.filter(m=>!this.valid(id,m.id)).map(m=>m.id),tick,"Control or selected units changed");
+        else this.finish(admission,tick,"superseded","Control or selected units changed");
         used++;
         continue;
       }
@@ -1021,9 +1175,12 @@ export class MovementAdmission {
             "There is no room for this formation at that destination",
           );
         else if (formation.state.phase === "done") {
-          for (const member of admission.members)
+          for (const member of admission.members) {
             member.destination = formation.state.result.get(member.id)!;
-          admission.phase = "queued";
+            this.onMemberProgress?.(member.id,tick,"layout");
+          }
+          if(admission.groupId !== undefined) this.splitLayout(admission,tick);
+          else admission.phase = "queued";
         }
         idle = 0;
       } else if (admission.phase === "queued") {
@@ -1039,6 +1196,20 @@ export class MovementAdmission {
           idle = 0;
         }
       } else if (admission.phase === "routes") {
+        if(admission.groupId!==undefined){
+          const m=admission.members[0];
+          used=Math.min(budget,used+this.preview(admission,m,tick));
+          if(used>=budget)continue;
+        }
+        if(admission.groupId!==undefined && admission.corridorId!==undefined &&
+          !this.corridors.has(admission.corridorId) && !this.pending.has(admission.corridorId)){
+          const old=admission.corridorId,family=this.families.get(old);
+          if(family){
+            this.families.delete(old);this.families.set(admission.id,family);
+            family.start=pointTile(this.map,this.ports.squad(admission.members[0].id)!);
+            for(const other of this.pending.values())if(other.groupId===admission.groupId && other.corridorId===old)other.corridorId=admission.id;
+          }
+        }
         // Nearby members share the first member's long corridor. Entry and
         // exit connectors retain exact obstacle checks under the same queue.
         const leader = admission.members[0], corridor = admission.corridorId === undefined ? undefined : this.corridors.get(admission.corridorId),
@@ -1047,7 +1218,9 @@ export class MovementAdmission {
         // squad still exists; otherwise it plans its own route below.
         const originalLead = original && original !== admission ? this.ports.squad(original.members[0].id) : undefined,
           follower = this.ports.squad(leader.id);
-        if (originalLead && follower && !corridor && follower.kind === originalLead.kind) {
+        if (originalLead && follower && !corridor && follower.kind === originalLead.kind &&
+          (admission.groupId === undefined || this.map.euclideanDistSquared(pointTile(this.map,follower),pointTile(this.map,originalLead)) <= 32**2 &&
+            this.map.euclideanDistSquared(pointTile(this.map,follower),pointTile(this.map,leader.destination!)) > COHORT_CONNECTORS.directTiles**2)) {
           if (++idle >= this.pending.size) break; continue;
         }
         if (!leader.path && leader.requested) { if (++idle >= this.pending.size) break; continue; }
@@ -1110,10 +1283,25 @@ export class MovementAdmission {
         }
         const member = admission.members[admission.member],
           squad = this.ports.squad(member.id)!;
-        const at = member.cursor++,
-          tile = member.path![at];
+        let at = member.cursor++;
+        let tile: number | undefined = member.path![at];
         used++;
         idle = 0;
+        if(member.preview){
+          const point=tile===undefined?undefined:tilePoint(this.map,tile);
+          const nearby=point!==undefined && distanceSquared(squad,point)<=(3*FIXED)**2;
+          if(nearby && this.ports.clear(squad,point!)){
+            const previous=member.join===undefined?undefined:tilePoint(this.map,member.path![member.join]);
+            if(!previous || distanceSquared(squad,point!)<=distanceSquared(squad,previous))member.join=at;
+          }
+          // A prefix can have carried the squad past the original route start.
+          // Join the nearest certified point in the first local neighbourhood,
+          // rather than ordering it backwards to the first point within 3 tiles.
+          // Each point is charged; at most sixteen are inspected per handoff.
+          if(tile!==undefined && at<15 && (nearby || member.join===undefined))continue;
+          if(member.join!==undefined){at=member.join;tile=member.path![at];member.join=undefined;}
+          else if(at>=15)tile=undefined;
+        }
         if (tile === undefined) {
           // A unit wedged against terrain has no clear connector even to a
           // route that starts beside it. Bound that replanning instead of
@@ -1151,7 +1339,7 @@ export class MovementAdmission {
           });
           if (stale) {
             admission.member = admission.members.indexOf(stale);
-            stale.cursor = 0;
+            stale.cursor = 0;stale.join=undefined;
             continue;
           }
           if (
@@ -1178,6 +1366,7 @@ export class MovementAdmission {
             continue;
           }
           for (const m of admission.members) {
+            this.onMemberProgress?.(m.id,tick,"commit");
             this.ports.commit(
               this.ports.squad(m.id)!,
               m.destination!,

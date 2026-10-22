@@ -34,12 +34,20 @@ export const IDLE_TICK_GOLDEN = Object.freeze({
   checkpoint: "287408ab7664b3e5a88dadceae4fef34e7fd75b00a3eb1f302ce0d67508e8fac",
 });
 
-export function idleTickFixture(): Skirmish {
-  return new Skirmish(generateMigration(250, 3).map, {
+export function idleTickFixture(policy: "legacy" | "responsive" = "responsive"): Skirmish {
+  const game = new Skirmish(generateMigration(250, 3).map, {
     ...DEFAULT_AI_POLICIES, ...FORMATION_MOVEMENT,
     seed: 3, aiCount: 4, tribes: true, tribeCount: 12, ruleset: "ages-v1",
     diplomacyRules: "raids-v1", armyTravel: "corridors-v1", startingAge: "Napoleonic",
   });
+  if(policy === "legacy") {
+    // These historical cache/spatial goldens must remain an exact regression
+    // for the old scheduler, rather than being re-recorded after a policy change.
+    const admission=game.movementAdmission.checkpoint();delete admission.policyVersion;delete admission.families;
+    game.movementAdmission.restore(admission);
+    const planning=game.routePlanner.checkpoint();planning.scheduling.version=6;game.routePlanner.restore(planning);
+  }
+  return game;
 }
 
 /** Order-dependent digest of the observable squad state, squads sorted by id.

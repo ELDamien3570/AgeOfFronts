@@ -82,7 +82,7 @@ describe("I-2 (b): envelope reads that previously always missed", () => {
     expect(geometry.settledEnvelope(plain, 7)).toEqual(new CombatGeometry().envelope(plain, 7));
   });
   it("reduces envelope recomputation on the idle-tick fixture without changing the squad hash", () => {
-    const g = idleTickFixture(), geometry = (g as any).facingGeometry as CombatGeometry;
+    const g = idleTickFixture("legacy"), geometry = (g as any).facingGeometry as CombatGeometry;
     for (let i = 0; i < IDLE_TICK_FIXTURE_TICKS; i++) g.step();
     expect(squadDigest(g.squads)).toBe(IDLE_TICK_GOLDEN.squads);
     expect(checkpointDigest(g)).toBe(IDLE_TICK_GOLDEN.checkpoint);
