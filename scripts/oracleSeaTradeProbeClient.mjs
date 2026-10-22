@@ -46,10 +46,10 @@ const until = async (fn, label, limit = 180000) => {
   }
 };
 const recordOutcome = (p, m) => {
-  const row = orders.find((r) => r.id === m.outcome.id);
+  const row = orders.find((r) => (r.commandIds??[r.id]).includes(m.outcome.id));
   if (!row) return;
   row.outcomes.push({ at: Date.now(), ...m.outcome });
-  if (m.outcome.status === "executed")
+  if (m.outcome.status === "executed" && (row.commandIds??[row.id]).every(id=>row.outcomes.some(o=>o.id===id&&o.status==="executed")))
     row.executedMs ??= Date.now() - row.sentAt;
   if (m.outcome.status === "rejected" || m.outcome.status === "superseded")
     row.terminal = m.outcome.status;
@@ -86,8 +86,8 @@ async function connect(index) {
         if (m.type === "directory") p.directory = m;
         if (m.type === "ack") {
           p.acks.set(m.requestId, m);
-          const row = orders.find((r) => r.id === m.requestId);
-          if (row) row.ackMs = Date.now() - row.sentAt;
+          const row = orders.find((r) => (r.commandIds??[r.id]).includes(m.requestId));
+          if (row && (row.commandIds??[row.id]).every(id=>p.acks.has(id))) row.ackMs = Date.now() - row.sentAt;
         }
         if (m.type === "match") {
           p.manifest = m.manifest;
@@ -260,7 +260,7 @@ try {
     const owned = p.snapshot.squads.filter(
       (s) => selected.has(s.id) && s.playerId === p.manifest.playerId,
     );
-    for(let start=0;start<owned.length;start+=60)send(p,{type:"match-command",matchId,command:{type:"order",playerId:p.manifest.playerId,squadIds:owned.slice(start,start+60).map(s=>s.id),order:{type:"hold"}}});
+    for(let start=0;start<owned.length;start+=30)send(p,{type:"match-command",matchId,command:{type:"order",playerId:p.manifest.playerId,squadIds:owned.slice(start,start+30).map(s=>s.id),order:{type:"hold"}}});
   }
   await sleep(5000);
   startSample = await (await fetch(probeUrl)).json();
@@ -281,7 +281,7 @@ try {
       next += 5000;
       const beforeCount = orders.length;
       const peer = peers[attempt % peers.length],
-        kind = Math.floor(attempt / peers.length) % 2 ? "long" : "short";
+        kind = Math.floor(attempt / (peers.length*2)) % 2 ? "long" : "short";
       attempt++;
       const busy = new Set(
         orders
@@ -316,7 +316,7 @@ try {
       );
       const s = eligible.find((s) => goalsFor(s).length),
         selectionSize = metadata.fixture.movementProbePlayer
-          ? peer.manifest.playerId===metadata.fixture.movementProbePlayer ? [8,60][Math.floor((attempt-1)/peers.length)%2] : [1,8][Math.floor((attempt-1)/peers.length)%2]
+          ? peer.manifest.playerId===metadata.fixture.movementProbePlayer ? [30,60][Math.floor((attempt-1)/peers.length)%2] : [1,8][Math.floor((attempt-1)/peers.length)%2]
           : [1, 4, 8][Math.floor((attempt - 1) / 4) % 3];
       if (s && eligible.length >= selectionSize) {
         const goals = goalsFor(s),
@@ -351,20 +351,12 @@ try {
             ) / 256;
           orders.push(order);
           order.memberDistanceTiles = group.map(member => ({ id: member.id, distance: Math.hypot(((order.tile % peer.snapshot.width) + 0.5) * 256 - member.x, (Math.floor(order.tile / peer.snapshot.width) + 0.5) * 256 - member.y) / 256 }));
-          appendFileSync(out + "/commands-sent.jsonl", JSON.stringify({ id: order.id, peer: peer.index, at: order.sentAt, observedTick: peer.tick, command: { type: "order", playerId: s.playerId, squadIds: order.squadIds, order: { type: "move", tile: order.tile } } }) + "\n");
-          peer.ws.send(
-            JSON.stringify({
-              type: "match-command",
-              requestId: order.id,
-              matchId,
-              command: {
-                type: "order",
-                playerId: s.playerId,
-                squadIds: order.squadIds,
-                order: { type: "move", tile: order.tile },
-              },
-            }),
-          );
+          order.commandIds=Array.from({length:Math.ceil(group.length/30)},(_,i)=>i===0?order.id:rid());
+          for(let start=0;start<group.length;start+=30){
+            const id=order.commandIds[start/30],command={type:"order",playerId:s.playerId,squadIds:order.squadIds.slice(start,start+30),order:{type:"move",tile:order.tile}};
+            appendFileSync(out+"/commands-sent.jsonl",JSON.stringify({id,selectionId:order.id,peer:peer.index,at:Date.now(),observedTick:peer.tick,command})+"\n");
+            peer.ws.send(JSON.stringify({type:"match-command",requestId:id,matchId,command}));
+          }
         }
       }
       if (orders.length === beforeCount) skipped++;
@@ -372,13 +364,13 @@ try {
       for (const row of orders)
         if (!row.held && (row.terminal || row.executedMs !== undefined && row.allSettledMs !== undefined)) {
           row.held = true;
-          send(peers[row.peer], {
+          for(let start=0;start<row.squadIds.length;start+=30)send(peers[row.peer], {
             type: "match-command",
             matchId,
             command: {
               type: "order",
               playerId: row.playerId,
-              squadIds: row.squadIds,
+              squadIds: row.squadIds.slice(start,start+30),
               order: { type: "hold" },
             },
           });
@@ -444,7 +436,7 @@ try {
       }),
     ),
     bySelectionSize: Object.fromEntries(
-      [1, 4, 8, 60].map((n) => {
+      [1, 4, 8, 30, 60].map((n) => {
         const rows = orders.filter((r) => r.selectionSize === n);
         return [
           n,
@@ -474,7 +466,7 @@ try {
       publicationGapMs: stats(p.gaps),
     })),
     limitations:
-      "Two or three real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is each member's first decoded displacement over eight fixed units after the input; it is independent of the aggregate receipt. First turn and all-member motion are reported separately. Holds wait for full command execution and every member's motion, or a terminal failure; not rendered pixels. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
+      "Selections above the 30-squad transport/UI limit are concurrent batches of legal orders; aggregate execution waits for every batch receipt. Two or three real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is each member's first decoded displacement over eight fixed units after the input; it is independent of the aggregate receipt. First turn and all-member motion are reported separately. Holds wait for full command execution and every member's motion, or a terminal failure; not rendered pixels. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
   };
   writeFileSync(out + "/result.json", JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result.byKind));
