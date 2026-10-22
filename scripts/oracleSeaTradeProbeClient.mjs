@@ -133,11 +133,13 @@ async function connect(index) {
         p.packets++;
         if (p.lastAt) p.gaps.push(Date.now() - p.lastAt);
         p.lastAt = Date.now();
-        for(const order of orders)if(order.peer===index && order.settled && !order.terminal){
+        for(const order of orders)if(order.peer===index && order.settled && !order.terminal && !order.held){
           order.memberResponses ??= order.starts.map(start=>({id:start.id}));
           for(const start of order.starts){
             const squad=snap.squads.find(s=>s.id===start.id),response=order.memberResponses.find(r=>r.id===start.id);
-            if(!squad)continue;
+            // Stop each response at its first translation or completed hold.
+            // Later commands must not supply a heading/movement sample for it.
+            if(!squad || response.firstMotionMs!==undefined || response.completedWithoutObservedMotionMs!==undefined)continue;
             const elapsed=decodedAt-order.sentAt;
             if(response.firstTurnMs===undefined && start.heading!==undefined && squad.locomotion?.heading!==undefined && Math.abs(Math.atan2(Math.sin(squad.locomotion.heading-start.heading),Math.cos(squad.locomotion.heading-start.heading)))>1e-6)
               response.firstTurnMs=elapsed;
@@ -371,6 +373,7 @@ try {
       for (const row of orders)
         if (!row.held && (row.terminal || row.executedMs !== undefined && row.allSettledMs !== undefined)) {
           row.held = true;
+          row.heldAt = Date.now();
           for(let start=0;start<row.squadIds.length;start+=MAX_ORDER_SQUADS)send(peers[row.peer], {
             type: "match-command",
             matchId,
