@@ -18,7 +18,9 @@ const f = deserialize(readFileSync(fixture));
 const store = new CoordinatorStore(
   process.env.MULTIPLAYER_DB ?? out + "/probe.sqlite",
 );
-const flushes = [];
+const flushes = [], captures = [];
+let checkpointCapture;
+const captureAfterRun = () => checkpointCapture ??= Promise.all(captures.map(capture => capture()));
 const server = createCoordinatorServer({
   store,
   origins: ["http://127.0.0.1:8080", "http://127.0.0.1:18081"],
@@ -26,6 +28,7 @@ const server = createCoordinatorServer({
   hostCustomRooms: false,
   createExecutor: () => {
     const worker = new ReservedMatchWorker();
+    captures.push(() => worker.request({type: "probe-checkpoint"}));
     let rows = [];
     const flush = () => {
       if (rows.length) {
@@ -61,7 +64,16 @@ const server = createCoordinatorServer({
     };
   },
 });
-const probe = createServer((req, res) => {
+const probe = createServer(async (req, res) => {
+  if (req.method === "POST" && req.url === "/checkpoint") {
+    try {
+      const checkpoints = await captureAfterRun();
+      res.writeHead(200, {"Content-Type": "application/json"}); res.end(JSON.stringify({checkpoints}));
+    } catch (error) {
+      res.writeHead(500, {"Content-Type": "application/json"}); res.end(JSON.stringify({error: String(error)}));
+    }
+    return;
+  }
   for (const flush of flushes) flush();
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end(
@@ -116,6 +128,7 @@ console.log("SEA_PROBE_READY");
 for (const signal of ["SIGTERM", "SIGINT"])
   process.once(signal, async () => {
     clearInterval(timer);
+    await captureAfterRun();
     await server.close();
     probe.close();
     store.close();

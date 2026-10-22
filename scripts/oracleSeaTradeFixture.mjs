@@ -1,6 +1,33 @@
 import { readFileSync, appendFileSync, writeFileSync } from "node:fs";
-import { deserialize } from "node:v8";
+import { deserialize, serialize } from "node:v8";
+import { createHash } from "node:crypto";
+import { Session } from "node:inspector";
 import { standable, squadRadius } from "../src/skirmish/SquadGeometry.ts";
+const journals = new WeakMap();
+const post = (session, method, params = {}) => new Promise((resolve, reject) =>
+  session.post(method, params, (error, result) => error ? reject(error) : resolve(result)));
+export async function finishProbeProfiling(game) {
+  const journal = journals.get(game);
+  if (!journal?.cpu) return;
+  await journal.cpu.ready;
+  const {profile} = await post(journal.cpu.session, "Profiler.stop");
+  writeFileSync(`${process.env.SEA_PROBE_OUT}/worker.cpuprofile`, JSON.stringify(profile));
+  journal.cpu.session.disconnect(); journal.cpu = undefined;
+}
+export function captureProbeCheckpoint(game, kind = "final") {
+  const journal = journals.get(game);
+  if (!journal) throw Error("Probe checkpoint requested for an uninstrumented world");
+  const file = `${process.env.SEA_PROBE_OUT}/worker-${kind}.v8`;
+  const bytes = serialize({...journal.fixture, options: game.options,
+    actionSequence: journal.sequence, checkpoint: game.checkpoint()});
+  const manifest = {tick: game.tick, actionSequence: journal.sequence,
+    sha256: createHash("sha256").update(bytes).digest("hex"), file,
+    source: process.env.GIT_COMMIT, authoritativeServerCheckpoint: true, cpuProfiling: process.env.SEA_PROBE_CPU === "1",
+    scope: "Captured outside the paced qualification interval; replay combined actions by sequence, including final-tick actions."};
+  writeFileSync(file, bytes);
+  writeFileSync(`${file}.json`, JSON.stringify(manifest, null, 2));
+  return manifest;
+}
 export function probeFixtureOptions(options) {
   const f = deserialize(readFileSync(process.env.SEA_PROBE_FIXTURE));
   if (options.seaTradeRouting !== f.options.seaTradeRouting)
@@ -25,6 +52,33 @@ export function restoreProbeFixture(game) {
     const p = game.player(id);
     if (!p || p.eliminated) throw Error("Required human faction unavailable");
     game.setAiController(id, false);
+  }
+  const journal = {sequence: 0, fixture: {seed: f.seed, settings: f.settings, options: f.options}};
+  journals.set(game, journal);
+  captureProbeCheckpoint(game, "initial");
+  // Optional separate diagnostic run only. Leave disabled for pace/latency
+  // qualification; sampling has overhead and is identified in the manifest.
+  if (process.env.SEA_PROBE_CPU === "1") {
+    const session = new Session(); session.connect();
+    const ready = post(session, "Profiler.enable").then(() => post(session, "Profiler.setSamplingInterval", {interval: 1000}))
+      .then(() => post(session, "Profiler.start"));
+    journal.cpu = {session, ready};
+  }
+  const control = game.setAiController.bind(game);
+  game.setAiController = (playerId, ai) => {
+    appendFileSync(out + "/actions-applied.jsonl", JSON.stringify({sequence: journal.sequence++,
+      tick: game.tick, type: "controller", playerId, ai}) + "\n");
+    return control(playerId, ai);
+  };
+  // Packing cosmetic road geometry is a publication-side cache write. Record
+  // it too so replay compares the entire checkpoint, including that cache.
+  if (game.expansion) {
+    const pack = game.expansion.roads.packed.bind(game.expansion.roads);
+    game.expansion.roads.packed = () => {
+      appendFileSync(out + "/actions-applied.jsonl", JSON.stringify({sequence: journal.sequence++,
+        tick: game.tick, type: "road-publication"}) + "\n");
+      return pack();
+    };
   }
   const targets = [];
   const owned = new Map([1, 2].map((id) => [id, []]));
@@ -111,7 +165,9 @@ export function restoreProbeFixture(game) {
   // This permits an exact input replay instead of inferring ticks from client receipts.
   const apply = game.commandApplications.apply.bind(game.commandApplications);
   game.commandApplications.apply = (id, command) => {
+    const action = {sequence: journal.sequence++, tick: game.tick, type: "command", id, command};
     const result = apply(id, command);
+    appendFileSync(out + "/actions-applied.jsonl", JSON.stringify({...action, result}) + "\n");
     appendFileSync(out + "/commands-applied.jsonl", JSON.stringify({ id, tick: game.tick, command, result }) + "\n");
     return result;
   };

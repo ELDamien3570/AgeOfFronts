@@ -82,3 +82,29 @@ describe("planning arena recovery", () => {
     );
   });
 });
+
+
+it("resumes a partially relaxed expansion after temporary allocation pressure without losing its frontier", async () => {
+  const {GameMapImpl} = await import("../../src/core/game/GameMap");
+  const {LandPaths} = await import("../../src/skirmish/Pathfinding");
+  const map = new GameMapImpl(20, 20, new Uint8Array(400).fill(133), 400), paths = new LandPaths(map, false);
+  const arena = new PlanningWorkspace(128), held: number[] = [];
+  for (let n = 0; n < 124; n++) held.push(arena.allocate(10000 + n, 0, -1, 0)!);
+  const search = paths.beginPlanning(arena, 21, 65);
+  expect(search.step(16, search.state.revision, undefined, true)).toBeLessThanOrEqual(16);
+  expect(search.state.waitingForCapacity).toBe(true);
+  expect(search.state.phase).toBe("search");
+  const saved = structuredClone(search.state), workspace = arena.checkpoint();
+  const restoredArena = new PlanningWorkspace(128); restoredArena.restore(workspace);
+  const restored = paths.beginPlanning(restoredArena, 21, 65, saved);
+  for (const slot of held) {arena.release(slot); restoredArena.release(slot);}
+  for (let n = 0; n < 100 && search.state.phase !== "done"; n++) {
+    expect(search.step(3, search.state.revision, undefined, true)).toBe(restored.step(3, saved.revision, undefined, true));
+    expect(restored.state).toEqual(search.state);
+    expect(restoredArena.checkpoint()).toEqual(arena.checkpoint());
+  }
+  expect(search.state.phase).toBe("done");
+  const control = paths.beginPlanning(new PlanningWorkspace(128), 21, 65);
+  control.step(1000, control.state.revision);
+  expect(search.state.path).toEqual(control.state.path);
+});

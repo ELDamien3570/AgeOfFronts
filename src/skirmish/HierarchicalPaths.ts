@@ -30,17 +30,39 @@ interface LocalContinuation {
   origin: number;
   progress: number;
 }
+/** Uniform-cost water trees discover each local cell once. The retained
+ * queue is bounded by the cluster (at most 1,024 cells), including restore. */
+class WaterBreadthQueue {
+  private readonly tiles: Uint32Array;
+  private head = 0;
+  private tail = 0;
+  constructor(capacity: number, pending?: readonly number[]) {
+    this.tiles = new Uint32Array(capacity);
+    if (pending) { this.tiles.set(pending); this.tail = pending.length; }
+  }
+  size(): number { return this.tail - this.head; }
+  enqueue(tile: number, _priority: number): void {
+    if (this.tail >= this.tiles.length) throw Error("Water breadth queue capacity exceeded");
+    this.tiles[this.tail++] = tile;
+  }
+  dequeue(): number { return this.tiles[this.head++]; }
+  getState() {
+    const tiles = this.tiles.slice(this.head, this.tail);
+    return {tiles, pri: new Float32Array(tiles.length)};
+  }
+}
 interface LocalRuntime {
   tree: LocalTree;
-  heap?: FlatBinaryHeap;
+  breadthFirst?: boolean;
+  heap?: FlatBinaryHeap | WaterBreadthQueue;
   closed?: Uint8Array;
 }
 export interface SharedPreparationCheckpoint {
-  version: 1;
+  version: 1 | 2;
   clusterRevisions: Uint32Array;
   entries: {
     origin: number; cluster: number; revision: number; progress: number;
-    tree: LocalTree; closed?: Uint8Array;
+    tree: LocalTree; closed?: Uint8Array; breadthFirst?: boolean;
     heap?: { pri: number[]; tiles: number[] };
   }[];
   backbones?: { key: string; chain: number[] }[];
@@ -189,11 +211,11 @@ export class HierarchicalPaths {
   }
   pinShared(origins: Iterable<number>): void { this.sharedPins = new Set(origins); }
   sharedCheckpoint(): SharedPreparationCheckpoint {
-    return structuredClone({ version: 1 as const, clusterRevisions: this.clusterRevision,
+    return structuredClone({ version: ([...this.sharedTrees.values()].some(e => e.runtime.breadthFirst) ? 2 : 1) as 1 | 2, clusterRevisions: this.clusterRevision,
       backbones: [...this.sharedBackbones].map(([key, chain]) => ({ key, chain })),
       entries: [...this.sharedTrees.values()].map(({ revision, local, runtime }) => {
         const heap = runtime.heap?.getState();
-        return { ...local, revision, tree: { ...runtime.tree, parent: Int32Array.from(runtime.tree.parent) },
+        return { ...local, revision, ...(runtime.breadthFirst ? {breadthFirst: true} : {}), tree: { ...runtime.tree, parent: Int32Array.from(runtime.tree.parent) },
           closed: runtime.closed, heap: heap && { pri: Array.from(heap.pri), tiles: Array.from(heap.tiles) } };
       }) });
   }
@@ -202,7 +224,7 @@ export class HierarchicalPaths {
     // Start trees are keyed on cluster revisions the restore replaces (R2-L15).
     this.startTrees.clear();
     if (!saved) return;
-    if (saved.version !== 1 || !(saved.clusterRevisions instanceof Uint32Array) ||
+    if (![1, 2].includes(saved.version) || !(saved.clusterRevisions instanceof Uint32Array) ||
       saved.clusterRevisions.length !== this.clusters.length || saved.entries.length > SHARED_TREE_LIMIT)
       throw Error("Invalid shared preparation checkpoint");
     this.clusterRevision.set(saved.clusterRevisions);
@@ -221,11 +243,13 @@ export class HierarchicalPaths {
       this.sharedBackbones.set(key, chain.slice()); this.backboneNodes += chain.length;
     }
     for (const entry of structuredClone(saved.entries)) {
-      const { origin, cluster, revision, progress, tree, heap, closed } = entry;
+      const { origin, cluster, revision, progress, tree, heap, closed, breadthFirst } = entry;
       const c = this.clusters[cluster], size = c && c.width * c.height;
       if (!Number.isInteger(origin) || origin < 0 || origin >= this.topology.map.width() * this.topology.map.height() ||
         !c || this.cluster(origin) !== cluster || this.sharedTrees.has(origin) ||
         !Number.isSafeInteger(revision) || revision < 0 || revision > this.clusterRevision[cluster] ||
+        (breadthFirst !== undefined && (breadthFirst !== true || saved.version !== 2 || !this.topology.water)) ||
+        (breadthFirst && heap && (heap.tiles.length > size || new Set(heap.tiles).size !== heap.tiles.length || heap.pri.some(v => v !== 0))) ||
         !Number.isInteger(progress) || progress < 0 || progress > this.localUnits({ origin, cluster, progress }) ||
         !(tree.cost instanceof Int32Array) || tree.cost.length !== size ||
         !(tree.parent instanceof Int32Array) || tree.parent.length !== size ||
@@ -237,8 +261,9 @@ export class HierarchicalPaths {
         (heap && (heap.pri.length !== heap.tiles.length || heap.tiles.length > size * 8 + 1 ||
           heap.pri.some(v => !Number.isFinite(v)) || heap.tiles.some(v => !Number.isInteger(v) || v < 0 || v >= size))))
         throw Error("Invalid shared preparation entry");
-      const runtime: LocalRuntime = { tree, closed, heap: heap && FlatBinaryHeap.fromState({
-        pri: Float32Array.from(heap.pri), tiles: Uint32Array.from(heap.tiles), capacity: Math.max(1024, heap.tiles.length) }) };
+      const runtime: LocalRuntime = { tree, closed, ...(breadthFirst ? {breadthFirst: true} : {}),
+        heap: heap && (breadthFirst ? new WaterBreadthQueue(size, heap.tiles) : FlatBinaryHeap.fromState({
+          pri: Float32Array.from(heap.pri), tiles: Uint32Array.from(heap.tiles), capacity: Math.max(1024, heap.tiles.length) })) };
       this.sharedTrees.set(origin, { revision, local: { origin, cluster, progress }, runtime });
     }
   }
@@ -250,7 +275,7 @@ export class HierarchicalPaths {
       this.sharedBackbones.delete(old); this.backboneNodes -= nodes.length;
     }
   }
-  private sharedLocal(local: LocalContinuation): { runtime: LocalRuntime; local: LocalContinuation; revision: number } {
+  private sharedLocal(local: LocalContinuation, fastWater = false): { runtime: LocalRuntime; local: LocalContinuation; revision: number } {
     this.sharedPins.add(local.origin);
     const revision = this.clusterRevision[local.cluster], old = this.sharedTrees.get(local.origin);
     if (old?.revision === revision) return old;
@@ -266,8 +291,10 @@ export class HierarchicalPaths {
     const c = this.clusters[local.cluster], size = c.width * c.height, start = this.index(c, local.origin);
     const tree: LocalTree = { cost: new Int32Array(size).fill(INFINITY), parent: new Int16Array(size).fill(-1), start, settled: 0, effort: 0 };
     tree.cost[start] = 0;
-    const heap = new FlatBinaryHeap(); heap.enqueue(start, 0);
-    const entry = { revision, local: owner, runtime: { tree, heap, closed: new Uint8Array(size) } as LocalRuntime };
+    const breadthFirst = fastWater && this.topology.water;
+    const heap = breadthFirst ? new WaterBreadthQueue(size) : new FlatBinaryHeap(); heap.enqueue(start, 0);
+    const entry = { revision, local: owner, runtime: { tree, heap,
+      ...(breadthFirst ? {breadthFirst: true} : {}), closed: new Uint8Array(size) } as LocalRuntime };
     this.sharedTrees.set(local.origin, entry);
     return entry;
   }
@@ -736,6 +763,7 @@ export class HierarchicalPaths {
     limit: number,
   ): void {
     if (!runtime.heap) return;
+    if (runtime.breadthFirst) { this.advanceWaterLocal(runtime, cluster, limit); return; }
     const heap = runtime.heap,
       c = this.clusters[cluster],
       tree = runtime.tree,
@@ -778,6 +806,30 @@ export class HierarchicalPaths {
       runtime.closed = undefined;
     }
   }
+  private readonly waterGlobalNeighbors = new Int32Array(4);
+  private advanceWaterLocal(runtime: LocalRuntime, cluster: number, limit: number): void {
+    const heap = runtime.heap!, c = this.clusters[cluster], tree = runtime.tree,
+      width = c.width, mapWidth = this.topology.map.width(), local = this.neighbors, global = this.waterGlobalNeighbors;
+    let used = 0;
+    while (used < limit && heap.size()) {
+      const index = heap.dequeue(), x = index % width, y = (index / width) | 0,
+        tile = c.rowStarts[y] + x, cost = tree.cost[index] + 10;
+      used++; tree.effort++; tree.settled++; runtime.closed![index] = 1;
+      let count = 0;
+      // Same cardinal order as GameMap.neighbors4; cluster exits are refined
+      // by the corridor graph, rather than explored inside this local tree.
+      if (y > 0) { local[count] = index - width; global[count++] = tile - mapWidth; }
+      if (y + 1 < c.height) { local[count] = index + width; global[count++] = tile + mapWidth; }
+      if (x > 0) { local[count] = index - 1; global[count++] = tile - 1; }
+      if (x + 1 < width) { local[count] = index + 1; global[count++] = tile + 1; }
+      for (let i = 0; i < count; i++) {
+        const next = local[i];
+        if (tree.cost[next] !== INFINITY || !this.topology.walkable(global[i])) continue;
+        tree.cost[next] = cost; tree.parent[next] = index; heap.enqueue(next, cost);
+      }
+    }
+    if (!heap.size()) { runtime.heap = undefined; runtime.closed = undefined; }
+  }
   /** One preparation unit is at most 512 dequeues. Cache hits replay the
    * completed tree's actual effort, so cold and warm queries yield identically. */
   private stepLocal(local: LocalContinuation, budget: number): number {
@@ -806,6 +858,7 @@ export class HierarchicalPaths {
     preparationBudget = Infinity,
     preparation: { used: number } = { used: 0 },
     shared = false,
+    chargePreparation = false,
   ): number {
     const startNode = this.portals.length,
       goalNode = startNode + 1,
@@ -902,7 +955,7 @@ export class HierarchicalPaths {
           used++;
           continue;
         }
-        const entry = shared ? this.sharedLocal(s.local) : undefined;
+        const entry = shared ? this.sharedLocal(s.local, chargePreparation) : undefined;
         const runtime = entry?.runtime ?? this.localRuntime(s.local);
         const allowance = Math.min(budget - used, preparationBudget - preparation.used);
         let localWork = 0;
@@ -910,8 +963,11 @@ export class HierarchicalPaths {
           if (!runtime.heap) { this.sharedDiagnostics.reused++; used++; }
           else if (allowance <= 0) break;
           while (localWork < allowance && runtime.heap) {
-            this.advanceLocal(runtime, s.local.cluster, 512);
-            entry.local.progress++; localWork++; this.sharedDiagnostics.preparedUnits++;
+            const effort = runtime.tree.effort, progress = entry.local.progress;
+            this.advanceLocal(runtime, s.local.cluster, chargePreparation ? Math.min(512, allowance - localWork) : 512);
+            entry.local.progress = Math.ceil(runtime.tree.effort / 512);
+            localWork += chargePreparation ? runtime.tree.effort - effort : 1;
+            this.sharedDiagnostics.preparedUnits += entry.local.progress - progress;
           }
           s.local.progress = entry.local.progress;
         } else localWork = this.stepLocal(s.local, allowance);
@@ -925,12 +981,14 @@ export class HierarchicalPaths {
         const tree = runtime.tree;
         if (s.phase === "start") {
           s.startTree = tree;
-          this.startTrees.set(s.start, {
-            tree,
-            revision: this.clusterRevision[startCluster],
-          });
-          if (this.startTrees.size > START_TREE_CACHE)
-            this.startTrees.delete(this.startTrees.keys().next().value!);
+          // FIFO trees have equally short distances but different tie parents.
+          // Keep them in the checkpointed shared owner; do not let a physical
+          // warm cache change later legacy synchronous routing after restore.
+          if (!runtime.breadthFirst) {
+            this.startTrees.set(s.start, {tree, revision: this.clusterRevision[startCluster]});
+            if (this.startTrees.size > START_TREE_CACHE)
+              this.startTrees.delete(this.startTrees.keys().next().value!);
+          }
           if (
             startCluster === goalCluster &&
             tree.cost[this.index(this.clusters[startCluster], s.goal)] !==
@@ -956,7 +1014,7 @@ export class HierarchicalPaths {
           }
         } else {
           const portal = this.portals[s.current];
-          if (!portal.tree) {
+          if (!portal.tree && !runtime.breadthFirst) {
             portal.tree = tree;
             this.crossingBytes += tree.cost.byteLength + tree.parent.byteLength;
           }

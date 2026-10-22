@@ -95,7 +95,7 @@ export async function convertSeaTradeFixture(input: string, output: string, sour
   const seaIds = new Set(trade.actors.filter(actor => actor.naval).map(actor => actor.id));
   trade.retries = trade.retries.filter(([id]) => !seaIds.has(id));
   trade.seaTrade = sea; trade.seaMarketDirty = false; state.options = options;
-  state.planning.scheduling.version = 7;
+  state.planning.scheduling.version = 8;
   sea.routes.waterRevision = old.waterPaths.revision;
   validateSeaRoutesEnvelope(sea.routes, true, m.width * m.height);
   candidate.restore(state);
@@ -115,7 +115,7 @@ export async function convertSeaTradeFixture(input: string, output: string, sour
   if (JSON.stringify(original.expansion!.supply) !== JSON.stringify(after.expansion!.supply)) throw Error("Conversion changed supply");
   const manifest = { sourceSha, input: resolve(input), checkpointSha256: createHash("sha256").update(bytes).digest("hex"),
     seed: fixture.seed, settings: fixture.settings, oldOptions: fixture.options, newOptions: options,
-    plannerScheduling: { old: original.planning.scheduling.version, new: 7 },
+    plannerScheduling: { old: original.planning.scheduling.version, new: 8 },
     historicalLaneCount, tick: state.tick, cancelledNavalAdmissions: cancelled, convertedLegs, legacyVoyages,
     behavior: "Imported shipments retain direct-return planning until the next new load; new shipments use ready direct lanes or retrace.",
     packedCells: sea.routes.lanes.reduce((n, lane) => n + (lane.state === "ready" ? lane.tiles.length : 0), 0) };

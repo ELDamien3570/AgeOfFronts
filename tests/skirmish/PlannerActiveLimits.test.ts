@@ -76,7 +76,7 @@ describe("balanced active admission (scheduling v7)", () => {
     const fixed = continuouslyPaidRace(true);
     expect(fixed.paidComplete).toBeGreaterThan(0);
     expect(fixed.departureComplete).toBeGreaterThanOrEqual(0);
-    expect(fixed.planner.checkpoint().scheduling.version).toBe(7);
+    expect(fixed.planner.checkpoint().scheduling.version).toBe(8);
   });
   it("retains the old active-slot behavior when restoring scheduling v6", () => {
     const old = continuouslyPaidRace(false);
@@ -222,6 +222,9 @@ describe("human arena retry and cold civilian holders", () => {
       },
     }, 128, 1024);
     const planner = create();
+    // Retain the historical v7 loan/retry regression. v8 memory/preparation
+    // accounting has separate pressure and restore coverage.
+    const historical = planner.checkpoint(); historical.scheduling.version = 7; planner.restore(historical);
     let cold: ReturnType<typeof create> | undefined;
     for (let id = 0; id < 8; id++) expect(planner.request({ key: `water:${id}`, start: map.ref(2, 65 + id),
       goal: map.ref(397, 65 + id), water: true, createdTick: 0, obstacleRevision: "0", context: { human: false } })).toBe(true);

@@ -999,7 +999,7 @@ export class Skirmish {
     const size = map.width() * map.height();
     this.tileChanges = new TileChangeJournal(size);
     this.owners = new Uint8Array(size);
-    this.wasteland = new NuclearWasteland(map);
+    this.wasteland = new NuclearWasteland(map, tile => this.invalidateCapture(tile));
     this.claims = new Uint8Array(size);
     this.progress = new Uint8Array(size);
     this.pressure = new CapturePressure(size);
@@ -1014,6 +1014,7 @@ export class Skirmish {
     }
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
       classificationRevision: () => this.routeClassificationEpoch,
+      partitionRevision: () => `${this.tick}:${this.routeClassificationEpoch}`,
       // Civilian routing always uses the background cohort. Loan the existing
       // player preparation reserve when no interactive route is waiting;
       // otherwise busy trade fleets leave that capacity idle for minutes.
@@ -5003,13 +5004,14 @@ export class Skirmish {
   private readonly captureFootprints = new Map<number, readonly number[]>();
   private readonly captureContributions = new Map<number, {
     x: number; y: number; owner: number; position: number; key: string;
-    tiles: readonly number[]; originIndependent: boolean; dirty: boolean; seen: number; allOwned: boolean;
+    tiles: readonly number[]; originIndependent: boolean; dirty: boolean; seen: number; allOwned: boolean; hasFallout: boolean;
   }>();
   private readonly captureCenters = new Map<number, Set<number>>();
   private readonly captureBuildings = new Map<number, {tile: number; key: string}>();
   readonly captureWork = { refreshed: 0, reused: 0, ownedSkipped: 0 };
   private capturePass = 0;
   private invalidateCapture(tile: number): void {
+    if (!this.captureContributions.size) return;
     const cx=this.map.x(tile),cy=this.map.y(tile);
     for(let dy=-CAPTURE_RADIUS;dy<=CAPTURE_RADIUS;dy++) for(let dx=-CAPTURE_RADIUS;dx<=CAPTURE_RADIUS;dx++) {
       if(dx*dx+dy*dy>CAPTURE_RADIUS**2 || !this.map.isValidCoord(cx+dx,cy+dy))continue;
@@ -5094,7 +5096,8 @@ export class Skirmish {
           for(const tile of tiles)this.pressure.retain(tile,squad.playerId);
         }
         row={x:squad.x,y:squad.y,owner:squad.playerId,position,key,tiles,originIndependent:canCapture?.originIndependent??true,dirty:false,seen:pass,
-          allOwned:tiles.every(tile=>this.owners[tile]===squad.playerId)};
+          allOwned:tiles.every(tile=>this.owners[tile]===squad.playerId),
+          hasFallout:tiles.some(tile=>this.wasteland.has(tile))};
         this.captureContributions.set(squad.id,row);
         let center=this.captureCenters.get(position);if(!center)this.captureCenters.set(position,center=new Set());
         center.add(squad.id);
@@ -5116,7 +5119,7 @@ export class Skirmish {
       // changeOwner/invalidateCapture. With no acceleration or fallout work,
       // an entirely owned footprint adds no claims or hostile notifications.
       // Pressure stays retained: competing claims still resolve below.
-      if(row.allOwned && !captureTicks && !cleanup){this.captureWork.ownedSkipped++;continue;}
+      if(row.allOwned && !captureTicks && !row.hasFallout){this.captureWork.ownedSkipped++;continue;}
       for (const tile of row.tiles) {
         if(cleanup && this.wasteland.has(tile)) {
           const distance=this.distanceSquared(squad,tilePoint(this.map,tile)),old=cleanup.get(tile);

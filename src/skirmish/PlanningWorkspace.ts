@@ -21,6 +21,8 @@ export class PlanningWorkspace {
   readonly free: Int32Array;
   private freeCount: number;
   private pristine = true;
+  /** Scheduler-scoped free-slot protection; never retained across a quantum. */
+  minimumFree = 0;
   constructor(readonly capacity = 65_536) {
     if (!Number.isInteger(capacity) || capacity < 1 || capacity > 65_536)
       throw new Error("Invalid planning workspace capacity");
@@ -47,7 +49,7 @@ export class PlanningWorkspace {
     parent: number,
     score: number,
   ): number | undefined {
-    if (!this.freeCount) return undefined;
+    if (this.freeCount <= this.minimumFree) return undefined;
     this.pristine = false;
     const slot = this.free[--this.freeCount];
     this.tile[slot] = tile;
@@ -143,6 +145,7 @@ export interface PlanningPathState {
     | "unreachable"
     | "limited"
     | "stale";
+  waitingForCapacity?: boolean;
   nodes: Map<number, number>;
   heap: number[];
   path: number[];
@@ -230,6 +233,7 @@ export class PlanningPath {
     budget: number,
     revision: number,
     blocked?: (tile: number) => boolean,
+    pauseOnCapacity = false,
   ): number {
     const s = this.state,
       w = this.workspace;
@@ -237,6 +241,7 @@ export class PlanningPath {
       s.phase = "stale";
       return 0;
     }
+    if (s.waitingForCapacity !== undefined) s.waitingForCapacity = undefined;
     let used = 0;
     while (used < budget) {
       if (s.phase === "search") {
@@ -253,7 +258,8 @@ export class PlanningPath {
             this.topology.estimate(s.start, s.goal),
           );
           if (slot === undefined) {
-            s.phase = "limited";
+            if (pauseOnCapacity) s.waitingForCapacity = true;
+            else s.phase = "limited";
             break;
           }
           s.nodes.set(s.start, slot);
@@ -283,7 +289,14 @@ export class PlanningPath {
           if (child === undefined) {
             child = w.allocate(next, cost, tile, score);
             if (child === undefined) {
-              s.phase = "limited";
+              if (pauseOnCapacity) {
+                // Requeue the partially relaxed expansion. On resume all eight
+                // neighbours are checked against the live topology again;
+                // already relaxed edges are harmless decrease-key no-ops.
+                // This preserves progress without a stale neighbour cursor.
+                this.up(slot);
+                s.waitingForCapacity = true;
+              } else s.phase = "limited";
               break;
             }
             s.nodes.set(next, child);
@@ -294,7 +307,7 @@ export class PlanningPath {
           }
           this.up(child);
         }
-        if (s.phase === "limited") break;
+        if (s.phase === "limited" || s.waitingForCapacity) break;
       } else if (s.phase === "trace") {
         used++;
         if (s.trace === s.start) {

@@ -7,16 +7,17 @@ const out = process.argv[2] ?? "build/sea-trade-probe";
 const runtime = "src/skirmish/multiplayer/application/MatchRuntime.ts";
 const original = readFileSync(runtime, "utf8"),
   needle = "match = new Skirmish(makeMap(map), options);";
-if (original.split(needle).length !== 2)
+if (original.split(needle).length !== 2 || original.split('if (request.type === "initialize" || request.type === "prepare") {').length !== 2)
   throw Error("Fixture seam changed; review before building");
 const injected =
-  `import {restoreProbeFixture,probeFixtureOptions} from ${JSON.stringify(resolve("scripts/oracleSeaTradeFixture.mjs"))};\n` +
+  `import {restoreProbeFixture,probeFixtureOptions,captureProbeCheckpoint,finishProbeProfiling} from ${JSON.stringify(resolve("scripts/oracleSeaTradeFixture.mjs"))};\n` +
   original.replace(
     needle,
     "options = probeFixtureOptions(options);\n    " +
       needle +
       "\n    restoreProbeFixture(match);",
-  );
+  ).replace('if (request.type === "initialize" || request.type === "prepare") {',
+    'if (request.type === "probe-checkpoint") { if (!match) throw Error("No probe match"); await finishProbeProfiling(match); result = captureProbeCheckpoint(match); } else if (request.type === "initialize" || request.type === "prepare") {');
 let seams = 0;
 await build({
   entryPoints: {
@@ -26,6 +27,7 @@ await build({
     snapshotEncoderThread:
       "src/skirmish/multiplayer/infrastructure/snapshotEncoderThread.ts",
     client: "scripts/oracleSeaTradeProbeClient.mjs",
+    replay: "scripts/replayOracleSeaTradeProbe.ts",
   },
   outdir: out,
   outExtension: { ".js": ".mjs" },
@@ -66,7 +68,7 @@ writeFileSync(
         "exact saved options before construction; restoreProbeFixture(match) immediately after construction, before production runtime attaches callbacks/runner",
       productionSourceUnchanged: true,
       limitations:
-        "Fixture initialization and bounded timing instrumentation only; ordinary production LiveMatch, worker caps, command, encoder and socket paths. No renderer.",
+        "Fixture initialization, bounded timing instrumentation and explicit boundary checkpoint capture outside the paced interval; ordinary production LiveMatch, worker caps, command, encoder and socket paths. No renderer.",
     },
     null,
     2,
