@@ -372,6 +372,13 @@ export class Armies {
       }return;
     }
     const routed=ai&&plan?.posture==='advance'&&near.some(t=>{const other=this.armyOf(t.id);return !!other&&(other.order.type==='regroup'||this.engagements?.planFor(other.id)?.posture==='withdraw');});
+    // Compute shared protection candidates once, rather than repeating contact
+    // geometry for every frontline member. The existing nearby-enemy list and
+    // per-member weapon/leash checks still bound legal interception.
+    const ranged = ai ? members.filter(m => active(m) && army.slots?.find(r => r.squadId === m.id)?.role === "ranged") : [];
+    const rangedThreats = ranged.length ? near.filter(t => active(t) && !t.afloat && this.world.hostile(army.playerId,t.playerId) &&
+      this.world.unit(t).attack.channel === "melee" && ranged.some(m =>
+        formationContact(t,m,this.world.tick).gap < AI_BATTLE.evadeTriggerTiles * FIXED)) : [];
     for(const old of members){
       const s=this.world.squad(old.id)??old,record=army.slots?.find(r=>r.squadId===s.id),slot=slots.get(s.id);if(!record||!slot||!mayWrite(this.controls,s,'army'))continue;
       if(ai&&record.role==='ranged'&&this.rangedEvade(army,s,members,near))continue;
@@ -411,6 +418,14 @@ export class Armies {
       let target=targetId===null?undefined:this.world.squad(targetId);
       if(!allowed(target)){target=undefined;targetId=null;}
       if(!plan&&leash>0)target=near.find(t=>allowed(t)&&formationContact({...s,...slot},t,this.world.tick).gap<=effectiveRange(this.world,{...s,...slot},this.world.unit(s).attack,t));
+      // A frontline member protects nearby ranged bodies before pursuing its
+      // assigned opponent. Otherwise cavalry fighting an adjacent infantry
+      // target can remain inside the archers while their screen chases elsewhere.
+      if (ai && record.role === "frontline") {
+        const threatened = rangedThreats.filter(t => allowed(t))
+          .sort((a,b) => distanceSquared(s,a)-distanceSquared(s,b) || a.id-b.id)[0];
+        if (threatened) {target = threatened; targetId = threatened.id;}
+      }
       // T-a: an AI member answers an enemy already striking it in melee before chasing a planned target out of contact.
       if(ai&&leash>0){
         const touching=(t:Squad)=>formationContact(s,t,this.world.tick).gap<AI_BATTLE.answerContactGap;

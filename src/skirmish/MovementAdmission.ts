@@ -308,6 +308,7 @@ export class MovementAdmission {
           const family = this.families.get(admission.id)!;
           this.families.delete(admission.id); this.families.set(next.id, family);
           family.start = pointTile(this.map, this.ports.squad(next.members[0].id)!);
+          family.goal = pointTile(this.map, next.members[0].destination!);
           for (const a of remaining) if (a.corridorId === admission.id) a.corridorId = next.id;
         }
       }
@@ -1270,6 +1271,7 @@ export class MovementAdmission {
           if(family){
             this.families.delete(old);this.families.set(admission.id,family);
             family.start=pointTile(this.map,this.ports.squad(admission.members[0].id)!);
+            family.goal=pointTile(this.map,admission.members[0].destination!);
             for(const other of this.pending.values())if(other.groupId===admission.groupId && other.corridorId===old)other.corridorId=admission.id;
           }
         }
@@ -1283,6 +1285,7 @@ export class MovementAdmission {
           follower = this.ports.squad(leader.id);
         if (originalLead && follower && !corridor && follower.kind === originalLead.kind &&
           (admission.groupId === undefined || this.map.euclideanDistSquared(pointTile(this.map,follower),pointTile(this.map,originalLead)) <= 32**2 &&
+            this.map.euclideanDistSquared(pointTile(this.map,leader.destination!),pointTile(this.map,original!.members[0].destination!)) <= 32**2 &&
             this.map.euclideanDistSquared(pointTile(this.map,follower),pointTile(this.map,leader.destination!)) > COHORT_CONNECTORS.directTiles**2)) {
           if (++idle >= this.pending.size) break; continue;
         }

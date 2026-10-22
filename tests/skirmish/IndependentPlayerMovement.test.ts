@@ -136,6 +136,23 @@ describe("independent player movement", () => {
     for (const s of f.squads.slice(1))
       expect(f.game.squad(s.id)!.order.type).toBe("move");
   });
+  it("does not wait on a promoted corridor whose destination is incompatible", () => {
+    const f = fixture(3, true);
+    const goals = [50, 20, 80].map(y => ({x: 150.5 * FIXED, y: (y + .5) * FIXED}));
+    f.game.movementAdmission.start(1, f.squads, f.map.ref(150, 50), f.game.tick,
+      new Map(f.squads.map((s, i) => [s.id, goals[i]])));
+    steps(f.game, 12);
+    expect(f.requests.map(r => r.s)).toEqual([f.squads[0].id]);
+    f.game.removeSquad(f.squads[0].id);
+    steps(f.game, 12);
+    expect(f.requests.map(r => r.s)).toEqual(f.squads.map(s => s.id));
+    for (const request of f.requests.slice(1)) f.complete(request);
+    steps(f.game, 24);
+    for (const squad of f.squads.slice(1)) {
+      expect(f.game.movementAdmission.hasPending(squad.id)).toBe(false);
+      expect(f.game.squad(squad.id)!.order.type).toBe("move");
+    }
+  });
   it("lets cheap members start while an incompatible distant family waits", () => {
     const f = fixture(8, true);
     for (const s of f.squads.slice(1))
