@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import WebSocket from "ws";
 import { serialize } from "node:v8";
 import { decodeState } from "../src/skirmish/multiplayer/StateCodec.ts";
+import { MAX_ORDER_SQUADS } from "../src/skirmish/FactionRules.ts";
 import { SnapshotDecoder } from "../src/skirmish/SnapshotCodec.ts";
 const args = process.argv.slice(2),
   get = (k, d) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
@@ -24,7 +25,7 @@ writeFileSync(out + "/metadata.json", JSON.stringify(metadata, null, 2));
 const peers = [],
   orders = [],
   failures = [],
-  hashes = new Map();
+  hashes = new Map(), comparisonStates=new Map();
 let sequence = 0,
   matchId,
   closing = false,
@@ -116,6 +117,7 @@ async function connect(index) {
           }
           throw error;
         }
+        const decodedAt=Date.now();
         p.decodeMs.push(performance.now() - at);
         p.stationary ??= new Map();
         for (const s of snap.squads) {
@@ -131,34 +133,12 @@ async function connect(index) {
         p.packets++;
         if (p.lastAt) p.gaps.push(Date.now() - p.lastAt);
         p.lastAt = Date.now();
-        // State hash comparison uses the same publication; bounded to 32 frames.
-        const key = m.publicationSequence ?? m.tick,
-          hash = createHash("sha256")
-            .update(snap.owners)
-            .update(
-              JSON.stringify([
-                snap.squads,
-                snap.ships,
-                snap.buildings,
-                snap.expansion?.traders,
-                snap.expansion?.armies,
-                snap.players,
-              ],(_key,value)=>value && typeof value==="object" && !Array.isArray(value) && Object.getPrototypeOf(value)===Object.prototype ? Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])) : value),
-            )
-            .digest("hex");
-        const row = hashes.get(key) ?? new Map();
-        row.set(index, hash);
-        hashes.set(key, row);
-        if (row.size === 2) comparedFrames++;
-        if (new Set(row.values()).size > 1)
-          failures.push("Client state disagreement at " + key);
-        while (hashes.size > 32) hashes.delete(hashes.keys().next().value);
         for(const order of orders)if(order.peer===index && order.settled && !order.terminal){
           order.memberResponses ??= order.starts.map(start=>({id:start.id}));
           for(const start of order.starts){
             const squad=snap.squads.find(s=>s.id===start.id),response=order.memberResponses.find(r=>r.id===start.id);
             if(!squad)continue;
-            const elapsed=Date.now()-order.sentAt;
+            const elapsed=decodedAt-order.sentAt;
             if(response.firstTurnMs===undefined && start.heading!==undefined && squad.locomotion?.heading!==undefined && Math.abs(Math.atan2(Math.sin(squad.locomotion.heading-start.heading),Math.cos(squad.locomotion.heading-start.heading)))>1e-6)
               response.firstTurnMs=elapsed;
             if(response.firstMotionMs===undefined && Math.hypot(squad.x-start.x,squad.y-start.y)>8){response.firstMotionMs=elapsed;response.motionTick=m.tick;}
@@ -187,6 +167,33 @@ async function connect(index) {
             publicationSequence: m.publicationSequence,
             flowEpoch: m.flowEpoch,
           });
+        // State hash comparison uses the same publication; bounded to 32 frames.
+        const key = m.publicationSequence ?? m.tick,
+          hash = createHash("sha256")
+            .update(snap.owners)
+            .update(
+              JSON.stringify([
+                [...snap.squads].sort((a,b)=>a.id-b.id),
+                [...snap.ships].sort((a,b)=>a.id-b.id),
+                [...snap.buildings].sort((a,b)=>a.id-b.id),
+                snap.expansion?.traders && [...snap.expansion.traders].sort((a,b)=>a.id-b.id),
+                snap.expansion?.armies && [...snap.expansion.armies].sort((a,b)=>a.id-b.id),
+                [...snap.players].sort((a,b)=>a.id-b.id),
+              ],(_key,value)=>value && typeof value==="object" && !Array.isArray(value) && Object.getPrototypeOf(value)===Object.prototype ? Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])) : value),
+            )
+            .digest("hex");
+        const states=comparisonStates.get(key)??new Map();
+        states.set(index,{tick:m.tick,packetTick:snap.tick,ownersHash:createHash("sha256").update(snap.owners).digest("hex"),sections:[snap.squads,snap.ships,snap.buildings,snap.expansion?.traders,snap.expansion?.armies,snap.players].map(section=>JSON.stringify(section)??"null")});
+        comparisonStates.set(key,states);
+        const row = hashes.get(key) ?? new Map();
+        row.set(index, hash);
+        hashes.set(key, row);
+        if (row.size === 2) comparedFrames++;
+        if(new Set(row.values()).size>1){
+          if(!failures.length)writeFileSync(out+"/state-disagreement.json",JSON.stringify({key,states:[...states]},null,2));
+          failures.push("Client state disagreement at "+key);
+        }
+        while(hashes.size>32){const old=hashes.keys().next().value;hashes.delete(old);comparisonStates.delete(old);}
       })
       .catch((e) => failures.push(e.stack ?? e.message));
   });
@@ -260,7 +267,7 @@ try {
     const owned = p.snapshot.squads.filter(
       (s) => selected.has(s.id) && s.playerId === p.manifest.playerId,
     );
-    for(let start=0;start<owned.length;start+=30)send(p,{type:"match-command",matchId,command:{type:"order",playerId:p.manifest.playerId,squadIds:owned.slice(start,start+30).map(s=>s.id),order:{type:"hold"}}});
+    for(let start=0;start<owned.length;start+=MAX_ORDER_SQUADS)send(p,{type:"match-command",matchId,command:{type:"order",playerId:p.manifest.playerId,squadIds:owned.slice(start,start+MAX_ORDER_SQUADS).map(s=>s.id),order:{type:"hold"}}});
   }
   await sleep(5000);
   startSample = await (await fetch(probeUrl)).json();
@@ -351,9 +358,9 @@ try {
             ) / 256;
           orders.push(order);
           order.memberDistanceTiles = group.map(member => ({ id: member.id, distance: Math.hypot(((order.tile % peer.snapshot.width) + 0.5) * 256 - member.x, (Math.floor(order.tile / peer.snapshot.width) + 0.5) * 256 - member.y) / 256 }));
-          order.commandIds=Array.from({length:Math.ceil(group.length/30)},(_,i)=>i===0?order.id:rid());
-          for(let start=0;start<group.length;start+=30){
-            const id=order.commandIds[start/30],command={type:"order",playerId:s.playerId,squadIds:order.squadIds.slice(start,start+30),order:{type:"move",tile:order.tile}};
+          order.commandIds=Array.from({length:Math.ceil(group.length/MAX_ORDER_SQUADS)},(_,i)=>i===0?order.id:rid());
+          for(let start=0;start<group.length;start+=MAX_ORDER_SQUADS){
+            const id=order.commandIds[start/MAX_ORDER_SQUADS],command={type:"order",playerId:s.playerId,squadIds:order.squadIds.slice(start,start+MAX_ORDER_SQUADS),order:{type:"move",tile:order.tile}};
             appendFileSync(out+"/commands-sent.jsonl",JSON.stringify({id,selectionId:order.id,peer:peer.index,at:Date.now(),observedTick:peer.tick,command})+"\n");
             peer.ws.send(JSON.stringify({type:"match-command",requestId:id,matchId,command}));
           }
@@ -364,13 +371,13 @@ try {
       for (const row of orders)
         if (!row.held && (row.terminal || row.executedMs !== undefined && row.allSettledMs !== undefined)) {
           row.held = true;
-          for(let start=0;start<row.squadIds.length;start+=30)send(peers[row.peer], {
+          for(let start=0;start<row.squadIds.length;start+=MAX_ORDER_SQUADS)send(peers[row.peer], {
             type: "match-command",
             matchId,
             command: {
               type: "order",
               playerId: row.playerId,
-              squadIds: row.squadIds.slice(start,start+30),
+              squadIds: row.squadIds.slice(start,start+MAX_ORDER_SQUADS),
               order: { type: "hold" },
             },
           });
@@ -466,7 +473,7 @@ try {
       publicationGapMs: stats(p.gaps),
     })),
     limitations:
-      "Selections above the 30-squad transport/UI limit are concurrent batches of legal orders; aggregate execution waits for every batch receipt. Two or three real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is each member's first decoded displacement over eight fixed units after the input; it is independent of the aggregate receipt. First turn and all-member motion are reported separately. Holds wait for full command execution and every member's motion, or a terminal failure; not rendered pixels. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
+      "Selections above the 30-squad transport/UI limit are concurrent batches of legal orders; aggregate execution waits for every batch receipt. Two or three real WebSocket clients (Oracle runs through an SSH tunnel); production decoder, coordinator, LiveMatch, reserved worker/encoder. Checkpoint initialization is test-only. First motion is each member's first decoded displacement over eight fixed units after the input; it is independent of the aggregate receipt. First turn and all-member motion are reported separately. Holds wait for full command execution and every member's motion, or a terminal failure; not rendered pixels. Credits and response timestamps precede observer-only state hashing; entity rosters are compared by ID and every field value remains included. State comparison retains at most 32 publications for a first-disagreement capture. Short/long classify the lead squad distance; memberDistanceTiles records the full selection spread. Initial short/long destinations are owned, standable and in the same land component; unresolved/rejections remain in result.",
   };
   writeFileSync(out + "/result.json", JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result.byKind));

@@ -56,6 +56,21 @@ describe("N10 released ranged history replication", () => {
     expect(replicatedWeaponState(state, undefined)).toBe(state);
   });
 
+  it("expires retained sparse history at the packet clock without another entity change",()=>{
+    const {game,sourceId}=scene(),encoder=new SnapshotEncoder(true,{compactFormationSlots:true}),decoder=new SnapshotDecoder();
+    game.tick=100;game.updateSquad(sourceId,{weaponState:released(100)});
+    const before=decoder.decode(encoder.encode(game.replicationSource(),game.tileChanges,game.replicationFacts()));
+    expect(before.squads.find(s=>s.id===sourceId)!.weaponState!.rangedAction).toBeDefined();
+    game.tick=109;
+    const sparse=encoder.encode(game.replicationSource(),game.tileChanges,game.replicationFacts());
+    expect(sparse.squads).toHaveLength(0);
+    const current=decoder.decode(sparse),fresh=new SnapshotDecoder().decode(new SnapshotEncoder(true,{compactFormationSlots:true}).encode(game.replicationSource(),game.tileChanges,game.replicationFacts()));
+    expect(current.squads.find(s=>s.id===sourceId)!.weaponState).toEqual(fresh.squads.find(s=>s.id===sourceId)!.weaponState);
+    expect(current.squads.find(s=>s.id===sourceId)!.weaponState!.rangedAction).toBeUndefined();
+    expect(before.squads.find(s=>s.id===sourceId)!.weaponState!.rangedAction).toBeDefined();
+    expect(game.squad(sourceId)!.weaponState!.rangedAction).toBeDefined();
+  });
+
   it("re-encodes a cached detail row when its history expires and never serves the stale row", () => {
     const { game, sourceId } = scene();
     const row = { ...game.snapshot().squads.find(s => s.id === sourceId)!, weaponState: released(100) };

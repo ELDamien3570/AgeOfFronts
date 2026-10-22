@@ -1,3 +1,4 @@
+import { replicatedWeaponState } from "./domain/RangedPreparation";
 import {validateAiWithdrawal} from "./domain/AiDiplomaticWithdrawal";
 import { FormationSlotDecoder } from "./FormationSlotStream";
 import {validateRaidDiplomacy} from './domain/DiplomacyValidation';
@@ -645,6 +646,13 @@ export class SnapshotDecoder {
       deposit.owner = owners[at + 1];
     }
     if (traders) this.expansionMetadata!.traders = traders.rows;
+    // Sparse entity journals do not change when presentation history expires.
+    // Project retained rows at this packet's clock, just like a fresh baseline.
+    // Replace the view row so previously returned snapshots keep their history.
+    for(const [id,squad] of this.squads){
+      const weaponState=replicatedWeaponState(squad.weaponState,packet.tick);
+      if(weaponState!==squad.weaponState)this.squads.set(id,{...squad,weaponState});
+    }
     const snapshot: Snapshot = {
       tick: packet.tick,
       width: packet.width,
