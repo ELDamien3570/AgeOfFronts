@@ -118,6 +118,7 @@ export class LiveMatch {
   private spawnDeadline?: number;
   private nextSpawnAt = 0;
   private publicationSequence = 0;
+  private latestExecutorPublication = 0;
   /** Tick of the oldest committed command not yet covered by a gate publication. */
   private pendingCommandTick?: number;
   private readonly commandPublication = { count: 0, totalWaitTicks: 0, maxWaitTicks: 0 };
@@ -161,6 +162,7 @@ export class LiveMatch {
   ) {
     this.unsubscribePublication = executor.onPublication?.(publication => {
       if (this.stopped || !this.running) return;
+      this.latestExecutorPublication=publication.sequence??this.latestExecutorPublication+1;
       this.publicationSequence++;
       this.broadcast(this.state(publication.packet, false, publication.tick));
     });
@@ -1029,11 +1031,10 @@ export class LiveMatch {
           // The worker advanced the shared comparison cursor atomically with
           // this baseline. Publish its matching delta even if this guest left
           // or another baseline superseded its recovery while it encoded.
-          this.publicationSequence++;
-          this.broadcast(this.state(result.packet,false,result.tick));
+          if(result.packet){this.publicationSequence++;this.broadcast(this.state(result.packet,false,result.tick));}
           if(this.flows.get(guest)!==flow || flow.epoch!==epoch || !this.connected(guest))continue;
           const sequence=++this.publicationSequence;
-          flow.baseline(sequence,this.tick>result.tick);
+          flow.baseline(sequence,result.sharedPublicationSequence===undefined?this.tick>result.tick:this.latestExecutorPublication>result.sharedPublicationSequence);
           this.send(guest,{...this.state(result.baseline),tick:result.tick,publicationSequence:sequence,flowEpoch:flow.epoch,rebase:true});
         }catch(error){
           this.recoveredAt.set(guest,this.now());

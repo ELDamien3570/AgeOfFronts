@@ -133,12 +133,13 @@ describe("reserved authoritative worker", () => {
       expect(shared.tick).toBe(2);
       expect(baseline.expansion!.progression![1].research.naval!.remainingTicks).toBe(TECHNOLOGIES.find(t=>t.id==="rus-stoneage-port-sea-trade")!.ticks-2);
       const recovered=await worker.request<import("../../src/skirmish/multiplayer/application/MatchExecutor").ClientBaseline>({type:"client-baseline"});
-      const recoveryShared=decoder.decode(await decodeState<SnapshotPacket>(recovered.packet));
+      expect(recovered.sharedPublicationSequence).toBe(2);
+      const recoveryShared=decoder.decode(await decodeState<SnapshotPacket>(publications[1].packet));
       const recoveryFresh=new SnapshotDecoder().decode(await decodeState<SnapshotPacket>(recovered.baseline));
       expect({...recoveryShared,changedTiles:undefined}).toEqual(recoveryFresh);
       await worker.request<MatchAdvance>(advance(3));
-      await vi.waitFor(() => expect(publications.map(p => p.tick)).toEqual([1, 5]));
-      expect((await decodeState<SnapshotPacket>(publications[1].packet)).tick).toBe(5);
+      await vi.waitFor(() => expect(publications.map(p => p.tick)).toEqual([1, 2, 5]));
+      expect((await decodeState<SnapshotPacket>(publications[2].packet)).tick).toBe(5);
     } finally { unsubscribe(); await worker.close(); }
   });
   it("correlates deferred execution and supersession, rejects oversized batches before advancing, and deduplicates completed commands", async () => {

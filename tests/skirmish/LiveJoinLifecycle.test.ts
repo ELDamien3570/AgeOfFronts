@@ -23,7 +23,9 @@ async function fixture(start = true) {
     kind: playerId === 5 ? "tribe" : "regular",
     eliminated: false,
   }));
+  const publicationListeners=new Set<(value:import("../../src/skirmish/multiplayer/application/MatchExecutor").MatchPublication)=>void>();
   const executor: MatchExecutor = {
+    onPublication:listener=>{publicationListeners.add(listener);return()=>{publicationListeners.delete(listener);};},
     close: async () => {},
     request: async <T extends ExecutorResult>(r: ExecutorRequest) => {
       requests.push(r);
@@ -106,6 +108,7 @@ async function fixture(start = true) {
     match.watch(guest, { name: guest, flagCode: null }, id);
   return {
     match,
+    publish:(value:import("../../src/skirmish/multiplayer/application/MatchExecutor").MatchPublication)=>{for(const listener of publicationListeners)listener(value);},
     executor,
     seats,
     requests,
@@ -320,6 +323,23 @@ describe("bounded live admission lifecycle", () => {
     const publications=f.messages.slice(before).filter(row=>row.message.type==="match-state");
     expect(publications.filter(row=>["a","b"].includes(row.guest)).map(row=>(row.message as any).packet)).toEqual([shared,shared]);
     expect(publications.some(row=>row.guest==="slow")).toBe(false);
+    await f.match.end("test");
+  });
+  it("keeps recovery dirty when a later direct publication overtakes its reply at the same tick",async()=>{
+    const f=await fixture(),original=f.executor.request;let complete:((value:unknown)=>void)|undefined;
+    f.executor.request=async<T extends ExecutorResult>(request:ExecutorRequest)=>request.type==="client-baseline"
+      ? await new Promise<unknown>(resolve=>{complete=resolve;}) as T : original<T>(request);
+    f.watch("slow",3);await f.match.qualify("slow","build",true);
+    const joined=f.baseline("slow");f.match.stateApplied("slow",joined.publicationSequence!,joined.flowEpoch!);
+    f.match.acknowledge("slow",joined.syncId!,joined.publicationSequence!);
+    f.match.resync("slow");const tick=f.match.progress().tick;
+    f.publish({tick,packet,sequence:1});f.publish({tick,packet,sequence:2});
+    complete!({tick,winner:null,sharedPublicationSequence:1,baseline:packet});
+    await Promise.resolve();await Promise.resolve();await Promise.resolve();
+    const baseline=f.baseline("slow");expect(baseline.rebase).toBe(true);
+    f.publish({tick,packet,sequence:3});
+    expect(f.baseline("slow").publicationSequence).toBe(baseline.publicationSequence);
+    expect(f.baseline("a").publicationSequence).toBeGreaterThan(baseline.publicationSequence!);
     await f.match.end("test");
   });
   it("acknowledging a rebased baseline after frames were refused during capture requests exactly one client-baseline",async()=>{

@@ -374,9 +374,19 @@ export function createMatchRuntime(host: MatchRuntimeHost): MatchRuntime {
             const state=diagnostics.measure("extraction",replicationSource);
             const aligned=diagnostics.measure("snapshot",()=>encoder.encodeJoinBarrier(state,match!.tileChanges,match!.replicationFacts()));
             capturedTick=state.tick;captureSequence++;
-            const packet=await encodePacket(aligned.shared),baseline=await encodePacket(aligned.baseline);
+            let packet:EncodedState|undefined,sharedPublicationSequence:number|undefined;
+            if(streamPublications){
+              // Use the same ordered encoder channel as ordinary deltas. A
+              // reply on the simulation channel cannot safely publish this
+              // cursor change: a later direct publication could overtake it.
+              const accepted=publications.offer(state.tick,()=>({packet:aligned.shared,tick:state.tick,sequence:++publicationsIssued}));
+              if(!accepted)throw Error("Recovery publication queue was not drained");
+              sharedPublicationSequence=publicationsIssued;
+              await publications.flush();
+            }else packet=await encodePacket(aligned.shared);
+            const baseline=await encodePacket(aligned.baseline);
             baselines.remember(canonicalVersion,baseline);
-            result={tick:state.tick,winner:state.winner,packet,baseline};
+            result={tick:state.tick,winner:state.winner,packet,sharedPublicationSequence,baseline};
           } else if (request.type === "baseline") {
             // A late initial subscriber must not reset everyone else's delta cursor.
             result = await recoveryBaseline();
