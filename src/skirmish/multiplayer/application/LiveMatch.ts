@@ -1025,7 +1025,13 @@ export class LiveMatch {
         try{
           const result=await this.executor.request<ClientBaseline>({type:"client-baseline"});
           this.recoveredAt.set(guest,this.now());
-          if(this.stopped || this.flows.get(guest)!==flow || flow.epoch!==epoch || !this.connected(guest))continue;
+          if(this.stopped)continue;
+          // The worker advanced the shared comparison cursor atomically with
+          // this baseline. Publish its matching delta even if this guest left
+          // or another baseline superseded its recovery while it encoded.
+          this.publicationSequence++;
+          this.broadcast(this.state(result.packet,false,result.tick));
+          if(this.flows.get(guest)!==flow || flow.epoch!==epoch || !this.connected(guest))continue;
           const sequence=++this.publicationSequence;
           flow.baseline(sequence,this.tick>result.tick);
           this.send(guest,{...this.state(result.baseline),tick:result.tick,publicationSequence:sequence,flowEpoch:flow.epoch,rebase:true});

@@ -16,8 +16,9 @@ const source =
     control ??
     execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
   runtime = "src/skirmish/multiplayer/application/MatchRuntime.ts";
+const commonNetworkFiles=[runtime,"src/skirmish/multiplayer/application/LiveMatch.ts"];
 const read = (file) =>
-  control
+  control && !commonNetworkFiles.includes(file)
     ? execFileSync("git", ["show", `${control}:${file}`], {
         encoding: "utf8",
         maxBuffer: 16 * 1024 * 1024,
@@ -116,10 +117,11 @@ writeFileSync(
     {
       source,
       control: !!control,
+      commonNetworkFiles:Object.fromEntries(commonNetworkFiles.map(file=>[file,createHash("sha256").update(readFileSync(file)).digest("hex")])),
       node: process.version,
       bundles: hashes,
       scope:
-        "Common isolated harness around an exact control or current candidate; no renderer or production deployment.",
+        "Common isolated harness and recovery cursor fix around an exact control simulation or current candidate; no renderer or production deployment.",
     },
     null,
     2,

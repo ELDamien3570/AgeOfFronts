@@ -368,9 +368,15 @@ export function createMatchRuntime(host: MatchRuntimeHost): MatchRuntime {
               seats: seats(),
             };
           } else if (request.type === "client-baseline") {
-            const tick=match.tick,winner=match.winner;
-            const baseline = await recoveryBaseline();
-            result={tick,winner,baseline};
+            // A private baseline must share the live delta cursor. Otherwise a
+            // detail that changes and changes back around this capture can be
+            // omitted from the next delta for the recovering client.
+            const state=diagnostics.measure("extraction",replicationSource);
+            const aligned=diagnostics.measure("snapshot",()=>encoder.encodeJoinBarrier(state,match!.tileChanges,match!.replicationFacts()));
+            capturedTick=state.tick;captureSequence++;
+            const packet=await encodePacket(aligned.shared),baseline=await encodePacket(aligned.baseline);
+            baselines.remember(canonicalVersion,baseline);
+            result={tick:state.tick,winner:state.winner,packet,baseline};
           } else if (request.type === "baseline") {
             // A late initial subscriber must not reset everyone else's delta cursor.
             result = await recoveryBaseline();

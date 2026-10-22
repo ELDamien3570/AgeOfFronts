@@ -62,7 +62,7 @@ export interface MatchAdvance {
   published?: boolean;
 }
 export interface MatchPublication { tick: number; packet: EncodedState }
-export interface ClientBaseline {tick:number;winner:number|null;baseline:EncodedState;}
+export interface ClientBaseline {tick:number;winner:number|null;packet:EncodedState;baseline:EncodedState;}
 /** Error message an executor uses for a faulted simulation. Hosts end the
  * match with MATCH_FAULT_MESSAGE instead of forwarding internal error text. */
 export const MATCH_FAULT_CODE = "simulation-fault";

@@ -143,7 +143,7 @@ async function connect(index) {
                 snap.expansion?.traders,
                 snap.expansion?.armies,
                 snap.players,
-              ]),
+              ],(_key,value)=>value && typeof value==="object" && !Array.isArray(value) && Object.getPrototypeOf(value)===Object.prototype ? Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])) : value),
             )
             .digest("hex");
         const row = hashes.get(key) ?? new Map();

@@ -101,7 +101,9 @@ for (const scenario of ["near1", "dispersed8", "compact60", "dispersed60"])
       );
     };
     const playerId =
-      scenario === "dispersed60"
+      scenario === "dispersed60" && arg("--large-player")
+        ? Number(arg("--large-player"))
+        : scenario === "dispersed60"
         ? [...counts]
             .filter(([, n]) => n >= 60)
             .sort((a, b) => spread(b[0]) - spread(a[0]) || a[0] - b[0])[0][0]

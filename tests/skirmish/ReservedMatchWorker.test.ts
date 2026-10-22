@@ -132,6 +132,10 @@ describe("reserved authoritative worker", () => {
       expect(shared.owners).toEqual(baseline.owners); expect(shared.squads).toEqual(baseline.squads);
       expect(shared.tick).toBe(2);
       expect(baseline.expansion!.progression![1].research.naval!.remainingTicks).toBe(TECHNOLOGIES.find(t=>t.id==="rus-stoneage-port-sea-trade")!.ticks-2);
+      const recovered=await worker.request<import("../../src/skirmish/multiplayer/application/MatchExecutor").ClientBaseline>({type:"client-baseline"});
+      const recoveryShared=decoder.decode(await decodeState<SnapshotPacket>(recovered.packet));
+      const recoveryFresh=new SnapshotDecoder().decode(await decodeState<SnapshotPacket>(recovered.baseline));
+      expect({...recoveryShared,changedTiles:undefined}).toEqual(recoveryFresh);
       await worker.request<MatchAdvance>(advance(3));
       await vi.waitFor(() => expect(publications.map(p => p.tick)).toEqual([1, 5]));
       expect((await decodeState<SnapshotPacket>(publications[1].packet)).tick).toBe(5);
