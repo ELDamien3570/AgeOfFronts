@@ -15,7 +15,7 @@ describe('isolated Oracle probe comparison',()=>{
   const a=snapshot(),b=snapshot();b.squads=[{y:4,x:3,id:1},{y:6,x:5,id:2}];
   const rows=await compare([{type:'state',key:8,index:0,tick:20,snapshot:a},{type:'state',key:8,index:1,tick:20,snapshot:b}]);
   expect(rows.some(r=>r.type==='disagreement')).toBe(false);
-  expect(rows.at(-1)).toMatchObject({type:'drained',processed:2,comparedFrames:1,retainedFrames:1});
+  expect(rows[rows.length-1]).toMatchObject({type:'drained',processed:2,comparedFrames:1,retainedFrames:1});
  });
  it('retains a real trader-field disagreement instead of excluding it from the hash',async()=>{
   const a=snapshot(),b=snapshot();b.traders[0].waitingReason='route';
@@ -26,6 +26,7 @@ describe('isolated Oracle probe comparison',()=>{
  it('bounds retained comparison frames and does not pair an evicted publication',async()=>{
   const messages=Array.from({length:34},(_,key)=>({type:'state',key,index:0,tick:key,snapshot:snapshot()}));
   messages.push({type:'state',key:0,index:1,tick:0,snapshot:snapshot()});
-  const rows=await compare(messages);expect(rows.at(-1)).toMatchObject({processed:35,comparedFrames:0,retainedFrames:32});
+  const rows=await compare(messages);expect(rows[rows.length-1]).toMatchObject({processed:35,comparedFrames:0,retainedFrames:32});
  });
 });
+
