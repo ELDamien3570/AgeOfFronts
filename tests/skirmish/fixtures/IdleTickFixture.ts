@@ -24,18 +24,34 @@ export const IDLE_TICK_FIXTURE_TICKS = 400;
  * them from e85f6612... / 25da28ca.... Re-recorded after two fresh 400-tick
  * runs matched, each preserving exact checkpoint restoration and 30-tick
  * continuation. Spatial-grid and clearance equivalence assertions remain
- * independent of these intentional AI behaviour and checkpoint changes. */
+ * independent of these intentional AI behaviour and checkpoint changes.
+ * The lossless AI minimum migration changes only the checkpoint digest from
+ * 13925232... to 287408ab...: putting its 16 unbounded sentinels back to
+ * Infinity exactly reproduces the previous digest. The squad digest stays
+ * unchanged; no clearance or spatial assertion was weakened. */
 export const IDLE_TICK_GOLDEN = Object.freeze({
   squads: "6d313fe09f509de5dc20505bb1c7fb8059d874a80d9a334a934b6942ca82cac0",
-  checkpoint: "13925232604ad8a08e8756d699738aa0a556f2d18e5fc49f995a20c3cedee21c",
+  checkpoint: "287408ab7664b3e5a88dadceae4fef34e7fd75b00a3eb1f302ce0d67508e8fac",
 });
 
-export function idleTickFixture(): Skirmish {
-  return new Skirmish(generateMigration(250, 3).map, {
-    ...DEFAULT_AI_POLICIES, ...FORMATION_MOVEMENT,
+export function idleTickFixture(policy: "legacy" | "responsive" = "responsive"): Skirmish {
+  const movement = { ...FORMATION_MOVEMENT };
+  // A historical hash fixture must omit newer match policies as well as
+  // restoring its historical admission/planner versions below.
+  if(policy === "legacy")delete movement.formationTravel;
+  const game = new Skirmish(generateMigration(250, 3).map, {
+    ...DEFAULT_AI_POLICIES, ...movement,
     seed: 3, aiCount: 4, tribes: true, tribeCount: 12, ruleset: "ages-v1",
     diplomacyRules: "raids-v1", armyTravel: "corridors-v1", startingAge: "Napoleonic",
   });
+  if(policy === "legacy") {
+    // These historical cache/spatial goldens must remain an exact regression
+    // for the old scheduler, rather than being re-recorded after a policy change.
+    const admission=game.movementAdmission.checkpoint();delete admission.policyVersion;delete admission.families;
+    game.movementAdmission.restore(admission);
+    const planning=game.routePlanner.checkpoint();planning.scheduling.version=6;game.routePlanner.restore(planning);
+  }
+  return game;
 }
 
 /** Order-dependent digest of the observable squad state, squads sorted by id.

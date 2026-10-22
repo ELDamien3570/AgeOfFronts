@@ -12,7 +12,7 @@ export class NuclearWasteland {
   private packed = new Uint32Array();
   private packedRevision = -1;
   revision = 0;
-  constructor(private readonly map: GameMap) {}
+  constructor(private readonly map: GameMap, private readonly changed?: (tile: number) => void) {}
   has(tile: number): boolean {
     return this.cells.has(tile);
   }
@@ -29,6 +29,7 @@ export class NuclearWasteland {
     this.owners.get(owner)?.delete(tile);
     this.recovery.delete(owner);
     this.revision++;
+    this.changed?.(tile);
     return true;
   }
   recoveryCandidates(owner: number, limit = 32): readonly number[] {
@@ -77,6 +78,7 @@ export class NuclearWasteland {
           this.owners.set(previous, owned);
           this.recovery.delete(previous);
           this.revision++;
+          this.changed?.(tile);
         }
         // Overlapping salvos do not repeatedly dirty already-neutral fallout.
         if (previous || !existing) unclaim(tile, previous);
@@ -110,6 +112,7 @@ export class NuclearWasteland {
         throw new Error("Invalid nuclear wasteland");
       validated.set(tile, owner);
     }
+    for (const tile of this.cells.keys()) this.changed?.(tile);
     this.cells.clear();
     this.owners.clear();
     this.recovery.clear();
@@ -118,6 +121,7 @@ export class NuclearWasteland {
       const owned = this.owners.get(owner) ?? new Set<number>();
       owned.add(tile);
       this.owners.set(owner, owned);
+      this.changed?.(tile);
     }
     this.revision++;
     this.packedRevision = -1;

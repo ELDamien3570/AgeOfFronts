@@ -215,7 +215,20 @@ export function createMatchRuntime(host: MatchRuntimeHost): MatchRuntime {
         extraction: {...encoder.diagnostics} },
       paths: pathResidencyFor(m),
       domainWork: { spatial: m.spatialDiagnostics && { ...m.spatialDiagnostics },
-        trade: m.expansion && { ...m.expansion.trade.diagnostics } },
+        trade: m.expansion && { ...m.expansion.trade.diagnostics,
+          ...(m.expansion.trade.seaTrade ? { sea: {
+            ...m.expansion.trade.seaTrade.routes.usage,
+            accepted: m.expansion.trade.seaTrade.routes.diagnostics.accepted,
+            refused: m.expansion.trade.seaTrade.routes.diagnostics.refused,
+            completed: m.expansion.trade.seaTrade.routes.diagnostics.completed,
+            readyHits: m.expansion.trade.seaTrade.routes.diagnostics.readyHits,
+            reversedHits: m.expansion.trade.seaTrade.routes.diagnostics.reversedHits,
+            departures: m.expansion.trade.seaTrade.diagnostics.departures,
+            arrivals: m.expansion.trade.seaTrade.diagnostics.arrivals,
+            cycles: m.expansion.trade.seaTrade.diagnostics.cycles,
+            directReturns: m.expansion.trade.seaTrade.diagnostics.directReturns,
+            retracedReturns: m.expansion.trade.seaTrade.diagnostics.retracedReturns,
+          } } : {}) } },
       entities: { squads: m.squads.length, ships: m.ships.length, buildings: m.buildings.length,
         traders: m.expansion?.trade.actors.length ?? 0, projectiles: m.expansion?.battle.projectiles.length ?? 0,
         recruitment: m.recruitment.jobs.length },
@@ -355,9 +368,25 @@ export function createMatchRuntime(host: MatchRuntimeHost): MatchRuntime {
               seats: seats(),
             };
           } else if (request.type === "client-baseline") {
-            const tick=match.tick,winner=match.winner;
-            const baseline = await recoveryBaseline();
-            result={tick,winner,baseline};
+            // A private baseline must share the live delta cursor. Otherwise a
+            // detail that changes and changes back around this capture can be
+            // omitted from the next delta for the recovering client.
+            const state=diagnostics.measure("extraction",replicationSource);
+            const aligned=diagnostics.measure("snapshot",()=>encoder.encodeJoinBarrier(state,match!.tileChanges,match!.replicationFacts()));
+            capturedTick=state.tick;captureSequence++;
+            let packet:EncodedState|undefined,sharedPublicationSequence:number|undefined;
+            if(streamPublications){
+              // Use the same ordered encoder channel as ordinary deltas. A
+              // reply on the simulation channel cannot safely publish this
+              // cursor change: a later direct publication could overtake it.
+              const accepted=publications.offer(state.tick,()=>({packet:aligned.shared,tick:state.tick,sequence:++publicationsIssued}));
+              if(!accepted)throw Error("Recovery publication queue was not drained");
+              sharedPublicationSequence=publicationsIssued;
+              await publications.flush();
+            }else packet=await encodePacket(aligned.shared);
+            const baseline=await encodePacket(aligned.baseline);
+            baselines.remember(canonicalVersion,baseline);
+            result={tick:state.tick,winner:state.winner,packet,sharedPublicationSequence,baseline};
           } else if (request.type === "baseline") {
             // A late initial subscriber must not reset everyone else's delta cursor.
             result = await recoveryBaseline();

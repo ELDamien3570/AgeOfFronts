@@ -453,6 +453,8 @@ export interface MatchOptions {
   formationReorientation?: boolean;
   /** Experimental crowd velocity steering without formation-facing travel gates. */
   formationFreeTravel?: boolean;
+  /** Preserve the chosen shape/frontage during travel and allow member overhang at map edges. Omitted by historical replays. */
+  formationTravel?: "fixed-v1";
   /** Economic demand policy. Normal games enable the shared AI policy defaults. */
   aiEconomy?: boolean;
   /** Bounded transactional route admission. Explicit false preserves legacy replay. */
@@ -476,6 +478,8 @@ export interface MatchOptions {
   diplomacyRules?: "raids-v1";
   /** Coordinated travel policy, recorded for checkpoint/replay compatibility. */
   armyTravel?: "corridors-v1";
+  /** Shared sea lanes; omission preserves historical trade and replay. */
+  seaTradeRouting?: "lanes-v1";
   victoryMode?: "solo" | "allied";
   technologySpeed?: TechnologySpeed;
   startingAge?: StartingAge;

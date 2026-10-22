@@ -14,6 +14,10 @@ function fixture() {
       runAi: false,
       deferredPlanning: true,
     });
+  // Historical checkpoints retain the transactional replacement contract.
+  // IndependentPlayerMovement.test.ts exercises the new per-member policy.
+  const policy=match.movementAdmission.checkpoint();delete policy.policyVersion;delete policy.families;
+  match.movementAdmission.restore(policy);
   const own = match.squads.filter((s) => s.playerId === 1);
   return { match, map, own };
 }

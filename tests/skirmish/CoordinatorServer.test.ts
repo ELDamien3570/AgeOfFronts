@@ -74,7 +74,7 @@ describe("durable authenticated lobby transport", () => {
     const executor:MatchExecutor={async request(request){
       const result=request.type==="prepare"?{mapHash:"map",options:request.options}:
         request.type==="spawn-state"?{remainingMs:request.remainingMs}:
-        request.type==="client-baseline"?{tick:0,winner:null,baseline:packet}:
+        request.type==="client-baseline"?{tick:0,winner:null,packet,baseline:packet}:
         request.type==="baseline"?packet:{tick:0,winner:null,packet,rejectedCommands:[]};
       return result as never;
     },async close(){}};

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TICKS_PER_SECOND, type Squad } from "../../src/skirmish/Protocol";
+import { FIXED, TICKS_PER_SECOND, type Squad } from "../../src/skirmish/Protocol";
 import { armyLineFighting } from "../../src/skirmish/domain/Armies";
 import type { Army } from "../../src/skirmish/domain/Definitions";
 import { buildDuel, duelMatrix, runDuel, walledCityDuel } from "./fixtures/AiDuel";
@@ -12,6 +12,24 @@ describe("AI battle competence", { timeout: 120_000 }, () => {
     expect(m.wins).toBeGreaterThanOrEqual(2);
     // AI archers no longer stand in melee far more than the opponent's.
     expect(m.mineRanged).toBeLessThanOrEqual(2 * Math.max(1, m.foeRanged));
+  });
+
+  it.each([true, false])("intercepts a nearby archer threat only for AI tactics (%s)", (ai) => {
+    const ctx = buildDuel({age:"EarlyMedieval", a:"ai", b:"idle"});
+    const {game,e} = ctx, front = ctx.A[0], archer = ctx.A[4], threat = ctx.B[7], planned = ctx.B[0];
+    const army = e.armies.armyOf(front.id)!;
+    ctx.p1.ai = ai;
+    for (const [s,x,y] of [[front,60,48],[archer,58,48],[threat,59,48],[planned,62,48]] as const)
+      game.updateSquad(s.id,{x:x*FIXED,y:y*FIXED,formation:undefined,order:{type:"hold"},path:[]});
+    // An ordinary legal attack is sticky, but cannot make an AI screen ignore
+    // cavalry inside its archers. Human army targeting remains unchanged.
+    game.setArmyAttack(front,planned.id);
+    (e.engagements as any).engagements.set(1,{id:1,revision:0});
+    (e.engagements as any).plans.set(army.id,{armyId:army.id,engagementId:1,revision:0,posture:"hold",assignments:[{squadId:front.id,targetId:planned.id,leashTiles:4}]});
+    const armies = e.armies as any, march={pending:new Set(),planned:new Map(),slots:new Map()};
+    const slots=new Map([[front.id,{x:front.x,y:front.y}]]);
+    armies.tacticalStep(army,march,[front,archer],slots,[threat,planned]);
+    expect(game.squad(front.id)!.order).toMatchObject({type:"attack",targetId:ai?threat.id:planned.id});
   });
 
   // The duel has no seed-dependent behaviour; two starts offset by +-3 tiles

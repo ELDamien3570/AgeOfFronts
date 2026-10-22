@@ -47,3 +47,45 @@ describe("incremental capture dependencies",()=>{
     }
   });
 });
+
+
+it("keeps owned-footprint skips local to fallout and matches the former global cleanup scan", () => {
+  const data = new Uint8Array(100 * 80).fill(133), map = new GameMapImpl(100, 80, data, data.length);
+  const options = {seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" as const};
+  const game = new Skirmish(map, options), internal = game as any;
+  const squad = game.squads.find(s => s.playerId === 1)!;
+  game.updateSquad(squad.id, {x: 30.5 * FIXED, y: 30.5 * FIXED});
+  for (let y = 24; y <= 36; y++) for (let x = 24; x <= 36; x++) internal.changeOwner(map.ref(x, y), 1);
+  game.nuclearBlast(80.5 * FIXED, 60.5 * FIXED, 2 * FIXED);
+  internal.capture();
+  expect(game.wasteland.size).toBeGreaterThan(0);
+  expect(game.captureWork.ownedSkipped).toBeGreaterThan(0);
+  const reference = new Skirmish(map, options); reference.restore(game.checkpoint());
+  const rows = (reference as any).captureContributions, set = rows.set.bind(rows);
+  // The former global-fallout guard always executed the complete tile loop.
+  // Keep that conservative reference while leaving all cleanup/capture rules live.
+  rows.set = (id: number, row: any) => {row.hasFallout = true; return set(id, row);};
+  for (let tick = 0; tick < 40; tick++) {
+    if (tick === 3) for (const world of [game, reference]) world.nuclearBlast(32.5 * FIXED, 30.5 * FIXED, FIXED);
+    if (tick === 20) for (const world of [game, reference]) world.updateSquad(squad.id, {x: 31.5 * FIXED});
+    for (const world of [game, reference]) {world.tick++; (world as any).capture();}
+    expect(game.checkpoint()).toEqual(reference.checkpoint());
+  }
+});
+
+it("invalidates cached contamination membership for direct contamination changes and restore", () => {
+  const data = new Uint8Array(64 * 64).fill(133), map = new GameMapImpl(64, 64, data, data.length);
+  const game = new Skirmish(map, {seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1"}), internal = game as any;
+  const squad = game.squads.find(s => s.playerId === 1)!;
+  game.updateSquad(squad.id, {x: 30.5 * FIXED, y: 30.5 * FIXED});
+  internal.capture(); const tile = map.ref(30, 30);
+  expect(internal.captureContributions.get(squad.id).hasFallout).toBe(false);
+  game.wasteland.restore([[tile, 1]]); internal.capture();
+  expect(internal.captureContributions.get(squad.id).hasFallout).toBe(true);
+  game.wasteland.clear(tile); internal.capture();
+  expect(internal.captureContributions.get(squad.id).hasFallout).toBe(false);
+  game.wasteland.scorch(squad.x, squad.y, FIXED, () => 1, () => {}); internal.capture();
+  expect(internal.captureContributions.get(squad.id).hasFallout).toBe(true);
+  game.wasteland.restore([]); internal.capture();
+  expect(internal.captureContributions.get(squad.id).hasFallout).toBe(false);
+});

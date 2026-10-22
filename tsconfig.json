@@ -33,6 +33,8 @@
     "scripts/content/**/*",
     "scripts/compileContent.ts",
     "scripts/playtestProbe.ts",
+    "scripts/profileSeaTrade.ts",
+    "scripts/convertSeaTradeFixture.ts",
     "scripts/pacingProbe.ts",
     "scripts/compileFormationRecipes.ts",
     "scripts/compileSoldierWeapons.ts",

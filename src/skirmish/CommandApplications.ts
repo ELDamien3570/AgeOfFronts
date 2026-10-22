@@ -12,6 +12,8 @@ export interface CommandOutcome {
 interface Receipt {
   outcome: CommandOutcome;
   plans: Set<string>;
+  independent?: boolean;
+  failure?: {status:"rejected"|"superseded";reason?:string};
 }
 interface Ports {
   apply(command: Command): string | null;
@@ -37,7 +39,7 @@ export class CommandApplications {
   private readonly pending = new Map<string, Receipt>();
   private readonly plans = new Map<string, string>();
   private readonly recent = new Map<string, CommandOutcome>();
-  private applying?: { key: string; playerId: number; plans: Set<string>; events?: number };
+  private applying?: { key: string; playerId: number; plans: Set<string>; events?: number; independent?: boolean };
   onOutcome?: (outcome: CommandOutcome) => void;
   /** Structured report of a validation throw turned into a rejection. The
    * default writes one JSON line to stderr; it is outside simulation state. */
@@ -105,6 +107,7 @@ export class CommandApplications {
       playerId: command.playerId,
       plans: new Set<string>(),
       events: 0,
+      independent: false,
     };
     const epoch = this.ports.mutationEpoch?.();
     this.applying = applying;
@@ -143,7 +146,7 @@ export class CommandApplications {
       result.reason = rejection;
     } else if (applying.plans.size) {
       result.status = "deferred";
-      this.pending.set(key, { outcome: result, plans: applying.plans });
+      this.pending.set(key, { outcome: result, plans: applying.plans, ...(applying.independent ? {independent:true} : {}) });
       for (const plan of applying.plans) this.plans.set(plan, key);
       this.diagnostics.pending = this.pending.size;
     }
@@ -154,15 +157,21 @@ export class CommandApplications {
     const plan = `${source}:${event.id}`;
     if (this.applying?.events !== undefined) this.applying.events++;
     if (event.status === "deferred") {
-      if (this.applying?.playerId === event.playerId)
+      if (this.applying?.playerId === event.playerId) {
         this.applying.plans.add(plan);
+        this.applying.independent ||= event.independent;
+      }
       return;
     }
     const key = this.plans.get(plan),
       receipt = key === undefined ? undefined : this.pending.get(key);
     if (!receipt || receipt.outcome.playerId !== event.playerId) return;
+    if(event.status === "progress") { this.onProgress?.(event.playerId); return; }
     this.plans.delete(plan);
     receipt.plans.delete(plan);
+    if(receipt.independent && (event.status === "rejected" || event.status === "superseded"))
+      receipt.failure ??= {status:event.status,reason:event.reason};
+    if(receipt.independent && receipt.plans.size) { this.onProgress?.(event.playerId); return; }
     if (event.status === "executed" && receipt.plans.size) {
       this.onProgress?.(event.playerId);
       return;
@@ -173,8 +182,8 @@ export class CommandApplications {
     this.publish({
       ...receipt.outcome,
       tick: event.tick,
-      status: event.status,
-      reason: event.reason,
+      status: receipt.failure?.status ?? event.status,
+      reason: receipt.failure?.reason ?? event.reason,
     });
   }
   /** A domain itinerary can replace its planning owner without completing the

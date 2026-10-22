@@ -337,9 +337,12 @@ export class Armies {
   private closeGap(army:Army):void {
     if(this.world.tick-(army.lastGapTick??-LINES.gapCheckTicks)<LINES.gapCheckTicks)return;
     const slots=army.slots??[],plan=this.engagements?.planFor(army.id),planKey=plan?`${plan.engagementId}:${plan.revision}`:undefined;
-    let weak=slots.find(r=>r.role==='frontline'&&(()=>{const s=this.world.squad(r.squadId);return !!s&&(strengthFraction(s)<LINES.gapStrength||s.order.type==='replenish');})());
+    // A casualty gap is vacant; replacing a weak member is a separate swap.
+    // Never displace a different frontline member while filling a queued gap.
+    const vacant=army.frontGaps?.[0];
+    let weak=vacant?undefined:slots.find(r=>r.role==='frontline'&&(()=>{const s=this.world.squad(r.squadId);return !!s&&(strengthFraction(s)<LINES.gapStrength||s.order.type==='replenish');})());
     if(!weak&&!army.frontGaps?.length&&plan?.reserveCommit&&army.reservePlan!==planKey)weak=slots.find(r=>r.role==='frontline'&&r.index===plan.reserveCommit!.slotIndex);
-    const gap=army.frontGaps?.[0]??(weak?{index:weak.index,lateral:weak.lateral,depth:weak.depth,width:weak.width}:undefined);
+    const gap=vacant??(weak?{index:weak.index,lateral:weak.lateral,depth:weak.depth,width:weak.width}:undefined);
     if(!gap)return;
     const reserve=slots.filter(r=>r.role==='reserve'&&(()=>{const s=this.world.squad(r.squadId);return !!s&&active(s)&&mayWrite(this.controls,s,'army')&&strengthFraction(s)>=LINES.gapStrength;})()).sort((a,b)=>Math.abs(a.lateral-gap.lateral)-Math.abs(b.lateral-gap.lateral)||a.index-b.index)[0];
     if(reserve){
@@ -369,6 +372,13 @@ export class Armies {
       }return;
     }
     const routed=ai&&plan?.posture==='advance'&&near.some(t=>{const other=this.armyOf(t.id);return !!other&&(other.order.type==='regroup'||this.engagements?.planFor(other.id)?.posture==='withdraw');});
+    // Compute shared protection candidates once, rather than repeating contact
+    // geometry for every frontline member. The existing nearby-enemy list and
+    // per-member weapon/leash checks still bound legal interception.
+    const ranged = ai ? members.filter(m => active(m) && army.slots?.find(r => r.squadId === m.id)?.role === "ranged") : [];
+    const rangedThreats = ranged.length ? near.filter(t => active(t) && !t.afloat && this.world.hostile(army.playerId,t.playerId) &&
+      this.world.unit(t).attack.channel === "melee" && ranged.some(m =>
+        formationContact(t,m,this.world.tick).gap < AI_BATTLE.evadeTriggerTiles * FIXED)) : [];
     for(const old of members){
       const s=this.world.squad(old.id)??old,record=army.slots?.find(r=>r.squadId===s.id),slot=slots.get(s.id);if(!record||!slot||!mayWrite(this.controls,s,'army'))continue;
       if(ai&&record.role==='ranged'&&this.rangedEvade(army,s,members,near))continue;
@@ -408,6 +418,14 @@ export class Armies {
       let target=targetId===null?undefined:this.world.squad(targetId);
       if(!allowed(target)){target=undefined;targetId=null;}
       if(!plan&&leash>0)target=near.find(t=>allowed(t)&&formationContact({...s,...slot},t,this.world.tick).gap<=effectiveRange(this.world,{...s,...slot},this.world.unit(s).attack,t));
+      // A frontline member protects nearby ranged bodies before pursuing its
+      // assigned opponent. Otherwise cavalry fighting an adjacent infantry
+      // target can remain inside the archers while their screen chases elsewhere.
+      if (ai && record.role === "frontline") {
+        const threatened = rangedThreats.filter(t => allowed(t))
+          .sort((a,b) => distanceSquared(s,a)-distanceSquared(s,b) || a.id-b.id)[0];
+        if (threatened) {target = threatened; targetId = threatened.id;}
+      }
       // T-a: an AI member answers an enemy already striking it in melee before chasing a planned target out of contact.
       if(ai&&leash>0){
         const touching=(t:Squad)=>formationContact(s,t,this.world.tick).gap<AI_BATTLE.answerContactGap;

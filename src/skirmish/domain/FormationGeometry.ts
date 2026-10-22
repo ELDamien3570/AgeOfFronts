@@ -43,6 +43,8 @@ export interface FormationState {
     /** Position-preserving orientation reform; translation remains admitted. */
     reorientation?: boolean;
     occupationReform?: boolean;
+    /** Certified automatic travel/deployment; a fresh move may retarget its pose. */
+    automaticTravel?: boolean;
     from: FormationShape;
     fromFrontage?:number;
     fromAutomatic?:boolean;
@@ -575,7 +577,7 @@ export function validateFormation(
     t &&
     (!d.shapes.includes(t.from) ||
       (t.fromFrontage!==undefined && (!Number.isSafeInteger(t.fromFrontage)||t.fromFrontage<=0||t.fromFrontage>128*FIXED||!formationProfile(d,t.from))) ||
-      [t.fromAutomatic,t.fromAutoFrontage,t.reorientation,t.occupationReform].some(v=>v!==undefined && typeof v!=="boolean") ||
+      [t.fromAutomatic,t.fromAutoFrontage,t.reorientation,t.occupationReform,t.automaticTravel].some(v=>v!==undefined && typeof v!=="boolean") ||
       !integer(t.fromFacing, TURN - 1) ||
       !integer(t.startTick) ||
       !integer(t.duration, secondsToTicks(10)) ||

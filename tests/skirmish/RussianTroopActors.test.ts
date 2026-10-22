@@ -89,6 +89,7 @@ describe("normal skirmish individual artwork", () => {
       formationLocomotion: true,
       formationReorientation: true,
       formationFreeTravel: true,
+      formationTravel: "fixed-v1",
     });
   });
 });

@@ -2,7 +2,7 @@ import type { MovementAdmissionEvent } from "../MovementAdmission";
 import type { Squad } from "../Protocol";
 import type { ExactRouteOutcome } from "../RoutePlanner";
 import type { WorldPoint } from "../SpatialGrid";
-export type DomainRouteOwner = "army" | "trade" | "strategy";
+export type DomainRouteOwner = "army" | "trade" | "strategy" | "sea-trade";
 export interface DomainRouteTask {
   kind: "domain";
   owner: DomainRouteOwner;
@@ -21,6 +21,7 @@ export function domainRouteKey(task: DomainRouteTask): string {
 /** Existing domain owners stage their work; the match owns the one fair exact router. */
 export interface DomainRoutePorts {
   deadlineTicks?(playerId: number, owner: DomainRouteOwner, admissionId?: number): number | undefined;
+  has?(key: string): boolean;
   hostile?(a: number, b: number): boolean;
   priority?(playerId:number):boolean;
   request(

@@ -80,8 +80,8 @@ describe("IncrementalSpatialGrid", () => {
 });
 
 describe("movement grid maintenance in the simulation (I-3)", () => {
-  it("matches a fresh rebuild at every synchronisation and keeps the fixture hash", () => {
-    const game = idleTickFixture(), sim = game as any, spatial = sim.spatial;
+  it.each(["legacy", "responsive"] as const)("matches a fresh rebuild at every synchronisation (%s movement)", policy => {
+    const game = idleTickFixture(policy), sim = game as any, spatial = sim.spatial;
     const original = sim.movementLand.bind(sim);
     let checks = 0;
     sim.movementLand = () => {
@@ -98,8 +98,13 @@ describe("movement grid maintenance in the simulation (I-3)", () => {
     };
     for (let i = 0; i < IDLE_TICK_FIXTURE_TICKS; i++) game.step();
     expect(checks).toBeGreaterThan(IDLE_TICK_FIXTURE_TICKS);
-    expect(squadDigest(game.squads)).toBe(IDLE_TICK_GOLDEN.squads);
-    expect(checkpointDigest(game)).toBe(IDLE_TICK_GOLDEN.checkpoint);
+    if(policy==="legacy") {
+      expect(squadDigest(game.squads)).toBe(IDLE_TICK_GOLDEN.squads);
+      expect(checkpointDigest(game)).toBe(IDLE_TICK_GOLDEN.checkpoint);
+    } else {
+      const restored=idleTickFixture("responsive");restored.restore(game.checkpoint());
+      expect(restored.checkpoint()).toEqual(game.checkpoint());
+    }
     const work = sim.idleTickWork;
     // Baseline (aof/next-1): 2.0 full rebuilds per tick of about 64 rows. Full
     // rebuilds now happen only when land membership changes.

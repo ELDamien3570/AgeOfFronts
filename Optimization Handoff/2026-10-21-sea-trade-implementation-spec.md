@@ -1,6 +1,6 @@
 # Sea trade routing implementation specification
 
-Revision 1, 21 October 2026. Applies to source `ea9514b1` on `Private-Matches`. This is an implementation contract, not implemented functionality or performance certification. Read it with [the architecture and qualification plan](2026-10-20-sea-trade-routing-plan.md). When the earlier plan leaves an implementation choice open, this specification supplies the initial choice. Measured acceptance gates still control whether that choice ships.
+Revision 1, 21 October 2026. Applies to source `ea9514b1` on `Private-Matches`. This is the implementation contract; implementation and qualification are now in progress in `codex/sea-trade-lanes`. See [current validation evidence](2026-10-21-sea-trade-implementation-validation.md) for completed checks, limits and remaining gates. This contract alone is not performance certification. Read it with [the architecture and qualification plan](2026-10-20-sea-trade-routing-plan.md). When the earlier plan leaves an implementation choice open, this specification supplies the initial choice. Measured acceptance gates still control whether that choice ships.
 
 ## 1 Scope and audit corrections
 
@@ -223,41 +223,26 @@ interface BasinCatalog {
 }
 interface SeaTradeCheckpoint {
   version: 1;
-  waterRevision: number;
-  nextLaneId: number;
-  nextSubscriptionId: number;
-  lanes: LaneRecord[];
-  subscriptions: Subscription[];
+  routes: SeaRoutesCheckpoint; // lane records, subscriptions, retention, orders, cursors
+  ports: SeaPortsCheckpoint;   // coherent catalogs, incremental builds, policy views/users
   voyages: [number, SeaVoyage][];
   dispatches: [SiteKey, SourceDispatch][];
-  sourceRetention: [string, LaneId[]][]; // <= 2 soft claims each
-  policies: [PolicyKey, PolicyView][];
-  catalogs: [number, BasinCatalog][];
-  order: {
-    packing: LaneId[];
-    memory: LaneId[];
-    retiring: LaneId[];
-    policies: PolicyKey[];
-    catalogs: number[];
-  };
-  cursors: {
-    mixedTurn: 0 | 1;
-    recoveryTurn: number; // 0..3, three recovery then one unpaid turn
-    lastRecoveryOwner: number;
-    lastDepartureOwner: number;
-    packing: number;
-    policy: number;
-    catalog: number;
-    maintenanceTurn: number;
-  };
+  mixedTurn: 0 | 1;       // legacy versus sea management
+  serviceTurn: 0 | 1;     // economic intent versus geometry management
+  demandRecoveryTurn: number; // 0..3
+  demandOrder: [string[], string[]]; // unpaid and recovery FIFO intents
+  salvageCursors: [number, number][];
 }
+// The concrete exported types in SeaTradeVoyages.ts, SeaTradeTypes.ts and
+// SeaTradePorts.ts are the serialization contract. Runtime indexes are rebuilt.
+
 ```
 
 Each subscription holder is the single authority for one hard reference. Transferring an active leg to the trail changes that holder/key without releasing/reacquiring the lane. `returnSpans` refer to those retained holders; they do not create duplicate subscriptions. A ready direct return replaces the old trail holders with one active-leg holder atomically after its reference is secured.
 
 For catalog sorting, implement bottom-up merge sort over the two captured ID buffers, preserving `width/block/left/right/write` across turns. One ID read/comparison or output move consumes a discovery unit; do not sort an entire basin synchronously. When `width >= count`, the final buffer is the coherent sorted output. Initial partial catalog publication uses only a completed sorted prefix/chunk with an explicit version; never expose half-written merge output. Normalize completed builds to `build: undefined` and release their other scratch buffer. Additional market churn sets `followupDirty` and cannot reset the older build's cursor.
 
-Array order in `order` is canonical; runtime position maps are derived. Remove an inactive policy/catalog order entry by deterministic swap-with-last and clamp/adjust its cursor, rather than retaining unlimited tombstones. The next uninterrupted and restored visits must agree. FIFO work queues use bounded ring buffers, not O(N) array shifts; serialize their logical remaining order and reconstruct equivalent head/tail positions. Delayed submissions and eviction heaps are reconstructed from lane state and total comparator keys; do not serialize redundant heap implementation arrays. Every lane in an explicit order list occurs exactly once in its matching state, and no ready lane remains in a packing/memory queue.
+Array order in `order` is canonical; runtime position maps are derived. Remove an inactive policy/catalog order entry by deterministic swap-with-last and clamp/adjust its cursor, rather than retaining unlimited tombstones. The next uninterrupted and restored visits must agree. FIFO work queues use removable linked maps with O(1) insertion, removal and pop; serialize their logical remaining order and reconstruct the links. This replaces the proposed ring buffer because cancellation needs arbitrary removal without tombstones or a full scan. Membership is bounded by live lane records or canonical demand intents; queues cannot accumulate historical entries. Delayed submissions and eviction heaps are reconstructed from lane state and total comparator keys; do not serialize redundant heap implementation arrays. Every lane in an explicit order list occurs exactly once in its matching state, and no ready lane remains in a packing/memory queue.
 
 An actor/source demand exists before a lane can be allocated. Its optional `laneId` and retained `requestTick` allow a record-capacity wait without losing the request age. Allocate no subscription row until a real lane exists. When capacity becomes available, initialize lane age from that demand's original `requestTick`, not the retry tick. Changing target geometry creates a new geometry-demand age but does not reset the actor/source's overall continuous route wait.
 
@@ -276,7 +261,7 @@ Place the following explicit initial defaults in `SeaTradeTypes.ts`. They are im
 | Active use | One active leg per actor; actor sidecars bounded by actual live trader pool |
 | Pending economic demand | At most one pending demand per actor and one dispatch per source with an idle ship; no speculative all-pairs warming |
 | Source ready-lane retention | Two most recently successfully used lane references per live source/basin access; an active voyage also owns its own reference |
-| Candidate list | Eight descriptors per active source/basin/owner view: four nearby plus four rotating exploration candidates |
+| Candidate list | At most eight descriptors per active source/basin/owner view: up to two successful source hints occupy slots first, followed by the nearest four and rotating exploration four until the eight-slot bound |
 | Planner jobs, arena, preparation | Existing bounds unchanged: 128 job table; current arena; existing 32/8 preparation rules |
 | Management turns | 40 total units/tick shared with the existing trade admission pass; ready-lane attachments in the existing actor update are excluded, see section 10 |
 | Copy/validation | 1,024 path tiles/tick globally, under the existing match route-work budget as specified below |
@@ -325,7 +310,7 @@ The planner request has `start = key.lo`, `goal = key.hi`, `water = true`, no al
 | `blocked` | Undefined, as for existing naval geometry. |
 | `completed` | Forward to the new consumer; never to actor-level `Trade.completedRoute`. |
 
-Keep scheduler version 6. The new mode supplies new callback semantics without rewriting old job ordering. A request's immutable sponsor stays fixed through completion even if that faction is eliminated; geometry validity comes from live subscribers, and priority stays background. If a retry is needed, choose a current subscriber owner using the service's checkpointed round-robin cursor. Do not cancel/restart useful geometry merely to change a sponsor. No new request is created without a live subscriber.
+The user approved expanding scope to fix shared-planner starvation after mature-fixture measurements showed legacy land jobs occupying almost every slot. New-mode matches use scheduler version 7. Legacy omitted-option matches and saved scheduling versions 1–6 retain their old behavior. Version 7 preserves the 128 total/120 background admission ceilings and human reserves. It counts uncommitted work against the unpaid ceiling, rather than counting paid reserved work a second time. Each 16-job background active pool guarantees eight land/eight water positions when both have demand; within each medium it reserves three quarters for committed work and one quarter for unpaid work, borrowing unused capacity. Existing jobs finish without discarding progress. Shared background preparation splits the existing allowance equally by medium and lends an unused half in a bounded second pass. No total simulation-work budget is raised. A request's immutable sponsor stays fixed through completion even if that faction is eliminated; geometry validity comes from live subscribers, and priority stays background. If a retry is needed, choose a current subscriber owner using the service's checkpointed round-robin cursor. Do not cancel/restart useful geometry merely to change a sponsor. No new request is created without a live subscriber.
 
 `SeaRoutePorts` supplied to the service should expose only `request(task,start,goal,true)`, `cancel(task)`, `has(key)`, `tick()` and the current water revision. `has` uses the existing planner's public method. No service reads planner private jobs or manipulates its arena. For restore validation, add a narrow `RoutePlanner.requests()` read view returning immutable request identities/keys, excluding reclamation-only jobs. It is used during restore/debug checks, not scanned during every acquisition.
 
@@ -384,7 +369,7 @@ The registry constructor receives only the immutable map, water paths, a functio
 
 A `requested` record with `has(key) === false` and no received callback on the next service turn is an invariant violation, not a reason to silently start again. Fail a debug/regression check with its key; production should surface an explicit routing fault rather than conceal lost work indefinitely. During normal callback execution, clear the requested key and store the terminal outcome atomically.
 
-`retiring` is reserved for a cancelled accepted request awaiting acknowledgment/reclamation, not an arbitrary ready payload. Cancelling an unreferenced staging/packing record releases its accounted input/output and removes it in a management turn. Evicting a ready record releases its packed payload directly. A new subscriber finding a retiring key may wait on that same record; after the old request is absent/acknowledged, transition to queued if references are nonzero, otherwise remove it. Its next request uses a new epoch, and no stale cancellation can delete that newer request.
+`retiring` is reserved for a cancelled accepted request awaiting acknowledgment/reclamation, not an arbitrary ready payload. Cancelling an unreferenced staging/packing record releases its accounted input/output in a bounded cleanup turn. A packing-queue cancellation consumes one copy-work unit; it is reported separately from an actual copied cell and returns that consumed unit to the shared budget accounting. Evicting a ready record releases its packed payload directly. A new subscriber finding a retiring key may wait on that same record; after the old request is absent/acknowledged, transition to queued if references are nonzero, otherwise remove it. Its next request uses a new epoch, and no stale cancellation can delete that newer request.
 
 `stepCopies` visits one queued packing record at a time, round-robin. For each tile, validate safe range, water walkability, endpoint convention and Manhattan adjacency to the previous tile, then write one `Int32`. No synchronous `.every`, `.map`, `Array.from`, `.reverse` or full-path copy in `completedRoute`. Reserve the full typed-array output before writing; constructing a zero-filled `Int32Array` is the single bounded allocation per accepted result, with its size charged to the payload cap. Record allocation time separately. Invalid path contents are a router contract failure, never a normal market rejection.
 
@@ -408,8 +393,8 @@ Use these exact initial selection steps, with no economic return-rate ranking:
 2. Query `TradeReceiving.available` using current owner/tile, naval/foreign/allied flags. Zero available intake makes the candidate temporarily unsuitable for a new outward leg, not geographically unreachable. Do not reserve intake or charge cargo at selection.
 3. For ready candidates, use the retained path's step count as distance. Let `d` be the shortest ready eligible length. The nearby-ready set is lengths `<= max(d + 16, ceil(1.5 * d))`. This avoids a far cached ally winning solely because it is cached. Constants are versioned policy parameters and must be reported in economy comparisons.
 4. If the nearby-ready set has allies, restrict selection to those allies. Otherwise use the whole nearby-ready set. Sort this at-most-eight group by numeric `(portTile, receiverId)` and choose its next element after the saved last selected physical tile; wrap at the end. Advance this cursor only on a successful departure/continuation commitment, never on a failed poll.
-5. If no eligible ready candidate exists, select one discovery target from the nearest-four subset using squared geographic distance as an estimate. Prefer allies only inside its nearby estimate group, using the same `max(d + 16, ceil(1.5*d))` rule on integer ceiling distance. Obtain integer ceiling distance with a tested helper; do not compare squared distances to unsquared thresholds. Tie-break by receiver tile/ID.
-6. Start or subscribe to exactly that one lane demand. While it is pending, use an eligible ready alternate if one becomes available. A source may retain at most the pending target and its bounded ready-retention set; do not launch all eight exact searches.
+5. For an optional extra stop, use only an eligible ready candidate. If none qualifies after bounded initial catalog discovery, return by known geometry; never launch a cold continuation search. For a loading departure with no eligible ready candidate, select one discovery target from the nearest-four subset using squared geographic distance as an estimate. Prefer allies only inside its nearby estimate group, using the same `max(d + 16, ceil(1.5*d))` rule on integer ceiling distance. Obtain integer ceiling distance with a tested helper; do not compare squared distances to unsquared thresholds. Tie-break by receiver tile/ID.
+6. For a loading departure, start or subscribe to exactly that one lane demand. While it is pending, use an eligible ready alternate if one becomes available. A source may retain at most the pending target and its bounded ready-retention set; do not launch all eight exact searches.
 7. On a proven different-component target, remove it from this pass and rotate to the next candidate, including the exploration four. Capacity waiting does not remove it. With no viable candidate, loading ships retain stock/identity and report no-market or market-intake as appropriate. Loaded ships return with the remainder after bounded candidate discovery; do not wait forever for a currently empty intake window to improve.
 
 The near-group algorithm deliberately permits different destinations from today's payout scoring. It does not promise shortest sea routes from geometric estimates. Continually changing intake must not restart geometry. Do not reset the rotating exploration window every time the nearest-four group is full; tests must prove eventual consideration of a lawful distant receiver.
@@ -478,7 +463,7 @@ At an ordinary outward arrival:
 1. Apply exactly today's receiver quantity, `tradePayout`, tariff, visited building/tile update and handling wait. A zero sale still marks that physical location visited, preserving current finite progress.
    Set `voyage.currentPortTile` to the actual receiver tile for the next bounded nearby query.
 2. Transfer the active leg's retained ownership into `voyage.trail`; do not briefly release the last reference and allow eviction. A full trail has at most eight legs.
-3. If cargo remains and the stop limit permits, try the cheap continuation policy. If none is ready and a target is still being discovered, give continuation at most five game seconds from first continuation demand. It may wait under explicit planning/intake causes during that interval; then return. This new-mode timeout is not a geographic negative or cargo deadline.
+3. If cargo remains and the stop limit permits, try the cached-only continuation policy. Choose a legal ready lane, otherwise return by known geometry. A policy view may wait for bounded initial catalog descriptors, or for intake on a known lane, for at most five game seconds from first continuation selection; no fresh continuation geometry search is allowed. This bound is not a geographic negative or cargo deadline.
 4. If cargo is empty, the stop limit is reached, discovery has no market, or that continuation limit expires, invoke `startReturn`.
 
 `startReturn` first resolves the current owned source site. If absent, use source-loss salvage below. Otherwise look up a **ready** lane from the ship's actual tile to that source's preferred endpoint in the current basin. If present, bind it as the sole direct return, release old trail references, set the current source representative as `destination`, set `state = returning` and perform no further destination scoring. A ready reversed lane qualifies.
@@ -714,3 +699,73 @@ The reverse-prefix formula passed 10,100 combinations: path lengths 1–100, bot
 Both checkpoints were reread to verify that their 128-entry cache limits bind at only 4,278/5,337 retained tiles. The recorded unique-path sizing and maximum lengths come directly from their actor arrays; consumed paths were not mislabeled as active movement. TypeScript example fences were syntax-checked, local Markdown links and whitespace were checked, and no production files were changed. Syntax checking examples is not type-checking an unimplemented cross-module API.
 
 The 97-test/five-suite baseline result is the earlier 20 October run. No new production test pass or performance improvement is claimed by this document audit. T00–T13 specify the implementation and proof still required, including measured validation of the initial resource bounds, forward-compatible wait-detail transport, mature fleet progress and actual hosting-path qualification.
+
+
+## 23 Implementation status (21 October 2026)
+
+Implementation lives in the isolated `codex/sea-trade-lanes` worktree, based on `ea9514b1e40420aca9336dbbf583370301e1e52b`. The original checkout is preserved. The option remains opt-in pending qualification; T13 is not complete.
+
+Cold actor updates only enqueue a canonical economic intent. `SeaTradeVoyages.stepManagement` alternates registration and registry maintenance. Economic intent service grants three recovery turns followed by one unpaid source turn when both queues have work. Ready routes attach directly during the ordered actor phase. Actor references, queue links and heap positions are derived runtime indexes. No fleet scan or fresh path search is hidden inside an intent registration turn.
+
+The offline converter preserves already calculated historical geometry as idle ready lanes, including consumed legacy actor paths, instead of making a mature network artificially cold. Active imported paths retain exactly their remaining physical waypoints and current position. The first imported shipment is explicitly legacy; its next load adopts normal cached-direct/retrace behavior. Reading fixture catalogs is read-only and checked against the original checkpoint before conversion.
+
+Current evidence: 48 focused tests across eleven sea-trade/planner suites pass; TypeScript and both production builds pass. The untouched original checkout independently reproduces the unrelated `RussianAssetIntegration.test.ts` machine-gun-truck release-point mismatch (expected 0.52, actual 0.5390625). It is not waived by this implementation. Full-suite, mature/fresh runs, isolated timing and browser/hosting qualification are still being completed. Earlier stopped fresh runs are marked pilot evidence and do not satisfy the final gates. Do not treat concurrent functional-run timings as isolated speedup measurements.
+
+
+### Admission fairness refinement
+
+The first mature v7 run failed cold-lane latency despite active-slot and preparation fairness: the shared 120-background-job table still allowed older land traffic to refill every freed admission before sea work entered. V7 therefore also divides background admission by medium while both have jobs or a recently refused request. The total and ordinary admission ceilings are split equally between land/water, preserving the human and paid reserves. A refused medium retains a two-game-second demand lease, refreshed by retries and checkpointed with the planner clock; accepting a request clears that lease because the admitted job now represents demand. Abandoned demand expires so capacity can be borrowed again. Existing jobs are never evicted or restarted; overrepresented inherited work drains naturally and cannot refill above its current share. The earlier concurrent long runs are diagnostic evidence of the previous admission behavior, not final qualification of this refinement.
+
+
+Admission class fairness uses the same finite leases for paid/unpaid demand within each medium: paid work may borrow an idle unpaid share, but cannot refill above three quarters while an unpaid request is being refused; unpaid work likewise yields the paid share when paid demand is waiting. Active admission now lends individual unused positions rather than reserving a whole eight-job medium share for a single opposite-medium job. The resource ceilings are unchanged.
+
+The benchmark's recurring-reuse population is nonlegacy actor-demand departure/continuation acquisitions for physical endpoint pairs first acquired while eligible at least five game minutes earlier. Source subscriptions, first use, return and salvage are excluded and remain separately reported. Selected-to-cold-subscription delay measures the bounded economic-intent queue before registry acquisition, so queue work cannot disappear from the lane acquisition clock. Both populations are recorded explicitly in result JSON; they are not interchangeable with the global raw cache-hit ratio.
+
+
+### Approved mature-checkpoint repair
+
+The user additionally approved fixing pre-existing nonfinite AI checkpoint fields after both the original and converted 60-minute fixtures failed portable encoding with 69 positive-infinity sentinels. `AiOperation.score` and naval assessment `portDistance`/`targetDistance` now represent an unobserved minimum with `undefined`, matching the existing formation-planning convention. Every comparison uses `value ?? Infinity`; finite values are unchanged. Restore maps legacy positive infinity to absence and rejects NaN/negative infinity for these fields. The codec and its resource limits are unchanged. New-mode and omitted-option saves both receive this approved migration. Exact mode-off checkpoint comparison therefore normalizes only these three known legacy sentinel fields; publications and every other checkpoint field must still match the old implementation. This is an explicit representation migration, not byte parity with an old infinity-bearing checkpoint.
+
+The 60-minute whole checkpoint successfully round-trips through the portable codec after normal restore/migration. The focused AI/persistence tests also exercise whole-state deltas and future-state equality. Earlier profiling processes may finish with the legacy sentinel representation; normal restoration must migrate those output fixtures before portable transport qualification.
+
+
+## Superseding reuse audit and intake correction
+
+The earlier recurring-reuse telemetry incorrectly started pair history only on a ready acquisition. That excluded recurring cold misses. The corrected population starts with the first eligible nonlegacy departure/continuation acquisition, ready or cold, and counts all recurring acquisitions once that pair has been observed for five game minutes. The corrected 60-minute run was approximately 77 percent, below the 95 percent gate. Its previous 100 percent ready-only subset is not a passing gate.
+
+The audit identified an implementation violation: temporarily full receiver intake caused pending geometry to be replaced with another cold target. New selection now retains the pending pair through intake saturation whenever there is no usable ready alternative. A ready but intake-blocked route keeps its actor reference and reports market capacity; it survives restore and does not debit source goods. A regression test covers a refused cold route, repeated intake saturation, completion into a ready intake wait, reference validation on restore, and subsequent successful load.
+
+The `*-admission` fresh runs and prior mature runs are marked diagnostic/pilot evidence, not final qualification. All earlier fresh runs have been stopped. `m60-stable-intake-v2` is the current mature qualification run with the complete correction and corrected recurring-pair telemetry. Normal factories remain unchanged until the actual gates pass.
+
+
+### Source retention policy wiring correction (2026-10-21)
+
+`SeaTradePorts.sourceHints` stores at most two receiver IDs per active source/owner/basin key, updated only on a successful loading departure. It survives transient view removal and is serialized as bounded `[key, receiverIds]` rows; omitted rows in older development sidecars migrate to empty. Before cloning, validate the outer bound `(actorCeiling * 32)`, tuple form and inner length two. Restore also checks canonical numeric keys and positive safe receiver IDs. Missing/destroyed/ineligible receivers are filtered live. `retainSources` removes inactive-source hints alongside the registry's soft claims.
+
+Candidate assembly first takes these source hints, then the nearest/exploration descriptors, deduplicates IDs and truncates to eight before live candidate lookup. Thus these are slots in the existing bounded policy, not a second basin scan or an unbounded ready-route graph. Only loading departures refresh the source's registry retention; continuation trail pins remain independently hard referenced. Regression proof must include view retirement/recreation and checkpoint restore, because keeping a hint only in an idle source view would lose it as soon as its last courier departed.
+
+
+### Approved cached-only continuations (supersedes five-second cold geometry discovery)
+
+After mature trace evidence showed 8,000 to 11,000 abandoned continuation searches, the user explicitly approved: optional extra stops use ready cached lanes only; otherwise ships take cached direct home geometry or retrace their recorded voyage. Departure and salvage retain bounded cold discovery. `begin(actor, false)` may wait for its bounded catalog to produce initial descriptors or for a known route's intake, within the existing five-second continuation limit. It never selects or acquires a cold continuation lane. Once descriptors exist and no legal ready candidate qualifies, call `startReturn` immediately. Loading departure discovery is unchanged. Return trail references stay pinned throughout selection and intake waits.
+
+Tests must prove a cold continuation is never requested in a fleet with only home-to-market lanes, and that multi-stop behavior still works when another merchant has discovered the foreign-to-foreign lane through ordinary departures. Do not preseed an actor's private copied path. Keep the multi-leg reverse-trail and payout assertions.
+
+
+### Retained-slot exploration stride invariant
+
+At a finite pass end, advance `explorationStart` by `4 - sourceHintCount`, not an unconditional four. The two retained IDs occupy slots in the same eight-candidate bound, so only two exploration descriptors may be visible. A stride of four with a two-wide visible window can permanently skip half the receiver ordinals when the eligible count is divisible by four. Conservative overlap when hints duplicate nearest receivers is safe; skipping unseen rows is not. Test full eventual eligible-ID coverage in a stable basin for hint counts zero, one and two, alongside restore and churn. The previous weaker assertion of merely seeing more than eight candidates did not catch this error.
+
+
+### Pending candidate reservation and accepted cold-route tradeoff
+
+A pending receiver outside the emitted eight candidates reserves one of the nearest-four slots, reducing nearest entries to at most three. Keep the guaranteed exploration width `4 - sourceHintCount`; never prepend a pending target and truncate the exploration tail. If the pending ID is already in the emitted set, no extra slot is reserved. Deduplicate receiver IDs before the eight-ID cap and physical port tiles during live lookup. The same pure pending-aware candidate construction is used by runtime selection and the read-only readiness probe. Parameterized tests require eventual full receiver coverage with a persistent pending receiver and zero/one/two hints.
+
+The user explicitly accepted preserving the fixed CPU budgets with documented first-use cold delays, rather than extending this task into path-preparation optimization. Treat cold-only five/15-second latency as an accepted exception, not an achieved result. All-acquisition and cold-only distributions, canceled demands and unresolved subscriptions remain separately reported. The ready departure, recurring reuse, bounded memory, restoration, physical return and no known-ready stationary failure gates remain in force.
+
+
+### Human full-arena retry and idle preparation lending
+
+A live human exact route awaiting exclusive workspace cannot spend corridor preparation. V7 must not reserve 24 otherwise idle preparation units merely because that request exists. During the existing bounded job-table scan, reserve for a priority live corridor, or a priority request that can still begin a corridor (no exclusive retry, no prior corridor, first candidate, empty exact-search nodes, search phase, corridor eligibility). A queued replacement has request fields only: conservatively reserve when it can begin a corridor, without reading absent running-job fields. Preserve v6 any-interactive reservation. This lends the existing 32-unit total; it does not enlarge the budget or remove a live human corridor's reserve.
+
+Regression: eight cold paid water routes hold a real 1,024-slot arena while a human exact route needs an exclusive retry. The human must complete by tick six (observed four; before correction 13), under 10,240 work units. Also compare matched actual commands on the mature input: the discovered v7 regression was 432–483 ticks versus legacy 109–160; corrected long-command outcomes are 88–147, with identical one-tick short commands. Saved all-AI qualification runs are behaviorally unaffected because this correction is entirely inside a priority-true branch; preserve exact source-hash and canonical/future equivalence evidence rather than silently treating changed source as identical.

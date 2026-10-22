@@ -308,6 +308,7 @@ export interface TradeActor {
   path: number[];
   nextPathIndex: number;
   waitTicks: number;
+  waitDetail?: "market-intake" | "no-market";
   waitingReason?: "cargo" | "planning" | "no-receiver" | "unreachable" | "handling" | "capacity";
   quoteAllies: number[];
 }

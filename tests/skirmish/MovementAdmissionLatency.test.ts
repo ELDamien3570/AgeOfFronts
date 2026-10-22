@@ -39,7 +39,7 @@ describe("human movement admission latency", () => {
       const requests = admissionRequests(match);
       expect(match.applyCommand({ type: "order", playerId: 1, squadIds: squads.map(s => s.id), order: { type: "move", tile: map.ref(85, 60) } })).toBeNull();
       let tick = 0;
-      for (; tick < 400 && !match.movementAdmission.checkpoint().pending.some(([, a]) => a.members.some(m => m.path)); tick++) match.step();
+      for (; tick < 400 && !(match.movementAdmission.checkpoint().pending.some(([, a]) => a.members.some(m => m.path)) || squads.some(s => match.squad(s.id)!.order.type === "move")); tick++) match.step();
       const pending = match.movementAdmission.checkpoint().pending;
       expect(pending.length).toBeGreaterThan(0);
       if (wall) {

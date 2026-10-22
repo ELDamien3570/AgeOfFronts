@@ -69,17 +69,18 @@ describe("corridor lead death during pending admission (R2-H1)", () => {
     expect(game.commandApplications.diagnostics.pending).toBe(0);
     expect(["executed", "superseded"]).toContain(outcomes[outcomes.length - 1].status);
   });
-  it("supersedes a cohort whose follower member dies", () => {
+  it("retains sibling intentions when a pending member dies", () => {
     const { game, command } = setup();
     congest(game);
     expect(game.commandApplications.apply("move-1", command).status).toBe("deferred");
-    for (let i = 0; i < 3; i++) game.step();
-    const cohort = pending(game).find(a => a.members.length > 1)!;
-    expect(cohort).toBeDefined();
-    const victim = cohort.members[1].id, siblings = cohort.members.filter(m => m.id !== victim).map(m => m.id);
+    for (let i = 0; i < 6; i++) game.step();
+    const members = pending(game).filter(a => a.members.length === 1);
+    expect(members.length).toBeGreaterThan(1);
+    const victim = members[0].members[0].id;
+    const siblings = members.slice(1).map(a => a.members[0].id);
     game.removeSquad(victim);
-    expect(pending(game).includes(cohort)).toBe(false);
-    for (const id of siblings) expect(game.movementAdmission.hasPending(id)).toBe(false);
+    expect(game.movementAdmission.hasPending(victim)).toBe(false);
+    for (const id of siblings) expect(game.movementAdmission.hasPending(id)).toBe(true);
     expect(() => { for (let i = 0; i < 6; i++) game.step(); }).not.toThrow();
   });
   it("does not dereference a vanished corridor lead even when nothing cancelled its admission", () => {

@@ -247,9 +247,9 @@ class TilePaths {
     if (this.builtHierarchy) this.builtHierarchy.pinShared(origins);
     else if (this.hasHierarchy) this.pendingPins = [...origins];
   }
-  stepCorridor(state:CorridorState,workspace:PlanningWorkspace,budget:number,blocked?: (tile:number)=>boolean,preparationBudget=Infinity,preparation:{used:number}={used:0},shared=false):number {
+  stepCorridor(state:CorridorState,workspace:PlanningWorkspace,budget:number,blocked?: (tile:number)=>boolean,preparationBudget=Infinity,preparation:{used:number}={used:0},shared=false,chargePreparation=false):number {
     if(!this.hierarchy)throw Error("Missing hierarchical route topology");
-    return this.hierarchy.step(state,workspace,budget,this.revision,blocked,preparationBudget,preparation,shared);
+    return this.hierarchy.step(state,workspace,budget,this.revision,blocked,preparationBudget,preparation,shared,chargePreparation);
   }
   validateCorridor(state:CorridorState,workspace:PlanningWorkspace,shared=false):void {
     if(!this.hierarchy)throw Error("Missing hierarchical route topology");

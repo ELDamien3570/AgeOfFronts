@@ -1,3 +1,4 @@
+import { restoreAiMinimum } from "./AiCheckpointMinimum";
 import { landGoldIncome } from "../content/Economy";
 import {TICKS_PER_SECOND} from '../Protocol';
 import { secondsToTicks } from '../Protocol';
@@ -36,13 +37,13 @@ interface Assessment {
   phase: "buildings" | "ships" | "jobs";
   cursor?: number | null;
   port?: number;
-  portDistance: number;
+  portDistance?: number;
   anchor?: number;
   members: number[];
   enemyPower: number;
   localEnemyPower?: number;
   target?: number;
-  targetDistance: number;
+  targetDistance?: number;
   futurePower: number;
   portTiles?: number[];
   recoveringPower?: number;
@@ -218,8 +219,13 @@ export class AiNavalPlanner {
     saved ??= {missions:[],funding:[],theaters:[],history:[],cursor:0,serial:0};
     this.missions.clear();
     this.lanes.clear();
-    for (const [id, mission] of structuredClone(saved.missions))
+    for (const [id, mission] of structuredClone(saved.missions)) {
+      if (mission.assessment) {
+        mission.assessment.portDistance = restoreAiMinimum(mission.assessment.portDistance);
+        mission.assessment.targetDistance = restoreAiMinimum(mission.assessment.targetDistance);
+      }
       this.missions.set(id, mission);
+    }
     for(const mission of this.missions.values())this.refreshLanes(mission);
     this.funding.clear();
     for (const [key, evidence] of structuredClone(saved.funding ?? []))
@@ -321,7 +327,7 @@ export class AiNavalPlanner {
         createdTick: world.tick,
         deadline: world.tick + FLEET_WATCHDOG_TICKS,
         nextAssessment: world.tick,
-        assessment:{phase:"buildings",portDistance:Infinity,members:[],enemyPower:0,targetDistance:Infinity,futurePower:0},
+        assessment:{phase:"buildings",portDistance:undefined,members:[],enemyPower:0,targetDistance:undefined,futurePower:0},
         members: [],
         recovering: [],
         purchases: 0,
@@ -360,10 +366,10 @@ export class AiNavalPlanner {
     if (!m.assessment && world.tick < m.nextAssessment) return 0;
     m.assessment ??= {
       phase: "buildings",
-      portDistance: Infinity,
+      portDistance: undefined,
       members: [],
       enemyPower: 0,
-      targetDistance: Infinity,
+      targetDistance: undefined,
       futurePower: 0,
     };
     const a = m.assessment;
@@ -402,8 +408,8 @@ export class AiNavalPlanner {
               player.base,
             );
             if (
-              distance < a.portDistance ||
-              (distance === a.portDistance && value.id < (a.port ?? Infinity))
+              distance < (a.portDistance ?? Infinity) ||
+              (distance === (a.portDistance ?? Infinity) && value.id < (a.port ?? Infinity))
             ) {
               const anchor = portWaterTiles(world.map, value.tile)
                 .find((t) => world.waterPaths.walkable(t));
@@ -471,8 +477,8 @@ export class AiNavalPlanner {
               if(distance <= 32 ** 2 || (m.state === "execute" && m.target === ship.id))
                 a.localEnemyPower=(a.localEnemyPower ?? 0)+navalPower(definition,ship.health);
               if (
-                (distance <= 32 ** 2 || (m.state === "execute" && m.target === ship.id)) && (distance < a.targetDistance ||
-                (distance === a.targetDistance &&
+                (distance <= 32 ** 2 || (m.state === "execute" && m.target === ship.id)) && (distance < (a.targetDistance ?? Infinity) ||
+                (distance === (a.targetDistance ?? Infinity) &&
                   ship.id < (a.target ?? Infinity)))
               ) {
                 a.target = ship.id;

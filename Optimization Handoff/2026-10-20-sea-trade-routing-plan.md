@@ -1,6 +1,6 @@
 # Sea trade routing architecture and completion plan
 
-Status: audited implementation plan, grounded in source at `ea9514b1` on `Private-Matches`. Created 20 October; detailed audit completed 21 October 2026. No gameplay implementation is included.
+Status: audited implementation plan, grounded in source at `ea9514b1` on `Private-Matches`. Created 20 October; detailed audit completed 21 October 2026. Implementation is now in progress in the isolated `codex/sea-trade-lanes` worktree; consult [the current validation report](2026-10-21-sea-trade-implementation-validation.md) for actual status and accepted exceptions.
 
 **Implementation entry point:** read [the detailed implementation specification](2026-10-21-sea-trade-implementation-spec.md) after this overview. It supplies exact private types, planner callback behavior, algorithms, initial limits, state transitions, failure handling, persistence/conversion rules, test assertions, harness metrics and ordered tickets T00–T13. Its concrete initial choices supersede the open implementation choices in this overview; empirical qualification gates still apply.
 
@@ -243,3 +243,13 @@ For parity-only phases, use `scripts/fixtureParityPair.ts` to compare every publ
 Implementation should produce the narrow sea-route modules and planner adapter, updated lifecycle/checkpoint/wire boundaries, durable regression fixtures, a single reproducible fleet qualification harness, exact comparison evidence and an updated shared-routing contract. Reconcile the stale P10/P22 and historical timing descriptions with links to the new contract rather than rewriting their historical results. Record which existing gates remain unpassed. Leave one owner and one executable acceptance checklist for future changes to trade.
 
 The first implementation action is T00–T01 in the detailed specification: verify concurrent work and establish the regression/measurement baseline. Initial algorithms and resource defaults are now concrete; their acceptance still depends on fleet, memory, restore and player-control evidence. Do not treat this planning pass as proof that unimplemented code meets those targets.
+
+
+## Implementation addendum — 21 October 2026
+
+The implementation specification's section 23 records the current patch and proof status. The user explicitly approved extending this pass to shared-planner scheduling after mature workloads exposed land-job starvation of new sea lanes. Scheduler v7 supplies fair land/water active admission and preparation, and corrects duplicate accounting of paid jobs against the unpaid allowance. Omitted-option legacy matches retain v6 behavior. The new routing remains opt-in until the specified qualification gates pass. Concrete serialization and queue contracts are documented in the updated implementation specification; the original flat checkpoint/ring-buffer sketch is superseded by nested service checkpoints and bounded removable FIFO queues.
+
+
+### 21 October implementation policy refinement
+
+Mature functional traces found thousands of speculative extra-stop searches canceled at the five-second continuation timeout. The user approved cached-only extra stops: use a legal ready lane, otherwise take a ready direct home lane or physically retrace the voyage. Cold discovery remains available for loading departures and salvage. The last two successful source markets now remain visible in policy selection across policy-view retirement and restore, occupying slots within the existing eight-candidate bound. Continuation hard trail pins do not overwrite a source's two soft departure references. These refinements supersede any earlier suggestion of fresh continuation geometry searches; see the updated implementation specification and validation record.

@@ -30,6 +30,19 @@ describe("trader publication", () => {
     expect(initial.upserts[0].visited).toEqual([2]);
   });
 
+  it("keeps recovered and existing traders aligned when a waiting reason changes back",()=>{
+    const {game}=formationLoad("distributed",15),a=actor();game.expansion!.trade.actors.push(a);
+    const encoder=new SnapshotEncoder(false,{compactTraders:true}),existing=new SnapshotDecoder(),recovered=new SnapshotDecoder();
+    a.waitingReason="planning";existing.decode(encoder.encode(game.replicationSource(true),game.tileChanges,game.replicationFacts()));
+    a.waitingReason=undefined;
+    const aligned=encoder.encodeJoinBarrier(game.replicationSource(true),game.tileChanges,game.replicationFacts());
+    expect(existing.decode(aligned.shared).expansion!.traders).toEqual(recovered.decode(aligned.baseline).expansion!.traders);
+    a.waitingReason="planning";
+    const next=encoder.encode(game.replicationSource(true),game.tileChanges,game.replicationFacts());
+    expect(next.traderChanges!.upserts[0].waitingReason).toBe("planning");
+    expect(existing.decode(next).expansion!.traders).toEqual(recovered.decode(next).expansion!.traders);
+  });
+
   it("rejects missing baselines, truncated rosters, invalid records and duplicate ids without poisoning retained details", () => {
     const encoder = new TraderEncoder(), decoder = new TraderDecoder(), a = dto(actor());
     const initial = encoder.encode([a], true);
